@@ -1,0 +1,151 @@
+{
+  "name": "Shaare Zedek Geriatrics System",
+  "short_name": "SZ Geriatrics",
+  "description": "מערכת גריאטרית משולבת - שערי צדק | Dr. Eias Ashav",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#004c8c",
+  "background_color": "#f0f2f5",
+  "dir": "rtl",
+  "lang": "he-IL",
+  "scope": "/",
+  "categories": ["medical", "health", "education"],
+  "iarc_rating_id": "e84b072d-71b3-4d5e-8b4a-5c3f1a4e7b3f",
+  "icons": [
+    {
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-emergency.png",
+      "type": "image/png",
+      "sizes": "1080x1920",
+      "label": "Emergency protocols screen"
+    },
+    {
+      "src": "/screenshot-medications.png",
+      "type": "image/png",
+      "sizes": "1080x1920",
+      "label": "Medication dosing screen"
+    },
+    {
+      "src": "/screenshot-training.png",
+      "type": "image/png",
+      "sizes": "1080x1920",
+      "label": "Training questions screen"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Emergency Protocols",
+      "short_name": "Emergency",
+      "description": "Quick access to emergency protocols",
+      "url": "/?panel=emergency",
+      "icons": [
+        {
+          "src": "/icon-emergency-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Blood Protocol",
+      "short_name": "Blood",
+      "description": "Blood transfusion protocol",
+      "url": "/?panel=blood",
+      "icons": [
+        {
+          "src": "/icon-blood-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Phone Directory",
+      "short_name": "Phones",
+      "description": "Hospital phone numbers",
+      "url": "/?panel=phones",
+      "icons": [
+        {
+          "src": "/icon-phone-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "files",
+          "accept": ["image/*", "application/pdf"]
+        }
+      ]
+    }
+  },
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "features": [
+    "Cross Platform",
+    "Offline Capable",
+    "Progressive Web App",
+    "Medical Reference",
+    "Training System"
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}

@@ -1,0 +1,2470 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Shaare Zedek Geriatrics - Dr. Eias Ashav | מערכת גריאטרית משולבת</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#004c8c">
+    <meta name="description" content="Comprehensive geriatrics reference system for Shaare Zedek Hospital - protocols, medications, assessments, and training">
+    <meta name="keywords" content="geriatrics, שערי צדק, protocols, Beers criteria, delirium, falls, elderly care">
+    <meta name="author" content="Dr. Eias Ashav">
+    
+    <!-- iOS Specific -->
+    <meta name="apple-mobile-web-app-title" content="SZ Geriatrics">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="/splash-screen.png">
+    
+    <!-- Open Graph / Social -->
+    <meta property="og:title" content="Shaare Zedek Geriatrics System">
+    <meta property="og:description" content="Professional geriatrics reference and training system">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://geriatrics.szmc.org.il">
+    <meta property="og:image" content="/og-image.png">
+    
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;900&display=swap');
+        
+        :root {
+            --primary: #004c8c;
+            --primary-light: #0277bd;
+            --secondary: #667eea;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --info: #2196f3;
+            --dark: #1c1e21;
+            --light: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Heebo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            direction: rtl;
+            padding-bottom: 70px;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-badges {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .header-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .streak-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ff9800);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: white;
+            display: flex;
+            overflow-x: auto;
+            border-bottom: 2px solid #e4e6eb;
+            position: sticky;
+            top: 56px;
+            z-index: 999;
+            scrollbar-width: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-tab {
+            flex-shrink: 0;
+            padding: 14px 20px;
+            color: #65676b;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .nav-tab:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-tab.active {
+            color: var(--primary-light);
+            border-bottom-color: var(--primary-light);
+            background: linear-gradient(to bottom, #f0f9ff, white);
+        }
+
+        .tab-icon {
+            font-size: 18px;
+        }
+
+        .tab-badge {
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 700;
+            position: absolute;
+            top: 8px;
+            left: 8px;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8f9fa, white);
+            padding: 16px 20px;
+            font-weight: 700;
+            border-bottom: 2px solid #e4e6eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Quick Actions Grid */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .quick-action {
+            background: white;
+            border: 2px solid #e4e6eb;
+            border-radius: var(--radius);
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: var(--primary-light);
+        }
+
+        .quick-action:hover::before {
+            opacity: 1;
+        }
+
+        .quick-action:hover * {
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quick-action-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            transition: transform 0.3s;
+        }
+
+        .quick-action:hover .quick-action-icon {
+            transform: scale(1.2);
+        }
+
+        .quick-action-label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Blood Protocol Section */
+        .blood-protocol {
+            background: linear-gradient(135deg, #ffebee, white);
+            border-radius: var(--radius);
+            padding: 20px;
+            border-right: 4px solid var(--danger);
+            margin-bottom: 20px;
+        }
+
+        .blood-step {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: relative;
+            padding-right: 50px;
+            transition: var(--transition);
+        }
+
+        .blood-step:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .step-number {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--danger), #ff5252);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* Emergency Alert */
+        .emergency-alert {
+            background: linear-gradient(135deg, #fff5f5, #ffebee);
+            border: 2px solid var(--danger);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin: 20px 0;
+            animation: alertPulse 2s infinite;
+        }
+
+        @keyframes alertPulse {
+            0%, 100% { border-color: var(--danger); }
+            50% { border-color: #ff7961; }
+        }
+
+        .emergency-title {
+            color: var(--danger);
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Forms Grid */
+        .forms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .form-card {
+            background: linear-gradient(135deg, #f8f9fa, white);
+            border: 2px solid #e4e6eb;
+            border-radius: var(--radius);
+            padding: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .form-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--primary-light);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .form-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            margin-top: 8px;
+        }
+
+        .form-details {
+            font-size: 13px;
+            color: #65676b;
+            line-height: 1.6;
+        }
+
+        /* Medication Tables */
+        .med-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+            overflow: hidden;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .med-table thead {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+
+        .med-table th {
+            padding: 14px;
+            text-align: right;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .med-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e4e6eb;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .med-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .med-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .dose-warning {
+            background: #fff3e0;
+            color: var(--warning);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .dose-safe {
+            background: #e8f5e9;
+            color: var(--success);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        /* Beers Criteria Cards */
+        .beers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .beers-card {
+            background: linear-gradient(135deg, #fff3e0, white);
+            border-radius: var(--radius);
+            padding: 20px;
+            border-right: 4px solid var(--warning);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .beers-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }
+
+        .beers-drug {
+            font-weight: 700;
+            color: #e65100;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .beers-reason {
+            color: var(--dark);
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .beers-alternative {
+            background: #e8f5e9;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 12px;
+        }
+
+        .evidence-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--danger);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Phone Directory */
+        .phone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .phone-category {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .phone-category-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 12px 16px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .phone-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e4e6eb;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .phone-item:hover {
+            background: #f0f9ff;
+            padding-right: 20px;
+        }
+
+        .phone-item:last-child {
+            border-bottom: none;
+        }
+
+        .phone-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .phone-number {
+            color: var(--primary-light);
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .phone-badge {
+            background: var(--danger);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        /* Assessment Tools */
+        .assessment-tool {
+            background: linear-gradient(135deg, #e3f2fd, white);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-right: 4px solid var(--info);
+        }
+
+        .tool-title {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .calculator-input {
+            display: flex;
+            gap: 12px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+
+        .calc-field {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .calc-field label {
+            display: block;
+            color: #65676b;
+            font-size: 12px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .calc-field input,
+        .calc-field select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e4e6eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+            font-family: 'Heebo', sans-serif;
+        }
+
+        .calc-field input:focus,
+        .calc-field select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(2, 119, 189, 0.1);
+        }
+
+        .calc-button {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 16px;
+        }
+
+        .calc-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 119, 189, 0.3);
+        }
+
+        .calc-result {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            font-weight: 700;
+            text-align: center;
+            font-size: 20px;
+            color: var(--primary);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        /* Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 3px solid var(--primary-light);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: #65676b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Training Question Card */
+        .question-container {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e4e6eb;
+        }
+
+        .difficulty-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .difficulty-easy { background: #e8f5e9; color: #2e7d32; }
+        .difficulty-medium { background: #fff3e0; color: #e65100; }
+        .difficulty-hard { background: #ffebee; color: #c62828; }
+
+        .question-text {
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--dark);
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-item {
+            background: #f8f9fa;
+            border: 2px solid #e4e6eb;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .option-item:hover {
+            border-color: var(--primary-light);
+            background: #f0f9ff;
+            transform: translateX(-5px);
+        }
+
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--primary-light);
+            border: 2px solid var(--primary-light);
+        }
+
+        .option-item.correct {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+            animation: correctPulse 0.5s;
+        }
+
+        .option-item.incorrect {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+            animation: shake 0.5s;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 2px solid #e4e6eb;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+        }
+
+        .nav-btn {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            color: #65676b;
+            font-size: 11px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: none;
+            font-family: 'Heebo', sans-serif;
+        }
+
+        .nav-btn:hover {
+            color: var(--primary-light);
+        }
+
+        .nav-btn.active {
+            color: var(--primary-light);
+            font-weight: 700;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 16px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: #01579b;
+            border-right: 4px solid var(--info);
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: #e65100;
+            border-right: 4px solid var(--warning);
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            color: #b71c1c;
+            border-right: 4px solid var(--danger);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: #1b5e20;
+            border-right: 4px solid var(--success);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Heebo', sans-serif;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 119, 189, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #66bb6a);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #ef5350);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #ffb74d);
+            color: white;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-light);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content {
+                padding: 12px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .forms-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .phone-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .beers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .med-table {
+                font-size: 12px;
+            }
+            
+            .med-table th,
+            .med-table td {
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 14px;
+            }
+            
+            .nav-tab {
+                padding: 12px 14px;
+                font-size: 13px;
+            }
+            
+            .question-text {
+                font-size: 16px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .header,
+            .nav-tabs,
+            .bottom-nav {
+                display: none;
+            }
+            
+            body {
+                padding-bottom: 0;
+            }
+            
+            .card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus Styles */
+        *:focus-visible {
+            outline: 3px solid var(--primary-light);
+            outline-offset: 2px;
+        }
+
+        /* Checklist Styles */
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin: 16px 0;
+        }
+
+        .checklist li {
+            padding: 12px 16px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .checklist li:hover {
+            background: #e3f2fd;
+            border-color: var(--primary-light);
+            transform: translateX(-5px);
+        }
+
+        .checklist li.checked {
+            background: #e8f5e9;
+            border-color: var(--success);
+        }
+
+        .checklist li::before {
+            content: "☐";
+            font-size: 20px;
+            color: var(--primary-light);
+            transition: var(--transition);
+        }
+
+        .checklist li.checked::before {
+            content: "☑";
+            color: var(--success);
+        }
+
+        /* Protocol Steps */
+        .protocol-step {
+            background: white;
+            border: 2px solid #e4e6eb;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 16px 0;
+            position: relative;
+            padding-right: 60px;
+            transition: var(--transition);
+        }
+
+        .protocol-step:hover {
+            border-color: var(--primary-light);
+            transform: translateX(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .protocol-step .step-number {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Badge Styles */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-primary { background: #e3f2fd; color: var(--primary-light); }
+        .badge-success { background: #e8f5e9; color: var(--success); }
+        .badge-warning { background: #fff3e0; color: var(--warning); }
+        .badge-danger { background: #ffebee; color: var(--danger); }
+        .badge-info { background: #e1f5fe; color: var(--info); }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <span>🏥</span>
+                <span>מערכת גריאטרית משולבת - שערי צדק</span>
+            </div>
+            <div class="header-badges">
+                <div class="header-badge">ד"ר איאס אשהב</div>
+                <div class="header-badge">התמחות-על גריאטריה</div>
+                <div class="streak-badge">
+                    <span>🔥</span>
+                    <span id="streakDays">12</span>
+                    <span>ימים</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <div class="nav-tab active" onclick="switchTab('emergency')">
+            <span class="tab-icon">🚨</span>
+            <span>חירום</span>
+            <span class="tab-badge">!</span>
+        </div>
+        <div class="nav-tab" onclick="switchTab('blood')">
+            <span class="tab-icon">🩸</span>
+            <span>פרוטוקול דם</span>
+        </div>
+        <div class="nav-tab" onclick="switchTab('training')">
+            <span class="tab-icon">🎯</span>
+            <span>אימון יומי</span>
+        </div>
+        <div class="nav-tab" onclick="switchTab('protocols')">
+            <span class="tab-icon">📋</span>
+            <span>פרוטוקולים</span>
+        </div>
+        <div class="nav-tab" onclick="switchTab('medications')">
+            <span class="tab-icon">💊</span>
+            <span>תרופות</span>
+        </div>
+        <div class="nav-tab" onclick="switchTab('beers')">
+            <span class="tab-icon">⚠️</span>
+            <span>Beers 2023</span>
+        </div>
+        <div class="nav-tab" onclick="switchTab('forms')">
+            <span class="tab-icon">📄</span>
+            <span>טפסים</span>
+        </div>
+        <div class="nav-tab" onclick="switchTab('assessment')">
+            <span class="tab-icon">📊</span>
+            <span>הערכה</span>
+        </div>
+        <div class="nav-tab" onclick="switchTab('phones')">
+            <span class="tab-icon">📞</span>
+            <span>טלפונים</span>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+        <!-- Emergency Panel -->
+        <div class="panel active" id="emergency-panel">
+            <div class="quick-actions">
+                <div class="quick-action" onclick="callEmergency()">
+                    <div class="quick-action-icon">🚨</div>
+                    <div class="quick-action-label">קוד 90</div>
+                </div>
+                <div class="quick-action" onclick="showProtocol('delirium')">
+                    <div class="quick-action-icon">🧠</div>
+                    <div class="quick-action-label">דליריום</div>
+                </div>
+                <div class="quick-action" onclick="showProtocol('falls')">
+                    <div class="quick-action-icon">🚶</div>
+                    <div class="quick-action-label">נפילה</div>
+                </div>
+                <div class="quick-action" onclick="showProtocol('agitation')">
+                    <div class="quick-action-icon">😤</div>
+                    <div class="quick-action-label">אגיטציה</div>
+                </div>
+                <div class="quick-action" onclick="showProtocol('acute')">
+                    <div class="quick-action-icon">⚡</div>
+                    <div class="quick-action-label">הידרדרות</div>
+                </div>
+                <div class="quick-action" onclick="showProtocol('pain')">
+                    <div class="quick-action-icon">😰</div>
+                    <div class="quick-action-label">כאב</div>
+                </div>
+            </div>
+
+            <div class="emergency-alert">
+                <div class="emergency-title">
+                    <span>⚠️</span>
+                    <span>פרוטוקול דליריום - CAM מהיר</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <strong>צריך 1+2 + (3 או 4):</strong>
+                        <ol style="margin-top: 10px; margin-right: 20px;">
+                            <li>שינוי חד + תנודתיות</li>
+                            <li>חוסר קשב (ימים/חודשים אחורה)</li>
+                            <li>חשיבה לא מאורגנת</li>
+                            <li>שינוי רמת הכרה</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <strong>טיפול מיידי:</strong>
+                        <div style="margin-top: 10px;">
+                            <div class="dose-safe">Haloperidol 0.25-0.5mg PO/IM</div>
+                            <div class="dose-warning" style="margin-top: 8px;">לעולם לא בנזו!</div>
+                            <div style="margin-top: 10px;">
+                                או: <span class="dose-safe">Quetiapine 12.5mg</span> בפרקינסון
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    חיפוש גורמים - DELIRIUM
+                    <span class="badge badge-danger">חובה לבדוק</span>
+                </div>
+                <div class="card-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <div>
+                            <strong style="color: var(--danger);">D</strong>rugs - בנזו, אנטיכולינרגי, אופיאטים<br>
+                            <strong style="color: var(--danger);">E</strong>lectrolytes - Na, Ca, גלוקוז<br>
+                            <strong style="color: var(--danger);">L</strong>ack of drugs - גמילה אלכוהול/בנזו<br>
+                            <strong style="color: var(--danger);">I</strong>nfection - UTI #1, pneumonia<br>
+                            <strong style="color: var(--danger);">R</strong>educed sensory - משקפיים/שמיעה
+                        </div>
+                        <div>
+                            <strong style="color: var(--danger);">I</strong>ntracranial - CVA, SDH<br>
+                            <strong style="color: var(--danger);">U</strong>rinary/fecal retention<br>
+                            <strong style="color: var(--danger);">M</strong>yocardial - MI, CHF<br>
+                            <strong style="color: var(--danger);">S</strong>leep deprivation
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blood Protocol Panel -->
+        <div class="panel" id="blood-panel">
+            <div class="blood-protocol">
+                <h2 style="color: var(--danger); margin-bottom: 20px;">🩸 פרוטוקול מתן דם - שערי צדק</h2>
+                
+                <div class="blood-step">
+                    <div class="step-number">1</div>
+                    <strong>לפני מתן דם - Pre-Transfusion</strong>
+                    <ul class="checklist" style="margin-top: 12px;">
+                        <li onclick="toggleCheck(this)">הסכמה חתומה (שנתית בכרוניים)</li>
+                        <li onclick="toggleCheck(this)">2 דגימות דם נפרדות (אם ראשונה)</li>
+                        <li onclick="toggleCheck(this)">אצעדה/מדבקת זיהוי צמודה</li>
+                        <li onclick="toggleCheck(this)">סימנים חיוניים: BP, HR, Temp, O₂</li>
+                    </ul>
+                </div>
+
+                <div class="blood-step">
+                    <div class="step-number">2</div>
+                    <strong>זיהוי כפול - חובה 2 אנשים!</strong>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 12px;">
+                        <div>
+                            <strong>בדוק מול החולה:</strong>
+                            <ul style="margin-top: 8px;">
+                                <li>שם מלא + ת.ז</li>
+                                <li>סוג דם מול האצעדה</li>
+                                <li>תוקף הצלבה</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <strong>בדוק על המנה:</strong>
+                            <ul style="margin-top: 8px;">
+                                <li>מספר מנה</li>
+                                <li>תאריך תפוגה</li>
+                                <li>צבע תקין (לא סגול/שחור)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blood-step">
+                    <div class="step-number">3</div>
+                    <strong>תגובה לעירוי? STOP מיד!</strong>
+                    <ol style="margin-top: 12px; margin-right: 20px;">
+                        <li>נתק מנה, סגור קו</li>
+                        <li>NaCl 0.9% בסט חדש</li>
+                        <li>הזעק רופא תורן</li>
+                        <li>דגימה חדשה (סגול) לבנק דם</li>
+                        <li>תיעוד מלא + דיווח אירוע חריג</li>
+                    </ol>
+                </div>
+
+                <div class="alert alert-danger">
+                    <span style="font-size: 24px;">⏰</span>
+                    <div>
+                        <strong>זכור: מקסימום 4 שעות משחרור המנה עד סיום העירוי!</strong><br>
+                        לא הסתיים? הפסק מיד ודווח לבנק דם
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Training Panel -->
+        <div class="panel" id="training-panel">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-number" id="accuracyStat">87%</div>
+                    <div class="stat-label">דיוק</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-number" id="totalQuestions">245</div>
+                    <div class="stat-label">שאלות נפתרו</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">נושאים</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">מקום במחלקה</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📖</div>
+                    <div class="stat-number">28</div>
+                    <div class="stat-label">מאמרים</div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-header">
+                    <span>שאלה 7 מתוך 20 היום</span>
+                    <span class="difficulty-badge difficulty-medium">בינוני</span>
+                </div>
+
+                <div class="question-text" id="questionText">
+                    אישה בת 84 עם דמנציה מתקדמת, מאושפזת עקב דלקת ריאות. 
+                    פתאום מפתחת אגיטציה חמורה, צועקת ומנסה לרדת מהמיטה.
+                    מה הטיפול הראשון המתאים?
+                </div>
+
+                <div class="options-list" id="optionsContainer">
+                    <div class="option-item" onclick="selectAnswer(this, 0)">
+                        <span class="option-letter">א</span>
+                        <span>Lorazepam 1mg IV</span>
+                    </div>
+                    <div class="option-item" onclick="selectAnswer(this, 1)">
+                        <span class="option-letter">ב</span>
+                        <span>Haloperidol 0.5mg PO</span>
+                    </div>
+                    <div class="option-item" onclick="selectAnswer(this, 2)">
+                        <span class="option-letter">ג</span>
+                        <span>גישה לא תרופתית - נוכחות משפחה, אור, אוריינטציה</span>
+                    </div>
+                    <div class="option-item" onclick="selectAnswer(this, 3)">
+                        <span class="option-letter">ד</span>
+                        <span>קיבוע פיזי למניעת נפילה</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="nextQuestion()">
+                        <span>שאלה הבאה</span>
+                        <span>←</span>
+                    </button>
+                    <button class="btn btn-warning" onclick="showHint()">
+                        <span>💡</span>
+                        <span>רמז</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Protocols Panel -->
+        <div class="panel" id="protocols-panel">
+            <div class="card">
+                <div class="card-header">
+                    פרוטוקול קבלה גריאטרית - שערי צדק
+                    <span class="badge badge-primary">מעודכן 2024</span>
+                </div>
+                <div class="card-body">
+                    <div class="protocol-step">
+                        <div class="step-number">1</div>
+                        <strong>30 דקות ראשונות - MUST DO</strong>
+                        <ul class="checklist">
+                            <li onclick="toggleCheck(this)">סימנים חיוניים + אורתוסטטיים</li>
+                            <li onclick="toggleCheck(this)">CAM - סקר דליריום</li>
+                            <li onclick="toggleCheck(this)">סקר נפילות (3 חודשים אחרונים)</li>
+                            <li onclick="toggleCheck(this)">רשימת תרופות מעודכנת</li>
+                            <li onclick="toggleCheck(this)">DNR status + מיופה כוח</li>
+                            <li onclick="toggleCheck(this)">מטפל עיקרי + טלפון</li>
+                        </ul>
+                    </div>
+
+                    <div class="protocol-step">
+                        <div class="step-number">2</div>
+                        <strong>הוראות קבלה סטנדרטיות</strong>
+                        <ul class="checklist">
+                            <li onclick="toggleCheck(this)">CBC, Chemistry, TSH, B12, Folate, Vit D</li>
+                            <li onclick="toggleCheck(this)">UA + Culture (חובה!)</li>
+                            <li onclick="toggleCheck(this)">EKG אם מעל 65 או תרופות לב</li>
+                            <li onclick="toggleCheck(this)">CXR אם חום/שיעול/dyspnea</li>
+                            <li onclick="toggleCheck(this)">Clexane 40mg SC (אלא אם CI)</li>
+                            <li onclick="toggleCheck(this)">מזרון אוויר אם Braden < 18</li>
+                        </ul>
+                    </div>
+
+                    <div class="protocol-step">
+                        <div class="step-number">3</div>
+                        <strong>תוך 48 שעות - CGA</strong>
+                        <ul class="checklist">
+                            <li onclick="toggleCheck(this)">ADL (Barthel/Katz)</li>
+                            <li onclick="toggleCheck(this)">IADL (Lawton)</li>
+                            <li onclick="toggleCheck(this)">MMSE/MoCA</li>
+                            <li onclick="toggleCheck(this)">GDS-15 (דיכאון)</li>
+                            <li onclick="toggleCheck(this)">MNA-SF (תזונה)</li>
+                            <li onclick="toggleCheck(this)">TUG test (ניידות)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medications Panel -->
+        <div class="panel" id="medications-panel">
+            <div class="card">
+                <div class="card-header">
+                    מינונים מותאמים לגריאטריה
+                    <span class="badge badge-warning">זהירות במינון!</span>
+                </div>
+                <div class="card-body">
+                    <table class="med-table">
+                        <thead>
+                            <tr>
+                                <th>תרופה</th>
+                                <th>מינון רגיל</th>
+                                <th>מינון גריאטרי</th>
+                                <th>הערות</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Haloperidol</strong></td>
+                                <td>5-10mg</td>
+                                <td><span class="dose-safe">0.25-0.5mg</span></td>
+                                <td>EPS++, QT prolongation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Lorazepam</strong></td>
+                                <td>1-2mg</td>
+                                <td><span class="dose-safe">0.25-0.5mg</span></td>
+                                <td>נפילות! דליריום!</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Morphine</strong></td>
+                                <td>5-10mg</td>
+                                <td><span class="dose-safe">2.5mg q4h</span></td>
+                                <td>Confusion, עצירות</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tramadol</strong></td>
+                                <td>50-100mg QID</td>
+                                <td><span class="dose-safe">25mg BID</span></td>
+                                <td>Seizures, SSRI interaction</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gabapentin</strong></td>
+                                <td>300mg TID</td>
+                                <td><span class="dose-safe">100mg HS</span></td>
+                                <td>Adjust for CKD</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Zolpidem</strong></td>
+                                <td>10mg</td>
+                                <td><span class="dose-warning">5mg MAX</span></td>
+                                <td>Falls, parasomnias</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="alert alert-info">
+                        <span>💡</span>
+                        <div>
+                            <strong>כלל הזהב:</strong> Start LOW (25-50% of adult dose), Go SLOW<br>
+                            תמיד שקול: האם התרופה באמת נחוצה?
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beers Criteria Panel -->
+        <div class="panel" id="beers-panel">
+            <div class="card">
+                <div class="card-header">
+                    Beers Criteria 2023 - AGS Guidelines
+                    <span class="badge badge-danger">עדכון אחרון</span>
+                </div>
+                <div class="card-body">
+                    <div class="beers-grid">
+                        <div class="beers-card">
+                            <span class="evidence-badge">Evidence: HIGH</span>
+                            <div class="beers-drug">Benzodiazepines</div>
+                            <div class="beers-reason">
+                                • סיכון נפילות ושברים ↑70%<br>
+                                • ירידה קוגניטיבית<br>
+                                • דליריום<br>
+                                • תלות פיזית ונפשית
+                            </div>
+                            <div class="beers-alternative">
+                                <strong>חלופות:</strong> CBT-I לנדודי שינה, Melatonin 3-6mg
+                            </div>
+                        </div>
+
+                        <div class="beers-card">
+                            <span class="evidence-badge">Evidence: HIGH</span>
+                            <div class="beers-drug">Z-Drugs (Zolpidem)</div>
+                            <div class="beers-reason">
+                                • כמו בנזו - נפילות ובלבול<br>
+                                • Parasomnias (sleep walking)<br>
+                                • Complex sleep behaviors<br>
+                                • Anterograde amnesia
+                            </div>
+                            <div class="beers-alternative">
+                                <strong>חלופות:</strong> Sleep hygiene, Trazodone 25mg
+                            </div>
+                        </div>
+
+                        <div class="beers-card">
+                            <span class="evidence-badge">Evidence: MODERATE</span>
+                            <div class="beers-drug">NSAIDs כרוניים</div>
+                            <div class="beers-reason">
+                                • GI bleeding risk ↑4x<br>
+                                • AKI בשילוב ACE-I<br>
+                                • החמרת CHF<br>
+                                • יתר לחץ דם
+                            </div>
+                            <div class="beers-alternative">
+                                <strong>חלופות:</strong> Paracetamol, טיפול מקומי, פיזיותרפיה
+                            </div>
+                        </div>
+
+                        <div class="beers-card">
+                            <span class="evidence-badge">Evidence: HIGH</span>
+                            <div class="beers-drug">Anticholinergics</div>
+                            <div class="beers-reason">
+                                • בלבול וירידה קוגניטיבית<br>
+                                • עצירות חמורה<br>
+                                • Urinary retention<br>
+                                • Dry mouth → aspiration
+                            </div>
+                            <div class="beers-alternative">
+                                <strong>דוגמאות:</strong> Oxybutynin, Diphenhydramine<br>
+                                <strong>חלופות:</strong> Mirabegron, Cetirizine
+                            </div>
+                        </div>
+
+                        <div class="beers-card">
+                            <span class="evidence-badge">NEW 2023</span>
+                            <div class="beers-drug">PPIs > 8 שבועות</div>
+                            <div class="beers-reason">
+                                • C. difficile risk ↑65%<br>
+                                • Fractures ↑30%<br>
+                                • B12 deficiency<br>
+                                • Hypomagnesemia
+                            </div>
+                            <div class="beers-alternative">
+                                <strong>המלצה:</strong> De-prescribe או H2 blockers
+                            </div>
+                        </div>
+
+                        <div class="beers-card">
+                            <span class="evidence-badge">Evidence: HIGH</span>
+                            <div class="beers-drug">Digoxin > 0.125mg</div>
+                            <div class="beers-reason">
+                                • No benefit in higher doses<br>
+                                • Toxicity risk ↑<br>
+                                • Drug interactions+++<br>
+                                • Narrow therapeutic index
+                            </div>
+                            <div class="beers-alternative">
+                                <strong>חלופות:</strong> Beta blockers, CCBs
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forms Panel -->
+        <div class="panel" id="forms-panel">
+            <div class="card">
+                <div class="card-header">
+                    טפסים חשובים - ביטוח לאומי ומשרד הבריאות
+                    <span class="badge badge-info">עדכון 2024</span>
+                </div>
+                <div class="card-body">
+                    <div class="forms-grid">
+                        <div class="form-card" onclick="openForm('2642')">
+                            <span class="form-number">2642</span>
+                            <div class="form-title">בקשה לגמלת סיעוד</div>
+                            <div class="form-details">
+                                • החולה/משפחה ממלאים<br>
+                                • צרף: ת.ז, אישורי הכנסה<br>
+                                • זמן המתנה: 45-60 יום
+                            </div>
+                        </div>
+
+                        <div class="form-card" onclick="openForm('2643')">
+                            <span class="form-number">2643</span>
+                            <div class="form-title">הערכת רופא לסיעוד</div>
+                            <div class="form-details">
+                                • <strong>אתה ממלא!</strong><br>
+                                • פרט תלות ב-6 ADL<br>
+                                • תאר צורך בהשגחה<br>
+                                • ציין MMSE score
+                            </div>
+                        </div>
+
+                        <div class="form-card" onclick="openForm('2645')">
+                            <span class="form-number">2645</span>
+                            <div class="form-title">אישפוז במוסד</div>
+                            <div class="form-details">
+                                • רק גריאטר ממלא<br>
+                                • קוד תשוש/סיעודי<br>
+                                • צרף: CGA מלא
+                            </div>
+                        </div>
+
+                        <div class="form-card" onclick="openForm('17')">
+                            <span class="form-number">טופס 17</span>
+                            <div class="form-title">הפניה למרפאות חוץ</div>
+                            <div class="form-details">
+                                • חובה קוד ICD-10<br>
+                                • פרט סיבת הפניה<br>
+                                • צרף בדיקות רלוונטיות
+                            </div>
+                        </div>
+
+                        <div class="form-card" onclick="openForm('29c')">
+                            <span class="form-number">29ג</span>
+                            <div class="form-title">תרופות לדמנציה</div>
+                            <div class="form-details">
+                                • Donepezil: MMSE 10-26<br>
+                                • Memantine: MMSE 5-14<br>
+                                • דרוש: אישור גריאטר
+                            </div>
+                        </div>
+
+                        <div class="form-card" onclick="openForm('pledge')">
+                            <span class="form-number">התחייבות</span>
+                            <div class="form-title">טופס התחייבות כספית</div>
+                            <div class="form-details">
+                                • למטופלים ללא ביטוח<br>
+                                • דרוש אישור מנהל<br>
+                                • תקף 3 חודשים
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment Panel -->
+        <div class="panel" id="assessment-panel">
+            <div class="assessment-tool">
+                <div class="tool-title">מחשבון CHADS₂-VASc</div>
+                <div class="calculator-input">
+                    <div class="calc-field">
+                        <label>CHF</label>
+                        <select id="chf" onchange="calculateCHADS()">
+                            <option value="0">לא</option>
+                            <option value="1">כן</option>
+                        </select>
+                    </div>
+                    <div class="calc-field">
+                        <label>יתר לחץ דם</label>
+                        <select id="htn" onchange="calculateCHADS()">
+                            <option value="0">לא</option>
+                            <option value="1">כן</option>
+                        </select>
+                    </div>
+                    <div class="calc-field">
+                        <label>גיל</label>
+                        <select id="age" onchange="calculateCHADS()">
+                            <option value="0">< 65</option>
+                            <option value="1">65-74</option>
+                            <option value="2">≥ 75</option>
+                        </select>
+                    </div>
+                    <div class="calc-field">
+                        <label>סוכרת</label>
+                        <select id="dm" onchange="calculateCHADS()">
+                            <option value="0">לא</option>
+                            <option value="1">כן</option>
+                        </select>
+                    </div>
+                    <div class="calc-field">
+                        <label>CVA/TIA</label>
+                        <select id="stroke" onchange="calculateCHADS()">
+                            <option value="0">לא</option>
+                            <option value="2">כן</option>
+                        </select>
+                    </div>
+                    <div class="calc-field">
+                        <label>מחלת כלי דם</label>
+                        <select id="vasc" onchange="calculateCHADS()">
+                            <option value="0">לא</option>
+                            <option value="1">כן</option>
+                        </select>
+                    </div>
+                    <div class="calc-field">
+                        <label>מין</label>
+                        <select id="sex" onchange="calculateCHADS()">
+                            <option value="0">זכר</option>
+                            <option value="1">נקבה</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="calc-result" id="chadsResult">Score: 0 | Risk: Low</div>
+                <button class="calc-button" onclick="calculateCHADS()">חשב סיכון</button>
+            </div>
+
+            <div class="assessment-tool">
+                <div class="tool-title">Morse Fall Scale</div>
+                <div class="calculator-input">
+                    <div class="calc-field">
+                        <label>היסטוריית נפילות</label>
+                        <select id="fallHistory">
+                            <option value="0">לא</option>
+                            <option value="25">כן</option>
+                        </select>
+                    </div>
+                    <div class="calc-field">
+                        <label>אבחנות משניות</label>
+                        <select id="secondaryDx">
+                            <option value="0">לא</option>
+                            <option value="15">כן</option>
+                        </select>
+                    </div>
+                    <div class="calc-field">
+                        <label>עזרי הליכה</label>
+                        <select id="ambulatory">
+                            <option value="0">ללא/מיטה/כיסא</option>
+                            <option value="15">קביים/מקל/הליכון</option>
+                            <option value="30">נאחז ברהיטים</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="calc-button" onclick="calculateMorse()">חשב סיכון נפילה</button>
+                <div class="calc-result" id="morseResult">Score: 0 | Low Risk</div>
+            </div>
+        </div>
+
+        <!-- Phones Panel -->
+        <div class="panel" id="phones-panel">
+            <div class="phone-grid">
+                <div class="phone-category">
+                    <div class="phone-category-header">🚨 חירום</div>
+                    <div class="phone-item" onclick="callNumber('90')">
+                        <span class="phone-name">
+                            <span class="phone-badge">חירום</span>
+                            קוד 90
+                        </span>
+                        <span class="phone-number">90</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5111')">
+                        <span class="phone-name">מוקד בית החולים</span>
+                        <span class="phone-number">02-655-5111</span>
+                    </div>
+                </div>
+
+                <div class="phone-category">
+                    <div class="phone-category-header">🏥 מחלקה גריאטרית</div>
+                    <div class="phone-item" onclick="callNumber('02-655-5701')">
+                        <span class="phone-name">תחנת אחיות</span>
+                        <span class="phone-number">02-655-5701</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5702')">
+                        <span class="phone-name">חדר רופאים</span>
+                        <span class="phone-number">02-655-5702</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5700')">
+                        <span class="phone-name">מנהל מחלקה</span>
+                        <span class="phone-number">02-655-5700</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5705')">
+                        <span class="phone-name">עו"ס מחלקה</span>
+                        <span class="phone-number">02-655-5705</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5703')">
+                        <span class="phone-name">מזכירות</span>
+                        <span class="phone-number">02-655-5703</span>
+                    </div>
+                </div>
+
+                <div class="phone-category">
+                    <div class="phone-category-header">👨‍⚕️ יועצים</div>
+                    <div class="phone-item" onclick="callNumber('02-655-5400')">
+                        <span class="phone-name">נוירולוגיה</span>
+                        <span class="phone-number">02-655-5400</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5500')">
+                        <span class="phone-name">פסיכיאטריה</span>
+                        <span class="phone-number">02-655-5500</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5450')">
+                        <span class="phone-name">קרדיולוגיה</span>
+                        <span class="phone-number">02-655-5450</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5800')">
+                        <span class="phone-name">פליאטיבי</span>
+                        <span class="phone-number">02-655-5800</span>
+                    </div>
+                </div>
+
+                <div class="phone-category">
+                    <div class="phone-category-header">🔬 שירותים</div>
+                    <div class="phone-item" onclick="callNumber('02-655-5300')">
+                        <span class="phone-name">מעבדה</span>
+                        <span class="phone-number">02-655-5300</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5350')">
+                        <span class="phone-name">בנק דם</span>
+                        <span class="phone-number">02-655-5350</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5200')">
+                        <span class="phone-name">רנטגן</span>
+                        <span class="phone-number">02-655-5200</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5250')">
+                        <span class="phone-name">CT</span>
+                        <span class="phone-number">02-655-5250</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5600')">
+                        <span class="phone-name">בית מרקחת</span>
+                        <span class="phone-number">02-655-5600</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-655-5900')">
+                        <span class="phone-name">פיזיותרפיה</span>
+                        <span class="phone-number">02-655-5900</span>
+                    </div>
+                </div>
+
+                <div class="phone-category">
+                    <div class="phone-category-header">📞 חיצוני</div>
+                    <div class="phone-item" onclick="callNumber('*6050')">
+                        <span class="phone-name">ביטוח לאומי</span>
+                        <span class="phone-number">*6050</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('02-644-4444')">
+                        <span class="phone-name">יד שרה</span>
+                        <span class="phone-number">02-644-4444</span>
+                    </div>
+                    <div class="phone-item" onclick="callNumber('*2700')">
+                        <span class="phone-name">כללית</span>
+                        <span class="phone-number">*2700</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <button class="nav-btn active" onclick="switchPanel('emergency')">
+            <span class="nav-icon">🚨</span>
+            <span>חירום</span>
+        </button>
+        <button class="nav-btn" onclick="switchPanel('blood')">
+            <span class="nav-icon">🩸</span>
+            <span>דם</span>
+        </button>
+        <button class="nav-btn" onclick="switchPanel('protocols')">
+            <span class="nav-icon">📋</span>
+            <span>פרוטוקול</span>
+        </button>
+        <button class="nav-btn" onclick="switchPanel('medications')">
+            <span class="nav-icon">💊</span>
+            <span>תרופות</span>
+        </button>
+        <button class="nav-btn" onclick="switchPanel('phones')">
+            <span class="nav-icon">📞</span>
+            <span>טלפונים</span>
+        </button>
+    </div>
+
+    <script>
+        // State Management
+        const appState = {
+            currentPanel: 'emergency',
+            questionsAnswered: 0,
+            correctAnswers: 0,
+            streakDays: 12,
+            checklistItems: {},
+            lastAccessed: new Date().toISOString()
+        };
+
+        // Load saved state
+        function loadState() {
+            const saved = localStorage.getItem('geriatricsApp');
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.assign(appState, data);
+                updateUI();
+            }
+        }
+
+        // Save state
+        function saveState() {
+            localStorage.setItem('geriatricsApp', JSON.stringify(appState));
+        }
+
+        // Update UI with saved state
+        function updateUI() {
+            document.getElementById('streakDays').textContent = appState.streakDays;
+            document.getElementById('accuracyStat').textContent = 
+                Math.round((appState.correctAnswers / Math.max(1, appState.questionsAnswered)) * 100) + '%';
+            document.getElementById('totalQuestions').textContent = appState.questionsAnswered;
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(`${tabName}-panel`).classList.add('active');
+            
+            appState.currentPanel = tabName;
+            saveState();
+        }
+
+        // Panel switching (bottom nav)
+        function switchPanel(panelName) {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(`${panelName}-panel`).classList.add('active');
+            
+            // Update top navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.includes(panelName) || 
+                    (panelName === 'emergency' && tab.textContent.includes('חירום')) ||
+                    (panelName === 'blood' && tab.textContent.includes('דם')) ||
+                    (panelName === 'protocols' && tab.textContent.includes('פרוטוקולים')) ||
+                    (panelName === 'medications' && tab.textContent.includes('תרופות')) ||
+                    (panelName === 'phones' && tab.textContent.includes('טלפונים'))) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            appState.currentPanel = panelName;
+            saveState();
+        }
+
+        // Checklist functionality
+        function toggleCheck(element) {
+            element.classList.toggle('checked');
+            const text = element.textContent;
+            appState.checklistItems[text] = element.classList.contains('checked');
+            saveState();
+        }
+
+        // Training questions
+        const questions = [
+            {
+                text: "אישה בת 84 עם דמנציה מתקדמת, מאושפזת עקב דלקת ריאות. פתאום מפתחת אגיטציה חמורה, צועקת ומנסה לרדת מהמיטה. מה הטיפול הראשון המתאים?",
+                options: [
+                    "Lorazepam 1mg IV",
+                    "Haloperidol 0.5mg PO",
+                    "גישה לא תרופתית - נוכחות משפחה, אור, אוריינטציה",
+                    "קיבוע פיזי למניעת נפילה"
+                ],
+                correct: 2,
+                explanation: "תמיד גישה לא-תרופתית קודם! HELP protocol מוכח כיעיל ביותר"
+            },
+            {
+                text: "גבר בן 87 עם פרקינסון, מפתח הזיות ראייה. איזו תרופה הכי מתאימה?",
+                options: [
+                    "Haloperidol 0.5mg",
+                    "Quetiapine 12.5mg",
+                    "Risperidone 0.25mg",
+                    "Lorazepam 0.5mg"
+                ],
+                correct: 1,
+                explanation: "Quetiapine היחיד הבטוח בפרקינסון/DLB. Typical antipsychotics = סכנת חיים!"
+            },
+            {
+                text: "מהו ה-cut-off ב-TUG test לסיכון גבוה לנפילות?",
+                options: [
+                    ">10 שניות",
+                    ">12 שניות",
+                    ">14 שניות",
+                    ">20 שניות"
+                ],
+                correct: 2,
+                explanation: ">14 שניות = סיכון גבוה, >20 = בעיה משמעותית בניידות"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex % questions.length];
+            document.getElementById('questionText').textContent = question.text;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            const letters = ['א', 'ב', 'ג', 'ד'];
+            question.options.forEach((option, i) => {
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                div.onclick = () => selectAnswer(div, i);
+                div.innerHTML = `
+                    <span class="option-letter">${letters[i]}</span>
+                    <span>${option}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function selectAnswer(element, index) {
+            const question = questions[currentQuestionIndex % questions.length];
+            
+            document.querySelectorAll('.option-item').forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (index === question.correct) {
+                element.classList.add('correct');
+                appState.correctAnswers++;
+            } else {
+                element.classList.add('incorrect');
+                document.querySelectorAll('.option-item')[question.correct].classList.add('correct');
+            }
+            
+            appState.questionsAnswered++;
+            updateUI();
+            saveState();
+            
+            setTimeout(() => {
+                alert(question.explanation);
+            }, 500);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function showHint() {
+            alert('חשוב על העקרונות של גריאטריה - בטיחות קודמת, גישה לא-תרופתית תמיד ראשונה');
+        }
+
+        // Calculator functions
+        function calculateCHADS() {
+            const score = 
+                parseInt(document.getElementById('chf').value) +
+                parseInt(document.getElementById('htn').value) +
+                parseInt(document.getElementById('age').value) +
+                parseInt(document.getElementById('dm').value) +
+                parseInt(document.getElementById('stroke').value) +
+                parseInt(document.getElementById('vasc').value) +
+                parseInt(document.getElementById('sex').value);
+            
+            let risk = '';
+            let recommendation = '';
+            
+            if (score === 0) {
+                risk = 'Low (0.6%/year)';
+                recommendation = 'Consider no therapy or aspirin';
+            } else if (score === 1) {
+                risk = 'Low-Moderate (2.8%/year)';
+                recommendation = 'Consider anticoagulation or aspirin';
+            } else if (score === 2) {
+                risk = 'Moderate (4.0%/year)';
+                recommendation = 'Anticoagulation recommended';
+            } else {
+                risk = `High (>${score * 2}%/year)`;
+                recommendation = 'Anticoagulation strongly recommended';
+            }
+            
+            document.getElementById('chadsResult').textContent = 
+                `Score: ${score} | Risk: ${risk} | ${recommendation}`;
+        }
+
+        function calculateMorse() {
+            const score = 
+                parseInt(document.getElementById('fallHistory').value) +
+                parseInt(document.getElementById('secondaryDx').value) +
+                parseInt(document.getElementById('ambulatory').value);
+            
+            let risk = '';
+            if (score < 25) {
+                risk = 'Low Risk';
+            } else if (score < 45) {
+                risk = 'Moderate Risk';
+            } else {
+                risk = 'High Risk - Implement fall prevention!';
+            }
+            
+            document.getElementById('morseResult').textContent = `Score: ${score} | ${risk}`;
+        }
+
+        // Phone functions
+        function callNumber(number) {
+            if (confirm(`להתקשר ל-${number}?`)) {
+                window.location.href = `tel:${number}`;
+            }
+        }
+
+        function callEmergency() {
+            if (confirm('להתקשר לקוד 90?')) {
+                window.location.href = 'tel:90';
+            }
+        }
+
+        // Protocol functions
+        function showProtocol(type) {
+            const protocols = {
+                delirium: 'CAM: 1+2+(3 או 4)\nטיפול: Haloperidol 0.25-0.5mg',
+                falls: 'בדיקה נוירולוגית\nאורתוסטטיים\nCT אם anticoag',
+                agitation: 'גישה לא-תרופתית תחילה\nHaloperidol 0.25mg אם מסכן',
+                acute: 'ABC + O2\nגלוקוז\nEKG מיד',
+                pain: 'PAINAD בדמנטיים\nParacetamol first line\nMorphine 2.5mg'
+            };
+            
+            alert(protocols[type] || 'פרוטוקול בטעינה...');
+        }
+
+        // Form functions
+        function openForm(formId) {
+            const forms = {
+                '2642': 'בקשה לגמלת סיעוד - החולה ממלא',
+                '2643': 'הערכת רופא - אתה ממלא! פרט ADL',
+                '2645': 'אישפוז במוסד - רק גריאטר',
+                '17': 'הפניה למרפאות - חובה ICD-10',
+                '29c': 'תרופות דמנציה - MMSE thresholds',
+                'pledge': 'התחייבות כספית - 3 חודשים'
+            };
+            
+            alert(forms[formId] || 'טופס בטעינה...');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadState();
+            loadQuestion();
+            
+            // Update streak if new day
+            const lastAccess = new Date(appState.lastAccessed);
+            const today = new Date();
+            if (today.toDateString() !== lastAccess.toDateString()) {
+                const daysDiff = Math.floor((today - lastAccess) / (1000 * 60 * 60 * 24));
+                if (daysDiff === 1) {
+                    appState.streakDays++;
+                } else if (daysDiff > 1) {
+                    appState.streakDays = 1;
+                }
+                appState.lastAccessed = today.toISOString();
+                saveState();
+                updateUI();
+            }
+            
+            // Service Worker for offline
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(() => {
+                    console.log('Service Worker registration failed');
+                });
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey) {
+                switch(e.key) {
+                    case '1': switchPanel('emergency'); break;
+                    case '2': switchPanel('blood'); break;
+                    case '3': switchPanel('protocols'); break;
+                    case '4': switchPanel('medications'); break;
+                    case '5': switchPanel('phones'); break;
+                }
+            }
+        });
+
+        console.log('Shaare Zedek Geriatrics System v2.0 - Dr. Eias Ashav');
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful:', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New version available
+                                    showUpdateNotification();
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed:', err);
+                    });
+
+                // Handle messages from service worker
+                navigator.serviceWorker.addEventListener('message', event => {
+                    if (event.data.type === 'UPDATE_AVAILABLE') {
+                        showUpdateNotification();
+                    }
+                    if (event.data.type === 'SYNC_REQUEST') {
+                        saveState(); // Sync local data
+                    }
+                });
+            });
+        }
+
+        // Show update notification
+        function showUpdateNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'update-notification';
+            notification.innerHTML = `
+                <div style="background: linear-gradient(135deg, #4caf50, #8bc34a); color: white; padding: 16px; border-radius: 12px; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; box-shadow: 0 8px 24px rgba(0,0,0,0.2); max-width: 90%; text-align: center;">
+                    <div style="font-weight: 700; margin-bottom: 8px;">🎉 גרסה חדשה זמינה!</div>
+                    <div style="margin-bottom: 12px;">יש עדכונים חדשים למערכת הגריאטרית</div>
+                    <button onclick="updateApp()" style="background: white; color: #4caf50; border: none; padding: 8px 20px; border-radius: 20px; font-weight: 700; cursor: pointer; margin-right: 10px;">עדכן עכשיו</button>
+                    <button onclick="dismissUpdate(this)" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 8px 20px; border-radius: 20px; font-weight: 700; cursor: pointer;">אחר כך</button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+        }
+
+        // Update the app
+        function updateApp() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.update().then(() => {
+                        window.location.reload(true);
+                    });
+                });
+            }
+        }
+
+        // Dismiss update notification
+        function dismissUpdate(button) {
+            button.closest('.update-notification').remove();
+        }
+
+        // Online/Offline Detection
+        function updateOnlineStatus() {
+            const statusElement = document.createElement('div');
+            statusElement.id = 'connection-status';
+            statusElement.style.cssText = `
+                position: fixed;
+                bottom: 70px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 8px 20px;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 12px;
+                z-index: 9999;
+                transition: all 0.3s;
+                pointer-events: none;
+            `;
+
+            if (navigator.onLine) {
+                statusElement.style.background = '#4caf50';
+                statusElement.style.color = 'white';
+                statusElement.textContent = '🟢 מחובר לרשת';
+                setTimeout(() => statusElement.remove(), 3000);
+            } else {
+                statusElement.style.background = '#f44336';
+                statusElement.style.color = 'white';
+                statusElement.textContent = '🔴 מצב אופליין - כל הנתונים זמינים';
+            }
+
+            const existing = document.getElementById('connection-status');
+            if (existing) existing.remove();
+            document.body.appendChild(statusElement);
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // Request persistent storage
+        if (navigator.storage && navigator.storage.persist) {
+            navigator.storage.persist().then(granted => {
+                if (granted) {
+                    console.log('Persistent storage granted');
+                }
+            });
+        }
+
+        // Background Sync Registration
+        if ('serviceWorker' in navigator && 'SyncManager' in window) {
+            navigator.serviceWorker.ready.then(registration => {
+                return registration.sync.register('sync-data');
+            }).catch(err => {
+                console.log('Background sync registration failed:', err);
+            });
+        }
+
+        // Install PWA prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button
+            const installButton = document.createElement('button');
+            installButton.id = 'install-button';
+            installButton.innerHTML = '📱 התקן כאפליקציה';
+            installButton.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                right: 20px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 25px;
+                font-weight: 700;
+                cursor: pointer;
+                z-index: 9998;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                font-family: 'Heebo', sans-serif;
+            `;
+            
+            installButton.addEventListener('click', async () => {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                }
+                deferredPrompt = null;
+                installButton.remove();
+            });
+            
+            document.body.appendChild(installButton);
+        });
+
+        // Check if running as PWA
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('Running as PWA');
+            // Add PWA-specific features
+            document.body.classList.add('pwa-mode');
+        }
+    </script>
+</body>
+</html>
