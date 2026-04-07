@@ -1184,7 +1184,7 @@ function gotoQ(idx){tab='quiz';const ti=QZ[idx]?QZ[idx].ti:-1;const related=QZ.m
 function _srchMatchStatus(i){
   if(srchStatus==='all')return true;
   if(srchStatus==='unanswered')return !S.sr[i];
-  if(srchStatus==='incorrect')return !!(S.sr[i]&&S.sr[i].n===0);
+  if(srchStatus==='incorrect')return !!(S.sr[i]&&S.sr[i].n===0);// n===0 means last answer was wrong (SR streak reset)
   if(srchStatus==='bookmarked')return !!S.bk[i];
   return true;
 }
@@ -1192,8 +1192,8 @@ function _srchSort(arr){
   if(srchSort==='topic')return[...arr].sort((a,b)=>QZ[a].ti-QZ[b].ti);
   if(srchSort==='accuracy'){
     return[...arr].sort((a,b)=>{
-      const efA=S.sr[a]?S.sr[a].ef:2.5;
-      const efB=S.sr[b]?S.sr[b].ef:2.5;
+      const efA=S.sr[a]?S.sr[a].ef:Infinity;// unanswered sorts last
+      const efB=S.sr[b]?S.sr[b].ef:Infinity;
       return efA-efB; // lowest easiness factor = lowest accuracy first
     });
   }
@@ -1209,11 +1209,11 @@ h+=`<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bo
 h+=`<span style="font-size:11px;font-weight:600;color:#64748b;white-space:nowrap">Filter:</span>`;
 h+=`<select class="calc-in" style="font-size:11px;padding:5px 8px;margin-bottom:0;width:auto;flex-shrink:0" onchange="srchTopic=parseInt(this.value);render()">`;
 h+=`<option value="-1" ${srchTopic===-1?'selected':''}>📂 All topics</option>`;
-TOPICS.forEach((t,i)=>{h+=`<option value="${i}" ${srchTopic===i?'selected':''}>${t}</option>`;});
+TOPICS.forEach((t,i)=>{h+=`<option value="${i}" ${srchTopic===i?'selected':''}>${sanitize(t)}</option>`;});
 h+=`</select>`;
 h+=`<span class="pill${srchStatus==='all'?' on':''}" onclick="srchStatus='all';render()">All</span>`;
 h+=`<span class="pill${srchStatus==='unanswered'?' on':''}" onclick="srchStatus='unanswered';render()">Unanswered</span>`;
-h+=`<span class="pill${srchStatus==='incorrect'?' on':''}" onclick="srchStatus='incorrect';render()">Incorrect</span>`;
+h+=`<span class="pill${srchStatus==='incorrect'?' on':''}" onclick="srchStatus='incorrect';render()">Last Wrong</span>`;
 h+=`<span class="pill${srchStatus==='bookmarked'?' on':''}" onclick="srchStatus='bookmarked';render()">🔖 Bookmarked</span>`;
 h+=`</div>`;
 
