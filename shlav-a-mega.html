@@ -465,7 +465,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <button onclick="startExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px">📋 Exam Mode (150q, 3h)</button>
 </div>`;
 h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
-const filts=[['all',`הכל (${QZ.length})`],['דצמ 2021','Dec21'],['2022','2022'],['2023','2023'],['2024','2024'],['ספט','Sep24'],['weak','🎯 Weak'],['due','🔄 Due']];
+const filts=[['all',`הכל (${QZ.length})`],['2021','2021'],['2022','2022'],['2023-א','2023-א'],['2023-ב','2023-ב'],['2024-א','2024-א'],['2024-ב','2024-ב'],['Hazzard','Hazzard'],['weak','🎯 Weak'],['due','🔄 Due']];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{h+=`<span class="pill ${filt===f&&filt!=='topic'?'on':''}" onclick="setFilt('${f}')">${l}</span>`;});
 h+=`</div>`;
