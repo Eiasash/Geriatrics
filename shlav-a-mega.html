@@ -115,6 +115,9 @@ input,textarea,select{font:inherit}
 .progress-bar{height:3px;background:#e2e8f0;border-radius:2px;margin-bottom:10px;overflow:hidden}
 .progress-bar .fill{height:100%;background:rgb(var(--sky));border-radius:2px;transition:width .3s ease}
 .dark .progress-bar{background:#334155}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal-box{background:#fff;border-radius:20px;padding:24px;max-width:340px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+body.dark .modal-box{background:#1e293b;color:#e2e8f0}
 .dark .qo.ok{border-color:rgb(var(--em));background:#064e3b;color:#a7f3d0}
 .dark .qo.no{border-color:rgb(var(--red));background:#450a0a;color:#fca5a5}
 .dark .qo.dim{border-color:#1e293b;color:#475569}
@@ -201,7 +204,7 @@ body.dark .rev-ans-info{color:#94a3b8}
 @keyframes ldprog{from{width:20%}to{width:90%}}</style>
 
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v8.1</span></h1>
+<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v8.2</span></h1>
 <button class="dm-btn" onclick="toggleDark()" title="Dark Mode">🌓</button>
 <p id="hdr-sub">SZMC · Loading... · Hazzard's 8e + Harrison's 22e · Syllabus P005-2026</p>
 </div>
@@ -280,8 +283,8 @@ let _dataReady=false; // guard: render() is a no-op until initApp() resolves
 
 // ===== STATE =====
 const LS='samega';
-let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,tpOk:{},tpNo:{}};
-if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;if(!S.tpOk)S.tpOk={};if(!S.tpNo)S.tpNo={};
+let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,tpOk:{},tpNo:{},examHistory:[]};
+if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;if(!S.tpOk)S.tpOk={};if(!S.tpNo)S.tpNo={};if(!S.examHistory)S.examHistory=[];
 let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>localStorage.setItem(LS,JSON.stringify(S)),150)}
 
 // ===== AI EXPLAIN =====
@@ -427,17 +430,20 @@ const badge=(t.id==='review'&&dueN>0)?` <span style="background:rgb(var(--red));
 return`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')"><span class="ic">${t.ic}</span>${t.l}${badge}</button>`;
 }).join('');
 }
-function go(t){tab=t;renderTabs();render()}
+function go(t){tab=t;showExamConfig=false;showExamResults=false;renderTabs();render()}
 
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
+let examCfg={n:60,t:60};
+let examStats={byTopic:{},times:[],startTs:0,qTs:0};
+let showExamConfig=false,showExamResults=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
 function buildPool(){
 if(filt==='weak'){
 const ts=getTopicStats();
 const weakTopics=TOPICS.map((_,i)=>({i,s:ts[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>=3).sort((a,b)=>{const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).slice(0,10).map(p=>p.i);
 if(weakTopics.length===0){pool=QZ.map((_,i)=>i);}else{pool=QZ.map((_,i)=>i).filter(i=>weakTopics.includes(QZ[i].ti));}
-for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-qi=0;return;}
+shuffle(pool);qi=0;return;}
 if(filt==='due'){pool=getDueQuestions();qi=0;return;}
 
 pool=[];
@@ -445,8 +451,7 @@ const due=getDueQuestions();
 if(filt==='due'){pool=due.length?due:[];}
 else if(filt==='topic'&&topicFilt>=0){QZ.forEach((q,i)=>{if(q.ti===topicFilt)pool.push(i)});}
 else{QZ.forEach((q,i)=>{if(filt==='all'||q.t.includes(filt))pool.push(i)});}
-for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-qi=0;sel=null;ans=false;
+shuffle(pool);qi=0;sel=null;ans=false;
 }
 // buildPool() deferred to initApp()
 
@@ -457,46 +462,143 @@ function check(){
 if(sel===null)return;ans=true;
 const q=QZ[pool[qi]];
 const ti_=q.ti;
-if(sel===q.c){S.qOk++;srScore(pool[qi],true);if(ti_>=0){if(!S.tpOk[ti_])S.tpOk[ti_]=0;S.tpOk[ti_]++;}}
-else{S.qNo++;srScore(pool[qi],false);if(ti_>=0){if(!S.tpNo[ti_])S.tpNo[ti_]=0;S.tpNo[ti_]++;}}
+if(examMode){
+  if(!examStats.byTopic[ti_])examStats.byTopic[ti_]={ok:0,no:0};
+  if(sel===q.c)examStats.byTopic[ti_].ok++;
+  else examStats.byTopic[ti_].no++;
+  srScore(pool[qi],sel===q.c);
+  examStats.times.push(Date.now()-examStats.qTs);
+}else{
+  if(sel===q.c){S.qOk++;srScore(pool[qi],true);if(ti_>=0){if(!S.tpOk[ti_])S.tpOk[ti_]=0;S.tpOk[ti_]++;}}
+  else{S.qNo++;srScore(pool[qi],false);if(ti_>=0){if(!S.tpNo[ti_])S.tpNo[ti_]=0;S.tpNo[ti_]++;}}
+}
 save();render();
 }
 function next(){
-if(examMode&&qi+1>=Math.min(pool.length,150)){endExam();return;}
-qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;render();
+if(examMode&&qi+1>=pool.length){endExam();return;}
+qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;
+if(examMode)examStats.qTs=Date.now();
+render();
 }
 function toggleBk(){S.bk[pool[qi]]=!S.bk[pool[qi]];save();render();}
 
 // ===== EXAM MODE =====
-function startExam(){
-examMode=true;filt='all';buildPool();pool=pool.slice(0,150);
-S.qOk=0;S.qNo=0;examSec=10800;save();
-examTimer=setInterval(()=>{examSec--;if(examSec<=0)endExam();
-const el=document.getElementById('etimer');if(el)el.textContent=fmtT(examSec);},1000);
-render();
+function startExamConfig(){showExamConfig=true;render();}
+function launchExam(){
+  showExamConfig=false;
+  examMode=true;
+  const ts=getTopicStats();
+  const weakTi=TOPICS.map((_,i)=>i).filter(i=>{const s=ts[i];return s&&s.tot>=3&&s.ok/s.tot<0.7;});
+  let wPool=[],rPool=[];
+  if(weakTi.length>0){
+    QZ.forEach((_,i)=>{if(weakTi.includes(QZ[i].ti))wPool.push(i);else rPool.push(i);});
+    shuffle(wPool);shuffle(rPool);
+    const wN=Math.min(Math.round(examCfg.n*0.7),wPool.length);
+    const rN=Math.min(examCfg.n-wN,rPool.length);
+    pool=[...wPool.slice(0,wN),...rPool.slice(0,rN)];
+    shuffle(pool);
+  }else{
+    pool=QZ.map((_,i)=>i);shuffle(pool);
+  }
+  pool=pool.slice(0,examCfg.n);
+  qi=0;sel=null;ans=false;
+  examSec=examCfg.t*60;
+  examStats={byTopic:{},times:[],startTs:Date.now(),qTs:Date.now()};
+  examTimer=setInterval(()=>{
+    examSec--;
+    if(examSec<=0){endExam();return;}
+    const el=document.getElementById('etimer');
+    if(el){el.textContent=fmtT(examSec);if(examSec<=300)el.style.color='#ef4444';}
+  },1000);
+  render();
 }
 function endExam(){
-clearInterval(examTimer);examMode=false;
-const tot=S.qOk+S.qNo,pct=tot?Math.round(S.qOk/tot*100):0;
-alert(`Exam Complete!\n\n✅ ${S.qOk}/${tot} (${pct}%)\n${pct>=60?'PASS 🎉':'NEEDS WORK ❌'}\n\nTime: ${fmtT(10800-examSec)}`);
-render();
+  clearInterval(examTimer);examMode=false;
+  let ok=0;
+  Object.values(examStats.byTopic).forEach(t=>{ok+=t.ok;});
+  const tot=pool.length;
+  const pct=tot?Math.round(ok/tot*100):0;
+  const elapsed=Math.round((Date.now()-examStats.startTs)/1000);
+  if(!S.examHistory)S.examHistory=[];
+  S.examHistory.unshift({date:new Date().toISOString().slice(0,10),n:tot,ok,pct,elapsed,cfg:{...examCfg}});
+  if(S.examHistory.length>10)S.examHistory.pop();
+  save();
+  showExamResults=true;render();
 }
 function fmtT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return(h?h+':':'')+String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0')}
 
+function renderExamConfig(){
+  const pills=(vals,key,unit)=>vals.map(v=>`<span class="pill ${examCfg[key]===v?'on':''}" onclick="examCfg.${key}=${v};render()">${v}${unit}</span>`).join('');
+  return `<div class="modal-overlay" onclick="if(event.target===this){showExamConfig=false;render()}">
+  <div class="modal-box">
+    <div style="font-weight:700;font-size:15px;margin-bottom:16px">📋 Mock Exam Setup</div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;font-weight:600;margin-bottom:6px">Questions</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${pills([20,40,60,100],'n','')}</div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:600;margin-bottom:6px">Time Limit</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${pills([30,60,90,120],'t',' min')}</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-p" style="flex:1" onclick="launchExam()">Start Exam</button>
+      <button class="btn btn-o" onclick="showExamConfig=false;render()">Cancel</button>
+    </div>
+  </div></div>`;
+}
+function renderExamResults(){
+  const last=S.examHistory[0];
+  const avgSec=examStats.times.length?Math.round(examStats.times.reduce((a,b)=>a+b,0)/examStats.times.length/1000):0;
+  let h=`<div class="sec-t">📋 Exam Results</div>`;
+  h+=`<div class="card" style="padding:16px;text-align:center">`;
+  h+=`<div style="font-size:48px;margin-bottom:8px">${last.pct>=60?'✅':'❌'}</div>`;
+  h+=`<div style="font-size:32px;font-weight:700;color:${last.pct>=60?'#059669':'#dc2626'}">${last.pct}%</div>`;
+  h+=`<div style="font-size:13px;margin-top:4px">${last.ok}/${last.n} correct · ${fmtT(last.elapsed)} · Avg ${avgSec}s/q</div>`;
+  h+=`<div style="margin-top:8px;font-size:13px;font-weight:700;color:${last.pct>=60?'#059669':'#dc2626'}">${last.pct>=60?'PASS 🎉':'NEEDS WORK ❌'}</div>`;
+  h+=`</div>`;
+  const topicRows=Object.entries(examStats.byTopic).map(([ti,s])=>({name:TOPICS[ti]||'Unknown',pct:s.ok+s.no?Math.round(s.ok/(s.ok+s.no)*100):0,ok:s.ok,tot:s.ok+s.no})).sort((a,b)=>a.pct-b.pct);
+  if(topicRows.length){
+    h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📊 By Topic</div>`;
+    topicRows.forEach(r=>{
+      const clr=r.pct>=70?'rgb(var(--em))':r.pct>=50?'rgb(var(--amb))':'rgb(var(--red))';
+      h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #f1f5f9;font-size:10px">
+      <span>${sanitize(r.name)}</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div style="width:50px;height:4px;background:#f1f5f9;border-radius:2px"><div style="width:${r.pct}%;height:100%;background:${clr};border-radius:2px"></div></div>
+        <span style="font-weight:600;color:${clr};width:32px;text-align:right">${r.pct}%</span>
+        <span style="color:#94a3b8;font-size:9px">${r.ok}/${r.tot}</span>
+      </div></div>`;
+    });
+    h+=`</div>`;
+  }
+  if(S.examHistory.length>1){
+    h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">📈 Previous Attempts</div>`;
+    S.examHistory.slice(1).forEach(e=>{
+      h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f1f5f9;font-size:10px">
+      <span>${e.date} · ${e.cfg.n}q/${e.cfg.t}min</span>
+      <span style="font-weight:700;color:${e.pct>=60?'#059669':'#dc2626'}">${e.pct}%</span></div>`;
+    });
+    h+=`</div>`;
+  }
+  h+=`<button class="btn btn-p" style="width:100%;margin-top:12px" onclick="showExamResults=false;render()">Back to Quiz</button>`;
+  return h;
+}
 function renderQuiz(){
+if(showExamResults)return renderExamResults();
 if(!pool.length)buildPool();
 if(qi>=pool.length)qi=0;
 const q=QZ[pool[qi]];const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
 const bk=S.bk[pool[qi]];
 const dueN=getDueQuestions().length;
-let h=examMode?`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:8px 12px;background:#0f172a;border-radius:12px;color:#fff">
+let h=showExamConfig?renderExamConfig():'';
+h+=examMode?`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:8px 12px;background:#0f172a;border-radius:12px;color:#fff">
 <span style="font-weight:700;font-size:13px">📋 Exam Mode</span>
 <span id="etimer" class="timer" style="font-size:16px;font-weight:700">${fmtT(examSec)}</span>
-<span style="font-size:11px">${qi+1}/150</span></div>`:'';
+<span style="font-size:11px">${qi+1}/${pool.length}</span></div>`:'';
 if(!examMode){
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
 <div class="sec-t">Quiz</div>
-<button onclick="startExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px">📋 Exam Mode (150q, 3h)</button>
+<button onclick="startExamConfig()" class="btn btn-d" style="font-size:10px;padding:5px 12px">📋 Exam Mode</button>
 </div>`;
 h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
 const filts=[['all',`הכל (${QZ.length})`],['דצמ 2021','Dec21'],['2022','2022'],['2023','2023'],['2024','2024'],['ספט','Sep24'],['weak','🎯 Weak']];
@@ -527,7 +629,7 @@ h+=`<button class="${cls}" onclick="pick(${i})">${sanitize(o)}</button>`;
 });
 h+=`<div style="display:flex;gap:6px;margin-top:14px">`;
 if(!ans)h+=`<button class="btn btn-p" onclick="check()"${sel===null?' disabled':''}>בדוק</button>`;
-else h+=`<button class="btn btn-d" onclick="next()">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
+else h+=`<button class="btn btn-d" onclick="next()">${examMode&&qi+1>=pool.length?'סיים':'הבאה ←'}</button>`;
 h+=`</div>`;
 if(ans&&!examMode){
 if(q.e){
@@ -1323,7 +1425,7 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 </div>`;
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
-<div>Shlav A Mega v8.1 · P005-2026 Syllabus</div>
+<div>Shlav A Mega v8.2 · P005-2026 Syllabus</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
 return h;
@@ -1646,7 +1748,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='8.1';
+const APP_VERSION='8.2';
 function getDiagnostics(){
 const tot=S.qOk+S.qNo;
 return `Shlav A Mega v${APP_VERSION}\n`+
