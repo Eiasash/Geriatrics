@@ -1175,19 +1175,75 @@ return h;
 
 // ===== SEARCH =====
 let srchQ='';
+let srchTopic=-1;
+let srchStatus='all'; // 'all'|'unanswered'|'incorrect'|'bookmarked'
+let srchSort='relevance'; // 'relevance'|'topic'|'accuracy'
+
 function gotoQ(idx){tab='quiz';const ti=QZ[idx]?QZ[idx].ti:-1;const related=QZ.map((_,i)=>i).filter(i=>QZ[i].ti===ti);pool=related.length>1?[idx,...related.filter(i=>i!==idx)]:[idx];qi=0;sel=null;ans=false;filt='topic';topicFilt=ti;renderTabs();render();window.scrollTo({top:0});}
+
+function _srchMatchStatus(i){
+  if(srchStatus==='all')return true;
+  if(srchStatus==='unanswered')return !S.sr[i];
+  if(srchStatus==='incorrect')return !!(S.sr[i]&&S.sr[i].n===0);
+  if(srchStatus==='bookmarked')return !!S.bk[i];
+  return true;
+}
+function _srchSort(arr){
+  if(srchSort==='topic')return[...arr].sort((a,b)=>QZ[a].ti-QZ[b].ti);
+  if(srchSort==='accuracy'){
+    return[...arr].sort((a,b)=>{
+      const efA=S.sr[a]?S.sr[a].ef:2.5;
+      const efB=S.sr[b]?S.sr[b].ef:2.5;
+      return efA-efB; // lowest easiness factor = lowest accuracy first
+    });
+  }
+  return arr;
+}
 
 function renderSearch(){
 let h=`<div class="sec-t">🔍 Search</div><div class="sec-s">Search across all ${QZ.length} questions + ${NOTES.length} study notes + ${DRUGS.length} drugs</div>`;
 h+=`<input class="search-box" placeholder="Type to search..." oninput="srchQ=this.value;if(window._srt)clearTimeout(window._srt);window._srt=setTimeout(render,250)" value="${srchQ}" id="srchi">`;
-if(srchQ.length>=2){
-const q=srchQ.toLowerCase();
-// Search questions
-const qRes=[];QZ.forEach((item,i)=>{if(item.q.toLowerCase().includes(q)||item.o.some(o=>o.toLowerCase().includes(q)))qRes.push(i);});
-// Search notes
-const nRes=NOTES.filter(n=>n.topic.toLowerCase().includes(q)||n.notes.toLowerCase().includes(q));
-// Search drugs
-const dRes=DRUGS.filter(d=>d.name.toLowerCase().includes(q)||d.heb.includes(q)||d.risk.toLowerCase().includes(q));
+
+// Filter row
+h+=`<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px">`;
+h+=`<span style="font-size:11px;font-weight:600;color:#64748b;white-space:nowrap">Filter:</span>`;
+h+=`<select class="calc-in" style="font-size:11px;padding:5px 8px;margin-bottom:0;width:auto;flex-shrink:0" onchange="srchTopic=parseInt(this.value);render()">`;
+h+=`<option value="-1" ${srchTopic===-1?'selected':''}>📂 All topics</option>`;
+TOPICS.forEach((t,i)=>{h+=`<option value="${i}" ${srchTopic===i?'selected':''}>${t}</option>`;});
+h+=`</select>`;
+h+=`<span class="pill${srchStatus==='all'?' on':''}" onclick="srchStatus='all';render()">All</span>`;
+h+=`<span class="pill${srchStatus==='unanswered'?' on':''}" onclick="srchStatus='unanswered';render()">Unanswered</span>`;
+h+=`<span class="pill${srchStatus==='incorrect'?' on':''}" onclick="srchStatus='incorrect';render()">Incorrect</span>`;
+h+=`<span class="pill${srchStatus==='bookmarked'?' on':''}" onclick="srchStatus='bookmarked';render()">🔖 Bookmarked</span>`;
+h+=`</div>`;
+
+// Sort row
+h+=`<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px">`;
+h+=`<span style="font-size:11px;font-weight:600;color:#64748b;white-space:nowrap">Sort:</span>`;
+h+=`<span class="pill${srchSort==='relevance'?' on':''}" onclick="srchSort='relevance';render()">Relevance</span>`;
+h+=`<span class="pill${srchSort==='topic'?' on':''}" onclick="srchSort='topic';render()">By Topic</span>`;
+h+=`<span class="pill${srchSort==='accuracy'?' on':''}" onclick="srchSort='accuracy';render()">Accuracy ↑</span>`;
+h+=`</div>`;
+
+const hasActiveFilter=(srchStatus!=='all'||srchTopic!==-1);
+const showQuestions=(srchQ.length>=2||hasActiveFilter);
+
+if(showQuestions){
+const q=srchQ.length>=2?srchQ.toLowerCase():null;
+// Text filter questions
+let qRes=[];
+QZ.forEach((item,i)=>{
+  if(!q||(item.q.toLowerCase().includes(q)||item.o.some(o=>o.toLowerCase().includes(q))))qRes.push(i);
+});
+// Apply status + topic filters
+qRes=qRes.filter(i=>_srchMatchStatus(i));
+qRes=qRes.filter(i=>srchTopic===-1||QZ[i].ti===srchTopic);
+// Sort
+qRes=_srchSort(qRes);
+
+// Text filter notes + drugs (text only, no status/topic/sort)
+const nRes=q?NOTES.filter(n=>n.topic.toLowerCase().includes(q)||n.notes.toLowerCase().includes(q)):[];
+const dRes=q?DRUGS.filter(d=>d.name.toLowerCase().includes(q)||d.heb.includes(q)||d.risk.toLowerCase().includes(q)):[];
 
 h+=`<div style="font-size:11px;color:#64748b;margin-bottom:10px">${qRes.length} questions · ${nRes.length} topics · ${dRes.length} drugs</div>`;
 
@@ -1201,7 +1257,14 @@ dRes.forEach(d=>{h+=`<div class="card" style="padding:10px"><span style="font-we
 }
 if(qRes.length){
 h+=`<div style="font-weight:700;font-size:12px;margin:8px 0 6px">📝 Questions (${Math.min(qRes.length,15)} shown)</div>`;
-qRes.slice(0,30).forEach(i=>{h+=`<div class="card heb" dir="rtl" style="padding:10px;font-size:11px;line-height:1.5;cursor:pointer" onclick="gotoQ(${i})"><span class="badge" style="background:#eff6ff;color:#1d4ed8">${sanitize(QZ[i].t)}</span> <span style="color:#1d4ed8;font-size:9px;margin-right:4px">↗ Quiz</span> ${sanitize(QZ[i].q.substring(0,150))}...</div>`;});
+qRes.slice(0,15).forEach(i=>{
+  const sr=S.sr[i];const bk=S.bk[i];
+  const accBadge=sr?`<span class="badge" style="background:#f0fdf4;color:#166534;margin-left:2px">ef ${sr.ef.toFixed(1)}</span>`:'';
+  const bkBadge=bk?'🔖 ':'';
+  h+=`<div class="card heb" dir="rtl" style="padding:10px;font-size:11px;line-height:1.5;cursor:pointer" onclick="gotoQ(${i})"><span class="badge" style="background:#eff6ff;color:#1d4ed8">${sanitize(QZ[i].t)}</span> <span style="color:#1d4ed8;font-size:9px;margin-right:4px">↗ Quiz</span>${accBadge} ${bkBadge}${sanitize(QZ[i].q.substring(0,150))}...</div>`;
+});
+}else{
+h+=`<div style="font-size:11px;color:#94a3b8;padding:12px 0;text-align:center">No questions match the selected filters.</div>`;
 }
 }
 return h;
