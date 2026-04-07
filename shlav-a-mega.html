@@ -430,7 +430,10 @@ const badge=(t.id==='review'&&dueN>0)?` <span style="background:rgb(var(--red));
 return`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')"><span class="ic">${t.ic}</span>${t.l}${badge}</button>`;
 }).join('');
 }
-function go(t){tab=t;showExamConfig=false;showExamResults=false;renderTabs();render()}
+function go(t){
+  if(examMode){clearInterval(examTimer);examTimer=null;examMode=false;}
+  tab=t;showExamConfig=false;showExamResults=false;renderTabs();render()
+}
 
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
@@ -491,7 +494,8 @@ function launchExam(){
   const weakTi=TOPICS.map((_,i)=>i).filter(i=>{const s=ts[i];return s&&s.tot>=3&&s.ok/s.tot<0.7;});
   let wPool=[],rPool=[];
   if(weakTi.length>0){
-    QZ.forEach((_,i)=>{if(weakTi.includes(QZ[i].ti))wPool.push(i);else rPool.push(i);});
+    const weakSet=new Set(weakTi);
+    QZ.forEach((_,i)=>{if(weakSet.has(QZ[i].ti))wPool.push(i);else rPool.push(i);});
     shuffle(wPool);shuffle(rPool);
     const wN=Math.min(Math.round(examCfg.n*0.7),wPool.length);
     const rN=Math.min(examCfg.n-wN,rPool.length);
@@ -504,6 +508,7 @@ function launchExam(){
   qi=0;sel=null;ans=false;
   examSec=examCfg.t*60;
   examStats={byTopic:{},times:[],startTs:Date.now(),qTs:Date.now()};
+  if(examTimer)clearInterval(examTimer);
   examTimer=setInterval(()=>{
     examSec--;
     if(examSec<=0){endExam();return;}
@@ -513,11 +518,11 @@ function launchExam(){
   render();
 }
 function endExam(){
-  clearInterval(examTimer);examMode=false;
-  let ok=0;
-  Object.values(examStats.byTopic).forEach(t=>{ok+=t.ok;});
-  const tot=pool.length;
-  const pct=tot?Math.round(ok/tot*100):0;
+  clearInterval(examTimer);examTimer=null;examMode=false;
+  let ok=0,answered=0;
+  Object.values(examStats.byTopic).forEach(t=>{ok+=t.ok;answered+=t.ok+(t.no||0);});
+  const tot=answered||pool.length;
+  const pct=Math.round(ok/tot*100)||0;
   const elapsed=Math.round((Date.now()-examStats.startTs)/1000);
   if(!S.examHistory)S.examHistory=[];
   S.examHistory.unshift({date:new Date().toISOString().slice(0,10),n:tot,ok,pct,elapsed,cfg:{...examCfg}});
@@ -548,7 +553,11 @@ function renderExamConfig(){
 }
 function renderExamResults(){
   const last=S.examHistory[0];
+  if(!last){showExamResults=false;render();return '';}
   const avgSec=examStats.times.length?Math.round(examStats.times.reduce((a,b)=>a+b,0)/examStats.times.length/1000):0;
+  const dk=S.dark;
+  const sepClr=dk?'#334155':'#f1f5f9';
+  const trackClr=dk?'#334155':'#f1f5f9';
   let h=`<div class="sec-t">📋 Exam Results</div>`;
   h+=`<div class="card" style="padding:16px;text-align:center">`;
   h+=`<div style="font-size:48px;margin-bottom:8px">${last.pct>=60?'✅':'❌'}</div>`;
@@ -561,10 +570,10 @@ function renderExamResults(){
     h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📊 By Topic</div>`;
     topicRows.forEach(r=>{
       const clr=r.pct>=70?'rgb(var(--em))':r.pct>=50?'rgb(var(--amb))':'rgb(var(--red))';
-      h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #f1f5f9;font-size:10px">
+      h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid ${sepClr};font-size:10px">
       <span>${sanitize(r.name)}</span>
       <div style="display:flex;align-items:center;gap:6px">
-        <div style="width:50px;height:4px;background:#f1f5f9;border-radius:2px"><div style="width:${r.pct}%;height:100%;background:${clr};border-radius:2px"></div></div>
+        <div style="width:50px;height:4px;background:${trackClr};border-radius:2px"><div style="width:${r.pct}%;height:100%;background:${clr};border-radius:2px"></div></div>
         <span style="font-weight:600;color:${clr};width:32px;text-align:right">${r.pct}%</span>
         <span style="color:#94a3b8;font-size:9px">${r.ok}/${r.tot}</span>
       </div></div>`;
@@ -574,7 +583,7 @@ function renderExamResults(){
   if(S.examHistory.length>1){
     h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">📈 Previous Attempts</div>`;
     S.examHistory.slice(1).forEach(e=>{
-      h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f1f5f9;font-size:10px">
+      h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid ${sepClr};font-size:10px">
       <span>${e.date} · ${e.cfg.n}q/${e.cfg.t}min</span>
       <span style="font-weight:700;color:${e.pct>=60?'#059669':'#dc2626'}">${e.pct}%</span></div>`;
     });
