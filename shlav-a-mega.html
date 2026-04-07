@@ -37,14 +37,14 @@ input,textarea,select{font:inherit}
 .qo.ok{border-color:rgb(var(--em));background:#ecfdf5;color:#065f46}
 .qo.no{border-color:rgb(var(--red));background:#fef2f2;color:#991b1b}
 .qo.dim{border-color:#f1f5f9;color:#cbd5e1}
-.btn{padding:7px 18px;border-radius:12px;font-size:12px;font-weight:700;transition:.15s;display:inline-block}
+.btn{padding:7px 18px;border-radius:12px;font-size:12px;font-weight:700;transition:.15s;display:inline-flex;align-items:center;justify-content:center;min-height:44px}
 .btn:disabled{opacity:.35}
 .btn-p{background:rgb(var(--sky));color:#fff}
 .btn-d{background:rgb(var(--sl8));color:#fff}
 .btn-g{background:rgb(var(--em));color:#fff}
 .btn-o{background:#f1f5f9;color:#475569}
 .ab{max-height:0;overflow:hidden;transition:max-height .3s ease}.ab.op{max-height:5000px}
-.acc-h{width:100%;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;text-align:left;transition:.1s}
+.acc-h{width:100%;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;text-align:left;transition:.1s;min-height:44px}
 .acc-h:hover{background:#f8fafc}
 .acc-ic{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex-shrink:0}
 .acc-ar{font-size:10px;color:#94a3b8;transition:transform .2s}
@@ -251,7 +251,7 @@ body.dark .diff-btn{color:#e2e8f0}
 @keyframes ldprog{from{width:20%}to{width:90%}}</style>
 
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v8.2</span></h1>
+<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v8.3</span></h1>
 <button class="dm-btn" onclick="toggleDark()" title="Dark Mode">🌓</button>
 <p id="hdr-sub">SZMC · Loading... · Hazzard's 8e + Harrison's 22e · Syllabus P005-2026</p>
 </div>
@@ -405,7 +405,7 @@ Rules: Hebrew only. Clinical mechanism, not vague. If answer seems counterintuit
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-opus-4-5',max_tokens:800,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-opus-4-6',max_tokens:800,messages:[{role:'user',content:prompt}]})
     });
     if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||resp.status);}
     const data=await resp.json();
@@ -1938,7 +1938,7 @@ async function sendChat(){
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-opus-4-5',max_tokens:1024,system:CHAT_SYSTEM,messages})
+      body:JSON.stringify({model:'claude-opus-4-6',max_tokens:1024,system:CHAT_SYSTEM,messages})
     });
     if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||resp.status);}
     const data=await resp.json();
@@ -2043,7 +2043,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='8.2';
+const APP_VERSION='8.3';
 function getDiagnostics(){
 const tot=S.qOk+S.qNo;
 return `Shlav A Mega v${APP_VERSION}\n`+
