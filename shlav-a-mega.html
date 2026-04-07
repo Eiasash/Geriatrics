@@ -218,6 +218,16 @@ body.dark .tp-btn.sel{border-color:#3b82f6;background:#1e3a5f}
 body.dark .tp-acc-bar{background:#334155}
 .tp-acc-fill{height:4px;border-radius:2px}
 
+/* Drug cross-references */
+.drug-xref{padding:8px 12px;border-top:1px solid #f1f5f9;background:#f8fafc}
+body.dark .drug-xref{background:#0f172a;border-top-color:#334155}
+.drug-q-chip{display:inline-block;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:4px 8px;font-size:10px;cursor:pointer;margin:2px;color:#1d4ed8;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+body.dark .drug-q-chip{background:#1e3a5f;border-color:#3b82f6;color:#93c5fd}
+.drug-xref-lbl{font-size:10px;color:#64748b;margin-bottom:4px}
+body.dark .drug-xref-lbl{color:#94a3b8}
+.drug-toggle-btn{font-size:10px;color:#64748b;padding:2px 6px;border-radius:6px;border:1px solid #e2e8f0;background:#f1f5f9;margin-left:6px;line-height:1.4}
+body.dark .drug-toggle-btn{background:#1e293b;border-color:#334155;color:#94a3b8}
+
 </style>
 </head>
 <body>
@@ -463,6 +473,7 @@ function go(t){
   if(examMode){clearInterval(examTimer);examTimer=null;examMode=false;}
   if(tab==='chat'&&t!=='chat')chatLoading=false;
   if(t!=='quiz'){showTopicPicker=false;selectedTopics=new Set();}
+  if(t!=='drugs')drugOpen=new Set();
   tab=t;showExamConfig=false;showExamResults=false;renderTabs();render()
 }
 
@@ -1073,6 +1084,27 @@ return h;
 
 // ===== DRUG LOOKUP =====
 let drugSearch='';
+let drugOpen=new Set();
+function getDrugQuestions(drugName){
+  const dn=drugName.toLowerCase();
+  return QZ.reduce((acc,q,i)=>{
+    const haystack=((q.q||'')+' '+(q.a||'')+(q.o?q.o.join(' '):'')).toLowerCase();
+    if(haystack.includes(dn))acc.push(i);
+    return acc;
+  },[]).slice(0,5);
+}
+function toggleDrug(idx){
+  if(drugOpen.has(idx))drugOpen.delete(idx);
+  else drugOpen.add(idx);
+  render();
+}
+function goToQuestion(qIdx){
+  const ti=QZ[qIdx]?QZ[qIdx].ti:-1;
+  const related=QZ.map((_,i)=>i).filter(i=>QZ[i].ti===ti);
+  pool=related.length>1?[qIdx,...related.filter(i=>i!==qIdx)]:[qIdx];
+  qi=0;sel=null;ans=false;filt='topic';topicFilt=ti;
+  tab='quiz';renderTabs();render();window.scrollTo({top:0});
+}
 function renderDrugs(){
 let h=`<div class="sec-t">💊 Drug Lookup</div><div class="sec-s">Beers Criteria + ACB Score Checker</div>`;
 h+=`<input class="search-box" placeholder="Search drug name..." oninput="drugSearch=this.value;render()" value="${drugSearch}" id="dsrch">`;
@@ -1080,15 +1112,33 @@ const fv=drugSearch.toLowerCase();
 const filtered=DRUGS.filter(d=>!fv||d.name.toLowerCase().includes(fv)||d.heb.includes(fv)||(d.cat||'').toLowerCase().includes(fv));
 h+=`<div class="card">`;
 if(!filtered.length)h+=`<div style="padding:16px;text-align:center;color:#94a3b8;font-size:12px">No drugs found</div>`;
-filtered.forEach(d=>{
+filtered.forEach((d,idx)=>{
+const isOpen=drugOpen.has(idx);
+const qMatches=isOpen?getDrugQuestions(d.name):[];
+let xrefHtml='';
+if(isOpen){
+  xrefHtml+=`<div class="drug-xref"><div class="drug-xref-lbl">📝 שאלות קשורות</div>`;
+  if(qMatches.length){
+    qMatches.forEach(qi=>{
+      const q=QZ[qi];
+      const txt=sanitize((q.q||'').replace(/\s+/g,' ').trim().slice(0,60))+(q.q&&q.q.length>60?'…':'');
+      xrefHtml+=`<button class="drug-q-chip" onclick="goToQuestion(${qi})" title="${sanitize(q.q||'')}">${txt}</button>`;
+    });
+  }else{
+    xrefHtml+=`<span style="color:#94a3b8;font-size:11px">אין שאלות קשורות</span>`;
+  }
+  xrefHtml+=`</div>`;
+}
 h+=`<div class="drug-row"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
 <span style="font-weight:700;font-size:12px">${sanitize(d.name)} ${d.heb?'<span style="color:#94a3b8">('+sanitize(d.heb)+')</span>':''}</span>
-<div style="display:flex;gap:4px">
+<div style="display:flex;gap:4px;align-items:center">
 ${d.beers?'<span class="badge badge-r">BEERS</span>':''}
 ${d.acb>=3?'<span class="badge badge-r">ACB '+d.acb+'</span>':d.acb>=2?'<span class="badge badge-y">ACB '+d.acb+'</span>':d.acb>=1?'<span class="badge badge-g">ACB '+d.acb+'</span>':''}
+<button class="drug-toggle-btn" onclick="toggleDrug(${idx})">${isOpen?'▲':'▼'}</button>
 </div></div>
 <div style="font-size:10px;color:#64748b">${sanitize(d.cat||'')}</div>
-<div style="font-size:10px;color:#475569;margin-top:2px">${sanitize(d.risk)}</div></div>`;
+<div style="font-size:10px;color:#475569;margin-top:2px">${sanitize(d.risk)}</div>
+${xrefHtml}</div>`;
 });
 h+=`</div>`;
 return h;
