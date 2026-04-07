@@ -222,3 +222,34 @@ TOPIC: [topic name, 0-39]
 
 - `references/legal-ethics.md` — full Israeli law details per document
 - `references/exam-patterns.md` — repeating stems, year frequency, key numbers to memorize
+
+---
+
+## CLAUDE CODE WORKFLOW
+
+### What to type in Claude Code
+```
+/audit-fix-deploy
+```
+That's it. The command does the full cycle: read → audit → fix → validate → push.
+
+### Other commands
+```
+/audit              — audit only, no fixes
+/add-questions      — add new MCQs to questions.json with auto topic-tagging
+/update-notes       — update study notes from Hazzard's/Harrison's content
+/explain-batch      — pre-generate AI explanations for top questions
+```
+
+### Agents (run autonomously)
+- `question-explainer` — paste any Hebrew MCQ, get structured explanation + source
+- `note-updater` — update notes.json for a specific topic
+
+### Deploy = git push
+No build step. Push main → GitHub Pages live in ~60s.
+```bash
+git remote set-url origin "https://Eiasash:TOKEN@github.com/Eiasash/Geriatrics.git"
+git push origin main
+git remote set-url origin https://github.com/Eiasash/Geriatrics.git
+```
+Revoke token at https://github.com/settings/tokens after session.
