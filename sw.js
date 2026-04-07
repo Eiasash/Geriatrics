@@ -1,4 +1,4 @@
-const CACHE='shlav-a-v8.1';
+const CACHE='shlav-a-v8.3';
 const STATIC=[
   'shlav-a-mega.html',
   'manifest.json',
