@@ -1,0 +1,17 @@
+{
+  "name": "Shlav A Board Prep",
+  "short_name": "Shlav A",
+  "description": "Israeli Geriatrics Board Exam Prep — 959 IMA Questions",
+  "start_url": "shlav-a-mega.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
