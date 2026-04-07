@@ -84,3 +84,22 @@ sw.js              — Service worker (v9)
 ## License
 
 Personal study tool. IMA exam questions are property of the Israeli Medical Association.
+
+---
+
+## Claude Skill (`skill/`)
+
+A Claude Projects skill for Shlav A board exam prep — AI-assisted question explanation,
+distractor analysis, and high-yield review.
+
+```
+skill/
+├── SKILL.md                    — Main skill: triggers, workflow, high-yield facts, exam traps
+└── references/
+    ├── legal-ethics.md         — Israeli law: dying patient act, POA, guardianship, capacity
+    ├── exam-patterns.md        — Repeating question stems, frequency ranking, key numbers
+    └── high-yield-by-topic.md  — (planned) distilled pearls per topic
+```
+
+**How to use:** Add to Claude Project → paste any Shlav A question → get structured
+explanation with correct answer, distractor analysis, board pearl, topic tag, source.
