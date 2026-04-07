@@ -165,6 +165,10 @@ body.dark .drug-row{border-color:#334155;color:#e2e8f0}
 body.dark .osce-card{border-color:#334155;color:#e2e8f0}
 body.dark .osce-card:hover{border-color:#475569}
 
+/* Study Notes structured formatting */
+.note-sec-hdr{font-weight:700;color:#1e293b;margin-top:10px;margin-bottom:2px;font-size:11px}
+body.dark .note-sec-hdr{color:#f1f5f9}
+
 /* Review tab: badge & prose classes */
 .rev-badge-ch{background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
 .rev-badge-topic{background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px}
@@ -559,20 +563,52 @@ return h;
 
 // ===== STUDY NOTES =====
 let openNote=null;
+let noteExpanded={};
 function toggleNote(i){openNote=openNote===i?null:i;render();}
+function _formatNoteHtml(text){
+  const BOLD_TERMS=['MMSE','MoCA','CAM','CDR','FAST','GDS','MNA','TUG','Beers','STOPP','START','ACB','ADL','IADL','FIM','CGA','FRAX','eGFR','HbA1c','COPD','HFrEF','HFpEF','ABCD2','PADUA','CURB-65','4AT','PAINAD','SARC-F','EWGSOP','SM-2'];
+  const paras=text.split(/\n+/).map(p=>p.trim()).filter(p=>p.length>0);
+  let html='';
+  paras.forEach(p=>{
+    let s=sanitize(p);
+    BOLD_TERMS.forEach(t=>{const re=new RegExp('(?<![\\w-])'+t.replace(/-/g,'\\-')+'(?![\\w-])','g');s=s.replace(re,`<b>${t}</b>`);});
+    s=s.replace(/\b([A-Z]{3,})\b/g,'<b>$1</b>');
+    const hdrMatch=s.match(/^(<b>)?([A-Za-z\u05d0-\u05ea][A-Za-z\u05d0-\u05ea\s]{1,30}?)(<\/b>)?:/);
+    if(hdrMatch){
+      const hdr=hdrMatch[0];const rest=s.slice(hdr.length).trim();
+      html+=`<div class="note-sec-hdr">${hdr.replace(':','')}</div>`;
+      if(rest)html+=`<p style="font-size:11px;line-height:1.8;color:#334155;margin-bottom:6px">${rest}</p>`;
+    }else{
+      html+=`<p style="font-size:11px;line-height:1.8;color:#334155;margin-bottom:6px">${s}</p>`;
+    }
+  });
+  return html;
+}
 function renderStudy(){
 let h=`<div class="sec-t">📚 Study Notes</div><div class="sec-s">40 IMA topics · Hazzard's 8e + Harrison's 22e + Israeli Law (P005-2026)</div>`;
 h+=`<input class="search-box" placeholder="Search topics..." oninput="filterNotes(this.value)" id="nfilt">`;
 const fv=document.getElementById('nfilt')?.value?.toLowerCase()||'';
 NOTES.filter(n=>n.topic.toLowerCase().includes(fv)||n.notes.toLowerCase().includes(fv)).forEach(n=>{
-const i=n.id;
-h+=`<div class="card"><button class="acc-h" onclick="toggleNote(${i})">
+const relCount=QZ.filter(q=>q.ti===n.id).length;
+const paras=n.notes.split(/\n+/).filter(p=>p.trim());
+const isExpanded=!!noteExpanded[n.id];
+const showFull=isExpanded||paras.length<=2;
+h+=`<div class="card"><button class="acc-h" onclick="toggleNote(${n.id})">
 <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:12px">${sanitize(n.topic)}</span>
 <span style="font-size:9px;color:#94a3b8">${sanitize(n.ch)}</span></div>
-<span class="acc-ar${openNote===i?' op':''}">▼</span></button>`;
-if(openNote===i){
-h+=`<div style="padding:10px 14px 14px;border-top:1px solid #f1f5f9">
-<p style="font-size:11px;line-height:1.8;color:#334155">${sanitize(n.notes)}</p></div>`;
+<span class="acc-ar${openNote===n.id?' op':''}">▼</span></button>`;
+if(openNote===n.id){
+const parasToShow=showFull?paras:paras.slice(0,2);
+h+=`<div style="padding:0 14px 14px">`;
+h+=`<div style="font-size:10px;color:rgb(var(--sky));font-weight:600;margin-bottom:10px">${sanitize(n.ch)}</div>`;
+h+=_formatNoteHtml(parasToShow.join('\n'));
+if(!showFull&&paras.length>2){
+h+=`<button onclick="noteExpanded[${n.id}]=true;render()" style="font-size:10px;color:rgb(var(--sky));background:none;border:none;cursor:pointer;padding:4px 0">↓ Show all ${paras.length} paragraphs</button>`;
+}
+h+=`<div style="margin-top:10px;padding-top:8px;border-top:1px solid #f1f5f9">
+<button class="btn btn-o" style="font-size:10px;padding:5px 12px" onclick="setTopicFilt(${n.id});go('quiz')">📝 Related Questions (${relCount})</button>
+</div>`;
+h+=`</div>`;
 }
 h+=`</div>`;
 });
