@@ -395,7 +395,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <button onclick="startExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px">📋 Exam Mode (150q, 3h)</button>
 </div>`;
 h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
-const filts=[['all',`הכל (${QZ.length})`],['דצמ 2021','Dec21'],['2022','2022'],['2023','2023'],['2024','2024'],['ספט','Sep24'],['weak','🎯 Weak'],['due','🔄 Due']];
+const filts=[['all',`הכל (${QZ.length})`],['דצמ 2021','Dec21'],['2022','2022'],['2023','2023'],['2024','2024'],['ספט','Sep24'],['weak','🎯 Weak']];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{h+=`<span class="pill ${filt===f&&filt!=='topic'?'on':''}" onclick="setFilt('${f}')">${l}</span>`;});
 h+=`</div>`;
@@ -1285,11 +1285,12 @@ const qIdx=rvQueue[rvIdx];const q=QZ[qIdx];
 const correct=rvSel===q.c;
 srScore(qIdx,correct);
 S.srSess.reviewed++;if(correct)S.srSess.correct++;
+const ti_=q.ti;
+if(ti_>=0){if(correct){if(!S.tpOk[ti_])S.tpOk[ti_]=0;S.tpOk[ti_]++;}else{if(!S.tpNo[ti_])S.tpNo[ti_]=0;S.tpNo[ti_]++;}}
 save();render();
 }
 function rvNext(){
 rvIdx++;rvSel=null;rvAns=false;
-if(rvIdx>=rvQueue.length){rvQueue=[];rvIdx=0;}
 render();
 }
 function fmtNext(ms){
