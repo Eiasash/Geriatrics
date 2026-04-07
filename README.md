@@ -2,22 +2,22 @@
 
 **Israeli Shlav A (שלב א) Geriatric Medicine Board Exam Preparation Tool**
 
-Standalone, offline-capable PWA with 959 real IMA exam questions, textbook-sourced study notes, clinical calculators, and spaced repetition — all in one HTML file.
+Standalone, offline-capable PWA with 1,131 real IMA exam questions, textbook-sourced study notes, clinical calculators, and spaced repetition — all in one HTML file.
 
 ## Features
 
 | Feature | Details |
 |---|---|
-| **Quiz Engine** | 959 verified IMA questions (2022–2025) with answer keys |
+| **Quiz Engine** | 1,131 verified IMA questions (2021–2024) with answer keys |
 | **Spaced Repetition** | SM-2 algorithm — wrong answers resurface automatically |
 | **Exam Mode** | 150 questions, 3-hour timer, simulates real exam |
 | **Weak Topic Drill** | Auto-targets your 10 weakest topics for focused practice |
 | **Due Review** | Filter to only SR-due questions |
-| **Topic Auto-Tagging** | All 959 questions mapped to 40 syllabus topics |
+| **Topic Auto-Tagging** | All 1,131 questions mapped to 40 syllabus topics |
 | **Per-Topic Stats** | Accuracy bars by topic — find weak areas |
 | **Study Notes** | 40 topics from Hazzard's 8e, GRS 8e, Washington Manual |
-| **Flashcards** | 39 high-yield cards with שוב/קשה/קל SR rating |
-| **Drug Lookup** | 52 drugs — Beers + ACB score + risk descriptions |
+| **Flashcards** | 159 high-yield cards with שוב/קשה/קל SR rating |
+| **Drug Lookup** | 53 drugs — Beers + ACB score + risk descriptions |
 | **Calculators** | 13 tools: CrCl, CHA₂DS₂-VASc, CURB-65, GDS-15, Braden, PADUA VTE, Katz ADL, Lawton IADL, 4AT Delirium, MNA-SF, Clinical Frailty Scale, Norton, Morse Fall |
 | **OSCE Simulator** | 10 timed stations with scored checklists |
 | **Full-Text Search** | Search questions, notes, and drugs |
@@ -66,9 +66,9 @@ Standalone, offline-capable PWA with 959 real IMA exam questions, textbook-sourc
 
 ## Data Sources
 
-- **Questions:** 959 MCQs from official IMA Shlav A exams with verified answer keys
+- **Questions:** 1,131 MCQs from official IMA Shlav A exams with verified answer keys
 - **Study Notes:** Hazzard's 8e, GRS 8e, Washington Manual, SZMC DAG
-- **Drugs:** Beers Criteria 2023 + ACB Scale (52 drugs)
+- **Drugs:** Beers Criteria 2023 + ACB Scale (53 drugs)
 - **Regulations:** Patient Rights Law, Dying Patient Act, Continuing POA, Takanah 12b
 
 ## Files
@@ -77,7 +77,7 @@ Standalone, offline-capable PWA with 959 real IMA exam questions, textbook-sourc
 shlav-a-mega.html  — Complete app (~665KB)
 index.html         — Redirect for GitHub Pages
 manifest.json      — PWA manifest
-sw.js              — Service worker (v3)
+sw.js              — Service worker (v9)
 .nojekyll          — Bypass Jekyll on GitHub Pages
 ```
 
