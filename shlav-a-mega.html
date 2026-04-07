@@ -180,7 +180,7 @@ body.dark .osce-card:hover{border-color:#475569}
 <div class="hdr" style="position:relative">
 <h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v8.0</span></h1>
 <button class="dm-btn" onclick="toggleDark()" title="Dark Mode">🌓</button>
-<p>SZMC · 959 Qs · Hazzard's 8e + Harrison's 22e · Syllabus P005-2026</p>
+<p id="hdr-sub">SZMC · Loading... · Hazzard's 8e + Harrison's 22e · Syllabus P005-2026</p>
 </div>
 
 <div class="ct" id="ct"></div>
@@ -1122,7 +1122,7 @@ return h;
 
 // ===== SEARCH =====
 let srchQ='';
-function gotoQ(idx){tab='quiz';pool=[idx];qi=0;sel=null;ans=false;renderTabs();render();window.scrollTo({top:0});}
+function gotoQ(idx){tab='quiz';const ti=QZ[idx]?QZ[idx].ti:-1;const related=QZ.map((_,i)=>i).filter(i=>QZ[i].ti===ti);pool=related.length>1?[idx,...related.filter(i=>i!==idx)]:[idx];qi=0;sel=null;ans=false;filt='topic';topicFilt=ti;renderTabs();render();window.scrollTo({top:0});}
 
 function renderSearch(){
 let h=`<div class="sec-t">🔍 Search</div><div class="sec-s">Search across all ${QZ.length} questions + ${NOTES.length} study notes + ${DRUGS.length} drugs</div>`;
@@ -1183,7 +1183,7 @@ if(focused){const fe=document.getElementById(focused);if(fe){fe.focus();if(fe.va
 
 // ===== DARK MODE =====
 function toggleDark(){document.body.classList.toggle('dark');S.dark=document.body.classList.contains('dark');save()}
-if(S.dark)document.body.classList.add('dark');
+if(S.dark){document.body.classList.add('dark');const ld=document.getElementById('app-loader');if(ld){ld.style.background='#0f172a';ld.style.color='#e2e8f0';const ldbar=document.getElementById('ldbar');if(ldbar)ldbar.style.background='#3b82f6';}}
 
 // ===== FLASHCARD SPACED REP =====
 function fcRate(q){// q: 0=again, 1=hard, 2=easy
@@ -1276,7 +1276,7 @@ async function initApp(){
     QZ=qd;NOTES=nd;FLASH=fd;DRUGS=dd;
     // Re-tag topics after loading QZ
     QZ.forEach(q=>{const txt=(q.q+' '+q.o.join(' ')).toLowerCase();let best=-1,mx=0;TK.forEach((keys,ti)=>{let sc=0;keys.forEach(k=>{if(txt.includes(k.toLowerCase()))sc++;});if(sc>mx){mx=sc;best=ti;}});if(q.ti===undefined||q.ti===-1)q.ti=best>=0?best:8;});
-    buildPool();
+    buildPool();const hdrSub=document.getElementById("hdr-sub");if(hdrSub)hdrSub.textContent="SZMC · "+QZ.length+" Qs · Hazzard's 8e + Harrison's 22e · Syllabus P005-2026";
     if(loader)loader.remove();
     renderTabs();render();
   }catch(e){
