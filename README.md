@@ -29,9 +29,30 @@ Standalone, offline-capable PWA with 1,148 real IMA exam questions, textbook-sou
 | **Bookmarks** | Flag questions for review |
 | **Share/Export/Import** | Copy to clipboard, JSON backup & restore |
 | **IMA Archive** | Direct S3 links for all exam PDFs 2022–2025 |
-| **PWA Offline** | Service worker for offline use |
+| **PWA Offline** | Service worker for offline use + install prompt banner |
+| **Swipe Navigation** | Swipe left/right on quiz + flashcards |
+| **Font Size Control** | A-/A+ in header, persists |
+| **Annotations** | Per-question personal notes |
+| **Heatmap** | 7-week study activity calendar in Track |
 
 ## Recent Changes (April 2026)
+
+### v8.4
+- **A-/A+** font size controls in header (persists across sessions)
+- **📝 Question annotations** — personal notes per question, saved locally
+- **⌨️ Keyboard shortcuts** — 1–4 select answer, Enter check/next, B bookmark, ? help overlay
+- **👆 Swipe gestures** — swipe left/right on quiz and flashcards
+- **📳 Haptic feedback** — vibration on correct/wrong (Android)
+- **🎊 Confetti** on 100% exam score
+- **🔍 Search highlighting** — matched terms highlighted in results
+- **📅 Study heatmap** — 7-week activity calendar in Track tab
+- **⏱ Study time tracking** — total minutes tracked, shown in dashboard
+- **★ Mastered badge** — topics with ≥90% accuracy + ≥5 attempts
+- **📲 PWA install prompt** — banner when app is installable
+- **📡 Offline indicator** — banner when no network
+- **?** keyboard shortcut help overlay
+
+### v8.3
 
 - **⚖️ Israeli Law tab**: All 13 legal documents with exam-critical bullet points, exam traps, category filter, search, and quick-link to related quiz topics
 - **🚫✅ STOPP/START v.3**: Full O'Mahony 2023 criteria integrated into Drug Reference tab — all sections searchable

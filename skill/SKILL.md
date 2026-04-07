@@ -62,7 +62,7 @@ description: >
 | 1 | MOH Geriatrics definitions — נהלי רוחב 0.2.1 (updated 2019) | ✓ |
 | 2 | Circular 26/2010 — functional status for transfer | ✓ |
 | 3 | Circular 4/2009 — rehabilitation criteria for elderly | ✓ |
-| 4 | **חוק החולה הנוטה למות 2005** | ❌ MISSING — upload urgently |
+| 4 | **חוק החולה הנוטה למות 2005** | ✓ |
 | 5 | National Committee: PEG in terminal dementia (11.8.16, SZMC) | ✓ |
 | 6 | Circular 10/2006 — guardian appointment (prolonged hospitalization) | ✓ |
 | 7 | ייפוי כוח מתמשך — preparation/registration | ✓ |
