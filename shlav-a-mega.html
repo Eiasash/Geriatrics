@@ -299,28 +299,34 @@ async function explainWithAI(qIdx){
   const q=QZ[qIdx];
   const src=HAZZARD_MAP[q.ti]||'Hazzardʼs Geriatric Medicine 8e';
   const opts=q.o.map((o,i)=>` ${String.fromCharCode(65+i)}. ${o}`).join('\n');
+  const correctLetter=String.fromCharCode(65+q.c);
+  const correctText=q.o[q.c];
+  const wrongOpts=q.o.map((o,i)=>i!==q.c?`${String.fromCharCode(65+i)}. ${o}`:'').filter(Boolean).join('\n');
   const prompt=`You are a senior geriatrician explaining a Shlav A (Israeli IMA geriatrics board exam) question.
+
+ANSWER KEY: The correct answer is DEFINITIVELY Option ${correctLetter}: "${correctText}"
+This is from the official IMA answer key — do NOT question it. Build your explanation around it.
 
 QUESTION (Hebrew): ${q.q}
 
-OPTIONS:
+ALL OPTIONS:
 ${opts}
 
-CORRECT ANSWER: Option ${String.fromCharCode(65+q.c)}: ${q.o[q.c]}
+WRONG OPTIONS TO DESTROY:
+${wrongOpts}
 
 PRIMARY SOURCE: ${src}
 
-Explain in Hebrew. Use this EXACT format:
-✅ נכון: [explain WHY this answer is correct — mechanism, evidence, guideline. 2-3 sentences]
+Explain in Hebrew. Use this EXACT format — no preamble, start immediately:
+✅ נכון (${correctLetter}): [WHY this answer is correct — mechanism, evidence, threshold, guideline. 2-3 sentences. Be specific.]
 
-❌ א/ב/ג: [1 sentence why each wrong option fails — be specific]
-(repeat for each wrong option)
+${q.o.map((o,i)=>i===q.c?'':` ❌ ${String.fromCharCode(65+i)}: [exact reason this is wrong — one specific sentence]`).filter(Boolean).join('\n')}
 
-📌 פנינת מבחן: [one sentence board pearl, exam-extractable rule]
+📌 פנינת מבחן: [one sentence, exam-extractable rule, starts with the key fact]
 
-📖 מקור: [specific book + chapter + key fact from that chapter supporting this answer]
+📖 מקור: [Hazzard's Ch X title / Harrison's Ch Y title / Article name — cite the specific chapter from P005-2026 that contains the supporting evidence]
 
-Be direct. No fluff. Use clinical reasoning. Cite Hazzard's 8e chapter numbers or Harrison's 22e chapter numbers from the P005-2026 syllabus when relevant.`;
+Rules: Hebrew only. Clinical mechanism, not vague. If answer seems counterintuitive, explain why it is still correct per guidelines.`;
 
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
