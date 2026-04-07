@@ -433,7 +433,7 @@ const relevant=sentences.filter(s=>s.length>20).filter(s=>{
 const sl=s.toLowerCase(),ql=q.q.toLowerCase(),cl=correctText.toLowerCase();
 return cl.split(/\s+/).filter(w=>w.length>3).some(w=>sl.includes(w.toLowerCase()))||ql.split(/\s+/).filter(w=>w.length>4).some(w=>sl.includes(w.toLowerCase()));
 }).slice(0,3);
-h+=`<div class="explain-box" style="margin-top:10px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:11px;line-height:1.7;color:#166534">`;
+h+=`<div class="explain-box" style="margin-top:10px;padding:10px 12px">`;
 h+=`<div style="font-weight:700;margin-bottom:4px">💡 ${sanitize(note.topic)}</div>`;
 if(relevant.length)h+=`<div style="margin-bottom:6px">${sanitize(relevant.join('. '))}.</div>`;
 else h+=`<div style="margin-bottom:6px;color:#64748b;font-style:italic">Correct answer: <b>${sanitize(correctText)}</b></div>`;
@@ -1279,7 +1279,7 @@ const topicName=q.ti>=0&&TOPICS[q.ti]?TOPICS[q.ti]:'';
 const srState=S.sr[qIdx]||{ef:2.5,n:0,next:0};
 // Progress bar
 h+=`<div class="progress-bar"><div class="fill" style="width:${Math.round(rvIdx/rvQueue.length*100)}%"></div></div>`;
-h+=`<div style="font-size:10px;color:#94a3b8;text-align:right;margin-bottom:8px">${rvIdx+1} / ${rvQueue.length}</div>`;
+h+=`<div class="rev-sub" style="font-size:10px;text-align:right;margin-bottom:8px">${rvIdx+1} / ${rvQueue.length}</div>`;
 h+=`<div class="card" style="padding:16px">`;
 h+=`<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px">
 <span class="rev-badge-ch">${sanitize(q.t)}</span>
@@ -1316,7 +1316,7 @@ const relevant=sentences.filter(s=>s.length>20).filter(s=>{
 const sl=s.toLowerCase(),ql=q.q.toLowerCase(),cl=correctText.toLowerCase();
 return cl.split(/\s+/).filter(w=>w.length>3).some(w=>sl.includes(w.toLowerCase()))||ql.split(/\s+/).filter(w=>w.length>4).some(w=>sl.includes(w.toLowerCase()));
 }).slice(0,2);
-h+=`<div class="explain-box" style="margin-top:10px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:11px;line-height:1.7;color:#166534">
+h+=`<div class="explain-box" style="margin-top:10px;padding:10px 12px">
 <div style="font-weight:700;margin-bottom:4px">💡 ${sanitize(note.topic)}</div>`;
 if(relevant.length)h+=`<div>${sanitize(relevant.join('. '))}.</div>`;
 else h+=`<div class="rev-sub" style="font-style:italic">Correct: <b>${sanitize(correctText)}</b></div>`;
