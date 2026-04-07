@@ -127,6 +127,7 @@ input,textarea,select{font:inherit}
 .dark .osce-scenario{background:#1e293b !important;border-color:#334155 !important}
 .dark .calc-result{background:#1e293b !important}
 .dark a{color:#60a5fa}
+.explain-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:11px;line-height:1.7;color:#166534}
 .dark .explain-box{background:#064e3b !important;border-color:#059669 !important;color:#a7f3d0 !important}
 .dark .tag-topic{background:#064e3b !important;color:#6ee7b7 !important}
 .dark .tag-year{background:#1e3a5f !important;color:#93c5fd !important}
@@ -167,7 +168,7 @@ body.dark .osce-card:hover{border-color:#475569}
 /* Review tab: badge & prose classes */
 .rev-badge-ch{background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
 .rev-badge-topic{background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px}
-.rev-badge-rep{background:#fffbeb;color:#d97706;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px}
+.rev-badge-rep{background:#fffbeb;color:#d97706;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid #fde68a}
 .rev-sub{font-size:11px;color:#64748b}
 .rev-next-info{font-size:11px;color:#94a3b8}
 .rev-ans-info{font-size:11px;color:#64748b;align-self:center;margin-left:4px}
@@ -175,7 +176,7 @@ body.dark .rev-badge-ch{background:#172554;color:#93c5fd}
 body.dark .rev-badge-topic{background:#064e3b;color:#6ee7b7}
 body.dark .rev-badge-rep{background:#451a03;color:#fcd34d;border-color:#92400e}
 body.dark .rev-sub{color:#94a3b8}
-body.dark .rev-next-info{color:#64748b}
+body.dark .rev-next-info{color:#94a3b8}
 body.dark .rev-ans-info{color:#94a3b8}
 
 </style>
@@ -1190,8 +1191,6 @@ let rvQueue=[],rvIdx=0,rvSel=null,rvAns=false;
 
 function startReview(){
 rvQueue=getDueOrdered();rvIdx=0;rvSel=null;rvAns=false;
-const today=new Date().toISOString().slice(0,10);
-if(!S.srSess||S.srSess.date!==today){S.srSess={reviewed:0,correct:0,date:today};}
 render();
 }
 function rvPick(i){if(rvAns)return;rvSel=i;render();}
@@ -1200,8 +1199,6 @@ if(rvSel===null)return;rvAns=true;
 const qIdx=rvQueue[rvIdx];const q=QZ[qIdx];
 const correct=rvSel===q.c;
 srScore(qIdx,correct);
-const today=new Date().toISOString().slice(0,10);
-if(!S.srSess||S.srSess.date!==today)S.srSess={reviewed:0,correct:0,date:today};
 S.srSess.reviewed++;if(correct)S.srSess.correct++;
 save();render();
 }
@@ -1218,11 +1215,10 @@ if(h>=1)return`in ${h}h`;
 return'soon';
 }
 function renderReview(){
-const today=new Date().toISOString().slice(0,10);
-if(!S.srSess||S.srSess.date!==today){S.srSess={reviewed:0,correct:0,date:today};save();}
 const sess=S.srSess;
 const retPct=sess.reviewed?Math.round(sess.correct/sess.reviewed*100):0;
-const totalDue=getDueOrdered().length;
+const dueQueue=getDueOrdered();
+const totalDue=dueQueue.length;
 let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
 <div class="sec-t">🔄 Review</div>
 <button class="btn btn-o" style="font-size:10px;padding:5px 12px" onclick="go('quiz')">← Back to Quiz</button>
@@ -1267,7 +1263,7 @@ h+=`<div class="card" style="padding:36px 20px;text-align:center">
 <div style="font-size:40px;margin-bottom:12px">✅</div>
 <div style="font-weight:700;font-size:15px;margin-bottom:6px">Session complete!</div>
 <div class="rev-sub" style="margin-bottom:16px">${sess.reviewed} reviewed · ${sess.correct} correct · ${retPct}% retention</div>
-${getDueOrdered().length>0?`<button class="btn btn-p" onclick="startReview()" style="margin-right:8px">Review New Due Cards</button>`:''}
+${dueQueue.length>0?`<button class="btn btn-p" onclick="startReview()" style="margin-right:8px">Review New Due Cards</button>`:''}
 <button class="btn btn-o" onclick="go('quiz')">Back to Quiz</button>
 </div>`;
 return h;
@@ -1299,11 +1295,10 @@ h+=`<button class="btn btn-p" onclick="rvCheck()"${rvSel===null?' disabled':''}>
 }else{
 const correct=rvSel===q.c;
 const newSr=S.sr[qIdx];
-const daysUntil=newSr?Math.round((newSr.next-Date.now())/86400000):1;
 h+=`<button class="btn btn-d" onclick="rvNext()">${rvIdx+1>=rvQueue.length?'Finish':'Next →'}</button>`;
 h+=`<span class="rev-ans-info">
 ${correct?'<span style="color:rgb(var(--em))">✓ Correct</span>':'<span style="color:rgb(var(--red))">✗ Incorrect</span>'}
-· Next review: ${daysUntil<=0?'tomorrow':`in ${daysUntil} day${daysUntil!==1?'s':''}`}
+· Next review: ${newSr?fmtNext(newSr.next):'tomorrow'}
 </span>`;
 }
 h+=`</div>`;
