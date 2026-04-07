@@ -210,7 +210,7 @@ body.dark .chat-disclaimer{background:#1a1200;border-color:#713f12;color:#fde047
 /* Topic Picker */
 .tp-picker{background:#f8fafc;border-radius:14px;padding:12px;margin-bottom:10px}
 body.dark .tp-picker{background:#1e293b}
-.tp-btn{display:inline-flex;flex-direction:column;align-items:flex-start;background:#fff;border:2px solid #e2e8f0;border-radius:10px;padding:8px 10px;cursor:pointer;font-size:11px;min-width:120px;margin:3px;transition:.15s}
+.tp-btn{display:inline-flex;flex-direction:column;align-items:flex-start;background:#fff;border:2px solid #e2e8f0;border-radius:10px;padding:8px 10px;cursor:pointer;font-size:11px;min-width:120px;margin:3px;transition:border-color .15s,background .15s}
 body.dark .tp-btn{background:#0f172a;border-color:#334155;color:#e2e8f0}
 .tp-btn.sel{border-color:#3b82f6;background:#eff6ff}
 body.dark .tp-btn.sel{border-color:#3b82f6;background:#1e3a5f}
@@ -490,9 +490,10 @@ shuffle(pool);qi=0;sel=null;ans=false;
 }
 // buildPool() deferred to initApp()
 
+const WEAK_THRESH=0.6, WEAK_MIN=2;
 function selectWeakTopics(){
   const ts=getTopicStats();
-  const weak=TOPICS.map((_,i)=>i).filter(i=>{const s=ts[i];return s&&s.tot>=2&&s.ok/s.tot<0.6;});
+  const weak=TOPICS.map((_,i)=>i).filter(i=>{const s=ts[i];return s&&s.tot>=WEAK_MIN&&s.ok/s.tot<WEAK_THRESH;});
   selectedTopics=new Set(weak.length?weak:TOPICS.map((_,i)=>i));
   render();
 }
@@ -502,7 +503,7 @@ function startTopicPractice(){
   QZ.forEach((q,i)=>{if(selectedTopics.has(q.ti))pool.push(i);});
   shuffle(pool);
   qi=0;sel=null;ans=false;
-  filt='topic';topicFilt=-1;
+  filt='all';topicFilt=-1;
   showTopicPicker=false;
   render();
 }
@@ -674,7 +675,7 @@ h+=`<div style="margin-bottom:10px">
 if(showTopicPicker){
 const ts=getTopicStats();
 // Compute weak topics (accuracy < 60%, min 2 answered)
-const weakSet=new Set(TOPICS.map((_,i)=>i).filter(i=>{const s=ts[i];return s&&s.tot>=2&&s.ok/s.tot<0.6;}));
+const weakSet=new Set(TOPICS.map((_,i)=>i).filter(i=>{const s=ts[i];return s&&s.tot>=WEAK_MIN&&s.ok/s.tot<WEAK_THRESH;}));
 h+=`<div class="tp-picker">`;
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
 <span style="font-size:11px;font-weight:700">בחר נושאים לתרגול</span>
