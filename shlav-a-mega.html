@@ -238,12 +238,7 @@ const TK=[
 ["periop","surgery","ניתוח","preop","postop","anesthes","DVT prophylaxis","hip fracture"],
 ["emergency","מיון","ED ","triage","geriatric emergency","EQUiPPED","typhlitis","atypical present"]
 ];
-QZ.forEach(q=>{
-const txt=(q.q+' '+q.o.join(' ')).toLowerCase();
-let best=-1,mx=0;
-TK.forEach((keys,ti)=>{let sc=0;keys.forEach(k=>{if(txt.includes(k.toLowerCase()))sc++;});if(sc>mx){mx=sc;best=ti;}});
-q.ti=best>=0?best:8;
-});
+// Topic tagging runs inside initApp() after QZ is loaded
 function getTopicStats(){
 const st={};
 Object.entries(S.sr).forEach(([idx,d])=>{
@@ -259,6 +254,7 @@ return st;
 let NOTES=[]; // loaded from notes.json
 let DRUGS=[]; // loaded from drugs.json
 let FLASH=[]; // loaded from flashcards.json
+let _dataReady=false; // guard: render() is a no-op until initApp() resolves
 
 // ===== STATE =====
 const LS='samega';
@@ -1166,6 +1162,7 @@ return h;
 // ===== RENDER =====
 let lastTab=null;
 function render(){
+if(!_dataReady)return;
 const el=document.getElementById('ct');
 const focused=document.activeElement?.id;
 const sv={srchi:document.getElementById('srchi')?.value,nfilt:document.getElementById('nfilt')?.value,dsrch:document.getElementById('dsrch')?.value};
@@ -1283,9 +1280,10 @@ async function initApp(){
       fetch('drugs.json').then(r=>{if(!r.ok)throw new Error('drugs');return r.json();}),
     ]);
     QZ=qd;NOTES=nd;FLASH=fd;DRUGS=dd;
-    // Re-tag topics after loading QZ
-    QZ.forEach(q=>{const txt=(q.q+' '+q.o.join(' ')).toLowerCase();let best=-1,mx=0;TK.forEach((keys,ti)=>{let sc=0;keys.forEach(k=>{if(txt.includes(k.toLowerCase()))sc++;});if(sc>mx){mx=sc;best=ti;}});if(q.ti===undefined||q.ti===-1)q.ti=best>=0?best:8;});
+    // Tag topics now that QZ is loaded
+    QZ.forEach(q=>{const txt=(q.q+' '+q.o.join(' ')).toLowerCase();let best=-1,mx=0;TK.forEach((keys,ti)=>{let sc=0;keys.forEach(k=>{if(txt.includes(k.toLowerCase()))sc++;});if(sc>mx){mx=sc;best=ti;}});q.ti=best>=0?best:8;});
     buildPool();const hdrSub=document.getElementById("hdr-sub");if(hdrSub)hdrSub.textContent="SZMC · "+QZ.length+" Qs · Hazzard's 8e + Harrison's 22e · Syllabus P005-2026";
+    _dataReady=true;
     if(loader)loader.remove();
     renderTabs();render();
   }catch(e){
