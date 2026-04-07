@@ -2,22 +2,26 @@
 
 **Israeli Shlav A (שלב א) Geriatric Medicine Board Exam Preparation Tool**
 
-Standalone, offline-capable PWA with 1,131 real IMA exam questions, textbook-sourced study notes, clinical calculators, and spaced repetition — all in one HTML file.
+Standalone, offline-capable PWA with 1,148 real IMA exam questions, textbook-sourced study notes, clinical calculators, and spaced repetition — all in one HTML file.
 
 ## Features
 
 | Feature | Details |
 |---|---|
-| **Quiz Engine** | 1,131 verified IMA questions (2021–2024) with answer keys |
+| **Quiz Engine** | 1,148 verified IMA questions (2021–2024) with answer keys |
 | **Spaced Repetition** | SM-2 algorithm — wrong answers resurface automatically |
-| **Exam Mode** | 150 questions, 3-hour timer, simulates real exam |
-| **Weak Topic Drill** | Auto-targets your 10 weakest topics for focused practice |
+| **Exam Mode** | Configurable N/time, topic breakdown, + wrong-answer re-drill after exam |
+| **Post-Exam Re-Drill** | One-click drill on wrong answers only after any mock exam |
+| **Weak Topic Drill** | Auto-targets weakest topics for focused practice |
 | **Due Review** | Filter to only SR-due questions |
-| **Topic Auto-Tagging** | All 1,131 questions mapped to 40 syllabus topics |
+| **Topic Auto-Tagging** | All questions mapped to 40 syllabus topics |
 | **Per-Topic Stats** | Accuracy bars by topic — find weak areas |
-| **Study Notes** | 40 topics from Hazzard's 8e, GRS 8e, Washington Manual |
+| **Study Notes** | 40 topics from Hazzard's 8e, Harrison's 22e, Washington Manual |
 | **Flashcards** | 159 high-yield cards with שוב/קשה/קל SR rating |
+| **AI Explain** | 15 pre-baked expert explanations + on-demand AI with API key |
 | **Drug Lookup** | 53 drugs — Beers + ACB score + risk descriptions |
+| **STOPP/START v.3** | Full O'Mahony 2023 criteria — all 13 STOPP sections + 12 START sections, searchable |
+| **Israeli Law Tab ⚖️** | 13 MOH/MoJ documents: EOL law, PEG dementia, ייפוי כוח, מקבל החלטות זמני, סיעוד מורכב, התעמרות, נהיגה — with exam traps |
 | **Calculators** | 13 tools: CrCl, CHA₂DS₂-VASc, CURB-65, GDS-15, Braden, PADUA VTE, Katz ADL, Lawton IADL, 4AT Delirium, MNA-SF, Clinical Frailty Scale, Norton, Morse Fall |
 | **OSCE Simulator** | 10 timed stations with scored checklists |
 | **Full-Text Search** | Search questions, notes, and drugs |
@@ -26,6 +30,14 @@ Standalone, offline-capable PWA with 1,131 real IMA exam questions, textbook-sou
 | **Share/Export/Import** | Copy to clipboard, JSON backup & restore |
 | **IMA Archive** | Direct S3 links for all exam PDFs 2022–2025 |
 | **PWA Offline** | Service worker for offline use |
+
+## Recent Changes (April 2026)
+
+- **⚖️ Israeli Law tab**: All 13 legal documents with exam-critical bullet points, exam traps, category filter, search, and quick-link to related quiz topics
+- **🚫✅ STOPP/START v.3**: Full O'Mahony 2023 criteria integrated into Drug Reference tab — all sections searchable
+- **🔁 Post-exam re-drill**: After any mock exam, drill wrong answers only with one tap
+- **💡 Baked-in AI explanations**: 15 expert explanations pre-loaded — no API key needed for those questions
+- **📝 Skill file updated**: SKILLshlava.md updated with all new indexed documents
 
 ## Calculators
 
