@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON files parse correctly
+        run: |
+          for f in questions.json notes.json drugs.json flashcards.json; do
+            echo "Checking $f..."
+            python3 -c "import json,sys; json.load(open('$f')); print('  OK')"
+          done
+
+      - name: Check question count (must be > 900)
+        run: |
+          COUNT=$(python3 -c "import json; print(len(json.load(open('questions.json'))))")
+          echo "Question count: $COUNT"
+          if [ "$COUNT" -le 900 ]; then
+            echo "ERROR: Expected > 900 questions, got $COUNT"
+            exit 1
+          fi
+          echo "OK: $COUNT questions"
