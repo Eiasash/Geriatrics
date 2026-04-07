@@ -136,6 +136,36 @@ body.dark .modal-box{background:#1e293b;color:#e2e8f0}
 .dark .explain-box-q{background:#451a03;border-color:#92400e;color:#fcd34d}
 .dark .tag-topic{background:#064e3b !important;color:#6ee7b7 !important}
 .dark .tag-year{background:#1e3a5f !important;color:#93c5fd !important}
+
+/* Font size control */
+:root{--qfont:14px}
+.heb{font-size:var(--qfont) !important}
+p.heb, .qo{font-size:var(--qfont) !important}
+/* Question annotation */
+.q-note-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:11px;width:100%}
+.q-note-box:focus{outline:none;border-color:#f59e0b}
+/* Search highlight */
+mark{background:#fef08a;color:#1e293b;border-radius:3px;padding:0 2px}
+.dark mark{background:#713f12;color:#fef9c3}
+/* Heatmap */
+.heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin:8px 0}
+.hm-cell{aspect-ratio:1;border-radius:3px;background:#f1f5f9}
+.dark .hm-cell{background:#1e293b}
+.hm-0{background:#f1f5f9}.hm-1{background:#bae6fd}.hm-2{background:#38bdf8}.hm-3{background:#0284c7}.hm-4{background:#0369a1}
+.dark .hm-0{background:#1e293b}.dark .hm-1{background:#0c4a6e}.dark .hm-2{background:#075985}.dark .hm-3{background:#0369a1}.dark .hm-4{background:#0ea5e9}
+/* Mastered badge */
+.mastered-badge{background:linear-gradient(135deg,#059669,#10b981);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block}
+/* Offline / install banners */
+.top-banner{padding:6px 12px;font-size:11px;font-weight:600;text-align:center;position:sticky;top:48px;z-index:39}
+.banner-offline{background:#fef2f2;color:#dc2626;border-bottom:1px solid #fecaca}
+.banner-install{background:#eff6ff;color:#1d4ed8;border-bottom:1px solid #bfdbfe;display:flex;justify-content:space-between;align-items:center;padding:6px 12px}
+/* Font size controls */
+.font-ctrl{display:flex;align-items:center;gap:4px;margin-left:auto}
+.font-btn{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.15);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
+.font-btn:hover{background:rgba(255,255,255,0.25)}
+/* Confetti */
+@keyframes confetti-fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;animation:confetti-fall 3s ease-in forwards;pointer-events:none;z-index:9999}
 @media print{.tabs,.hdr,.dm-btn,button{display:none !important}.ct{padding:0;max-width:100%}.card{break-inside:avoid;border:1px solid #ccc;margin-bottom:8px}.ab{max-height:none !important}.stat,.stats{break-inside:avoid}body{background:#fff;color:#000;font-size:12pt}}
 .fade-in{animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
@@ -330,9 +360,60 @@ let _dataReady=false; // guard: render() is a no-op until initApp() resolves
 
 // ===== STATE =====
 const LS='samega';
-let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,tpOk:{},tpNo:{},examHistory:[],chat:[],diff:{}};
+let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,tpOk:{},tpNo:{},examHistory:[],chat:[],diff:{},qNotes:{},studyDays:{},totalMinutes:0,fontSize:14};
 if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;if(!S.tpOk)S.tpOk={};if(!S.tpNo)S.tpNo={};if(!S.examHistory)S.examHistory=[];if(!S.chat)S.chat=[];if(!S.diff)S.diff={};
+if(!S.qNotes)S.qNotes={};if(!S.studyDays)S.studyDays={};if(!S.totalMinutes)S.totalMinutes=0;if(!S.fontSize)S.fontSize=14;
+// Track daily study minutes
+const _today=new Date().toISOString().slice(0,10);
+if(!S.studyDays[_today])S.studyDays[_today]=0;
+setInterval(()=>{S.studyDays[_today]=(S.studyDays[_today]||0)+1;S.totalMinutes=(S.totalMinutes||0)+1;save();},60000);
 let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>localStorage.setItem(LS,JSON.stringify(S)),150)}
+// Font size control
+function changeFontSize(delta){
+  S.fontSize=Math.min(18,Math.max(11,(S.fontSize||14)+delta));
+  document.documentElement.style.setProperty('--qfont',S.fontSize+'px');
+  save();
+}
+// Highlight search terms in HTML string
+function highlightTerms(text, term){
+  if(!term||term.length<2)return text;
+  const escaped=term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return text.replace(new RegExp('('+escaped+')','gi'),'<mark>$1</mark>');
+}
+// Haptic feedback
+function haptic(type){
+  if(!navigator.vibrate)return;
+  if(type==='correct')navigator.vibrate([40]);
+  else if(type==='wrong')navigator.vibrate([80,40,80]);
+  else navigator.vibrate(30);
+}
+// Confetti
+function launchConfetti(){
+  const colors=['#f59e0b','#10b981','#3b82f6','#ef4444','#8b5cf6','#ec4899'];
+  for(let i=0;i<60;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.cssText=`left:${Math.random()*100}vw;top:-10px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*2}s;animation-duration:${2+Math.random()*2}s;width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;border-radius:${Math.random()>0.5?'50%':'2px'}`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),5000);
+  }
+}
+// Offline/Install banners
+let _deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_deferredInstall=e;renderBanners();});
+window.addEventListener('online',()=>renderBanners());
+window.addEventListener('offline',()=>renderBanners());
+function renderBanners(){
+  let b=document.getElementById('banners');
+  if(!b){b=document.createElement('div');b.id='banners';const hdr=document.getElementById('hdr');if(hdr)hdr.after(b);}
+  let h='';
+  if(!navigator.onLine)h+=`<div class="top-banner banner-offline">📡 Offline — using cached version</div>`;
+  if(_deferredInstall)h+=`<div class="top-banner banner-install"><span>📲 Install app for offline use</span><button class="btn btn-p" style="font-size:10px;padding:4px 10px" onclick="installApp()">Install</button></div>`;
+  b.innerHTML=h;
+}
+function installApp(){if(_deferredInstall){_deferredInstall.prompt();_deferredInstall.userChoice.then(()=>{_deferredInstall=null;renderBanners();});}}
+setTimeout(renderBanners,500);
+
 function rateDiff(qIdx,level){S.diff[String(qIdx)]=level;save();render();}
 
 // ===== AI EXPLAIN =====
@@ -647,6 +728,7 @@ function renderExamResults(){
   h+=`<div style="font-size:48px;margin-bottom:8px">${last.pct>=60?'✅':'❌'}</div>`;
   h+=`<div style="font-size:32px;font-weight:700;color:${last.pct>=60?'#059669':'#dc2626'}">${last.pct}%</div>`;
   h+=`<div style="font-size:13px;margin-top:4px">${last.ok}/${last.n} correct · ${fmtT(last.elapsed)} · Avg ${avgSec}s/q</div>`;
+  if(last.pct===100)setTimeout(launchConfetti,300);
   h+=`<div style="margin-top:8px;font-size:13px;font-weight:700;color:${last.pct>=60?'#059669':'#dc2626'}">${last.pct>=60?'PASS 🎉':'NEEDS WORK ❌'}</div>`;
   h+=`</div>`;
   const topicRows=Object.entries(examStats.byTopic).map(([ti,s])=>({name:TOPICS[ti]||'Unknown',pct:s.ok+s.no?Math.round(s.ok/(s.ok+s.no)*100):0,ok:s.ok,tot:s.ok+s.no})).sort((a,b)=>a.pct-b.pct);
@@ -654,8 +736,9 @@ function renderExamResults(){
     h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📊 By Topic</div>`;
     topicRows.forEach(r=>{
       const clr=r.pct>=70?'rgb(var(--em))':r.pct>=50?'rgb(var(--amb))':'rgb(var(--red))';
+      const mastBadge=r.pct>=90&&r.tot>=5?'<span class="mastered-badge">★ Mastered</span>':'';
       h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid ${sepClr};font-size:10px">
-      <span>${sanitize(r.name)}</span>
+      <span>${sanitize(r.name)} ${mastBadge}</span>
       <div style="display:flex;align-items:center;gap:6px">
         <div style="width:50px;height:4px;background:${trackClr};border-radius:2px"><div style="width:${r.pct}%;height:100%;background:${clr};border-radius:2px"></div></div>
         <span style="font-weight:600;color:${clr};width:32px;text-align:right">${r.pct}%</span>
@@ -797,6 +880,15 @@ h+=`</div>`;
 // AI Explain button
 const qGlobalIdx=pool[qi];
 const hasCached=!!_exCache[qGlobalIdx];
+// Per-question user notes
+const qNote = S.qNotes[String(qGlobalIdx)]||'';
+h+=`<div style="margin-top:8px">
+<div style="font-size:10px;color:#94a3b8;margin-bottom:3px">📝 הערה אישית</div>
+<textarea class="q-note-box" rows="2" placeholder="הוסף הערה לשאלה זו..." onchange="S.qNotes['${qGlobalIdx}']=this.value;save()" onblur="S.qNotes['${qGlobalIdx}']=this.value;save()">${sanitize(qNote)}</textarea>
+</div>`;
+h+=// Per-question user notes
+const qNote=S.qNotes[String(qGlobalIdx)]||'';
+h+=`<div style="margin-top:8px"><div style="font-size:10px;color:#94a3b8;margin-bottom:3px">📝 הערה אישית</div><textarea class="q-note-box" rows="2" placeholder="הוסף הערה לשאלה זו..." oninput="S.qNotes['${qGlobalIdx}']=this.value;save()">${sanitize(qNote)}</textarea></div>`;
 h+=`<div style="margin-top:8px;display:flex;align-items:center;gap:6px">
 <button class="btn" style="background:#6d28d9;color:#fff;font-size:11px;padding:6px 14px" onclick="explainWithAI(${qGlobalIdx})">
 ${hasCached?'📖 הסבר שמור':'🤖 הסבר AI עם מקור'}</button>
@@ -1519,6 +1611,29 @@ const tSt=getTopicStats();
 const ranked=TOPICS.map((t,i)=>({name:t,i,s:tSt[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>0);
 const weakTopics=ranked.filter(p=>p.s.tot>=3&&(p.s.tot?p.s.ok/p.s.tot:0)<0.7).sort((a,b)=>{const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).slice(0,3);
 let h=`<div class="sec-t">📊 Study Dashboard</div><div class="sec-s">Progress · Accuracy · Spaced Repetition</div>`;
+// Study time
+const totalMins=S.totalMinutes||0;
+const hrs=Math.floor(totalMins/60);const mins=totalMins%60;
+const timeStr=hrs>0?`${hrs}h ${mins}m`:`${mins}m`;
+// Heatmap - last 49 days (7 weeks)
+const heatDays=[];const now=new Date();
+for(let i=48;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);heatDays.push(d.toISOString().slice(0,10));}
+const maxMins=Math.max(1,...heatDays.map(d=>S.studyDays[d]||0));
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+<div style="font-weight:700;font-size:12px">📅 Study Activity</div>
+<div style="font-size:10px;color:#64748b">⏱ Total: ${timeStr}</div>
+</div>
+<div class="heatmap">`;
+heatDays.forEach(d=>{
+  const mins=S.studyDays[d]||0;
+  const lvl=mins===0?0:mins<=5?1:mins<=15?2:mins<=30?3:4;
+  const label=mins?`${d}: ${mins} min`:`${d}: no activity`;
+  h+=`<div class="hm-cell hm-${lvl}" title="${label}" style="border-radius:3px"></div>`;
+});
+h+=`</div><div style="display:flex;justify-content:flex-end;gap:4px;margin-top:4px;align-items:center;font-size:9px;color:#94a3b8">Less`;
+[0,1,2,3,4].forEach(l=>h+=`<div class="hm-cell hm-${l}" style="width:10px;height:10px;flex-shrink:0"></div>`);
+h+=`More</div></div>`;
 // Stats row 1: Topics, Questions, Retention
 h+=`<div class="stats" style="margin-bottom:4px">
 <div class="stat"><div class="n" style="color:rgb(var(--em));font-size:16px">${done}/40</div><div class="l">Topics</div></div>
@@ -1626,7 +1741,7 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 </div>`;
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
-<div>Shlav A Mega v8.3 · P005-2026 Syllabus</div>
+<div>Shlav A Mega v8.4 · P005-2026 Syllabus</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
 return h;
@@ -1748,7 +1863,7 @@ const correct=rvSel===q.c;
 srScore(qIdx,correct);
 S.srSess.reviewed++;if(correct)S.srSess.correct++;
 const ti_=q.ti;
-if(ti_>=0){if(correct){if(!S.tpOk[ti_])S.tpOk[ti_]=0;S.tpOk[ti_]++;}else{if(!S.tpNo[ti_])S.tpNo[ti_]=0;S.tpNo[ti_]++;}}
+if(ti_>=0){if(correct){if(!S.tpOk[ti_])S.tpOk[ti_]=0;S.tpOk[ti_]++;haptic('correct');}else{if(!S.tpNo[ti_])S.tpNo[ti_]=0;S.tpNo[ti_]++;haptic('wrong');}}
 save();render();
 }
 function rvNext(){
@@ -2522,8 +2637,68 @@ if(sv.srchi!==undefined&&document.getElementById('srchi'))document.getElementByI
 if(sv.nfilt!==undefined&&document.getElementById('nfilt'))document.getElementById('nfilt').value=sv.nfilt;
 if(sv.dsrch!==undefined&&document.getElementById('dsrch'))document.getElementById('dsrch').value=sv.dsrch;
 if(focused){const fe=document.getElementById(focused);if(fe){fe.focus();if(fe.value)fe.setSelectionRange(fe.value.length,fe.value.length);}}
+// Keyboard overlay
+let _ko=document.getElementById('kbd-overlay');if(!_ko){_ko=document.createElement('div');_ko.id='kbd-overlay';document.body.appendChild(_ko);}_ko.innerHTML=renderKbdOverlay();
+// Apply font size
+document.documentElement.style.setProperty('--qfont',(S.fontSize||14)+'px');
 }
 
+
+// ===== KEYBOARD SHORTCUTS =====
+let _showKbd=false;
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+  if(e.key==='?'){_showKbd=!_showKbd;render();return;}
+  if(_showKbd&&e.key==='Escape'){_showKbd=false;render();return;}
+  if(tab==='quiz'){
+    if(!ans&&(e.key==='1'||e.key==='2'||e.key==='3'||e.key==='4')){pick(parseInt(e.key)-1);}
+    if(ans&&(e.key==='Enter'||e.key===' '||e.key==='ArrowRight'))next();
+    if(!ans&&sel!==null&&e.key==='Enter')check();
+    if(e.key==='b'||e.key==='B')toggleBk();
+  }
+  if(tab==='flash'){
+    if(e.key===' ')S.fcFlip=!S.fcFlip;render();
+    if(e.key==='ArrowRight')nextFc();
+    if(e.key==='1')rateFc(0);if(e.key==='2')rateFc(1);if(e.key==='3')rateFc(2);
+  }
+});
+function renderKbdOverlay(){
+  if(!_showKbd)return '';
+  return `<div class="modal-overlay" onclick="_showKbd=false;render()">
+  <div class="modal-box" style="max-width:320px">
+    <div style="font-weight:700;font-size:14px;margin-bottom:12px">⌨️ Keyboard Shortcuts</div>
+    <div style="font-size:11px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px">
+      <b>1–4</b><span>Select answer</span>
+      <b>Enter / Space</b><span>Check / Next</span>
+      <b>→</b><span>Next question</span>
+      <b>B</b><span>Bookmark</span>
+      <b>Space (Cards)</b><span>Flip flashcard</span>
+      <b>1/2/3 (Cards)</b><span>Rate flashcard</span>
+      <b>?</b><span>Toggle this help</span>
+      <b>Esc</b><span>Close overlay</span>
+    </div>
+    <button class="btn btn-o" style="width:100%;margin-top:12px" onclick="_showKbd=false;render()">Close</button>
+  </div></div>`;
+}
+
+// ===== SWIPE GESTURES =====
+(function(){
+  let _tx=0,_ty=0;
+  document.addEventListener('touchstart',e=>{_tx=e.touches[0].clientX;_ty=e.touches[0].clientY;},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-_tx;
+    const dy=e.changedTouches[0].clientY-_ty;
+    if(Math.abs(dx)<Math.abs(dy)*1.5||Math.abs(dx)<40)return;
+    if(tab==='quiz'&&!examMode){
+      if(dx<-40&&ans)next();
+      else if(dx>40&&qi>0&&!ans){qi--;sel=null;ans=false;render();}
+    }
+    if(tab==='flash'){
+      if(dx<-40){nextFc();}
+      else if(dx>40&&S.fci>0){S.fci--;S.fcFlip=false;save();render();}
+    }
+  },{passive:true});
+})();
 
 // ===== DARK MODE =====
 function toggleDark(){document.body.classList.toggle('dark');S.dark=document.body.classList.contains('dark');save()}
