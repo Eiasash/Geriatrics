@@ -1472,14 +1472,19 @@ else if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>alert('
 function importProgress(){
 const input=document.createElement('input');input.type='file';input.accept='.json';
 input.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
-r.onload=ev=>{try{const d=JSON.parse(ev.target.result);Object.assign(S,d);save();render();
-alert('✅ Progress imported successfully!');}catch(err){alert('❌ Invalid file');}};r.readAsText(f);};
+r.onload=ev=>{try{const d=JSON.parse(ev.target.result);
+if(typeof d !== 'object' || d === null || Array.isArray(d)) throw new Error('Invalid progress file format');
+Object.assign(S,d);save();render();
+const tot=(S.qOk||0)+(S.qNo||0);
+const done=Object.values(S.ck||{}).filter(Boolean).length;
+alert(`✅ Imported! ${tot} questions answered, ${done} topics checked, streak ${S.streak} days`);}catch(err){alert('❌ Invalid file: '+err.message);}};r.readAsText(f);};
 input.click();}
 
 function exportProgress(){
+const date=new Date().toISOString().slice(0,10);
 const data=JSON.stringify(S,null,2);
 const blob=new Blob([data],{type:'application/json'});
-const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='shlav-a-progress.json';a.click();
+const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`shlav-a-progress-${date}.json`;a.click();
 }
 
 
