@@ -228,6 +228,15 @@ body.dark .drug-xref-lbl{color:#94a3b8}
 .drug-toggle-btn{font-size:10px;color:#64748b;padding:2px 6px;border-radius:6px;border:1px solid #e2e8f0;background:#f1f5f9;margin-left:6px;line-height:1.4}
 body.dark .drug-toggle-btn{background:#1e293b;border-color:#334155;color:#94a3b8}
 
+/* Difficulty rating */
+.diff-row{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
+.diff-lbl{font-size:10px;color:#64748b}
+body.dark .diff-lbl{color:#94a3b8}
+.diff-btn{padding:3px 10px;border-radius:20px;border:2px solid;background:transparent;cursor:pointer;font-size:11px;font-weight:600;color:#374151;transition:.15s}
+body.dark .diff-btn{color:#e2e8f0}
+.diff-btn.diff-sel{color:#fff}
+.diff-badge{font-size:9px;padding:1px 5px;border-radius:10px;font-weight:600;margin-left:4px;color:#fff}
+
 </style>
 </head>
 <body>
@@ -321,9 +330,10 @@ let _dataReady=false; // guard: render() is a no-op until initApp() resolves
 
 // ===== STATE =====
 const LS='samega';
-let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,tpOk:{},tpNo:{},examHistory:[],chat:[]};
-if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;if(!S.tpOk)S.tpOk={};if(!S.tpNo)S.tpNo={};if(!S.examHistory)S.examHistory=[];if(!S.chat)S.chat=[];
+let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,tpOk:{},tpNo:{},examHistory:[],chat:[],diff:{}};
+if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;if(!S.tpOk)S.tpOk={};if(!S.tpNo)S.tpNo={};if(!S.examHistory)S.examHistory=[];if(!S.chat)S.chat=[];if(!S.diff)S.diff={};
 let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>localStorage.setItem(LS,JSON.stringify(S)),150)}
+function rateDiff(qIdx,level){S.diff[String(qIdx)]=level;save();render();}
 
 // ===== AI EXPLAIN =====
 const EX_LS='samega_ex';
@@ -755,6 +765,18 @@ else h+=`<div style="margin-bottom:6px;color:#64748b;font-style:italic">Correct 
 h+=`<div style="font-size:9px;color:#059669;border-top:1px solid #bbf7d0;padding-top:4px;margin-top:4px">📖 Source: ${sanitize(note.ch)} · ${sanitize(q.t)}</div>`;
 h+=`</div>`;
 }
+}
+// Difficulty rating row
+if(ans&&!examMode){
+const _qi=pool[qi];const _cur=S.diff[String(_qi)];
+const _lvls=[['easy','קל','#22c55e'],['medium','בינוני','#eab308'],['hard','קשה','#ef4444']];
+h+=`<div class="diff-row"><span class="diff-lbl">קושי:</span>`;
+_lvls.forEach(([lvl,label,color])=>{
+const isSel=_cur===lvl;
+const st=isSel?`background:${color};border-color:${color};color:#fff`:`border-color:${color}`;
+h+=`<button class="diff-btn${isSel?' diff-sel':''}" style="${st}" onclick="rateDiff(${_qi},'${lvl}')">${label}</button>`;
+});
+h+=`</div>`;
 }
 // AI Explain button
 const qGlobalIdx=pool[qi];
@@ -1486,6 +1508,22 @@ h+=`<div class="stats">
 <div class="stat"><div class="n" style="color:rgb(var(--amb));font-size:16px">${streakN>0?'🔥 '+streakN:'—'}</div><div class="l">Streak</div></div>
 <div class="stat"><div class="n" style="font-size:16px">${bkCount}</div><div class="l">Bookmarks</div></div>
 </div>`;
+// Difficulty breakdown
+const _diffVals=Object.values(S.diff);
+const _dEasy=_diffVals.filter(v=>v==='easy').length;
+const _dMed=_diffVals.filter(v=>v==='medium').length;
+const _dHard=_diffVals.filter(v=>v==='hard').length;
+const _dUnrated=QZ.length-_diffVals.length;
+if(_diffVals.length>0){
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="font-weight:700;font-size:12px;margin-bottom:8px">🎯 Difficulty Ratings</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px">
+<span style="background:#22c55e;color:#fff;padding:3px 10px;border-radius:12px;font-weight:600">קל ${_dEasy}</span>
+<span style="background:#eab308;color:#fff;padding:3px 10px;border-radius:12px;font-weight:600">בינוני ${_dMed}</span>
+<span style="background:#ef4444;color:#fff;padding:3px 10px;border-radius:12px;font-weight:600">קשה ${_dHard}</span>
+<span style="background:#94a3b8;color:#fff;padding:3px 10px;border-radius:12px;font-weight:600">Unrated ${_dUnrated}</span>
+</div></div>`;
+}
 // Weak Topics callout (only if any topic has ≥3 attempts and <70%)
 if(weakTopics.length>0){
 h+=`<div class="card" style="padding:14px;margin-bottom:10px;border-left:3px solid rgb(var(--amb))">
@@ -1659,7 +1697,10 @@ qRes.slice(0,15).forEach(i=>{
   const sr=S.sr[i];const bk=S.bk[i];
   const accBadge=sr?`<span class="badge" style="background:#f0fdf4;color:#166534;margin-left:2px">ef ${sr.ef.toFixed(1)}</span>`:'';
   const bkBadge=bk?'🔖 ':'';
-  h+=`<div class="card heb" dir="rtl" style="padding:10px;font-size:11px;line-height:1.5;cursor:pointer" onclick="gotoQ(${i})"><span class="badge" style="background:#eff6ff;color:#1d4ed8">${sanitize(QZ[i].t)}</span> <span style="color:#1d4ed8;font-size:9px;margin-right:4px">↗ Quiz</span>${accBadge} ${bkBadge}${sanitize(QZ[i].q.substring(0,150))}...</div>`;
+  const _dv=S.diff[String(i)];
+  const _dc=_dv==='easy'?'#22c55e':_dv==='medium'?'#eab308':_dv==='hard'?'#ef4444':null;
+  const diffBadge=_dc?`<span class="diff-badge" style="background:${_dc}">${_dv==='easy'?'קל':_dv==='medium'?'בינוני':'קשה'}</span>`:'';
+  h+=`<div class="card heb" dir="rtl" style="padding:10px;font-size:11px;line-height:1.5;cursor:pointer" onclick="gotoQ(${i})"><span class="badge" style="background:#eff6ff;color:#1d4ed8">${sanitize(QZ[i].t)}</span> <span style="color:#1d4ed8;font-size:9px;margin-right:4px">↗ Quiz</span>${accBadge}${diffBadge} ${bkBadge}${sanitize(QZ[i].q.substring(0,150))}...</div>`;
 });
 }else{
 h+=`<div style="font-size:11px;color:#94a3b8;padding:12px 0;text-align:center">No questions match the selected filters.</div>`;
@@ -1804,6 +1845,16 @@ if(relevant.length)h+=`<div>${sanitize(relevant.join('. '))}.</div>`;
 else h+=`<div class="rev-sub" style="font-style:italic">Correct: <b>${sanitize(correctText)}</b></div>`;
 h+=`</div>`;
 }
+// Difficulty rating row
+const _rvCur=S.diff[String(qIdx)];
+const _rvLvls=[['easy','קל','#22c55e'],['medium','בינוני','#eab308'],['hard','קשה','#ef4444']];
+h+=`<div class="diff-row"><span class="diff-lbl">קושי:</span>`;
+_rvLvls.forEach(([lvl,label,color])=>{
+const isSel=_rvCur===lvl;
+const st=isSel?`background:${color};border-color:${color};color:#fff`:`border-color:${color}`;
+h+=`<button class="diff-btn${isSel?' diff-sel':''}" style="${st}" onclick="rateDiff(${qIdx},'${lvl}')">${label}</button>`;
+});
+h+=`</div>`;
 }
 h+=`</div>`;
 return h;
