@@ -133,8 +133,6 @@ input,textarea,select{font:inherit}
 .dark .explain-box-q{background:#451a03;border-color:#92400e;color:#fcd34d}
 .dark .tag-topic{background:#064e3b !important;color:#6ee7b7 !important}
 .dark .tag-year{background:#1e3a5f !important;color:#93c5fd !important}
-.streak-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#fffbeb;color:#d97706;border:1px solid #fde68a}
-.dark .streak-badge{background:#451a03;border-color:#92400e}
 @media print{.tabs,.hdr,.dm-btn,button{display:none !important}.ct{padding:0;max-width:100%}.card{break-inside:avoid;border:1px solid #ccc;margin-bottom:8px}.ab{max-height:none !important}.stat,.stats{break-inside:avoid}body{background:#fff;color:#000;font-size:12pt}}
 .fade-in{animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
@@ -259,12 +257,10 @@ const TK=[
 // Topic tagging runs inside initApp() after QZ is loaded
 function getTopicStats(){
 const st={};
-Object.entries(S.sr).forEach(([idx,d])=>{
-const q=QZ[idx];if(!q)return;
-const ti=q.ti||0;
-if(!st[ti])st[ti]={ok:0,no:0,tot:0};
-st[ti].tot++;
-if(d.n>0)st[ti].ok++;else st[ti].no++;
+const allTopics=new Set([...Object.keys(S.tpOk||{}),...Object.keys(S.tpNo||{})].map(Number));
+allTopics.forEach(ti=>{
+const ok=S.tpOk[ti]||0,no=S.tpNo[ti]||0;
+st[ti]={ok,no,tot:ok+no};
 });
 return st;
 }
@@ -276,8 +272,8 @@ let _dataReady=false; // guard: render() is a no-op until initApp() resolves
 
 // ===== STATE =====
 const LS='samega';
-let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null};
-if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;
+let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,tpOk:{},tpNo:{}};
+if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;if(!S.tpOk)S.tpOk={};if(!S.tpNo)S.tpNo={};
 let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>localStorage.setItem(LS,JSON.stringify(S)),150)}
 (function updateStreak(){
 const today=new Date().toISOString().slice(0,10);
@@ -356,8 +352,9 @@ function pick(i){if(ans)return;sel=i;render()}
 function check(){
 if(sel===null)return;ans=true;
 const q=QZ[pool[qi]];
-if(sel===q.c){S.qOk++;srScore(pool[qi],true);}
-else{S.qNo++;srScore(pool[qi],false);}
+const ti_=q.ti;
+if(sel===q.c){S.qOk++;srScore(pool[qi],true);if(ti_>=0){if(!S.tpOk[ti_])S.tpOk[ti_]=0;S.tpOk[ti_]++;}}
+else{S.qNo++;srScore(pool[qi],false);if(ti_>=0){if(!S.tpNo[ti_])S.tpNo[ti_]=0;S.tpNo[ti_]++;}}
 save();render();
 }
 function next(){
@@ -1074,7 +1071,6 @@ function renderTrack(){
 const done=Object.values(S.ck).filter(Boolean).length;
 const tot=S.qOk+S.qNo;const retPct=tot?Math.round(S.qOk/tot*100)+'%':'—';
 const bkCount=Object.values(S.bk).filter(Boolean).length;
-const dueN=getDueQuestions().length;
 const todayReviewed=(S.srSess&&S.srSess.reviewed)||0;
 const streakN=S.streak||0;
 // Per-topic accuracy
