@@ -1,7 +1,7 @@
 {
   "name": "Shlav A Board Prep",
   "short_name": "Shlav A",
-  "description": "Israeli Geriatrics Shlav A Board Prep \u2014 959 Questions + Hazzard's 8e + Harrison's 22e + P005-2026 Syllabus",
+  "description": "Israeli Geriatrics Shlav A Board Prep — 1031 Questions + Hazzard's 8e + Harrison's 22e + P005-2026 Syllabus",
   "start_url": "shlav-a-mega.html",
   "display": "standalone",
   "orientation": "portrait",
@@ -9,7 +9,7 @@
   "theme_color": "#0f172a",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>\ud83e\ude7a</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>",
       "sizes": "any",
       "type": "image/svg+xml"
     }
