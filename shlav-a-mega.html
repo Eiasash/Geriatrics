@@ -207,6 +207,17 @@ body.dark .chat-starter:hover{border-color:#3b82f6;background:#172554}
 body.dark .chat-disclaimer{background:#1a1200;border-color:#713f12;color:#fde047}
 .chat-msgs{flex:1;overflow-y:auto;padding:8px;min-height:200px;max-height:calc(100vh - 280px)}
 
+/* Topic Picker */
+.tp-picker{background:#f8fafc;border-radius:14px;padding:12px;margin-bottom:10px}
+body.dark .tp-picker{background:#1e293b}
+.tp-btn{display:inline-flex;flex-direction:column;align-items:flex-start;background:#fff;border:2px solid #e2e8f0;border-radius:10px;padding:8px 10px;cursor:pointer;font-size:11px;min-width:120px;margin:3px;transition:.15s}
+body.dark .tp-btn{background:#0f172a;border-color:#334155;color:#e2e8f0}
+.tp-btn.sel{border-color:#3b82f6;background:#eff6ff}
+body.dark .tp-btn.sel{border-color:#3b82f6;background:#1e3a5f}
+.tp-acc-bar{height:4px;border-radius:2px;margin-top:4px;background:#e2e8f0;width:100%}
+body.dark .tp-acc-bar{background:#334155}
+.tp-acc-fill{height:4px;border-radius:2px}
+
 </style>
 </head>
 <body>
@@ -451,11 +462,13 @@ return`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')"><span class
 function go(t){
   if(examMode){clearInterval(examTimer);examTimer=null;examMode=false;}
   if(tab==='chat'&&t!=='chat')chatLoading=false;
+  if(t!=='quiz'){showTopicPicker=false;selectedTopics=new Set();}
   tab=t;showExamConfig=false;showExamResults=false;renderTabs();render()
 }
 
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
+let showTopicPicker=false,selectedTopics=new Set();
 let examCfg={n:60,t:60};
 let examStats={byTopic:{},times:[],startTs:0,qTs:0};
 let showExamConfig=false,showExamResults=false;
@@ -476,6 +489,23 @@ else{QZ.forEach((q,i)=>{if(filt==='all'||q.t.includes(filt))pool.push(i)});}
 shuffle(pool);qi=0;sel=null;ans=false;
 }
 // buildPool() deferred to initApp()
+
+function selectWeakTopics(){
+  const ts=getTopicStats();
+  const weak=TOPICS.map((_,i)=>i).filter(i=>{const s=ts[i];return s&&s.tot>=2&&s.ok/s.tot<0.6;});
+  selectedTopics=new Set(weak.length?weak:TOPICS.map((_,i)=>i));
+  render();
+}
+function startTopicPractice(){
+  if(!selectedTopics.size)return;
+  pool=[];
+  QZ.forEach((q,i)=>{if(selectedTopics.has(q.ti))pool.push(i);});
+  shuffle(pool);
+  qi=0;sel=null;ans=false;
+  filt='topic';topicFilt=-1;
+  showTopicPicker=false;
+  render();
+}
 
 function setFilt(f){filt=f;topicFilt=-1;buildPool();render()}
 function setTopicFilt(ti){filt='topic';topicFilt=ti;buildPool();render()}
@@ -637,6 +667,41 @@ h+=`<div style="margin-bottom:10px"><select class="calc-in" style="font-size:11p
 <option value="-1"${filt!=='topic'?' selected':''}>📂 Filter by topic…</option>`;
 TOPICS.forEach((t,i)=>{h+=`<option value="${i}"${filt==='topic'&&topicFilt===i?' selected':''}>${t}</option>`;});
 h+=`</select></div>`;
+// Topic picker toggle button
+h+=`<div style="margin-bottom:10px">
+<button class="btn ${showTopicPicker?'btn-p':'btn-o'}" style="font-size:11px;padding:5px 14px;width:100%" onclick="showTopicPicker=!showTopicPicker;render()">
+🎯 תרגול לפי נושא${showTopicPicker?' ▲':' ▼'}</button></div>`;
+if(showTopicPicker){
+const ts=getTopicStats();
+// Compute weak topics (accuracy < 60%, min 2 answered)
+const weakSet=new Set(TOPICS.map((_,i)=>i).filter(i=>{const s=ts[i];return s&&s.tot>=2&&s.ok/s.tot<0.6;}));
+h+=`<div class="tp-picker">`;
+h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+<span style="font-size:11px;font-weight:700">בחר נושאים לתרגול</span>
+<div style="display:flex;gap:6px">
+<button class="btn btn-o" style="font-size:10px;padding:4px 10px" onclick="selectWeakTopics()">🎯 נושאים חלשים</button>
+<button class="btn btn-o" style="font-size:10px;padding:4px 10px" onclick="selectedTopics=selectedTopics.size===TOPICS.length?new Set():new Set(TOPICS.map((_,i)=>i));render()">${selectedTopics.size===TOPICS.length?'הסר הכל':'בחר הכל'}</button>
+</div></div>`;
+h+=`<div style="display:flex;flex-wrap:wrap;">`;
+TOPICS.forEach((name,i)=>{
+const s=ts[i]||{ok:0,no:0,tot:0};
+const pct=s.tot?Math.round(s.ok/s.tot*100):-1;
+const barColor=pct<0?'#94a3b8':pct>=75?'#22c55e':pct>=50?'#eab308':'#ef4444';
+const isSel=selectedTopics.has(i);
+const isWeak=weakSet.has(i);
+h+=`<button class="tp-btn${isSel?' sel':''}" onclick="selectedTopics.has(${i})?selectedTopics.delete(${i}):selectedTopics.add(${i});render()">
+<span style="font-weight:600">${sanitize(name)}${isWeak?' ⚠️':''}</span>
+<span style="color:#94a3b8;font-size:9px">${pct>=0?pct+'% ('+s.tot+'q)':'אין נתונים'}</span>
+<div class="tp-acc-bar"><div class="tp-acc-fill" style="width:${pct>=0?pct:0}%;background:${barColor}"></div></div>
+</button>`;
+});
+h+=`</div>`;
+h+=`<div style="display:flex;gap:8px;margin-top:10px">
+<button class="btn btn-p" style="flex:1;font-size:12px" onclick="startTopicPractice()"${selectedTopics.size===0?' disabled':''}>▶ התחל תרגול (${selectedTopics.size} נושאים)</button>
+<button class="btn btn-o" style="font-size:11px;padding:5px 12px" onclick="showTopicPicker=false;render()">סגור</button>
+</div>`;
+h+=`</div>`;
+}
 }
 if(!pool.length){h+=`<div class="card" style="padding:24px;text-align:center"><p style="font-size:13px;color:#94a3b8">${filt==='due'?'🎉 No questions due for review!':'No questions match this filter.'}</p></div>`;return h;}
 h+=`<div class="progress-bar"><div class="fill" style="width:${Math.round((qi+1)/pool.length*100)}%"></div></div>`;
