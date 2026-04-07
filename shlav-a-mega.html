@@ -261,6 +261,96 @@ const LS='samega';
 let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null};
 if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;
 let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>localStorage.setItem(LS,JSON.stringify(S)),150)}
+
+// ===== AI EXPLAIN =====
+const EX_LS='samega_ex';
+let _exCache=JSON.parse(localStorage.getItem(EX_LS)||'{}');
+function saveExCache(){localStorage.setItem(EX_LS,JSON.stringify(_exCache));}
+function getApiKey(){return localStorage.getItem('samega_apikey')||'';}
+function setApiKey(k){localStorage.setItem('samega_apikey',k.trim());}
+
+const HAZZARD_MAP={
+  0:'Hazzardʼs Ch 3 (Biology of Aging)',1:'Hazzardʼs Ch 2 (Demography)',2:'Hazzardʼs Ch 1 (Comprehensive Geriatric Assessment)',
+  3:'Hazzardʼs Ch 20 (Frailty & Sarcopenia)',4:'Hazzardʼs Ch 41 (Falls)',5:'Hazzardʼs Ch 58 (Delirium)',
+  6:'Hazzardʼs Ch 59 (Dementia)',7:'Hazzardʼs Ch 62 (Depression — excluded from exam)',8:'Hazzardʼs Ch 13 (Pharmacology & Beers)',
+  9:'Hazzardʼs Ch 43 (Nutrition)',10:'Hazzardʼs Ch 49 (Pressure Injuries)',11:'Hazzardʼs Ch 55 (Urinary Incontinence)',
+  12:'Hazzardʼs Ch 54 (Constipation)',13:'Hazzardʼs Ch 37 (Sleep)',14:'Hazzardʼs Ch 44 (Pain)',
+  15:'Hazzardʼs Ch 46 (Osteoporosis)',16:'Hazzardʼs Ch 47 (Osteoarthritis)',17:'Hazzardʼs Ch 25 (Cardiovascular Disease)',
+  18:'Hazzardʼs Ch 28 (Heart Failure)',19:'Hazzardʼs Ch 26 (Hypertension)',20:'Harrisonʼs Ch 437-439 (Stroke)',
+  21:'Hazzardʼs Ch 30 (COPD)',22:'Hazzardʼs Ch 64 (Diabetes)',23:'Hazzardʼs Ch 65 (Thyroid)',
+  24:'Hazzardʼs Ch 68 (CKD)',25:'Hazzardʼs Ch 24 (Anemia)',26:'Hazzardʼs Ch 71 (Cancer)',
+  27:'Hazzardʼs Ch 36 (Infections)',28:'Hazzardʼs Ch 22 (Palliative Care)',29:'Israeli Law / Hazzardʼs Ch 16 (Ethics)',
+  30:'Israeli Law – Elder Abuse (נוהל 12)',31:'Israeli Law – Fitness to Drive (חובת ההודעה)',
+  32:'Israeli Law – Guardianship (חוזר מנהל רפואה)',33:'Israeli Law – Patient Rights Law',
+  34:'Israeli Law – Dying Patient Act 2005 + Advance Directives',35:'Hazzardʼs Ch 35 (Community Care)',
+  36:'Hazzardʼs Ch 17 (Rehabilitation) + FIM',37:'Hazzardʼs Ch 39 (Vision & Hearing) + NEJM Hearing Loss',
+  38:'Hazzardʼs Ch 23 (Perioperative)',39:'Harrisonʼs Emergency Chapters'
+};
+
+async function explainWithAI(qIdx){
+  const key=getApiKey();
+  if(!key){
+    const k=prompt('הכנס Anthropic API Key (יישמר מקומית בדפדפן):','');
+    if(!k)return;setApiKey(k);
+  }
+  if(_exCache[qIdx]){renderExplainBox(qIdx,_exCache[qIdx]);return;}
+  const box=document.getElementById('ex-box-'+qIdx);
+  if(box)box.innerHTML='<div style="color:#64748b;font-size:11px">⏳ שואל את קלוד...</div>';
+  const q=QZ[qIdx];
+  const src=HAZZARD_MAP[q.ti]||'Hazzardʼs Geriatric Medicine 8e';
+  const opts=q.o.map((o,i)=>` ${String.fromCharCode(65+i)}. ${o}`).join('\n');
+  const prompt=`You are a senior geriatrician explaining a Shlav A (Israeli IMA geriatrics board exam) question.
+
+QUESTION (Hebrew): ${q.q}
+
+OPTIONS:
+${opts}
+
+CORRECT ANSWER: Option ${String.fromCharCode(65+q.c)}: ${q.o[q.c]}
+
+PRIMARY SOURCE: ${src}
+
+Explain in Hebrew. Use this EXACT format:
+✅ נכון: [explain WHY this answer is correct — mechanism, evidence, guideline. 2-3 sentences]
+
+❌ א/ב/ג: [1 sentence why each wrong option fails — be specific]
+(repeat for each wrong option)
+
+📌 פנינת מבחן: [one sentence board pearl, exam-extractable rule]
+
+📖 מקור: [specific book + chapter + key fact from that chapter supporting this answer]
+
+Be direct. No fluff. Use clinical reasoning. Cite Hazzard's 8e chapter numbers or Harrison's 22e chapter numbers from the P005-2026 syllabus when relevant.`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-opus-4-5',max_tokens:800,messages:[{role:'user',content:prompt}]})
+    });
+    if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||resp.status);}
+    const data=await resp.json();
+    const text=data.content[0].text;
+    _exCache[qIdx]={text,src,ts:Date.now()};saveExCache();
+    renderExplainBox(qIdx,_exCache[qIdx]);
+  }catch(e){
+    if(box)box.innerHTML=`<div style="color:#dc2626;font-size:11px">שגיאה: ${e.message}</div>`;
+  }
+}
+
+function renderExplainBox(qIdx,entry){
+  const box=document.getElementById('ex-box-'+qIdx);
+  if(!box)return;
+  const lines=entry.text.split('\n').filter(l=>l.trim());
+  const html=lines.map(l=>{
+    if(l.startsWith('✅'))return`<div style="background:#dcfce7;border-radius:8px;padding:8px 10px;margin-bottom:6px;font-weight:600">${sanitize(l)}</div>`;
+    if(l.startsWith('❌'))return`<div style="color:#991b1b;padding:3px 0">${sanitize(l)}</div>`;
+    if(l.startsWith('📌'))return`<div style="background:#fef3c7;border-radius:8px;padding:8px 10px;margin-top:6px;font-weight:600">${sanitize(l)}</div>`;
+    if(l.startsWith('📖'))return`<div style="font-size:10px;color:#059669;margin-top:6px;border-top:1px solid #bbf7d0;padding-top:4px">${sanitize(l)}</div>`;
+    return`<div style="padding:2px 0">${sanitize(l)}</div>`;
+  }).join('');
+  box.innerHTML=html;
+}
 (function updateStreak(){
 const today=new Date().toISOString().slice(0,10);
 if(S.lastDay===today)return;
@@ -416,6 +506,16 @@ h+=`<div style="font-size:9px;color:#059669;border-top:1px solid #bbf7d0;padding
 h+=`</div>`;
 }
 }
+// AI Explain button
+const qGlobalIdx=pool[qi];
+const hasCached=!!_exCache[qGlobalIdx];
+h+=`<div style="margin-top:8px;display:flex;align-items:center;gap:6px">
+<button class="btn" style="background:#6d28d9;color:#fff;font-size:11px;padding:6px 14px" onclick="explainWithAI(${qGlobalIdx})">
+${hasCached?'📖 הסבר שמור':'🤖 הסבר AI עם מקור'}</button>
+${hasCached?`<button onclick="delete _exCache[${qGlobalIdx}];saveExCache();document.getElementById('ex-box-${qGlobalIdx}').innerHTML='';this.parentNode.querySelector('.btn').textContent='🤖 הסבר AI עם מקור'" style="font-size:10px;color:#94a3b8;background:none;border:none;cursor:pointer" title="נקה הסבר">↺</button>`:''}
+</div>
+<div id="ex-box-${qGlobalIdx}" style="margin-top:8px;font-family:'Heebo',sans-serif;direction:rtl;font-size:12px;line-height:1.7"></div>`;
+if(hasCached)setTimeout(()=>renderExplainBox(qGlobalIdx,_exCache[qGlobalIdx]),0);
 h+=`<div style="display:flex;gap:16px;margin-top:10px;padding-top:8px;border-top:1px solid #f1f5f9;font-size:10px;color:#94a3b8">
 <span>✅ ${S.qOk}</span><span>❌ ${S.qNo}</span><span>📊 ${pct}</span></div>`;
 h+=`</div>`;
@@ -426,7 +526,7 @@ return h;
 let openNote=null;
 function toggleNote(i){openNote=openNote===i?null:i;render();}
 function renderStudy(){
-let h=`<div class="sec-t">📚 Study Notes</div><div class="sec-s">40 IMA topics · Hazzard's 8e + Harrison's + Israeli Guidelines</div>`;
+let h=`<div class="sec-t">📚 Study Notes</div><div class="sec-s">40 IMA topics · Hazzard's 8e + Harrison's 22e + Israeli Law (P005-2026)</div>`;
 h+=`<input class="search-box" placeholder="Search topics..." oninput="filterNotes(this.value)" id="nfilt">`;
 const fv=document.getElementById('nfilt')?.value?.toLowerCase()||'';
 NOTES.filter(n=>n.topic.toLowerCase().includes(fv)||n.notes.toLowerCase().includes(fv)).forEach(n=>{
@@ -559,11 +659,15 @@ h+=`</div>`;
 if(sylSec==='haz'){
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📕 Hazzard's Geriatric Medicine & Gerontology 8e</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">Only 7 chapters required — NOT the entire book</div>`;
+<div style="font-size:10px;color:#64748b;margin-bottom:6px">כל הפרקים <b>למעט</b> הפרקים הבאים (מוחרגים מהסילבוס)</div>
+<div style="font-size:10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px;margin-bottom:10px;color:#991b1b">
+⛔ <b>פרקים מוחרגים</b>: Ch 2 (Demography), Ch 3 (Biology), Ch 4 (Immunology), Ch 5 (Psychosocial), Ch 6 (Sex/Gender), Ch 34 (Sexuality), Ch 62 (Depression)
+</div>
+<div style="font-size:11px;color:#059669;font-weight:600;margin-bottom:8px">✅ כל שאר הפרקים — חובה לבחינה</div>`;
 SYL_HAZ.forEach(c=>{
-h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
-<span style="background:rgb(var(--sky));color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:36px;text-align:center">Ch ${c.ch}</span>
-<span style="font-size:11px">${c.t}</span></div>`;
+h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #fee2e2;opacity:0.7">
+<span style="background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:36px;text-align:center">Ch ${c.ch}</span>
+<span style="font-size:11px;text-decoration:line-through;color:#94a3b8">${c.t} — מוחרג</span></div>`;
 });
 h+=`</div>`;
 }
@@ -1096,6 +1200,8 @@ h+=`<div class="card" style="padding:14px;text-align:center;margin-top:12px">
 <div style="font-size:10px;color:#64748b;margin-bottom:10px">Share this app with fellow geriatric medicine residents</div>
 <button class="btn btn-p" onclick="shareApp()" style="margin-bottom:8px">📤 Share App Link</button>
 </div>`;
+// AI Key setting
+h+=`<div class="card" style="padding:14px;margin-top:12px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🤖 AI הסבר — Anthropic API Key</div><div style="font-size:10px;color:#64748b;margin-bottom:8px">מפתח API להסברים עם מקור (Hazzardʼs / Harrisonʼs). נשמר רק בדפדפן שלך.</div><input type="password" class="calc-in" id="apiKeyIn" placeholder="sk-ant-..." value="${getApiKey()}" style="font-family:monospace;font-size:11px"><div style="display:flex;gap:8px;margin-top:6px"><button class="btn btn-p" onclick="setApiKey(document.getElementById('apiKeyIn').value);alert('נשמר ✅')">שמור</button><button class="btn btn-o" onclick="localStorage.removeItem('samega_apikey');document.getElementById('apiKeyIn').value='';alert('נמחק')">מחק</button><span style="font-size:9px;color:#94a3b8;align-self:center">${Object.keys(_exCache).length} הסברים שמורים</span></div></div>`;
 // Data management
 h+=`<div class="card" style="padding:14px;margin-top:12px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
@@ -1119,7 +1225,7 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
 <div>Shlav A Mega v8.0 · P005-2026 Syllabus</div>
-<div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
+<div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions · No GRS</div>
 <div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
 return h;
 }
