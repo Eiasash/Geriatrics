@@ -337,7 +337,7 @@ function rateDiff(qIdx,level){S.diff[String(qIdx)]=level;save();render();}
 
 // ===== AI EXPLAIN =====
 const EX_LS='samega_ex';
-let _exCache=Object.assign({"428": {"text": "✅ נכון (B): קריטריוני Fried מחייבים 3 מתוך 5 רכיבים לאבחנת שבריריות: ירידה במשקל, אחיזה חלשה, מהירות הליכה איטית, עייפות ופעילות פיזית נמוכה. המטופל מציג 4 מתוך 5 קריטריונים - קושי בהליכה (מהירות איטית), אחיזה חלשה (לא מצליח להרים סל), עייפות לאחר מעברים ופעילות פיזית נמוכה.\n\n❌ A: מציגה רק 3 קריטריונים (ירידת משקל של 2 ק\"ג בשנה אינה עומדת בסף של 4.5 ק\"ג או 5% ממשקל הגוף).\n\n❌ C: מציגה רק 2 קריטריונים - עייפות וירידת משקל, אך האחיזה תקינה (מסוגלת להרים סל קניות).\n\n❌ D: מציג פעילות גבוהה (הולך למועדון יומית) ללא ירידת משקל, רק הצורך בעזרה בקניות אינו מספיק לאבחנה.\n\n📌 פנינת מבחן: קריטריוני Fried דורשים 3 מתוך 5 רכיבים (ירידת משקל >4.5 ק\"ג/שנה, אחיזה חלשה, הליכה איטית, עייפות, פעילות נמוכה) לאבחנת שבריריות.\n\n📖 מקור: Hazzard's Ch 20 Frailty & Sarcopenia", "src": "Hazzard's Ch 20 (Frailty & Sarcopenia)", "ts": 1775590951076}, "430": {"text": "✅ נכון (A): בדליריום מתרחשת האטה גלובלית של פעילות המוח עקב הפרעה מטבולית או דלקתית המשפיעה על תפקוד הקורטקס בצורה נרחבת. ה-EEG מראה האטה של קצב הגלים הבסיסיים (מ-8-13 Hz ל-4-7 Hz) עם שמירה יחסית על גלי אלפא, מה שמשקף את ההפרעה הדיפוזית בפעילות הנוירונלית.\n\n❌ B: ספייקים פוקאליים מאפיינים אפילפסיה או נגע מוקדי במוח, לא את ההפרעה הגלובלית של דליריום.\n\n❌ C: גלים מחודדים באונה הטמפוראלית מציינים פתולוגיה מקומית כמו אנצפליטיס הרפס או נגע ממוקד.\n\n❌ D: גלים ביפאזים וטריפאזים הם ממצא אופייני לאנצפלופתיה הפטית או למחלת קרויצפלד-יעקב.\n\n📌 פנינת מבחן: דליריום גורם להאטה גלובלית ב-EEG עם שמירה על גלי אלפא, בניגוד לממצאים פוקאליים באפילפסיה או בנגעים מוקדיים.\n\n📖 מקור: Hazzard's Ch 58 Delirium", "src": "Hazzard's Ch 58 (Delirium)", "ts": 1775590964338}, "432": {"text": "✅ נכון (B): נגע חדש בגיל 90 מחייב הערכה היסטופתולוגית מיידית לשלילת ממאירות, במיוחד קרצינומה של תאי הבסיס או קרצינומה של תאי קשקש. ביופסיה על ידי פלסטיקאי מאפשרת גם אבחנה וגם טיפול בו-זמנית במידת הצורך.\n\n❌ A: צריבה עם חנקן נעשית רק לאחר אישור היסטופתולוגי של נגע שפיר, ולא כטיפול ראשוני בנגע לא מאובחן.\n\n❌ C: משחה עם סטרואידים עלולה להסתיר תהליך ממאיר ולעכב את האבחנה הנכונה של הנגע החדש.\n\n❌ D: מעקב של 3 חודשים בנגע חדש בגיל 90 מהווה דחייה מסוכנת של אבחנה פוטנציאלית של ממאירות עורית.\n\n📌 פנינת מבחן: כל נגע עור חדש בגיל מתקדם מחייב ביופסיה לשלילת ממאירות לפני כל שיקול טיפולי אחר.\n\n📖 מקור: Hazzard's Ch 13 Pharmacology & Beers", "src": "Hazzard's Ch 13 (Pharmacology & Beers)", "ts": 1775590976070}, "433": {"text": "✅ נכון (A): במקרה של אלצהיימר המתחיל לפני גיל 65 עם דפוס משפחתי חזק (אם בגיל 68, דוד בגיל 61), הגן השכיח ביותר שגורם לצורה המשפחתית הוא PSEN1 (Presenilin 1), האחראי על כ-80% מהמקרים של Early-Onset Familial Alzheimer's Disease. הגן משפיע על עיבוד חלבון APP ועל ייצור האמילואיד.\n\n❌ B: רק 5-10% מכלל מקרי Early-Onset Alzheimer מוסברים על ידי מוטציות גנטיות ידועות (PSEN1, PSEN2, APP).\n\n❌ C: הטרוזיגוטיות לAPOE ε4 מעלה את הסיכון פי 3-4, אך לא מגיעה לסיכוי של מעל 50% לפיתוח המחלה.\n\n❌ D: מוטציות בגן MAPT קשורות ל-Frontotemporal Dementia ולא למחלת אלצהיימר, והן לא משפיעות על קצב ההתדרדרות באלצהיימר.\n\n📌 פנינת מבחן: PSEN1 הוא הגן השכיח ביותר באלצהיימר משפחתי מוקדם עם התחלה לפני גיל 65.\n\n📖 מקור: Hazzard's Ch 59 Dementia", "src": "Hazzard's Ch 59 (Dementia)", "ts": 1775590987560}, "435": {"text": "✅ נכון (A): דולוקסטין הוא SNRI המאושר לטיפול בכאב נוירופתי וכאב שרירי-שלדי כרוני, ובמקביל מטפל בדיכאון הקשור לאבל. במינון 30 מ\"ג ליום הוא בטוח לקשישים ומתאים במיוחד למטופלת זו שסובלת מכאב דיסקופתיה וירידה במצב הרוח.\n\n❌ B: פנטניל הוא אופיואיד חזק המיועד לכאב סרטני או כאב כרוני חמור, ולא מהווה קו טיפול ראשון בכאב דיסקופתיה.\n\n❌ C: פרגבלין במינון 300 מ\"ג ליום הוא מינון גבוה יחסית לקשישים ועלול לגרום לסחרחורת ונפילות.\n\n❌ D: אסציטלופרם מטפל בדיכאון בלבד אך אינו יעיל לטיפול בכאב נוירופתי או שרירי-שלדי.\n\n📌 פנינת מבחן: דולוקסטין הוא הבחירה הראשונה בקשישים עם כאב כרוני ודיכאון בשל יעילותו הכפולה.\n\n📖 מקור: Hazzard's Ch 58 Delirium", "src": "Hazzard's Ch 58 (Delirium)", "ts": 1775591000136}, "436": {"text": "✅ נכון (D): דמנציה פרונטוטמפורלית מאופיינת באובדן אמפתיה כתסמין מוקדם ובולט עקב נזק לקורטקס הפרונטלי הממונה על פונקציות ביצועיות והתנהגות חברתית. החולים מפתחים אדישות רגשית, חוסר יכולת לזהות רגשות אחרים וחוסר התחשבות חברתית.\n\n❌ A: במחלת אלצהיימר האמפתיה נשמרת יחסית בשלבים המוקדמים והבעיה העיקרית היא בזיכרון.\n\n❌ B: בדמנציה וסקולרית התסמינים תלויים במיקום הפגיעה הוסקולרית ולא בהכרח כוללים אובדן אמפתיה.\n\n❌ C: בדמנציה עם גופי לוי התסמינים הבולטים הם הזיות ויזואליות, תנודות קוגניטיביות ותסמיני פרקינסוניזם.\n\n📌 פנינת מבחן: אובדן אמפתיה מוקדם הוא סימן פתוגנומוני לדמנציה פרונטוטמפורלית.\n\n📖 מקור: Hazzard's Ch 59 Dementia", "src": "Hazzard's Ch 59 (Dementia)", "ts": 1775591012099}, "438": {"text": "✅ נכון (C): היצרות המסתם האאורטלי גורמת להפרעה בתפקוד הטסיות כתוצאה מפגיעה מכנית בטסיות בעת מעברן דרך המסתם המצומצם והמסויד. הזרימה הטורבולנטית והמהירות הגבוהה דרך הפתח הצר פוגעות בממברנה של הטסיות ובתפקוד הצבירה שלהן.\n\n❌ A: חסם עלייתי חדרי אינו סיבוך של היצרות אאורטלית אלא של פתולוגיה במערכת ההולכה החשמלית של הלב.\n\n❌ B: השטחה של המיקרווילי היא סיבוך של מחלות מעיים דלקתיות ואינה קשורה להיצרות המסתם האאורטלי.\n\n❌ D: עליה ברמות VON WILLEBRAND FACTOR אינה הסיבוך הישיר - למעשה יש ירידה ברמות המולטימרים הגדולים של vWF.\n\n📌 פנינת מבחן: היצרות אאורטלית חמורה גורמת לפגיעה מכנית בטסיות עקב הזרימה הטורבולנטית דרך המסתם הצר.\n\n📖 מקור: Hazzard's Ch 13 Pharmacology & Beers", "src": "Hazzard's Ch 13 (Pharmacology & Beers)", "ts": 1775591023211}, "440": {"text": "✅ נכון (B): המטופלת עונה על כל ארבעת קריטריוני CAM - שינוי חד במצב המנטלי עם דפוס תנודתי (ישנונית ביום, אי שקט בלילה), הפרעה בקשב (נרדמת תוך כדי משפטים), חשיבה לא מאורגנת (אינה מצליחה במשימות פשוטות כמו איות שם לאחור), ושינוי ברמת התודעה (ישנונית יתר). ה-UTI מהווה הטריגר הקלאסי לדליריום בקשישים עם דמנציה רקע.\n\n❌ A: המצב הוא כרוני (חודשים) ללא שינוי חד או תנודתיות, מתאים יותר לדמנציה מתקדמת עם הפרעות התנהגות.\n\n❌ C: השינויים הקוגניטיביים הם יציבים ואינם תנודתיים מאז האירוע המוחי, מתאימים לפגיעה קוגניטיבית וסקולרית קבועה.\n\n❌ D: המטופל מראה התנהגות לא שיתופית אך ללא עדות לשינוי חד במצב המנטלי או הפרעה בקשב.\n\n📌 פנינת מבחן: דליריום מחייב שינוי חד במצב המנטלי עם דפוס תנודתי בנוסף להפרעה בקשב.\n\n📖 מקור: Hazzard's Ch 58 Delirium", "src": "Hazzard's Ch 58 (Delirium)", "ts": 1775591036762}, "443": {"text": "✅ נכון (C): הפחתת לחץ ומעקב היא הטיפול הראשוני המומלץ בפצעי לחץ בשלב מוקדם (שלב 1-2), כאשר הסרת הגורם הפתוגני (לחץ מתמשך) והמעקב הקפדני מאפשרים ריפוי ספונטני של הרקמה. גישה זו מונעת התערבויות מיותרות ומאפשרת הערכה של קצב ההחלמה הטבעי.\n\n❌ A: הטריה כירורגית מיועדת לפצעי לחץ מתקדמים עם רקמה נמקית או זיהום עמוק, ולא נדרשת בשלבים מוקדמים.\n\n❌ B: אנטיביוטיקה סיסטמית רחבת טווח מיועדת רק לפצעים עם סימני זיהום סיסטמי או צלוליטיס, ולא לטיפול מונע.\n\n❌ D: גרב אלסטית עלולה להגביר את הלחץ המקומי ולהחמיר את הפצע במקום לטפל בו.\n\n📌 פנינת מבחן: הטיפול הראשוני בפצעי לחץ מוקדמים הוא תמיד הסרת הלחץ ולא התערבות אגרסיבית.\n\n📖 מקור: Hazzard's Ch 13 Pharmacology & Beers", "src": "Hazzard's Ch 13 (Pharmacology & Beers)", "ts": 1775591048578}, "446": {"text": "✅ נכון (C): במטופל עם דמנציה בדרגת חומרה בינונית הזקוק לכריתת גפה דחופה, כאשר קיים יפוי כח מתמשך שלא הופעל, יש להפעיל את תוקף יפוי הכח באופן מיידי ולקבל הסכמה ממיופה הכח. זהו הליך המאפשר קבלת החלטה רפואית דחופה כאשר המטופל אינו כשיר לתת הסכמה מדעת.\n\n❌ A: הנחיות מקדימות רלוונטיות רק למצבים של חולה נוטה למות ולא לניתוח כריתה בחולה יציב.\n\n❌ B: אין הליך של חתימת 3 רופאים לכריתה ללא הסכמה בחוק הישראלי.\n\n❌ D: מינוי אפוטרופוס הוא הליך ארוך שאינו מתאים למצב דחוף הדורש כריתה בימים הקרובים.\n\n📌 פנינת מבחן: יפוי כח מתמשך קיים מאפשר קבלת הסכמה מיידית למטופל לא כשיר.\n\n📖 מקור: חוק החולה הנוטה למות, תשס\"ה-2005", "src": "Israeli Law – Dying Patient Act 2005", "ts": 1775591058276}, "450": {"text": "✅ נכון (A): Hydrocolloids כגון Granuflex מתאימים לפצעים עם אקסודט מינימלי עד בינוני, יוצרים סביבה לחה המעודדת ריפוי והם אוקלוסיביים למחצה המאפשרים חילופי גזים. הם מושלמים לפצעים שטחיים עד עמוקים בינוניים במצב נקי ללא זיהום פעיל.\n\n❌ B: Hydrogels מיועדים לפצעים יבשים או עם נקרוזיס, לא לפצעים עם רמת לחות נורמלית.\n\n❌ C: Alginates מתאימים לפצעים עם אקסודט רב עד כבד ולא לפצעים עם הפרשה מועטה.\n\n❌ D: Hydrofibers מיועדים לפצעים עם אקסודט כבד או זיהום, לא למצב הפצע המוצג.\n\n📌 פנינת מבחן: Hydrocolloids הם הבחירה הראשונה לפצעים נקיים עם אקסודט מינימלי-בינוני הדורשים סביבה לחה לריפוי.\n\n📖 מקור: Hazzard's Ch 13 Pharmacology & Beers", "src": "Hazzard's Ch 13 (Pharmacology & Beers)", "ts": 1775591069160}, "453": {"text": "✅ נכון (D): היפואלבומינמיה עם רמת אלבומין של 2.2 גרם/דציליטר או פחות היא קריטריון פרוגנוסטי מבוסס במחקרים של Mitchell לתוחלת חיים קצרה מ-6 חודשים בדמנציה מתקדמת. האלבומין משקף את המצב התזונתי והתפקודי הכללי ומנבא תמותה גבוהה בחולים במצב FAST 7C.\n\n❌ A: פצעי לחץ דרגה 2 אינם מהווים קריטריון פרוגנוסטי מבוסס לתוחלת חיים קצרה מ-6 חודשים במודל של Mitchell.\n\n❌ B: צלוליטיס הוא זיהום חריף שאינו נכלל בקריטריונים הפרוגנוסטיים ארוכי הטווח לתוחלת חיים בדמנציה מתקדמת.\n\n❌ C: בשלב FAST 7C כבר קיים ירידה קוגניטיבית מקסימלית, ו-MMSE אינו מהווה קריטריון פרוגנוסטי נוסף בשלב זה.\n\n📌 פנינת מבחן: אלבומין ≤2.2 גרם/דציליטר הוא קריטריון פרוגנוסטי מרכזי לתוחלת חיים קצרה בדמנציה מתקדמת.\n\n📖 מקור: Hazzard's Ch 59 (Dementia)", "src": "Hazzard's Ch 59 (Dementia)", "ts": 1775591079731}, "456": {"text": "✅ נכון (A): שאלון SARC-F כולל 5 רכיבים: Strength (כוח), Assistance in walking (עזרה בהליכה), Rise from a chair (קימה מכיסא), Climb stairs (עליה במדרגות), ו-Falls (נפילות). נפילות הן רכיב מרכזי בהערכת סרקופניה מכיוון שחולשת שרירים מגבירה את הסיכון לאי יציבות ונפילות.\n\n❌ B: השאלון שואל על עליה במדרגות ולא על ירידה במדרגות.\n\n❌ C: השאלון בודק קימה מכיסא ולא מעברים במיטה.\n\n❌ D: SARC-F הוא שאלון תפקודי ואינו כולל בדיקות הדמיה או מעבדה כמו צפיפות עצם.\n\n📌 פנינת מבחן: SARC-F כולל 5 רכיבים תפקודיים כולל נפילות, ואינו דורש בדיקות מעבדה או הדמיה.\n\n📖 מקור: Hazzard's Ch 20 (Frailty & Sarcopenia)", "src": "Hazzard's Ch 20 (Frailty & Sarcopenia)", "ts": 1775591088847}, "457": {"text": "✅ נכון (B): פמפיגואיד בולוזי הוא המחלה האוטואימונית השכיחה ביותר בקרב מבוגרים מעל גיל 60, המתאפיינת בשלפוחיות מוצקות על רקע דלקתי אורטיקרי עם גרד עז ללא מעורבות ריריות. המחלה נגרמת מנוגדנים נגד BP180 ו-BP230 באזור הממברנה הבזאלית, היוצרים פיצול תת-אפידרמלי והשלפוחיות המוצקות האופייניות.\n\n❌ A: פמפיגוס פוליאצאוס מתאפיין בשלפוחיות רדודות שמתפרצות מיד ויוצרות קרום ללא המראה האורטיקרי האופייני.\n\n❌ C: פמפיגוס וולגריס כולל תמיד מעורבות ריריות משמעותית (פה, איברי מין) שאינה מתוארת כאן.\n\n❌ D: פמפיגוס פרה-נאופלסטי כולל מעורבות ריריות קשה וקשור למחלה אונקולוגית פעילה שאינה מוזכרת.\n\n📌 פנינת מבחן: פמפיגואיד בולוזי הוא האבחנה העיקרית בשלפוחיות מוצקות עם רקע אורטיקרי ללא מעורבות ריריות בקשישים.\n\n📖 מקור: Hazzard's Ch 13 Dermatologic Changes and Disorders", "src": "Hazzard's Ch 13 (Pharmacology & Beers)", "ts": 1775591102296}, "458": {"text": "✅ נכון (C): בהיצרות אאורטלית קשה א-תסמינית נדרש מעקב אקו הדוק פעמיים בשנה בשל הסיכון הגבוה להתקדמות מהירה למצב תסמיני ומוות לבבי פתאומי. החמרה המהירה של הפונקציה החדרית השמאלית והתפתחות לחץ אטריאלי שמאלי גבוה מחייבים זיהוי מוקדם.\n\n❌ A: היצרות קלה דורשת מעקב קבוע כל 3-5 שנים גם ללא תסמינים על מנת לזהות התקדמות.\n\n❌ B: היצרות בינונית דורשת מעקב תכוף יותר - כל 1-2 שנים ולא כל חמש שנים.\n\n❌ D: תדירות המעקב חייבת להיקבע על פי חומרת ההיצרות ולא להיות אחידה לכל החולים.\n\n📌 פנינת מבחן: היצרות אאורטלית קשה א-תסמינית מחייבת מעקב אקו פעמיים בשנה עקב סיכון גבוה להתדרדרות מהירה.\n\n📖 מקור: Hazzard's Ch 13 Pharmacology & Beers", "src": "Hazzard's Ch 13 (Pharmacology & Beers)", "ts": 1775591113331}},JSON.parse(localStorage.getItem(EX_LS)||'{}'));
+let _exCache=JSON.parse(localStorage.getItem(EX_LS)||'{}');
 function saveExCache(){localStorage.setItem(EX_LS,JSON.stringify(_exCache));}
 function getApiKey(){return localStorage.getItem('samega_apikey')||'';}
 function setApiKey(k){localStorage.setItem('samega_apikey',k.trim());}
@@ -469,7 +469,7 @@ const TABS=[
 {id:'quiz',ic:'📝',l:'Quiz'},{id:'review',ic:'🔄',l:'Review'},{id:'study',ic:'📚',l:'Study'},{id:'syl',ic:'📋',l:'Syllabus'},
 {id:'book',ic:'📖',l:'Book'},{id:'flash',ic:'🃏',l:'Cards'},{id:'drugs',ic:'💊',l:'Drugs'},
 {id:'calc',ic:'🧮',l:'Calc'},{id:'osce',ic:'🎭',l:'OSCE'},{id:'track',ic:'📊',l:'Track'},{id:'search',ic:'🔍',l:'Search'},
-{id:'law',ic:'⚖️',l:'Law'},{id:'chat',ic:'💬',l:'Chat'},
+{id:'chat',ic:'💬',l:'Chat'},
 ];
 let tab='quiz';
 function renderTabs(){
@@ -485,14 +485,6 @@ function go(t){
   if(t!=='quiz'){showTopicPicker=false;selectedTopics=new Set();}
   if(t!=='drugs')drugOpen=new Set();
   tab=t;showExamConfig=false;showExamResults=false;renderTabs();render()
-}
-
-function drillWrongAnswers(){
-  const wp = window._examWrongPool||[];
-  if(!wp.length)return;
-  pool=[...new Set(wp)];qi=0;sel=null;ans=false;examMode=false;
-  showExamResults=false;filt='all';
-  tab='quiz';renderTabs();render();window.scrollTo({top:0});
 }
 
 // ===== QUIZ ENGINE =====
@@ -607,11 +599,6 @@ function endExam(){
   S.examHistory.unshift({date:new Date().toISOString().slice(0,10),n:tot,ok,pct,elapsed,cfg:{...examCfg}});
   if(S.examHistory.length>10)S.examHistory.pop();
   save();
-  // collect wrong answer indices for re-drill
-  window._examWrongPool = [];
-  Object.entries(examStats.byTopic).forEach(([ti, s]) => {
-    if(s.wrong) s.wrong.forEach(idx => window._examWrongPool.push(idx));
-  });
   showExamResults=true;render();
 }
 function fmtT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return(h?h+':':'')+String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0')}
@@ -673,10 +660,7 @@ function renderExamResults(){
     });
     h+=`</div>`;
   }
-  h+=`<div style="display:flex;gap:8px;margin-top:12px">
-    <button class="btn btn-p" style="flex:1" onclick="showExamResults=false;render()">Back to Quiz</button>
-    ${window._examWrongPool&&window._examWrongPool.length?`<button class="btn" style="flex:1;background:#dc2626;color:#fff" onclick="drillWrongAnswers()">🔁 Drill Wrong (${window._examWrongPool.length})</button>`:''}
-  </div>`;
+  h+=`<button class="btn btn-p" style="width:100%;margin-top:12px" onclick="showExamResults=false;render()">Back to Quiz</button>`;
   return h;
 }
 function renderQuiz(){
@@ -1140,15 +1124,7 @@ function goToQuestion(qIdx){
   tab='quiz';renderTabs();render();window.scrollTo({top:0});
 }
 function renderDrugs(){
-let drugsMode=window._drugsMode||'beers';
-window._drugsMode=drugsMode;
-let h=`<div class="sec-t">💊 Drug Reference</div><div class="sec-s">Beers · ACB · STOPP/START v.3</div>`;
-h+=`<div style="display:flex;gap:6px;margin-bottom:10px">
-  <button class="btn ${drugsMode==='beers'?'btn-p':'btn-o'}" style="flex:1;font-size:11px" onclick="window._drugsMode='beers';render()">💊 Beers/ACB</button>
-  <button class="btn ${drugsMode==='stopp'?'btn-d':'btn-o'}" style="flex:1;font-size:11px" onclick="window._drugsMode='stopp';ssMode='stopp';ssSec='All';ssSearch='';render()">🚫 STOPP</button>
-  <button class="btn ${drugsMode==='start'?'btn-g':'btn-o'}" style="flex:1;font-size:11px" onclick="window._drugsMode='start';ssMode='start';ssSec='All';ssSearch='';render()">✅ START</button>
-</div>`;
-if(drugsMode==='stopp'||drugsMode==='start'){ssMode=drugsMode;h+=renderStoppStart();return h;}
+let h=`<div class="sec-t">💊 Drug Lookup</div><div class="sec-s">Beers Criteria + ACB Score Checker</div>`;
 h+=`<input class="search-box" placeholder="Search drug name..." oninput="drugSearch=this.value;render()" value="${drugSearch}" id="dsrch">`;
 const fv=drugSearch.toLowerCase();
 const filtered=DRUGS.filter(d=>!fv||d.name.toLowerCase().includes(fv)||d.heb.includes(fv)||(d.cat||'').toLowerCase().includes(fv));
@@ -1176,7 +1152,7 @@ h+=`<div class="drug-row"><div style="display:flex;justify-content:space-between
 <div style="display:flex;gap:4px;align-items:center">
 ${d.beers?'<span class="badge badge-r">BEERS</span>':''}
 ${d.acb>=3?'<span class="badge badge-r">ACB '+d.acb+'</span>':d.acb>=2?'<span class="badge badge-y">ACB '+d.acb+'</span>':d.acb>=1?'<span class="badge badge-g">ACB '+d.acb+'</span>':''}
-<button class="drug-toggle-btn" onclick="toggleDrug('${d.name.replace(/'/g,"\\'")}')"> ${isOpen?'▲':'▼'}</button>
+<button class="drug-toggle-btn" onclick="toggleDrug('${d.name.replace(/'/g,"\\'")}')">${isOpen?'▲':'▼'}</button>
 </div></div>
 <div style="font-size:10px;color:#64748b">${sanitize(d.cat||'')}</div>
 <div style="font-size:10px;color:#475569;margin-top:2px">${sanitize(d.risk)}</div>
@@ -1185,6 +1161,7 @@ ${xrefHtml}</div>`;
 h+=`</div>`;
 return h;
 }
+
 // ===== CALCULATORS =====
 let calcVals={};
 function calcUp(k,v){calcVals[k]=parseFloat(v)||0;render();}
@@ -1626,7 +1603,7 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 </div>`;
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
-<div>Shlav A Mega v8.3 · P005-2026 Syllabus</div>
+<div>Shlav A Mega v8.2 · P005-2026 Syllabus</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
 return h;
@@ -1884,515 +1861,6 @@ return h;
 }
 
 let lastTab=null;
-// ===== ISRAELI LAW TAB =====
-const LAW_DOCS = [
-  {
-    id:'hng', icon:'🏥', cat:'EOL', title:'חוק החולה הנוטה למות 2005',
-    exam: true,
-    points:[
-      {h:'הגדרות מפתח (בחינה)',body:'חולה נוטה למות (s.8a): מחלה חשוכת מרפא, תוחלת חיים ≤6 חודשים גם עם טיפול.\nשלב סופי (s.8b): אי-ספיקת איברים מרובה, תוחלת חיים ≤2 שבועות גם עם טיפול.\nטיפול נלווה (s.16b): טיפול תומך כולל תזונה ונוזלים — חובה אף אם החולה סירב בעבר.\nשלב סופי (s.17): ניתן להימנע מכל טיפול כולל תזונה אם: החולה הביע רצונו בעבר + הרופא קבע שהנוזלים גורמים סבל.'},
-      {h:'ויתור על טיפול',body:'החולה רשאי לסרב לכל התערבות רפואית, כולל טיפול מאריך חיים.\nהנחיות מקדימות: תקפות 5 שנים, ניתנות לחידוש. מקדמות על העדפות משפחה/רופא.\nאם אין הנחיות: רופא + ועדת אתיקה + קלט משפחה.'},
-      {h:'הפסקת טיפול לעומת אי-התחלה',body:'החוק מתייחס לשניהם. טיפולים לסירוגין (דיאליזה, מחזורי הנשמה) ניתן לבנות כך שאי-חידוש ≠ הפסקה אקטיבית.\nטיפול פליאטיבי: חובה — לא ניתן להימנע ממנו אצל חולה נוטה למות.\nDNR: מחייב תיעוד חולה/מיופה כוח לפי חוק זה.'},
-      {h:'מלכודת בחינה',body:'ברירת מחדל "Full Code" אלא אם תועדה הנחיה מקדימה.\nאי-מתן תזונה כאשר אין CI רפואי ואין הנחיה מקדימה = הפרת חוק.'},
-    ]
-  },
-  {
-    id:'peg', icon:'🍽️', cat:'EOL', title:'PEG בחולה עם דמנציה נוטה למות — ועדה לאומית (11.8.16, שערי צדק)',
-    exam: true,
-    points:[
-      {h:'כללי הוועדה — קריטיים לבחינה',body:'A. חולה נוטה למות עם דמנציה: חייב לקבל מזון ונוזלים, אפילו בדרך מלאכותית, אלא אם CI רפואי ספציפי.\nB. שלב סופי עם דמנציה: חייב לקבל נוזלים (לא בהכרח מזון), אפילו מלאכותית. שוויון בזכות לחיים גם עם דמנציה.\nC. רק CI רפואי יכול לעקוף — לא שיקולי איכות חיים על בסיס מצב קוגניטיבי.\nD. מסלול מועדף: הזנה פומית תחילה תמיד — עם SLP, הזנה איטית, הפחתת סיכון שאיפה.'},
-      {h:'PEG לעומת NGT',body:'PEG עדיף על NGT לנוחות/איכות חיים כאשר דרוש מסלול מלאכותי.\nNGT = גשר זמני בלבד. לא כתחליף קבוע.\nאין הבדל הישרדות בין PEG/NGT/IV בחולי דמנציה (אין RCT).'},
-      {h:'התוויות נגד PEG',body:'לעולם לא להכניס PEG בזמן מחלה חריפה (סיכון ניתוחי עולה על התועלת).\nלעולם לא PEG בשלב סופי.\nשקול PEG מוקדם כאשר ניתן לצפות ירידה תפקודית וחולה יציב.'},
-      {h:'מלכודת בחינה',body:'נימוקים איכות חיים בלבד על בסיס לקות קוגניטיבית — מפורשות אסורים תחת חוק החולה הנוטה למות.\nGastrostomy tube ≠ treatment withdrawal. הנחת NGT בלבד = גשר, לא פתרון.'},
-    ]
-  },
-  {
-    id:'yikuach', icon:'📜', cat:'Capacity', title:'ייפוי כוח מתמשך',
-    exam: true,
-    points:[
-      {h:'מה זה',body:'מסמך משפטי שנחתם בעת כשירות (≥18). ממנה מיופה כוח להחלטות אישיות/כספיות/רפואיות בעת אובדן כשירות.\nייפוי כוח רפואי: המיופה יכול לאשר פרוצדורות דחופות ללא צו בית משפט.'},
-      {h:'תהליך',body:'החולה (לא הרופא!) מגיש. נרשם אצל האפוטרופוס הכללי.\nדחוף: הרופא יכול לאפשר כניסה לטיפול דחוף לפני הרישום — מודיע לרשם מיד לאחר.'},
-      {h:'היררכיית החלטות',body:'1. ייפוי כוח מתמשך עם סמכות רפואית → הפעלת מיופה\n2. הנחיות מקדימות (s.35א חוק הכשרות) → עקוב\n3. לא קיים → מקבל החלטות זמני\n4. אין הסכמת משפחה → בית משפט (אפוטרופוס)'},
-      {h:'מלכודת בחינה',body:'ייפוי כוח גובר על הסכמת משפחה. חובה לבדוק לפני ברירת מחדל להסכמת משפחה.\nייפוי כוח אישי הכולל בריאות = מספיק. לא חייב להיות ייפוי כוח "רפואי" ספציפי.'},
-    ]
-  },
-  {
-    id:'mkbl', icon:'🏛️', cat:'Capacity', title:'מקבל החלטות זמני (תיקון 16, ינואר 2024)',
-    exam: true,
-    points:[
-      {h:'תנאים מוקדמים — כולם חייבים להתקיים',body:'חולה אינו יכול לתת הסכמה מדעת.\nהפרוצדורה דחופה (לא חירום — חירום = כלל 3 רופאים).\nאין ייפוי כוח / אפוטרופוס למענינים רפואיים.\nקיים קונצנזוס משפחתי על מי יהיה הממלא.'},
-      {h:'תהליך',body:'שלב 1 — רופא מומחה: קובע צורך בפרוצדורה דחופה, מתעד אי-כשירות, מנסה התאמות נגישות.\nשלב 2 — עו"ס (שעות עבודה): מוודא שאין ייפוי כוח/הנחיות, כינוס משפחה, נספח א׳ (הצהרת משפחה).\nשלב 3 — מנהל בית חולים: חותם נספח ב׳ → הרשאה בתוקף.'},
-      {h:'סדר עדיפות משפחתי',body:'בן/בת זוג → ילד → הורה → אח/אחות\n(הסכמה על סדר שונה מותרת)'},
-      {h:'תוקף ומגבלות',body:'6 חודשים מהחתימה. בדוק מחדש כשירות לפני כל פרוצדורה.\nבשחרור: הערך כשירות, תעד מצב כשירות עכשווי במכתב שחרור.\nלא חל כאשר: ייפוי כוח מתמשך קיים / אפוטרופוס מונה / משפחה חלוקה.'},
-      {h:'מלכודת בחינה',body:'3 רופאים = מצב חירום בלבד. מקבל החלטות זמני = דחוף שאינו חירום.\nוועדה לאומית ≠ מקבל החלטות זמני — אלה שתי מסגרות נפרדות.'},
-    ]
-  },
-  {
-    id:'tmch', icon:'🤝', cat:'Capacity', title:'תומך החלטות / קבלת החלטות נתמכת (משרד המשפטים, 27.10.2019)',
-    exam: true,
-    points:[
-      {h:'שוני מהותי ממקבל החלטות זמני',body:'תומך החלטות: החולה שומר על כשירות — הוא עדיין מסכים בעצמו. התומך תומך, לא מחליף.\nמקבל החלטות זמני: החולה חסר כשירות — הממלא מחליט במקומו.'},
-      {h:'מינוי',body:'בית משפט (לא בית חולים). שני סוגים:\nמתנדב — נדרש הכשרה (בפיילוט: מצומצמת יותר).\nמקצועי — השכלה + ניסיון; תאגידים בפיילוט.'},
-      {h:'רלוונטיות קלינית',body:'אם לחולה יש תומך החלטות שמונה על ידי בית משפט → כלול אותו בדיוני הסכמה מדעת כתמיכה.\nלא לעקוף חתימת החולה עצמו. לא לבלבל עם כלי סרוגאצי.'},
-    ]
-  },
-  {
-    id:'siud', icon:'🏨', cat:'Ward', title:'סיעוד מורכב — מינהל גריאטריה (חוזר 4/2010, עדכון 14.3.23)',
-    exam: true,
-    points:[
-      {h:'קריטריוני קבלה — כולם חייבים להתקיים',body:'תלות כרונית (סיעודי / תשוש נפש לפי הגדרות משרד הבריאות)\nבנוסף לפחות אחד מ:\n• פצע לחץ דרגה 3–4\n• עירוי IV ממושך\n• נשימה: טרכיאוסטומיה / BiPAP / שאיבה >1×/משמרת / ניטור O2 רצוף\n• דיאליזה כרונית\n• ממאירות פעילה הדורשת טיפול (עירויים, ניקוז פלאורלי, כימו IV, שליטה בכאב)\n• עירויים חוזרים >1×/חודש לאחר בירור'},
-      {h:'אי-קבלה',body:'פוטנציאל שיקומי → יחידה גריאטרית שיקומית\nתת-חריף שאינו תלוי כרוני\nהנשמה ממושכת (מתקן נפרד)\nניתן לטפל בבית'},
-      {h:'מלכודת בחינה',body:'פצע לחץ דרגה 2 בלבד → לא מספיק לסיעוד מורכב.\nסיעוד מורכב ≠ שיקום. עם פוטנציאל שיקומי → שיקום תחילה.'},
-    ]
-  },
-  {
-    id:'hatarut', icon:'🚨', cat:'Abuse', title:'נוהל התעמרות בזקנים (חוזר 22/03)',
-    exam: true,
-    points:[
-      {h:'5 סוגי התעמרות',body:'פיזית · נפשית · כלכלית · הזנחה (פסיבית + אקטיבית) · מסגרת (מוסדית)'},
-      {h:'מחויבי דיווח (חוק העונשין תיקון 26, 1989)',body:'רופא, אחות, עובד סוציאלי, פסיכולוג, קרימינולוג, מנהל מוסד + כל עובד.\nאי-דיווח = עבירה פלילית (עד 6 חודשים).'},
-      {h:'דיווח אל',body:'משטרה ו/או פקיד סעד.\nבבית חולים: בדיקת רופא מיידית (ללא מלווים), עו"ס מקביל, טופס תיעוד תקני, איסוף נתונים חודשי, דוח שנתי למשרד הבריאות.'},
-      {h:'שחרור',body:'עם עו"ס, הודעה בכתב לפקיד סעד.'},
-      {h:'מלכודת בחינה',body:'חובת דיווח היא לפקיד סעד ו/או משטרה — לא לרופא ממונה בלבד.\nדיווח חל גם בחשד בלבד (לא רק בוודאות).'},
-    ]
-  },
-  {
-    id:'nehiga', icon:'🚗', cat:'Driving', title:'כשירות לנהיגה — חוזר מנכ"ל 6/2023 + נספח 12ב׳',
-    exam: true,
-    points:[
-      {h:'חובת הרופא',body:'לדווח על חולים שמצבם הרפואי עלול לסכן עצמם או אחרים בנהיגה.\nפורטל דיווח: https://www.gov.il/he/service/medical-fitness-reports-for-drivers\n(טופס נייר בוטל באוגוסט 2023)'},
-      {h:'תחומי נהיגה (נספח 12ב׳)',body:'פיזי: יציבה זקופה, שליטה בהגה + דוושות, תיאום גפיים, כניסה/יציאה מרכב.\nחושי: ראייה מרחוק (צמתים, פניות, מרחק), ראייה קרובה (שוליים, שלטים), שמיעה (סירנות, קרנות, הולכי רגל).\nקוגניטיבי: החלטות נכונות בסביבה משתנה, תגובה מהירה, מודעות מתמשכת לחוקי תנועה.'},
-      {h:'דגלים אדומים גריאטריים',body:'דמנציה (כל שלב) — כל 3 תחומים → דווח + הפנה להמרב"ד.\nפרקינסון — מוטורי + קוגניטיבי.\nאפילפסיה לא מבוקרת — התוויה נגד מוחלטת.\nסינקופה / OH חמורה — דווח בזמן בירור.\nACVA/TIA — פסילה זמנית.\nתרופות Beers מרדימות: בנזו, אנטיהיסטמינים דור 1, אנטי-פסיכוטיות מרדימות, אופיאטים.'},
-      {h:'תהליך',body:'1. זהה מצב. 2. תעד שיחה עם החולה. 3. יידע בכתב להפסיק נהיגה. 4. דווח אלקטרונית (המרב"ד). 5. הפנה להערכת כשירות פורמלית.'},
-    ]
-  },
-  {
-    id:'mush', icon:'📖', cat:'Definitions', title:'הגדרת מושגים — נהלי רוחב 0.2.1 (מינהל גריאטריה, עדכון 2019)',
-    exam: true,
-    points:[
-      {h:'הגדרות בסיסיות',body:'סיעודי: תלוי בעיקרו בעזרת הזולת ב-ADL בסיסיים (רחצה, לבישה, אכילה, ניידות, שליטה על סוגרים).\nתשוש: תלות חלקית — זקוק לעזרה ב-ADL אחד לפחות אך לא לרמת "סיעודי".\nתשוש נפש: לקות קוגניטיבית משמעותית, לא בהכרח תלות פיזית מלאה.\nנוטה למות: ראה חוק 2005.\nשלב סופי: ראה חוק 2005.'},
-      {h:'רלוונטיות לקבלה',body:'הגדרות אלה קובעות סף לקבלה: לסיעוד מורכב (צריך "סיעודי" או "תשוש נפש") + קריטריון רפואי.\nלשיקום: פוטנציאל שיקומי (ראה חוזר 4/2009).'},
-    ]
-  },
-  {
-    id:'mivna', icon:'🏗️', cat:'Ward', title:'קביעת מצב תפקודי להעברה — חוזר 26/2010',
-    exam: true,
-    points:[
-      {h:'סיווג להעברה',body:'עצמאי · תת-חריף · גריאטרי שיקומי · גריאטרי סיעודי.\nנדרש לסיווג פורמלי לפני העברה ממחלקה כללית למסגרת גריאטרית/שיקומית.'},
-      {h:'רלוונטיות לבחינה',body:'הכלי הפורמלי לקביעת יעד שחרור. ה-FIM משמש לתמיכה בסיווג.'},
-    ]
-  },
-  {
-    id:'shikum', icon:'💪', cat:'Ward', title:'אמות מידה לטיפול שיקומי לקשישים — חוזר 4/2009',
-    exam: true,
-    points:[
-      {h:'קריטריוני קבלה לשיקום',body:'פוטנציאל שיקומי (דרישה מפורשת). שלב התאוששות פעיל מכוון לשיפור מוטורי + קוגניטיבי.\nמתאים: שבר ירך לאחר ניתוח, שבץ בשלב תת-חריף, החלפת מפרק.\nלא מתאים: ללא פוטנציאל שיקומי → סיעוד מורכב.'},
-      {h:'מלכודת בחינה',body:'שיקום ≠ אחסון. חייב להיות פוטנציאל שיקומי מוכח.\nFIM בקבלה + השחרור משמשים לניטור יעילות ולתכנון שחרור.'},
-    ]
-  },
-  {
-    id:'apot', icon:'⚖️', cat:'Capacity', title:'מינוי אפוטרופוס באשפוז ממושך — חוזר 10/2006',
-    exam: true,
-    points:[
-      {h:'מתי חל',body:'חולה אינו יכול להסכים + אין ייפוי כוח + אשפוז ממושך.\nתהליך דרך בית משפט — לא החלטה ברמת בית חולים.'},
-      {h:'תפקיד הרופא',body:'הערך כשירות, תעד, יזום דרך עו"ס ופקיד סעד.'},
-      {h:'מלכודת בחינה',body:'אפוטרופוס ≠ מקבל החלטות זמני. אפוטרופוס = מינוי בית משפט, קבוע יותר.\nמקבל החלטות זמני = מנגנון בית חולים, 6 חודשים.'},
-    ]
-  },
-  {
-    id:'brook', icon:'📊', cat:'Epidemiology', title:'נתוני 65+ בישראל — Brookdale/JDC 2024',
-    exam: false,
-    points:[
-      {h:'נתונים מרכזיים',body:'10% מ-≥65 עם דמנציה. 35% מ-≥90 עם דמנציה.\nנשים חיות יותר → יותר נשים בגריאטריה.\nניידות: ≥85 — נפח גדל ביותר.\nשירותים: קהילה לעומת מוסדי (שיעורי שימוש לפי מחוז).'},
-    ]
-  },
-];
-
-const LAW_CATS = ['All', 'EOL', 'Capacity', 'Ward', 'Abuse', 'Driving', 'Definitions', 'Epidemiology'];
-let lawCat = 'All';
-let lawSearch = '';
-let lawOpen = null;
-
-function renderLaw() {
-  const filtered = LAW_DOCS.filter(d => {
-    const matchCat = lawCat === 'All' || d.cat === lawCat;
-    const matchSearch = !lawSearch || d.title.includes(lawSearch) ||
-      d.points.some(p => p.h.includes(lawSearch) || p.body.includes(lawSearch));
-    return matchCat && matchSearch;
-  });
-
-  let h = `<div class="sec-t">⚖️ Israeli Law</div>
-  <div class="sec-s">13 מסמכים • קריטי לבחינה</div>`;
-
-  // Search
-  h += `<input class="search-box" id="lawsrch" placeholder="חיפוש במסמכי חוק..." value="${sanitize(lawSearch)}"
-    oninput="lawSearch=this.value;lawOpen=null;render();">`;
-
-  // Category filter
-  h += `<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">`;
-  LAW_CATS.forEach(c => {
-    const count = c === 'All' ? LAW_DOCS.length : LAW_DOCS.filter(d => d.cat === c).length;
-    h += `<span class="pill ${lawCat===c?'on':''}" onclick="lawCat='${c}';lawOpen=null;render()">${c} (${count})</span>`;
-  });
-  h += `</div>`;
-
-  if (!filtered.length) {
-    h += `<div class="card" style="padding:24px;text-align:center;color:#94a3b8">אין תוצאות</div>`;
-    return h;
-  }
-
-  filtered.forEach(doc => {
-    const isOpen = lawOpen === doc.id;
-    h += `<div class="card" style="margin-bottom:10px;overflow:hidden">`;
-    h += `<button class="acc-h" onclick="lawOpen=lawOpen==='${doc.id}'?null:'${doc.id}';render()">
-      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
-        <span style="font-size:20px">${doc.icon}</span>
-        <div style="min-width:0">
-          <div class="heb" style="font-weight:700;font-size:12px;line-height:1.4;text-align:right">${sanitize(doc.title)}</div>
-          <div style="display:flex;gap:5px;margin-top:3px">
-            <span style="background:#eff6ff;color:#1d4ed8;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px">${doc.cat}</span>
-            ${doc.exam ? '<span style="background:#fef2f2;color:#dc2626;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px">🎯 בחינה</span>' : ''}
-          </div>
-        </div>
-      </div>
-      <span class="acc-ar ${isOpen ? 'op' : ''}">▼</span>
-    </button>`;
-
-    if (isOpen) {
-      h += `<div style="padding:0 14px 14px">`;
-      doc.points.forEach(pt => {
-        h += `<div style="margin-bottom:12px">
-          <div style="font-weight:700;font-size:11px;color:rgb(var(--sky));margin-bottom:4px;border-bottom:1px solid #e2e8f0;padding-bottom:3px">${sanitize(pt.h)}</div>
-          <div class="heb" style="font-size:11px;line-height:1.7;white-space:pre-line;direction:rtl;text-align:right">${sanitize(pt.body)}</div>
-        </div>`;
-      });
-      // Quick quiz link
-      const relatedTopics = {
-        'hng': [28,34], 'peg': [28], 'yikuach': [32,33,34], 'mkbl': [32,33],
-        'siud': [35], 'hatarut': [30], 'nehiga': [31], 'shikum': [36], 'apot': [32]
-      };
-      const tIdxs = relatedTopics[doc.id] || [];
-      if (tIdxs.length) {
-        h += `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #f1f5f9">
-          <div style="font-size:10px;color:#64748b;margin-bottom:6px">שאלות קשורות:</div>
-          <div style="display:flex;flex-wrap:wrap;gap:4px">`;
-        tIdxs.forEach(ti => {
-          if (TOPICS[ti]) {
-            h += `<button onclick="setTopicFilt(${ti});go('quiz')" class="pill" style="font-size:10px;padding:3px 8px">${sanitize(TOPICS[ti])}</button>`;
-          }
-        });
-        h += `</div></div>`;
-      }
-      h += `</div>`;
-    }
-    h += `</div>`;
-  });
-
-  // Exam tip card
-  h += `<div class="card" style="padding:14px;border-left:3px solid rgb(var(--sky));margin-top:4px">
-    <div style="font-weight:700;font-size:11px;margin-bottom:6px">💡 טיפ לבחינה — היררכיית סמכות</div>
-    <div class="heb" style="font-size:11px;line-height:1.7;direction:rtl;text-align:right">
-      ייפוי כוח מתמשך → הנחיות מקדימות → מקבל החלטות זמני → בית משפט (אפוטרופוס)<br>
-      <b>מלכודת:</b> 3 רופאים = חירום בלבד. מקבל החלטות זמני = דחוף (לא חירום).
-    </div>
-  </div>`;
-
-  return h;
-}
-
-// ===== STOPP/START DATA =====
-const STOPP_START = {
-  stopp: [
-    {sec:'A', title:'Indication', items:[
-      'Any drug prescribed without a clinical indication.',
-      'Any drug prescribed beyond recommended duration where duration is well-defined.',
-      'Duplicate drug class prescription (e.g. two NSAIDs, SSRIs, loop diuretics, ACEIs, anticoagulants, antipsychotics, opioids).',
-    ]},
-    {sec:'B', title:'Cardiovascular', items:[
-      'Digoxin for HF with normal systolic function (no clear benefit).',
-      'Verapamil or diltiazem with NYHA III–IV HF (worsens HFrEF).',
-      'Beta-blocker + verapamil or diltiazem (heart block risk).',
-      'Rate-limiting drugs (BB, verapamil, diltiazem, digoxin) with bradycardia <50/min, type II or complete heart block.',
-      'Beta-blocker monotherapy for uncomplicated hypertension (no firm evidence).',
-      'Amiodarone as first-line for SVT (higher risk than BB/digoxin/verapamil).',
-      'Loop diuretic as first-line for hypertension (safer alternatives exist).',
-      'Loop diuretic for ankle oedema without HF/liver/nephrotic/renal failure (compression hosiery preferred).',
-      'Thiazide with hypokalaemia <3.0, hyponatraemia <130, hypercalcaemia >2.65, or gout.',
-      'Loop diuretic for hypertension + urinary incontinence (worsens incontinence).',
-      'Centrally-acting antihypertensives (methyldopa, clonidine, moxonidine — less tolerated in elderly).',
-      'ACEi/ARB with hyperkalaemia K >5.5.',
-      'Aldosterone antagonist + K-conserving drugs without K monitoring (dangerous hyperkalaemia).',
-      'PDE5 inhibitors in HF with SBP <90 or with nitrates (cardiovascular collapse).',
-      'QTc-prolonging drugs in patients with QTc >450ms(M) or >470ms(F): quinolones, macrolides, ondansetron, citalopram >20mg, escitalopram >10mg, TCAs, lithium, haloperidol, digoxin, class IA/III antiarrhythmics, tizanidine, phenothiazines, mirabegron.',
-      'Statins for PRIMARY CVD prevention in ≥85 with frailty + life expectancy <3 years.',
-      'Long-term systemic NSAIDs with coronary/cerebral/peripheral vascular disease (thrombosis risk).',
-      'Long-term antipsychotics with vascular disease history (thrombosis risk).',
-      'NSAIDs or systemic corticosteroids with HF requiring loop diuretics (HF exacerbation).',
-      'Antihypertensives in severe symptomatic aortic stenosis (severe hypotension/syncope).',
-      'Digoxin as first-line for long-term (>3mo) ventricular rate control in AF (increased mortality).',
-    ]},
-    {sec:'C', title:'Coagulation', items:[
-      'Long-term aspirin >100mg/day (bleeding risk, no added efficacy).',
-      'Antiplatelet/anticoagulant with concurrent major bleeding risk.',
-      'Aspirin + clopidogrel as long-term (>4wk) secondary stroke prevention (no added benefit over clopidogrel alone — unless stent <12mo/ACS/high-grade carotid stenosis).',
-      'Antiplatelet + anticoagulant in chronic AF without coronary stent or >50% stenosis.',
-      'Antiplatelet + anticoagulant in stable coronary/cerebrovascular/peripheral arterial disease.',
-      'Ticlopidine (clopidogrel/prasugrel have better evidence, fewer SE).',
-      'Antiplatelet as alternative to anticoagulant for stroke prevention in AF (no efficacy).',
-      'Anticoagulant for first DVT without ongoing provoking factors for >6 months.',
-      'Anticoagulant for first PE without ongoing provoking factors for >12 months.',
-      'NSAIDs + anticoagulant (major GI bleeding risk).',
-      'VKA as first-line anticoagulant for AF unless metallic valve/moderate-severe mitral stenosis/eGFR <15.',
-      'SSRIs + anticoagulant with prior major haemorrhage.',
-      'Dabigatran + diltiazem or verapamil (bleeding risk).',
-      'Apixaban/dabigatran/edoxaban/rivaroxaban + P-gp inhibitors: amiodarone, azithromycin, carvedilol, dronedarone, itraconazole, ketoconazole, macrolides, verapamil (bleeding risk).',
-      'Systemic oestrogens/androgens with prior VTE.',
-      'Aspirin for PRIMARY CVD prevention (no evidence of benefit).',
-    ]},
-    {sec:'D', title:'CNS', items:[
-      'TCAs with dementia, narrow-angle glaucoma, cardiac conduction abnormalities, prostatism, chronic constipation, recent falls, urinary retention, or orthostatic hypotension.',
-      'TCAs as first-line for major depression (higher ADR vs SSRIs/SNRIs).',
-      'SNRIs (venlafaxine, duloxetine) with severe hypertension SBP >180.',
-      'Antipsychotics with anticholinergic effects (olanzapine, clozapine, chlorpromazine etc.) + lower urinary tract symptoms/BPH (urinary retention).',
-      'Antipsychotics for BPSD at unchanged dose >3 months without review (EPS, cognitive worsening, CV mortality).',
-      'SSRIs with hyponatraemia Na <130 (risk of SIADH worsening).',
-      'SSRIs with current/recent significant bleeding (antiplatelet effects).',
-      'Benzodiazepines ≥4 weeks (sedation, confusion, falls, accidents; taper gradually — abrupt stop = withdrawal risk).',
-      'Benzodiazepines for agitation or psychotic symptoms of dementia (no evidence).',
-      'Benzodiazepines for insomnia ≥2 weeks (dependency, falls, fractures).',
-      'Z-drugs (zolpidem, zopiclone, zaleplon) for insomnia ≥2 weeks (falls, fractures).',
-      'Antipsychotics (not clozapine/quetiapine) in Parkinsonism or DLB (severe EPS).',
-      'Anticholinergics (biperiden, procyclidine, trihexyphenidyl) to treat antipsychotic EPS (anticholinergic toxicity).',
-      'Potent anticholinergics** in delirium or dementia (**TCAs, chlorpromazine/clozapine/thioridazine, diphenhydramine, chlorpheniramine, tolterodine, oxybutynin, hyoscine, procyclidine, tizanidine).',
-      'Antipsychotics for BPSD >12 weeks unless severe + non-pharm failed (stroke, MI risk).',
-      'Antipsychotics as hypnotics (confusion, hypotension, EPS, falls).',
-      'Acetylcholinesterase inhibitors with bradycardia <60 or heart block or unexplained syncope.',
-      'Acetylcholinesterase inhibitors + BB/digoxin/diltiazem/verapamil (bradycardia, cardiac conduction failure).',
-      'Memantine with known seizure disorder.',
-      'Nootropics in dementia: Gingko biloba, piracetam, phosphatidylserine, modafinil, omega-3, ginseng (no evidence).',
-      'Phenothiazines as first-line for psychosis/dementia (except prochlorperazine for nausea/vertigo, chlorpromazine for hiccoughs, levomepromazine in palliative).',
-      'Levodopa or dopamine agonists for essential tremor (no evidence).',
-      'Levodopa or dopamine agonists to treat drug-induced Parkinsonism (prescribing cascade).',
-      'First-generation antihistamines as first-line for allergy or pruritus.',
-      'First-generation antihistamines for insomnia.',
-    ]},
-    {sec:'E', title:'Renal', items:[
-      'Digoxin long-term ≥125μg/day if eGFR <30 (toxicity risk).',
-      'Dabigatran if eGFR <30 (bleeding).',
-      'Factor Xa inhibitors (rivaroxaban, apixaban, edoxaban) if eGFR <15 (bleeding).',
-      'NSAIDs if eGFR <50 (renal deterioration).',
-      'Colchicine if eGFR <10 (toxicity).',
-      'Metformin if eGFR <30 (lactic acidosis).',
-      'Mineralocorticoid antagonists (spironolactone, eplerenone) if eGFR <30 (hyperkalaemia).',
-      'Nitrofurantoin if eGFR <45 (toxicity).',
-      'Bisphosphonates if eGFR <30 (acute renal failure).',
-      'Methotrexate if eGFR <30 (toxicity).',
-    ]},
-    {sec:'F', title:'GI', items:[
-      'Prochlorperazine or metoclopramide with Parkinsonism (worsens symptoms).',
-      'PPI for uncomplicated peptic ulcer at full dose >8 weeks (dose reduction indicated).',
-      'Constipating drugs (antimuscarinics, oral iron, opioids, verapamil, aluminium antacids) with chronic constipation where alternatives exist.',
-      'Oral elemental iron >200mg/day (no added absorption; ferrous fumarate >600mg, ferrous sulphate >600mg, ferrous gluconate >1800mg).',
-      'Corticosteroids with peptic ulcer/erosive oesophagitis (relapse risk without PPI).',
-      'Antiplatelet/anticoagulant with GAVE (watermelon stomach) — major GI bleeding.',
-      'Antipsychotics with dysphagia (aspiration pneumonia risk).',
-      'Megestrol acetate to increase appetite (thrombosis + death risk; unproven efficacy).',
-    ]},
-    {sec:'G', title:'Respiratory', items:[
-      'Theophylline as monotherapy for COPD (narrow therapeutic index; safer alternatives).',
-      'Systemic corticosteroids instead of inhaled for maintenance in moderate-severe COPD.',
-      'Long-acting antimuscarinics (tiotropium, aclidinium, umeclidinium, glycopyrronium) with narrow-angle glaucoma or bladder outflow obstruction.',
-      'Benzodiazepines with acute/chronic respiratory failure pO2 <8.0 kPa or pCO2 >6.5 kPa.',
-    ]},
-    {sec:'H', title:'Musculoskeletal', items:[
-      'Non-selective NSAIDs with peptic ulcer/GI bleeding history without PPI.',
-      'NSAIDs with severe hypertension SBP >170 or DBP >100 consistently.',
-      'Long-term NSAIDs (>3mo) for osteoarthritis pain where paracetamol not tried.',
-      'Long-term corticosteroids (>3mo) monotherapy for rheumatoid arthritis.',
-      'Corticosteroids (not intra-articular) for osteoarthritis.',
-      'Long-term NSAID or colchicine (>3mo) for gout where xanthine oxidase inhibitor not contraindicated.',
-      'NSAID + corticosteroids for arthritis (peptic ulcer risk).',
-      'Oral bisphosphonates with upper GI disease (oesophagitis, gastritis, peptic ulcer, GI bleeding).',
-      'Long-term opioids for osteoarthritis (lack of evidence; serious SE).',
-    ]},
-    {sec:'I', title:'Urogenital', items:[
-      'Systemic antimuscarinics (oxybutynin, tolterodine, trospium) with dementia/cognitive impairment.',
-      'Systemic antimuscarinics with narrow-angle glaucoma.',
-      'Systemic antimuscarinics for LUTS with BPH + post-void residual >200ml.',
-      'Systemic antimuscarinics with constipation.',
-      'Alpha-1 antagonists (alfuzosin, doxazosin, tamsulosin, terazosin) with orthostatic hypotension or syncope (not silodosin).',
-      'Mirabegron with labile or severe hypertension.',
-      'Duloxetine with urinary urgency/urge incontinence (indicated for stress incontinence only).',
-      'Antibiotics for asymptomatic bacteriuria (no indication).',
-    ]},
-    {sec:'J', title:'Endocrine', items:[
-      'Long-acting sulphonylureas (glibenclamide, chlorpropamide, glimepiride) with type 2 DM (prolonged hypoglycaemia).',
-      'Thiazolidinediones (rosiglitazone, pioglitazone) with HF (exacerbation).',
-      'Non-selective beta-blockers in DM with frequent hypoglycaemic episodes (masks symptoms).',
-      'SGLT2 inhibitors with symptomatic hypotension.',
-      'Systemic oestrogens with history of breast cancer.',
-      'Systemic oestrogens with VTE history.',
-      'Menopausal HRT (oestrogen + progestin) with stenotic coronary/cerebral/peripheral arterial disease.',
-      'Systemic oestrogens without progestogens with intact uterus (endometrial cancer).',
-      'Levothyroxine for subclinical hypothyroidism (TSH <10 mU/L, normal free T4 — no evidence, thyrotoxicosis risk).',
-      'Vasopressin analogues (desmopressin) for incontinence/frequency (symptomatic hyponatraemia).',
-    ]},
-    {sec:'K', title:'Falls Risk Drugs', items:[
-      'Benzodiazepines with recurrent falls.',
-      'Antipsychotics with recurrent falls (Parkinsonism).',
-      'Vasodilators with recurrent falls + persistent postural hypotension (SBP drop ≥20 or DBP ≥10).',
-      'Z-drugs (zopiclone, zolpidem, zaleplon) with recurrent falls.',
-      'Anti-epileptic drugs with recurrent falls.',
-      'First-generation antihistamines with recurrent falls.',
-      'Opioids with recurrent falls.',
-      'Antidepressants with recurrent falls.',
-      'Alpha blockers as antihypertensives with recurrent falls.',
-      'Alpha blockers for BPH (not silodosin) with recurrent falls.',
-      'Centrally-acting antihypertensives with recurrent falls.',
-      'Antimuscarinics for overactive bladder with recurrent falls.',
-    ]},
-    {sec:'L', title:'Analgesics', items:[
-      'Strong opioids (morphine, oxycodone, fentanyl, buprenorphine, tramadol) as FIRST-LINE for mild pain (WHO ladder not observed).',
-      'Daily regular opioids without concomitant laxative (severe constipation).',
-      'Long-acting opioids without short-acting opioids for breakthrough pain.',
-      'Topical lidocaine patch for chronic osteoarthritis pain (no evidence).',
-      'Gabapentinoids (gabapentin, pregabalin) for non-neuropathic pain (no evidence).',
-      'Paracetamol ≥3g/24h with poor nutritional status (BMI <18) or chronic liver disease (hepatotoxicity).',
-    ]},
-    {sec:'M', title:'Anticholinergic Burden', items:[
-      'Two or more drugs with antimuscarinic/anticholinergic properties concurrently (bladder antispasmodics, intestinal antispasmodics, TCAs, first-gen antihistamines, antipsychotics).',
-    ]},
-  ],
-  start: [
-    {sec:'B', title:'Cardiovascular', items:[
-      'Antihypertensives if SBP >140/DBP >90 (frail: threshold SBP >150).',
-      'Statin with documented coronary/cerebral/peripheral vascular disease (unless EOL or moderate-severe frailty).',
-      'ACEi with coronary artery disease.',
-      'Beta-blocker with symptomatic coronary artery disease.',
-      'ACEi for HFrEF.',
-      'Cardioselective beta-blocker (bisoprolol, nebivolol, metoprolol, carvedilol) for stable HFrEF.',
-      'Mineralocorticoid antagonist (spironolactone, eplerenone) in HF if eGFR >30.',
-      'SGLT2 inhibitors in symptomatic HF with or without reduced EF, with or without diabetes.',
-      'Sacubitril/valsartan in HFrEF with persistent symptoms despite optimal ACEi/ARB.',
-      'Beta-blocker for chronic AF with uncontrolled rate.',
-      'IV iron for symptomatic HFrEF with iron deficiency.',
-    ]},
-    {sec:'C', title:'Coagulation', items:[
-      'VKA or DOAC (direct thrombin inhibitor or factor Xa inhibitor) in chronic or paroxysmal AF.',
-      'Antiplatelet (aspirin/clopidogrel/prasugrel/ticagrelor) with documented coronary/cerebral/peripheral vascular disease.',
-    ]},
-    {sec:'D', title:'CNS', items:[
-      'L-DOPA or dopamine agonist in idiopathic Parkinson\'s with functional impairment.',
-      'Non-TCA antidepressant for major depression.',
-      'Acetylcholinesterase inhibitor (donepezil, rivastigmine, galantamine) for mild-moderate Alzheimer\'s dementia.',
-      'Rivastigmine for DLB or Parkinson\'s disease dementia.',
-      'SSRI (or SNRI/pregabalin if SSRI contraindicated) for persistent severe anxiety affecting function.',
-      'Dopamine agonist (ropinirole, pramipexole, rotigotine) for RLS (after excluding iron deficiency and eGFR <30).',
-      'Propranolol for essential tremor with functional impairment.',
-    ]},
-    {sec:'E', title:'Renal', items:[
-      '1-alpha-hydroxycholecalciferol or calcitriol for eGFR <30 with hypocalcaemia + secondary hyperparathyroidism.',
-      'Phosphate binder for eGFR <30 if phosphate persistently >1.76 mmol/L.',
-      'Erythropoietin analogue for eGFR <30 with symptomatic anaemia (not from haematinic/iron deficiency) to Hb 10–12 g/dL.',
-      'ARB or ACEi in CKD with proteinuria >300mg/24h.',
-    ]},
-    {sec:'F', title:'GI', items:[
-      'PPI for severe GORD or peptic oesophageal stricture.',
-      'PPI with initiation of low-dose aspirin + prior peptic ulcer or reflux oesophagitis.',
-      'PPI with NSAIDs (short or long-term).',
-      'Fibre supplements (bran, ispaghula, methylcellulose) for diverticulosis with constipation.',
-      'Osmotic laxative (lactulose, macrogol) for chronic idiopathic or secondary constipation.',
-      'Probiotics with antibiotics (immunocompetent) to prevent C. difficile.',
-      'H. pylori eradication in HP-associated active peptic ulcer disease.',
-    ]},
-    {sec:'G', title:'Respiratory', items:[
-      'LAMA (tiotropium, aclidinium, umeclidinium, glycopyrronium) or LABA (formoterol, indacaterol, salmeterol) for symptomatic COPD GOLD 1–2 or chronic asthma.',
-      'Daily inhaled corticosteroid for moderate-severe asthma or COPD GOLD 3–4 (FEV1 <50% predicted + exacerbations).',
-      'Home O2 for chronic hypoxaemia (pO2 <8.0 kPa or SaO2 <89%).',
-    ]},
-    {sec:'H', title:'Musculoskeletal', items:[
-      'DMARD for chronic active disabling rheumatoid arthritis.',
-      'Bisphosphonates + vitamin D + calcium on long-term systemic corticosteroids.',
-      'Vitamin D in osteoporosis and/or prior fragility fracture(s) or BMD T-score < -2.5.',
-      'Bone anti-resorptive or anabolic therapy (bisphosphonate, teriparatide, denosumab) in documented osteoporosis (T < -2.5) without contraindication.',
-      'Vitamin D supplement if 25-OH-D deficiency (<20μg/L) + housebound/falls/osteopenia.',
-      'Anti-resorptive treatment after ≥2 denosumab doses stopped (rebound fracture risk).',
-      'Anti-resorptive after teriparatide/abaloparatide discontinuation.',
-      'Xanthine-oxidase inhibitors (allopurinol, febuxostat) with recurrent gout.',
-      'Folic acid supplement with methotrexate.',
-    ]},
-    {sec:'I', title:'Urogenital', items:[
-      'Selective alpha-1 blocker (tamsulosin, silodosin) for LUTS from BPH where prostatectomy not appropriate.',
-      '5-alpha reductase inhibitor (finasteride, dutasteride) for LUTS from BPH where prostatectomy not appropriate.',
-      'Topical vaginal oestrogen for symptomatic atrophic vaginitis.',
-      'Topical vaginal oestrogen in women for recurrent UTIs.',
-      'PDE5 inhibitors (sildenafil, tadalafil) for persistent erectile dysfunction causing distress.',
-    ]},
-    {sec:'J', title:'Endocrine', items:[
-      'ACEi or ARB in diabetes with renal disease (dipstick proteinuria or microalbuminuria >30mg/24h) unless eGFR <30.',
-    ]},
-    {sec:'K', title:'Analgesics', items:[
-      'High-potency opioids for moderate-severe non-arthritis pain where paracetamol/NSAIDs/low-potency opioids insufficient.',
-      'Laxatives with regular (non-PRN) opioid use.',
-      'Topical 5% lidocaine patch for localised neuropathic pain (e.g. post-herpetic neuralgia).',
-    ]},
-    {sec:'L', title:'Vaccines', items:[
-      'Seasonal influenza vaccine annually.',
-      'Pneumococcal vaccine at least once per national guidelines.',
-      'Varicella-zoster vaccine per national guidelines.',
-      'SARS-CoV2 vaccine per national guidelines.',
-    ]},
-  ]
-};
-
-let ssMode = 'stopp'; // 'stopp' | 'start'
-let ssSec = 'All';
-let ssSearch = '';
-
-function renderStoppStart() {
-  const data = ssMode === 'stopp' ? STOPP_START.stopp : STOPP_START.start;
-  const secs = ['All', ...data.map(s => s.sec)];
-
-  let h = `<div style="display:flex;gap:6px;margin-bottom:10px">
-    <button class="btn ${ssMode==='stopp'?'btn-d':'btn-o'}" style="flex:1;font-size:11px" onclick="ssMode='stopp';ssSec='All';render()">🚫 STOPP</button>
-    <button class="btn ${ssMode==='start'?'btn-g':'btn-o'}" style="flex:1;font-size:11px" onclick="ssMode='start';ssSec='All';render()">✅ START</button>
-  </div>`;
-
-  h += `<input class="search-box" id="sssrch" placeholder="${ssMode==='stopp'?'Search STOPP criteria...':'Search START criteria...'}" value="${sanitize(ssSearch)}" oninput="ssSearch=this.value;render()">`;
-
-  h += `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">`;
-  secs.forEach(s => {
-    const sec = data.find(d => d.sec === s);
-    h += `<span class="pill ${ssSec===s?'on':''}" style="font-size:10px" onclick="ssSec='${s}';render()">${s==='All'?'All':s+' '+sec?.title}</span>`;
-  });
-  h += `</div>`;
-
-  let count = 0;
-  data.forEach(sec => {
-    if (ssSec !== 'All' && ssSec !== sec.sec) return;
-    const items = sec.items.filter(it => !ssSearch || it.toLowerCase().includes(ssSearch.toLowerCase()));
-    if (!items.length) return;
-    h += `<div class="card" style="margin-bottom:10px;overflow:hidden">
-      <div style="padding:10px 14px 6px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:8px">
-        <span style="background:${ssMode==='stopp'?'#fef2f2':'#ecfdf5'};color:${ssMode==='stopp'?'#dc2626':'#059669'};font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px">${sec.sec}</span>
-        <span style="font-weight:700;font-size:12px">${sec.title}</span>
-        <span style="color:#94a3b8;font-size:10px;margin-left:auto">${items.length} criteria</span>
-      </div>
-      <div style="padding:8px 14px">`;
-    items.forEach((item, i) => {
-      count++;
-      h += `<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #f8fafc;font-size:11px;line-height:1.5">
-        <span style="color:${ssMode==='stopp'?'#dc2626':'#059669'};font-weight:700;flex-shrink:0">${ssMode==='stopp'?'✗':'✓'}</span>
-        <span>${sanitize(item)}</span>
-      </div>`;
-    });
-    h += `</div></div>`;
-  });
-
-  if (!count) h += `<div class="card" style="padding:24px;text-align:center;color:#94a3b8">No criteria match.</div>`;
-  return h;
-}
-
 // ===== CHAT TAB =====
 let chatLoading=false;
 const CHAT_STARTERS=[
@@ -2514,7 +1982,6 @@ case'calc':el.innerHTML=renderCalc();break;
 case'osce':el.innerHTML=renderOsce();break;
 case'track':el.innerHTML=renderTrack();break;
 case'search':el.innerHTML=renderSearch();break;
-case'law':el.innerHTML=renderLaw();break;
 case'chat':el.innerHTML=renderChat();break;
 }
 // Restore input values and focus
