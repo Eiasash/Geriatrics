@@ -74,7 +74,7 @@ Ch 14 (Pain), 15 (Chest), 16 (Abdominal pain), 17 (Headache), 18 (Low back), 20 
 
 ## APP STRUCTURE (eiasash.github.io/Geriatrics)
 
-- `shlav-a-mega.html` — main PWA: 1,131 MCQs, 40 topics, SR, exam mode, calculators, OSCE
+- `shlav-a-mega.html` — main PWA: 1,148 MCQs, 40 topics, SR, exam mode, calculators, OSCE
 - `questions.json` — `{q, o, c, t, ti}` — question, options, correct index, year, topic index
 - `notes.json` — 40 topic notes (Hazzard's + Harrison's sourced)
 - `flashcards.json` — 159 cards `{f, b}`
