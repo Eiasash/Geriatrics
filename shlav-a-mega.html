@@ -1072,17 +1072,39 @@ const TOPICS=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium"
 
 function renderTrack(){
 const done=Object.values(S.ck).filter(Boolean).length;
-const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
+const tot=S.qOk+S.qNo;const retPct=tot?Math.round(S.qOk/tot*100)+'%':'—';
 const bkCount=Object.values(S.bk).filter(Boolean).length;
 const dueN=getDueQuestions().length;
-let h=`<div class="sec-t">Progress</div><div class="sec-s">Syllabus · Bookmarks · Spaced Repetition</div>`;
-if(S.streak>0)h+=`<div style="text-align:center;margin-bottom:12px"><span class="streak-badge">🔥 ${S.streak} day${S.streak>1?'s':''} streak</span></div>`;
-h+=`<div class="stats">
-<div class="stat"><div class="n" style="color:rgb(var(--em))">${done}/40</div><div class="l">Topics</div></div>
-<div class="stat"><div class="n" style="color:rgb(var(--sky))">${pct}</div><div class="l">Quiz</div></div>
-<div class="stat"><div class="n">${bkCount}</div><div class="l">Bookmarks</div></div>
-<div class="stat"><div class="n" style="color:rgb(var(--amb))">${dueN}</div><div class="l">Due (SR)</div></div>
+const todayReviewed=(S.srSess&&S.srSess.reviewed)||0;
+const streakN=S.streak||0;
+// Per-topic accuracy
+const tSt=getTopicStats();
+const ranked=TOPICS.map((t,i)=>({name:t,i,s:tSt[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>0);
+const weakTopics=ranked.filter(p=>p.s.tot>=3&&(p.s.tot?p.s.ok/p.s.tot:0)<0.7).sort((a,b)=>{const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).slice(0,3);
+let h=`<div class="sec-t">📊 Study Dashboard</div><div class="sec-s">Progress · Accuracy · Spaced Repetition</div>`;
+// Stats row 1: Topics, Questions, Retention
+h+=`<div class="stats" style="margin-bottom:4px">
+<div class="stat"><div class="n" style="color:rgb(var(--em));font-size:16px">${done}/40</div><div class="l">Topics</div></div>
+<div class="stat"><div class="n" style="color:rgb(var(--sky));font-size:16px">${tot}/${QZ.length}</div><div class="l">Questions</div></div>
+<div class="stat"><div class="n" style="color:rgb(var(--em));font-size:16px">${retPct}</div><div class="l">Correct</div></div>
 </div>`;
+// Stats row 2: Today, Streak, Bookmarks
+h+=`<div class="stats">
+<div class="stat"><div class="n" style="color:rgb(var(--sky));font-size:16px">🔄 ${todayReviewed}</div><div class="l">Today</div></div>
+<div class="stat"><div class="n" style="color:rgb(var(--amb));font-size:16px">${streakN>0?'🔥 '+streakN:'—'}</div><div class="l">Streak</div></div>
+<div class="stat"><div class="n" style="font-size:16px">${bkCount}</div><div class="l">Bookmarks</div></div>
+</div>`;
+// Weak Topics callout (only if any topic has ≥3 attempts and <70%)
+if(weakTopics.length>0){
+h+=`<div class="card" style="padding:14px;margin-bottom:10px;border-left:3px solid rgb(var(--amb))">
+<div style="font-weight:700;font-size:12px;margin-bottom:8px">⚠️ Focus Areas</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px">`;
+weakTopics.forEach(p=>{
+const pct=p.s.tot?Math.round(p.s.ok/p.s.tot*100):0;
+h+=`<span onclick="setTopicFilt(${p.i});go('quiz')" style="cursor:pointer;background:rgba(var(--amb),0.15);color:rgb(var(--amb));border:1px solid rgb(var(--amb));border-radius:12px;padding:4px 10px;font-size:10px;font-weight:600">${p.name} (${pct}%)</span>`;
+});
+h+=`</div></div>`;
+}
 // Bookmarked questions
 if(bkCount>0){
 h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🔖 Bookmarked (${bkCount})</div>`;
@@ -1091,14 +1113,10 @@ const q=QZ[k];if(q)h+=`<div style="font-size:10px;padding:6px 0;border-bottom:1p
 });
 h+=`</div>`;
 }
-// Syllabus
-h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📋 Syllabus (${done}/40)</div>`;
-// Per-topic accuracy bars
-const tSt=getTopicStats();
-const ranked=TOPICS.map((t,i)=>({name:t,i,s:tSt[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>0);
+// Accuracy by Topic card
 if(ranked.length>0){
 h+=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📊 Accuracy by Topic</div>`;
-ranked.sort((a,b)=>{const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).forEach(p=>{
+[...ranked].sort((a,b)=>{const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).forEach(p=>{
 const pct=p.s.tot?Math.round(p.s.ok/p.s.tot*100):0;
 const clr=pct>=70?'rgb(var(--em))':pct>=50?'rgb(var(--amb))':'rgb(var(--red))';
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #f8fafc;font-size:10px">
@@ -1110,6 +1128,8 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;pa
 </div></div>`;
 });
 h+=`</div>`;}
+// Syllabus
+h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📋 Syllabus (${done}/40)</div>`;
 TOPICS.forEach((t,i)=>{h+=`<div class="topic${S.ck[i]?' done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()">
 <input type="checkbox" ${S.ck[i]?'checked':''} readonly style="width:13px;height:13px"><span>${t}</span></div>`;});
 h+=`</div>`;
