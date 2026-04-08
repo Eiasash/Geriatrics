@@ -1013,8 +1013,10 @@ signal:ctrl.signal
 clearTimeout(timeout);
 const data=await res.json();
 const txt=(data.content&&data.content[0]&&data.content[0].text)||'';
-const parsed=JSON.parse((txt.match(/{[sS]*}/)||['{}'])[0]);
-teachBackState={score:parsed.score||1,feedback:parsed.feedback||'No feedback'};
+if(data.error){throw new Error(data.error.message||'API error');}
+const jsonMatch=txt.match(/\{[\s\S]*\}/);
+const parsed=jsonMatch?JSON.parse(jsonMatch[0]):{};
+teachBackState={score:parsed.score||1,feedback:parsed.feedback||'לא התקבל משוב — נסה שוב'};
 }catch(e){
 teachBackState={score:null,feedback:e.name==='AbortError'?'⏱️ תם הזמן':'⚠️ '+e.message};
 }
