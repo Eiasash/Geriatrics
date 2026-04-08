@@ -297,6 +297,21 @@ body.dark .chat-disclaimer{background:#422006;border-color:#92400e;color:#fcd34d
 .tt-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e293b}
 .tt-icon:hover+.tt-box,.tt-icon:focus+.tt-box{display:block}
 </style>
+
+<script>
+(function(){
+const el=document.getElementById('hdr-sub');
+if(!el)return;
+function upd(){
+const d=new Date();
+const day=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+const h=String(d.getHours()).padStart(2,'0');
+const m=String(d.getMinutes()).padStart(2,'0');
+el.textContent='SZMC · Hazzard 8e + Harrison 22e · P005-2026 · '+day+' '+h+':'+m;
+}
+upd();setInterval(upd,30000);
+})();
+</script>
 </head>
 <body>
 
@@ -304,7 +319,7 @@ body.dark .chat-disclaimer{background:#422006;border-color:#92400e;color:#fcd34d
 <div class="hdr" style="position:relative">
 <h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v9.1</span></h1>
 <button class="dm-btn" onclick="toggleStudyMode()" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode">🌓</button>
-<p>SZMC · Hazzard's 8e + Harrison's 22e · P005-2026 · Built Apr 2026</p>
+<p id="hdr-sub">SZMC · Hazzard 8e + Harrison 22e · P005-2026</p>
 </div>
 
 <div class="ct" id="ct" role="main"></div>
@@ -2023,7 +2038,7 @@ if(_storedKey){
 h+='<div style="font-size:9px;color:#94a3b8">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
-<div>Shlav A Mega v9.1 · P005-2026 · Updated 9 Apr 2026</div>
+<div>Shlav A Mega v9.1 · P005-2026 · 9 Apr 2026</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
 return h;
