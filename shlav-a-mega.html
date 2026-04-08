@@ -322,6 +322,10 @@ body.dark .diff-btn{color:#e2e8f0}
 .diff-btn.diff-sel{color:#fff}
 .diff-badge{font-size:9px;padding:1px 5px;border-radius:10px;font-weight:600;margin-left:4px;color:#fff}
 
+.drug-fc-front,.drug-fc-back{padding:20px 16px;min-height:160px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.drug-fc-front{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;border-radius:16px}
+.drug-fc-back{background:#f0fdf4;border:1px solid #a7f3d0;border-radius:16px;direction:rtl}
+body.dark .drug-fc-back{background:#064e3b;border-color:#065f46;color:#a7f3d0}
 </style>
 </head>
 <body>
@@ -1604,6 +1608,9 @@ return h;
 }
 
 // ===== DRUG LOOKUP =====
+let drugFcMode=false; // flip card mode in drugs tab
+let drugFcIdx=0;
+let drugFcFlip=false;
 let drugSearch='';
 let drugOpen=new Set();
 function getDrugQuestions(drugName){
@@ -1630,8 +1637,42 @@ h+=`<div style="display:flex;gap:6px;margin-bottom:10px">
   <button class="btn ${drugsMode==='beers'?'btn-p':'btn-o'}" style="flex:1;font-size:11px" onclick="window._drugsMode='beers';render()">💊 Beers/ACB</button>
   <button class="btn ${drugsMode==='stopp'?'btn-d':'btn-o'}" style="flex:1;font-size:11px" onclick="window._drugsMode='stopp';ssMode='stopp';ssSec='All';ssSearch='';render()">🚫 STOPP</button>
   <button class="btn ${drugsMode==='start'?'btn-g':'btn-o'}" style="flex:1;font-size:11px" onclick="window._drugsMode='start';ssMode='start';ssSec='All';ssSearch='';render()">✅ START</button>
+  <button class="btn ${drugFcMode?'btn-p':'btn-o'}" style="flex:1;font-size:11px" onclick="drugFcMode=!drugFcMode;drugFcIdx=0;drugFcFlip=false;render()">🃏 Flip Cards</button>
 </div>`;
 if(drugsMode==='stopp'||drugsMode==='start'){ssMode=drugsMode;h+=renderStoppStart();return h;}
+if(drugFcMode){
+  const cards=DRUGS.filter(d=>d.beers||d.acb>=2);
+  if(!cards.length){h+=`<div class="empty">No drugs with Beers/ACB criteria loaded</div>`;return h;}
+  const di=drugFcIdx%cards.length;
+  const d=cards[di];
+  h+=`<div style="font-size:10px;color:#64748b;margin-bottom:8px;text-align:center">${di+1}/${cards.length} · Beers/ACB drugs</div>`;
+  h+=`<div onclick="drugFcFlip=!drugFcFlip;render()" style="cursor:pointer;border-radius:16px;overflow:hidden;margin-bottom:12px">`;
+  if(!drugFcFlip){
+    h+=`<div class="drug-fc-front">
+    <div style="font-size:20px;font-weight:700;margin-bottom:8px">${sanitize(d.name)}</div>
+    ${d.heb?'<div style="font-size:13px;color:#94a3b8;margin-bottom:8px">'+sanitize(d.heb)+'</div>':''}
+    <div style="font-size:11px;color:#cbd5e1">${sanitize(d.cat||'')}</div>
+    ${d.beers?'<span class="badge badge-r" style="margin-top:8px">BEERS</span>':''}
+    ${d.acb>=2?'<span class="badge badge-y" style="margin-top:8px">ACB '+d.acb+'</span>':''}
+    <div style="font-size:9px;color:#475569;margin-top:12px">Tap to reveal</div>
+    </div>`;
+  } else {
+    h+=`<div class="drug-fc-back">
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px">${sanitize(d.name)}</div>
+    <div style="font-size:11px;line-height:1.8">${sanitize(d.risk)}</div>
+    ${d.interactions?'<div style="font-size:10px;color:#64748b;margin-top:8px;border-top:1px solid #a7f3d0;padding-top:8px">⚠️ '+sanitize(d.interactions)+'</div>':''}
+    ${d.dose?'<div style="font-size:10px;margin-top:6px">💊 '+sanitize(d.dose)+'</div>':''}
+    <div style="font-size:9px;color:#64748b;margin-top:12px">Tap to flip back</div>
+    </div>`;
+  }
+  h+=`</div>`;
+  h+=`<div style="display:flex;gap:8px;justify-content:center">
+  <button class="btn btn-o" style="flex:1" onclick="drugFcIdx=(drugFcIdx-1+cards.length)%cards.length;drugFcFlip=false;render()">← Prev</button>
+  <button class="btn btn-o" style="flex:1" onclick="drugFcIdx=Math.floor(Math.random()*cards.length);drugFcFlip=false;render()">🔀 Random</button>
+  <button class="btn btn-p" style="flex:1" onclick="drugFcIdx=(drugFcIdx+1)%cards.length;drugFcFlip=false;render()">Next →</button>
+  </div>`;
+  return h;
+}
 h+=`<input class="search-box" placeholder="Search drug name..." oninput="drugSearch=this.value;render()" value="${drugSearch}" id="dsrch">`;
 const fv=drugSearch.toLowerCase();
 const filtered=DRUGS.filter(d=>!fv||d.name.toLowerCase().includes(fv)||d.heb.includes(fv)||(d.cat||'').toLowerCase().includes(fv));
