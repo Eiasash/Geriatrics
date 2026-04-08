@@ -3,9 +3,10 @@
   "configurations": [
     {
       "name": "geriatrics-app",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["--yes", "serve", "-l", "3737", "."],
-      "port": 3737
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "3737"],
+      "port": 3737,
+      "autoPort": false
     }
   ]
 }
