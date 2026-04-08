@@ -686,6 +686,7 @@ function drillWrongAnswers(){
 
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
+let examFlagged=new Set();let examAnswers=[];let showExamReview=false;
 let _qStartTime=0;
 let showTopicPicker=false,selectedTopics=new Set();
 let examCfg={n:60,t:60};
@@ -754,11 +755,12 @@ if(_elapsed>500&&_elapsed<120000){
   S.qTimes[_ti].n++;
 }
 save();render();
+if(examMode)examAnswers[qi]={sel,ans};
 }
 function next(){
 if(examMode&&qi+1>=pool.length){endExam();return;}
 qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;teachBackState=null;
-if(examMode)examStats.qTs=Date.now();
+if(examMode){examStats.qTs=Date.now();if(examAnswers[qi]){sel=examAnswers[qi].sel??null;ans=examAnswers[qi].ans??false;}}
 render();
 }
 function showAnswerHardFail(){
@@ -823,6 +825,7 @@ function launchExam(){
     pool=QZ.map((_,i)=>i);shuffle(pool);
   }
   pool=pool.slice(0,examCfg.n);
+  examFlagged=new Set();examAnswers=new Array(pool.length).fill(null).map(()=>({sel:null,ans:false}));showExamReview=false;
   qi=0;sel=null;ans=false;
   examSec=examCfg.t*60;
   examStats={byTopic:{},times:[],startTs:Date.now(),qTs:Date.now()};
@@ -854,7 +857,47 @@ function endExam(){
   showExamResults=true;render();
 }
 function fmtT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return(h?h+':':'')+String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0')}
+function jumpToQ(idx){
+  if(idx<0||idx>=pool.length)return;
+  if(examMode)examAnswers[qi]={sel,ans};
+  qi=idx;sel=examAnswers[idx]?.sel??null;ans=examAnswers[idx]?.ans??false;
+  showExamReview=false;
+  render();
+}
+function toggleExamFlag(){
+  if(examFlagged.has(qi))examFlagged.delete(qi);else examFlagged.add(qi);
+  render();
+}
 
+function renderExamReviewScreen(){
+  let h=`<div class="sec-t">📋 Exam Review</div>`;
+  h+=`<div style="font-size:11px;color:#64748b;margin-bottom:12px">Click a number to return to that question. Submit when ready.</div>`;
+  h+=`<div style="display:flex;gap:6px;font-size:10px;margin-bottom:12px;flex-wrap:wrap">
+  <span style="background:#94a3b8;color:#fff;padding:2px 8px;border-radius:6px">Gray = Answered</span>
+  <span style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:6px">Red = Unanswered</span>
+  <span style="background:#f59e0b;color:#fff;padding:2px 8px;border-radius:6px">Yellow = Flagged</span></div>`;
+  h+=`<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-bottom:16px">`;
+  for(let i=0;i<pool.length;i++){
+    const a=examAnswers[i];
+    const answered=a&&a.ans;
+    const flagged=examFlagged.has(i);
+    const isCurrent=i===qi;
+    let bg=answered?'#94a3b8':'#ef4444';
+    if(flagged)bg='#f59e0b';
+    const border=isCurrent?'2px solid #1d4ed8':'2px solid transparent';
+    h+=`<button onclick="jumpToQ(${i})" style="aspect-ratio:1;border-radius:6px;background:${bg};color:#fff;font-size:11px;font-weight:700;border:${border};cursor:pointer">${i+1}</button>`;
+  }
+  h+=`</div>`;
+  const unanswered=pool.filter((_,i)=>!examAnswers[i]?.ans).length;
+  const flaggedN=examFlagged.size;
+  if(unanswered>0)h+=`<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 12px;font-size:11px;margin-bottom:10px">⚠️ ${unanswered} question(s) unanswered</div>`;
+  if(flaggedN>0)h+=`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;font-size:11px;margin-bottom:10px">🚩 ${flaggedN} question(s) flagged for review</div>`;
+  h+=`<div style="display:flex;gap:8px">
+  <button class="btn btn-p" style="flex:1" onclick="showExamReview=false;render()">↩ Back to Exam</button>
+  <button class="btn" style="background:#dc2626;color:#fff;flex:1" onclick="showExamReview=false;endExam()">Submit & Grade</button>
+  </div>`;
+  return h;
+}
 function renderExamConfig(){
   const pills=(vals,key,unit)=>vals.map(v=>`<span class="pill ${examCfg[key]===v?'on':''}" onclick="examCfg.${key}=${v};render()">${v}${unit}</span>`).join('');
   return `<div class="modal-overlay" onclick="if(event.target===this){showExamConfig=false;render()}">
@@ -922,6 +965,7 @@ function renderExamResults(){
 }
 function renderQuiz(){
 if(showExamResults)return renderExamResults();
+if(showExamReview)return renderExamReviewScreen();
 if(!pool.length)buildPool();
 if(qi>=pool.length)qi=0;
 _qStartTime=Date.now();
@@ -929,10 +973,14 @@ const q=QZ[pool[qi]];const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*10
 const bk=S.bk[pool[qi]];
 const dueN=getDueQuestions().length;
 let h=showExamConfig?renderExamConfig():'';
-h+=examMode?`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:8px 12px;background:#0f172a;border-radius:12px;color:#fff">
-<span style="font-weight:700;font-size:13px">📋 Exam Mode</span>
-<span id="etimer" class="timer" style="font-size:16px;font-weight:700">${fmtT(examSec)}</span>
-<span style="font-size:11px">${qi+1}/${pool.length}</span></div>`:'';
+h+=examMode?`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding:8px 12px;background:#0f172a;border-radius:12px;color:#fff">
+<span style="font-weight:700;font-size:13px">📋 Exam</span>
+<span id="etimer" class="timer" style="font-size:14px;font-weight:700">${fmtT(examSec)}</span>
+<div style="display:flex;gap:6px;align-items:center">
+<button onclick="toggleExamFlag()" style="background:${examFlagged.has(qi)?'#f59e0b':'rgba(255,255,255,0.15)'};color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer">${examFlagged.has(qi)?'🚩 Flagged':'🏳️ Flag'}</button>
+<button onclick="showExamReview=true;render()" style="background:rgba(255,255,255,0.15);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer">📋 Review</button>
+<span style="font-size:11px;opacity:0.7">${qi+1}/${pool.length}</span>
+</div></div>`:'';
 if(!examMode){
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
 <div class="sec-t">Quiz</div>
