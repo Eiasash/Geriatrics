@@ -1039,6 +1039,47 @@ render();
 function fmtT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return(h?h+':':'')+String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0')}
 
 
+
+// ===== QUESTION IMAGE UPLOAD =====
+const SUPA_URL='https://krmlzwwelqvlfslwltol.supabase.co';
+const SUPA_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtybmx6d3dlbHF2bGZzbHdsdG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDExMDcyNTAsImV4cCI6MjA1NjY4MzI1MH0.CsJEJAjP-GB4X0bHk0RVbFCOZxyj0VrfOdGr5wSBzBg';
+async function uploadQImage(qIdx){
+const input=document.createElement('input');
+input.type='file';input.accept='image/*';input.capture='environment';
+input.onchange=async function(){
+const file=input.files[0];if(!file)return;
+const ext=file.name.split('.').pop()||'png';
+const fname='q'+qIdx+'_'+Date.now()+'.'+ext;
+const statusEl=document.getElementById('img-status-'+qIdx);
+if(statusEl)statusEl.textContent='⏳ Uploading...';
+try{
+const res=await fetch(SUPA_URL+'/storage/v1/object/question-images/'+fname,{
+method:'POST',headers:{'Authorization':'Bearer '+SUPA_ANON,'Content-Type':file.type},body:file});
+if(!res.ok)throw new Error('Upload failed: '+res.status);
+const imgUrl=SUPA_URL+'/storage/v1/object/public/question-images/'+fname;
+QZ[qIdx].img=imgUrl;
+// Save to localStorage
+const imgMap=JSON.parse(localStorage.getItem('shlav_q_images')||'{}');
+imgMap[qIdx]=imgUrl;
+localStorage.setItem('shlav_q_images',JSON.stringify(imgMap));
+if(statusEl)statusEl.textContent='✅ Image attached';
+setTimeout(()=>render(),500);
+}catch(e){if(statusEl)statusEl.textContent='❌ '+e.message;}
+};
+input.click();
+}
+function removeQImage(qIdx){
+QZ[qIdx].img=null;
+const imgMap=JSON.parse(localStorage.getItem('shlav_q_images')||'{}');
+delete imgMap[qIdx];
+localStorage.setItem('shlav_q_images',JSON.stringify(imgMap));
+render();
+}
+// Load saved images on startup
+(function(){
+const imgMap=JSON.parse(localStorage.getItem('shlav_q_images')||'{}');
+Object.entries(imgMap).forEach(([idx,url])=>{if(QZ[parseInt(idx)])QZ[parseInt(idx)].img=url;});
+})();
 function viewImg(src){
 const ov=document.createElement('div');
 ov.className='img-overlay';
@@ -1056,7 +1097,8 @@ let h=`<div class="sudden-death-banner"><span style="font-weight:700;font-size:1
 <button class="btn" style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;padding:4px 10px" onclick="endSuddenDeath()">Quit</button></div>`;
 h+=`<div class="card" style="padding:16px">`;
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px">${q.q}</p>`;
-if(q.img){h+=`<div style="margin-bottom:14px;text-align:center"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid #e2e8f0;cursor:pointer" onclick="viewImg(this.src)" loading="lazy"></div>`;}
+if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid #e2e8f0;cursor:pointer" onclick="viewImg(this.src)" loading="lazy"><button onclick="event.stopPropagation();removeQImage(${pool[qi]})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer">✕</button></div>`;}
+if(!q.img&&!examMode){h+=`<div style="margin-bottom:10px"><button onclick="uploadQImage(${pool[qi]})" style="font-size:10px;padding:4px 12px;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">📷 Attach Image</button><span id="img-status-${pool[qi]}" style="font-size:10px;color:#94a3b8;margin-left:6px"></span></div>`;}
 q.o.forEach((o,i)=>{
 let cls='qo';
 if(ans){cls+=' lk';if(i===q.c)cls+=' ok';else if(i===sel)cls+=' no';else cls+=' dim';}
