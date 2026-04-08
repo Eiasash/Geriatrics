@@ -820,9 +820,9 @@ if(sel===null)return;ans=true;teachBackState=null;
 const q=QZ[pool[qi]];
 const ti_=q.ti;
 if(examMode){
-  if(!examStats.byTopic[ti_])examStats.byTopic[ti_]={ok:0,no:0};
+  if(!examStats.byTopic[ti_])examStats.byTopic[ti_]={ok:0,no:0,wrong:[]};
   if(sel===q.c)examStats.byTopic[ti_].ok++;
-  else examStats.byTopic[ti_].no++;
+  else{examStats.byTopic[ti_].no++;if(!examStats.byTopic[ti_].wrong)examStats.byTopic[ti_].wrong=[];examStats.byTopic[ti_].wrong.push(pool[qi]);}
   srScore(pool[qi],sel===q.c);
   examStats.times.push(Date.now()-examStats.qTs);
 }else{
@@ -2193,6 +2193,7 @@ const bkCount=Object.values(S.bk).filter(Boolean).length;
 var totQ_=QZ.length,totAns_t=S.qOk+S.qNo,unansd_t=totQ_-totAns_t;
 var ok_pt=totQ_?S.qOk/totQ_:0,no_pt=totQ_?S.qNo/totQ_:0;
 function pSlice(s,e,clr){if(e-s<.001)return'';if(e-s>=.999)return'<circle cx="50" cy="50" r="40" fill="'+clr+'"/>';var a1=s*2*Math.PI-Math.PI/2,a2=e*2*Math.PI-Math.PI/2,x1=50+40*Math.cos(a1),y1=50+40*Math.sin(a1),x2=50+40*Math.cos(a2),y2=50+40*Math.sin(a2),lg=e-s>.5?1:0;return'<path d="M50,50 L'+x1+','+y1+' A40,40 0 '+lg+',1 '+x2+','+y2+' Z" fill="'+clr+'"/>';}
+var h='';
 h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">\U0001f4ca Progress Overview</div><div style="display:flex;align-items:center;gap:16px"><svg viewBox="0 0 100 100" width="90" height="90" style="flex-shrink:0">'+pSlice(0,ok_pt,'#059669')+pSlice(ok_pt,ok_pt+no_pt,'#dc2626')+pSlice(ok_pt+no_pt,1,'#e2e8f0')+'<circle cx="50" cy="50" r="26" fill="white"/><text x="50" y="46" text-anchor="middle" font-size="10" font-weight="bold" fill="#1e293b">'+totAns_t+'</text><text x="50" y="57" text-anchor="middle" font-size="7" fill="#94a3b8">done</text></svg><div style="flex:1"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:10px;height:10px;border-radius:2px;background:#059669"></div><span style="font-size:10px">Correct: '+S.qOk+' ('+Math.round(ok_pt*100)+'%)</span></div><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:10px;height:10px;border-radius:2px;background:#dc2626"></div><span style="font-size:10px">Incorrect: '+S.qNo+' ('+Math.round(no_pt*100)+'%)</span></div><div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:10px;border-radius:2px;background:#e2e8f0"></div><span style="font-size:10px">Untouched: '+unansd_t+' ('+Math.round((1-ok_pt-no_pt)*100)+'%)</span></div></div></div></div>';
 if(bkCount>0){var byTopic={};Object.entries(S.bk).filter(function(e){return e[1];}).forEach(function(e){var q=QZ[e[0]];if(!q)return;var tp=q.t||'Other';if(!byTopic[tp])byTopic[tp]=[];byTopic[tp].push({k:e[0],q:q});});var topicKeys=Object.keys(byTopic);if(topicKeys.length>1){h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">\U0001f4c1 Bookmark Folders</div>';topicKeys.forEach(function(topic){var fk='bkf_'+topic.replace(/[^a-z0-9]/gi,'_');var open=S[fk];var qs=byTopic[topic];h+='<div style="margin-bottom:6px"><div onclick="S[\''+fk+'\']=!S[\''+fk+'\'];save();render()" style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f8fafc;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600"><span>\U0001f4c1 '+topic+' ('+qs.length+')</span><span>'+(open?'&#9660;':'&#9654;')+'</span></div>';if(open){qs.forEach(function(e){h+='<div style="padding:6px 12px;font-size:10px;line-height:1.5;border-bottom:1px solid #f8fafc" class="heb" dir="rtl">'+e.q.q.substring(0,100)+'\u2026</div>';});}h+='</div>';});h+='</div>';}}
 
@@ -2202,7 +2203,7 @@ const streakN=S.streak||0;
 const tSt=getTopicStats();
 const ranked=TOPICS.map((t,i)=>({name:t,i,s:tSt[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>0);
 const weakTopics=ranked.filter(p=>p.s.tot>=3&&(p.s.tot?p.s.ok/p.s.tot:0)<0.7).sort((a,b)=>{const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).slice(0,3);
-let h=`<div class="sec-t">📊 Study Dashboard</div><div class="sec-s">Progress · Accuracy · Spaced Repetition</div>`;
+h=`<div class="sec-t">📊 Study Dashboard</div><div class="sec-s">Progress · Accuracy · Spaced Repetition</div>`;
 // Study time
 const totalMins=S.totalMinutes||0;
 const hrs=Math.floor(totalMins/60);const mins=totalMins%60;
@@ -3418,7 +3419,7 @@ document.addEventListener('keydown',e=>{
   if(tab==='flash'){
     if(e.key===' ')S.fcFlip=!S.fcFlip;render();
     if(e.key==='ArrowRight')nextFc();
-    if(e.key==='1')rateFc(0);if(e.key==='2')rateFc(1);if(e.key==='3')rateFc(2);
+    if(e.key==='1')fcRate(0);if(e.key==='2')fcRate(1);if(e.key==='3')fcRate(2);
   }
 });
 function renderKbdOverlay(){
@@ -3480,6 +3481,7 @@ const days=q===0?0:q===1?1:4;
 s.n=q===0?0:s.n+1;s.next=Date.now()+days*86400000;
 S.fci++;S.fcFlip=false;save();render();
 }
+function nextFc(){S.fci++;S.fcFlip=false;save();render();}
 
 // ===== SHARE =====
 function shareQ(){
