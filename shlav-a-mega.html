@@ -44,7 +44,7 @@ input,textarea,select{font:inherit}
 .btn-g{background:rgb(var(--em));color:#fff}
 .btn-o{background:#f1f5f9;color:#475569}
 .ab{max-height:0;overflow:hidden;transition:max-height .3s ease}.ab.op{max-height:5000px}
-.acc-h{width:100%;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;text-align:left;transition:.1s;min-height:44px}
+.acc-h{width:100%;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;text-align:left;transition:.1s;min-height:44px;color:inherit}
 .acc-h:hover{background:#f8fafc}
 .acc-ic{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex-shrink:0}
 .acc-ar{font-size:10px;color:#94a3b8;transition:transform .2s}
@@ -94,6 +94,8 @@ input,textarea,select{font:inherit}
 .dark .calc-in{background:#1e293b;border-color:#334155;color:#e2e8f0}
 .dark .ck{border-color:#334155;color:#e2e8f0}
 .dark .drug-row{border-color:#334155}
+.drug-cat{font-size:10px;color:#64748b}.drug-risk{font-size:10px;color:#475569;margin-top:2px}
+.dark .drug-cat{color:#94a3b8 !important}.dark .drug-risk{color:#94a3b8 !important}
 .dark .topic{color:#e2e8f0}
 .dark .topic.done{background:#064e3b;border-color:#059669}
 .dark .sec-t{color:#f1f5f9}
@@ -134,6 +136,23 @@ body.dark .modal-box{background:#1e293b;color:#e2e8f0}
 .dark .explain-box{background:#064e3b !important;border-color:#059669 !important;color:#a7f3d0 !important}
 .explain-box-q{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;font-size:11px;line-height:1.7;color:#92400e;margin-top:10px;padding:10px 12px}
 .dark .explain-box-q{background:#451a03;border-color:#92400e;color:#fcd34d}
+.explain-src{font-size:10px;color:#059669;border-top:1px solid #bbf7d0;padding-top:4px;margin-top:6px}
+.dark .explain-src{color:#6ee7b7 !important;border-top-color:#065f46 !important}
+.explain-correct{color:#64748b;font-style:italic}
+.dark .explain-correct{color:#86efac !important}
+.explain-pearl{background:#fef3c7;border-radius:8px;padding:8px 10px;margin-top:6px;font-weight:600;color:#78350f}
+.dark .explain-pearl{background:#292400;color:#fde68a !important}
+/* Explanation formatter */
+.expl-p{font-size:12px;line-height:1.9;margin-bottom:9px;direction:rtl}
+.expl-ans{font-size:12px;line-height:1.9;margin:5px 0;padding:5px 10px 5px 6px;border-radius:5px;direction:rtl;border-right:3px solid #d97706}
+.expl-ans-ok{border-right-color:#16a34a;background:rgba(22,163,74,.07)}
+.expl-ans-no{border-right-color:#94a3b8;opacity:.88}
+.dark .expl-ans{border-right-color:#92400e}
+.dark .expl-ans-ok{border-right-color:#22c55e;background:rgba(34,197,94,.07)}
+.dark .expl-ans-no{border-right-color:#475569;opacity:.9}
+.expl-pearl{margin-top:10px;padding:7px 10px;border-radius:6px;border:1px solid rgba(0,0,0,.12);direction:rtl}
+.dark .expl-pearl{border-color:rgba(255,255,255,.12)}
+.expl-pearl-lbl{font-weight:700;font-size:11px;display:block;margin-bottom:4px}
 .dark .tag-topic{background:#064e3b !important;color:#6ee7b7 !important}
 .dark .tag-year{background:#1e3a5f !important;color:#93c5fd !important}
 
@@ -142,8 +161,11 @@ body.dark .modal-box{background:#1e293b;color:#e2e8f0}
 .heb{font-size:var(--qfont) !important}
 p.heb, .qo{font-size:var(--qfont) !important}
 /* Question annotation */
-.q-note-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:11px;width:100%}
+.q-note-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:11px;width:100%;color:#1e293b}
 .q-note-box:focus{outline:none;border-color:#f59e0b}
+.dark .q-note-box{background:#1e293b;border-color:#334155;color:#e2e8f0}
+.dark .q-note-box:focus{border-color:#64748b}
+.dark .q-note-box::placeholder{color:#475569}
 /* Search highlight */
 mark{background:#fef08a;color:#1e293b;border-radius:3px;padding:0 2px}
 .dark mark{background:#713f12;color:#fef9c3}
@@ -212,11 +234,22 @@ body.dark .osce-card{border-color:#334155;color:#e2e8f0}
 body.dark .osce-card:hover{border-color:#475569}
 
 /* Study Notes structured formatting */
-.note-sec-hdr{font-weight:700;color:#1e293b;margin-top:10px;margin-bottom:2px;font-size:11px}
-body.dark .note-sec-hdr{color:#f1f5f9}
-.note-p{font-size:11px;line-height:1.8;color:#334155;margin-bottom:6px}
+.note-sec-hdr{font-weight:700;color:#0f172a;margin-top:18px;margin-bottom:5px;font-size:13px;padding-bottom:5px;border-bottom:2px solid #e2e8f0;letter-spacing:.01em}
+body.dark .note-sec-hdr{color:#7dd3fc;border-bottom-color:#334155}
+.note-p{font-size:13px;line-height:2;color:#1e293b;margin-bottom:10px}
 body.dark .note-p{color:#cbd5e1}
-.note-sep{border-top:1px solid #f1f5f9;margin-top:10px;padding-top:8px}
+.note-pearl{border-left:3px solid #94a3b8;padding:6px 14px 6px 16px;margin:16px 0}
+body.dark .note-pearl{border-left-color:#475569}
+.note-pearl-sub{font-weight:700;font-size:12px;margin:10px 0 3px;color:#0f172a}
+body.dark .note-pearl-sub{color:#7dd3fc}
+.note-pearl-p{font-size:13px;line-height:1.9;margin:3px 0 6px;color:#1e293b}
+body.dark .note-pearl-p{color:#cbd5e1}
+.note-ul{margin:3px 0 8px 18px;padding:0;list-style:disc}
+.note-ul li{font-size:12px;line-height:1.8;margin-bottom:3px;color:#1e293b}
+body.dark .note-ul li{color:#cbd5e1}
+.note-src{display:inline-block;background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:14px}
+body.dark .note-src{background:#172554;color:#93c5fd}
+.note-sep{border-top:1px solid #e2e8f0;margin-top:16px;padding-top:12px}
 body.dark .note-sep{border-top-color:#334155}
 
 /* Review tab: badge & prose classes */
@@ -300,9 +333,9 @@ body.dark .diff-btn{color:#e2e8f0}
 @keyframes ldprog{from{width:20%}to{width:90%}}</style>
 
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#94a3b8;vertical-align:middle">v8.6 · Apr 2026</span></h1>
+<h1>Shlav A Mega <span id="ver-span" style="font-size:9px;font-weight:400;color:#94a3b8;vertical-align:middle">v8.9</span><span id="date-span" style="font-size:11px;font-weight:400;color:#7dd3fc;vertical-align:middle;margin-left:6px"></span></h1>
 <button class="dm-btn" onclick="toggleDark()" title="Dark Mode">🌓</button>
-<p id="hdr-sub">SZMC · Loading... · Hazzard's 8e + Harrison's 22e · Syllabus P005-2026</p>
+<p id="hdr-sub">SZMC · Loading... · Hazzard's 8e + Harrison's 22e</p>
 </div>
 
 <div class="ct" id="ct"></div>
@@ -545,8 +578,8 @@ function renderExplainBox(qIdx,entry){
   const html=lines.map(l=>{
     if(l.startsWith('✅'))return`<div style="background:#dcfce7;border-radius:8px;padding:8px 10px;margin-bottom:6px;font-weight:600">${sanitize(l)}</div>`;
     if(l.startsWith('❌'))return`<div style="color:#991b1b;padding:3px 0">${sanitize(l)}</div>`;
-    if(l.startsWith('📌'))return`<div style="background:#fef3c7;border-radius:8px;padding:8px 10px;margin-top:6px;font-weight:600">${sanitize(l)}</div>`;
-    if(l.startsWith('📖'))return`<div style="font-size:10px;color:#059669;margin-top:6px;border-top:1px solid #bbf7d0;padding-top:4px">${sanitize(l)}</div>`;
+    if(l.startsWith('📌'))return`<div class="explain-pearl">${sanitize(l)}</div>`;
+    if(l.startsWith('📖'))return`<div class="explain-src">${sanitize(l)}</div>`;
     return`<div style="padding:2px 0">${sanitize(l)}</div>`;
   }).join('');
   box.innerHTML=html;
@@ -888,7 +921,7 @@ else h+=`<button class="btn btn-d" onclick="next()">${examMode&&qi+1>=pool.lengt
 h+=`</div>`;
 if(ans&&!examMode){
 if(q.e){
-h+=`<div class="explain-box-q"><div style="font-weight:700;margin-bottom:4px">💡 Explanation</div>${sanitize(q.e)}</div>`;
+h+=`<div class="explain-box-q"><div style="font-weight:700;margin-bottom:8px">💡 Explanation</div>${_formatExplanationHtml(q.e)}</div>`;
 }
 const note=q.ti>=0&&NOTES[q.ti]?NOTES[q.ti]:null;
 if(note){
@@ -901,8 +934,8 @@ return cl.split(/\s+/).filter(w=>w.length>3).some(w=>sl.includes(w.toLowerCase()
 h+=`<div class="explain-box" style="margin-top:10px;padding:10px 12px">`;
 h+=`<div style="font-weight:700;margin-bottom:4px">💡 ${sanitize(note.topic)}</div>`;
 if(relevant.length)h+=`<div style="margin-bottom:6px">${sanitize(relevant.join('. '))}.</div>`;
-else h+=`<div style="margin-bottom:6px;color:#64748b;font-style:italic">Correct answer: <b>${sanitize(correctText)}</b></div>`;
-h+=`<div style="font-size:9px;color:#059669;border-top:1px solid #bbf7d0;padding-top:4px;margin-top:4px">📖 Source: ${sanitize(note.ch)} · ${sanitize(q.t)}</div>`;
+else h+=`<div class="explain-correct" style="margin-bottom:6px">Correct answer: <b>${sanitize(correctText)}</b></div>`;
+h+=`<div class="explain-src" style="font-size:9px;margin-top:4px">📖 Source: ${sanitize(note.ch)} · ${sanitize(q.t)}</div>`;
 h+=`</div>`;
 }
 }
@@ -935,7 +968,7 @@ h+=`<button onclick="reportQ(${qGlobalIdx})" style="font-size:9px;font-weight:70
 h+=`</div>`;
 // Per-question user notes
 const qNote=S.qNotes[String(qGlobalIdx)]||'';
-h+=`<div style="margin-top:8px"><div style="font-size:10px;color:#94a3b8;margin-bottom:3px">📝 הערה אישית</div><textarea class="q-note-box" rows="2" placeholder="הוסף הערה לשאלה זו..." oninput="S.qNotes['${qGlobalIdx}']=this.value;save()">${sanitize(qNote)}</textarea></div>`;
+h+=`<div style="margin-top:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-size:10px;color:#94a3b8">📝 הערה אישית</span><span id="note-saved-${qGlobalIdx}" style="font-size:9px;color:#10b981;opacity:0;transition:opacity .5s">✓ נשמר</span></div><textarea class="q-note-box" rows="2" placeholder="הוסף הערה לשאלה זו... (נשמרת אוטומטית)" oninput="S.qNotes['${qGlobalIdx}']=this.value;save();const si=document.getElementById('note-saved-${qGlobalIdx}');if(si){si.style.opacity=1;clearTimeout(si._t);si._t=setTimeout(()=>si.style.opacity=0,1500);}">${sanitize(qNote)}</textarea></div>`;
 h+=`<div style="margin-top:8px;display:flex;align-items:center;gap:6px">
 <button class="btn" style="background:#6d28d9;color:#fff;font-size:11px;padding:6px 14px" onclick="explainWithAI(${qGlobalIdx})">
 ${hasCached?'📖 הסבר שמור':'🤖 הסבר AI עם מקור'}</button>
@@ -955,26 +988,110 @@ let noteExpanded={};
 function toggleNote(i){openNote=openNote===i?null:i;render();}
 function _formatNoteHtml(text){
   const BOLD_TERMS=['MMSE','MoCA','CAM','CDR','FAST','GDS','MNA','TUG','Beers','STOPP','START','ACB','ADL','IADL','FIM','CGA','FRAX','eGFR','HbA1c','COPD','HFrEF','HFpEF','ABCD2','PADUA','CURB-65','4AT','PAINAD','SARC-F','EWGSOP','SM-2'];
-  const boldSet=new Set(BOLD_TERMS.map(t=>t.toUpperCase()));
   const paras=text.split(/\n+/).map(p=>p.trim()).filter(p=>p.length>0);
   let html='';
+  function applyBold(t){
+    BOLD_TERMS.forEach(tm=>{const re=new RegExp('(?<![\\w-])'+tm.replace(/-/g,'\\-')+'(?![\\w-])','g');t=t.replace(re,`<b>${tm}</b>`);});
+    return t.replace(/\b([A-Z][A-Z0-9\-]{2,})\b/g,`<b>$1</b>`);
+  }
+  let pearlBuf=[];
+  function flushPearl(){
+    if(!pearlBuf.length)return;
+    // raw text, not yet sanitized/bolded
+    let raw=pearlBuf.join(' ').replace(/^📖\s*/,'').replace(/HAZZARD[^\s]*\s+\d+[eE]\s+BOARD\s+PEARLS\s*:\s*/i,'');
+    html+='<div class="note-pearl">';
+    if(/\(\d+\)\s+[A-Z]/.test(raw)){
+      // Split on numbered subsections
+      const parts=raw.split(/(?=\(\d+\)\s+[A-Z])/);
+      // Intro sentence before (1)
+      const intro=parts[0]&&!parts[0].match(/^\(\d+\)/)?parts.shift().trim():'';
+      if(intro)html+=`<p class="note-pearl-p">${applyBold(sanitize(intro))}</p>`;
+      parts.forEach(part=>{
+        part=part.trim();if(!part)return;
+        const m=part.match(/^\((\d+)\)\s+([^:(]{2,50}?):\s*([\s\S]*)/);
+        if(m){
+          html+=`<div class="note-pearl-sub">${sanitize(m[1]+'. '+m[2].trim())}</div>`;
+          const items=m[3].trim().replace(/\.\s*$/,'').split(/;\s+/).filter(s=>s.trim().length>3);
+          if(items.length>1){html+='<ul class="note-ul">'+items.map(it=>`<li>${applyBold(sanitize(it.trim()))}</li>`).join('')+'</ul>';}
+          else{html+=`<p class="note-pearl-p">${applyBold(sanitize(m[3].trim()))}</p>`;}
+        }else if(part.length>5){html+=`<p class="note-pearl-p">${applyBold(sanitize(part))}</p>`;}
+      });
+    }else{
+      // Try inline ". CONCEPT: content" headers
+      const inParts=raw.split(/\.\s+(?=[A-Z][A-Za-z][A-Za-z\s\(\)\/\-]{2,40}:\s)/);
+      if(inParts.length>1){
+        // Intro before first concept header
+        const intro=inParts[0].trim();
+        if(intro.length>5){
+          const iItems=intro.split(/;\s+/).filter(s=>s.trim().length>3);
+          if(iItems.length>2){html+='<ul class="note-ul">'+iItems.map(it=>`<li>${applyBold(sanitize(it.trim()))}</li>`).join('')+'</ul>';}
+          else{html+=`<p class="note-pearl-p">${applyBold(sanitize(intro))}</p>`;}
+        }
+        inParts.slice(1).forEach(part=>{
+          const m=part.match(/^([A-Z][A-Za-z\s\(\)\/\-]{2,40}?):\s*([\s\S]*)/);
+          if(m){
+            html+=`<div class="note-pearl-sub">${sanitize(m[1].trim())}</div>`;
+            const content=m[2].trim().replace(/\.\s*$/,'');
+            const items=content.split(/;\s+/).filter(s=>s.trim().length>3);
+            if(items.length>1){html+='<ul class="note-ul">'+items.map(it=>`<li>${applyBold(sanitize(it.trim()))}</li>`).join('')+'</ul>';}
+            else{html+=`<p class="note-pearl-p">${applyBold(sanitize(content))}</p>`;}
+          }else{html+=`<p class="note-pearl-p">${applyBold(sanitize(part.trim()))}</p>`;}
+        });
+      }else{
+        // No detectable structure — split on semicolons
+        const items=raw.split(/;\s+/).filter(s=>s.trim().length>3);
+        if(items.length>2){html+='<ul class="note-ul">'+items.map(it=>`<li>${applyBold(sanitize(it.trim()))}</li>`).join('')+'</ul>';}
+        else{html+=`<p class="note-pearl-p">${applyBold(sanitize(raw))}</p>`;}
+      }
+    }
+    html+='</div>';pearlBuf=[];
+  }
   paras.forEach(p=>{
-    let s=sanitize(p);
-    // 1. Detect section header BEFORE any bold injection (match on clean sanitized text)
-    const hdrMatch=s.match(/^([A-Za-z\u05d0-\u05ea][A-Za-z\u05d0-\u05ea\s\-]{1,30}?):/);
+    const s=sanitize(p);
+    if(s.startsWith('📖')||s.includes('BOARD PEARLS')){pearlBuf.push(p);return;}
+    flushPearl();
+    const hdrMatch=s.match(/^([A-Za-z\u05d0-\u05ea][A-Za-z\u05d0-\u05ea\s\-\/]{1,35}?):/);
     let hdrHtml='',bodyText=s;
     if(hdrMatch){hdrHtml=hdrMatch[1];bodyText=s.slice(hdrMatch[0].length).trim();}
-    // 2. Apply BOLD_TERMS substitution to body text
-    BOLD_TERMS.forEach(t=>{const re=new RegExp('(?<![\\w-])'+t.replace(/-/g,'\\-')+'(?![\\w-])','g');bodyText=bodyText.replace(re,`<b>${t}</b>`);});
-    // 3. Bold remaining ALL-CAPS tokens (3+ chars) not already in BOLD_TERMS
-    bodyText=bodyText.replace(/\b([A-Z][A-Z0-9\-]{2,})\b/g,(m)=>boldSet.has(m.toUpperCase())?`<b>${m}</b>`:`<b>${m}</b>`);
-    if(hdrHtml){
-      html+=`<div class="note-sec-hdr">${sanitize(hdrHtml)}</div>`;
-      if(bodyText)html+=`<p class="note-p">${bodyText}</p>`;
-    }else{
-      html+=`<p class="note-p">${bodyText}</p>`;
-    }
+    bodyText=applyBold(bodyText);
+    if(hdrHtml){html+=`<div class="note-sec-hdr">${sanitize(hdrHtml)}</div>`;if(bodyText)html+=`<p class="note-p">${bodyText}</p>`;}
+    else{html+=`<p class="note-p">${bodyText}</p>`;}
   });
+  flushPearl();
+  return html;
+}
+function _formatExplanationHtml(text){
+  if(!text)return'';
+  function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function bold(t){return t.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');}
+  const paras=text.split(/\n\n+/).map(p=>p.trim()).filter(Boolean);
+  let html='';
+  for(const p of paras){
+    // Pearl section
+    if(/פנינה קלינית/.test(p)){
+      const content=bold(esc(p).replace(/\*?\*?💡?\s*פנינה קלינית\s*[:*\s]*/,'').trim());
+      html+=`<div class="expl-pearl"><span class="expl-pearl-lbl">💡 פנינה קלינית</span>${content}</div>`;
+      continue;
+    }
+    // Correct answer paragraph
+    if(/ה?תשובה.*נכונה/.test(p)||(/תשובה/.test(p)&&/הנכונה/.test(p))){
+      html+=`<div class="expl-ans expl-ans-ok">${bold(esc(p))}</div>`;
+      continue;
+    }
+    // Wrong answer paragraph
+    if(/תשובה/.test(p)&&/שגוי/.test(p)){
+      html+=`<div class="expl-ans expl-ans-no">${bold(esc(p))}</div>`;
+      continue;
+    }
+    // Any other answer-labelled paragraph
+    if(/^\*?\*?ה?תשובה\s+[A-Dא-ד]/.test(p)||/^ה?תשובה\s+[A-Dא-ד]/.test(p)){
+      const isOk=/נכונה/.test(p);
+      html+=`<div class="expl-ans ${isOk?'expl-ans-ok':'expl-ans-no'}">${bold(esc(p))}</div>`;
+      continue;
+    }
+    // Intro / regular paragraph
+    html+=`<div class="expl-p">${bold(esc(p))}</div>`;
+  }
   return html;
 }
 function renderStudy(){
@@ -990,13 +1107,13 @@ const paras=n.notes.split(/\n+/).filter(p=>p.trim());
 const isExpanded=!!noteExpanded[n.id];
 const showFull=isExpanded||paras.length<=2;
 h+=`<div class="card"><button class="acc-h" onclick="toggleNote(${n.id})">
-<div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:12px">${sanitize(n.topic)}</span>
-<span style="font-size:9px;color:#94a3b8">${sanitize(n.ch)}</span></div>
+<div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:14px">${sanitize(n.topic)}</span>
+<span style="font-size:10px;color:#94a3b8">${sanitize(n.ch)}</span></div>
 <span class="acc-ar${openNote===n.id?' op':''}">▼</span></button>`;
 if(openNote===n.id){
 const parasToShow=showFull?paras:paras.slice(0,2);
-h+=`<div style="padding:0 14px 14px">`;
-h+=`<div style="font-size:10px;color:rgb(var(--sky));font-weight:600;margin-bottom:10px">${sanitize(n.ch)}</div>`;
+h+=`<div style="padding:4px 18px 18px">`;
+h+=`<span class="note-src">${sanitize(n.ch)}</span>`;
 h+=_formatNoteHtml(parasToShow.join('\n'));
 if(!showFull&&paras.length>2){
 h+=`<button onclick="noteExpanded[${n.id}]=true;render()" style="font-size:10px;color:rgb(var(--sky));background:none;border:none;cursor:pointer;padding:4px 0">↓ Show all ${paras.length} paragraphs</button>`;
@@ -1388,8 +1505,8 @@ ${d.beers?'<span class="badge badge-r">BEERS</span>':''}
 ${d.acb>=3?'<span class="badge badge-r">ACB '+d.acb+'</span>':d.acb>=2?'<span class="badge badge-y">ACB '+d.acb+'</span>':d.acb>=1?'<span class="badge badge-g">ACB '+d.acb+'</span>':''}
 <button class="drug-toggle-btn" onclick="toggleDrug('${d.name.replace(/'/g,"\\'")}')"> ${isOpen?'▲':'▼'}</button>
 </div></div>
-<div style="font-size:10px;color:#64748b">${sanitize(d.cat||'')}</div>
-<div style="font-size:10px;color:#475569;margin-top:2px">${sanitize(d.risk)}</div>
+<div class="drug-cat">${sanitize(d.cat||'')}</div>
+<div class="drug-risk">${sanitize(d.risk)}</div>
 ${xrefHtml}</div>`;
 });
 h+=`</div>`;
@@ -1946,7 +2063,7 @@ nRes.forEach(n=>{h+=`<div class="card" style="padding:10px"><div style="font-wei
 }
 if(dRes.length){
 h+=`<div style="font-weight:700;font-size:12px;margin:8px 0 6px">💊 Drugs</div>`;
-dRes.forEach(d=>{h+=`<div class="card" style="padding:10px"><span style="font-weight:700;font-size:11px">${sanitize(d.name)}</span> ${d.beers?'<span class="badge badge-r">BEERS</span>':''}<div style="font-size:10px;color:#475569;margin-top:2px">${sanitize(d.risk)}</div></div>`;});
+dRes.forEach(d=>{h+=`<div class="card" style="padding:10px"><span style="font-weight:700;font-size:11px">${sanitize(d.name)}</span> ${d.beers?'<span class="badge badge-r">BEERS</span>':''}<div class="drug-risk">${sanitize(d.risk)}</div></div>`;});
 }
 if(qRes.length){
 h+=`<div style="font-weight:700;font-size:12px;margin:8px 0 6px">📝 Questions (${Math.min(qRes.length,15)} shown)</div>`;
@@ -2086,7 +2203,7 @@ ${correct?'<span style="color:rgb(var(--em))">✓ Correct</span>':'<span style="
 h+=`</div>`;
 if(rvAns){
 if(q.e){
-h+=`<div class="explain-box-q"><div style="font-weight:700;margin-bottom:4px">💡 Explanation</div>${sanitize(q.e)}</div>`;
+h+=`<div class="explain-box-q"><div style="font-weight:700;margin-bottom:8px">💡 Explanation</div>${_formatExplanationHtml(q.e)}</div>`;
 }
 const note=q.ti>=0&&NOTES[q.ti]?NOTES[q.ti]:null;
 if(note){
@@ -2924,7 +3041,8 @@ async function initApp(){
     QZ=qd;NOTES=nd;FLASH=fd;DRUGS=dd;
     // Tag topics now that QZ is loaded
     QZ.forEach(q=>{const txt=(q.q+' '+q.o.join(' ')).toLowerCase();let best=-1,mx=0;TK.forEach((keys,ti)=>{let sc=0;keys.forEach(k=>{if(txt.includes(k.toLowerCase()))sc++;});if(sc>mx){mx=sc;best=ti;}});q.ti=best>=0?best:8;});
-    buildPool();const hdrSub=document.getElementById("hdr-sub");if(hdrSub)hdrSub.textContent="SZMC · "+QZ.length+" Qs · Hazzard's 8e + Harrison's 22e · Syllabus P005-2026";
+    buildPool();const hdrSub=document.getElementById("hdr-sub");if(hdrSub)hdrSub.textContent="SZMC · "+QZ.length+" Qs · Hazzard's 8e + Harrison's 22e";
+(function(){function updClock(){const d=new Date(),dy=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],mn=['January','February','March','April','May','June','July','August','September','October','November','December'],n=d.getDate(),ord=n>3&&n<21?'th':([,'st','nd','rd'][n%10]||'th'),h=String(d.getHours()).padStart(2,'0'),m=String(d.getMinutes()).padStart(2,'0'),ds=document.getElementById('date-span');if(ds)ds.textContent=dy[d.getDay()]+' '+n+ord+' '+mn[d.getMonth()]+' '+d.getFullYear()+' · '+h+':'+m;}updClock();setInterval(updClock,60000);})();
     _dataReady=true;
     if(loader)loader.remove();
     renderTabs();render();
