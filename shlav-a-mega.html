@@ -19,7 +19,7 @@ button{cursor:pointer;border:none;background:none;font:inherit}
 input,textarea,select{font:inherit}
 .hdr{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:10px 16px;position:sticky;top:0;z-index:40}
 .hdr h1{font-size:16px;font-weight:700;letter-spacing:-.5px}
-.hdr p{font-size:10px;color:#64748b;margin-top:1px}
+.hdr p{font-size:10px;color:#94a3b8;margin-top:1px}
 .tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;z-index:50;box-shadow:0 -2px 10px rgba(0,0,0,.06);padding-bottom:max(4px,env(safe-area-inset-bottom));overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tabs button{flex:0 0 auto;min-width:52px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px 6px;transition:.15s;font-size:10px;font-weight:600}
@@ -81,12 +81,12 @@ input,textarea,select{font:inherit}
 .dark .card{background:#1e293b;border-color:#334155}
 .dark .hdr{background:linear-gradient(135deg,#020617,#0f172a)}
 .dark .tabs{background:#1e293b;border-color:#334155}
-.dark .tabs button:not(.on){color:#64748b}
+.dark .tabs button:not(.on){color:#94a3b8}
 .dark .pill:not(.on){background:#1e293b;color:#94a3b8;border-color:#334155}
 .dark .qo{border-color:#334155;color:#e2e8f0}
 .dark .qo:not(.lk):hover{border-color:#1d4ed8;background:#172554}
 .dark .qo.sel{border-color:rgb(var(--sky));background:#1e3a5f}
-.dark .qo.dim{border-color:#1e293b;color:#475569}
+.dark .qo.dim{border-color:#334155;color:#64748b}
 .dark .search-box{background:#1e293b;border-color:#334155;color:#e2e8f0}
 .dark .stat{background:#1e293b;border-color:#334155}
 .dark .fc{background:#1e293b;border-color:#334155;color:#e2e8f0}
@@ -120,7 +120,7 @@ input,textarea,select{font:inherit}
 body.dark .modal-box{background:#1e293b;color:#e2e8f0}
 .dark .qo.ok{border-color:rgb(var(--em));background:#064e3b;color:#a7f3d0}
 .dark .qo.no{border-color:rgb(var(--red));background:#450a0a;color:#fca5a5}
-.dark .qo.dim{border-color:#1e293b;color:#475569}
+.dark .qo.dim{border-color:#334155;color:#64748b}
 .dark .drug-row{border-color:#334155;color:#e2e8f0}
 .dark .badge-r{background:#450a0a;color:#fca5a5}
 .dark .badge-y{background:#451a03;color:#fde68a}
@@ -190,13 +190,13 @@ body.dark{background:#0f172a;color:#e2e8f0}
 body.dark .card{background:#1e293b;border-color:#334155}
 body.dark .hdr{background:linear-gradient(135deg,#000,#0f172a)}
 body.dark .tabs{background:#1e293b;border-color:#334155}
-body.dark .tabs button:not(.on){color:#64748b}
+body.dark .tabs button:not(.on){color:#94a3b8}
 body.dark .qo{border-color:#334155;color:#e2e8f0}
 body.dark .qo:not(.lk):hover{border-color:#475569;background:#1e293b}
 body.dark .qo.sel{border-color:rgb(var(--sky));background:#172554}
 body.dark .qo.ok{background:#064e3b;border-color:#065f46;color:#a7f3d0}
 body.dark .qo.no{background:#450a0a;border-color:#7f1d1d;color:#fca5a5}
-body.dark .qo.dim{border-color:#1e293b;color:#475569}
+body.dark .qo.dim{border-color:#334155;color:#64748b}
 body.dark .pill:not(.on){background:#1e293b;color:#94a3b8;border-color:#334155}
 body.dark .search-box,.dark .calc-in{background:#1e293b;border-color:#334155;color:#e2e8f0}
 body.dark select{background:#1e293b;color:#e2e8f0}
@@ -300,7 +300,7 @@ body.dark .diff-btn{color:#e2e8f0}
 @keyframes ldprog{from{width:20%}to{width:90%}}</style>
 
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v8.5</span></h1>
+<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#94a3b8;vertical-align:middle">v8.6 · Apr 2026</span></h1>
 <button class="dm-btn" onclick="toggleDark()" title="Dark Mode">🌓</button>
 <p id="hdr-sub">SZMC · Loading... · Hazzard's 8e + Harrison's 22e · Syllabus P005-2026</p>
 </div>
@@ -2875,7 +2875,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='8.5';
+const APP_VERSION='8.6';
 function getDiagnostics(){
 const tot=S.qOk+S.qNo;
 return `Shlav A Mega v${APP_VERSION}\n`+
