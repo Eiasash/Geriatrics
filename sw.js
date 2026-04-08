@@ -9,6 +9,7 @@ const DATA=[
   'notes.json',
   'flashcards.json',
   'drugs.json',
+  'explanations_cache.json',
 ];
 const ALL_URLS=[...STATIC,...DATA];
 
