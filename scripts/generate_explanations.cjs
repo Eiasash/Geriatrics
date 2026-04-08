@@ -141,8 +141,8 @@ function callClaude(apiKey, userPrompt) {
     });
 
     req.on('error', reject);
-    req.setTimeout(60000, () => {
-      req.destroy(new Error('Request timed out after 60s'));
+    req.setTimeout(120000, () => {
+      req.destroy(new Error('Request timed out after 120s'));
     });
     req.write(body);
     req.end();
