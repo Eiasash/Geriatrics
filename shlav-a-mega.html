@@ -15,7 +15,7 @@
 .skip-link{position:absolute;left:-9999px;top:0;z-index:999;padding:8px 16px;background:rgb(var(--sky));color:#fff;font-weight:700;font-size:13px;border-radius:0 0 8px 0;text-decoration:none}.skip-link:focus{left:0}
 :root{--sky:59 130 246;--em:16 185 129;--sl8:30 41 59;--red:239 68 68;--amb:245 158 11}
 body{font-family:'Inter',system-ui,sans-serif;background:#f8fafc;color:#1e293b;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-.heb{font-family:'Heebo',sans-serif;direction:rtl;text-align:right}
+.heb{font-family:'Heebo',sans-serif;direction:rtl;text-align:right;unicode-bidi:plaintext}
 button{cursor:pointer;border:none;background:none;font:inherit}
 input,textarea,select{font:inherit}
 .hdr{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:10px 16px;position:sticky;top:0;z-index:40}
@@ -1075,7 +1075,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:flex-star
 ${bk ? `<button onclick="assignBkFolder(pool[qi])" style="font-size:10px;padding:2px 6px;border:1px solid #e2e8f0;border-radius:6px;background:${S.dark?'#1e293b':'#fff'};color:${S.dark?'#e2e8f0':'#475569'};cursor:pointer" title="Assign folder">${S.bkFolders[pool[qi]]?'📂'+S.bkFolders[pool[qi]]:'📁'}</button>` : ''}
 <span style="color:#94a3b8;font-size:10px">${qi+1}/${pool.length}</span>
 </div></div>`;
-h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px">${sanitize(q.q)}</p>`;
+h+=`<p class="heb" dir="rtl" lang="he" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px">${sanitize(q.q)}</p>`;
 if(q.img_url)h+=`<img src="${sanitize(q.img_url)}" alt="Question image" style="max-width:100%;height:auto;border-radius:8px;margin-bottom:12px;display:block">`;
 q.o.forEach((o,i)=>{
 let cls='qo';
@@ -1113,7 +1113,7 @@ if(ans&&!examMode&&sel===q.c){
   if(!teachBackState){
     h+=`<div style="margin-top:12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:12px">
       <div style="font-size:12px;font-weight:700;color:#065f46;margin-bottom:8px;direction:rtl">🎓 Teach-Back: הסבר מדוע זו התשובה הנכונה</div>
-      <textarea id="tbInput" class="q-note-box" style="width:100%;min-height:60px;resize:vertical;font-family:'Heebo',sans-serif" placeholder="הקלד את ההסבר שלך..."></textarea>
+      <textarea id="tbInput" class="q-note-box" dir="rtl" style="width:100%;min-height:60px;resize:vertical;font-family:'Heebo',sans-serif" placeholder="הקלד את ההסבר שלך..."></textarea>
       <div style="display:flex;gap:8px;margin-top:8px">
         <button class="btn btn-g" style="flex:1;font-size:11px" onclick="const v=document.getElementById('tbInput')?.value?.trim();if(v){gradeTeachBack(pool[qi],v);}else{teachBackState='skip';render();}">🤖 Grade it</button>
         <button class="btn btn-o" style="font-size:11px" onclick="teachBackState='skip';render()">Skip</button>
@@ -2620,7 +2620,7 @@ h+=`<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px">
 ${topicName?`<span class="rev-badge-topic">${sanitize(topicName)}</span>`:''}
 <span class="rev-badge-rep">Rep #${srState.n}</span>
 </div>`;
-h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px">${sanitize(q.q)}</p>`;
+h+=`<p class="heb" dir="rtl" lang="he" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px">${sanitize(q.q)}</p>`;
 if(q.img_url)h+=`<img src="${sanitize(q.img_url)}" alt="Question image" style="max-width:100%;height:auto;border-radius:8px;margin-bottom:12px;display:block">`;
 q.o.forEach((o,i)=>{
 let cls='qo';
