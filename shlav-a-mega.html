@@ -881,12 +881,6 @@ h+=`</div>`;
 const qGlobalIdx=pool[qi];
 const hasCached=!!_exCache[qGlobalIdx];
 // Per-question user notes
-const qNote = S.qNotes[String(qGlobalIdx)]||'';
-h+=`<div style="margin-top:8px">
-<div style="font-size:10px;color:#94a3b8;margin-bottom:3px">📝 הערה אישית</div>
-<textarea class="q-note-box" rows="2" placeholder="הוסף הערה לשאלה זו..." onchange="S.qNotes['${qGlobalIdx}']=this.value;save()" onblur="S.qNotes['${qGlobalIdx}']=this.value;save()">${sanitize(qNote)}</textarea>
-</div>`;
-h+=// Per-question user notes
 const qNote=S.qNotes[String(qGlobalIdx)]||'';
 h+=`<div style="margin-top:8px"><div style="font-size:10px;color:#94a3b8;margin-bottom:3px">📝 הערה אישית</div><textarea class="q-note-box" rows="2" placeholder="הוסף הערה לשאלה זו..." oninput="S.qNotes['${qGlobalIdx}']=this.value;save()">${sanitize(qNote)}</textarea></div>`;
 h+=`<div style="margin-top:8px;display:flex;align-items:center;gap:6px">
