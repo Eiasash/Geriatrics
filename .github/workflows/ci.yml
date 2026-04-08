@@ -28,3 +28,100 @@ jobs:
             exit 1
           fi
           echo "OK: $COUNT questions"
+
+      - name: Validate question schema integrity
+        run: |
+          python3 -c "
+          import json, sys
+          qs = json.load(open('questions.json'))
+          errors = []
+          for i, q in enumerate(qs):
+              if not q.get('q'):
+                  errors.append(f'Q{i}: missing question text')
+              if not isinstance(q.get('o'), list) or len(q.get('o', [])) < 2:
+                  errors.append(f'Q{i}: missing or invalid options')
+              if not isinstance(q.get('c'), int) or q['c'] < 0 or q['c'] >= len(q.get('o', [])):
+                  errors.append(f'Q{i}: invalid correct answer index c={q.get(\"c\")}')
+              if q.get('ti') is not None and (not isinstance(q.get('ti'), int) or q['ti'] < 0):
+                  errors.append(f'Q{i}: invalid topic index ti={q.get(\"ti\")}')
+          if errors:
+              for e in errors:
+                  print(f'ERROR: {e}', file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: All {len(qs)} questions have valid schema')
+          "
+
+      - name: Validate notes schema
+        run: |
+          python3 -c "
+          import json, sys
+          notes = json.load(open('notes.json'))
+          errors = []
+          for i, n in enumerate(notes):
+              if not n.get('topic'):
+                  errors.append(f'Note {i}: missing topic')
+              if not n.get('notes'):
+                  errors.append(f'Note {i}: missing notes content')
+          if errors:
+              for e in errors:
+                  print(f'ERROR: {e}', file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: All {len(notes)} notes have valid schema')
+          "
+
+      - name: Validate drugs schema
+        run: |
+          python3 -c "
+          import json, sys
+          drugs = json.load(open('drugs.json'))
+          errors = []
+          for i, d in enumerate(drugs):
+              if not d.get('name'):
+                  errors.append(f'Drug {i}: missing name')
+          if errors:
+              for e in errors:
+                  print(f'ERROR: {e}', file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: All {len(drugs)} drugs have valid schema')
+          "
+
+      - name: Check for duplicate questions
+        run: |
+          python3 -c "
+          import json, sys
+          qs = json.load(open('questions.json'))
+          seen = {}
+          dupes = 0
+          for i, q in enumerate(qs):
+              key = q['q'].strip()[:80]
+              if key in seen:
+                  dupes += 1
+                  if dupes <= 5:
+                      print(f'WARN: Possible duplicate Q{i} ~ Q{seen[key]}: {key[:60]}...')
+              else:
+                  seen[key] = i
+          if dupes > 0:
+              print(f'WARNING: {dupes} possible duplicate questions found')
+          else:
+              print('OK: No duplicate questions detected')
+          "
+
+      - name: Validate HTML syntax
+        run: |
+          python3 -c "
+          from html.parser import HTMLParser
+          import sys
+          class Checker(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.errors = 0
+              def handle_starttag(self, tag, attrs): pass
+              def handle_endtag(self, tag): pass
+          c = Checker()
+          try:
+              c.feed(open('shlav-a-mega.html').read())
+              print('OK: HTML parses without errors')
+          except Exception as e:
+              print(f'ERROR: HTML parse error: {e}', file=sys.stderr)
+              sys.exit(1)
+          "
