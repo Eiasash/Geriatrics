@@ -747,7 +747,7 @@ function speakQuestion(){
 if(!window.speechSynthesis)return;
 if(isSpeaking){window.speechSynthesis.cancel();isSpeaking=false;render();return;}
 const q=QZ[pool[qi]];if(!q)return;
-let text=q.q+'. ';q.o.forEach((o,i)=>{text+=String.fromCharCode(1488+i)+'. '+o+'. ';});
+let text=q.q+(q.img?' [Image: '+q.img+']':'')+'. ';q.o.forEach((o,i)=>{text+=String.fromCharCode(1488+i)+'. '+o+'. ';});
 const u=new SpeechSynthesisUtterance(text);
 u.lang='he-IL';u.rate=0.9;
 u.onend=()=>{isSpeaking=false;render();};
@@ -1038,6 +1038,14 @@ render();
 }
 function fmtT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return(h?h+':':'')+String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0')}
 
+
+function viewImg(src){
+const ov=document.createElement('div');
+ov.className='img-overlay';
+ov.innerHTML='<img src="'+src+'" alt="Zoomed">';
+ov.onclick=function(){ov.remove();};
+document.body.appendChild(ov);
+}
 function renderQuiz(){
 // ===== SUDDEN DEATH RENDERING =====
 if(sdMode){
@@ -1047,7 +1055,8 @@ let h=`<div class="sudden-death-banner"><span style="font-weight:700;font-size:1
 <span style="font-size:16px;font-weight:700">🔥 ${sdStreak}</span>
 <button class="btn" style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;padding:4px 10px" onclick="endSuddenDeath()">Quit</button></div>`;
 h+=`<div class="card" style="padding:16px">`;
-h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px">${q.q}</p>`;
+h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px">${q.q}</p>`;
+if(q.img){h+=`<div style="margin-bottom:14px;text-align:center"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid #e2e8f0;cursor:pointer" onclick="viewImg(this.src)" loading="lazy"></div>`;}
 q.o.forEach((o,i)=>{
 let cls='qo';
 if(ans){cls+=' lk';if(i===q.c)cls+=' ok';else if(i===sel)cls+=' no';else cls+=' dim';}
@@ -1117,7 +1126,8 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <button onclick="shareQ()" id="shbtn" class="share-btn" title="Share">📋 שתף</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px" title="Bookmark">${bk?'🔖':'🏷️'}</button>
 <span style="color:#94a3b8;font-size:10px">${qi+1}/${pool.length}</span>
 </div></div>`;
-h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px" dir="auto">${q.q}</p>`;
+h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="auto">${q.q}</p>`;
+if(q.img){h+=`<div style="margin-bottom:14px;text-align:center"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid #e2e8f0;cursor:pointer" onclick="viewImg(this.src)" loading="lazy"></div>`;}
 q.o.forEach((o,i)=>{
 let cls='qo';
 if(ans){cls+=' lk';if(i===q.c)cls+=' ok';else if(i===sel)cls+=' no';else cls+=' dim';}
@@ -1125,7 +1135,7 @@ else if(i===sel)cls+=' sel';
 const blurCls=blindRecall&&!ans&&i!==sel?' qo-blur':'';
 // Distractor autopsy: highlight a wrong answer on mastered questions
 const autopsyCls=(autopsyMode&&ans&&i!==q.c&&i===autopsyDistractor)?' distractor-highlight':'';
-h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&i!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${i})">${o}</button>`;
+h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&i!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${i})"><span>${o}</span>${q.oi&&q.oi[i]?'<img src="'+q.oi[i]+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
 });
 h+=`<div style="display:flex;gap:6px;margin-top:14px">`;
 if(!ans){h+=`<button class="btn btn-p" onclick="check()"${sel===null?' disabled':''}>בדוק</button>`;if(!examMode)h+=`<button class="btn" onclick="showAnswerHardFail()" style="background:#fff3e0;color:#d97706;font-size:11px;padding:6px 14px;margin-left:6px">👁 לא יודע</button>`;}
