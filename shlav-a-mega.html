@@ -1230,9 +1230,12 @@ const lines=para.split('\n');
 const fmt=lines.map(function(line){
 line=line.replace(/^([^:\n]{2,45}):/,'<strong>$1:</strong>');
 line=line.replace(/(≥\d[\d.]*|≤\d[\d.]*|<\d[\d.]*|>\d[\d.]*|\d+%)/g,'<b>$1</b>');
+line=line.replace(/\(SOE=[A-C]\)/g,'<span style="background:#ecfdf5;color:#059669;padding:1px 4px;border-radius:3px;font-size:10px;font-weight:600">$&</span>');
+line=line.replace(/\(([0-9]+)\)/g,'<br><span style="color:#3b82f6;font-weight:600">($1)</span>');
+line=line.replace(/(?:TYPES|Types|Subtypes|Risk factors|Prevention|Management|Diagnosis|Treatment|Complications|Consequences|Screening|Assessment|Workup):/g,'<br><strong style="color:#1e40af">$&</strong>');
 return line;
 }).join('<br>');
-return '<p style="font-size:11px;line-height:1.9;margin:0 0 10px">'+fmt+'</p>';
+return '<p style="font-size:11px;line-height:1.85;margin:0 0 8px">'+fmt+'</p>';
 }).join('');
 }
 let h='<div style="font-size:10px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📝 Clinical Notes</div>';
@@ -2536,11 +2539,22 @@ const el=document.getElementById('fbText');
 const msg=el?.value?.trim();
 if(!msg){const st=document.getElementById('fbStatus');if(st){st.textContent='⚠️ Please enter your feedback first';st.style.display='block';st.style.color='#d97706';setTimeout(()=>st.style.display='none',3000);}return;}
 const diag=getDiagnostics();
-const body=encodeURIComponent(`${msg}\n\n--- Diagnostics ---\n${diag}`);
-const subject=encodeURIComponent('Shlav A Mega Feedback v'+APP_VERSION);
-window.open(`mailto:eiasashhab@yahoo.com?subject=${subject}&body=${body}`);
+const payload={msg:msg,diag:diag,ts:new Date().toISOString(),v:APP_VERSION};
+// Store locally
+const fb=JSON.parse(localStorage.getItem('shlav_feedback')||'[]');
+fb.push(payload);
+localStorage.setItem('shlav_feedback',JSON.stringify(fb));
+// Try Supabase
+fetch('https://krmlzwwelqvlfslwltol.supabase.co/rest/v1/shlav_feedback',{
+method:'POST',
+headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtybmx6d3dlbHF2bGZzbHdsdG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDExMDcyNTAsImV4cCI6MjA1NjY4MzI1MH0.CsJEJAjP-GB4X0bHk0RVbFCOZxyj0VrfOdGr5wSBzBg','Prefer':'return=minimal'},
+body:JSON.stringify({message:msg,diagnostics:diag,app_version:APP_VERSION})
+}).catch(()=>{});
+// Also copy to clipboard as backup
+const full=msg+'\n\n--- Diagnostics ---\n'+diag;
+if(navigator.clipboard){navigator.clipboard.writeText(full).catch(()=>{});}
 const st=document.getElementById('fbStatus');
-if(st){st.textContent='✅ Email draft opened — thank you!';st.style.display='block';st.style.color='#059669';setTimeout(()=>st.style.display='none',5000);}
+if(st){st.textContent='✅ Feedback saved + copied to clipboard';st.style.display='block';st.style.color='#059669';setTimeout(()=>st.style.display='none',5000);}
 el.value='';
 }
 
