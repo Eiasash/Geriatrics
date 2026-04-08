@@ -2200,6 +2200,96 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;pa
 </div></div>`;
 });
 h+=`</div>`;}
+// Progress line chart
+if(S.examHistory && S.examHistory.length >= 2){
+  const pts = [...S.examHistory].reverse(); // oldest first
+  const W=280, H=100, pad=28;
+  const maxPts = 10;
+  const data = pts.slice(-maxPts);
+  const xStep = data.length > 1 ? (W - 2*pad) / (data.length - 1) : W - 2*pad;
+  const yScale = (pct) => pad + (H - 2*pad) * (1 - pct/100);
+  const passY = yScale(60);
+  // Build polyline
+  const polyPts = data.map((e,i) => `${pad + i*xStep},${yScale(e.pct)}`).join(' ');
+  // Build dots
+  const dots = data.map((e,i) => {
+    const cx = pad + i*xStep;
+    const cy = yScale(e.pct);
+    const col = e.pct >= 60 ? '#059669' : '#dc2626';
+    return `<circle cx="${cx}" cy="${cy}" r="4" fill="${col}"/><title>${e.date}: ${e.pct}%</title>`;
+  }).join('');
+  // X axis labels (every other exam)
+  const xLabels = data.map((e,i) => {
+    if(i % 2 !== 0 && i !== data.length-1) return '';
+    return `<text x="${pad + i*xStep}" y="${H-4}" text-anchor="middle" font-size="7" fill="#94a3b8">${e.date.slice(5)}</text>`;
+  }).join('');
+  // Y axis labels
+  const yLabels = [0,25,50,75,100].map(v => `<text x="${pad-4}" y="${yScale(v)+3}" text-anchor="end" font-size="7" fill="#94a3b8">${v}</text><line x1="${pad-2}" y1="${yScale(v)}" x2="${W-pad}" y2="${yScale(v)}" stroke="#f1f5f9" stroke-width="0.5"/>`).join('');
+  // Pass line at 60%
+  const passLine = `<line x1="${pad}" y1="${passY}" x2="${W-pad}" y2="${passY}" stroke="#eab308" stroke-width="1" stroke-dasharray="3,3"/><text x="${W-pad+2}" y="${passY+3}" font-size="7" fill="#eab308">60%</text>`;
+
+  h += `<div class="card" style="padding:14px;margin-bottom:10px">
+  <div style="font-weight:700;font-size:12px;margin-bottom:8px">📈 Exam Score Trend</div>
+  <svg viewBox="0 0 ${W} ${H}" width="100%" style="overflow:visible">
+    ${yLabels}
+    ${passLine}
+    <polyline points="${polyPts}" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linejoin="round"/>
+    ${dots}
+    ${xLabels}
+  </svg>
+  <div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">Last ${data.length} mock exams · dashed line = 60% pass threshold</div>
+  </div>`;
+}
+// Topic Radar Chart
+const radarTopics = TOPICS.map((name,i) => {
+  const s = getTopicStats()[i] || {ok:0,no:0,tot:0};
+  return {name, i, pct: s.tot ? Math.round(s.ok/s.tot*100) : 0, tot: s.tot};
+}).filter(t => t.tot > 0).slice(0, 10);
+
+if(radarTopics.length >= 3){
+  const N = radarTopics.length;
+  const CX=120, CY=110, R=80, W=240, H=220;
+  const angle = i => (2*Math.PI*i/N) - Math.PI/2;
+  // Background rings (25/50/75/100%)
+  const rings = [25,50,75,100].map(pct => {
+    const r = R * pct/100;
+    const pts = radarTopics.map((_,i) => `${CX+r*Math.cos(angle(i))},${CY+r*Math.sin(angle(i))}`).join(' ');
+    return `<polygon points="${pts}" fill="none" stroke="#e2e8f0" stroke-width="${pct===100?1.5:0.5}"/><text x="${CX}" y="${CY-r-2}" font-size="6" fill="#94a3b8" text-anchor="middle">${pct}%</text>`;
+  }).join('');
+  // Axes
+  const axes = radarTopics.map((_,i) => `<line x1="${CX}" y1="${CY}" x2="${CX+R*Math.cos(angle(i))}" y2="${CY+R*Math.sin(angle(i))}" stroke="#e2e8f0" stroke-width="0.5"/>`).join('');
+  // Data polygon
+  const dataPts = radarTopics.map((t,i) => {
+    const r = R * t.pct/100;
+    return `${CX+r*Math.cos(angle(i))},${CY+r*Math.sin(angle(i))}`;
+  }).join(' ');
+  // Labels
+  const labels = radarTopics.map((t,i) => {
+    const lx = CX + (R+14)*Math.cos(angle(i));
+    const ly = CY + (R+14)*Math.sin(angle(i));
+    const short = t.name.length > 8 ? t.name.slice(0,7)+'…' : t.name;
+    const col = t.pct>=70?'#059669':t.pct>=50?'#d97706':'#dc2626';
+    return `<text x="${lx}" y="${ly}" font-size="7" text-anchor="middle" dominant-baseline="middle" fill="${col}">${short}</text>`;
+  }).join('');
+  // Dots
+  const dots2 = radarTopics.map((t,i) => {
+    const r = R * t.pct/100;
+    const col = t.pct>=70?'#059669':t.pct>=50?'#d97706':'#dc2626';
+    return `<circle cx="${CX+r*Math.cos(angle(i))}" cy="${CY+r*Math.sin(angle(i))}" r="3" fill="${col}"/>`;
+  }).join('');
+
+  h += `<div class="card" style="padding:14px;margin-bottom:10px">
+  <div style="font-weight:700;font-size:12px;margin-bottom:8px">🕸 Topic Coverage Radar</div>
+  <svg viewBox="0 0 ${W} ${H}" width="100%" style="overflow:visible">
+    ${rings}
+    ${axes}
+    <polygon points="${dataPts}" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="1.5"/>
+    ${dots2}
+    ${labels}
+  </svg>
+  <div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">${radarTopics.filter(t=>t.pct>=70).length}/${radarTopics.length} topics ≥70% · outer ring = 100%</div>
+  </div>`;
+}
 // Time per question analytics
 if(S.qTimes && Object.keys(S.qTimes).length > 0){
 h+=`<div class="card" style="padding:14px;margin-bottom:10px">
