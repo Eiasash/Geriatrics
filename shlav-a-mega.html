@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Heebo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+.skip-link{position:absolute;left:-9999px;top:0;z-index:999;padding:8px 16px;background:rgb(var(--sky));color:#fff;font-weight:700;font-size:13px;border-radius:0 0 8px 0;text-decoration:none}.skip-link:focus{left:0}
 :root{--sky:59 130 246;--em:16 185 129;--sl8:30 41 59;--red:239 68 68;--amb:245 158 11}
 body{font-family:'Inter',system-ui,sans-serif;background:#f8fafc;color:#1e293b;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .heb{font-family:'Heebo',sans-serif;direction:rtl;text-align:right}
@@ -24,7 +25,7 @@ input,textarea,select{font:inherit}
 .tabs::-webkit-scrollbar{display:none}
 .tabs button{flex:0 0 auto;min-width:52px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px 6px;transition:.15s;font-size:10px;font-weight:600}
 .tabs button.on{color:rgb(var(--sky))}
-.tabs button:not(.on){color:#94a3b8}
+.tabs button:not(.on){color:#64748b}
 .tabs .ic{font-size:18px}
 .ct{max-width:640px;margin:0 auto;padding:12px 12px 80px}
 .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:10px}
@@ -39,6 +40,7 @@ input,textarea,select{font:inherit}
 .qo.dim{border-color:#f1f5f9;color:#cbd5e1}
 .btn{padding:7px 18px;border-radius:12px;font-size:12px;font-weight:700;transition:.15s;display:inline-flex;align-items:center;justify-content:center;min-height:44px}
 .btn:disabled{opacity:.35}
+:focus-visible{outline:3px solid rgb(var(--sky));outline-offset:2px;border-radius:4px}
 .btn-p{background:rgb(var(--sky));color:#fff}
 .btn-d{background:rgb(var(--sl8));color:#fff}
 .btn-g{background:rgb(var(--em));color:#fff}
@@ -82,6 +84,7 @@ input,textarea,select{font:inherit}
 .dark .hdr{background:linear-gradient(135deg,#020617,#0f172a)}
 .dark .tabs{background:#1e293b;border-color:#334155}
 .dark .tabs button:not(.on){color:#94a3b8}
+.dark .skip-link{background:#3b82f6}
 .dark .pill:not(.on){background:#1e293b;color:#94a3b8;border-color:#334155}
 .dark .qo{border-color:#334155;color:#e2e8f0}
 .dark .qo:not(.lk):hover{border-color:#1d4ed8;background:#172554}
@@ -333,11 +336,12 @@ body.dark .diff-btn{color:#e2e8f0}
 @keyframes ldprog{from{width:20%}to{width:90%}}</style>
 
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span id="ver-span" style="font-size:9px;font-weight:400;color:#94a3b8;vertical-align:middle">v8.9</span><span id="date-span" style="font-size:11px;font-weight:400;color:#7dd3fc;vertical-align:middle;margin-left:6px"></span></h1>
-<button class="dm-btn" onclick="toggleDark()" title="Dark Mode">🌓</button>
+<h1>Shlav A Mega <span id="ver-span" style="font-size:9px;font-weight:400;color:#94a3b8;vertical-align:middle">v9.0</span><span id="date-span" style="font-size:11px;font-weight:400;color:#7dd3fc;vertical-align:middle;margin-left:6px"></span></h1>
+<button class="dm-btn" onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode">🌓</button>
 <p id="hdr-sub">SZMC · Loading... · Hazzard's 8e + Harrison's 22e</p>
 </div>
 
+<a href="#ct" class="skip-link">Skip to content</a>
 <div class="ct" id="ct"></div>
 
 <div class="tabs" id="tb"></div>
@@ -395,13 +399,18 @@ const TK=[
 ["emergency","מיון","ED ","triage","geriatric emergency","EQUiPPED","typhlitis","atypical present"]
 ];
 // Topic tagging runs inside initApp() after QZ is loaded
+let _topicStatsSig='';let _topicStatsCache=null;
 function getTopicStats(){
+const sig=S.qOk+','+S.qNo+','+JSON.stringify(S.tpOk)+','+JSON.stringify(S.tpNo);
+if(sig===_topicStatsSig&&_topicStatsCache)return _topicStatsCache;
+_topicStatsSig=sig;
 const st={};
 const allTopics=new Set([...Object.keys(S.tpOk||{}),...Object.keys(S.tpNo||{})].map(Number));
 allTopics.forEach(ti=>{
 const ok=S.tpOk[ti]||0,no=S.tpNo[ti]||0;
 st[ti]={ok,no,tot:ok+no};
 });
+_topicStatsCache=st;
 return st;
 }
 
@@ -604,13 +613,25 @@ const days=s.n<=1?1:s.n===2?3:Math.round((s.n-1)*s.ef);
 s.next=Date.now()+days*86400000;
 save();
 }
+let _dueSig='';let _dueQCache=null;let _dueOrdCache=null;
+function _getDueSig(){const now=Date.now();return JSON.stringify(S.sr)+','+Math.floor(now/60000);}
 function getDueQuestions(){
+const sig=_getDueSig();
+if(sig===_dueSig&&_dueQCache)return _dueQCache;
+_dueSig=sig;
 const now=Date.now();
-return Object.entries(S.sr).filter(([k,v])=>v.next<=now).map(([k])=>parseInt(k)).slice(0,20);
+_dueQCache=Object.entries(S.sr).filter(([k,v])=>v.next<=now).map(([k])=>parseInt(k)).slice(0,20);
+_dueOrdCache=null;
+return _dueQCache;
 }
 function getDueOrdered(){
+const sig=_getDueSig();
+if(sig===_dueSig&&_dueOrdCache)return _dueOrdCache;
+_dueSig=sig;
 const now=Date.now();
-return Object.entries(S.sr).filter(([k,v])=>v.next<=now).sort((a,b)=>a[1].next-b[1].next).map(([k])=>parseInt(k));
+_dueQCache=Object.entries(S.sr).filter(([k,v])=>v.next<=now).map(([k])=>parseInt(k)).slice(0,20);
+_dueOrdCache=Object.entries(S.sr).filter(([k,v])=>v.next<=now).sort((a,b)=>a[1].next-b[1].next).map(([k])=>parseInt(k));
+return _dueOrdCache;
 }
 // Init/reset SR session tracking
 (function initSrSess(){
@@ -630,7 +651,7 @@ function renderTabs(){
 const dueN=_dataReady?getDueOrdered().length:0;
 document.getElementById('tb').innerHTML=TABS.map(t=>{
 const badge=(t.id==='review'&&dueN>0)?` <span style="background:rgb(var(--red));color:#fff;font-size:8px;font-weight:700;padding:1px 5px;border-radius:8px;vertical-align:middle">${dueN}</span>`:'';
-return`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')"><span class="ic">${t.ic}</span>${t.l}${badge}</button>`;
+return`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" aria-label="${t.l}"><span class="ic">${t.ic}</span>${t.l}${badge}</button>`;
 }).join('');
 }
 function go(t){
@@ -1977,7 +1998,7 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 </div>`;
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
-<div>Shlav A Mega v8.4 · P005-2026 Syllabus</div>
+<div>Shlav A Mega v9.0 · P005-2026 Syllabus</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
 return h;
@@ -2040,11 +2061,29 @@ const showQuestions=(srchQ.length>=2||hasActiveFilter);
 
 if(showQuestions){
 const q=srchQ.length>=2?srchQ.toLowerCase():null;
-// Text filter questions
+// Text filter questions — use inverted index when available
 let qRes=[];
-QZ.forEach((item,i)=>{
-  if(!q||(item.q.toLowerCase().includes(q)||item.o.some(o=>o.toLowerCase().includes(q))))qRes.push(i);
-});
+if(q&&_searchIdx.size>0){
+  const terms=q.split(/\s+/).filter(w=>w.length>2);
+  if(terms.length>0){
+    // intersect candidate sets for each term
+    let candidates=null;
+    terms.forEach(term=>{
+      const matches=new Set();
+      _searchIdx.forEach((idxList,word)=>{if(word.includes(term))idxList.forEach(i=>matches.add(i));});
+      candidates=candidates===null?matches:new Set([...candidates].filter(x=>matches.has(x)));
+    });
+    qRes=[...(candidates||new Set())];
+    // fallback: also include questions matching full query string directly (handles short words missed by index)
+    QZ.forEach((item,i)=>{if(!candidates||!candidates.has(i)){if(item.q.toLowerCase().includes(q)||item.o.some(o=>o.toLowerCase().includes(q)))qRes.push(i);}});
+  } else {
+    QZ.forEach((item,i)=>{if(item.q.toLowerCase().includes(q)||item.o.some(o=>o.toLowerCase().includes(q)))qRes.push(i);});
+  }
+} else {
+  QZ.forEach((item,i)=>{
+    if(!q||(item.q.toLowerCase().includes(q)||item.o.some(o=>o.toLowerCase().includes(q))))qRes.push(i);
+  });
+}
 // Apply status + topic filters
 qRes=qRes.filter(i=>_srchMatchStatus(i));
 qRes=qRes.filter(i=>srchTopic===-1||QZ[i].ti===srchTopic);
@@ -2992,7 +3031,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='8.6';
+const APP_VERSION='9.0';
 function getDiagnostics(){
 const tot=S.qOk+S.qNo;
 return `Shlav A Mega v${APP_VERSION}\n`+
@@ -3029,6 +3068,7 @@ el.value='';
 // PWA
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 // Async app initialization
+let _searchIdx=new Map();
 async function initApp(){
   const loader=document.getElementById('app-loader');
   try{
@@ -3039,6 +3079,12 @@ async function initApp(){
       fetch('drugs.json').then(r=>{if(!r.ok)throw new Error('drugs');return r.json();}),
     ]);
     QZ=qd;NOTES=nd;FLASH=fd;DRUGS=dd;
+    // Build inverted search index
+    _searchIdx=new Map();
+    QZ.forEach((q,i)=>{
+      const words=(q.q+' '+q.o.join(' ')).toLowerCase().split(/\s+/);
+      words.forEach(w=>{if(w.length>2){if(!_searchIdx.has(w))_searchIdx.set(w,[]);_searchIdx.get(w).push(i);}});
+    });
     // Tag topics now that QZ is loaded
     QZ.forEach(q=>{const txt=(q.q+' '+q.o.join(' ')).toLowerCase();let best=-1,mx=0;TK.forEach((keys,ti)=>{let sc=0;keys.forEach(k=>{if(txt.includes(k.toLowerCase()))sc++;});if(sc>mx){mx=sc;best=ti;}});q.ti=best>=0?best:8;});
     buildPool();const hdrSub=document.getElementById("hdr-sub");if(hdrSub)hdrSub.textContent="SZMC · "+QZ.length+" Qs · Hazzard's 8e + Harrison's 22e";
