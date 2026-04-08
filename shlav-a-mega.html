@@ -326,6 +326,23 @@ body.dark .diff-btn{color:#e2e8f0}
 .drug-fc-front{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;border-radius:16px}
 .drug-fc-back{background:#f0fdf4;border:1px solid #a7f3d0;border-radius:16px;direction:rtl}
 body.dark .drug-fc-back{background:#064e3b;border-color:#065f46;color:#a7f3d0}
+
+/* Night/Study Mode - warm sepia tones */
+body.study{background:#1a1008;color:#e8d5b0;filter:none}
+body.study .card{background:#221508;border-color:#3d2a12}
+body.study .hdr{background:linear-gradient(135deg,#0d0804,#1a1008)}
+body.study .tabs{background:#221508;border-color:#3d2a12}
+body.study .tabs button:not(.on){color:#a08060}
+body.study .pill:not(.on){background:#221508;color:#a08060;border-color:#3d2a12}
+body.study .qo{border-color:#3d2a12;color:#e8d5b0;background:#221508}
+body.study .qo:not(.lk):hover{border-color:#7a5c30;background:#2a1e0d}
+body.study .qo.sel{border-color:#c48a3a;background:#2a1e0d}
+body.study .search-box,.study .calc-in{background:#221508;border-color:#3d2a12;color:#e8d5b0}
+body.study .stat{background:#221508;border-color:#3d2a12}
+body.study .fc{background:#221508;border-color:#3d2a12;color:#e8d5b0}
+body.study .acc-h:hover{background:#221508}
+body.study .sec-t{color:#e8d5b0}
+:root{--night-bg:26 16 8;--night-text:232 213 176}
 </style>
 </head>
 <body>
@@ -341,7 +358,10 @@ body.dark .drug-fc-back{background:#064e3b;border-color:#065f46;color:#a7f3d0}
 
 <div class="hdr" style="position:relative">
 <h1>Shlav A Mega <span id="ver-span" style="font-size:9px;font-weight:400;color:#94a3b8;vertical-align:middle">v9.0</span><span id="date-span" style="font-size:11px;font-weight:400;color:#7dd3fc;vertical-align:middle;margin-left:6px"></span></h1>
-<button class="dm-btn" onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode">🌓</button>
+<div class="dm-btn" style="display:flex;gap:4px;align-items:center">
+<button onclick="toggleStudyMode()" title="Night/Study Mode" aria-label="Toggle study mode" style="font-size:15px;padding:3px;opacity:.7;background:none;border:none;cursor:pointer">🕯️</button>
+<button onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode" style="font-size:15px;padding:3px;opacity:.7;background:none;border:none;cursor:pointer">🌓</button>
+</div>
 <p id="hdr-sub">SZMC · Loading... · Hazzard's 8e + Harrison's 22e</p>
 </div>
 
@@ -425,10 +445,10 @@ let _dataReady=false; // guard: render() is a no-op until initApp() resolves
 
 // ===== STATE =====
 const LS='samega';
-let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,tpOk:{},tpNo:{},examHistory:[],chat:[],diff:{},qNotes:{},studyDays:{},totalMinutes:0,fontSize:14,ltn:{},qTags:{},qReports:{}};
+let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,tpOk:{},tpNo:{},examHistory:[],chat:[],diff:{},qNotes:{},studyDays:{},totalMinutes:0,fontSize:14,ltn:{},qTags:{},qReports:{},bkFolders:{}};
 if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;if(!S.tpOk)S.tpOk={};if(!S.tpNo)S.tpNo={};if(!S.examHistory)S.examHistory=[];if(!S.chat)S.chat=[];if(!S.diff)S.diff={};
 if(!S.qNotes)S.qNotes={};if(!S.studyDays)S.studyDays={};if(!S.totalMinutes)S.totalMinutes=0;if(!S.fontSize)S.fontSize=14;
-if(!S.ltn)S.ltn={};if(!S.qTags)S.qTags={};if(!S.qReports)S.qReports={};
+if(!S.ltn)S.ltn={};if(!S.qTags)S.qTags={};if(!S.qReports)S.qReports={};if(!S.bkFolders)S.bkFolders={};
 // Track daily study minutes
 const _today=new Date().toISOString().slice(0,10);
 if(!S.studyDays[_today])S.studyDays[_today]=0;
@@ -784,6 +804,14 @@ if(!examMode){
 save();render();
 }
 function toggleBk(){S.bk[pool[qi]]=!S.bk[pool[qi]];save();render();}
+function assignBkFolder(qIdx){
+  const existing=[...new Set(Object.values(S.bkFolders).filter(Boolean))];
+  const opts=existing.length?existing.join(', ')+' (or type new name)':'Type a folder name';
+  const name=prompt('Assign to folder:\n'+opts);
+  if(name===null)return;
+  if(!name.trim()){delete S.bkFolders[qIdx];save();render();return;}
+  S.bkFolders[qIdx]=name.trim();save();render();
+}
 
 // ===== EXAM MODE =====
 let teachBackState=null;
@@ -1044,6 +1072,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:flex-star
 }${(q.ti>=0&&NOTES[q.ti])?`<button onclick="openNote=${q.ti};noteExpanded[${q.ti}]=true;go('study')" style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;border:1px solid #bfdbfe;background:#eff6ff;color:#1d4ed8;cursor:pointer" title="Open chapter notes">📖 Notes</button>`:''}</div>
 <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
 <button onclick="shareQ()" id="shbtn" class="share-btn" title="Share">📋 שתף</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px" title="Bookmark">${bk?'🔖':'🏷️'}</button>
+${bk ? `<button onclick="assignBkFolder(pool[qi])" style="font-size:10px;padding:2px 6px;border:1px solid #e2e8f0;border-radius:6px;background:${S.dark?'#1e293b':'#fff'};color:${S.dark?'#e2e8f0':'#475569'};cursor:pointer" title="Assign folder">${S.bkFolders[pool[qi]]?'📂'+S.bkFolders[pool[qi]]:'📁'}</button>` : ''}
 <span style="color:#94a3b8;font-size:10px">${qi+1}/${pool.length}</span>
 </div></div>`;
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px">${sanitize(q.q)}</p>`;
@@ -2179,9 +2208,28 @@ h+=`</div></div>`;
 }
 // Bookmarked questions
 if(bkCount>0){
-h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🔖 Bookmarked (${bkCount})</div>`;
-Object.entries(S.bk).filter(([k,v])=>v).slice(0,10).forEach(([k])=>{
-const q=QZ[k];if(q)h+=`<div style="font-size:10px;padding:6px 0;border-bottom:1px solid #f8fafc" class="heb" dir="rtl">${sanitize(q.q.substring(0,80))}...</div>`;
+h+=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🔖 Bookmarked (${bkCount})</div>`;
+// Group by folder
+const byFolder={};
+Object.entries(S.bk).filter(([k,v])=>v).forEach(([k])=>{
+  const folder=S.bkFolders[k]||'Uncategorized';
+  if(!byFolder[folder])byFolder[folder]=[];
+  byFolder[folder].push(parseInt(k));
+});
+const folders=Object.keys(byFolder).sort((a,b)=>a==='Uncategorized'?1:b==='Uncategorized'?-1:a.localeCompare(b));
+folders.forEach(folder=>{
+  const fk='bkf_'+folder.replace(/[^a-z0-9]/gi,'_');
+  const isOpen=S[fk]!==false;
+  const qs=byFolder[folder];
+  h+=`<div style="margin-bottom:6px"><div onclick="S['${fk}']=!S['${fk}'];save();render()" style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#f8fafc;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600"><span>📁 ${sanitize(folder)} (${qs.length})</span><span>${isOpen?'▾':'▸'}</span></div>`;
+  if(isOpen){
+    qs.slice(0,8).forEach(k=>{
+      const q=QZ[k];if(!q)return;
+      h+=`<div style="padding:5px 10px;font-size:10px;line-height:1.5;border-bottom:1px solid #f8fafc;cursor:pointer" class="heb" dir="rtl" onclick="gotoQ(${k})">${sanitize(q.q.substring(0,80))}…</div>`;
+    });
+    if(qs.length>8)h+=`<div style="font-size:9px;color:#94a3b8;padding:4px 10px">+${qs.length-8} more</div>`;
+  }
+  h+=`</div>`;
 });
 h+=`</div>`;
 }
@@ -3337,7 +3385,14 @@ function renderKbdOverlay(){
 
 // ===== DARK MODE =====
 function toggleDark(){document.body.classList.toggle('dark');S.dark=document.body.classList.contains('dark');save()}
+function toggleStudyMode(){
+  document.body.classList.toggle('study');
+  S.studyMode=document.body.classList.contains('study');
+  if(S.studyMode&&document.body.classList.contains('dark')){document.body.classList.remove('dark');S.dark=false;}
+  save();
+}
 if(S.dark){document.body.classList.add('dark');const ld=document.getElementById('app-loader');if(ld){ld.style.background='#0f172a';ld.style.color='#e2e8f0';const ldbar=document.getElementById('ldbar');if(ldbar)ldbar.style.background='#3b82f6';}}
+if(S.studyMode){document.body.classList.add('study');}
 
 // ===== FLASHCARD SPACED REP =====
 function fcRate(q){// q: 0=again, 1=hard, 2=easy
