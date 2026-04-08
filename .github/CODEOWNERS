@@ -1,0 +1,17 @@
+# Default code owners for the entire repository
+* @Eiasash
+
+# Data files
+*.json @Eiasash
+
+# CI/CD and GitHub configuration
+/.github/ @Eiasash
+*.yml @Eiasash
+*.yaml @Eiasash
+
+# Documentation
+*.md @Eiasash
+
+# App
+shlav-a-mega.html @Eiasash
+scripts/ @Eiasash
