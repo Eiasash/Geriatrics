@@ -1,4 +1,4 @@
-const CACHE='shlav-a-v9.0';
+const CACHE='shlav-a-v9.1';
 const STATIC=[
   'shlav-a-mega.html',
   'manifest.json',
@@ -30,9 +30,19 @@ self.addEventListener('activate',e=>e.waitUntil(
 self.addEventListener('fetch',e=>{
   const url=new URL(e.request.url);
   // Pass-through for external APIs (no caching)
-  if(url.hostname==='api.anthropic.com'){
+  if(url.hostname==='api.anthropic.com'||url.hostname.endsWith('.supabase.co')){
     e.respondWith(
       fetch(e.request).catch(()=>new Response(JSON.stringify({error:{message:'offline'}}),{status:503,headers:{'Content-Type':'application/json'}}))
+    );
+    return;
+  }
+  // Pass-through for CDN resources (supabase-js, fonts, etc.)
+  if(url.hostname==='cdn.jsdelivr.net'||url.hostname==='fonts.googleapis.com'||url.hostname==='fonts.gstatic.com'){
+    e.respondWith(
+      caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+        if(res.ok){const c=res.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c));}
+        return res;
+      }).catch(()=>new Response('',{status:503})))
     );
     return;
   }
