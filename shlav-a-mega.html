@@ -7,6 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f172a">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩺</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <link rel="manifest" href="manifest.json">
 <title>Shlav A Mega — Board Prep</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Heebo:wght@400;600;700&display=swap" rel="stylesheet">
@@ -371,6 +372,65 @@ body.study .sec-t{color:#e8d5b0}
 <div class="tabs" id="tb"></div>
 
 <script>
+// ===== SUPABASE CLOUD SYNC =====
+const SUPA_URL='YOUR_SUPABASE_URL';
+const SUPA_KEY='YOUR_SUPABASE_ANON_KEY';
+let _supa=null;
+function _getSupaClient(){
+  if(_supa)return _supa;
+  const url=localStorage.getItem('supa_url')||SUPA_URL;
+  const key=localStorage.getItem('supa_key')||SUPA_KEY;
+  try{
+    if(window.supabase&&url!=='YOUR_SUPABASE_URL'){
+      _supa=window.supabase.createClient(url,key);
+    }
+  }catch(e){console.warn('Supabase init failed',e);}
+  return _supa;
+}
+function getCloudUserId(){
+  let uid=localStorage.getItem('samega_uid');
+  if(!uid){uid=crypto.randomUUID();localStorage.setItem('samega_uid',uid);}
+  return uid;
+}
+async function backupData(){
+  const client=_getSupaClient();
+  if(!client){showToast('⚠️ Supabase not configured — add URL/key in settings',4000);return;}
+  const uid=getCloudUserId();
+  const data={};
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k)data[k]=localStorage.getItem(k);
+  }
+  const btn=document.getElementById('supa-bk-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Backing up...';}
+  try{
+    const {error}=await client.from('progress_state').upsert({user_id:uid,data,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+    if(error)throw error;
+    showToast('✅ Backup complete! Synced to cloud.',3000);
+  }catch(e){showToast('❌ Backup failed: '+e.message,5000);}
+  if(btn){btn.disabled=false;btn.textContent='☁️ Backup to Cloud';}
+}
+async function restoreData(){
+  const client=_getSupaClient();
+  if(!client){showToast('⚠️ Supabase not configured',4000);return;}
+  const uid=getCloudUserId();
+  if(!confirm('Restore from cloud? This will OVERWRITE your current local progress.'))return;
+  const btn=document.getElementById('supa-rs-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Restoring...';}
+  try{
+    const {data,error}=await client.from('progress_state').select('data').eq('user_id',uid).single();
+    if(error)throw error;
+    if(!data||!data.data){showToast('⚠️ No backup found for this device',4000);return;}
+    const savedUid=localStorage.getItem('samega_uid');
+    localStorage.clear();
+    Object.entries(data.data).forEach(([k,v])=>localStorage.setItem(k,v));
+    if(savedUid)localStorage.setItem('samega_uid',savedUid);
+    showToast('✅ Restored from cloud! Reloading...',2000);
+    setTimeout(()=>location.reload(),2000);
+  }catch(e){showToast('❌ Restore failed: '+e.message,5000);}
+  if(btn){btn.disabled=false;btn.textContent='📥 Restore from Cloud';}
+}
+
 // ===== XSS SANITIZER =====
 function sanitize(s){
   if(s==null)return'';
@@ -2376,6 +2436,22 @@ h+=`<div class="card" style="padding:14px;text-align:center;margin-top:12px">
 </div>`;
 // AI Key setting
 h+=`<div class="card" style="padding:14px;margin-top:12px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🤖 AI הסבר — Anthropic API Key</div><div style="font-size:10px;color:#64748b;margin-bottom:8px">מפתח API להסברים עם מקור (Hazzardʼs / Harrisonʼs). נשמר רק בדפדפן שלך.</div><input type="password" class="calc-in" id="apiKeyIn" placeholder="sk-ant-..." value="${sanitize(getApiKey())}" style="font-family:monospace;font-size:11px"><div style="display:flex;gap:8px;margin-top:6px"><button class="btn btn-p" onclick="setApiKey(document.getElementById('apiKeyIn').value);alert('נשמר ✅')">שמור</button><button class="btn btn-o" onclick="localStorage.removeItem('samega_apikey');document.getElementById('apiKeyIn').value='';alert('נמחק')">מחק</button><span style="font-size:9px;color:#94a3b8;align-self:center">${Object.keys(_exCache).length} הסברים שמורים</span></div></div>`;
+// Cloud sync card
+h+=`<div class="card" style="padding:14px;margin-top:12px">
+<div style="font-weight:700;font-size:12px;margin-bottom:8px">☁️ Cloud Sync (Supabase)</div>
+<div style="font-size:10px;color:#64748b;margin-bottom:10px">Backup and restore your progress across devices. Requires Supabase credentials below.</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+<button id="supa-bk-btn" class="btn btn-p" onclick="backupData()" style="flex:1;min-width:120px">☁️ Backup to Cloud</button>
+<button id="supa-rs-btn" class="btn btn-o" onclick="restoreData()" style="flex:1;min-width:120px">📥 Restore from Cloud</button>
+</div>
+<div style="font-size:9px;color:#94a3b8">Device ID: ${getCloudUserId().slice(0,8)}…</div>
+<div style="margin-top:8px">
+<div style="font-size:10px;font-weight:600;margin-bottom:4px">Supabase URL</div>
+<input type="text" class="calc-in" id="supaUrlIn" placeholder="https://xxxx.supabase.co" value="${localStorage.getItem('supa_url')||''}" style="font-size:10px;margin-bottom:6px">
+<div style="font-size:10px;font-weight:600;margin-bottom:4px">Anon Key</div>
+<input type="password" class="calc-in" id="supaKeyIn" placeholder="eyJ..." value="${localStorage.getItem('supa_key')||''}" style="font-size:10px;margin-bottom:6px">
+<button class="btn btn-g" onclick="localStorage.setItem('supa_url',document.getElementById('supaUrlIn').value);localStorage.setItem('supa_key',document.getElementById('supaKeyIn').value);_supa=null;showToast('✅ Supabase credentials saved — backup now',3000)" style="font-size:11px">Save Credentials</button>
+</div></div>`;
 // Data management
 h+=`<div class="card" style="padding:14px;margin-top:12px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
