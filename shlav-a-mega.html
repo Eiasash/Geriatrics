@@ -327,6 +327,9 @@ body.dark .diff-btn{color:#e2e8f0}
 .drug-fc-front{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;border-radius:16px}
 .drug-fc-back{background:#f0fdf4;border:1px solid #a7f3d0;border-radius:16px;direction:rtl}
 body.dark .drug-fc-back{background:#064e3b;border-color:#065f46;color:#a7f3d0}
+body.dark .pearl-card{background:#1e293b;border-color:#475569;color:#e2e8f0}
+body.dark .pearl-card strong{color:#fde68a}
+body.dark .pearl-cat-hdr{border-color:#334155!important}
 
 /* Night/Study Mode - warm sepia tones */
 body.study{background:#1a1008;color:#e8d5b0;filter:none}
@@ -1079,7 +1082,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <button onclick="startExamConfig()" class="btn btn-d" style="font-size:10px;padding:5px 12px">📋 Exam Mode</button>
 </div>`;
 h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
-const filts=[['all',`הכל (${QZ.length})`],['דצמ 2021','Dec21'],['2022','2022'],['2023','2023'],['2024','2024'],['ספט','Sep24'],['weak','🎯 Weak']];
+const filts=[['all',`הכל (${QZ.length})`],['דצמ 2021','Dec21'],['2022','2022'],['2023','2023'],['2024','2024'],['2025','2025'],['ספט','Sep24'],['weak','🎯 Weak']];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{h+=`<span class="pill ${filt===f&&filt!=='topic'?'on':''}" onclick="setFilt('${f}')">${l}</span>`;});
 h+=`</div>`;
@@ -2128,7 +2131,7 @@ var examDateStr=S.examDate||(today.getFullYear()+'-09-15');
 var examDate=new Date(examDateStr);examDate.setHours(0,0,0,0);
 var daysLeft=Math.max(0,Math.round((examDate-today)/(1000*60*60*24)));
 var urgent=daysLeft<30,warning=daysLeft<60;
-var h='<div class="sec-t">\U0001f4c5 Exam Planner</div><div class="sec-s">Countdown \u00b7 Study schedule \u00b7 Focus areas</div>';
+var h='<div class="sec-t">📅 Exam Planner</div><div class="sec-s">Countdown \u00b7 Study schedule \u00b7 Focus areas</div>';
 h+='<div class="card" style="padding:18px;text-align:center;background:'+(urgent?'#fef2f2':warning?'#fffbeb':'#eff6ff')+';border:1px solid '+(urgent?'#fecaca':warning?'#fde68a':'#bfdbfe')+'">'
 +'<div style="font-size:40px;font-weight:800;color:'+(urgent?'#dc2626':warning?'#d97706':'#1d4ed8')+'">'+daysLeft+'</div>'
 +'<div style="font-size:12px;font-weight:600;color:#475569;margin-top:4px">days until exam</div>'
@@ -2136,7 +2139,7 @@ h+='<div class="card" style="padding:18px;text-align:center;background:'+(urgent
 var today0=new Date();today0.setHours(0,0,0,0);
 var dayLog=S.dailyLog||{};
 var dayNames=['Su','Mo','Tu','We','Th','Fr','Sa'];
-h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">\U0001f4c6 Last 7 Days</div><div style="display:flex;gap:4px;justify-content:center">';
+h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📆 Last 7 Days</div><div style="display:flex;gap:4px;justify-content:center">';
 for(var i=6;i>=0;i--){
 var d=new Date(today0);d.setDate(d.getDate()-i);
 var dk_=d.toISOString().slice(0,10);
@@ -2145,42 +2148,62 @@ h+='<div style="text-align:center;flex:1"><div style="width:32px;height:32px;bor
 h+='</div></div>';
 var tSt=getTopicStats();
 var weakTopics=TOPICS.map(function(t,i){return{name:t,i:i,s:tSt[i]||{ok:0,no:0,tot:0}};}).filter(function(p){return p.s.tot>0;}).map(function(p){return{name:p.name,pct:Math.round(p.s.ok/p.s.tot*100)};}).sort(function(a,b){return a.pct-b.pct;}).slice(0,5);
-if(weakTopics.length){h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">\U0001f3af Focus Areas</div>';weakTopics.forEach(function(p){var clr=p.pct<50?'#dc2626':p.pct<70?'#d97706':'#059669';h+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f8fafc"><span style="font-size:10px;flex:1">'+p.name+'</span><div style="width:60px;height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden"><div style="width:'+p.pct+'%;height:100%;background:'+clr+';border-radius:3px"></div></div><span style="font-size:10px;font-weight:700;color:'+clr+';width:30px;text-align:right">'+p.pct+'%</span></div>';});h+='</div>';}
+if(weakTopics.length){h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🎯 Focus Areas</div>';weakTopics.forEach(function(p){var clr=p.pct<50?'#dc2626':p.pct<70?'#d97706':'#059669';h+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f8fafc"><span style="font-size:10px;flex:1">'+p.name+'</span><div style="width:60px;height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden"><div style="width:'+p.pct+'%;height:100%;background:'+clr+';border-radius:3px"></div></div><span style="font-size:10px;font-weight:700;color:'+clr+';width:30px;text-align:right">'+p.pct+'%</span></div>';});h+='</div>';}
 var totAns_p=S.qOk+S.qNo;var qPerDay=daysLeft>0?Math.min(50,Math.ceil((QZ.length-totAns_p)/daysLeft)):0;
-h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">\U0001f4ca Daily Target</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center"><div style="padding:10px;background:#eff6ff;border-radius:10px"><div style="font-size:22px;font-weight:700;color:#1d4ed8">'+qPerDay+'</div><div style="font-size:9px;color:#64748b">questions/day</div></div><div style="padding:10px;background:#ecfdf5;border-radius:10px"><div style="font-size:22px;font-weight:700;color:#059669">'+(S.streak||0)+'</div><div style="font-size:9px;color:#64748b">day streak \U0001f525</div></div></div></div>';
+h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">📊 Daily Target</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center"><div style="padding:10px;background:#eff6ff;border-radius:10px"><div style="font-size:22px;font-weight:700;color:#1d4ed8">'+qPerDay+'</div><div style="font-size:9px;color:#64748b">questions/day</div></div><div style="padding:10px;background:#ecfdf5;border-radius:10px"><div style="font-size:22px;font-weight:700;color:#059669">'+(S.streak||0)+'</div><div style="font-size:9px;color:#64748b">day streak 🔥</div></div></div></div>';
 return h;
 }
 
 // ===== CLINICAL PEARLS =====
 var PEARLS=[
-{cat:'Delirium',emoji:'\U0001f9e0',pearl:'CAM = Acute onset/fluctuating + Inattention + (Disorganized thinking OR Altered consciousness)'},
-{cat:'Delirium',emoji:'\U0001f9e0',pearl:'IWATCHDEATH: Infections, Withdrawal, Acute metabolic, Trauma, CNS, Hypoxia, Deficiencies, Endocrine, Acute vascular, Toxins, Heavy metals'},
-{cat:'Falls',emoji:'\U0001f6b6',pearl:'DAME: Drugs, Affect/mood, Mobility, Eyes/ears \u2014 the 4 modifiable fall risk factors'},
-{cat:'Falls',emoji:'\U0001f6b6',pearl:'TUG >12s = high fall risk. TUG >20s = needs assistive device. Perform at every admission.'},
-{cat:'Dementia',emoji:'\U0001f50d',pearl:'Alzheimer: memory first. Lewy body: fluctuating + visual hallucinations + parkinsonism + REM sleep disorder'},
-{cat:'Dementia',emoji:'\U0001f50d',pearl:'Reversible: ABCDEF \u2014 Alcohol, B12/thyroid, Cerebrovascular, Drugs, Eye/ear, Fungal/infection'},
-{cat:'Pharmacology',emoji:'\U0001f48a',pearl:'Beers top dangers: Benzodiazepines, Anticholinergics, NSAIDs, Sulfonylureas, Digoxin >0.125mg'},
-{cat:'Pharmacology',emoji:'\U0001f48a',pearl:'ACB \u22653: cognitive impairment risk equivalent to 1+ years of dementia progression'},
-{cat:'Nutrition',emoji:'\U0001f957',pearl:'MNA <17: malnourished. 17\u201323.5: at risk. \u226524: normal. Albumin reflects 3-week-old status.'},
-{cat:'Pressure Injuries',emoji:'\U0001fa79',pearl:'Stage 1: non-blanchable. Stage 2: partial dermis. Stage 3: full dermis. Stage 4: bone/muscle.'},
-{cat:'Anticoagulation',emoji:'\U0001fa78',pearl:'Apixaban preferred in CKD (27% renal clearance). Avoid DOACs if CrCl <15\u201330 ml/min.'},
+{cat:'Delirium',emoji:'🧠',pearl:'CAM = Acute onset/fluctuating + Inattention + (Disorganized thinking OR Altered consciousness)'},
+{cat:'Delirium',emoji:'🧠',pearl:'IWATCHDEATH: Infections, Withdrawal, Acute metabolic, Trauma, CNS, Hypoxia, Deficiencies, Endocrine, Acute vascular, Toxins, Heavy metals'},
+{cat:'Falls',emoji:'🚶',pearl:'DAME: Drugs, Affect/mood, Mobility, Eyes/ears \u2014 the 4 modifiable fall risk factors'},
+{cat:'Falls',emoji:'🚶',pearl:'TUG >12s = high fall risk. TUG >20s = needs assistive device. Perform at every admission.'},
+{cat:'Dementia',emoji:'🔍',pearl:'Alzheimer: memory first. Lewy body: fluctuating + visual hallucinations + parkinsonism + REM sleep disorder'},
+{cat:'Dementia',emoji:'🔍',pearl:'Reversible: ABCDEF \u2014 Alcohol, B12/thyroid, Cerebrovascular, Drugs, Eye/ear, Fungal/infection'},
+{cat:'Pharmacology',emoji:'💊',pearl:'Beers top dangers: Benzodiazepines, Anticholinergics, NSAIDs, Sulfonylureas, Digoxin >0.125mg'},
+{cat:'Pharmacology',emoji:'💊',pearl:'ACB \u22653: cognitive impairment risk equivalent to 1+ years of dementia progression'},
+{cat:'Nutrition',emoji:'🥗',pearl:'MNA <17: malnourished. 17\u201323.5: at risk. \u226524: normal. Albumin reflects 3-week-old status.'},
+{cat:'Pressure Injuries',emoji:'🩹',pearl:'Stage 1: non-blanchable. Stage 2: partial dermis. Stage 3: full dermis. Stage 4: bone/muscle.'},
+{cat:'Anticoagulation',emoji:'🩸',pearl:'Apixaban preferred in CKD (27% renal clearance). Avoid DOACs if CrCl <15\u201330 ml/min.'},
 {cat:'HF',emoji:'\u2764\ufe0f',pearl:'HFrEF 4 pillars: ACEi/ARB/ARNI + betablocker + MRA + SGLT2i. HFpEF: SGLT2i now evidence-based.'},
-{cat:'AF',emoji:'\U0001f493',pearl:'CHA\u2082DS\u2082-VASc \u22652 (M) or \u22653 (F) = anticoagulate. HAS-BLED \u22653 = high bleed risk (not contraindication).'},
-{cat:'Assessment',emoji:'\U0001f4cb',pearl:'4Ms: Mobility, Mentation, Medications, What Matters. Core age-friendly care framework.'},
-{cat:'Frailty',emoji:'\U0001f50b',pearl:'CFS 1\u20133: fit. 4: vulnerable. 5\u20136: frail. 7: severely frail. 8\u20139: very severely frail/end-stage.'},
+{cat:'AF',emoji:'💓',pearl:'CHA\u2082DS\u2082-VASc \u22652 (M) or \u22653 (F) = anticoagulate. HAS-BLED \u22653 = high bleed risk (not contraindication).'},
+{cat:'Assessment',emoji:'📋',pearl:'4Ms: Mobility, Mentation, Medications, What Matters. Core age-friendly care framework.'},
+{cat:'Frailty',emoji:'🔋',pearl:'CFS 1\u20133: fit. 4: vulnerable. 5\u20136: frail. 7: severely frail. 8\u20139: very severely frail/end-stage.'},
 {cat:'Hebrew Law',emoji:'\u2696\ufe0f',pearl:'\u05d9\u05d9\u05e4\u05d5\u05d9 \u05db\u05d5\u05d7 \u05de\u05ea\u05de\u05e9\u05da \u2192 \u05d4\u05e0\u05d7\u05d9\u05d5\u05ea \u05de\u05e7\u05d3\u05d9\u05de\u05d5\u05ea \u2192 \u05de\u05e7\u05d1\u05dc \u05d4\u05d7\u05dc\u05d8\u05d5\u05ea \u05d6\u05de\u05e0\u05d9 \u2192 \u05d0\u05e4\u05d5\u05d8\u05e8\u05d5\u05e4\u05d5\u05e1 (Amendment 16, Jan 2024)'},
 {cat:'Hebrew Law',emoji:'\u2696\ufe0f',pearl:'\u05de\u05e7\u05d1\u05dc \u05d4\u05d7\u05dc\u05d8\u05d5\u05ea \u05d6\u05de\u05e0\u05d9: incapacity + urgent + no \u05d9\u05db"\u05de + family consensus. SW coordinates. Valid 6 months.'},
-{cat:'Driving',emoji:'\U0001f697',pearl:'Report via MOH portal (not paper form since Aug 2023). Dementia = mandatory referral to \u05d4\u05de\u05e8\u05d1"\u05d3.'},
+{cat:'Driving',emoji:'🚗',pearl:'Report via MOH portal (not paper form since Aug 2023). Dementia = mandatory referral to \u05d4\u05de\u05e8\u05d1"\u05d3.'},
 ];
 function renderPearls(){
 var filt=S.pearlFilt||'All';
 var cats=['All'];
 PEARLS.forEach(function(p){if(cats.indexOf(p.cat)<0)cats.push(p.cat);});
-var h='<div class="sec-t">\U0001f48e Clinical Pearls</div><div class="sec-s">High-yield mnemonics \u00b7 '+PEARLS.length+' pearls</div>';
+var h='<div class="sec-t">💎 Clinical Pearls</div><div class="sec-s">High-yield mnemonics \u00b7 '+PEARLS.length+' pearls</div>';
 h+='<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none">';
 cats.forEach(function(c){h+='<button onclick="S.pearlFilt=\''+c.replace(/\\/g,"\\\\").replace(/'/g,"\\'")+'\';save();render()" style="flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:10px;font-weight:600;border:none;cursor:pointer;background:'+(filt===c?'rgb(var(--sky))':'#f1f5f9')+';color:'+(filt===c?'#fff':'#64748b')+'">'+c+'</button>';});
 h+='</div>';
-PEARLS.filter(function(p){return filt==='All'||p.cat===filt;}).forEach(function(p){h+='<div class="card" style="padding:12px 14px;border-left:3px solid rgb(var(--sky))"><div style="font-size:9px;font-weight:700;color:rgb(var(--sky));text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">'+p.emoji+' '+p.cat+'</div><div style="font-size:11px;line-height:1.65">'+p.pearl+'</div></div>';});
+(function(){
+var filtered=PEARLS.filter(function(p){return filt==='All'||p.cat===filt;});
+var catColors={'Delirium':'#7c3aed','Falls':'#d97706','Dementia':'#2563eb','Pharmacology':'#dc2626','Nutrition':'#059669','Pressure Injuries':'#0891b2','Anticoagulation':'#be123c','HF':'#e11d48','AF':'#9333ea','Assessment':'#0284c7','Frailty':'#65a30d','Hebrew Law':'#374151','Driving':'#b45309'};
+var lastCat=null;
+filtered.forEach(function(p){
+  if(filt==='All'&&p.cat!==lastCat){
+    lastCat=p.cat;
+    var cc=catColors[p.cat]||'rgb(var(--sky))';
+    h+='<div class="pearl-cat-hdr" style="display:flex;align-items:center;gap:8px;margin:16px 0 8px;border-bottom:2px solid '+cc+'20;padding-bottom:6px"><span style="font-size:18px">'+p.emoji+'</span><span style="font-size:11px;font-weight:700;color:'+cc+';letter-spacing:.3px">'+p.cat.toUpperCase()+'</span></div>';
+  }
+  var cc=catColors[p.cat]||'rgb(var(--sky))';
+  var isHebCat=(p.cat==='Hebrew Law');
+  var pearl=p.pearl;
+  var boldPearl=pearl.replace(/^([A-Z][^:=()]{1,40}[:=])/,function(m){return'<strong>'+m+'</strong>';});
+  var dirAttr=isHebCat?' dir="rtl" style="direction:rtl;text-align:right"':'';
+  h+='<div class="card pearl-card" style="padding:12px 14px;border-left:4px solid '+cc+';margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.05)">';
+  if(filt!=='All')h+='<div style="font-size:9px;font-weight:700;color:'+cc+';text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">'+p.emoji+' '+p.cat+'</div>';
+  h+='<div style="font-size:12px;line-height:1.75"'+dirAttr+'>'+boldPearl+'</div>';
+  h+='</div>';
+});
+})();
 return h;
 }
 
@@ -2194,8 +2217,8 @@ var totQ_=QZ.length,totAns_t=S.qOk+S.qNo,unansd_t=totQ_-totAns_t;
 var ok_pt=totQ_?S.qOk/totQ_:0,no_pt=totQ_?S.qNo/totQ_:0;
 function pSlice(s,e,clr){if(e-s<.001)return'';if(e-s>=.999)return'<circle cx="50" cy="50" r="40" fill="'+clr+'"/>';var a1=s*2*Math.PI-Math.PI/2,a2=e*2*Math.PI-Math.PI/2,x1=50+40*Math.cos(a1),y1=50+40*Math.sin(a1),x2=50+40*Math.cos(a2),y2=50+40*Math.sin(a2),lg=e-s>.5?1:0;return'<path d="M50,50 L'+x1+','+y1+' A40,40 0 '+lg+',1 '+x2+','+y2+' Z" fill="'+clr+'"/>';}
 var h='';
-h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">\U0001f4ca Progress Overview</div><div style="display:flex;align-items:center;gap:16px"><svg viewBox="0 0 100 100" width="90" height="90" style="flex-shrink:0">'+pSlice(0,ok_pt,'#059669')+pSlice(ok_pt,ok_pt+no_pt,'#dc2626')+pSlice(ok_pt+no_pt,1,'#e2e8f0')+'<circle cx="50" cy="50" r="26" fill="white"/><text x="50" y="46" text-anchor="middle" font-size="10" font-weight="bold" fill="#1e293b">'+totAns_t+'</text><text x="50" y="57" text-anchor="middle" font-size="7" fill="#94a3b8">done</text></svg><div style="flex:1"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:10px;height:10px;border-radius:2px;background:#059669"></div><span style="font-size:10px">Correct: '+S.qOk+' ('+Math.round(ok_pt*100)+'%)</span></div><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:10px;height:10px;border-radius:2px;background:#dc2626"></div><span style="font-size:10px">Incorrect: '+S.qNo+' ('+Math.round(no_pt*100)+'%)</span></div><div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:10px;border-radius:2px;background:#e2e8f0"></div><span style="font-size:10px">Untouched: '+unansd_t+' ('+Math.round((1-ok_pt-no_pt)*100)+'%)</span></div></div></div></div>';
-if(bkCount>0){var byTopic={};Object.entries(S.bk).filter(function(e){return e[1];}).forEach(function(e){var q=QZ[e[0]];if(!q)return;var tp=q.t||'Other';if(!byTopic[tp])byTopic[tp]=[];byTopic[tp].push({k:e[0],q:q});});var topicKeys=Object.keys(byTopic);if(topicKeys.length>1){h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">\U0001f4c1 Bookmark Folders</div>';topicKeys.forEach(function(topic){var fk='bkf_'+topic.replace(/[^a-z0-9]/gi,'_');var open=S[fk];var qs=byTopic[topic];h+='<div style="margin-bottom:6px"><div onclick="S[\''+fk+'\']=!S[\''+fk+'\'];save();render()" style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f8fafc;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600"><span>\U0001f4c1 '+topic+' ('+qs.length+')</span><span>'+(open?'&#9660;':'&#9654;')+'</span></div>';if(open){qs.forEach(function(e){h+='<div style="padding:6px 12px;font-size:10px;line-height:1.5;border-bottom:1px solid #f8fafc" class="heb" dir="rtl">'+e.q.q.substring(0,100)+'\u2026</div>';});}h+='</div>';});h+='</div>';}}
+h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📊 Progress Overview</div><div style="display:flex;align-items:center;gap:16px"><svg viewBox="0 0 100 100" width="90" height="90" style="flex-shrink:0">'+pSlice(0,ok_pt,'#059669')+pSlice(ok_pt,ok_pt+no_pt,'#dc2626')+pSlice(ok_pt+no_pt,1,'#e2e8f0')+'<circle cx="50" cy="50" r="26" fill="white"/><text x="50" y="46" text-anchor="middle" font-size="10" font-weight="bold" fill="#1e293b">'+totAns_t+'</text><text x="50" y="57" text-anchor="middle" font-size="7" fill="#94a3b8">done</text></svg><div style="flex:1"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:10px;height:10px;border-radius:2px;background:#059669"></div><span style="font-size:10px">Correct: '+S.qOk+' ('+Math.round(ok_pt*100)+'%)</span></div><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:10px;height:10px;border-radius:2px;background:#dc2626"></div><span style="font-size:10px">Incorrect: '+S.qNo+' ('+Math.round(no_pt*100)+'%)</span></div><div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:10px;border-radius:2px;background:#e2e8f0"></div><span style="font-size:10px">Untouched: '+unansd_t+' ('+Math.round((1-ok_pt-no_pt)*100)+'%)</span></div></div></div></div>';
+if(bkCount>0){var byTopic={};Object.entries(S.bk).filter(function(e){return e[1];}).forEach(function(e){var q=QZ[e[0]];if(!q)return;var tp=q.t||'Other';if(!byTopic[tp])byTopic[tp]=[];byTopic[tp].push({k:e[0],q:q});});var topicKeys=Object.keys(byTopic);if(topicKeys.length>1){h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">📁 Bookmark Folders</div>';topicKeys.forEach(function(topic){var fk='bkf_'+topic.replace(/[^a-z0-9]/gi,'_');var open=S[fk];var qs=byTopic[topic];h+='<div style="margin-bottom:6px"><div onclick="S[\''+fk+'\']=!S[\''+fk+'\'];save();render()" style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f8fafc;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600"><span>📁 '+topic+' ('+qs.length+')</span><span>'+(open?'&#9660;':'&#9654;')+'</span></div>';if(open){qs.forEach(function(e){h+='<div style="padding:6px 12px;font-size:10px;line-height:1.5;border-bottom:1px solid #f8fafc" class="heb" dir="rtl">'+e.q.q.substring(0,100)+'\u2026</div>';});}h+='</div>';});h+='</div>';}}
 
 const todayReviewed=(S.srSess&&S.srSess.reviewed)||0;
 const streakN=S.streak||0;
@@ -2934,6 +2957,28 @@ function renderLaw() {
           <div class="heb" style="font-size:11px;line-height:1.7;white-space:pre-line;direction:rtl;text-align:right">${sanitize(pt.body)}</div>
         </div>`;
       });
+      // Official source link
+      const lawUrls = {
+        'hng':'https://www.nevo.co.il/law_html/Law01/P175_001.htm',
+        'peg':'https://www.health.gov.il/hozer/mk04_2010.pdf',
+        'yikuach':'https://www.gov.il/he/departments/general/ytk_permanent_lasting_power_of_attorney',
+        'mkbl':'https://www.health.gov.il/Subjects/Law/RightsInHealth/Pages/alternatedecisionmaker.aspx',
+        'tmch':'https://www.gov.il/he/departments/guides/guide-to-supported-decision-making',
+        'siud':'https://www.health.gov.il/hozer/mr04_2010.pdf',
+        'hatarut':'https://www.health.gov.il/hozer/mr22_2003.pdf',
+        'nehiga':'https://www.gov.il/he/service/medical-fitness-reports-for-drivers',
+        'mush':'https://www.health.gov.il/hozer/mr04_2010.pdf',
+        'mivna':'https://www.health.gov.il/hozer/mr26_2010.pdf',
+        'shikum':'https://www.health.gov.il/hozer/mr04_2009.pdf',
+        'apot':'https://www.health.gov.il/hozer/mr10_2006.pdf',
+        'brook':'https://brookdale.jdc.org.il/en/publication/65-plus-in-israel-2024/',
+      };
+      const docUrl = lawUrls[doc.id];
+      if (docUrl) {
+        const isPdf = docUrl.endsWith('.pdf');
+        h += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid #f1f5f9">
+          <a href="${docUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:rgb(var(--sky));text-decoration:none;padding:5px 12px;border:1px solid rgb(var(--sky));border-radius:8px">${isPdf ? '📄 Open PDF ↗' : '🔗 Official Source ↗'}</a></div>`;
+      }
       // Quick quiz link
       const relatedTopics = {
         'hng': [28,34], 'peg': [28], 'yikuach': [32,33,34], 'mkbl': [32,33],
