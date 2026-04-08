@@ -288,6 +288,14 @@ body.dark .chat-disclaimer{background:#422006;border-color:#92400e;color:#fcd34d
 .skip-link{position:absolute;left:-9999px;top:4px;z-index:9999;padding:6px 12px;background:#3b82f6;color:#fff;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none}
 .skip-link:focus{left:4px}
 :focus-visible{outline:2px solid #3b82f6;outline-offset:2px}
+
+/* ===== TOOLTIPS ===== */
+.tt-wrap{position:relative;display:inline-flex;align-items:center;gap:3px}
+.tt-icon{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:#e2e8f0;color:#64748b;font-size:9px;font-weight:700;cursor:help;flex-shrink:0;line-height:1;border:none;padding:0}
+.tt-icon:focus{outline:2px solid rgb(var(--sky));outline-offset:1px}
+.tt-box{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1e293b;color:#f1f5f9;font-size:10px;line-height:1.5;padding:7px 10px;border-radius:8px;width:180px;z-index:999;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.tt-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e293b}
+.tt-icon:hover+.tt-box,.tt-icon:focus+.tt-box{display:block}
 </style>
 </head>
 <body>
@@ -1061,8 +1069,8 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <div class="sec-t">Quiz</div>
 <div style="display:flex;gap:4px;flex-wrap:wrap">
 <button onclick="startExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px">📋 Exam (150q)</button>
-<button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:5px 12px;background:#fef2f2;color:#dc2626">💀 Sudden Death</button>
-${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:5px 12px;background:#ecfdf5;color:#059669">⏱️ Pomodoro</button>':''}
+<span class="tt-wrap"><button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:5px 12px;background:#fef2f2;color:#dc2626">💀 Sudden Death</button><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">One wrong answer ends the session. Builds high-stakes exam pressure.</div></span>
+${!pomoActive?'<span class="tt-wrap"><button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:5px 12px;background:#ecfdf5;color:#059669">⏱️ Pomodoro</button><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">25min focus / 5min break study timer. Helps maintain concentration.</div></span>':''}
 </div>
 </div>`;
 h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
@@ -1075,7 +1083,7 @@ else h+=`<span class="pill ${filt===f&&filt!=='topic'?'on':''}" onclick="setFilt
 h+=`</div>`;
 // Blind recall & Distractor Autopsy toggles
 h+=`<div style="display:flex;gap:8px;margin-bottom:10px;font-size:10px">
-<label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" ${blindRecall?'checked':''} onchange="blindRecall=this.checked;render()"> 🙈 Cover Options</label>
+<span class="tt-wrap"><label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" ${blindRecall?'checked':''} onchange="blindRecall=this.checked;render()"> 🙈 Cover Options</label><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">Hides answer choices — forces you to recall the answer before seeing options.</div></span>
 <label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" ${autopsyMode?'checked':''} onchange="autopsyMode=this.checked;render()"> 🔬 Distractor Autopsy</label>
 </div>`;
 h+=`<div style="margin-bottom:10px"><select class="calc-in" style="font-size:11px;padding:6px 10px" onchange="this.value===-1?setFilt('all'):setTopicFilt(parseInt(this.value))">
@@ -1196,8 +1204,19 @@ h+=`<div class="card"><button class="acc-h" onclick="toggleNote(${i})">
 <span style="font-size:9px;color:#94a3b8">${n.ch}</span></div>
 <span class="acc-ar${openNote===i?' op':''}">▼</span></button>`;
 if(openNote===i){
-h+=`<div style="padding:10px 14px 14px;border-top:1px solid #f1f5f9">
-<p style="font-size:11px;line-height:1.8;color:#334155">${n.notes}</p></div>`;
+const _fmtNote=function(txt){
+const paras=txt.split(/\n{2,}/);
+return paras.map(function(para){
+const lines=para.split('\n');
+const fmt=lines.map(function(line){
+line=line.replace(/^([^:\n]{2,45}):/,'<strong>$1:</strong>');
+line=line.replace(/(≥\d[\d.]*|≤\d[\d.]*|<\d[\d.]*|>\d[\d.]*|\d+%)/g,'<b>$1</b>');
+return line;
+}).join('<br>');
+return '<p style="font-size:11px;line-height:1.9;color:#334155;margin:0 0 10px">'+fmt+'</p>';
+}).join('');
+};
+h+=`<div style="padding:10px 14px 14px;border-top:1px solid #f1f5f9">${_fmtNote(n.notes)}</div>`;
 }
 h+=`</div>`;
 });
@@ -1331,10 +1350,13 @@ if(sylSec==='harAll'){
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — For ALL Residents</div>
 <div style="font-size:10px;color:#64748b;margin-bottom:10px">התמחות בסיס + התמחות-על · ${SYL_HAR_ALL.length} chapters</div>`;
+const _harMap={"14":"harrison/Ch14_Pain_Pathophysiology_and_Management.pdf","15":"harrison/Ch15_Chest_Discomfort.pdf","16":"harrison/Ch16_Abdominal_Pain.pdf","17":"harrison/Ch17_Headache.pdf","18":"harrison/Ch18_Low_back_pain.pdf","20":"harrison/Ch20_Fever.pdf","22":"harrison/Ch22_Fever_of_Unknown_Origin.pdf","30":"harrison/Ch30_Coma.pdf","39":"harrison/Ch39_Dyspnea.pdf","40":"harrison/Ch40_Cough.pdf","41":"harrison/Ch41_Hemoptysis.pdf","42":"harrison/Ch42_Hypoxia_and_Cyanosis.pdf","43":"harrison/Ch43_Edema.pdf","48":"harrison/Ch48_Nausea_Vomiting_and_Indigestion.pdf","49":"harrison/Ch49_Diarrhea_and_Constipation.pdf","50":"harrison/Ch50_Unintentional_Weight_Loss.pdf","51":"harrison/Ch51_Gastrointestinal_Bleeding.pdf","52":"harrison/Ch52_Jaundice.pdf","53":"harrison/Ch53_Abdominal_Swelling_and_Ascites.pdf","55":"harrison/Ch55_Azotemia_and_Urinary_Abnormalities.pdf","56":"harrison/Ch56_Fluid_and_Electrolyte_Disturbances.pdf","57":"harrison/Ch57_Hypercalcemia_and_Hypocalcemia.pdf","58":"harrison/Ch58_Acidosis_and_Alkalosis.pdf","66":"harrison/Ch66_Anemia_and_Polycythemia.pdf","67":"harrison/Ch67_Disorders_of_Granulocytes_and_Monocytes.pdf","69":"harrison/Ch69_Bleeding_and_Thrombosis.pdf","70":"harrison/Ch70_Enlargement_of_Lymph_Nodes_and_Spleen.pdf","79":"harrison/Ch79_Infections_in_Patients_with_Cancer.pdf","80":"harrison/Ch80_Oncologic_Emergencies.pdf","102":"harrison/Ch102_Iron_Deficiency_and_Other_Hypoproliferat.pdf"};
 SYL_HAR_ALL.forEach(c=>{
+const _pdf=_harMap[String(c.ch)];
 h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
 <span style="background:#8b5cf6;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:44px;text-align:center">Ch ${c.ch}</span>
-<span style="font-size:11px">${c.t}</span></div>`;
+<span style="font-size:11px;flex:1">${c.t}</span>${_pdf?`<a href="${_pdf}" target="_blank" style="font-size:10px;padding:3px 7px;background:#ede9fe;color:#7c3aed;border-radius:6px;text-decoration:none;flex-shrink:0">📄 PDF</a>`:''}
+</div>`;
 });
 h+=`</div>`;
 }
@@ -1343,9 +1365,11 @@ h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — Base Specialization Additional</div>
 <div style="font-size:10px;color:#64748b;margin-bottom:10px">תוספת למבחן התמחות בסיס · ${SYL_HAR_BASE.length} chapters</div>`;
 SYL_HAR_BASE.forEach(c=>{
+const _pdf=_harMap[String(c.ch)];
 h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
 <span style="background:#06b6d4;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:44px;text-align:center">Ch ${c.ch}</span>
-<span style="font-size:11px">${c.t}</span></div>`;
+<span style="font-size:11px;flex:1">${c.t}</span>${_pdf?`<a href="${_pdf}" target="_blank" style="font-size:10px;padding:3px 7px;background:#e0f2fe;color:#0284c7;border-radius:6px;text-decoration:none;flex-shrink:0">📄 PDF</a>`:''}
+</div>`;
 });
 h+=`</div>`;
 }
@@ -1864,7 +1888,7 @@ h+=`<div class="stats">
 <div class="stat"><div class="n" style="color:rgb(var(--em))">${done}/40</div><div class="l">Topics</div></div>
 <div class="stat"><div class="n" style="color:rgb(var(--sky))">${pct}</div><div class="l">Quiz</div></div>
 <div class="stat"><div class="n">${bkCount}</div><div class="l">Bookmarks</div></div>
-<div class="stat"><div class="n" style="color:rgb(var(--amb))">${dueN}</div><div class="l">Due (SR)</div></div>
+<div class="stat"><span class="tt-wrap"><div class="n" style="color:rgb(var(--amb))">${dueN}</div><div class="l">Due (SR) <button class="tt-icon" tabindex="0">ⓘ</button></div><div class="tt-box" style="left:0;transform:none">Spaced repetition cards due for review. Based on your past performance.</div></span></div>
 </div>`;
 // Bookmarked questions with folder grouping
 if(bkCount>0){
@@ -1903,7 +1927,7 @@ h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size
 const tSt=getTopicStats();
 const ranked=TOPICS.map((t,i)=>({name:t,i,s:tSt[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>0);
 if(ranked.length>0){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📊 Accuracy by Topic</div>`;
+h+=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📊 Accuracy by Topic <span class="tt-wrap"><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">Shows your accuracy (% correct) for each topic you've attempted. Green ≥70%, amber ≥50%, red <50%.</div></span></div>`;
 ranked.sort((a,b)=>{const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).forEach(p=>{
 const pct=p.s.tot?Math.round(p.s.ok/p.s.tot*100):0;
 const clr=pct>=70?'rgb(var(--em))':pct>=50?'rgb(var(--amb))':'rgb(var(--red))';
@@ -1916,56 +1940,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;pa
 </div></div>`;
 });
 h+=`</div>`;}
-// ===== TOPIC RADAR CHART =====
-{const radarTopics=TOPICS.map(function(name,i){
-const s=(getTopicStats()[i])||{ok:0,no:0,tot:0};
-return{name:name,i:i,pct:s.tot?Math.round(s.ok/s.tot*100):0,tot:s.tot};
-}).filter(function(t){return t.tot>0;}).slice(0,10);
-if(radarTopics.length>=3){
-var N=radarTopics.length;
-var CX=120,CY=110,R=80,W=240,H=220;
-var angle=function(i){return(2*Math.PI*i/N)-Math.PI/2;};
-var rings=[25,50,75,100].map(function(pct){
-var r=R*pct/100;
-var pts=radarTopics.map(function(_,i){return(CX+r*Math.cos(angle(i)))+','+(CY+r*Math.sin(angle(i)));}).join(' ');
-return '<polygon points="'+pts+'" fill="none" stroke="#e2e8f0" stroke-width="'+(pct===100?1.5:0.5)+'"/><text x="'+CX+'" y="'+(CY-r-2)+'" font-size="6" fill="#94a3b8" text-anchor="middle">'+pct+'%</text>';
-}).join('');
-var axes=radarTopics.map(function(_,i){
-return '<line x1="'+CX+'" y1="'+CY+'" x2="'+(CX+R*Math.cos(angle(i)))+'" y2="'+(CY+R*Math.sin(angle(i)))+'" stroke="#e2e8f0" stroke-width="0.5"/>';
-}).join('');
-var dataPts=radarTopics.map(function(t,i){var r=R*t.pct/100;return(CX+r*Math.cos(angle(i)))+','+(CY+r*Math.sin(angle(i)));}).join(' ');
-var labels=radarTopics.map(function(t,i){
-var lx=CX+(R+14)*Math.cos(angle(i)),ly=CY+(R+14)*Math.sin(angle(i));
-var short=t.name.length>8?t.name.slice(0,7)+'…':t.name;
-var col=t.pct>=70?'#059669':t.pct>=50?'#d97706':'#dc2626';
-return '<text x="'+lx+'" y="'+ly+'" font-size="7" text-anchor="middle" dominant-baseline="middle" fill="'+col+'">'+short+'</text>';
-}).join('');
-var dots2=radarTopics.map(function(t,i){
-var r=R*t.pct/100,col=t.pct>=70?'#059669':t.pct>=50?'#d97706':'#dc2626';
-return '<circle cx="'+(CX+r*Math.cos(angle(i)))+'" cy="'+(CY+r*Math.sin(angle(i)))+'" r="3" fill="'+col+'"/>';
-}).join('');
-h+='<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🛘 Topic Coverage Radar</div>';
-h+='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="overflow:visible">'+rings+axes+'<polygon points="'+dataPts+'" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="1.5"/>'+dots2+labels+'</svg>';
-h+='<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">'+radarTopics.filter(function(t){return t.pct>=70;}).length+'/'+radarTopics.length+' topics ≥70% · outer ring = 100%</div></div>';
-}}
-// ===== ROI MATRIX SCATTER PLOT =====
-h+=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:4px">🎯 Syllabus ROI Matrix</div>
-<div style="font-size:9px;color:#64748b;margin-bottom:10px">X = Your Accuracy · Y = IMA Exam Weight · Top-left = highest ROI (weak + high-weight)</div>
-<div class="roi-grid" id="roi-grid">
-<span class="roi-label" style="bottom:-18px;left:50%;transform:translateX(-50%)">Your Accuracy →</span>
-<span class="roi-label" style="left:-30px;top:50%;transform:rotate(-90deg) translateX(-50%);transform-origin:0 0">IMA Weight →</span>`;
-const maxW=Math.max(...IMA_WEIGHTS);
-TOPICS.forEach((t,i)=>{
-const stat=tSt[i]||{ok:0,no:0,tot:0};
-const acc=stat.tot>0?Math.round(stat.ok/stat.tot*100):50;
-const wt=IMA_WEIGHTS[i]||3;
-const x=Math.round(acc/100*90)+5;// 5-95% horizontal
-const y=Math.round((1-wt/maxW)*85)+5;// inverted: high weight = top
-const clr=acc>=70?'#059669':acc>=50?'#d97706':'#dc2626';
-const sz=Math.max(22,Math.min(34,wt*3));
-h+=`<div class="roi-dot" style="left:${x}%;bottom:${100-y}%;width:${sz}px;height:${sz}px;background:${clr}20;color:${clr};border-color:${clr}" title="${t}: ${acc}% acc, ${wt}% weight">${t.substring(0,4)}</div>`;
-});
-h+=`</div></div>`;
+// ROI Matrix and Radar chart removed — accuracy bars above are sufficient
 
 TOPICS.forEach((t,i)=>{h+=`<div class="topic${S.ck[i]?' done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()">
 <input type="checkbox" ${S.ck[i]?'checked':''} readonly style="width:13px;height:13px"><span>${t}</span></div>`;});
@@ -1994,6 +1969,12 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 <button class="btn btn-p" onclick="exportProgress()">📥 Export Progress</button>
 <button class="btn btn-g" onclick="importProgress()">📤 Import Progress</button>
 <button class="btn btn-o" onclick="if(confirm('Reset ALL data? This cannot be undone.')){localStorage.removeItem('${LS}');location.reload()}">🗑️ Reset</button>
+</div>
+<div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px">
+<button id="cloud-backup-btn" class="btn" style="background:#e0f2fe;color:#0284c7" onclick="cloudBackup()">☁️ Backup to Cloud</button>
+<button class="btn" style="background:#f0fdf4;color:#15803d" onclick="cloudRestore()">☁️ Restore from Cloud</button>
+</div>
+<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
 </div></div>`;
 // Feedback / Bug Report
 h+=`<div class="card" style="padding:14px;margin-top:12px">
@@ -2007,10 +1988,11 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 <div id="fbStatus" style="font-size:10px;margin-top:6px;display:none"></div>
 </div>`;
 // API key settings card
-h+='<div class="card" style="padding:14px;margin-top:10px">';
+var _storedKey=getApiKey();
+h+='<div class="card" style="padding:14px;margin-top:10px;border:2px solid '+(_storedKey?'#bbf7d0':'#fde68a')+'">';
 h+='<div class="sec-t" style="font-size:13px">🔑 Anthropic API Key</div>';
 h+='<div class="sec-s" style="margin-bottom:10px">לשימוש ב-AI Explain ו-Teach-Back · מאוחסן בדפדפן בלבד</div>';
-var _storedKey=getApiKey();
+if(!_storedKey){h+='<div style="padding:8px 10px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;font-size:10px;color:#92400e;margin-bottom:10px">💡 הוסף API key כדי לקבל הסברים AI על שאלות. <a href="https://console.anthropic.com/keys" target="_blank" style="color:#d97706;font-weight:700">קבל מפתח ↗</a></div>';}
 if(_storedKey){
   h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
   h+='<div style="flex:1;font-size:11px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:8px;padding:6px 10px;color:#065f46">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
@@ -2025,7 +2007,7 @@ if(_storedKey){
 h+='<div style="font-size:9px;color:#94a3b8">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
-<div>Shlav A Mega v8.0 · P005-2026 Syllabus</div>
+<div>Shlav A Mega v9.0 · P005-2026 Syllabus</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
 return h;
@@ -2367,6 +2349,55 @@ setTimeout(function(){const el=document.getElementById('chat-msgs');if(el)el.scr
 function sendChatStarter(text){const input=document.getElementById('chat-input');if(input)input.value=text;sendChat();}
 function clearChat(){S.chat=[];chatLoading=false;save();render();}
 
+// ===== SUPABASE CLOUD SYNC =====
+const _SB_URL='https://drvocrtufqtifkgmijpg.supabase.co';
+const _SB_KEY='sb_publishable_YoJbJEr3_Ss6yunhFlNIzg_RWapShpn';
+function _sbDeviceId(){let id=localStorage.getItem('samega_devid');if(!id){id='dev_'+Math.random().toString(36).slice(2,12);localStorage.setItem('samega_devid',id);}return id;}
+async function cloudBackup(){
+  const btn=document.getElementById('cloud-backup-btn');
+  if(btn){btn.disabled=true;btn.textContent='☁️ Saving...';}
+  try{
+    const payload={id:_sbDeviceId(),data:S,updated_at:new Date().toISOString()};
+    const res=await fetch(_SB_URL+'/rest/v1/samega_backups',{
+      method:'POST',
+      headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify(payload)
+    });
+    if(res.ok||res.status===409){
+      // If 409, try upsert
+      if(res.status===409){
+        await fetch(_SB_URL+'/rest/v1/samega_backups?id=eq.'+_sbDeviceId(),{
+          method:'PATCH',
+          headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'},
+          body:JSON.stringify({data:S,updated_at:new Date().toISOString()})
+        });
+      }
+      alert('✅ Progress backed up to cloud!\nDevice ID: '+_sbDeviceId().slice(0,12)+'...');
+    } else {
+      const err=await res.text();
+      alert('❌ Backup failed: '+res.status+'\n'+err.slice(0,200));
+    }
+  }catch(e){alert('❌ Backup failed: '+e.message);}
+  if(btn){btn.disabled=false;btn.textContent='☁️ Backup to Cloud';}
+}
+async function cloudRestore(){
+  const id=prompt('Enter device ID to restore from (leave blank for this device):',_sbDeviceId())||_sbDeviceId();
+  if(!id)return;
+  try{
+    const res=await fetch(_SB_URL+'/rest/v1/samega_backups?id=eq.'+encodeURIComponent(id)+'&select=data,updated_at',{
+      headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY}
+    });
+    if(!res.ok){alert('❌ Restore failed: '+res.status);return;}
+    const rows=await res.json();
+    if(!rows||!rows.length){alert('No backup found for ID: '+id);return;}
+    const row=rows[0];
+    if(confirm('Restore backup from '+new Date(row.updated_at).toLocaleString()+'?\nThis will overwrite your current progress.')){
+      Object.assign(S,row.data);save();render();
+      alert('✅ Progress restored!');
+    }
+  }catch(e){alert('❌ Restore failed: '+e.message);}
+}
+
 function render(){
 const el=document.getElementById('ct');
 const focused=document.activeElement?.id;
@@ -2448,7 +2479,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='8.0';
+const APP_VERSION='9.0';
 function getDiagnostics(){
 const tot=S.qOk+S.qNo;
 return `Shlav A Mega v${APP_VERSION}\n`+
