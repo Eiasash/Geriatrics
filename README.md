@@ -2,14 +2,14 @@
 
 **Israeli Shlav A (שלב א) Geriatric Medicine Board Exam Preparation Tool**
 
-Standalone, offline-capable PWA with 1,148 real IMA exam questions, textbook-sourced study notes, clinical calculators, and spaced repetition — all in one HTML file.
+Standalone, offline-capable PWA with 1,241 real IMA exam questions, textbook-sourced study notes, clinical calculators, and spaced repetition — all in one HTML file.
 
 ## Features
 
 | Feature | Details |
 |---|---|
-| **Quiz Engine** | 1,148 verified IMA questions (2021–2024) with answer keys |
-| **Spaced Repetition** | SM-2 algorithm — wrong answers resurface automatically |
+| **Quiz Engine** | 1,241 verified IMA questions (2021–2025) with answer keys |
+| **Spaced Repetition** | SM-2 algorithm (ID-based) — wrong answers resurface automatically |
 | **Exam Mode** | Configurable N/time, topic breakdown, + wrong-answer re-drill after exam |
 | **Post-Exam Re-Drill** | One-click drill on wrong answers only after any mock exam |
 | **Weak Topic Drill** | Auto-targets weakest topics for focused practice |
@@ -26,16 +26,30 @@ Standalone, offline-capable PWA with 1,148 real IMA exam questions, textbook-sou
 | **OSCE Simulator** | 10 timed stations with scored checklists |
 | **Full-Text Search** | Search questions, notes, and drugs |
 | **Dark Mode** | Toggle, persists to localStorage |
-| **Bookmarks** | Flag questions for review |
-| **Share/Export/Import** | Copy to clipboard, JSON backup & restore |
+| **Bookmarks** | Flag questions for review; named bookmark collections/folders |
+| **Share/Export/Import** | Copy to clipboard, JSON backup & restore, markdown export of weaknesses |
 | **IMA Archive** | Direct S3 links for all exam PDFs 2022–2025 |
 | **PWA Offline** | Service worker for offline use + install prompt banner |
 | **Swipe Navigation** | Swipe left/right on quiz + flashcards |
 | **Font Size Control** | A-/A+ in header, persists |
 | **Annotations** | Per-question personal notes |
 | **Heatmap** | 7-week study activity calendar in Track |
+| **Cloud Sync** | Supabase backup/restore — sync progress across devices |
+| **Night/Study Mode** | Reduced-distraction study mode |
+| **Teach-Back Mode** | Answer without seeing choices — active recall |
+| **Progress Charts** | Line chart + topic radar chart in Track tab |
 
 ## Recent Changes (April 2026)
+
+### v9.0
+- **Harrison's 22e chapters** — grouped PDF links added to Study Notes
+- **Pearls Unicode rendering** fixed; law document URLs corrected; 2025 exam filter working
+- **Prometric flag** — flag questions for Prometric-style review screen in Exam Mode
+
+### v8.5
+- **Markdown export** — export weak areas (SM-2 failures, bookmarks, due-soon) as markdown
+- **Supabase cloud sync** — backup and restore study progress across devices
+- **Full RTL support** — `dir=rtl`, `unicode-bidi:plaintext`, Hebrew language attributes on question text
 
 ### v8.4
 - **A-/A+** font size controls in header (persists across sessions)
@@ -51,14 +65,20 @@ Standalone, offline-capable PWA with 1,148 real IMA exam questions, textbook-sou
 - **📲 PWA install prompt** — banner when app is installable
 - **📡 Offline indicator** — banner when no network
 - **?** keyboard shortcut help overlay
+- **Night/Study mode** — reduced-distraction environment
+- **Bookmark collections** — named folders for bookmarks
+- **Progress charts** — line chart + topic radar in Track tab
+- **Drug flip cards** — flip to see Beers/ACB criteria details
 
 ### v8.3
-
 - **⚖️ Israeli Law tab**: All 13 legal documents with exam-critical bullet points, exam traps, category filter, search, and quick-link to related quiz topics
 - **🚫✅ STOPP/START v.3**: Full O'Mahony 2023 criteria integrated into Drug Reference tab — all sections searchable
 - **🔁 Post-exam re-drill**: After any mock exam, drill wrong answers only with one tap
 - **💡 Baked-in AI explanations**: 15 expert explanations pre-loaded — no API key needed for those questions
-- **📝 Skill file updated**: SKILLshlava.md updated with all new indexed documents
+- **Teach-back mode**: Practice active recall — answer before seeing choices
+- **Show-answer SM-2 fail**: Counts as wrong for spaced repetition
+- **Time-per-question analytics**: Tracked in session stats
+- **ID-based SM-2**: Stable spaced repetition linked to question IDs, not array position
 
 ## Calculators
 
@@ -99,18 +119,22 @@ Standalone, offline-capable PWA with 1,148 real IMA exam questions, textbook-sou
 
 ## Data Sources
 
-- **Questions:** 1,131 MCQs from official IMA Shlav A exams with verified answer keys
-- **Study Notes:** Hazzard's 8e, GRS 8e, Washington Manual, SZMC DAG
+- **Questions:** 1,241 MCQs from official IMA Shlav A exams (2021–2025) with verified answer keys
+- **Study Notes:** Hazzard's 8e, GRS 8e, Washington Manual, SZMC DAG, Harrison's 22e chapters
 - **Drugs:** Beers Criteria 2023 + ACB Scale (53 drugs)
 - **Regulations:** Patient Rights Law, Dying Patient Act, Continuing POA, Takanah 12b
 
 ## Files
 
 ```
-shlav-a-mega.html  — Complete app (~665KB)
+shlav-a-mega.html  — Complete app (v9.0)
 index.html         — Redirect for GitHub Pages
 manifest.json      — PWA manifest
 sw.js              — Service worker (v9)
+questions.json     — 1,241 exam questions
+notes.json         — 40 study topics
+flashcards.json    — 159 high-yield flashcards
+drugs.json         — 53 Beers/ACB drugs
 .nojekyll          — Bypass Jekyll on GitHub Pages
 ```
 
