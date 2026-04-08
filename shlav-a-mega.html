@@ -429,10 +429,16 @@ if(!S.ltn)S.ltn={};if(!S.qTags)S.qTags={};if(!S.qReports)S.qReports={};
 const _today=new Date().toISOString().slice(0,10);
 if(!S.studyDays[_today])S.studyDays[_today]=0;
 setInterval(()=>{S.studyDays[_today]=(S.studyDays[_today]||0)+1;S.totalMinutes=(S.totalMinutes||0)+1;save();},60000);
+function showToast(msg, duration=3000){
+  let t=document.getElementById('toast-msg');
+  if(!t){t=document.createElement('div');t.id='toast-msg';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 16px;border-radius:12px;font-size:12px;font-weight:600;z-index:9998;box-shadow:0 4px 20px rgba(0,0,0,.3);max-width:300px;text-align:center';document.body.appendChild(t);}
+  t.textContent=msg;t.style.display='block';t.style.cursor='';t.onclick=null;
+  clearTimeout(t._timer);if(duration>0)t._timer=setTimeout(()=>t.style.display='none',duration);
+}
 let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>{try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){if(e.name==='QuotaExceededError'||e.code===22){// Trim oldest data to free space
 if(S.chat&&S.chat.length>4)S.chat=S.chat.slice(-4);
 const old=Object.keys(S.studyDays||{}).sort();while(old.length>30){delete S.studyDays[old.shift()];}
-try{localStorage.setItem(LS,JSON.stringify(S));}catch(e2){console.warn('localStorage full');}}else{throw e;}}},150)}
+try{localStorage.setItem(LS,JSON.stringify(S));showToast('⚠️ Storage full — oldest study days removed. Consider exporting progress.',4000);}catch(e2){console.warn('localStorage full');}}else{throw e;}}},150)}
 // Font size control
 function changeFontSize(delta){
   S.fontSize=Math.min(18,Math.max(11,(S.fontSize||14)+delta));
@@ -603,9 +609,12 @@ S.lastDay=today;save();
 })();
 
 // ===== SPACED REP =====
+let _idToIdx=new Map(); // populated in initApp after QZ loads
+function _srKey(qIdx){return QZ[qIdx]?.id||String(qIdx);}
 function srScore(qIdx,correct){
-if(!S.sr[qIdx])S.sr[qIdx]={ef:2.5,n:0,next:0};
-const s=S.sr[qIdx];
+const key=_srKey(qIdx);
+if(!S.sr[key])S.sr[key]={ef:2.5,n:0,next:0};
+const s=S.sr[key];
 const q=correct?4:1;
 s.ef=Math.max(1.3,s.ef+(.1-(5-q)*(.08+(5-q)*.02)));
 s.n=correct?s.n+1:0;
@@ -615,12 +624,16 @@ save();
 }
 let _dueSig='';let _dueQCache=null;let _dueOrdCache=null;
 function _getDueSig(){const now=Date.now();return JSON.stringify(S.sr)+','+Math.floor(now/60000);}
+function _keyToIdx(key){
+  if(_idToIdx.size>0){const r=_idToIdx.get(key);if(r!==undefined)return r;}
+  const n=parseInt(key);return isNaN(n)?-1:n;
+}
 function getDueQuestions(){
 const sig=_getDueSig();
 if(sig===_dueSig&&_dueQCache)return _dueQCache;
 _dueSig=sig;
 const now=Date.now();
-_dueQCache=Object.entries(S.sr).filter(([k,v])=>v.next<=now).map(([k])=>parseInt(k)).slice(0,20);
+_dueQCache=Object.entries(S.sr).filter(([k,v])=>v.next<=now).map(([k])=>_keyToIdx(k)).filter(i=>i>=0&&i<QZ.length).slice(0,20);
 _dueOrdCache=null;
 return _dueQCache;
 }
@@ -629,8 +642,9 @@ const sig=_getDueSig();
 if(sig===_dueSig&&_dueOrdCache)return _dueOrdCache;
 _dueSig=sig;
 const now=Date.now();
-_dueQCache=Object.entries(S.sr).filter(([k,v])=>v.next<=now).map(([k])=>parseInt(k)).slice(0,20);
-_dueOrdCache=Object.entries(S.sr).filter(([k,v])=>v.next<=now).sort((a,b)=>a[1].next-b[1].next).map(([k])=>parseInt(k));
+const due=Object.entries(S.sr).filter(([k,v])=>v.next<=now);
+_dueQCache=due.map(([k])=>_keyToIdx(k)).filter(i=>i>=0&&i<QZ.length).slice(0,20);
+_dueOrdCache=due.sort((a,b)=>a[1].next-b[1].next).map(([k])=>_keyToIdx(k)).filter(i=>i>=0&&i<QZ.length);
 return _dueOrdCache;
 }
 // Init/reset SR session tracking
@@ -931,6 +945,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:flex-star
 <span style="color:#94a3b8;font-size:10px">${qi+1}/${pool.length}</span>
 </div></div>`;
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px">${sanitize(q.q)}</p>`;
+if(q.img_url)h+=`<img src="${sanitize(q.img_url)}" alt="Question image" style="max-width:100%;height:auto;border-radius:8px;margin-bottom:12px;display:block">`;
 q.o.forEach((o,i)=>{
 let cls='qo';
 if(ans){cls+=' lk';if(i===q.c)cls+=' ok';else if(i===sel)cls+=' no';else cls+=' dim';}
@@ -2293,6 +2308,7 @@ ${topicName?`<span class="rev-badge-topic">${sanitize(topicName)}</span>`:''}
 <span class="rev-badge-rep">Rep #${srState.n}</span>
 </div>`;
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px">${sanitize(q.q)}</p>`;
+if(q.img_url)h+=`<img src="${sanitize(q.img_url)}" alt="Question image" style="max-width:100%;height:auto;border-radius:8px;margin-bottom:12px;display:block">`;
 q.o.forEach((o,i)=>{
 let cls='qo';
 if(rvAns){cls+=' lk';if(i===q.c)cls+=' ok';else if(i===rvSel)cls+=' no';else cls+=' dim';}
@@ -3060,7 +3076,7 @@ if(S.dark){document.body.classList.add('dark');const ld=document.getElementById(
 
 // ===== FLASHCARD SPACED REP =====
 function fcRate(q){// q: 0=again, 1=hard, 2=easy
-const key='fc_'+S.fci%FLASH.length;
+const _fci=S.fci%FLASH.length;const key=FLASH[_fci]?.id||('fc_'+_fci);
 if(!S.fcsr)S.fcsr={};
 if(!S.fcsr[key])S.fcsr[key]={n:0,next:0};
 const s=S.fcsr[key];
@@ -3140,7 +3156,21 @@ el.value='';
 }
 
 // PWA
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(reg=>{reg.addEventListener('updatefound',()=>{const nw=reg.installing;nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller){const b=document.createElement('div');b.id='sw-update-banner';b.setAttribute('role','alert');b.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#1d4ed8;color:#fff;padding:10px 16px;border-radius:12px;font-size:12px;font-weight:600;z-index:9999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.3)';b.innerHTML='Update available! <button onclick=\"location.reload()\" style=\"background:#fff;color:#1d4ed8;border:none;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer;margin-left:4px\">Reload</button>';document.body.appendChild(b);}});});}).catch(()=>{});}
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    reg.addEventListener('updatefound',()=>{
+      const nw=reg.installing;
+      nw.addEventListener('statechange',()=>{
+        if(nw.state==='installed'&&navigator.serviceWorker.controller){
+          showToast('🔄 Update available — tap to refresh',0);
+          const t=document.getElementById('toast-msg');
+          if(t){t.style.cursor='pointer';t.onclick=()=>{nw.postMessage({type:'SKIP_WAITING'});navigator.serviceWorker.addEventListener('controllerchange',()=>location.reload());};}
+        }
+      });
+    });
+  }).catch(()=>{});
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(document.readyState==='complete')location.reload();});
+}
 // Async app initialization
 let _searchIdx=new Map();
 async function initApp(){
@@ -3153,6 +3183,8 @@ async function initApp(){
       fetch('drugs.json').then(r=>{if(!r.ok)throw new Error('drugs');return r.json();}),
     ]);
     QZ=qd;NOTES=nd;FLASH=fd;DRUGS=dd;
+    // Build id→index reverse map for SM-2 key lookups
+    _idToIdx=new Map(QZ.map((q,i)=>[q.id||String(i),i]));
     // Build inverted search index
     _searchIdx=new Map();
     QZ.forEach((q,i)=>{
@@ -3165,6 +3197,7 @@ async function initApp(){
 (function(){function updClock(){const d=new Date(),dy=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],mn=['January','February','March','April','May','June','July','August','September','October','November','December'],n=d.getDate(),ord=n>3&&n<21?'th':([,'st','nd','rd'][n%10]||'th'),h=String(d.getHours()).padStart(2,'0'),m=String(d.getMinutes()).padStart(2,'0'),ds=document.getElementById('date-span');if(ds)ds.textContent=dy[d.getDay()]+' '+n+ord+' '+mn[d.getMonth()]+' '+d.getFullYear()+' · '+h+':'+m;}updClock();setInterval(updClock,60000);})();
     _dataReady=true;
     if(loader)loader.remove();
+    if(getApiKey()==='')showToast('💡 Add your Claude API key in settings for AI explanations and teach-back',5000);
     renderTabs();render();
   }catch(e){
     if(loader)loader.innerHTML='<div style="text-align:center;padding:48px 24px"><div style="font-size:48px;margin-bottom:16px">⚠️</div><div style="font-size:15px;font-weight:700;margin-bottom:8px">Failed to load question bank</div><div style="font-size:12px;color:#64748b;margin-bottom:20px">'+sanitize(e.message)+'</div><button onclick="location.reload()" style="padding:10px 24px;background:#3b82f6;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Retry</button></div>';
