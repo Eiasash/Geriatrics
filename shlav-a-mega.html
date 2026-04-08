@@ -686,6 +686,7 @@ function drillWrongAnswers(){
 
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
+let _qStartTime=0;
 let showTopicPicker=false,selectedTopics=new Set();
 let examCfg={n:60,t:60};
 let examStats={byTopic:{},times:[],startTs:0,qTs:0};
@@ -730,7 +731,7 @@ function setFilt(f){filt=f;topicFilt=-1;buildPool();render()}
 function setTopicFilt(ti){filt='topic';topicFilt=ti;buildPool();render()}
 function pick(i){if(ans)return;sel=i;render()}
 function check(){
-if(sel===null)return;ans=true;
+if(sel===null)return;ans=true;teachBackState=null;
 const q=QZ[pool[qi]];
 const ti_=q.ti;
 if(examMode){
@@ -744,17 +745,65 @@ if(examMode){
   else{S.qNo++;srScore(pool[qi],false);if(ti_>=0){if(!S.tpNo[ti_])S.tpNo[ti_]=0;S.tpNo[ti_]++;}}
 }
 const dk=(new Date()).toISOString().slice(0,10);if(!S.dailyLog)S.dailyLog={};S.dailyLog[dk]=true;
+const _elapsed=Date.now()-_qStartTime;
+if(_elapsed>500&&_elapsed<120000){
+  if(!S.qTimes)S.qTimes={};
+  const _ti=String(q.ti);
+  if(!S.qTimes[_ti])S.qTimes[_ti]={sum:0,n:0};
+  S.qTimes[_ti].sum+=_elapsed;
+  S.qTimes[_ti].n++;
+}
 save();render();
 }
 function next(){
 if(examMode&&qi+1>=pool.length){endExam();return;}
-qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;
+qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;teachBackState=null;
 if(examMode)examStats.qTs=Date.now();
 render();
+}
+function showAnswerHardFail(){
+if(ans)return;
+const q=QZ[pool[qi]];
+sel=q.c;ans=true;teachBackState=null;
+if(!examMode){
+  S.qNo++;
+  if(q.ti>=0){if(!S.tpNo[q.ti])S.tpNo[q.ti]=0;S.tpNo[q.ti]++;}
+  const key=_srKey(pool[qi]);
+  if(!S.sr[key])S.sr[key]={ef:2.5,n:0,next:0};
+  S.sr[key].ef=Math.max(1.3,(S.sr[key].ef||2.5)-0.3);
+  S.sr[key].n=0;
+  S.sr[key].next=Date.now();
+  const dk=(new Date()).toISOString().slice(0,10);if(!S.dailyLog)S.dailyLog={};S.dailyLog[dk]=true;
+}
+save();render();
 }
 function toggleBk(){S.bk[pool[qi]]=!S.bk[pool[qi]];save();render();}
 
 // ===== EXAM MODE =====
+let teachBackState=null;
+async function gradeTeachBack(qIdx, userExplanation){
+  teachBackState='grading'; render();
+  const q=QZ[qIdx];
+  const correctOption=q.o[q.c];
+  const apiKey=getApiKey();
+  if(!apiKey){teachBackState={score:null,feedback:'\u{1F4A1} Add API key for AI grading'};render();return;}
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',max_tokens:200,
+        messages:[{role:'user',content:`You are grading a medical student's teach-back explanation.\nQuestion: ${q.q}\nCorrect answer: ${correctOption}\nStudent explanation: ${userExplanation}\n\nGrade on a scale of 1-3:\n1 = Incorrect/incomplete understanding\n2 = Partial understanding  \n3 = Correct and complete\n\nReply with ONLY: {"score": N, "feedback": "one sentence in Hebrew"}`}]
+      })
+    });
+    const data=await res.json();
+    const txt=data.content?.[0]?.text||'';
+    const parsed=JSON.parse(txt.match(/{.*}/s)?.[0]||'{}');
+    teachBackState={score:parsed.score||1, feedback:parsed.feedback||'No feedback'};
+  }catch(e){teachBackState={score:null,feedback:'\u05E9\u05D2\u05D9\u05D0\u05D4: '+e.message};}
+  render();
+}
+
 function startExamConfig(){showExamConfig=true;render();}
 function launchExam(){
   showExamConfig=false;
@@ -875,6 +924,7 @@ function renderQuiz(){
 if(showExamResults)return renderExamResults();
 if(!pool.length)buildPool();
 if(qi>=pool.length)qi=0;
+_qStartTime=Date.now();
 const q=QZ[pool[qi]];const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
 const bk=S.bk[pool[qi]];
 const dueN=getDueQuestions().length;
@@ -952,6 +1002,7 @@ if(ans){cls+=' lk';if(i===q.c)cls+=' ok';else if(i===sel)cls+=' no';else cls+=' 
 else if(i===sel)cls+=' sel';
 h+=`<button class="${cls}" onclick="pick(${i})">${sanitize(o)}</button>`;
 });
+if(!ans)h+=`<button class="btn btn-o" style="width:100%;margin-top:8px;font-size:11px" onclick="showAnswerHardFail()">👁️ Don't Know — Show Answer</button>`;
 h+=`<div style="display:flex;gap:6px;margin-top:14px">`;
 if(!ans)h+=`<button class="btn btn-p" onclick="check()"${sel===null?' disabled':''}>בדוק</button>`;
 else h+=`<button class="btn btn-d" onclick="next()">${examMode&&qi+1>=pool.length?'סיים':'הבאה ←'}</button>`;
@@ -975,6 +1026,26 @@ else h+=`<div class="explain-correct" style="margin-bottom:6px">Correct answer: 
 h+=`<div class="explain-src" style="font-size:9px;margin-top:4px">📖 Source: ${sanitize(note.ch)} · ${sanitize(q.t)}</div>`;
 h+=`</div>`;
 }
+}
+// Teach-back block: only show after a CORRECT answer in non-exam mode
+if(ans&&!examMode&&sel===q.c){
+  if(!teachBackState){
+    h+=`<div style="margin-top:12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:12px">
+      <div style="font-size:12px;font-weight:700;color:#065f46;margin-bottom:8px;direction:rtl">🎓 Teach-Back: הסבר מדוע זו התשובה הנכונה</div>
+      <textarea id="tbInput" class="q-note-box" style="width:100%;min-height:60px;resize:vertical;font-family:'Heebo',sans-serif" placeholder="הקלד את ההסבר שלך..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-g" style="flex:1;font-size:11px" onclick="const v=document.getElementById('tbInput')?.value?.trim();if(v){gradeTeachBack(pool[qi],v);}else{teachBackState='skip';render();}">🤖 Grade it</button>
+        <button class="btn btn-o" style="font-size:11px" onclick="teachBackState='skip';render()">Skip</button>
+      </div></div>`;
+  } else if(teachBackState==='grading'){
+    h+=`<div style="margin-top:12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:12px;text-align:center"><div style="font-size:12px;color:#065f46">⏳ Grading your explanation...</div></div>`;
+  } else if(teachBackState&&teachBackState!=='skip'){
+    const scoreEmoji=teachBackState.score===3?'🟢':teachBackState.score===2?'🟡':'🔴';
+    const scoreLabel=teachBackState.score===3?'Excellent!':teachBackState.score===2?'Partial understanding':'Needs more work';
+    h+=`<div style="margin-top:12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:12px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">${scoreEmoji} ${scoreLabel}</div>
+      <div style="font-size:11px;line-height:1.7;direction:rtl;text-align:right">${sanitize(teachBackState.feedback)}</div></div>`;
+  }
 }
 // Difficulty rating row
 if(ans&&!examMode){
@@ -2040,6 +2111,21 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;pa
 </div></div>`;
 });
 h+=`</div>`;}
+// Time per question analytics
+if(S.qTimes && Object.keys(S.qTimes).length > 0){
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="font-weight:700;font-size:12px;margin-bottom:8px">⏱ Time Per Question by Topic</div>`;
+TOPICS.forEach((name,_ti)=>{
+  const t=S.qTimes[String(_ti)];
+  if(!t||!t.n)return;
+  const avg=Math.round(t.sum/t.n/1000);
+  const bar=Math.min(100,avg/120*100);
+  const col=avg<=30?'#22c55e':avg<=60?'#eab308':'#ef4444';
+  h+=`<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span>${sanitize(name)}</span><span style="color:${col};font-weight:700">${avg}s avg (${t.n}q)</span></div>
+  <div style="height:4px;background:#f1f5f9;border-radius:2px"><div style="height:100%;width:${bar}%;background:${col};border-radius:2px"></div></div></div>`;
+});
+h+=`</div>`;
+}
 // Syllabus
 h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📋 Syllabus (${done}/40)</div>`;
 TOPICS.forEach((t,i)=>{h+=`<div class="topic${S.ck[i]?' done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()">
