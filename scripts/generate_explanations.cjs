@@ -30,18 +30,19 @@ const path  = require('path');
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const QUESTIONS_PATH = path.resolve(__dirname, '..', 'questions.json');
+const CACHE_PATH     = path.resolve(__dirname, '..', 'explanations_cache.json');
 const CONFIG_PATH    = path.resolve(__dirname, '..', 'config.json');
 const SAVE_EVERY     = 10; // write progress every N completions
 
-const MODEL          = 'claude-haiku-4-5-20251001';
-const MAX_TOKENS     = 300;
+const MODEL          = 'claude-opus-4-6';
+const MAX_TOKENS     = 600;
 
 const SYSTEM_PROMPT =
-  'You are a geriatrics medical educator. Generate a concise clinical explanation ' +
-  '(2-4 sentences, max 300 tokens) for why a multiple-choice answer is correct. ' +
-  'Include: the key clinical concept, why the correct answer is right, and one ' +
-  'differentiating point about wrong answers. Write in Hebrew if the question is ' +
-  'in Hebrew, English if in English. Be concise and exam-focused.';
+  'You are a senior geriatrician preparing a colleague for the Israeli IMA Shlav A (שלב א) geriatrics board exam. ' +
+  'Generate a concise clinical explanation (3-5 sentences, max 500 tokens) for the correct answer. ' +
+  'Structure: ✅ נכון (LETTER): one-line reason → then clinical mechanism (cite Hazzard\'s/Harrison\'s if relevant) → ' +
+  '❌ briefly destroy each wrong answer (one line each) → 📌 פנינת מבחן: one exam-extractable takeaway. ' +
+  'Write in Hebrew. Drug names and medical terms in Latin script. Be direct, mechanism-based, no hedging.';
 
 // ─── Argument parsing ────────────────────────────────────────────────────────
 
@@ -196,10 +197,20 @@ async function main() {
 
   console.log(`Loaded ${questions.length} questions from questions.json`);
 
-  // Filter candidates
+  // Load explanations cache
+  let exCache = {};
+  try { exCache = JSON.parse(fs.readFileSync(CACHE_PATH, 'utf8')); } catch {}
+  console.log(`Loaded ${Object.keys(exCache).length} cached explanations`);
+
+  // Filter candidates — skip if already has good explanation in q.e OR in cache
   let candidates = questions
     .map((q, idx) => ({ q, idx }))
-    .filter(({ q }) => !q.e || q.e.trim() === '');
+    .filter(({ q, idx }) => {
+      if (q.e && q.e.trim() !== '') return false;
+      const cached = exCache[String(idx)];
+      if (cached && cached.text && cached.text.includes('מנגנון') ) return false; // already has clinical detail
+      return true;
+    });
 
   if (args.topic !== null) {
     candidates = candidates.filter(({ q }) => q.ti === args.topic);
@@ -256,6 +267,7 @@ async function main() {
     try {
       const explanation = await callClaude(apiKey, SYSTEM_PROMPT, userPrompt);
       questions[idx].e = explanation;
+      exCache[String(idx)] = { text: explanation };
       successCount++;
       savesSinceCheckpoint++;
       console.log(`${label} Done. (${explanation.length} chars)`);
@@ -268,6 +280,7 @@ async function main() {
     if (savesSinceCheckpoint >= SAVE_EVERY) {
       try {
         atomicWriteJson(QUESTIONS_PATH, questions);
+        atomicWriteJson(CACHE_PATH, exCache);
         console.log(`  [checkpoint] Saved progress (${successCount} explanations so far)`);
         savesSinceCheckpoint = 0;
       } catch (writeErr) {
@@ -284,6 +297,7 @@ async function main() {
   // Final save
   try {
     atomicWriteJson(QUESTIONS_PATH, questions);
+    atomicWriteJson(CACHE_PATH, exCache);
     console.log(`\nFinal save complete.`);
   } catch (writeErr) {
     console.error(`ERROR: Final save failed: ${writeErr.message}`);
