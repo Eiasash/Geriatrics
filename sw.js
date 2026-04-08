@@ -1,4 +1,4 @@
-const CACHE='shlav-a-v8.4';
+const CACHE='shlav-a-v8.5';
 const STATIC=[
   'shlav-a-mega.html',
   'manifest.json',
@@ -24,13 +24,20 @@ self.addEventListener('activate',e=>e.waitUntil(
 
 self.addEventListener('fetch',e=>{
   const url=new URL(e.request.url);
-  // Cache-first for JSON data files
+  // Pass-through for external APIs (no caching)
+  if(url.hostname==='api.anthropic.com'){
+    e.respondWith(
+      fetch(e.request).catch(()=>new Response(JSON.stringify({error:{message:'offline'}}),{status:503,headers:{'Content-Type':'application/json'}}))
+    );
+    return;
+  }
+  // Network-first for JSON data files (get updates, cache fallback)
   if(DATA.some(d=>url.pathname.endsWith(d))){
     e.respondWith(
-      caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+      fetch(e.request).then(res=>{
         if(res.ok){const c=res.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c));}
         return res;
-      }))
+      }).catch(()=>caches.match(e.request))
     );
     return;
   }
