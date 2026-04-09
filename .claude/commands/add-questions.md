@@ -10,7 +10,7 @@ Steps:
 3. Validate: question has exactly 4 options, correct index 0-3, year string matches existing format
 4. Auto-tag topic (ti field) based on question content matching TOPICS list
 5. Check for near-duplicate questions (fuzzy match on question text)
-6. Append to questions.json
+6. Append to root questions.json (canonical copy) and data/questions.json (runtime copy)
 7. Update README question count
 
 The `ti` field MUST map to one of these indices (0-39):
