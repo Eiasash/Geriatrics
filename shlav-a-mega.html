@@ -299,7 +299,7 @@ body.dark .chat-disclaimer{background:#422006;border-color:#92400e;color:#fcd34d
 </style>
 
 <script>
-(function(){
+document.addEventListener('DOMContentLoaded',function(){
 const el=document.getElementById('hdr-sub');
 if(!el)return;
 function upd(){
@@ -311,7 +311,7 @@ const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','De
 el.textContent=day+' '+d.getDate()+' '+mon+' · '+h+':'+m;
 }
 upd();setInterval(upd,30000);
-})();
+});
 </script>
 </head>
 <body>
@@ -2320,7 +2320,7 @@ if(_storedKey){
 h+='<div style="font-size:9px;color:#94a3b8">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
-<div>Shlav A Mega v9.2 · P005-2026 · 9 Apr 2026</div>
+<div>Shlav A Mega v9.3 · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
 return h;
