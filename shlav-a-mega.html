@@ -989,6 +989,26 @@ _exCache[_apKey]='<span style="color:#dc2626">Error: '+e.message.substring(0,40)
 render();
 }
 
+function startVoiceTeachBack(){
+  const SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRec){alert('קול לא נתמך בדפדפן זה');return;}
+  const rec=new SpeechRec();
+  rec.lang='he-IL';
+  rec.continuous=false;
+  rec.interimResults=false;
+  const btn=document.getElementById('tb-mic-btn');
+  const inp=document.getElementById('tbInput');
+  if(!inp){alert('עדכן את הדף');return;}
+  if(btn){btn.textContent='🔴';btn.disabled=true;}
+  rec.onresult=function(e){
+    const transcript=e.results[0][0].transcript;
+    inp.value=(inp.value?inp.value+' ':'')+transcript;
+    if(btn){btn.textContent='🎙️';btn.disabled=false;}
+  };
+  rec.onerror=function(){if(btn){btn.textContent='🎙️';btn.disabled=false;}};
+  rec.onend=function(){if(btn){btn.textContent='🎙️';btn.disabled=false;}};
+  rec.start();
+}
 async function gradeTeachBack(qIdx,userExplanation){
 teachBackState='grading';render();
 const q=QZ[qIdx];
@@ -1210,16 +1230,39 @@ function stopTimedMode(){
   clearInterval(timedInt);
   render();
 }
+function isMetaOption(text){
+  // Detect options that reference letter positions or aggregate all answers
+  // These must NOT be shuffled as their content references other option positions
+  const t=(text||'').trim();
+  const metaPatterns=[
+    /כל\s*(ה)?תשוב/,           // כל התשובות נכונות
+    /כל\s*(ה)?אמור/,            // כל האמור נכון
+    /אף\s*תשוב/,                // אף תשובה
+    /all\s+of\s+the\s+above/i,
+    /none\s+of\s+the\s+above/i,
+    /both\s+[a-e]\s+and\s+[a-e]/i,
+    /[א-ת][׳']\s*ו[־-]?\s*[א-ת][׳']/,  // א׳ ו-ב׳, א׳ וג׳
+    /^\s*[a-e]\s+and\s+[a-e]\s*$/i,      // "A and C"
+    /\d\s*ו\s*\d/,              // 1 ו-2
+  ];
+  return metaPatterns.some(p=>p.test(t));
+}
 function getOptShuffle(qIdx,q){
   // Return stable shuffle for this question in this session
   if(_optShuffle&&_optShuffle.qIdx===qIdx)return _optShuffle.map;
-  // Create shuffled index array
   const n=q.o.length;
-  const map=[...Array(n).keys()];
-  // Fisher-Yates using qIdx as seed for stability within session
+  // Separate meta-options (pin to end) from regular options (shuffle)
+  const regular=[],meta=[];
+  q.o.forEach((_,i)=>{isMetaOption(q.o[i])?meta.push(i):regular.push(i);});
+  // Fisher-Yates shuffle of regular options only, seeded by qIdx
   let seed=qIdx*31+17;
   const rand=()=>{seed=(seed*1664525+1013904223)&0xffffffff;return(seed>>>0)/0xffffffff;};
-  for(let i=n-1;i>0;i--){const j=Math.floor(rand()*(i+1));[map[i],map[j]]=[map[j],map[i]];}
+  for(let i=regular.length-1;i>0;i--){
+    const j=Math.floor(rand()*(i+1));
+    [regular[i],regular[j]]=[regular[j],regular[i]];
+  }
+  // Meta options stay at end in original relative order
+  const map=[...regular,...meta];
   _optShuffle={qIdx,map};
   return map;
 }
@@ -1355,7 +1398,7 @@ h+=`</div>`;
 if(ans&&!examMode&&sel===q.c){
 if(!teachBackState){
 h+='<div style="margin-top:12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:12px">';
-h+='<div style="font-size:12px;font-weight:700;color:#065f46;margin-bottom:8px;direction:rtl">🎓 Teach-Back: הסבר מדוע זו התשובה הנכונה</div>';
+h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:12px;font-weight:700;color:#065f46;direction:rtl">🎓 Teach-Back: הסבר מדוע זו התשובה הנכונה</span><button onclick="startVoiceTeachBack()" id="tb-mic-btn" style="font-size:16px;padding:4px 8px;background:#ecfdf5;border:none;border-radius:8px;cursor:pointer" title="הקלט קולי">🎙️</button></div>';
 h+='<textarea id="tbInput" dir="rtl" style="width:100%;min-height:60px;resize:vertical;font-family:Heebo,sans-serif;border:1px solid #a7f3d0;border-radius:8px;padding:8px;font-size:12px" placeholder="הקלד את ההסבר שלך..."></textarea>';
 h+='<div style="display:flex;gap:8px;margin-top:8px">';
 h+='<button class="btn btn-g" style="flex:1;font-size:11px" onclick="var v=document.getElementById(\'tbInput\')?.value?.trim();if(v){gradeTeachBack(pool[qi],v);}else{teachBackState=\'skip\';render();}">🤖 Grade it</button>';
@@ -3422,6 +3465,12 @@ window.addEventListener('beforeunload',function(e){
     e.preventDefault();
     e.returnValue='Mock exam in progress — are you sure you want to leave?';
     return e.returnValue;
+  }
+});
+// iOS Safari: save immediately when app is backgrounded (OS may kill tab)
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='hidden'){
+    try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){}
   }
 });
 // ===== WEEKLY TREND SNAPSHOT =====
