@@ -318,7 +318,7 @@ upd();setInterval(upd,30000);
 
 <a href="#main-content" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v10.0</span></h1>
+<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v9.7</span></h1>
 <button class="dm-btn" onclick="toggleStudyMode()" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode">🌓</button><button class="dm-btn" onclick="showHelp()" title="Help" aria-label="Help" style="right:82px;font-size:11px">❓</button>
 <p id="hdr-sub">Loading...</p>
 </div>
@@ -710,6 +710,7 @@ const _dataPromise = (async function loadDataArrays() {
     });
     _dataReady = true;
     console.log('Data loaded: ' + QZ.length + ' questions, ' + NOTES.length + ' notes');
+    takeWeeklySnapshot();
   } catch (error) {
     console.error('Data load failed:', error);
     var ct = document.getElementById('ct');
@@ -735,6 +736,7 @@ function go(t){tab=t;renderTabs();render()}
 
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
+let onCallMode=false,flipRevealed=false;
 let qStartTime=Date.now();
 function buildPool(){
 if(filt==='weak'){
@@ -771,17 +773,95 @@ buildPool();
 
 function setFilt(f){filt=f;topicFilt=-1;buildPool();render()}
 function setTopicFilt(ti){filt='topic';topicFilt=ti;buildPool();render()}
+
+// ===== ON-CALL FLIP CARD MODE =====
+function startOnCallMode(){onCallMode=true;flipRevealed=false;filt='due';buildPool();if(!pool.length){filt='weak';buildPool();}if(!pool.length){filt='all';buildPool();}render();}
+function exitOnCallMode(){onCallMode=false;flipRevealed=false;render();}
+function flipCard(){flipRevealed=true;render();}
+function onCallPick(correct){
+  sel=correct?QZ[pool[qi]].c:((QZ[pool[qi]].c+1)%QZ[pool[qi]].o.length);
+  checkMockIntercept();ans=true;
+  const q=QZ[pool[qi]];
+  if(correct){S.qOk++;srScore(pool[qi],true);}
+  else{S.qNo++;srScore(pool[qi],false);}
+  save();
+  setTimeout(()=>{
+    qi++;if(qi>=pool.length)qi=0;
+    sel=null;ans=false;flipRevealed=false;autopsyDistractor=-1;teachBackState=null;
+    render();
+  },600);
+}
+function renderOnCall(){
+  if(!pool.length)return '<div style="padding:40px;text-align:center;color:#94a3b8">No questions available</div>';
+  const qIdx=pool[qi];const q=QZ[qIdx];
+  const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+  const topic=q.ti>=0?TOPICS_L[q.ti]:'';
+  const correct=q.o[q.c];
+  let h='<div style="min-height:100vh;padding:16px;display:flex;flex-direction:column;gap:12px">';
+  // Header
+  h+=`<div style="display:flex;justify-content:space-between;align-items:center">
+    <div style="font-size:11px;color:#64748b">${qi+1}/${pool.length} · ${filt}</div>
+    <button onclick="exitOnCallMode()" style="font-size:11px;padding:4px 10px;background:#f1f5f9;border:none;border-radius:8px;cursor:pointer">✕ Exit</button>
+  </div>`;
+  // Topic tag
+  if(topic)h+=`<div style="font-size:10px;background:#f0fdf4;color:#166534;padding:3px 10px;border-radius:20px;display:inline-block;align-self:flex-start;font-weight:600">${topic}</div>`;
+  // Question card - large text
+  h+=`<div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);flex:1;cursor:${flipRevealed?'default':'pointer'}" ${flipRevealed?'':'onclick="flipCard()"'}>
+    <div style="font-size:16px;line-height:1.6;font-weight:500;direction:rtl;text-align:right;margin-bottom:${flipRevealed?'16px':'0'}">${q.q}</div>`;
+  if(!flipRevealed){
+    h+=`<div style="text-align:center;margin-top:20px;color:#94a3b8;font-size:13px">👆 tap to reveal answer</div>`;
+  } else {
+    // Show correct answer prominently
+    h+=`<div style="background:#dcfce7;border-radius:12px;padding:14px;margin-bottom:12px">
+      <div style="font-size:10px;color:#166534;font-weight:700;margin-bottom:6px">✓ CORRECT ANSWER</div>
+      <div style="font-size:14px;font-weight:600;direction:rtl;text-align:right">${correct}</div>
+    </div>`;
+    // Explanation if available
+    const ex=_exCache&&_exCache[qIdx];
+    if(ex){h+=`<div style="font-size:12px;color:#475569;line-height:1.7;direction:rtl;text-align:right;border-top:1px solid #e2e8f0;padding-top:10px">${ex}</div>`;}
+    else{h+=`<button onclick="runExplainOnCall(${qIdx})" id="oc-exp-${qIdx}" style="font-size:11px;padding:5px 12px;background:#eff6ff;color:#3b82f6;border:none;border-radius:8px;cursor:pointer;margin-bottom:8px">🤖 הסבר AI</button><div id="oc-exp-box-${qIdx}"></div>`;}
+  }
+  h+=`</div>`;
+  // Rate buttons (only after flip)
+  if(flipRevealed){
+    h+=`<div style="display:flex;gap:12px">
+      <button onclick="onCallPick(false)" style="flex:1;padding:18px;background:#fef2f2;color:#dc2626;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px">✗</button>
+      <button onclick="onCallPick(true)" style="flex:1;padding:18px;background:#f0fdf4;color:#16a34a;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px">✓</button>
+    </div>`;
+  }
+  h+=`</div>`;
+  return h;
+}
+async function runExplainOnCall(qIdx){
+  const btn=document.getElementById('oc-exp-'+qIdx);
+  const box=document.getElementById('oc-exp-box-'+qIdx);
+  if(!btn||!box)return;
+  btn.textContent='⏳ ...';btn.disabled=true;
+  const q=QZ[qIdx];const correct=q.o[q.c];
+  try{
+    const txt=await callAI([{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה. עגן בתשובה הנכונה. שאלה: '+q.q+'\nתשובה נכונה: '+correct}],400,'sonnet');
+    _exCache[qIdx]=txt;try{localStorage.setItem('samega_ex',JSON.stringify(_exCache));}catch(e){}
+    box.innerHTML='<div style="font-size:12px;color:#475569;line-height:1.7;direction:rtl;text-align:right;margin-top:8px">'+txt+'</div>';
+    btn.remove();
+  }catch(e){btn.textContent='🤖 הסבר AI';btn.disabled=false;}
+}
 function pick(i){if(ans)return;sel=i;render()}
 function check(){
-if(sel===null)return;ans=true;
+if(sel===null)return;
+checkMockIntercept();
+ans=true;
 const q=QZ[pool[qi]];
 if(sel===q.c){S.qOk++;srScore(pool[qi],true);}
-else{S.qNo++;srScore(pool[qi],false);}
+else{S.qNo++;srScore(pool[qi],false);
+  const _apk='autopsy_'+pool[qi];
+  if(!localStorage.getItem(_apk)){setTimeout(()=>aiAutopsy(pool[qi]),400);}
+}
 save();render();
 }
 function next(){
 qStartTime=Date.now();
-if(examMode&&qi+1>=Math.min(pool.length,150)){endExam();return;}
+if(examMode&&mockExamResults&&qi+1>=pool.length){endMockExam();return;}
+if(examMode&&!mockExamResults&&qi+1>=Math.min(pool.length,150)){endExam();return;}
 qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;render();
 }
 
@@ -853,7 +933,14 @@ teachBackState='grading';render();
 const q=QZ[qIdx];
 const correctOption=q.o[q.c];
 try{
-const txt=await callAI([{role:'user',content:'You are grading a medical student teach-back.\nQuestion: '+q.q+'\nCorrect answer: '+correctOption+'\nStudent explanation: '+userExplanation+'\n\nGrade 1-3: 1=incorrect, 2=partial, 3=correct.\nReply ONLY: {"score":N,"feedback":"one sentence in Hebrew"}'}],200,'haiku');
+const teachBackRubric=`You are an Israeli geriatrics board examiner grading a resident\'s teach-back.
+RUBRIC (score all 3 axes, then give final score):
+1. MECHANISM: Does the student explain WHY this is correct (pathophysiology/mechanism)? (0=no, 1=yes)
+2. CRITERIA: Does the student cite the key criterion/definition/threshold (e.g. specific numbers, guideline criteria)? (0=no, 1=yes)
+3. EXCEPTION: Does the student mention at least one important exception, caveat, or when this would NOT apply? (0=no, 1=yes)
+FINAL SCORE: 3=all 3 axes correct (excellent), 2=any 2 correct (partial), 1=0-1 correct (needs work).
+Respond ONLY with valid JSON: {"score":N,"mechanism":0or1,"criteria":0or1,"exception":0or1,"feedback":"2 sentences in Hebrew — what was good and what is missing"}`;
+const txt=await callAI([{role:'user',content:teachBackRubric+'\n\nQuestion: '+q.q+'\nCorrect answer: '+correctOption+'\nStudent explanation: '+userExplanation}],400,'sonnet');
 const jsonMatch=txt.match(/\{[\s\S]*\}/);
 const parsed=jsonMatch?JSON.parse(jsonMatch[0]):{};
 teachBackState={score:parsed.score||1,feedback:parsed.feedback||'לא התקבל משוב — נסה שוב'};
@@ -865,18 +952,111 @@ render();
 function toggleBk(){S.bk[pool[qi]]=!S.bk[pool[qi]];save();render();}
 
 // ===== EXAM MODE =====
+// Historical topic frequency weights (from 9 real exams, recency-weighted 2× for last 2)
+const EXAM_FREQ=[0,34,30,28,36,43,178,39,63,36,20,27,19,22,50,40,22,94,70,78,18,80,43,21,46,27,29,52,10,11,7,0,6,9,26,19,23,9,17,0];
+// target 100q: proportional + floor(1) for evergreen topics
+function buildMockExamPool(){
+  const total=EXAM_FREQ.reduce((a,b)=>a+b,0);
+  const examPool=[];
+  // Group QZ by topic
+  const byTopic={};
+  QZ.forEach((q,i)=>{const ti=q.ti>=0?q.ti:39;if(!byTopic[ti])byTopic[ti]=[];byTopic[ti].push(i);});
+  // Compute target per topic
+  EXAM_FREQ.forEach((freq,ti)=>{
+    if(!freq||!byTopic[ti]||!byTopic[ti].length)return;
+    const target=Math.max(1,Math.round(freq/total*100));
+    // shuffle that topic's questions, take target count
+    const src=[...byTopic[ti]].sort(()=>Math.random()-.5);
+    for(let k=0;k<Math.min(target,src.length);k++)examPool.push(src[k]);
+  });
+  // Trim or pad to ~100
+  examPool.sort(()=>Math.random()-.5);
+  return examPool.slice(0,100);
+}
+let mockExamResults=null; // stores per-topic breakdown
 function startExam(){
-examMode=true;filt='all';buildPool();pool=pool.slice(0,150);
-S.qOk=0;S.qNo=0;examSec=10800;save();
-examTimer=setInterval(()=>{examSec--;if(examSec<=0)endExam();
-const el=document.getElementById('etimer');if(el)el.textContent=fmtT(examSec);},1000);
-render();
+  // Classic 150q mode (unchanged) 
+  examMode=true;filt='all';buildPool();pool=pool.slice(0,150);
+  S.qOk=0;S.qNo=0;examSec=10800;mockExamResults=null;save();
+  examTimer=setInterval(()=>{examSec--;if(examSec<=0)endExam();
+  const el=document.getElementById('etimer');if(el)el.textContent=fmtT(examSec);},1000);
+  render();
+}
+function startMockExam(){
+  // v2: 100q, realistic distribution, per-topic tracking
+  examMode=true;
+  pool=buildMockExamPool();
+  qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;
+  // per-topic tracking: {ok,no} per ti
+  mockExamResults={byTopic:{},start:Date.now()};
+  EXAM_FREQ.forEach((_,ti)=>{mockExamResults.byTopic[ti]={ok:0,no:0};});
+  S.qOk=0;S.qNo=0;examSec=10800;save();
+  examTimer=setInterval(()=>{examSec--;if(examSec<=0)endMockExam();
+  const el=document.getElementById('etimer');if(el)el.textContent=fmtT(examSec);},1000);
+  render();
+}
+// Override check() to also record per-topic result when in mockExam
+const _origCheck=window.check;
+function checkMockIntercept(){
+  if(ans||sel===null)return;
+  const qIdx=pool[qi];const q=QZ[qIdx];const correct=sel===q.c;
+  if(mockExamResults&&q.ti>=0){
+    if(correct)mockExamResults.byTopic[q.ti].ok++;
+    else mockExamResults.byTopic[q.ti].no++;
+  }
 }
 function endExam(){
-clearInterval(examTimer);examMode=false;
-const tot=S.qOk+S.qNo,pct=tot?Math.round(S.qOk/tot*100):0;
-alert(`Exam Complete!\n\n✅ ${S.qOk}/${tot} (${pct}%)\n${pct>=60?'PASS 🎉':'NEEDS WORK ❌'}\n\nTime: ${fmtT(10800-examSec)}`);
-render();
+  clearInterval(examTimer);examMode=false;
+  const tot=S.qOk+S.qNo,pct=tot?Math.round(S.qOk/tot*100):0;
+  alert(`Exam Complete!\n\n✅ ${S.qOk}/${tot} (${pct}%)\n${pct>=60?'PASS 🎉':'NEEDS WORK ❌'}\n\nTime: ${fmtT(10800-examSec)}`);
+  render();
+}
+function endMockExam(){
+  clearInterval(examTimer);examMode=false;
+  if(!mockExamResults){render();return;}
+  // Build analytics
+  const tot=S.qOk+S.qNo,pct=tot?Math.round(S.qOk/tot*100):0;
+  const elapsed=Math.floor((Date.now()-mockExamResults.start)/1000);
+  // Store in history
+  try{const hist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');
+    hist.push({date:new Date().toISOString(),score:pct,correct:S.qOk,total:tot,elapsed,byTopic:mockExamResults.byTopic});
+    if(hist.length>20)hist.splice(0,hist.length-20);
+    localStorage.setItem('samega_mock_hist',JSON.stringify(hist));
+  }catch(e){}
+  // Show in custom modal instead of alert
+  showMockExamResult(pct,S.qOk,tot,elapsed,mockExamResults.byTopic);
+  mockExamResults=null;
+  render();
+}
+function showMockExamResult(pct,correct,tot,elapsed,byTopic){
+  const TOPICS_LOCAL=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+  const pass=pct>=60;
+  // per-topic breakdown sorted by accuracy ascending (worst first)
+  const rows=Object.entries(byTopic).map(([ti,s])=>{
+    const n=s.ok+s.no;if(!n)return null;
+    const acc=Math.round(s.ok/n*100);
+    return{ti:+ti,name:TOPICS_LOCAL[+ti]||'Other',ok:s.ok,no:s.no,n,acc};
+  }).filter(Boolean).sort((a,b)=>a.acc-b.acc);
+  let html=`<div style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;overflow-y:auto;padding:16px" id="mexModal">
+<div style="background:#fff;border-radius:16px;max-width:480px;margin:0 auto;padding:20px;font-family:Inter,sans-serif">
+<div style="text-align:center;margin-bottom:16px">
+  <div style="font-size:48px">${pass?'🎉':'💪'}</div>
+  <div style="font-size:28px;font-weight:700;color:${pass?'#059669':'#dc2626'}">${pct}%</div>
+  <div style="font-size:13px;color:#64748b">${correct}/${tot} correct · ${fmtT(elapsed)}</div>
+  <div style="font-size:14px;font-weight:700;margin-top:4px;color:${pass?'#059669':'#dc2626'}">${pass?'PASS ✓':'NEEDS WORK ✗'} (pass ≥60%)</div>
+</div>
+<div style="font-weight:700;font-size:12px;margin-bottom:8px;color:#475569">TOPIC BREAKDOWN (worst first):</div>
+${rows.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9">
+  <div style="font-size:11px;flex:1">${r.name}</div>
+  <div style="font-size:10px;color:#64748b">${r.ok}/${r.n}</div>
+  <div style="width:60px;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden">
+    <div style="width:${r.acc}%;height:100%;background:${r.acc>=70?'#10b981':r.acc>=50?'#f59e0b':'#ef4444'};border-radius:4px"></div>
+  </div>
+  <div style="font-size:10px;font-weight:700;color:${r.acc>=70?'#059669':r.acc>=50?'#d97706':'#dc2626'};min-width:28px;text-align:right">${r.acc}%</div>
+</div>`).join('')}
+<button onclick="document.getElementById('mexModal').remove()" style="margin-top:16px;width:100%;padding:10px;background:#0f172a;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Close</button>
+</div></div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
 }
 function fmtT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return(h?h+':':'')+String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0')}
 
@@ -976,8 +1156,8 @@ if(!examMode){
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
 <div class="sec-t">Quiz</div>
 <div style="display:flex;gap:4px;flex-wrap:wrap">
-<button onclick="startExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px">📋 Exam (150q)</button>
-<span class="tt-wrap"><button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:5px 12px;background:#fef2f2;color:#dc2626">💀 Sudden Death</button><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">One wrong answer ends the session. Builds high-stakes exam pressure.</div></span>
+<button onclick="startExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px">📋 Exam (150q)</button><button onclick="startMockExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px;background:#7c3aed;color:#fff">🎯 Mock (100q)</button>
+<span class="tt-wrap"><button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:5px 12px;background:#fef2f2;color:#dc2626">💀 Sudden Death</button><button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:5px 12px;background:#0f172a;color:#7dd3fc">🌙 On-call</button><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">One wrong answer ends the session. Builds high-stakes exam pressure.</div></span>
 ${!pomoActive?'<span class="tt-wrap"><button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:5px 12px;background:#ecfdf5;color:#059669">⏱️ Pomodoro</button><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">25min focus / 5min break study timer. Helps maintain concentration.</div></span>':''}
 </div>
 </div>`;
@@ -1004,7 +1184,7 @@ h+=`<div class="progress-bar"><div class="fill" style="width:${Math.round((qi+1)
 h+=`<div class="card" style="padding:16px">`;
 const topicName=q.ti>=0&&TOPICS[q.ti]?TOPICS[q.ti]:'';
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-<div style="display:flex;gap:4px;flex-wrap:wrap"><span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}</div>
+<div style="display:flex;gap:4px;flex-wrap:wrap"><span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libChOpen=${ref.ch};loadLibChapter(${ref.ch});render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open in Library">📖 ${ref.l}</span>`;return '';})()}</div>
 <div style="display:flex;align-items:center;gap:8px">
 <button onclick="speakQuestion()" class="speech-btn${isSpeaking?' speaking':''}" title="Read aloud">🔊</button>
 <button onclick="shareQ()" id="shbtn" class="share-btn" title="Share">📋 שתף</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px" title="Bookmark">${bk?'🔖':'🏷️'}</button>
@@ -1043,7 +1223,12 @@ var scoreEmoji=teachBackState.score===3?'🟢':teachBackState.score===2?'🟡':'
 var scoreLabel=teachBackState.score===3?'Excellent!':teachBackState.score===2?'Partial':'Needs work';
 h+='<div style="margin-top:12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:12px">';
 h+='<div style="font-size:13px;font-weight:700;margin-bottom:4px">'+scoreEmoji+' '+scoreLabel+'</div>';
-if(teachBackState.feedback)h+='<div style="font-size:11px;line-height:1.7;direction:rtl;text-align:right">'+sanitize(teachBackState.feedback)+'</div>';
+if(teachBackState.feedback){
+  const axes=[['mechanism','מנגנון'],['criteria','קריטריון'],['exception','חריג']];
+  const axesDots=axes.map(([k,l])=>{const v=teachBackState[k];return v===undefined?'':`<span style="font-size:10px;padding:1px 6px;border-radius:10px;background:${v?'#dcfce7':'#fee2e2'};color:${v?'#166534':'#991b1b'}">${l} ${v?'✓':'✗'}</span>`;}).join(' ');
+  if(axesDots)h+='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">'+axesDots+'</div>';
+  h+='<div style="font-size:11px;line-height:1.7;direction:rtl;text-align:right">'+sanitize(teachBackState.feedback)+'</div>';
+}
 h+='</div>';
 }
 }
@@ -1362,6 +1547,117 @@ const HAZZARD_PARTS=[
 {file:'hazzard_part08.pdf',title:'Supplementary Material',ch:'Additional',desc:'Additional figures, tables, and supplementary content',color:'#78716c'},
 {file:'hazzard_part09.pdf',title:'Index',ch:'Index',desc:'Full subject index',color:'#94a3b8'},
 ];
+// ===== TOPIC PRIORITY MATRIX (added to Track tab) =====
+function renderPriorityMatrix(){
+  const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+  const EF_FREQ=[0,34,30,28,36,43,178,39,63,36,20,27,19,22,50,40,22,94,70,78,18,80,43,21,46,27,29,52,10,11,7,0,6,9,26,19,23,9,17,0];
+  const maxFreq=Math.max(...EF_FREQ);
+  const tSt=S.ts||{};
+  const rows=TOPICS_L.map((name,ti)=>{
+    const s=tSt[ti]||{ok:0,no:0,tot:0};
+    const acc=s.tot>0?s.ok/s.tot:null;
+    const freq=EF_FREQ[ti]||0;
+    const freqPct=maxFreq>0?freq/maxFreq:0;
+    const gap=acc===null?0.7:(1-acc); // unknown → treat as 70% gap
+    const priority=Math.round(freqPct*gap*100);
+    return{ti,name,freq,acc,gap,priority,s};
+  }).filter(r=>r.freq>0).sort((a,b)=>b.priority-a.priority);
+  
+  let h='<div style="font-weight:700;font-size:12px;margin:14px 0 8px;color:#0f172a">🎯 Priority Matrix — where to study next</div>';
+  h+='<div style="font-size:9px;color:#94a3b8;margin-bottom:8px">Score = exam frequency × your gap. Higher = drill harder.</div>';
+  rows.slice(0,15).forEach((r,rank)=>{
+    const accStr=r.acc===null?'untested':`${Math.round(r.acc*100)}%`;
+    const barW=Math.round(r.priority);
+    const color=r.priority>=60?'#dc2626':r.priority>=30?'#f59e0b':'#10b981';
+    const trend=getTopicTrend(r.ti);
+    const trendStr=trend===null?'':trend>5?'<span style="color:#059669;font-size:10px">↑</span>':trend<-5?'<span style="color:#dc2626;font-size:10px">↓</span>':'<span style="color:#94a3b8;font-size:10px">→</span>';
+    h+=`<div style="margin-bottom:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+        <div style="font-size:11px;font-weight:${rank<5?'700':'400'}">${rank+1}. ${r.name} ${trendStr}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:9px;color:#64748b">${r.s.tot}q · ${accStr}</span>
+          <span style="font-size:10px;font-weight:700;color:${color}">${r.priority}</span>
+        </div>
+      </div>
+      <div style="height:5px;background:#e2e8f0;border-radius:3px;overflow:hidden">
+        <div style="width:${barW}%;height:100%;background:${color};border-radius:3px"></div>
+      </div>
+    </div>`;
+  });
+  h+=`<div onclick="var el=document.getElementById('pmFull');el.style.display=el.style.display==='none'?'block':'none'" style="font-size:10px;color:rgb(var(--sky));cursor:pointer;margin-top:6px">Show all 40 topics ▾</div>`;
+  h+=`<div id="pmFull" style="display:none">`;
+  rows.slice(15).forEach((r,rank)=>{
+    const accStr=r.acc===null?'untested':`${Math.round(r.acc*100)}%`;
+    h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f1f5f9;font-size:10px">
+      <span>${rank+16}. ${r.name}</span>
+      <span style="color:#64748b">${r.s.tot}q · ${accStr}</span>
+    </div>`;
+  });
+  h+=`</div>`;
+  return h;
+}
+async function quizMeOnChapter(chNum,chTitle){
+  // Show loading state in Library
+  const el=document.getElementById('quiz-me-box');
+  if(el){el.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">⏳ Generating questions from Ch '+chNum+'...</div>';}
+  // Get chapter text from already-loaded data
+  let chapterText='';
+  if(window._libData&&window._libData.chapters){
+    const ch=window._libData.chapters.find(c=>c.ch===chNum);
+    if(ch&&ch.sections){
+      chapterText=ch.sections.slice(0,6).map(s=>s.title+': '+s.content).join('\n').slice(0,3000);
+    }
+  }
+  if(!chapterText){
+    chapterText="Hazzard's Geriatric Medicine Chapter "+chNum+": "+chTitle;
+  }
+  const prompt=`You are an Israeli geriatrics board examiner writing MCQ for the שלב א׳ exam.
+
+Based on this chapter content from Hazzard's Geriatric Medicine Ch ${chNum} (${chTitle}):
+${chapterText}
+
+Generate 3 original MCQ questions NOT already in the question bank. Each question must:
+1. Test a specific fact, threshold, or mechanism from this chapter
+2. Have exactly 5 answer options (A-E)
+3. Have one definitively correct answer
+4. Include a brief Hebrew explanation (2-3 sentences)
+
+Return ONLY valid JSON array:
+[{"q":"question text","o":["A. opt","B. opt","C. opt","D. opt","E. opt"],"c":0,"e":"הסבר בעברית"}]
+c = 0-based index of correct answer. No markdown, no preamble.`;
+  try{
+    const txt=await callAI([{role:'user',content:prompt}],1200,'sonnet');
+    const clean=txt.replace(/\`\`\`json|\`\`\`/g,'').trim();
+    const qs=JSON.parse(clean);
+    // Display the generated questions
+    let h='<div style="margin-top:16px;border-top:2px solid #7c3aed;padding-top:12px">';
+    h+='<div style="font-weight:700;font-size:12px;color:#7c3aed;margin-bottom:10px">🧠 AI-Generated Questions — Ch '+chNum+': '+chTitle+'</div>';
+    qs.forEach((q,qi)=>{
+      h+=`<div style="margin-bottom:14px;padding:12px;background:#faf5ff;border-radius:10px;border-left:3px solid #7c3aed">`;
+      h+=`<div style="font-size:12px;font-weight:600;margin-bottom:8px">${qi+1}. ${q.q}</div>`;
+      q.o.forEach((opt,oi)=>{
+        const isCorrect=oi===q.c;
+        h+=`<div style="font-size:11px;padding:4px 8px;margin-bottom:3px;border-radius:6px;background:${isCorrect?'#dcfce7':'#f8fafc'};color:${isCorrect?'#166534':'#475569'};font-weight:${isCorrect?'700':'400'}">${opt}${isCorrect?' ✓':''}</div>`;
+      });
+      if(q.e)h+=`<div style="font-size:10px;color:#6d28d9;margin-top:8px;direction:rtl;text-align:right;line-height:1.6;border-top:1px solid #e9d5ff;padding-top:6px">💡 ${q.e}</div>`;
+      h+='</div>';
+    });
+    h+='<button onclick="addChapterQsToBank('+JSON.stringify(JSON.stringify(qs)).slice(1,-1)+')" style="font-size:10px;padding:6px 14px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-top:4px">➕ Add to my question bank</button>';
+    h+='</div>';
+    if(el)el.innerHTML=h;
+  }catch(e){
+    if(el)el.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px">⚠️ Failed to generate: '+e.message+'</div>';
+  }
+}
+function addChapterQsToBank(jsonStr){
+  try{
+    const qs=JSON.parse(jsonStr);
+    const existing=JSON.parse(localStorage.getItem('samega_custom_qs')||'[]');
+    qs.forEach(q=>{q.t='AI-Ch';q.ti=-1;existing.push(q);});
+    localStorage.setItem('samega_custom_qs',JSON.stringify(existing));
+    alert('✅ '+qs.length+' questions added! Reload to see them in the AI-Ch filter.');
+  }catch(e){alert('Failed: '+e.message);}
+}
 function renderLibrary(){
 let h=`<div class="sec-t">📖 Library</div>
 <div class="sec-s">Textbooks · Laws · Articles · Exam PDFs</div>`;
@@ -1396,7 +1692,8 @@ if(libChOpen!==null && _hazChapters && _hazChapters[String(libChOpen)]){
 const ch=_hazChapters[String(libChOpen)];
 h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
 <button onclick="libChOpen=null;render()" style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">← Back</button>
-<div style="font-size:13px;font-weight:700">Ch ${libChOpen}: ${ch.title}</div></div>`;
+<div style="font-size:13px;font-weight:700">Ch ${libChOpen}: ${ch.title}</div><button onclick="quizMeOnChapter(libChOpen,ch.title)" style="font-size:10px;padding:4px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">🧠 Quiz me</button></div>`;
+h+=`<div id="quiz-me-box"></div>`;
 h+=`<div class="card" style="padding:16px">`;
 ch.sections.forEach(sec=>{
 const lvl=sec.level||1;
@@ -1535,6 +1832,7 @@ render(); // show loading
 try{
 const r=await fetch('hazzard_chapters.json');
 _hazChapters=await r.json();
+window._libData={chapters:Object.entries(_hazChapters).map(([k,v])=>({ch:+k,...v}))};
 }catch(e){
 console.error('Failed to load Hazzard chapters',e);
 _hazChapters={};
@@ -1968,6 +2266,16 @@ return h;
 
 // ===== TRACKER =====
 const TOPICS=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+// topic index → {source:'haz'|'notes', label, action} for deep link
+const TOPIC_REF={
+  0:{s:'haz',ch:3,l:'Hazzard Ch 3'},  // Biology of Aging
+  1:{s:'haz',ch:2,l:'Hazzard Ch 2'},  // Demography
+  5:{s:'haz',ch:5,l:'Hazzard Ch 5'},  // Delirium → Psychosocial
+  6:{s:'haz',ch:5,l:'Hazzard Ch 5'},  // Dementia → Psychosocial
+  7:{s:'haz',ch:62,l:'Hazzard Ch 62'}, // Depression
+  30:{s:'notes',l:'Ethics & Elder Abuse'}, // Elder Abuse
+  31:{s:'haz',ch:6,l:'Hazzard Ch 6'},  // Driving → Sex/Gender (nearest)
+};
 
 function renderTrack(){
 const done=Object.values(S.ck).filter(Boolean).length;
@@ -2074,6 +2382,7 @@ h+=`<div style="display:flex;gap:8px;margin-top:6px;font-size:8px;color:#94a3b8;
 </div>`;
 h+=`</div>`;}
 // ROI Matrix and Radar chart removed — accuracy bars above are sufficient
+h+=renderPriorityMatrix();
 
 TOPICS.forEach((t,i)=>{h+=`<div class="topic${S.ck[i]?' done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()" style="display:${S._sylOpen?'flex':'none'}">
 <input type="checkbox" ${S.ck[i]?'checked':''} readonly style="width:13px;height:13px"><span>${t}</span></div>`;});
@@ -2144,7 +2453,7 @@ if(_storedKey){
 h+='<div style="font-size:9px;color:#94a3b8">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
-<div>Shlav A Mega v9.6 · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>
+<div>Shlav A Mega v9.7 · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · build ${BUILD_HASH}</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
 return h;
@@ -2541,7 +2850,7 @@ const focused=document.activeElement?.id;
 const sv={srchi:document.getElementById('srchi')?.value,nfilt:document.getElementById('nfilt')?.value,dsrch:document.getElementById('dsrch')?.value};
 if(tab!==lastTab){el.classList.remove('fade-in');void el.offsetWidth;el.classList.add('fade-in');window.scrollTo({top:0});lastTab=tab;}
 switch(tab){
-case'quiz':el.innerHTML=renderQuiz();break;
+case'quiz':el.innerHTML=onCallMode?renderOnCall():renderQuiz();break;
 case'study':el.innerHTML=renderStudy();break;
 case'lib':el.innerHTML=renderLibrary();break;
 case'flash':el.innerHTML=renderFlash();break;
@@ -2617,7 +2926,35 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.0';
+const APP_VERSION='9.7';
+// ===== WEEKLY TREND SNAPSHOT =====
+function takeWeeklySnapshot(){
+  try{
+    const now=new Date();
+    const weekKey='w_'+now.getFullYear()+'_'+Math.floor((now-new Date(now.getFullYear(),0,0))/(7*864e5));
+    const snapshots=JSON.parse(localStorage.getItem('samega_weekly')||'{}');
+    if(snapshots[weekKey])return; // already taken this week
+    const tSt=S&&S.ts?S.ts:{};
+    const snap={};
+    for(let i=0;i<40;i++){const s=tSt[i]||{ok:0,no:0,tot:0};snap[i]=s.tot>0?Math.round(s.ok/s.tot*100):null;}
+    snapshots[weekKey]={date:now.toISOString(),acc:snap};
+    const keys=Object.keys(snapshots).sort();
+    if(keys.length>52)delete snapshots[keys[0]];
+    localStorage.setItem('samega_weekly',JSON.stringify(snapshots));
+  }catch(e){}
+}
+function getTopicTrend(ti){
+  try{
+    const snapshots=JSON.parse(localStorage.getItem('samega_weekly')||'{}');
+    const keys=Object.keys(snapshots).sort();
+    if(keys.length<2)return null;
+    const prev=snapshots[keys[keys.length-2]].acc[ti];
+    const curr=snapshots[keys[keys.length-1]].acc[ti];
+    if(prev===null||curr===null)return null;
+    return curr-prev; // positive = improving
+  }catch(e){return null;}
+}
+const BUILD_HASH=(()=>{const d=new Date('2026-04-10T00:00:00Z');return d.toISOString().slice(0,10).replace(/-/g,'');})();
 
 // ===== SHARED AI PROXY =====
 const AI_PROXY='https://toranot.netlify.app/api/claude';
@@ -2798,7 +3135,7 @@ navigator.serviceWorker.getRegistrations().then(regs=>{
 regs.forEach(r=>r.update());
 });
 caches.keys().then(ks=>{
-const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v9.6.0');
+const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v9.7.0');
 old.forEach(k=>{caches.delete(k);console.log('Deleted old cache:',k);});
 });
 navigator.serviceWorker.register('sw.js').then(reg=>{

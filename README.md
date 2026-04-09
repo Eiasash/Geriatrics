@@ -162,3 +162,18 @@ skill/
 
 **How to use:** Add to Claude Project → paste any Shlav A question → get structured
 explanation with correct answer, distractor analysis, board pearl, topic tag, source.
+
+## v9.7 — April 2026 Study Intelligence Update
+
+### New Features
+- **🎯 Mock Exam 100q** — proportionally sampled from 9-year topic distribution (Dementia ~14q, CV ~8q, COPD ~6q etc.) + rich post-exam analytics with per-topic breakdown and pass/fail bars. Stored to history.
+- **🌙 On-call Mode** — flip-card study for 3 AM. Tap to reveal answer, one-touch ✓/✗, AI explain on demand. No keyboard. Loads Due → Weak → All automatically.
+- **🎯 Priority Matrix** (Track tab) — ranks all 40 topics by `exam frequency × your accuracy gap`. Shows exactly where to drill. Weekly trend arrows (↑↓→) once 2+ weekly snapshots exist.
+- **Auto Distractor Autopsy** — fires automatically 400ms after any wrong answer (no checkbox needed).
+- **🧠 Quiz me on Chapter** — button in Hazzard chapter view generates 3 AI novel MCQ from chapter content. Can add to personal bank.
+- **Build hash in footer** — visible deploy date for cache debugging.
+- **TeachBack v2** — Sonnet instead of Haiku, 3-axis rubric (Mechanism / Criterion / Exception), colored badges per axis.
+- **Topic → Chapter deep link** — tappable chip on question card opens relevant Hazzard chapter directly.
+
+### Bug fixes
+- Version unified to v9.7 across H1, footer, SW cache, APP_VERSION
