@@ -9,7 +9,7 @@
   },
   {
     "name": "Diphenhydramine",
-    "heb": "דיפנהידרמין",
+    "heb": "",
     "acb": 3,
     "beers": true,
     "cat": "Antihistamine",
@@ -105,7 +105,7 @@
   },
   {
     "name": "Sliding-scale insulin",
-    "heb": "אינסולין מדרג בלבד",
+    "heb": "",
     "acb": 0,
     "beers": true,
     "cat": "Insulin",
@@ -217,7 +217,7 @@
   },
   {
     "name": "Cyclobenzaprine",
-    "heb": "ציקלובנזפרין",
+    "heb": "",
     "acb": 2,
     "beers": true,
     "cat": "Muscle relaxant",
@@ -225,7 +225,7 @@
   },
   {
     "name": "Methocarbamol",
-    "heb": "מתוקרבמול",
+    "heb": "",
     "acb": 1,
     "beers": true,
     "cat": "Muscle relaxant",
