@@ -1,1 +1,426 @@
-[{"name":"Oxybutynin","heb":"דיטרופן","acb":3,"beers":true,"cat":"Anticholinergic/Bladder","risk":"Cognitive decline, delirium, falls, constipation, urinary retention. Opposes donepezil."},{"name":"Diphenhydramine","heb":"","acb":3,"beers":true,"cat":"Antihistamine","risk":"Sedation, delirium, falls, anticholinergic toxicity"},{"name":"Amitriptyline","heb":"אלאטרול","acb":3,"beers":true,"cat":"TCA","risk":"Strong anticholinergic, cardiac conduction, orthostatic hypotension, sedation"},{"name":"Chlorpromazine","heb":"לרגקטיל","acb":3,"beers":true,"cat":"Antipsychotic","risk":"High anticholinergic, sedation, orthostatic, EPS"},{"name":"Paroxetine","heb":"פקסט","acb":2,"beers":true,"cat":"SSRI","risk":"Most anticholinergic SSRI. Hyponatremia, drug interactions (CYP2D6)"},{"name":"Olanzapine","heb":"זיפרקסה","acb":3,"beers":false,"cat":"Antipsychotic","risk":"STRONGEST anticholinergic among common antipsychotics. Weight gain, metabolic syndrome"},{"name":"Diazepam","heb":"וליום","acb":1,"beers":true,"cat":"Benzodiazepine","risk":"Long-acting. Falls, sedation, cognitive impairment, paradoxical agitation"},{"name":"Zolpidem","heb":"סטילנוקס","acb":0,"beers":true,"cat":"Sedative-hypnotic","risk":"Falls, confusion, complex sleep behaviors, fractures"},{"name":"Temazepam","heb":"נורמיסון","acb":1,"beers":true,"cat":"Benzodiazepine","risk":"Falls, sedation, next-day impairment"},{"name":"Glyburide","heb":"גלי-ב","acb":0,"beers":true,"cat":"Sulfonylurea","risk":"Prolonged hypoglycemia (long half-life, active metabolites). Use glipizide instead"},{"name":"Megestrol","heb":"מגייס","acb":0,"beers":true,"cat":"Progestational","risk":"Thrombotic events, minimal appetite benefit, fluid retention, adrenal suppression"},{"name":"Doxazosin","heb":"קדקס","acb":0,"beers":true,"cat":"Alpha-blocker","risk":"Orthostatic hypotension → falls. Not first-line for HTN"},{"name":"Metoclopramide","heb":"פראמין","acb":0,"beers":true,"cat":"Prokinetic","risk":"EPS, tardive dyskinesia (risk increases with duration). Max 12 weeks"},{"name":"Sliding-scale insulin","heb":"","acb":0,"beers":true,"cat":"Insulin","risk":"Reactive dosing without proactive management. Hypoglycemia risk"},{"name":"Meperidine","heb":"דמרול","acb":0,"beers":true,"cat":"Opioid","risk":"Neurotoxic metabolite (normeperidine) → seizures. NEVER use in elderly"},{"name":"Donepezil","heb":"אריספט","acb":0,"beers":false,"cat":"Cholinesterase inhibitor","risk":"GI side effects (take with food, NOT on empty stomach). Does NOT prevent postop delirium"},{"name":"Haloperidol","heb":"הלדול","acb":1,"beers":false,"cat":"Antipsychotic","risk":"EPS, QTc prolongation. Lower anticholinergic than olanzapine"},{"name":"Quetiapine","heb":"סרוקוול","acb":1,"beers":false,"cat":"Antipsychotic","risk":"Sedation, orthostatic, metabolic. Moderate anticholinergic"},{"name":"Risperidone","heb":"ריספרדל","acb":0,"beers":false,"cat":"Antipsychotic","risk":"EPS at higher doses, orthostatic. Low anticholinergic"},{"name":"Metformin","heb":"גלוקופאג","acb":0,"beers":false,"cat":"Biguanide","risk":"CI if CrCl<30. Lactic acidosis rare. Causes anorexia/weight loss in thin elderly. Hold 48h pre-op"},{"name":"Alendronate","heb":"פוסלן","acb":0,"beers":false,"cat":"Bisphosphonate","risk":"Esophagitis (take upright with water). CI in reflux esophagitis → use denosumab"},{"name":"Apixaban","heb":"אליקוויס","acb":0,"beers":false,"cat":"DOAC","risk":"Safest DOAC in CKD. CI with mechanical valves. Dose reduce if ≥2: age≥80, weight≤60kg, Cr≥1.5"},{"name":"Sertraline","heb":"לוסטרל","acb":0,"beers":false,"cat":"SSRI","risk":"Hyponatremia risk (like all SSRIs). Generally safe in elderly. Low anticholinergic"},{"name":"Bupropion","heb":"ולבוטרין","acb":0,"beers":false,"cat":"Antidepressant","risk":"LOWEST hyponatremia risk among antidepressants. Seizure risk at high doses. Activating"},{"name":"Mirtazapine","heb":"רמרון","acb":1,"beers":false,"cat":"Antidepressant","risk":"Sedation (good if insomnia), weight gain (good if anorexic). Monitor metabolic"},{"name":"Nitrofurantoin","heb":"מקרודנטין","acb":0,"beers":true,"cat":"Antibiotic","risk":"Avoid if CrCl<30: pulmonary toxicity, peripheral neuropathy, hepatotoxicity"},{"name":"Nifedipine IR","heb":"נפידיפין","acb":0,"beers":true,"cat":"CCB (short-acting)","risk":"Reflex tachycardia, hypotension, risk of CV events. Use long-acting formulations instead"},{"name":"Cyclobenzaprine","heb":"","acb":2,"beers":true,"cat":"Muscle relaxant","risk":"Anticholinergic, sedation, falls, ineffective for spasticity in elderly. Avoid >2 weeks"},{"name":"Methocarbamol","heb":"","acb":1,"beers":true,"cat":"Muscle relaxant","risk":"Sedation, dizziness, falls. Limited efficacy. Avoid in elderly"},{"name":"Promethazine","heb":"פנרגן","acb":3,"beers":true,"cat":"Antihistamine (1st gen)","risk":"Strong anticholinergic, sedation, EPS, falls, delirium. Avoid in elderly"},{"name":"Clonidine","heb":"קלונידין","beers":true,"acb":0,"cat":"Antihypertensive","risk":"CNS depression, rebound hypertension, bradycardia. High risk of adverse CNS effects in elderly. Avoid as first-line antihypertensive."},{"name":"Digoxin","heb":"דיגוקסין","beers":true,"acb":0,"cat":"Cardiac","risk":"Narrow therapeutic index. Avoid doses >0.125mg/day in elderly. Toxicity risk with renal impairment, hypokalemia. Monitor levels."},{"name":"Ketorolac","heb":"קטורולק","beers":true,"acb":0,"cat":"NSAID","risk":"High GI bleeding risk, AKI. Avoid in elderly especially >5 days. Beers: avoid all non-COX-selective NSAIDs chronically."},{"name":"Hydroxyzine","heb":"הידרוקסיזין","beers":true,"acb":3,"cat":"Antihistamine","risk":"Strong anticholinergic. Sedation, confusion, urinary retention, dry mouth. ACB=3. Use alternatives for anxiety/pruritus."},{"name":"Chlorpropamide","heb":"כלורפרופמיד","beers":true,"acb":0,"cat":"Sulfonylurea","risk":"Prolonged hypoglycemia (long half-life 36h). SIADH/hyponatremia. Beers: avoid in all older adults. Use short-acting agents."},{"name":"Prazosin","heb":"פרזוסין","beers":true,"acb":0,"cat":"Alpha-blocker","risk":"Orthostatic hypotension, syncope, falls. Beers: avoid as antihypertensive. High first-dose syncope risk."},{"name":"Amiodarone","heb":"אמיודרון","beers":true,"acb":0,"cat":"Antiarrhythmic","risk":"Thyroid toxicity, pulmonary fibrosis, hepatotoxicity, QT prolongation. Beers: avoid as first-line for AF. Multiple drug interactions."},{"name":"Carisoprodol","heb":"קריסופרודול","beers":true,"acb":0,"cat":"Muscle Relaxant","risk":"Sedation, dependence potential, anticholinergic effects. Metabolized to meprobamate (anxiolytic). Beers: avoid."},{"name":"Trimethobenzamide","heb":"טרימתובנזמיד","beers":true,"acb":0,"cat":"Antiemetic","risk":"Extrapyramidal effects, limited efficacy. Beers: avoid. One of least effective antiemetics."},{"name":"Ibuprofen","heb":"איבופרופן","beers":true,"acb":0,"cat":"NSAID","risk":"GI bleeding (3-4x risk in elderly), AKI, HTN, HF exacerbation. Avoid with anticoagulants, CKD, HF. Max 5 days if used."},{"name":"Ferrous Sulfate >325mg","heb":"ברזל גופרתי","beers":true,"acb":0,"cat":"Supplement","risk":"Constipation, nausea. Doses >325mg/day do not increase absorption but increase side effects. Beers: avoid high doses."},{"name":"Nitrazepam","heb":"ניטרזפם","beers":true,"acb":0,"cat":"Benzodiazepine","risk":"Long-acting benzo. Falls, fractures, cognitive impairment, delirium. Beers: avoid all benzos in elderly."},{"name":"Chlordiazepoxide","heb":"כלורדיאזפוקסיד","beers":true,"acb":0,"cat":"Benzodiazepine","risk":"Long half-life (24-48h). Accumulation in elderly, prolonged sedation, falls. Beers: avoid."},{"name":"Trihexyphenidyl","heb":"טריהקסיפנידיל","beers":true,"acb":3,"cat":"Anticholinergic","risk":"Strong anticholinergic for Parkinson's. Confusion, hallucinations, urinary retention, constipation. ACB=3. Avoid in elderly."},{"name":"Benztropine","heb":"בנזטרופין","beers":true,"acb":3,"cat":"Anticholinergic","risk":"Anticholinergic for EPS. Cognitive impairment, urinary retention, constipation. ACB=3. Beers: avoid. Use lower risk alternatives."},{"name":"Desipramine","heb":"דסיפרמין","beers":true,"acb":1,"cat":"TCA","risk":"Less anticholinergic than amitriptyline but still risky: orthostatic hypotension, cardiac conduction delays. Beers: avoid."},{"name":"Nortriptyline","heb":"נורטריפטילין","beers":true,"acb":1,"cat":"TCA","risk":"Secondary amine TCA — less anticholinergic but still: orthostatic hypotension, QT prolongation. Beers: avoid. SNRI preferred."},{"name":"Insulin (sliding scale only)","heb":"אינסולין מדרג","beers":true,"acb":0,"cat":"Antidiabetic","risk":"Sliding scale alone = poor glycemic control + hypoglycemia risk. Beers: avoid without basal insulin. A1c targets should be relaxed in frail elderly."},{"name":"Propoxyphene","heb":"פרופוקסיפן","beers":true,"acb":0,"cat":"Opioid","risk":"Withdrawn in many countries. Cardiac toxicity, seizures, minimal analgesic benefit. Beers: avoid. Use paracetamol or low-dose opioids instead."},{"name":"Pentazocine","heb":"פנטזוצין","beers":true,"acb":0,"cat":"Opioid","risk":"Mixed agonist-antagonist. CNS effects including confusion, hallucinations. Beers: avoid."},{"name":"Ticlopidine","heb":"טיקלופידין","beers":true,"acb":0,"cat":"Antiplatelet","risk":"Safer alternatives exist (clopidogrel). Neutropenia, TTP risk. Beers: avoid."},{"name":"Tolterodine","heb":"טולטרודין","beers":true,"acb":3,"cat":"Anticholinergic","risk":"Anticholinergic for OAB. Dry mouth, constipation, confusion in elderly. ACB=3. Consider mirabegron as alternative."},{"name":"Solifenacin","heb":"סוליפנצין","beers":true,"acb":3,"cat":"Anticholinergic","risk":"Antimuscarinic for OAB. Cognitive effects, constipation, dry mouth. ACB=3. Beers: avoid if possible."}]
+[
+  {
+    "name": "Oxybutynin",
+    "heb": "דיטרופן",
+    "acb": 3,
+    "beers": true,
+    "cat": "Anticholinergic/Bladder",
+    "risk": "Cognitive decline, delirium, falls, constipation, urinary retention. Opposes donepezil."
+  },
+  {
+    "name": "Diphenhydramine",
+    "heb": "דיפנהידרמין",
+    "acb": 3,
+    "beers": true,
+    "cat": "Antihistamine",
+    "risk": "Sedation, delirium, falls, anticholinergic toxicity"
+  },
+  {
+    "name": "Amitriptyline",
+    "heb": "אלאטרול",
+    "acb": 3,
+    "beers": true,
+    "cat": "TCA",
+    "risk": "Strong anticholinergic, cardiac conduction, orthostatic hypotension, sedation"
+  },
+  {
+    "name": "Chlorpromazine",
+    "heb": "לרגקטיל",
+    "acb": 3,
+    "beers": true,
+    "cat": "Antipsychotic",
+    "risk": "High anticholinergic, sedation, orthostatic, EPS"
+  },
+  {
+    "name": "Paroxetine",
+    "heb": "פקסט",
+    "acb": 2,
+    "beers": true,
+    "cat": "SSRI",
+    "risk": "Most anticholinergic SSRI. Hyponatremia, drug interactions (CYP2D6)"
+  },
+  {
+    "name": "Olanzapine",
+    "heb": "זיפרקסה",
+    "acb": 3,
+    "beers": false,
+    "cat": "Antipsychotic",
+    "risk": "STRONGEST anticholinergic among common antipsychotics. Weight gain, metabolic syndrome"
+  },
+  {
+    "name": "Diazepam",
+    "heb": "וליום",
+    "acb": 1,
+    "beers": true,
+    "cat": "Benzodiazepine",
+    "risk": "Long-acting. Falls, sedation, cognitive impairment, paradoxical agitation"
+  },
+  {
+    "name": "Zolpidem",
+    "heb": "סטילנוקס",
+    "acb": 0,
+    "beers": true,
+    "cat": "Sedative-hypnotic",
+    "risk": "Falls, confusion, complex sleep behaviors, fractures"
+  },
+  {
+    "name": "Temazepam",
+    "heb": "נורמיסון",
+    "acb": 1,
+    "beers": true,
+    "cat": "Benzodiazepine",
+    "risk": "Falls, sedation, next-day impairment"
+  },
+  {
+    "name": "Glyburide",
+    "heb": "גלי-ב",
+    "acb": 0,
+    "beers": true,
+    "cat": "Sulfonylurea",
+    "risk": "Prolonged hypoglycemia (long half-life, active metabolites). Use glipizide instead"
+  },
+  {
+    "name": "Megestrol",
+    "heb": "מגייס",
+    "acb": 0,
+    "beers": true,
+    "cat": "Progestational",
+    "risk": "Thrombotic events, minimal appetite benefit, fluid retention, adrenal suppression"
+  },
+  {
+    "name": "Doxazosin",
+    "heb": "קדקס",
+    "acb": 0,
+    "beers": true,
+    "cat": "Alpha-blocker",
+    "risk": "Orthostatic hypotension → falls. Not first-line for HTN"
+  },
+  {
+    "name": "Metoclopramide",
+    "heb": "פראמין",
+    "acb": 0,
+    "beers": true,
+    "cat": "Prokinetic",
+    "risk": "EPS, tardive dyskinesia (risk increases with duration). Max 12 weeks"
+  },
+  {
+    "name": "Sliding-scale insulin",
+    "heb": "אינסולין מדרג בלבד",
+    "acb": 0,
+    "beers": true,
+    "cat": "Insulin",
+    "risk": "Reactive dosing without proactive management. Hypoglycemia risk"
+  },
+  {
+    "name": "Meperidine",
+    "heb": "דמרול",
+    "acb": 0,
+    "beers": true,
+    "cat": "Opioid",
+    "risk": "Neurotoxic metabolite (normeperidine) → seizures. NEVER use in elderly"
+  },
+  {
+    "name": "Donepezil",
+    "heb": "אריספט",
+    "acb": 0,
+    "beers": false,
+    "cat": "Cholinesterase inhibitor",
+    "risk": "GI side effects (take with food, NOT on empty stomach). Does NOT prevent postop delirium"
+  },
+  {
+    "name": "Haloperidol",
+    "heb": "הלדול",
+    "acb": 1,
+    "beers": false,
+    "cat": "Antipsychotic",
+    "risk": "EPS, QTc prolongation. Lower anticholinergic than olanzapine"
+  },
+  {
+    "name": "Quetiapine",
+    "heb": "סרוקוול",
+    "acb": 1,
+    "beers": false,
+    "cat": "Antipsychotic",
+    "risk": "Sedation, orthostatic, metabolic. Moderate anticholinergic"
+  },
+  {
+    "name": "Risperidone",
+    "heb": "ריספרדל",
+    "acb": 0,
+    "beers": false,
+    "cat": "Antipsychotic",
+    "risk": "EPS at higher doses, orthostatic. Low anticholinergic"
+  },
+  {
+    "name": "Metformin",
+    "heb": "גלוקופאג",
+    "acb": 0,
+    "beers": false,
+    "cat": "Biguanide",
+    "risk": "CI if CrCl<30. Lactic acidosis rare. Causes anorexia/weight loss in thin elderly. Hold 48h pre-op"
+  },
+  {
+    "name": "Alendronate",
+    "heb": "פוסלן",
+    "acb": 0,
+    "beers": false,
+    "cat": "Bisphosphonate",
+    "risk": "Esophagitis (take upright with water). CI in reflux esophagitis → use denosumab"
+  },
+  {
+    "name": "Apixaban",
+    "heb": "אליקוויס",
+    "acb": 0,
+    "beers": false,
+    "cat": "DOAC",
+    "risk": "Safest DOAC in CKD. CI with mechanical valves. Dose reduce if ≥2: age≥80, weight≤60kg, Cr≥1.5"
+  },
+  {
+    "name": "Sertraline",
+    "heb": "לוסטרל",
+    "acb": 0,
+    "beers": false,
+    "cat": "SSRI",
+    "risk": "Hyponatremia risk (like all SSRIs). Generally safe in elderly. Low anticholinergic"
+  },
+  {
+    "name": "Bupropion",
+    "heb": "ולבוטרין",
+    "acb": 0,
+    "beers": false,
+    "cat": "Antidepressant",
+    "risk": "LOWEST hyponatremia risk among antidepressants. Seizure risk at high doses. Activating"
+  },
+  {
+    "name": "Mirtazapine",
+    "heb": "רמרון",
+    "acb": 1,
+    "beers": false,
+    "cat": "Antidepressant",
+    "risk": "Sedation (good if insomnia), weight gain (good if anorexic). Monitor metabolic"
+  },
+  {
+    "name": "Nitrofurantoin",
+    "heb": "מקרודנטין",
+    "acb": 0,
+    "beers": true,
+    "cat": "Antibiotic",
+    "risk": "Avoid if CrCl<30: pulmonary toxicity, peripheral neuropathy, hepatotoxicity"
+  },
+  {
+    "name": "Nifedipine IR",
+    "heb": "נפידיפין",
+    "acb": 0,
+    "beers": true,
+    "cat": "CCB (short-acting)",
+    "risk": "Reflex tachycardia, hypotension, risk of CV events. Use long-acting formulations instead"
+  },
+  {
+    "name": "Cyclobenzaprine",
+    "heb": "ציקלובנזפרין",
+    "acb": 2,
+    "beers": true,
+    "cat": "Muscle relaxant",
+    "risk": "Anticholinergic, sedation, falls, ineffective for spasticity in elderly. Avoid >2 weeks"
+  },
+  {
+    "name": "Methocarbamol",
+    "heb": "מתוקרבמול",
+    "acb": 1,
+    "beers": true,
+    "cat": "Muscle relaxant",
+    "risk": "Sedation, dizziness, falls. Limited efficacy. Avoid in elderly"
+  },
+  {
+    "name": "Promethazine",
+    "heb": "פנרגן",
+    "acb": 3,
+    "beers": true,
+    "cat": "Antihistamine (1st gen)",
+    "risk": "Strong anticholinergic, sedation, EPS, falls, delirium. Avoid in elderly"
+  },
+  {
+    "name": "Clonidine",
+    "heb": "קלונידין",
+    "beers": true,
+    "acb": 0,
+    "cat": "Antihypertensive",
+    "risk": "CNS depression, rebound hypertension, bradycardia. High risk of adverse CNS effects in elderly. Avoid as first-line antihypertensive."
+  },
+  {
+    "name": "Digoxin",
+    "heb": "דיגוקסין",
+    "beers": true,
+    "acb": 0,
+    "cat": "Cardiac",
+    "risk": "Narrow therapeutic index. Avoid doses >0.125mg/day in elderly. Toxicity risk with renal impairment, hypokalemia. Monitor levels."
+  },
+  {
+    "name": "Ketorolac",
+    "heb": "קטורולק",
+    "beers": true,
+    "acb": 0,
+    "cat": "NSAID",
+    "risk": "High GI bleeding risk, AKI. Avoid in elderly especially >5 days. Beers: avoid all non-COX-selective NSAIDs chronically."
+  },
+  {
+    "name": "Hydroxyzine",
+    "heb": "הידרוקסיזין",
+    "beers": true,
+    "acb": 3,
+    "cat": "Antihistamine",
+    "risk": "Strong anticholinergic. Sedation, confusion, urinary retention, dry mouth. ACB=3. Use alternatives for anxiety/pruritus."
+  },
+  {
+    "name": "Chlorpropamide",
+    "heb": "כלורפרופמיד",
+    "beers": true,
+    "acb": 0,
+    "cat": "Sulfonylurea",
+    "risk": "Prolonged hypoglycemia (long half-life 36h). SIADH/hyponatremia. Beers: avoid in all older adults. Use short-acting agents."
+  },
+  {
+    "name": "Prazosin",
+    "heb": "פרזוסין",
+    "beers": true,
+    "acb": 0,
+    "cat": "Alpha-blocker",
+    "risk": "Orthostatic hypotension, syncope, falls. Beers: avoid as antihypertensive. High first-dose syncope risk."
+  },
+  {
+    "name": "Amiodarone",
+    "heb": "אמיודרון",
+    "beers": true,
+    "acb": 0,
+    "cat": "Antiarrhythmic",
+    "risk": "Thyroid toxicity, pulmonary fibrosis, hepatotoxicity, QT prolongation. Beers: avoid as first-line for AF. Multiple drug interactions."
+  },
+  {
+    "name": "Carisoprodol",
+    "heb": "קריסופרודול",
+    "beers": true,
+    "acb": 0,
+    "cat": "Muscle Relaxant",
+    "risk": "Sedation, dependence potential, anticholinergic effects. Metabolized to meprobamate (anxiolytic). Beers: avoid."
+  },
+  {
+    "name": "Trimethobenzamide",
+    "heb": "טרימתובנזמיד",
+    "beers": true,
+    "acb": 0,
+    "cat": "Antiemetic",
+    "risk": "Extrapyramidal effects, limited efficacy. Beers: avoid. One of least effective antiemetics."
+  },
+  {
+    "name": "Ibuprofen",
+    "heb": "איבופרופן",
+    "beers": true,
+    "acb": 0,
+    "cat": "NSAID",
+    "risk": "GI bleeding (3-4x risk in elderly), AKI, HTN, HF exacerbation. Avoid with anticoagulants, CKD, HF. Max 5 days if used."
+  },
+  {
+    "name": "Ferrous Sulfate >325mg",
+    "heb": "ברזל גופרתי",
+    "beers": true,
+    "acb": 0,
+    "cat": "Supplement",
+    "risk": "Constipation, nausea. Doses >325mg/day do not increase absorption but increase side effects. Beers: avoid high doses."
+  },
+  {
+    "name": "Nitrazepam",
+    "heb": "ניטרזפם",
+    "beers": true,
+    "acb": 0,
+    "cat": "Benzodiazepine",
+    "risk": "Long-acting benzo. Falls, fractures, cognitive impairment, delirium. Beers: avoid all benzos in elderly."
+  },
+  {
+    "name": "Chlordiazepoxide",
+    "heb": "כלורדיאזפוקסיד",
+    "beers": true,
+    "acb": 0,
+    "cat": "Benzodiazepine",
+    "risk": "Long half-life (24-48h). Accumulation in elderly, prolonged sedation, falls. Beers: avoid."
+  },
+  {
+    "name": "Trihexyphenidyl",
+    "heb": "טריהקסיפנידיל",
+    "beers": true,
+    "acb": 3,
+    "cat": "Anticholinergic",
+    "risk": "Strong anticholinergic for Parkinson's. Confusion, hallucinations, urinary retention, constipation. ACB=3. Avoid in elderly."
+  },
+  {
+    "name": "Benztropine",
+    "heb": "בנזטרופין",
+    "beers": true,
+    "acb": 3,
+    "cat": "Anticholinergic",
+    "risk": "Anticholinergic for EPS. Cognitive impairment, urinary retention, constipation. ACB=3. Beers: avoid. Use lower risk alternatives."
+  },
+  {
+    "name": "Desipramine",
+    "heb": "דסיפרמין",
+    "beers": true,
+    "acb": 1,
+    "cat": "TCA",
+    "risk": "Less anticholinergic than amitriptyline but still risky: orthostatic hypotension, cardiac conduction delays. Beers: avoid."
+  },
+  {
+    "name": "Nortriptyline",
+    "heb": "נורטריפטילין",
+    "beers": true,
+    "acb": 1,
+    "cat": "TCA",
+    "risk": "Secondary amine TCA — less anticholinergic but still: orthostatic hypotension, QT prolongation. Beers: avoid. SNRI preferred."
+  },
+  {
+    "name": "Insulin (sliding scale only)",
+    "heb": "אינסולין מדרג",
+    "beers": true,
+    "acb": 0,
+    "cat": "Antidiabetic",
+    "risk": "Sliding scale alone = poor glycemic control + hypoglycemia risk. Beers: avoid without basal insulin. A1c targets should be relaxed in frail elderly."
+  },
+  {
+    "name": "Propoxyphene",
+    "heb": "פרופוקסיפן",
+    "beers": true,
+    "acb": 0,
+    "cat": "Opioid",
+    "risk": "Withdrawn in many countries. Cardiac toxicity, seizures, minimal analgesic benefit. Beers: avoid. Use paracetamol or low-dose opioids instead."
+  },
+  {
+    "name": "Pentazocine",
+    "heb": "פנטזוצין",
+    "beers": true,
+    "acb": 0,
+    "cat": "Opioid",
+    "risk": "Mixed agonist-antagonist. CNS effects including confusion, hallucinations. Beers: avoid."
+  },
+  {
+    "name": "Ticlopidine",
+    "heb": "טיקלופידין",
+    "beers": true,
+    "acb": 0,
+    "cat": "Antiplatelet",
+    "risk": "Safer alternatives exist (clopidogrel). Neutropenia, TTP risk. Beers: avoid."
+  },
+  {
+    "name": "Tolterodine",
+    "heb": "טולטרודין",
+    "beers": true,
+    "acb": 3,
+    "cat": "Anticholinergic",
+    "risk": "Anticholinergic for OAB. Dry mouth, constipation, confusion in elderly. ACB=3. Consider mirabegron as alternative."
+  },
+  {
+    "name": "Solifenacin",
+    "heb": "סוליפנצין",
+    "beers": true,
+    "acb": 3,
+    "cat": "Anticholinergic",
+    "risk": "Antimuscarinic for OAB. Cognitive effects, constipation, dry mouth. ACB=3. Beers: avoid if possible."
+  }
+]
