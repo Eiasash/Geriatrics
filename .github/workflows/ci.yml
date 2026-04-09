@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ── JSON Parse Validity ──
       - name: Validate JSON files parse correctly
         run: |
           for f in questions.json notes.json drugs.json flashcards.json; do
@@ -19,6 +20,7 @@ jobs:
             python3 -c "import json,sys; json.load(open('$f')); print('  OK')"
           done
 
+      # ── Question Count ──
       - name: Check question count (must be > 900)
         run: |
           COUNT=$(python3 -c "import json; print(len(json.load(open('questions.json'))))")
@@ -29,6 +31,7 @@ jobs:
           fi
           echo "OK: $COUNT questions"
 
+      # ── Question Schema ──
       - name: Validate question schema integrity
         run: |
           python3 -c "
@@ -38,12 +41,19 @@ jobs:
           for i, q in enumerate(qs):
               if not q.get('q'):
                   errors.append(f'Q{i}: missing question text')
+              if len(q.get('q', '')) < 10:
+                  errors.append(f'Q{i}: question text suspiciously short ({len(q.get(\"q\",\"\"))} chars)')
               if not isinstance(q.get('o'), list) or len(q.get('o', [])) < 2:
                   errors.append(f'Q{i}: missing or invalid options')
               if not isinstance(q.get('c'), int) or q['c'] < 0 or q['c'] >= len(q.get('o', [])):
                   errors.append(f'Q{i}: invalid correct answer index c={q.get(\"c\")}')
-              if q.get('ti') is not None and (not isinstance(q.get('ti'), int) or q['ti'] < 0):
-                  errors.append(f'Q{i}: invalid topic index ti={q.get(\"ti\")}')
+              if q.get('ti') is not None and (not isinstance(q.get('ti'), int) or q['ti'] < 0 or q['ti'] > 39):
+                  errors.append(f'Q{i}: topic index ti={q.get(\"ti\")} out of range 0-39')
+              if not q.get('t'):
+                  errors.append(f'Q{i}: missing year field t')
+              for opt in q.get('o', []):
+                  if not opt or not opt.strip():
+                      errors.append(f'Q{i}: has empty option')
           if errors:
               for e in errors:
                   print(f'ERROR: {e}', file=sys.stderr)
@@ -51,61 +61,196 @@ jobs:
           print(f'OK: All {len(qs)} questions have valid schema')
           "
 
-      - name: Validate notes schema
-        run: |
-          python3 -c "
-          import json, sys
-          notes = json.load(open('notes.json'))
-          errors = []
-          for i, n in enumerate(notes):
-              if not n.get('topic'):
-                  errors.append(f'Note {i}: missing topic')
-              if not n.get('notes'):
-                  errors.append(f'Note {i}: missing notes content')
-          if errors:
-              for e in errors:
-                  print(f'ERROR: {e}', file=sys.stderr)
-              sys.exit(1)
-          print(f'OK: All {len(notes)} notes have valid schema')
-          "
-
-      - name: Validate drugs schema
-        run: |
-          python3 -c "
-          import json, sys
-          drugs = json.load(open('drugs.json'))
-          errors = []
-          for i, d in enumerate(drugs):
-              if not d.get('name'):
-                  errors.append(f'Drug {i}: missing name')
-          if errors:
-              for e in errors:
-                  print(f'ERROR: {e}', file=sys.stderr)
-              sys.exit(1)
-          print(f'OK: All {len(drugs)} drugs have valid schema')
-          "
-
-      - name: Check for duplicate questions
+      # ── Conflicting Duplicates (CRITICAL) ──
+      - name: Check for conflicting duplicate questions
         run: |
           python3 -c "
           import json, sys
           qs = json.load(open('questions.json'))
           seen = {}
-          dupes = 0
+          conflicts = []
+          dupes = []
           for i, q in enumerate(qs):
               key = q['q'].strip()[:80]
               if key in seen:
-                  dupes += 1
-                  if dupes <= 5:
-                      print(f'WARN: Possible duplicate Q{i} ~ Q{seen[key]}: {key[:60]}...')
+                  j = seen[key]
+                  if qs[i]['o'] == qs[j]['o'] and qs[i]['c'] != qs[j]['c']:
+                      conflicts.append((j, i, key[:60]))
+                  elif qs[i]['o'] == qs[j]['o']:
+                      dupes.append((j, i, key[:60]))
               else:
                   seen[key] = i
-          if dupes > 0:
-              print(f'WARNING: {dupes} possible duplicate questions found')
+
+          if conflicts:
+              print(f'CRITICAL: {len(conflicts)} duplicate pairs have DIFFERENT correct answers:', file=sys.stderr)
+              for j, i, k in conflicts:
+                  print(f'  Q{j} (c={qs[j][\"c\"]}) vs Q{i} (c={qs[i][\"c\"]}): {k}...', file=sys.stderr)
+              sys.exit(1)
+
+          if dupes:
+              print(f'WARNING: {len(dupes)} exact duplicate pairs (same answer)')
+              for j, i, k in dupes[:5]:
+                  print(f'  Q{j} ~ Q{i}: {k}...')
           else:
               print('OK: No duplicate questions detected')
           "
 
+      # ── Notes Schema + GRS Check ──
+      - name: Validate notes schema and content
+        run: |
+          python3 -c "
+          import json, sys
+          notes = json.load(open('notes.json'))
+          errors = []
+          ids_found = set()
+          for i, n in enumerate(notes):
+              if not n.get('topic'):
+                  errors.append(f'Note {i}: missing topic')
+              if not n.get('notes'):
+                  errors.append(f'Note {i}: missing notes content')
+              if not n.get('ch'):
+                  errors.append(f'Note {i} ({n.get(\"topic\",\"?\")}): missing ch field')
+              ch = n.get('ch', '')
+              if 'GRS' in ch.upper():
+                  errors.append(f'Note {n.get(\"id\",i)} ({n.get(\"topic\",\"?\")}): ch references GRS — removed from P005-2026 syllabus')
+              if 'id' in n:
+                  ids_found.add(n['id'])
+          for tid in range(40):
+              if tid not in ids_found:
+                  errors.append(f'Topic {tid} missing from notes.json')
+          if errors:
+              for e in errors:
+                  print(f'ERROR: {e}', file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: All {len(notes)} notes valid, all 40 topics present, no GRS references')
+          "
+
+      # ── Drugs Full Schema ──
+      - name: Validate drugs schema completeness
+        run: |
+          python3 -c "
+          import json, sys
+          drugs = json.load(open('drugs.json'))
+          errors = []
+          required = ['name', 'heb', 'acb', 'beers', 'cat', 'risk']
+          for i, d in enumerate(drugs):
+              for k in required:
+                  if k not in d:
+                      errors.append(f'Drug {i} ({d.get(\"name\",\"?\")}): missing field \"{k}\"')
+              if 'heb' in d and d['heb'] == '':
+                  errors.append(f'Drug {i} ({d[\"name\"]}): empty Hebrew name')
+              if 'acb' in d and (not isinstance(d['acb'], int) or d['acb'] < 0 or d['acb'] > 3):
+                  errors.append(f'Drug {i} ({d[\"name\"]}): acb={d[\"acb\"]} out of range 0-3')
+              if 'beers' in d and not isinstance(d['beers'], bool):
+                  errors.append(f'Drug {i} ({d[\"name\"]}): beers must be boolean')
+          if errors:
+              for e in errors:
+                  print(f'ERROR: {e}', file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: All {len(drugs)} drugs have complete schema')
+          "
+
+      # ── Flashcards Schema ──
+      - name: Validate flashcards schema
+        run: |
+          python3 -c "
+          import json, sys
+          fc = json.load(open('flashcards.json'))
+          errors = []
+          for i, c in enumerate(fc):
+              if not c.get('f'):
+                  errors.append(f'Flashcard {i}: missing front (f)')
+              if not c.get('b'):
+                  errors.append(f'Flashcard {i}: missing back (b)')
+          if errors:
+              for e in errors:
+                  print(f'ERROR: {e}', file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: All {len(fc)} flashcards valid')
+          "
+
+      # ── Service Worker Version Sync ──
+      - name: Check service worker cache version matches app
+        run: |
+          python3 << 'PYEOF'
+          import re, sys
+          html = open('shlav-a-mega.html').read()
+          sw = open('sw.js').read()
+          m_app = re.search(r"APP_VERSION\s*=\s*['\"]([^'\"]+)['\"]", html)
+          m_sw = re.search(r"CACHE\s*=\s*['\"]shlav-a-v([^'\"]+)['\"]", sw)
+          if not m_app:
+              print('ERROR: APP_VERSION not found in shlav-a-mega.html', file=sys.stderr)
+              sys.exit(1)
+          if not m_sw:
+              print('ERROR: CACHE version not found in sw.js', file=sys.stderr)
+              sys.exit(1)
+          app_v = m_app.group(1)
+          sw_v = m_sw.group(1)
+          if app_v != sw_v:
+              print(f'ERROR: Version mismatch — app={app_v}, sw.js={sw_v}', file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: App and service worker versions match (v{app_v})')
+          PYEOF
+
+      # ── innerHTML Sanitization Audit ──
+      - name: Audit innerHTML for unsanitized interpolation
+        run: |
+          python3 << 'PYEOF'
+          import re, sys
+          html = open('shlav-a-mega.html').read()
+          lines = html.split('\n')
+          warnings = []
+          for i, line in enumerate(lines, 1):
+              if '.innerHTML=' in line or '.innerHTML =' in line:
+                  after_eq = line.split('innerHTML')[1]
+                  if ('+' in after_eq or '${' in after_eq) and 'sanitize(' not in after_eq:
+                      warnings.append(f'  Line {i}: {line.strip()[:100]}')
+          if warnings:
+              print(f'WARNING: {len(warnings)} innerHTML assignments with unsanitized interpolation:')
+              for w in warnings:
+                  print(w)
+          else:
+              print('OK: No unsanitized innerHTML interpolation detected')
+          PYEOF
+
+      # ── Topic Coverage ──
+      - name: Check topic coverage (min 5 questions per topic)
+        run: |
+          python3 -c "
+          import json, sys
+          qs = json.load(open('questions.json'))
+          TOPICS = [
+              'Biology of Aging','Demography','CGA','Frailty','Falls','Delirium',
+              'Dementia','Depression','Polypharmacy/Beers','Nutrition','Pressure Injuries',
+              'Urinary Incontinence','Constipation','Sleep','Pain','Osteoporosis',
+              'OA','CVD','HF','HTN','Stroke','COPD','DM','Thyroid','CKD','Anemia',
+              'Cancer','Infections','Palliative','Ethics','Elder Abuse','Fitness to Drive',
+              'Guardianship','Patient Rights','Advance Directives','Community Care',
+              'Rehab/FIM','Vision/Hearing','Perioperative','Geriatric Emergency'
+          ]
+          counts = {}
+          for q in qs:
+              ti = q.get('ti', -1)
+              counts[ti] = counts.get(ti, 0) + 1
+          thin = []
+          for ti in range(40):
+              c = counts.get(ti, 0)
+              name = TOPICS[ti] if ti < len(TOPICS) else f'Topic {ti}'
+              if c < 5:
+                  thin.append(f'  ti={ti} ({name}): {c} questions')
+          if thin:
+              print(f'WARNING: {len(thin)} topics have fewer than 5 questions:')
+              for t in thin:
+                  print(t)
+          else:
+              print('OK: All topics have at least 5 questions')
+          # Always print distribution summary
+          total = len(qs)
+          with_expl = sum(1 for q in qs if q.get('e'))
+          print(f'Coverage: {total} questions, {with_expl} with explanations ({100*with_expl//total}%)')
+          "
+
+      # ── HTML Syntax ──
       - name: Validate HTML syntax
         run: |
           python3 -c "
@@ -124,4 +269,19 @@ jobs:
           except Exception as e:
               print(f'ERROR: HTML parse error: {e}', file=sys.stderr)
               sys.exit(1)
+          "
+
+      # ── JS Brace Balance ──
+      - name: Check JS brace balance
+        run: |
+          python3 -c "
+          import sys
+          c = open('shlav-a-mega.html').read()
+          opens = c.count('{')
+          closes = c.count('}')
+          diff = opens - closes
+          if diff != 0:
+              print(f'ERROR: Brace imbalance — {{ ={opens}, }} ={closes}, diff={diff}', file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: Brace balance ({opens} pairs)')
           "
