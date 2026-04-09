@@ -1068,7 +1068,7 @@ function fmtT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;re
 
 // ===== QUESTION IMAGE UPLOAD =====
 const SUPA_URL='https://krmlzwwelqvlfslwltol.supabase.co';
-const SUPA_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtybmx6d3dlbHF2bGZzbHdsdG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDExMDcyNTAsImV4cCI6MjA1NjY4MzI1MH0.CsJEJAjP-GB4X0bHk0RVbFCOZxyj0VrfOdGr5wSBzBg';
+const SUPA_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtybWx6d3dlbHF2bGZzbHdsdG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NjQxMDksImV4cCI6MjA4NzU0MDEwOX0.PFSuFgHA-WBnrgs4stmloxvOORSX0CiXDPsW2dinAAQ';
 async function uploadQImage(qIdx){
 const input=document.createElement('input');
 input.type='file';input.accept='image/*';input.capture='environment';
@@ -2831,29 +2831,43 @@ const st=document.getElementById('fbStatus');if(st){st.textContent='✅ Copied (
 alert(d);
 }
 }
-function reportIssue(type){
+async function reportIssue(type){
 const labels={bug:'Bug Report',wrong_answer:'Wrong Answer',feature:'Feature Request'};
 let context='';
 if(type==='wrong_answer'&&pool.length&&qi<pool.length){
 const q=QZ[pool[qi]];
-context=`Q#${pool[qi]}: ${q.q.substring(0,80)}... (correct: ${q.o[q.c]})`;
+context=`Q#${pool[qi]}: ${q.q.substring(0,100)}... | correct: ${q.o[q.c]}`;
 }
-const msg=prompt(labels[type]+':\n'+(type==='wrong_answer'?'Which answer is wrong and what should it be?':'Describe the issue:'));
+const msg=prompt(labels[type]+':\n'+(type==='wrong_answer'?'מה התשובה הנכונה לדעתך?':'תאר את הבעיה:'));
 if(!msg)return;
 const diag=getDiagnostics();
+const st=document.getElementById('fbStatus');
+if(st){st.textContent='⏳ Sending...';st.style.display='block';st.style.color='#64748b';}
+// Save locally first
 const payload={type,msg,context,diag,ts:new Date().toISOString(),v:APP_VERSION};
 const fb=JSON.parse(localStorage.getItem('shlav_feedback')||'[]');
-fb.push(payload);
-if(fb.length>50)fb.splice(0,fb.length-50);
+fb.push(payload);if(fb.length>50)fb.splice(0,fb.length-50);
 localStorage.setItem('shlav_feedback',JSON.stringify(fb));
 // Send to Supabase
-fetch('https://krmlzwwelqvlfslwltol.supabase.co/rest/v1/shlav_feedback',{
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtybWx6d3dlbHF2bGZzbHdsdG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NjQxMDksImV4cCI6MjA4NzU0MDEwOX0.PFSuFgHA-WBnrgs4stmloxvOORSX0CiXDPsW2dinAAQ';
+try{
+const res=await fetch('https://krmlzwwelqvlfslwltol.supabase.co/rest/v1/shlav_feedback',{
 method:'POST',
-headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtybmx6d3dlbHF2bGZzbHdsdG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDExMDcyNTAsImV4cCI6MjA1NjY4MzI1MH0.CsJEJAjP-GB4X0bHk0RVbFCOZxyj0VrfOdGr5wSBzBg','Prefer':'return=minimal'},
+headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Prefer':'return=minimal'},
 body:JSON.stringify({message:msg,diagnostics:diag,app_version:APP_VERSION,type:type,context:context})
-}).catch(()=>{});
-const st=document.getElementById('fbStatus');
-if(st){st.textContent='✅ '+labels[type]+' saved';st.style.display='block';st.style.color='#059669';setTimeout(()=>st.style.display='none',3000);}
+});
+if(res.ok){
+if(st){st.textContent='✅ '+labels[type]+' sent to Supabase';st.style.color='#059669';}
+}else{
+const err=await res.text();
+console.warn('Supabase error:',res.status,err);
+if(st){st.textContent='⚠️ Saved locally (Supabase: '+res.status+')';st.style.color='#d97706';}
+}
+}catch(e){
+console.warn('Network error:',e);
+if(st){st.textContent='⚠️ Saved locally (offline)';st.style.color='#d97706';}
+}
+if(st)setTimeout(()=>st.style.display='none',4000);
 }
 function submitFeedback(){
 const el=document.getElementById('fbText');
@@ -2868,7 +2882,7 @@ localStorage.setItem('shlav_feedback',JSON.stringify(fb));
 // Try Supabase
 fetch('https://krmlzwwelqvlfslwltol.supabase.co/rest/v1/shlav_feedback',{
 method:'POST',
-headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtybmx6d3dlbHF2bGZzbHdsdG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDExMDcyNTAsImV4cCI6MjA1NjY4MzI1MH0.CsJEJAjP-GB4X0bHk0RVbFCOZxyj0VrfOdGr5wSBzBg','Prefer':'return=minimal'},
+headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtybWx6d3dlbHF2bGZzbHdsdG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NjQxMDksImV4cCI6MjA4NzU0MDEwOX0.PFSuFgHA-WBnrgs4stmloxvOORSX0CiXDPsW2dinAAQ','Prefer':'return=minimal'},
 body:JSON.stringify({message:msg,diagnostics:diag,app_version:APP_VERSION})
 }).catch(()=>{});
 // Also copy to clipboard as backup
