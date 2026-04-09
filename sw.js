@@ -1,8 +1,48 @@
-const CACHE='shlav-a-v8';
-const URLS=['shlav-a-mega.html','manifest.json'];
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(URLS)).then(()=>self.skipWaiting())));
+const CACHE='shlav-a-v9';
+const HTML_URLS=['shlav-a-mega.html','manifest.json'];
+const JSON_DATA_URLS=['data/questions.json','data/topics.json','data/notes.json','data/drugs.json','data/flashcards.json','data/tabs.json','data/osce.json'];
+const ALL_URLS=[...HTML_URLS,...JSON_DATA_URLS];
+
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ALL_URLS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{if(res.ok){const c=res.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c));}return res;}).catch(()=>caches.match('shlav-a-mega.html'))));});
+
+// Cache strategy dispatcher
+function shouldUseCacheFirst(url){
+  return JSON_DATA_URLS.some(pattern=>url.endsWith(pattern));
+}
+
+// Network-first for HTML, cache-first for JSON data
+self.addEventListener('fetch',e=>{
+  const url=new URL(e.request.url).pathname;
+
+  if(shouldUseCacheFirst(url)){
+    // Cache-first strategy for JSON data files
+    e.respondWith(
+      caches.match(e.request)
+        .then(r=>r||fetch(e.request).then(res=>{
+          if(res.ok){
+            const c=res.clone();
+            caches.open(CACHE).then(cache=>cache.put(e.request,c));
+          }
+          return res;
+        }))
+        .catch(()=>caches.match('data/questions.json'))
+    );
+  }else{
+    // Network-first strategy for HTML and other files
+    e.respondWith(
+      fetch(e.request)
+        .then(res=>{
+          if(res.ok){
+            const c=res.clone();
+            caches.open(CACHE).then(cache=>cache.put(e.request,c));
+          }
+          return res;
+        })
+        .catch(()=>caches.match(e.request).then(r=>r||caches.match('shlav-a-mega.html')))
+    );
+  }
+});
 
 // ===== BACKGROUND SYNC =====
 // When a Supabase backup fails offline, the app registers a sync event.
