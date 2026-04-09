@@ -1797,6 +1797,19 @@ const HAZZARD_PARTS=[
 {file:'hazzard_part08.pdf',title:'Supplementary Material',ch:'Additional',desc:'Additional figures, tables, and supplementary content',color:'#78716c'},
 {file:'hazzard_part09.pdf',title:'Index',ch:'Index',desc:'Full subject index',color:'#94a3b8'},
 ];
+// ===== Hazzard's — Annotated/Marked PDFs =====
+const HAZZARD_MARKED_PARTS=[
+{file:'hazzard_marked/part01.pdf',title:'Part 1 — Marked',ch:'Front Matter + Ch 1–6',desc:'Principles of Gerontology — annotated',color:'#3b82f6',exam:'⭐ Ch 2-6 required for exam'},
+{file:'hazzard_marked/part02.pdf',title:'Part 2 — Marked',ch:'Ch 7–13',desc:'Assessment — annotated',color:'#8b5cf6'},
+{file:'hazzard_marked/part03.pdf',title:'Part 3 — Marked',ch:'Ch 14–30',desc:'Care Settings & Management — annotated',color:'#06b6d4'},
+{file:'hazzard_marked/part04.pdf',title:'Part 4 — Marked',ch:'Ch 31–48',desc:'Sensory, Sexuality & Geriatric Syndromes — annotated',color:'#f59e0b',exam:'⭐ Ch 34 required for exam'},
+{file:'hazzard_marked/part05.pdf',title:'Part 5 — Marked',ch:'Ch 49–66',desc:'Mobility & Mentation — annotated',color:'#ec4899',exam:'⭐ Ch 62 required for exam'},
+{file:'hazzard_marked/part06.pdf',title:'Part 6 — Marked',ch:'Ch 67–72',desc:'Palliative Medicine & Ethics — annotated',color:'#10b981'},
+{file:'hazzard_marked/part07.pdf',title:'Part 7 — Marked',ch:'Ch 73–87',desc:'Cardiovascular, Pulmonary, Nephrology, GI — annotated',color:'#ef4444'},
+{file:'hazzard_marked/part08.pdf',title:'Part 8 — Marked',ch:'Ch 88–96',desc:'Oncology & Hematology — annotated',color:'#f97316'},
+{file:'hazzard_marked/part09.pdf',title:'Part 9 — Marked',ch:'Ch 97–108',desc:'Endocrine, Rheumatology & Infectious Disease — annotated',color:'#6366f1'},
+{file:'hazzard_marked/part10.pdf',title:'Part 10 — Marked',ch:'Additional',desc:'Supplementary & Index — annotated',color:'#78716c'},
+];
 // ===== TOPIC PRIORITY MATRIX (added to Track tab) =====
 function renderPriorityMatrix(){
   const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
@@ -2122,7 +2135,24 @@ h+=`</div>`;
 if(libSec==='haz-pdf'){
 h+=`<div style="padding:8px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;margin-bottom:12px;font-size:10px;color:#92400e;line-height:1.5">
 ⚠️ Large PDFs — first load may take a moment on mobile.</div>`;
+h+=`<div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px">📚 Original</div>`;
 HAZZARD_PARTS.forEach((p,i)=>{
+h+=`<a href="${p.file}" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+<div class="card" style="padding:12px;cursor:pointer;border-left:4px solid ${p.color}">
+<div style="display:flex;align-items:flex-start;gap:10px">
+<div style="width:32px;height:32px;border-radius:8px;background:${p.color}15;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+<span style="font-size:14px;font-weight:700;color:${p.color}">${i+1}</span></div>
+<div style="flex:1;min-width:0">
+<div style="font-size:11px;font-weight:700">${p.title}</div>
+<div style="font-size:9px;color:rgb(var(--sky));font-weight:600;margin-top:2px">${p.ch}</div>
+<div style="font-size:9px;color:#64748b;margin-top:2px">${p.desc}</div>
+${p.exam?`<div style="font-size:9px;color:#f59e0b;font-weight:700;margin-top:3px">${p.exam}</div>`:''}
+</div>
+<span style="font-size:14px;color:#94a3b8;align-self:center">↗</span>
+</div></div></a>`;
+});
+h+=`<div style="font-size:11px;font-weight:700;color:#64748b;margin:14px 0 8px">✏️ Annotated (Marked)</div>`;
+HAZZARD_MARKED_PARTS.forEach((p,i)=>{
 h+=`<a href="${p.file}" target="_blank" rel="noopener" style="text-decoration:none;display:block">
 <div class="card" style="padding:12px;cursor:pointer;border-left:4px solid ${p.color}">
 <div style="display:flex;align-items:flex-start;gap:10px">
