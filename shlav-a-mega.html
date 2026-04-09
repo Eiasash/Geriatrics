@@ -1653,23 +1653,16 @@ h+=`</div>`;
 
 // ===== EXAMS =====
 if(libSec==='exams'){
+const examYears=[...new Set(QZ.map(q=>q.t))].sort();
 h+=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">📝 Past Exam PDFs</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">Available exam papers</div>`;
-const exams=[
-{y:'Dec 2021',f:'questions/images/exam_dec_2021.pdf',t:'שלב א''},
-{y:'Jun 2022',f:'questions/images/exam_jun_2022.pdf',t:'שלב א''},
-{y:'Jun 2023',f:'questions/images/exam_jun_2023.pdf',t:'שלב א''},
-{y:'May 2024',f:'questions/images/exam_may_2024.pdf',t:'שלב א''},
-{y:'Sep 2024',f:'questions/images/exam_sep_2024.pdf',t:'שלב א''},
-{y:'2023-ב',f:'questions/images/exam_2023b.pdf',t:'התמחות על'},
-];
-exams.forEach(e=>{
-h+=`<a href="${e.f}" target="_blank" style="text-decoration:none;display:block">
-<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;cursor:pointer">
-<span style="background:#06b6d4;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px">${e.y}</span>
-<span style="font-size:11px;flex:1">${e.t}</span>
-<span style="font-size:14px;color:#94a3b8">↗</span></div></a>`;
+<div style="font-size:13px;font-weight:700;margin-bottom:4px">📝 Past Exams in Question Bank</div>
+<div style="font-size:10px;color:#64748b;margin-bottom:10px">${QZ.length} questions from ${examYears.length} exam sessions</div>`;
+examYears.forEach(yr=>{
+const cnt=QZ.filter(q=>q.t===yr).length;
+h+=`<div onclick="tab='quiz';filt='${yr}';buildPool();render()" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;cursor:pointer">
+<span style="background:#06b6d4;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;min-width:60px;text-align:center">${yr}</span>
+<span style="font-size:11px;flex:1">${cnt} questions</span>
+<span style="font-size:14px;color:#94a3b8">›</span></div>`;
 });
 h+=`</div>`;
 }
