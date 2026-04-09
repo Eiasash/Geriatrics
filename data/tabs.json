@@ -1,0 +1,52 @@
+[
+  {
+    "id": "quiz",
+    "ic": "📝",
+    "l": "Quiz"
+  },
+  {
+    "id": "study",
+    "ic": "📚",
+    "l": "Study"
+  },
+  {
+    "id": "syl",
+    "ic": "📋",
+    "l": "Syllabus"
+  },
+  {
+    "id": "book",
+    "ic": "📖",
+    "l": "Book"
+  },
+  {
+    "id": "flash",
+    "ic": "🃏",
+    "l": "Cards"
+  },
+  {
+    "id": "drugs",
+    "ic": "💊",
+    "l": "Drugs"
+  },
+  {
+    "id": "calc",
+    "ic": "🧮",
+    "l": "Calc"
+  },
+  {
+    "id": "osce",
+    "ic": "🎭",
+    "l": "OSCE"
+  },
+  {
+    "id": "track",
+    "ic": "📊",
+    "l": "Track"
+  },
+  {
+    "id": "search",
+    "ic": "🔍",
+    "l": "Search"
+  }
+]

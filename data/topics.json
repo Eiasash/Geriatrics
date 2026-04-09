@@ -1,0 +1,418 @@
+[
+  [
+    "biology",
+    "aging",
+    "telomer",
+    "senesc",
+    "ROS",
+    "oxidat",
+    "hayflick",
+    "caloric"
+  ],
+  [
+    "demograph",
+    "epidemiol",
+    "brookdale",
+    "תוחלת",
+    "אוכלוסי",
+    "life expectancy"
+  ],
+  [
+    "CGA",
+    "geriatric assessment",
+    "הערכה",
+    "ADL",
+    "IADL",
+    "FIM",
+    "Barthel",
+    "Katz",
+    "comprehensive"
+  ],
+  [
+    "frail",
+    "שבריר",
+    "sarcopenia",
+    "EWGSOP",
+    "SARC-F",
+    "Fried",
+    "CFS",
+    "grip strength"
+  ],
+  [
+    "fall",
+    "נפיל",
+    "TUG",
+    "orthostatic",
+    "balance",
+    "hip protector",
+    "Tai Chi"
+  ],
+  [
+    "delirium",
+    "דליריום",
+    "CAM",
+    "בלבול",
+    "confusion",
+    "4AT",
+    "HELP protocol",
+    "hypoactive"
+  ],
+  [
+    "dementia",
+    "דמנציה",
+    "alzheimer",
+    "אלצהיימר",
+    "DLB",
+    "FTD",
+    "MMSE",
+    "MoCA",
+    "CDR",
+    "lewy",
+    "amyloid"
+  ],
+  [
+    "depress",
+    "דיכאון",
+    "GDS",
+    "SSRI",
+    "antidepress",
+    "ECT",
+    "pseudodementia",
+    "bupropion",
+    "mirtazapine"
+  ],
+  [
+    "polypharm",
+    "Beers",
+    "STOPP",
+    "START",
+    "deprescrib",
+    "אנטיכולינרג",
+    "anticholinerg",
+    "ACB",
+    "prescribing cascade",
+    "PIM"
+  ],
+  [
+    "nutrit",
+    "malnutrit",
+    "MNA",
+    "תזונ",
+    "albumin",
+    "BMI",
+    "weight loss",
+    "ירידה במשקל",
+    "protein"
+  ],
+  [
+    "pressure",
+    "פצע לחץ",
+    "decubit",
+    "Braden",
+    "Norton",
+    "NPUAP",
+    "wound",
+    "dressing",
+    "ulcer stage"
+  ],
+  [
+    "incontinen",
+    "שלפוחית",
+    "bladder",
+    "urinary",
+    "detrusor",
+    "Kegel",
+    "שתן",
+    "אצירת שתן"
+  ],
+  [
+    "constipat",
+    "עצירות",
+    "lactulose",
+    "bisacodyl",
+    "senna",
+    "PEG",
+    "laxat",
+    "normalax"
+  ],
+  [
+    "sleep",
+    "שינה",
+    "insomnia",
+    "melatonin",
+    "zolpidem",
+    "OSA",
+    "CPAP",
+    "RBD"
+  ],
+  [
+    "pain",
+    "כאב",
+    "analges",
+    "opioid",
+    "WHO ladder",
+    "gabapentin",
+    "acetaminophen",
+    "morphine"
+  ],
+  [
+    "osteopor",
+    "צפיפות עצם",
+    "T-score",
+    "FRAX",
+    "bisphosph",
+    "denosumab",
+    "alendronate",
+    "zoledronic",
+    "bone density"
+  ],
+  [
+    "osteoarth",
+    "OA",
+    "מפרק",
+    "joint",
+    "arthr",
+    "TENS",
+    "arthroplasty"
+  ],
+  [
+    "cardio",
+    "cardiovascul",
+    "coronar",
+    "MI",
+    "ischemi",
+    "angina",
+    "stent",
+    "PVD",
+    "peripheral vascular"
+  ],
+  [
+    "heart fail",
+    "אי ספיקת לב",
+    "HFrEF",
+    "HFpEF",
+    "EF",
+    "ARNI",
+    "ejection",
+    "carvedilol",
+    "spironolactone"
+  ],
+  [
+    "hyperten",
+    "לחץ דם",
+    "SPRINT",
+    "HYVET",
+    "amlodipine",
+    "HTN",
+    "antihypertens",
+    "doxazosin"
+  ],
+  [
+    "stroke",
+    "שבץ",
+    "CVA",
+    "TIA",
+    "ABCD2",
+    "MCA",
+    "ACA",
+    "PCA",
+    "aphasia",
+    "hemipl",
+    "thrombolys"
+  ],
+  [
+    "COPD",
+    "pulmon",
+    "ריאה",
+    "FEV1",
+    "FVC",
+    "DLCO",
+    "pneumon",
+    "respiratory",
+    "IPF",
+    "residual volume"
+  ],
+  [
+    "diabet",
+    "סוכרת",
+    "HbA1c",
+    "A1c",
+    "metformin",
+    "insulin",
+    "SGLT2",
+    "glipizide",
+    "hypoglycem",
+    "ACCORD"
+  ],
+  [
+    "thyroid",
+    "תירואיד",
+    "TSH",
+    "levothyrox",
+    "amiodarone",
+    "hypothyroid",
+    "hyperthyroid",
+    "euthyroid"
+  ],
+  [
+    "kidney",
+    "כלי",
+    "CKD",
+    "creatinin",
+    "GFR",
+    "nephro",
+    "renal",
+    "dialys",
+    "aminoglycoside"
+  ],
+  [
+    "anem",
+    "המוגלובין",
+    "iron",
+    "ferritin",
+    "B12",
+    "MDS",
+    "erythropoietin",
+    "transferrin"
+  ],
+  [
+    "cancer",
+    "oncolog",
+    "סרטן",
+    "tumor",
+    "chemo",
+    "malign",
+    "metasta",
+    "neoplasm",
+    "tumor lysis",
+    "typhlitis"
+  ],
+  [
+    "infect",
+    "זיהום",
+    "antibiotic",
+    "pneumonia",
+    "UTI",
+    "sepsis",
+    "bacterem",
+    "immunosenesc",
+    "nitrofurantoin"
+  ],
+  [
+    "palliati",
+    "הנוטה למות",
+    "hospice",
+    "end of life",
+    "dyspnea",
+    "Mitchell",
+    "comfort",
+    "FAST 7",
+    "NG tube",
+    "PEG tube"
+  ],
+  [
+    "ethic",
+    "אתיק",
+    "autonomy",
+    "beneficence",
+    "capacity",
+    "כשירות",
+    "informed consent",
+    "futility",
+    "rationing"
+  ],
+  [
+    "abuse",
+    "התעללות",
+    "neglect",
+    "mandatory report",
+    "elder abuse"
+  ],
+  [
+    "driv",
+    "נהיגה",
+    "מרב\"ד",
+    "license",
+    "CDR",
+    "רישיון",
+    "road safety"
+  ],
+  [
+    "guardian",
+    "אפוטרופ",
+    "ייפוי כוח",
+    "legal capacity",
+    "power of attorney",
+    "תשוש נפש"
+  ],
+  [
+    "patient right",
+    "זכויות החולה",
+    "informed consent",
+    "refuse",
+    "privacy",
+    "סודיות",
+    "autonomy"
+  ],
+  [
+    "advance directive",
+    "הנחיות מקדימות",
+    "הנוטה למות",
+    "living will",
+    "DNR",
+    "withhold",
+    "withdraw"
+  ],
+  [
+    "community",
+    "קהיל",
+    "long-term",
+    "nursing home",
+    "home care",
+    "day center",
+    "CAPABLE",
+    "kupat"
+  ],
+  [
+    "rehabilit",
+    "שיקום",
+    "FIM",
+    "physiotherapy",
+    "PT",
+    "OT",
+    "mobiliz",
+    "motor",
+    "walking stick"
+  ],
+  [
+    "vision",
+    "hearing",
+    "שמיעה",
+    "ראיה",
+    "presbycusis",
+    "cataract",
+    "macular",
+    "AMD",
+    "glaucoma"
+  ],
+  [
+    "periop",
+    "surgery",
+    "ניתוח",
+    "preop",
+    "postop",
+    "anesthes",
+    "DVT prophylaxis",
+    "hip fracture"
+  ],
+  [
+    "emergency",
+    "מיון",
+    "ED ",
+    "triage",
+    "geriatric emergency",
+    "EQUiPPED",
+    "typhlitis",
+    "atypical present"
+  ]
+]
