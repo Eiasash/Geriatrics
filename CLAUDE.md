@@ -5,8 +5,9 @@
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (669 KB, self-contained HTML/CSS/JS)
-- **Data**: JSON files loaded lazily at runtime
+- **Main file**: `shlav-a-mega.html` (95 KB, ~1,427 lines, self-contained HTML/CSS/JS)
+- **App version**: v9.7
+- **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
 ---
@@ -16,11 +17,11 @@
 ### Single-File PWA
 
 All application logic lives in `shlav-a-mega.html` — no bundler, no framework, no build step. The file contains:
-- All CSS (1000+ lines, responsive, RTL-aware, dark/light/study modes)
+- All CSS (1,000+ lines, responsive, RTL-aware, dark/light/study modes)
 - All JavaScript (ES6+, vanilla)
 - HTML structure
 
-Data is loaded at runtime from separate JSON files. The service worker (`sw.js`) caches all assets for offline use.
+Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`) caches all assets for offline use.
 
 ### Storage Layers
 
@@ -38,16 +39,26 @@ Data is loaded at runtime from separate JSON files. The service worker (`sw.js`)
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS)
-├── index.html               # GitHub Pages redirect
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.7)
+├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
 │
-├── questions.json           # 1,241 MCQs — primary data source
-├── notes.json               # 40 study topic notes
-├── flashcards.json          # 159 high-yield flashcards
-├── drugs.json               # 53 Beers/ACB drugs database
-├── explanations_cache.json  # Pre-generated AI explanations (700 KB)
+├── data/                    # Lazy-loaded JSON data (v9.7+ split architecture)
+│   ├── questions.json       # 1,031 MCQs (primary runtime source)
+│   ├── notes.json           # 40 study topic notes
+│   ├── drugs.json           # 53 Beers/ACB drugs database
+│   ├── flashcards.json      # 159 high-yield flashcards
+│   ├── osce.json            # 11 OSCE station scenarios
+│   ├── tabs.json            # 10 tab definitions for app navigation
+│   └── topics.json          # 40 topic keyword mappings for auto-tagging
+│
+├── questions.json           # 1,432 MCQs (root copy — includes all questions + explanations)
+├── notes.json               # 40 study notes (root copy)
+├── drugs.json               # 53 drugs (root copy)
+├── flashcards.json          # 159 flashcards (root copy)
+├── explanations_cache.json  # Pre-generated AI explanations (2.3 MB)
+├── hazzard_chapters.json    # Hazzard's 8e textbook content (structured JSON)
 │
 ├── scripts/
 │   ├── generate_explanations.cjs   # Bulk explanation generator (Claude API)
@@ -61,11 +72,12 @@ Data is loaded at runtime from separate JSON files. The service worker (`sw.js`)
 │
 ├── .claude/
 │   ├── launch.json          # Dev server: python -m http.server 3737
-│   ├── agents/              # Agent workflow prompts
-│   └── commands/            # Slash command definitions (see Skills section)
+│   ├── agents/              # Agent workflow prompts (note-updater, question-explainer)
+│   ├── commands/            # Slash command definitions (see Skills section)
+│   └── skills/              # Skill files (shlav-a-mega.md)
 │
 ├── .github/
-│   └── workflows/ci.yml     # Validation CI (JSON schema, question count, duplicates)
+│   └── workflows/ci.yml     # Validation CI (21 checks — JSON schema, duplicates, etc.)
 │
 ├── supabase-setup.sql        # Supabase RLS schema
 ├── .mcp.json                 # MCP server config (Supabase)
@@ -74,6 +86,10 @@ Data is loaded at runtime from separate JSON files. The service worker (`sw.js`)
 ├── article_*.pdf             # 6 mandatory clinical reference articles
 └── hazzard_part*.pdf         # Hazzard's Geriatric Medicine 8e
 ```
+
+### Data Architecture (v9.7)
+
+In v9.7, data was split from the monolithic HTML into lazy-loaded JSON chunks in the `data/` directory. The root-level JSON files are the canonical complete copies (with all questions + explanations), while `data/` contains the runtime-loaded versions. The service worker caches from `data/`.
 
 ---
 
@@ -121,6 +137,16 @@ Data is loaded at runtime from separate JSON files. The service worker (`sw.js`)
 }
 ```
 
+### osce.json
+```json
+{
+  "title": "Station title",
+  "scenario": "Clinical scenario text",
+  "tasks": ["Task 1", "Task 2", ...],
+  "tips": ["Tip 1", "Tip 2", ...]
+}
+```
+
 ---
 
 ## Topic Index (ti field — 0 to 39)
@@ -151,12 +177,14 @@ No build step needed. Edit and refresh.
 
 ### Making Changes
 1. Edit `shlav-a-mega.html` for app logic, UI, or features
-2. Edit JSON files for content changes
+2. Edit JSON files in `data/` for content changes (update root copies too if needed)
 3. Run local server to test
 4. Commit and push to `main` — CI validates, Pages deploys
 
 ### Service Worker Versioning
-When making changes to `shlav-a-mega.html`, update the version constant in `sw.js` so existing users get cache-busted. Check current version before editing.
+- `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
+- Currently both at version `9` (for app v9.7)
+- Update both when making changes to ensure users get cache-busted
 
 ---
 
@@ -168,11 +196,16 @@ Runs on push to `main` and all PRs. Uses Python only (no Node.js in CI).
 |-------|-----------|
 | JSON parse validity | questions, notes, drugs, flashcards |
 | Question count | Must be > 900 |
-| Question schema | `q` (string), `o` (array ≥2), `c` (valid index), `ti` (int ≥0) |
-| Notes schema | `topic` and `notes` fields present |
-| Drugs schema | `name` field present |
-| Duplicate detection | First 80 chars of question text |
+| Question schema | `q` (string), `o` (array >= 2), `c` (valid index), `ti` (int >= 0) |
+| Notes schema | `topic` and `notes` fields present; **NO GRS references** |
+| Drugs schema | `name`, `heb`, `acb`, `beers`, `cat`, `risk` fields present |
+| Flashcards schema | `f` and `b` fields present |
+| Duplicate detection | First 80 chars of question text (conflicting answers flagged) |
 | HTML syntax | Python HTMLParser |
+| JS brace balance | Matching braces in shlav-a-mega.html |
+| Service worker version sync | APP_VERSION matches sw.js CACHE version |
+| innerHTML sanitization | Audit for unsanitized innerHTML usage |
+| Topic coverage | >= 5 questions per topic (all 40 topics) |
 
 **CI never runs Node.js.** Scripts in `scripts/` are run locally only.
 
@@ -180,7 +213,7 @@ Runs on push to `main` and all PRs. Uses Python only (no Node.js in CI).
 
 ## Skills / Slash Commands
 
-These are Claude Code slash commands defined in `.claude/commands/`:
+### Claude Code Slash Commands (`.claude/commands/`)
 
 | Command | Description |
 |---------|-------------|
@@ -189,6 +222,13 @@ These are Claude Code slash commands defined in `.claude/commands/`:
 | `/add-questions` | Add new questions to questions.json with validation and topic tagging |
 | `/update-notes` | Update notes.json from Hazzard's/Harrison's/articles |
 | `/explain-batch` | Pre-generate AI explanations via Claude API |
+
+### Claude Code Agents (`.claude/agents/`)
+
+| Agent | Purpose |
+|-------|---------|
+| `note-updater` | Workflow for updating study notes from textbooks |
+| `question-explainer` | Workflow for generating AI explanations for questions |
 
 ---
 
@@ -222,6 +262,7 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 - Table: `progress_state` with RLS (row-level security per `user_id`)
 - MCP configured in `.mcp.json` for Claude Code integration
 - The `x-user-id` header must be sent on all Supabase requests for RLS to function
+- Background sync via service worker (tag: `supabase-backup`)
 
 ---
 
@@ -234,15 +275,25 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 - Question `ti` must be an integer 0–39 from the topic list above
 - `c` (correct answer index) must be 0-based and valid (< length of `o` array)
 
+### Code Style
+- Vanilla JavaScript ES6+ — no transpilation, no framework
+- Functional style with module-like structure
+- Global state object `S` (localStorage-backed via `samega` key)
+- Global question array `QZ` (loaded at runtime from JSON)
+- CamelCase for functions, UPPERCASE for constants
+- CSS custom properties: `--sky`, `--em`, `--sl8`, `--red`, `--amb`
+
 ### Localization
 - App supports Hebrew (RTL) and English
-- Hebrew text uses `dir="rtl"` and `unicode-bidi` CSS
+- Hebrew text uses `dir="rtl"` and `unicode-bidi: plaintext` CSS
+- Fonts: Inter (English), Heebo (Hebrew) via Google Fonts
 - Do not break RTL layout when adding new UI elements
 
 ### Accessibility / Mobile
-- Touch targets must be ≥44px
+- Touch targets must be >= 44px
 - Dark mode, study mode, and light mode must all be tested for new UI
-- Haptic feedback (navigator.vibrate) is used on mobile — do not remove
+- Haptic feedback (`navigator.vibrate`) is used on mobile — do not remove
+- Mobile-first responsive design (max-width: 640px container)
 
 ### Keyboard Shortcuts
 - `1–4`: select answer options
@@ -260,7 +311,8 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 3. Validate: exactly 4 options, `c` index in 0–3, valid `t` year string
 4. Fuzzy-check for near-duplicates (first 80 chars)
 5. Append to the JSON array (do not sort or reorder existing entries)
-6. Update question count in `README.md`
+6. Update both `data/questions.json` and root `questions.json` if needed
+7. Update question count in `README.md`
 
 ---
 
@@ -270,7 +322,8 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 - CSS is at the top, JS is at the bottom before `</body>`
 - TOPICS array in JS must stay in sync with the 40-topic list (indices 0–39)
 - All localStorage operations must use the established keys (`samega`, `samega_ex`, `samega_apikey`)
-- explainWithAI() must handle errors gracefully and cache results in localStorage
+- `explainWithAI()` must handle errors gracefully and cache results in localStorage
+- Data loads lazily from `data/*.json` — do not inline large data back into HTML
 
 ---
 
@@ -285,6 +338,11 @@ git push origin main
 GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 
 **No manual deployment steps needed.**
+
+### Commit Conventions
+- Version prefix: `v9.7`, `v9.6.1`, etc.
+- Imperative tense: `fix:`, `feat:`, `Add`, `Update`
+- Clear scope describing the feature or issue
 
 ---
 
