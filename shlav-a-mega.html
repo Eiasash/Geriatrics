@@ -933,11 +933,14 @@ for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i
 qi=0;return;}
 if(filt==='due'){pool=getDueQuestions();qi=0;return;}
 if(filt==='hard'){
-pool=QZ.map((_,i)=>i).filter(i=>{const s=S.sr[i];return s&&s.ef<2.3;});
-pool.sort((a,b)=>{
-const sa=S.sr[a],sb=S.sr[b];
-return (sa?.ef||2.5)-(sb?.ef||2.5);
-});
+// Any question you've interacted with that isn't at default EF (2.5 = never wrong)
+pool=QZ.map((_,i)=>i).filter(i=>{const s=S.sr[i];return s&&s.ef<2.5;});
+pool.sort((a,b)=>(S.sr[a]?.ef||2.5)-(S.sr[b]?.ef||2.5));
+if(!pool.length){
+// Fallback: any question with SR data at all
+pool=QZ.map((_,i)=>i).filter(i=>S.sr[i]);
+pool.sort((a,b)=>(S.sr[a]?.ef||2.5)-(S.sr[b]?.ef||2.5));
+}
 qi=0;sel=null;ans=false;return;}
 if(filt==='slow'){
 pool=QZ.map((_,i)=>i).filter(i=>{const s=S.sr[i];return s&&s.at&&s.at>60;});
