@@ -1560,13 +1560,6 @@ h+=`</div>`;
 return h;
 }
 // Sudden Death check/next
-function sdCheck(){
-if(sel===null)return;ans=true;
-const q=QZ[sdPool[sdQi]];
-if(sel===q.c){sdStreak++;srScore(sdPool[sdQi],true);}
-else{srScore(sdPool[sdQi],false);setTimeout(()=>endSuddenDeath(),600);}
-save();render();
-}
 function sdNext(){sdQi++;if(sdQi>=sdPool.length)sdQi=0;sel=null;ans=false;autopsyDistractor=-1;render();}
 
 // ===== STUDY NOTES =====
@@ -2760,10 +2753,9 @@ if(btn){btn.textContent='✅ הועתק';setTimeout(()=>btn.textContent='📋 ה
 }
 
 // ===== OSCE =====
-let OSCE=[];
 
-let oi=-1,otime=0,orun=false,oint=null,ocks={};
-function startO(i){oi=i;otime=OSCE[i].time;orun=false;ocks={};if(oint)clearInterval(oint);render();}
+
+let oi=-1,oint=null,ocks={};
 function exitO(){if(oint)clearInterval(oint);oi=-1;orun=false;render();}
 function togOT(){
 if(orun){clearInterval(oint);orun=false;render();return;}
@@ -2772,20 +2764,6 @@ otime--;const el=document.getElementById('oc');if(el){el.textContent=fmtT(otime)
 },1000);render();
 }
 function togOck(j){ocks[j]=!ocks[j];render();}
-function scoreO(){const d=Object.values(ocks).filter(Boolean).length,t=OSCE[oi].ck.length,p=Math.round(d/t*100);
-const el=document.getElementById("osce-result");if(el)el.remove();
-const div=document.createElement('div');div.id='osce-result';
-div.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);z-index:100;text-align:center;min-width:260px';
-if(document.body.classList.contains('dark'))div.style.background='#1e293b';
-div.innerHTML=`<div style="font-size:48px;margin-bottom:8px">${p>=70?'✅':'❌'}</div>
-<div style="font-size:28px;font-weight:700;color:${p>=70?'#059669':'#dc2626'}">${p}%</div>
-<div style="font-size:13px;color:#64748b;margin:6px 0">${d}/${t} items checked</div>
-<div style="font-size:14px;font-weight:600;margin:8px 0;color:${p>=70?'#059669':'#dc2626'}">${p>=80?'Excellent!':p>=70?'Pass':'Needs more work'}</div>
-<div style="display:flex;gap:8px;justify-content:center;margin-top:14px">
-<button class="btn btn-p" onclick="this.closest(\"#osce-result\").remove()">Close</button>
-<button class="btn btn-o" onclick="this.closest(\"#osce-result\").remove();ocks={};render()">Retry</button>
-</div>`;
-document.body.appendChild(div);}
 
 // renderOsce removed v9.10
 // ===== TRACKER =====
