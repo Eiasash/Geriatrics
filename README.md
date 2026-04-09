@@ -2,13 +2,13 @@
 
 **Israeli Shlav A (שלב א) Geriatric Medicine Board Exam Preparation Tool**
 
-Standalone, offline-capable PWA with 1,241 real IMA exam questions, textbook-sourced study notes, clinical calculators, and spaced repetition — all in one HTML file.
+Standalone, offline-capable PWA with 1,419 real IMA exam questions, textbook-sourced study notes, clinical calculators, and spaced repetition — all in one HTML file.
 
 ## Features
 
 | Feature | Details |
 |---|---|
-| **Quiz Engine** | 1,241 verified IMA questions (2021–2025) with answer keys |
+| **Quiz Engine** | 1,419 verified IMA questions (2021–2025) with answer keys |
 | **Spaced Repetition** | SM-2 algorithm (ID-based) — wrong answers resurface automatically |
 | **Exam Mode** | Configurable N/time, topic breakdown, + wrong-answer re-drill after exam |
 | **Post-Exam Re-Drill** | One-click drill on wrong answers only after any mock exam |
@@ -17,6 +17,8 @@ Standalone, offline-capable PWA with 1,241 real IMA exam questions, textbook-sou
 | **Topic Auto-Tagging** | All questions mapped to 40 syllabus topics |
 | **Per-Topic Stats** | Accuracy bars by topic — find weak areas |
 | **Study Notes** | 40 topics from Hazzard's 8e, Harrison's 22e, Washington Manual |
+| **📖 Library** | Consolidated textbook browser — Hazzard's in-app chapter reader (Ch 2-6, 34, 62 with formatted sections), Harrison's PDFs, Laws, Articles, Exams |
+| **Hazzard Reader** | All 7 required chapters extracted with section headers, proper paragraphs, reading time estimates — no raw PDF needed |
 | **Flashcards** | 159 high-yield cards with שוב/קשה/קל SR rating |
 | **AI Explain** | 15 pre-baked expert explanations + on-demand AI with API key |
 | **Drug Lookup** | 53 drugs — Beers + ACB score + risk descriptions |
@@ -119,7 +121,7 @@ Standalone, offline-capable PWA with 1,241 real IMA exam questions, textbook-sou
 
 ## Data Sources
 
-- **Questions:** 1,241 MCQs from official IMA Shlav A exams (2021–2025) with verified answer keys
+- **Questions:** 1,432 MCQs from official IMA Shlav A exams (2021–2025) with verified answer keys
 - **Study Notes:** Hazzard's 8e, GRS 8e, Washington Manual, SZMC DAG, Harrison's 22e chapters
 - **Drugs:** Beers Criteria 2023 + ACB Scale (53 drugs)
 - **Regulations:** Patient Rights Law, Dying Patient Act, Continuing POA, Takanah 12b
@@ -131,7 +133,7 @@ shlav-a-mega.html  — Complete app (v9.0)
 index.html         — Redirect for GitHub Pages
 manifest.json      — PWA manifest
 sw.js              — Service worker (v9)
-questions.json     — 1,241 exam questions
+questions.json     — 1,432 exam questions
 notes.json         — 40 study topics
 flashcards.json    — 159 high-yield flashcards
 drugs.json         — 53 Beers/ACB drugs
