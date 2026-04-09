@@ -1461,14 +1461,109 @@ function filterNotes(v){render();}
 
 // ===== SYLLABUS (P005-2026 Official IMA) =====
 let sylSec='haz';
+const SYL_HAZ_EXCLUDED=new Set([2,3,4,5,6,34,62]);
 const SYL_HAZ=[
-{ch:2,t:'Demography and Epidemiology of Aging'},
-{ch:3,t:'Biology of Aging'},
-{ch:4,t:'Immunology of Aging'},
-{ch:5,t:'Psychosocial Aspects of Aging'},
-{ch:6,t:'Sex and Gender Differences'},
-{ch:34,t:'Sexuality & Sexual Function in Women'},
-{ch:62,t:'Depression & Other Mood Disorders'},
+{ch:1,t:'The Scope of Geriatric Medicine'},
+{ch:7,t:'Making Difficult Medical Decisions'},
+{ch:8,t:'Comprehensive Geriatric Assessment'},
+{ch:9,t:'Mental Status and Neurological Examination'},
+{ch:10,t:'Decisional Capacity and Informed Consent'},
+{ch:11,t:'Health Promotion and Disease Prevention'},
+{ch:12,t:'Age-Friendly Care in the Hospital'},
+{ch:13,t:'Geriatrics Around the World'},
+{ch:14,t:'Hospital Care'},
+{ch:15,t:'Emergency Department Care'},
+{ch:16,t:'Intensive Care Unit Care'},
+{ch:17,t:'Perioperative Care'},
+{ch:18,t:'Transitions of Care'},
+{ch:19,t:'Long-Term Care'},
+{ch:20,t:'Home Care'},
+{ch:21,t:'Palliative and End-of-Life Care in the Community'},
+{ch:22,t:'Prescribing for Older Adults'},
+{ch:23,t:'Substance Use Disorders'},
+{ch:24,t:'Preoperative and Anesthetic Management'},
+{ch:25,t:'Surgical Care'},
+{ch:26,t:'Nutrition and Aging'},
+{ch:27,t:'Obesity'},
+{ch:28,t:'Physical Activity and Exercise'},
+{ch:29,t:'Complementary and Alternative Medicine'},
+{ch:30,t:'Technology for Aging'},
+{ch:31,t:'Swallowing Disorders'},
+{ch:32,t:'Oral Health'},
+{ch:33,t:'Visual Impairment'},
+{ch:35,t:'Hearing Impairment'},
+{ch:36,t:'Sexuality in Older Men'},
+{ch:37,t:'Benign Prostatic Hyperplasia'},
+{ch:38,t:'Frailty'},
+{ch:39,t:'Falls and Gait Disorders'},
+{ch:40,t:'Sleep Disorders'},
+{ch:41,t:'Syncope'},
+{ch:42,t:'Pressure Injuries'},
+{ch:43,t:'Urinary Incontinence'},
+{ch:44,t:'Fecal Incontinence'},
+{ch:45,t:'Elder Mistreatment'},
+{ch:46,t:'Delirium'},
+{ch:47,t:'The Older Driver'},
+{ch:48,t:'Caregiver Issues'},
+{ch:49,t:'Sarcopenia'},
+{ch:50,t:'Gait and Balance Disorders'},
+{ch:51,t:'Osteoporosis'},
+{ch:52,t:'Osteoarthritis'},
+{ch:53,t:'Hip and Knee Replacement'},
+{ch:54,t:'Hip Fractures'},
+{ch:55,t:'Rehabilitation'},
+{ch:56,t:'The Aging Brain'},
+{ch:57,t:'Cognitive Changes in Normal and Pathologic Aging'},
+{ch:58,t:'Delirium (Mentation)'},
+{ch:59,t:'Dementia Including Alzheimer Disease'},
+{ch:60,t:'Behavioral Symptoms of Dementia and Psychoactive Drug Therapy'},
+{ch:61,t:'Parkinson Disease and Related Disorders'},
+{ch:63,t:'Other Neurodegenerative Disorders'},
+{ch:64,t:'Traumatic Brain Injury and Chronic Traumatic Encephalopathy'},
+{ch:65,t:'Major Depression'},
+{ch:66,t:'General Topics in Geriatric Psychiatry'},
+{ch:67,t:'Palliative Care and Special Management Issues'},
+{ch:68,t:'Pain Management'},
+{ch:69,t:'Management of Common Nonpain Symptoms'},
+{ch:70,t:'Palliative Care Across Care Settings'},
+{ch:71,t:'Effective Communication for Patients with Serious Illness'},
+{ch:72,t:'Ethical Issues'},
+{ch:73,t:'Heart Disease'},
+{ch:74,t:'Valvular Heart Disease'},
+{ch:75,t:'Heart Failure'},
+{ch:76,t:'Arrhythmias and Conduction Disorders'},
+{ch:77,t:'Peripheral Arterial Disease and Venous Thromboembolism'},
+{ch:78,t:'Hypertension'},
+{ch:79,t:'Pulmonary Disease'},
+{ch:80,t:'Kidney Disease'},
+{ch:81,t:'Acid-Base and Electrolyte Disorders'},
+{ch:82,t:'Upper Gastrointestinal Disorders'},
+{ch:83,t:'Lower Gastrointestinal Disorders'},
+{ch:84,t:'Hepatic and Biliary Disorders'},
+{ch:85,t:'Constipation and Fecal Incontinence (GI)'},
+{ch:86,t:'Anemia'},
+{ch:87,t:'Coagulation Disorders and Anticoagulation'},
+{ch:88,t:'Cancer: Principles of Management'},
+{ch:89,t:'Breast Cancer'},
+{ch:90,t:'Prostate Cancer'},
+{ch:91,t:'Lung Cancer'},
+{ch:92,t:'Gastrointestinal Cancers'},
+{ch:93,t:'Skin Cancer'},
+{ch:94,t:'Leukemia and Lymphoma'},
+{ch:95,t:'Multiple Myeloma and Plasma Cell Disorders'},
+{ch:96,t:'Hematologic Disorders'},
+{ch:97,t:'Thyroid Disorders'},
+{ch:98,t:'Diabetes Mellitus'},
+{ch:99,t:'Myopathies and Muscle Disease'},
+{ch:100,t:'Rheumatoid Arthritis and Related Disorders'},
+{ch:101,t:'Back Pain and Fibromyalgia'},
+{ch:102,t:'Gout and Crystal Arthropathies'},
+{ch:103,t:'Infections: General Principles'},
+{ch:104,t:'Pneumonia'},
+{ch:105,t:'Urinary Tract Infections'},
+{ch:106,t:'Skin and Soft Tissue Infections'},
+{ch:107,t:'Herpes Zoster'},
+{ch:108,t:'Influenza, COVID-19, and Other Respiratory Viruses'},
 ];
 const SYL_HAR_ALL=[
 {ch:26,t:'Neurologic Causes of Weakness and Paralysis'},
@@ -1573,9 +1668,12 @@ h+=`</div>`;
 if(sylSec==='haz'){
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📕 Hazzard's Geriatric Medicine & Gerontology 8e</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">Only 7 chapters required — NOT the entire book</div>`;
+<div style="font-size:10px;color:#dc2626;font-weight:600;margin-bottom:10px;padding:6px 10px;background:#fef2f2;border-radius:6px">⚠️ כל הספר נדרש — למעט פרקים 2-6, 34, 62 בלבד (101 פרקים מתוך 108)</div>`;
+// Show excluded chapters note first
+h+=`<div style="padding:8px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:10px;margin-bottom:10px;color:#dc2626;font-weight:600">
+❌ מוחרגים (לא נדרשים): Ch 2, 3, 4, 5, 6, 34, 62</div>`;
 SYL_HAZ.forEach(c=>{
-h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
+h+=`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9">
 <span style="background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:36px;text-align:center">Ch ${c.ch}</span>
 <span style="font-size:11px">${c.t}</span></div>`;
 });
@@ -1966,7 +2064,7 @@ h+=`<div class="card" style="padding:20px;text-align:center"><div style="font-si
 } else {
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📕 Hazzard's 8th — Required Chapters</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">Read in-app with formatted sections · 7 chapters required for שלב א'</div>`;
+<div style="font-size:10px;color:#64748b;margin-bottom:10px">Read in-app with formatted sections · כל הספר — למעט Ch 2-6,34,62 — required for שלב א'</div>`;
 HAZ_CH.forEach(c=>{
 h+=`<div onclick="openHazChapter(${c.ch})" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;cursor:pointer">
 <span style="background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;min-width:40px;text-align:center">Ch ${c.ch}</span>
