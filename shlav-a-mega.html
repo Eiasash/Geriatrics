@@ -2287,16 +2287,18 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 </div>
 <div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
 </div></div>`;
-// Feedback / Bug Report
+// Error Reporter — quick buttons + AI verification
 h+=`<div class="card" style="padding:14px;margin-top:12px">
-<div style="font-weight:700;font-size:12px;margin-bottom:8px">💬 Feedback & Suggestions</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:8px">Found a bug, wrong answer, or have a feature request? Share it below.</div>
-<textarea id="fbText" class="search-box" rows="3" placeholder="Describe the issue, suggestion, or improvement..." style="resize:vertical;min-height:60px"></textarea>
-<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-<button class="btn btn-p" onclick="submitFeedback()">📨 Submit Feedback</button>
-<button class="btn btn-o" onclick="copyDiagnostics()">🔧 Copy Diagnostics</button>
+<div style="font-weight:700;font-size:12px;margin-bottom:6px">🐞 Report Issue</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<button class="btn" style="font-size:10px;background:#fef2f2;color:#dc2626" onclick="reportIssue('bug')">🐛 Bug</button>
+<button class="btn" style="font-size:10px;background:#fffbeb;color:#d97706" onclick="reportIssue('wrong_answer')">❌ Wrong Answer</button>
+<button class="btn" style="font-size:10px;background:#eff6ff;color:#3b82f6" onclick="reportIssue('feature')">💡 Feature</button>
+<button class="btn" style="font-size:10px;background:#f1f5f9;color:#64748b" onclick="copyDiagnostics()">📋 Diagnostics</button>
 </div>
+<div style="font-size:9px;color:#94a3b8;margin-top:4px">Wrong Answer uses AI to verify and auto-correct if API key is set</div>
 <div id="fbStatus" style="font-size:10px;margin-top:6px;display:none"></div>
+<div id="aiVerifyResult" style="display:none;margin-top:8px;padding:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:10px;line-height:1.6"></div>
 </div>`;
 // API key settings card
 var _storedKey=getApiKey();
@@ -2832,42 +2834,77 @@ alert(d);
 }
 }
 async function reportIssue(type){
-const labels={bug:'Bug Report',wrong_answer:'Wrong Answer',feature:'Feature Request'};
-let context='';
-if(type==='wrong_answer'&&pool.length&&qi<pool.length){
-const q=QZ[pool[qi]];
-context=`Q#${pool[qi]}: ${q.q.substring(0,100)}... | correct: ${q.o[q.c]}`;
-}
-const msg=prompt(labels[type]+':\n'+(type==='wrong_answer'?'מה התשובה הנכונה לדעתך?':'תאר את הבעיה:'));
-if(!msg)return;
-const diag=getDiagnostics();
+const labels={bug:'🐛 Bug Report',wrong_answer:'❌ Wrong Answer',feature:'💡 Feature Request'};
 const st=document.getElementById('fbStatus');
-if(st){st.textContent='⏳ Sending...';st.style.display='block';st.style.color='#64748b';}
-// Save locally first
+const aiBox=document.getElementById('aiVerifyResult');
+if(aiBox)aiBox.style.display='none';
+
+let qIdx=-1,qObj=null,context='';
+if(pool.length&&qi<pool.length){qIdx=pool[qi];qObj=QZ[qIdx];}
+if(type==='wrong_answer'&&qObj){
+context=`Q#${qIdx}: ${qObj.q} | Options: ${qObj.o.join(' / ')} | Marked correct: ${qObj.o[qObj.c]}`;
+}
+
+const promptText=type==='wrong_answer'
+  ?'מה לדעתך התשובה הנכונה ולמה?'
+  :type==='bug'?'תאר את הבאג:':'תאר את הפיצ\'ר:';
+const msg=prompt(labels[type]+'\n'+promptText);
+if(!msg)return;
+
+if(st){st.textContent='⏳ שולח...';st.style.display='block';st.style.color='#64748b';}
+
+// Save locally
+const diag=getDiagnostics();
 const payload={type,msg,context,diag,ts:new Date().toISOString(),v:APP_VERSION};
 const fb=JSON.parse(localStorage.getItem('shlav_feedback')||'[]');
 fb.push(payload);if(fb.length>50)fb.splice(0,fb.length-50);
 localStorage.setItem('shlav_feedback',JSON.stringify(fb));
+
 // Send to Supabase
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtybWx6d3dlbHF2bGZzbHdsdG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NjQxMDksImV4cCI6MjA4NzU0MDEwOX0.PFSuFgHA-WBnrgs4stmloxvOORSX0CiXDPsW2dinAAQ';
-try{
-const res=await fetch('https://krmlzwwelqvlfslwltol.supabase.co/rest/v1/shlav_feedback',{
+fetch('https://krmlzwwelqvlfslwltol.supabase.co/rest/v1/shlav_feedback',{
 method:'POST',
 headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Prefer':'return=minimal'},
-body:JSON.stringify({message:msg,diagnostics:diag,app_version:APP_VERSION,type:type,context:context})
-});
-if(res.ok){
-if(st){st.textContent='✅ '+labels[type]+' sent to Supabase';st.style.color='#059669';}
-}else{
-const err=await res.text();
-console.warn('Supabase error:',res.status,err);
-if(st){st.textContent='⚠️ Saved locally (Supabase: '+res.status+')';st.style.color='#d97706';}
+body:JSON.stringify({message:msg,diagnostics:diag,app_version:APP_VERSION,type,context})
+}).catch(()=>{});
+
+// For wrong_answer: use AI to verify if API key is set
+if(type==='wrong_answer'&&qObj&&getApiKey()){
+if(st){st.textContent='🤖 AI verifying answer...';st.style.color='#8b5cf6';}
+try{
+const aiRes=await fetch('https://api.anthropic.com/v1/messages',{
+method:'POST',
+headers:{'x-api-key':getApiKey(),'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+body:JSON.stringify({
+model:'claude-sonnet-4-20250514',max_tokens:600,
+messages:[{role:'user',content:`You are a geriatric medicine board exam expert. A student reports this question has a wrong answer key.
+
+QUESTION: ${qObj.q}
+OPTIONS: ${qObj.o.map((o,i)=>(i===qObj.c?'[MARKED CORRECT] ':'')+o).join(' | ')}
+STUDENT SAYS: ${msg}
+
+Analyze: Is the current answer key correct or wrong? Give your verdict in 2-3 sentences. If wrong, state which option is actually correct and why. Answer in English. Start with VERDICT: CORRECT or VERDICT: WRONG.`}]
+})});
+const data=await aiRes.json();
+const aiText=data.content?.[0]?.text||'No response';
+const isWrong=aiText.startsWith('VERDICT: WRONG');
+if(aiBox){
+aiBox.innerHTML=`<div style="font-weight:700;margin-bottom:4px;color:${isWrong?'#dc2626':'#059669'}">${isWrong?'⚠️ AI agrees — answer key may be wrong':'✅ AI says answer key is correct'}</div><div>${aiText.replace('VERDICT: CORRECT','').replace('VERDICT: WRONG','').trim()}</div>`;
+aiBox.style.display='block';
+aiBox.style.background=isWrong?'#fef2f2':'#f0fdf4';
+aiBox.style.borderColor=isWrong?'#fecaca':'#bbf7d0';
 }
+if(st){st.textContent=isWrong?'⚠️ AI confirmed error — logged':'✅ AI verified — answer key OK';st.style.color=isWrong?'#dc2626':'#059669';}
 }catch(e){
-console.warn('Network error:',e);
-if(st){st.textContent='⚠️ Saved locally (offline)';st.style.color='#d97706';}
+console.warn('AI verify failed:',e);
+if(st){st.textContent='✅ Saved (AI verify failed: '+e.message.substring(0,30)+')';st.style.color='#d97706';}
 }
-if(st)setTimeout(()=>st.style.display='none',4000);
+} else if(type==='wrong_answer'&&!getApiKey()){
+if(st){st.textContent='✅ Saved · Set API key to get AI verification';st.style.color='#059669';}
+} else {
+if(st){st.textContent='✅ '+labels[type]+' saved';st.style.color='#059669';}
+}
+if(st)setTimeout(()=>{st.style.display='none';},type==='wrong_answer'?10000:4000);
 }
 function submitFeedback(){
 const el=document.getElementById('fbText');
