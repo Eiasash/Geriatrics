@@ -10,14 +10,9 @@
     "l": "Study"
   },
   {
-    "id": "syl",
-    "ic": "📋",
-    "l": "Syllabus"
-  },
-  {
-    "id": "book",
+    "id": "lib",
     "ic": "📖",
-    "l": "Book"
+    "l": "Library"
   },
   {
     "id": "flash",
@@ -48,5 +43,10 @@
     "id": "search",
     "ic": "🔍",
     "l": "Search"
+  },
+  {
+    "id": "chat",
+    "ic": "💬",
+    "l": "Chat"
   }
 ]
