@@ -896,13 +896,18 @@ const now=Date.now();
 return Object.entries(S.sr).filter(([k,v])=>v.next<=now).map(([k])=>parseInt(k)).slice(0,20);
 }
 
+const HARRISON_PDF_MAP={"14":"harrison/Ch14_Pain_Pathophysiology_and_Management.pdf","15":"harrison/Ch15_Chest_Discomfort.pdf","16":"harrison/Ch16_Abdominal_Pain.pdf","17":"harrison/Ch17_Headache.pdf","18":"harrison/Ch18_Low_back_pain.pdf","20":"harrison/Ch20_Fever.pdf","22":"harrison/Ch22_Fever_of_Unknown_Origin.pdf","26":"harrison/Ch026_Neurologic_Causes_of_Weakness_and_Paralysis.pdf","30":"harrison/Ch30_Coma.pdf","39":"harrison/Ch39_Dyspnea.pdf","40":"harrison/Ch40_Cough.pdf","41":"harrison/Ch41_Hemoptysis.pdf","42":"harrison/Ch42_Hypoxia_and_Cyanosis.pdf","43":"harrison/Ch43_Edema.pdf","48":"harrison/Ch48_Nausea_Vomiting_and_Indigestion.pdf","49":"harrison/Ch49_Diarrhea_and_Constipation.pdf","50":"harrison/Ch50_Unintentional_Weight_Loss.pdf","51":"harrison/Ch51_Gastrointestinal_Bleeding.pdf","52":"harrison/Ch52_Jaundice.pdf","53":"harrison/Ch53_Abdominal_Swelling_and_Ascites.pdf","55":"harrison/Ch55_Azotemia_and_Urinary_Abnormalities.pdf","56":"harrison/Ch56_Fluid_and_Electrolyte_Disturbances.pdf","57":"harrison/Ch57_Hypercalcemia_and_Hypocalcemia.pdf","58":"harrison/Ch58_Acidosis_and_Alkalosis.pdf","66":"harrison/Ch66_Anemia_and_Polycythemia.pdf","67":"harrison/Ch67_Disorders_of_Granulocytes_and_Monocytes.pdf","69":"harrison/Ch69_Bleeding_and_Thrombosis.pdf","70":"harrison/Ch70_Enlargement_of_Lymph_Nodes_and_Spleen.pdf","79":"harrison/Ch79_Infections_in_Patients_with_Cancer.pdf","80":"harrison/Ch80_Oncologic_Emergencies.pdf","102":"harrison/Ch102_Iron_Deficiency_and_Other_Hypoproliferat.pdf","120":"harrison/Ch120_Disorders_of_Platelets_and_Vessel_Wall.pdf","121":"harrison/Ch121_Coagulation_Disorders.pdf","127":"harrison/Ch127_Approach_to_the_Acutely_Ill_Infected_Febrile_.pdf","133":"harrison/Ch133_Infective_Endocarditis.pdf","136":"harrison/Ch136_Osteomyelitis.pdf","142":"harrison/Ch142_Encephalitis.pdf","143":"harrison/Ch143_Acute_Meningitis.pdf","147":"harrison/Ch147_Infections_Acquired_in_Health_Care_Facilities.pdf","243":"harrison/Ch243_Approach_to_the_Patient_with_Possible_Cardiov.pdf","247":"harrison/Ch247_Electrocardiography.pdf","285":"harrison/Ch285_Non-ST-Segment_Elevation_Acute_Coronary_Syndr.pdf","286":"harrison/Ch286_ST-Segment_Elevation_Myocardial_Infarction.pdf","295":"harrison/Ch295_Approach_to_the_Patient_with_Disease_of_the_R.pdf","305":"harrison/Ch305_Disorders_of_the_Pleura.pdf","311":"harrison/Ch311_Approach_to_the_Patient_with_Critical_Illness.pdf","314":"harrison/Ch314_Approach_to_the_Patient_with_Shock.pdf","315":"harrison/Ch315_Sepsis_and_Septic_Shock.pdf","316":"harrison/Ch316_Cardiogenic_Shock_and_Pulmonary_Edema.pdf","317":"harrison/Ch317_Cardiovascular_Collapse,_Cardiac_Arrest,_and_.pdf","319":"harrison/Ch319_Approach_to_the_Patient_with_Renal_Disease_or.pdf","321":"harrison/Ch321_Acute_Kidney_Injury.pdf","322":"harrison/Ch322_Chronic_Kidney_Disease.pdf","332":"harrison/Ch332_Approach_to_the_Patient_with_Gastrointestinal.pdf","347":"harrison/Ch347_Approach_to_the_Patient_with_Liver_Disease.pdf","355":"harrison/Ch355_Cirrhosis_and_Its_Complications.pdf","375":"harrison/Ch375_The_Vasculitis_Syndromes.pdf","379":"harrison/Ch379_Sarcoidosis.pdf","382":"harrison/Ch382_Approach_to_Articular_and_Musculoskeletal_Dis.pdf","384":"harrison/Ch384_Gout_and_Other_Crystal-Associated_Arthropathi.pdf","387":"harrison/Ch387_Periarticular_Disorders_of_the_Extremities.pdf","388":"harrison/Ch388_Approach_to_the_Patient_with_Endocrine_Disord.pdf","433":"harrison/Ch433_Approach_to_the_Patient_with_Neurologic_Disea.pdf","436":"harrison/Ch436_Seizures_and_Epilepsy.pdf","437":"harrison/Ch437_Introduction_to_Cerebrovascular_Diseases.pdf","438":"harrison/Ch438_Ischemic_Stroke.pdf","439":"harrison/Ch439_Intracerebral_Hemorrhage.pdf","458":"harrison/Ch458_Guillain-Barr%23U00e9_Syndrome_and_Other_Immune.pdf","459":"harrison/Ch459_Myasthenia_Gravis_and_Other_Diseases_of_the_N.pdf"};
 // ===== TABS =====
 const TABS=[
-{id:'quiz',ic:'📝',l:'Quiz'},{id:'study',ic:'📚',l:'Study'},{id:'syl',ic:'📋',l:'Syllabus'},
-{id:'book',ic:'📖',l:'Book'},{id:'flash',ic:'🃏',l:'Cards'},{id:'drugs',ic:'💊',l:'Drugs'},
+{id:'quiz',ic:'📝',l:'Quiz'},{id:'study',ic:'📚',l:'Study'},{id:'lib',ic:'📖',l:'Library'},
+{id:'flash',ic:'🃏',l:'Cards'},{id:'drugs',ic:'💊',l:'Drugs'},
 {id:'calc',ic:'🧮',l:'Calc'},{id:'osce',ic:'🎭',l:'OSCE'},{id:'track',ic:'📊',l:'Track'},{id:'search',ic:'🔍',l:'Search'},{id:'chat',ic:'💬',l:'Chat'},
 ];
 let tab='quiz';
+let libSec='haz-read';
+let libChOpen=null;
+let _hazChapters=null;
+let _hazLoading=false;
 function renderTabs(){
 document.getElementById('tb').innerHTML=TABS.map(t=>
 `<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')"><span class="ic">${t.ic}</span>${t.l}</button>`
@@ -1505,30 +1510,195 @@ const HAZZARD_PARTS=[
 {file:'hazzard_part08.pdf',title:'Supplementary Material',ch:'Additional',desc:'Additional figures, tables, and supplementary content',color:'#78716c'},
 {file:'hazzard_part09.pdf',title:'Index',ch:'Index',desc:'Full subject index',color:'#94a3b8'},
 ];
-function renderBook(){
-let h=`<div class="sec-t">📖 Hazzard's Geriatric Medicine & Gerontology</div>
-<div class="sec-s">8th Edition · Halter, Ouslander, Studenski et al. · 108 Chapters in 11 PDFs</div>`;
+function renderLibrary(){
+let h=`<div class="sec-t">📖 Library</div>
+<div class="sec-s">Textbooks · Laws · Articles · Exam PDFs</div>`;
+// Sub-tabs
+const libTabs=[
+{id:'haz-read',l:'📕 Hazzard',c:'#dc2626'},
+{id:'haz-pdf',l:'📄 All PDFs',c:'#f59e0b'},
+{id:'harrison',l:'📗 Harrison',c:'#8b5cf6'},
+{id:'laws',l:'⚖️ Laws',c:'#f59e0b'},
+{id:'articles',l:'📄 Articles',c:'#3b82f6'},
+{id:'exams',l:'📝 Exams',c:'#06b6d4'}
+];
+h+=`<div style="display:flex;gap:4px;overflow-x:auto;padding:4px 0;margin-bottom:12px;-webkit-overflow-scrolling:touch">`;
+libTabs.forEach(t=>{
+h+=`<span class="pill ${libSec===t.id?'on':''}" style="white-space:nowrap;font-size:10px" onclick="libSec='${t.id}';render()">${t.l}</span>`;
+});
+h+=`</div>`;
+
+// ===== HAZZARD IN-APP READER =====
+if(libSec==='haz-read'){
+const HAZ_CH=[
+{ch:2,t:'Demography & Epidemiology',w:12499,s:12,exam:true},
+{ch:3,t:'Immunology of Aging',w:10788,s:9,exam:true},
+{ch:4,t:'Psychosocial Aspects',w:12530,s:19,exam:true},
+{ch:5,t:'Sex & Gender Differences',w:8975,s:9,exam:true},
+{ch:6,t:'Social Determinants of Health',w:6612,s:15,exam:true},
+{ch:34,t:'Sexuality & Aging',w:9612,s:15,exam:true},
+{ch:62,t:'Depression & Mood Disorders',w:21861,s:11,exam:true},
+];
+if(libChOpen!==null && _hazChapters && _hazChapters[String(libChOpen)]){
+// Render chapter content
+const ch=_hazChapters[String(libChOpen)];
+h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+<button onclick="libChOpen=null;render()" style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">← Back</button>
+<div style="font-size:13px;font-weight:700">Ch ${libChOpen}: ${ch.title}</div></div>`;
+h+=`<div class="card" style="padding:16px">`;
+ch.sections.forEach(sec=>{
+const lvl=sec.level||1;
+if(sec.title){
+h+=`<div style="font-size:${lvl===1?'14px':'12px'};font-weight:${lvl===1?'800':'700'};color:${lvl===1?'#dc2626':'#1e293b'};margin:${lvl===1?'20px 0 8px':'14px 0 6px'};padding-bottom:4px;${lvl===1?'border-bottom:2px solid #fecaca':'border-bottom:1px solid #f1f5f9'}">${sec.title}</div>`;
+}
+sec.content.forEach(p=>{
+h+=`<p style="font-size:11px;line-height:1.8;color:#334155;margin:0 0 10px;text-align:justify">${p}</p>`;
+});
+});
+h+=`</div>`;
+} else if(_hazLoading){
+h+=`<div class="card" style="padding:20px;text-align:center"><div style="font-size:13px;color:#64748b">Loading chapter...</div></div>`;
+} else {
+h+=`<div class="card" style="padding:14px">
+<div style="font-size:13px;font-weight:700;margin-bottom:4px">📕 Hazzard's 8th — Required Chapters</div>
+<div style="font-size:10px;color:#64748b;margin-bottom:10px">Read in-app with formatted sections · 7 chapters required for שלב א'</div>`;
+HAZ_CH.forEach(c=>{
+h+=`<div onclick="openHazChapter(${c.ch})" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;cursor:pointer">
+<span style="background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;min-width:40px;text-align:center">Ch ${c.ch}</span>
+<div style="flex:1">
+<div style="font-size:12px;font-weight:600">${c.t}</div>
+<div style="font-size:9px;color:#94a3b8;margin-top:2px">${c.s} sections · ~${Math.round(c.w/1000)}k words · ${Math.round(c.w/250)} min read</div>
+</div>
+<span style="font-size:18px;color:#94a3b8">›</span></div>`;
+});
+h+=`</div>`;
+}
+}
+
+// ===== HAZZARD ALL PDFs =====
+if(libSec==='haz-pdf'){
 h+=`<div style="padding:8px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;margin-bottom:12px;font-size:10px;color:#92400e;line-height:1.5">
-⚠️ PDFs open in a new tab. Large files — first load may take a moment on mobile.</div>`;
+⚠️ Large PDFs — first load may take a moment on mobile.</div>`;
 HAZZARD_PARTS.forEach((p,i)=>{
 h+=`<a href="${p.file}" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-<div class="card" style="padding:14px;cursor:pointer;transition:.15s;border-left:4px solid ${p.color}" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='none'">
+<div class="card" style="padding:12px;cursor:pointer;border-left:4px solid ${p.color}">
 <div style="display:flex;align-items:flex-start;gap:10px">
-<div style="width:36px;height:36px;border-radius:10px;background:${p.color}15;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-<span style="font-size:16px;font-weight:700;color:${p.color}">${i+1}</span></div>
+<div style="width:32px;height:32px;border-radius:8px;background:${p.color}15;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+<span style="font-size:14px;font-weight:700;color:${p.color}">${i+1}</span></div>
 <div style="flex:1;min-width:0">
-<div style="font-size:12px;font-weight:700;margin-bottom:2px" class="sec-t">${p.title}</div>
-<div style="font-size:10px;color:rgb(var(--sky));font-weight:600;margin-bottom:4px">${p.ch}</div>
-<div style="font-size:10px;color:#64748b;line-height:1.5">${p.desc}</div>
-${p.exam?`<div style="font-size:9px;color:#f59e0b;font-weight:700;margin-top:4px">${p.exam}</div>`:''}
+<div style="font-size:11px;font-weight:700">${p.title}</div>
+<div style="font-size:9px;color:rgb(var(--sky));font-weight:600;margin-top:2px">${p.ch}</div>
+<div style="font-size:9px;color:#64748b;margin-top:2px">${p.desc}</div>
+${p.exam?`<div style="font-size:9px;color:#f59e0b;font-weight:700;margin-top:3px">${p.exam}</div>`:''}
 </div>
-<span style="font-size:14px;color:#94a3b8;flex-shrink:0;align-self:center">↗</span>
+<span style="font-size:14px;color:#94a3b8;align-self:center">↗</span>
 </div></div></a>`;
 });
-h+=`<div style="text-align:center;margin-top:16px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.5">
+}
+
+// ===== HARRISON =====
+if(libSec==='harrison'){
+h+=`<div class="card" style="padding:14px">
+<div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — All Residents</div>
+<div style="font-size:10px;color:#64748b;margin-bottom:10px">${SYL_HAR_ALL.length} chapters · Click for PDF</div>`;
+const _harMap=HARRISON_PDF_MAP;
+SYL_HAR_ALL.forEach(c=>{
+const _pdf=_harMap[String(c.ch)];
+h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
+<span style="background:#8b5cf6;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:44px;text-align:center">Ch ${c.ch}</span>
+<span style="font-size:11px;flex:1">${c.t}</span>${_pdf?`<a href="${_pdf}" target="_blank" style="font-size:10px;padding:3px 7px;background:#ede9fe;color:#7c3aed;border-radius:6px;text-decoration:none;flex-shrink:0">📄</a>`:''}</div>`;
+});
+h+=`</div>`;
+h+=`<div class="card" style="padding:14px;margin-top:8px">
+<div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — Base Additional</div>
+<div style="font-size:10px;color:#64748b;margin-bottom:10px">${SYL_HAR_BASE.length} additional chapters</div>`;
+SYL_HAR_BASE.forEach(c=>{
+const _pdf=_harMap[String(c.ch)];
+h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
+<span style="background:#06b6d4;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:44px;text-align:center">Ch ${c.ch}</span>
+<span style="font-size:11px;flex:1">${c.t}</span>${_pdf?`<a href="${_pdf}" target="_blank" style="font-size:10px;padding:3px 7px;background:#e0f2fe;color:#0284c7;border-radius:6px;text-decoration:none;flex-shrink:0">📄</a>`:''}</div>`;
+});
+h+=`</div>`;
+}
+
+// ===== LAWS =====
+if(libSec==='laws'){
+h+=`<div class="card" style="padding:14px">
+<div style="font-size:13px;font-weight:700;margin-bottom:4px">⚖️ חוקים, נהלים ופרסומים</div>
+<div class="heb" style="font-size:10px;color:#64748b;margin-bottom:10px">${SYL_LAWS.length} items</div>`;
+SYL_LAWS.forEach((l,i)=>{
+h+=`<div class="heb" style="padding:8px 0;border-bottom:1px solid #f1f5f9">
+<div style="display:flex;align-items:flex-start;gap:8px">
+<span style="background:#f59e0b;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;flex-shrink:0">${i+1}</span>
+<div style="flex:1"><div style="font-size:11px;font-weight:600">${l.n}</div>
+<div style="font-size:9px;color:#94a3b8;margin-top:2px">${l.s}</div></div>${l.f?`<a href="${l.f}" target="_blank" style="font-size:10px;padding:3px 7px;background:#fffbeb;color:#d97706;border-radius:6px;text-decoration:none;flex-shrink:0;white-space:nowrap">📄</a>`:''}</div></div>`;
+});
+h+=`</div>`;
+}
+
+// ===== ARTICLES =====
+if(libSec==='articles'){
+h+=`<div class="card" style="padding:14px">
+<div style="font-size:13px;font-weight:700;margin-bottom:4px">📄 Required Articles</div>
+<div style="font-size:10px;color:#64748b;margin-bottom:10px">${SYL_ARTICLES.length} journal articles</div>`;
+const _artMap={"0":"article_beers_2023.pdf","1":"article_vascog2.pdf","2":"article_alzheimer_iwg.pdf","3":"article_alzheimer_aa.pdf","4":"article_dementia_prevention.pdf","5":"article_hearing_loss.pdf"};
+SYL_ARTICLES.forEach((a,i)=>{
+const _apdf=_artMap[String(i)];
+h+=`<div style="padding:8px 0;border-bottom:1px solid #f1f5f9;display:flex;align-items:flex-start;gap:8px">
+<div style="flex:1"><div style="font-size:11px;font-weight:600;line-height:1.5">${i+1}. ${a.t}</div>
+<div style="font-size:9px;color:rgb(var(--sky));margin-top:2px">${a.j}</div></div>${_apdf?`<a href="${_apdf}" target="_blank" style="font-size:10px;padding:3px 7px;background:#eff6ff;color:#3b82f6;border-radius:6px;text-decoration:none;flex-shrink:0">📄</a>`:''}</div>`;
+});
+h+=`</div>`;
+}
+
+// ===== EXAMS =====
+if(libSec==='exams'){
+h+=`<div class="card" style="padding:14px">
+<div style="font-size:13px;font-weight:700;margin-bottom:4px">📝 Past Exam PDFs</div>
+<div style="font-size:10px;color:#64748b;margin-bottom:10px">Available exam papers</div>`;
+const exams=[
+{y:'Dec 2021',f:'questions/images/exam_dec_2021.pdf',t:'שלב א''},
+{y:'Jun 2022',f:'questions/images/exam_jun_2022.pdf',t:'שלב א''},
+{y:'Jun 2023',f:'questions/images/exam_jun_2023.pdf',t:'שלב א''},
+{y:'May 2024',f:'questions/images/exam_may_2024.pdf',t:'שלב א''},
+{y:'Sep 2024',f:'questions/images/exam_sep_2024.pdf',t:'שלב א''},
+{y:'2023-ב',f:'questions/images/exam_2023b.pdf',t:'התמחות על'},
+];
+exams.forEach(e=>{
+h+=`<a href="${e.f}" target="_blank" style="text-decoration:none;display:block">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;cursor:pointer">
+<span style="background:#06b6d4;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px">${e.y}</span>
+<span style="font-size:11px;flex:1">${e.t}</span>
+<span style="font-size:14px;color:#94a3b8">↗</span></div></a>`;
+});
+h+=`</div>`;
+}
+
+h+=`<div style="text-align:center;margin-top:12px;font-size:9px;color:#94a3b8">
+<a href="https://ima-contentfiles.s3.amazonaws.com/P005-2026.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">P005-2026 Syllabus ↗</a></div>`;
+h+=`<div style="text-align:center;margin-top:8px;padding:8px;font-size:9px;color:#94a3b8;line-height:1.5">
 صدقة جارية الى من نحب<br>Ceaseless Charity — To the People That We Love</div>`;
 return h;
 }
+
+async function openHazChapter(ch){
+libChOpen=ch;
+if(_hazChapters){render();return;}
+if(_hazLoading)return;
+_hazLoading=true;
+render(); // show loading
+try{
+const r=await fetch('hazzard_chapters.json');
+_hazChapters=await r.json();
+}catch(e){
+console.error('Failed to load Hazzard chapters',e);
+_hazChapters={};
+}
+_hazLoading=false;
+render();
+}
+
+
 
 // ===== FLASHCARDS =====
 function renderFlash(){
@@ -2494,8 +2664,7 @@ if(tab!==lastTab){el.classList.remove('fade-in');void el.offsetWidth;el.classLis
 switch(tab){
 case'quiz':el.innerHTML=renderQuiz();break;
 case'study':el.innerHTML=renderStudy();break;
-case'syl':el.innerHTML=renderSyllabus();break;
-case'book':el.innerHTML=renderBook();break;
+case'lib':el.innerHTML=renderLibrary();break;
 case'flash':el.innerHTML=renderFlash();break;
 case'drugs':el.innerHTML=renderDrugs();break;
 case'calc':el.innerHTML=renderCalc();break;
