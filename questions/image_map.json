@@ -1,0 +1,114 @@
+[
+  {
+    "exam": "jun2022",
+    "q_num": 4,
+    "fname": "jun2022_q4.png",
+    "fpath": "questions/images/jun2022_q4.png",
+    "w": 1268,
+    "h": 380
+  },
+  {
+    "exam": "jun2022",
+    "q_num": 13,
+    "fname": "jun2022_q13.png",
+    "fpath": "questions/images/jun2022_q13.png",
+    "w": 1032,
+    "h": 694
+  },
+  {
+    "exam": "jun2022",
+    "q_num": 19,
+    "fname": "jun2022_q19.png",
+    "fpath": "questions/images/jun2022_q19.png",
+    "w": 1153,
+    "h": 1153
+  },
+  {
+    "exam": "jun2022",
+    "q_num": 25,
+    "fname": "jun2022_q25.png",
+    "fpath": "questions/images/jun2022_q25.png",
+    "w": 395,
+    "h": 300
+  },
+  {
+    "exam": "jun2022",
+    "q_num": 26,
+    "fname": "jun2022_q26.png",
+    "fpath": "questions/images/jun2022_q26.png",
+    "w": 204,
+    "h": 249
+  },
+  {
+    "exam": "jun2022",
+    "q_num": 37,
+    "fname": "jun2022_q37.png",
+    "fpath": "questions/images/jun2022_q37.png",
+    "w": 1268,
+    "h": 671
+  },
+  {
+    "exam": "jun2022",
+    "q_num": 38,
+    "fname": "jun2022_q38.png",
+    "fpath": "questions/images/jun2022_q38.png",
+    "w": 344,
+    "h": 570
+  },
+  {
+    "exam": "jun2022",
+    "q_num": 61,
+    "fname": "jun2022_q61.png",
+    "fpath": "questions/images/jun2022_q61.png",
+    "w": 684,
+    "h": 515
+  },
+  {
+    "exam": "jun2022",
+    "q_num": 93,
+    "fname": "jun2022_q93.png",
+    "fpath": "questions/images/jun2022_q93.png",
+    "w": 268,
+    "h": 188
+  },
+  {
+    "exam": "jun2025",
+    "q_num": 47,
+    "fname": "jun2025_q47.png",
+    "fpath": "questions/images/jun2025_q47.png",
+    "w": 468,
+    "h": 320
+  },
+  {
+    "exam": "jun2025",
+    "q_num": 57,
+    "fname": "jun2025_q57.png",
+    "fpath": "questions/images/jun2025_q57.png",
+    "w": 571,
+    "h": 500
+  },
+  {
+    "exam": "jun2025",
+    "q_num": 108,
+    "fname": "jun2025_q108.png",
+    "fpath": "questions/images/jun2025_q108.png",
+    "w": 1200,
+    "h": 709
+  },
+  {
+    "exam": "jun2025",
+    "q_num": 116,
+    "fname": "jun2025_q116.png",
+    "fpath": "questions/images/jun2025_q116.png",
+    "w": 765,
+    "h": 417
+  },
+  {
+    "exam": "jun2025",
+    "q_num": 136,
+    "fname": "jun2025_q136.png",
+    "fpath": "questions/images/jun2025_q136.png",
+    "w": 1500,
+    "h": 1000
+  }
+]
