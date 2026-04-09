@@ -2,13 +2,13 @@
 
 **Israeli Shlav A (שלב א) Geriatric Medicine Board Exam Preparation Tool**
 
-Standalone, offline-capable PWA with 1,432 real IMA exam questions, textbook-sourced study notes, clinical calculators, and spaced repetition — all in one HTML file.
+Standalone, offline-capable PWA with 1,419 real IMA exam questions, textbook-sourced study notes, clinical calculators, and spaced repetition — all in one HTML file.
 
 ## Features
 
 | Feature | Details |
 |---|---|
-| **Quiz Engine** | 1,432 verified IMA questions (2021–2025) with answer keys |
+| **Quiz Engine** | 1,419 verified IMA questions (2021–2025) with answer keys |
 | **Spaced Repetition** | SM-2 algorithm (ID-based) — wrong answers resurface automatically |
 | **Exam Mode** | Configurable N/time, topic breakdown, + wrong-answer re-drill after exam |
 | **Post-Exam Re-Drill** | One-click drill on wrong answers only after any mock exam |
