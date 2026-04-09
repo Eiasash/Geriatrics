@@ -925,6 +925,15 @@ if(weakTopics.length===0){pool=QZ.map((_,i)=>i);}else{pool=QZ.map((_,i)=>i).filt
 for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
 qi=0;return;}
 if(filt==='due'){pool=getDueQuestions();qi=0;return;}
+if(filt==='hard'){
+// Questions answered wrong at least once, sorted by worst accuracy
+pool=QZ.map((_,i)=>i).filter(i=>{const s=S.sr[i];return s&&s.n>0;});
+pool.sort((a,b)=>{
+const sa=S.sr[a],sb=S.sr[b];
+const ra=sa?(sa.ef||2.5):2.5, rb=sb?(sb.ef||2.5):2.5;
+return ra-rb; // lowest easiness factor = hardest
+});
+qi=0;sel=null;ans=false;return;}
 
 pool=[];
 const due=getDueQuestions();
@@ -1147,7 +1156,7 @@ ${!pomoActive?'<span class="tt-wrap"><button onclick="startPomodoro()" class="bt
 </div>
 </div>`;
 h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
-const filts=[['all',`הכל (${QZ.length})`],['2022','2022'],['2023','2023'],['2024','2024'],['ספט','Sep24'],['2025','2025'],['weak','🎯 Weak'],['due','🔄 Due'],['nbs','🎯 Next Best Step']];
+const filts=[['all',`הכל (${QZ.length})`],['2022','2022'],['2023','2023'],['2024','2024'],['ספט','Sep24'],['2025','2025'],['hard','🔥 Hard'],['weak','🎯 Weak'],['due','🔄 Due'],['nbs','🎯 Next Best Step']];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{
 if(f==='nbs')h+=`<span class="pill ${filt==='nbs'?'on':''}" onclick="startNextBestStep()">${l}</span>`;
@@ -2731,26 +2740,45 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.1';
+const APP_VERSION='9.2.3';
 function getDiagnostics(){
 const tot=S.qOk+S.qNo;
+const srEntries=Object.entries(S.sr||{});
+const srDue=srEntries.filter(([k,v])=>v.next<=Date.now()).length;
+const srHard=srEntries.filter(([k,v])=>v.ef<2.0).length;
+const srMastered=srEntries.filter(([k,v])=>v.n>=3&&v.ef>=2.5).length;
+const ts=getTopicStats();
+const weakTopics=TOPICS.map((t,i)=>({t,s:ts[i]||{ok:0,no:0,tot:0}}))
+  .filter(p=>p.s.tot>=3).sort((a,b)=>(a.s.ok/a.s.tot)-(b.s.ok/b.s.tot)).slice(0,5);
+const weakStr=weakTopics.map(p=>`  ${p.t}: ${Math.round(p.s.ok/p.s.tot*100)}% (${p.s.ok}/${p.s.tot})`).join('\n');
 return `Shlav A Mega v${APP_VERSION}\n`+
+`Date: ${new Date().toISOString()}\n`+
 `UA: ${navigator.userAgent}\n`+
 `Screen: ${screen.width}x${screen.height} · DPR: ${devicePixelRatio}\n`+
+`---\n`+
 `Questions: ${QZ.length} · Answered: ${tot} · Correct: ${S.qOk} (${tot?Math.round(S.qOk/tot*100):0}%)\n`+
+`SR: ${srEntries.length} tracked · ${srDue} due · ${srHard} hard (EF<2.0) · ${srMastered} mastered\n`+
 `Topics done: ${Object.values(S.ck).filter(Boolean).length}/40\n`+
 `Bookmarks: ${Object.values(S.bk).filter(Boolean).length}\n`+
-`Dark mode: ${S.dark?'on':'off'}\n`+
-`Streak: ${S.streak} days\n`+
-`LocalStorage: ${(JSON.stringify(S).length/1024).toFixed(1)}KB\n`+
-`Online: ${navigator.onLine}\n`+
-`Date: ${new Date().toISOString()}`;
+`Streak: ${S.streak||0} days\n`+
+`---\n`+
+`Weakest 5 topics:\n${weakStr||'  (not enough data)'}\n`+
+`---\n`+
+`Storage: ${(JSON.stringify(S).length/1024).toFixed(1)}KB · Online: ${navigator.onLine}\n`+
+`Dark: ${S.dark?'on':'off'} · SW: ${navigator.serviceWorker?'registered':'none'}`;
 }
 function copyDiagnostics(){
 const d=getDiagnostics();
 if(navigator.clipboard){navigator.clipboard.writeText(d).then(()=>{
 const st=document.getElementById('fbStatus');if(st){st.textContent='✅ Diagnostics copied to clipboard';st.style.display='block';st.style.color='#059669';setTimeout(()=>st.style.display='none',3000);}
-});}
+}).catch(()=>{
+// Fallback for mobile
+const ta=document.createElement('textarea');ta.value=d;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+const st=document.getElementById('fbStatus');if(st){st.textContent='✅ Copied (fallback)';st.style.display='block';st.style.color='#059669';setTimeout(()=>st.style.display='none',3000);}
+});}else{
+// No clipboard API — show in alert
+alert(d);
+}
 }
 function submitFeedback(){
 const el=document.getElementById('fbText');
