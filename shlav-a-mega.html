@@ -1085,7 +1085,7 @@ Object.entries(imgMap).forEach(([idx,url])=>{if(QZ[parseInt(idx)])QZ[parseInt(id
 function viewImg(src){
 const ov=document.createElement('div');
 ov.className='img-overlay';
-ov.innerHTML='<img src="'+src+'" alt="Zoomed">';
+ov.innerHTML='<img src="'+sanitize(src)+'" alt="Zoomed">';
 ov.onclick=function(){ov.remove();};
 document.body.appendChild(ov);
 }
