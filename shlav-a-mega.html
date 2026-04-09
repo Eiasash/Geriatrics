@@ -317,7 +317,7 @@ upd();setInterval(upd,30000);
 
 <a href="#main-content" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v9.1</span></h1>
+<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v9.2</span></h1>
 <button class="dm-btn" onclick="toggleStudyMode()" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode">🌓</button>
 <p id="hdr-sub">SZMC · Hazzard 8e + Harrison 22e · P005-2026</p>
 </div>
@@ -2265,7 +2265,7 @@ if(_storedKey){
 h+='<div style="font-size:9px;color:#94a3b8">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
-<div>Shlav A Mega v9.1 · P005-2026 · 9 Apr 2026</div>
+<div>Shlav A Mega v9.2 · P005-2026 · 9 Apr 2026</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
 return h;
@@ -2676,6 +2676,8 @@ case'law':el.innerHTML=renderEOLTree();break;
 case'labs':el.innerHTML=renderLabOverlay();break;
 case'aging':el.innerHTML=renderAgingSheet();break;
 case'basket':el.innerHTML=renderMedBasket();break;
+case'book':case'syl':tab='lib';el.innerHTML=renderLibrary();break;
+default:tab='quiz';el.innerHTML=renderQuiz();break;
 }
 // Ward modal
 const wc=document.getElementById('ward-container');
