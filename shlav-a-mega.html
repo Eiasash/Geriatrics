@@ -361,7 +361,20 @@ let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},not
 if(!S.chat)S.chat=[];
 if(S.studyMode===undefined)S.studyMode=false;
 if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;
-let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>localStorage.setItem(LS,JSON.stringify(S)),150)}
+let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>{
+  localStorage.setItem(LS,JSON.stringify(S));
+  // Warn if localStorage approaching 5MB limit
+  try{
+    let total=0;
+    for(let k in localStorage)if(localStorage.hasOwnProperty(k))total+=localStorage[k].length*2;
+    if(total>4*1024*1024&&!window._lsWarnShown){
+      window._lsWarnShown=true;
+      console.warn('localStorage: '+(total/1024/1024).toFixed(1)+'MB — approaching limit');
+      localStorage.removeItem('samega_ex');
+      localStorage.removeItem('samega_weekly');
+    }
+  }catch(e){}
+  },150)}
 (function updateStreak(){
 const today=new Date().toISOString().slice(0,10);
 if(S.lastDay===today)return;
@@ -742,7 +755,8 @@ function go(t){tab=t;renderTabs();render()}
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
 let onCallMode=false,flipRevealed=false;
-let timedMode=false,timedSec=90,timedInt=null;
+let timedMode=false,timedSec=90,timedInt=null,timedPaused=false;
+let _optShuffle=null; // {map:[shuffled indices], qIdx} — shuffle per question
 // Session tracking for end-of-session summary
 let _sessionOk=0,_sessionNo=0,_sessionBest={},_sessionWorse={},_sessionStart=Date.now();
 let _sessionSaved=false;
@@ -896,7 +910,7 @@ function next(){
 qStartTime=Date.now();
 if(examMode&&mockExamResults&&qi+1>=pool.length){endMockExam();return;}
 if(examMode&&!mockExamResults&&qi+1>=Math.min(pool.length,150)){endExam();return;}
-qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;
+qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;_optShuffle=null;
 if(timedMode){clearInterval(timedInt);timedSec=90;render();setTimeout(startTimedQ,100);}
 else render();
 }
@@ -1157,6 +1171,12 @@ ov.innerHTML='<img src="'+sanitize(src)+'" alt="Zoomed">';
 ov.onclick=function(){ov.remove();};
 document.body.appendChild(ov);
 }
+function pauseTimed(){
+  timedPaused=!timedPaused;
+  if(timedPaused){clearInterval(timedInt);}
+  else{startTimedQ();}
+  render();
+}
 function startTimedQ(){
   clearInterval(timedInt);
   timedSec=90;
@@ -1190,6 +1210,19 @@ function stopTimedMode(){
   clearInterval(timedInt);
   render();
 }
+function getOptShuffle(qIdx,q){
+  // Return stable shuffle for this question in this session
+  if(_optShuffle&&_optShuffle.qIdx===qIdx)return _optShuffle.map;
+  // Create shuffled index array
+  const n=q.o.length;
+  const map=[...Array(n).keys()];
+  // Fisher-Yates using qIdx as seed for stability within session
+  let seed=qIdx*31+17;
+  const rand=()=>{seed=(seed*1664525+1013904223)&0xffffffff;return(seed>>>0)/0xffffffff;};
+  for(let i=n-1;i>0;i--){const j=Math.floor(rand()*(i+1));[map[i],map[j]]=[map[j],map[i]];}
+  _optShuffle={qIdx,map};
+  return map;
+}
 function renderQuiz(){
 // ===== SUDDEN DEATH RENDERING =====
 if(sdMode){
@@ -1204,7 +1237,9 @@ if(timedMode&&!ans){
 <span id="timed-count" style="font-size:11px;font-weight:700;color:#64748b;min-width:24px">${timedSec}s</span>
 <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
   <div id="timed-bar" style="height:100%;width:${Math.round(timedSec/90*100)}%;background:${timedSec>45?'#10b981':timedSec>22?'#f59e0b':'#ef4444'};border-radius:3px;transition:width .9s linear"></div>
-</div></div>`;
+</div>
+<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;white-space:nowrap">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
+</div>`;
 }
 const _isFlagQ=(S.flagged||{})[pool[qi]];
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px">${_isFlagQ?'<span style="color:#dc2626;font-size:11px" title="Explanation flagged — verify">⚑ </span>':''  }${q.q}</p>`;
@@ -1286,7 +1321,9 @@ if(timedMode&&!ans){
 <span id="timed-count" style="font-size:11px;font-weight:700;color:#64748b;min-width:24px">${timedSec}s</span>
 <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
   <div id="timed-bar" style="height:100%;width:${Math.round(timedSec/90*100)}%;background:${timedSec>45?'#10b981':timedSec>22?'#f59e0b':'#ef4444'};border-radius:3px;transition:width .9s linear"></div>
-</div></div>`;
+</div>
+<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;white-space:nowrap">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
+</div>`;
 }
 const topicName=q.ti>=0&&TOPICS[q.ti]?TOPICS[q.ti]:'';
 const _cf=isChronicFail(pool[qi]);
@@ -1299,14 +1336,15 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 </div></div>`;
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="auto">${q.q}</p>`;
 if(q.img){h+=`<div style="margin-bottom:14px;text-align:center"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid #e2e8f0;cursor:pointer" onclick="viewImg(this.src)" loading="lazy"></div>`;}
-q.o.forEach((o,i)=>{
+const _shuf=getOptShuffle(pool[qi],q);
+_shuf.forEach((origI,dispJ)=>{
+const o=q.o[origI];
 let cls='qo';
-if(ans){cls+=' lk';if(i===q.c)cls+=' ok';else if(i===sel)cls+=' no';else cls+=' dim';}
-else if(i===sel)cls+=' sel';
-const blurCls=blindRecall&&!ans&&i!==sel?' qo-blur':'';
-// Distractor autopsy: highlight a wrong answer on mastered questions
-const autopsyCls=(autopsyMode&&ans&&i!==q.c&&i===autopsyDistractor)?' distractor-highlight':'';
-h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&i!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${i})"><span>${o}</span>${q.oi&&q.oi[i]?'<img src="'+q.oi[i]+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
+if(ans){cls+=' lk';if(origI===q.c)cls+=' ok';else if(origI===sel)cls+=' no';else cls+=' dim';}
+else if(origI===sel)cls+=' sel';
+const blurCls=blindRecall&&!ans&&origI!==sel?' qo-blur':'';
+const autopsyCls=(autopsyMode&&ans&&origI!==q.c&&origI===autopsyDistractor)?' distractor-highlight':'';
+h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${origI})"><span>${o}</span>${q.oi&&q.oi[origI]?'<img src="'+q.oi[origI]+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
 });
 h+=`<div style="display:flex;gap:6px;margin-top:14px">`;
 if(!ans){h+=`<button class="btn btn-p" onclick="check()"${sel===null?' disabled':''}>בדוק</button>`;if(!examMode)h+=`<button class="btn" onclick="showAnswerHardFail()" style="background:#fff3e0;color:#d97706;font-size:11px;padding:6px 14px;margin-left:6px">👁 לא יודע</button>`;}
@@ -2047,7 +2085,9 @@ if(timedMode&&!ans){
 <span id="timed-count" style="font-size:11px;font-weight:700;color:#64748b;min-width:24px">${timedSec}s</span>
 <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
   <div id="timed-bar" style="height:100%;width:${Math.round(timedSec/90*100)}%;background:${timedSec>45?'#10b981':timedSec>22?'#f59e0b':'#ef4444'};border-radius:3px;transition:width .9s linear"></div>
-</div></div>`;
+</div>
+<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;white-space:nowrap">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
+</div>`;
 }
 ch.sections.forEach(sec=>{
 const lvl=sec.level||1;
@@ -3346,6 +3386,14 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 // ===== FEEDBACK & DIAGNOSTICS =====
 const APP_VERSION='9.10';
+// Prevent accidental navigation during mock exam
+window.addEventListener('beforeunload',function(e){
+  if(examMode&&(S.qOk+S.qNo)>0){
+    e.preventDefault();
+    e.returnValue='Mock exam in progress — are you sure you want to leave?';
+    return e.returnValue;
+  }
+});
 // ===== WEEKLY TREND SNAPSHOT =====
 function takeWeeklySnapshot(){
   try{
@@ -3378,14 +3426,20 @@ const BUILD_HASH=(()=>{const d=new Date('2026-04-10T00:00:00Z');return d.toISOSt
 // ===== SHARED AI PROXY =====
 const AI_PROXY='https://toranot.netlify.app/api/claude';
 const AI_SECRET='shlav-a-mega-2026';
+let _aiAbortController=null;
 async function callAI(messages,maxTokens=400,model='sonnet'){
+  // Cancel any in-flight AI request before starting new one
+  if(_aiAbortController)_aiAbortController.abort();
+  _aiAbortController=new AbortController();
+  const signal=_aiAbortController.signal;
 // Model alias map for direct API fallback
 const modelMap={sonnet:'claude-sonnet-4-6',opus:'claude-opus-4-6',haiku:'claude-haiku-4-5-20251001'};
 try{
 const pr=await fetch(AI_PROXY,{
 method:'POST',
 headers:{'Content-Type':'application/json','x-api-secret':AI_SECRET},
-body:JSON.stringify({model,max_tokens:maxTokens,messages})
+body:JSON.stringify({model,max_tokens:maxTokens,messages}),
+signal
 });
 if(pr.ok){const d=await pr.json();return d.content?.[0]?.text||'';}
 console.warn('Proxy status:',pr.status);
@@ -3397,7 +3451,8 @@ const fullModel=modelMap[model]||model;
 const r=await fetch('https://api.anthropic.com/v1/messages',{
 method:'POST',
 headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
-body:JSON.stringify({model:fullModel,max_tokens:maxTokens,messages})
+body:JSON.stringify({model:fullModel,max_tokens:maxTokens,messages}),
+signal
 });
 if(!r.ok)throw new Error('API '+r.status);
 const d=await r.json();
