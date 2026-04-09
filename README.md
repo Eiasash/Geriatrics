@@ -17,6 +17,8 @@ Standalone, offline-capable PWA with 1,432 real IMA exam questions, textbook-sou
 | **Topic Auto-Tagging** | All questions mapped to 40 syllabus topics |
 | **Per-Topic Stats** | Accuracy bars by topic — find weak areas |
 | **Study Notes** | 40 topics from Hazzard's 8e, Harrison's 22e, Washington Manual |
+| **📖 Library** | Consolidated textbook browser — Hazzard's in-app chapter reader (Ch 2-6, 34, 62 with formatted sections), Harrison's PDFs, Laws, Articles, Exams |
+| **Hazzard Reader** | All 7 required chapters extracted with section headers, proper paragraphs, reading time estimates — no raw PDF needed |
 | **Flashcards** | 159 high-yield cards with שוב/קשה/קל SR rating |
 | **AI Explain** | 15 pre-baked expert explanations + on-demand AI with API key |
 | **Drug Lookup** | 53 drugs — Beers + ACB score + risk descriptions |
