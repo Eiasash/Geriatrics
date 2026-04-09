@@ -318,7 +318,7 @@ upd();setInterval(upd,30000);
 
 <a href="#main-content" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v9.4</span></h1>
+<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v9.5</span></h1>
 <button class="dm-btn" onclick="toggleStudyMode()" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode">🌓</button><button class="dm-btn" onclick="showHelp()" title="Help" aria-label="Help" style="right:82px;font-size:11px">❓</button>
 <p id="hdr-sub">Loading...</p>
 </div>
@@ -920,28 +920,15 @@ function renderExplainBox(qIdx){
 }
 async function explainWithAI(qIdx){
   if(_exCache[qIdx]&&!_exCache[qIdx].err){setTimeout(function(){renderExplainBox(qIdx);},0);return;}
-  // AI available via proxy — no personal key needed
   _exLoading=true;_exIdx=qIdx;renderExplainBox(qIdx);
   var q=QZ[qIdx];
   var correct=q.o[q.c];
   try{
-    // callAI handles timeouts internally
-    var res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'opus',max_tokens:400,
-        messages:[{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה לשאלה הבאה מתחום הגריאטריה. עגן תמיד בתשובה הנכונה הנל.\n\nשאלה: '+q.q+'\nאפשרויות: '+q.o.join(' / ')+'\nתשובה נכונה: '+correct}]}),
-      signal:ctrl.signal
-    });
-    clearTimeout(timeout);
-    if(res.status===401||res.status===403){setApiKey('');throw new Error('API key invalid');}
-    var data=await res.json();
-    if(!res.ok)throw new Error((data.error&&data.error.message)||'API error '+res.status);
-    var txt=(data.content&&data.content[0]&&data.content[0].text)||'';
+    var txt=await callAI([{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה לשאלה הבאה מתחום הגריאטריה. עגן תמיד בתשובה הנכונה הנל.\n\nשאלה: '+q.q+'\nאפשרויות: '+q.o.join(' / ')+'\nתשובה נכונה: '+correct}],400,'sonnet');
     _exCache[qIdx]={text:txt};
     localStorage.setItem('samega_ex',JSON.stringify(_exCache));
   }catch(e){
-    _exCache[qIdx]={err:e.name==='AbortError'?'תם הזמן — נסה שוב':e.message};
+    _exCache[qIdx]={err:e.message==='no_key'?'AI unavailable — set API key in Track':e.message};
   }
   _exLoading=false;_exIdx=-1;
   setTimeout(function(){renderExplainBox(qIdx);},0);
@@ -954,11 +941,7 @@ _exCache[_apKey]='<div style="color:#64748b">⏳ AI analyzing each option...</di
 render();
 try{
 const wrongOpts=q.o.filter((_,i)=>i!==q.c);
-const res=await fetch(AI_PROXY,{
-method:'POST',
-headers:{'Content-Type':'application/json','x-api-secret':AI_SECRET},
-body:JSON.stringify({model:'sonnet',max_tokens:500,
-messages:[{role:'user',content:`Geriatric board exam question. For EACH wrong option, explain in 1-2 sentences why it's wrong HERE and when it WOULD be correct.
+const txt=await callAI([{role:'user',content:`Geriatric board exam question. For EACH wrong option, explain in 1-2 sentences why it's wrong HERE and when it WOULD be correct.
 
 Question: ${q.q}
 Correct: ${q.o[q.c]}
@@ -967,10 +950,7 @@ Wrong options: ${wrongOpts.join(' | ')}
 Format each as:
 ✗ [option] — Wrong because: [reason]. Would be correct if: [scenario].
 
-Be concise. Use English for medical terms, Hebrew for context if relevant.`}]})
-});
-const data=await res.json();
-const txt=data.content?.[0]?.text||'No response';
+Be concise. Use English for medical terms, Hebrew for context if relevant.`}],500);
 // Format nicely
 const formatted=txt.replace(/✗/g,'<b style="color:#dc2626">✗</b>')
   .replace(/Wrong because:/g,'<span style="color:#b91c1c">Wrong because:</span>')
@@ -988,26 +968,13 @@ async function gradeTeachBack(qIdx,userExplanation){
 teachBackState='grading';render();
 const q=QZ[qIdx];
 const correctOption=q.o[q.c];
-// AI available via proxy — no key needed
 try{
-const ctrl=new AbortController();
-const timeout=setTimeout(function(){ctrl.abort();},20000);
-const res=await fetch(AI_PROXY,{
-method:'POST',
-headers:{'Content-Type':'application/json','x-api-secret':AI_SECRET},
-body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:200,
-messages:[{role:'user',content:'You are grading a medical student teach-back.\nQuestion: '+q.q+'\nCorrect answer: '+correctOption+'\nStudent explanation: '+userExplanation+'\n\nGrade 1-3: 1=incorrect, 2=partial, 3=correct.\nReply ONLY: {"score":N,"feedback":"one sentence in Hebrew"}'}]}),
-signal:ctrl.signal
-});
-clearTimeout(timeout);
-const data=await res.json();
-const txt=(data.content&&data.content[0]&&data.content[0].text)||'';
-if(data.error){throw new Error(data.error.message||'API error');}
+const txt=await callAI([{role:'user',content:'You are grading a medical student teach-back.\nQuestion: '+q.q+'\nCorrect answer: '+correctOption+'\nStudent explanation: '+userExplanation+'\n\nGrade 1-3: 1=incorrect, 2=partial, 3=correct.\nReply ONLY: {"score":N,"feedback":"one sentence in Hebrew"}'}],200,'haiku');
 const jsonMatch=txt.match(/\{[\s\S]*\}/);
 const parsed=jsonMatch?JSON.parse(jsonMatch[0]):{};
 teachBackState={score:parsed.score||1,feedback:parsed.feedback||'לא התקבל משוב — נסה שוב'};
 }catch(e){
-teachBackState={score:null,feedback:e.name==='AbortError'?'⏱️ תם הזמן':'⚠️ '+e.message};
+teachBackState={score:null,feedback:'⚠️ '+(e.message==='no_key'?'AI unavailable':e.message)};
 }
 render();
 }
@@ -1131,7 +1098,7 @@ ${!pomoActive?'<span class="tt-wrap"><button onclick="startPomodoro()" class="bt
 </div>
 </div>`;
 h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
-const filts=[['all',`הכל (${QZ.length})`],['2022','2022'],['2023','2023'],['2024','2024'],['ספט','Sep24'],['2025','2025'],['hard','🔥 Hard'],['weak','🎯 Weak'],['due','🔄 Due'],['nbs','🎯 Next Best Step']];
+const filts=[['all',`הכל (${QZ.length})`],['2021','2021'],['2022','2022'],['2023','2023'],['2023-ב','2023-ב'],['מאי 2024','May24'],['ספט 2024','Sep24'],['2025','2025'],['Hazzard','📕 Haz'],['hard','🔥 Hard'],['slow','⏱️ Slow'],['weak','🎯 Weak'],['due','🔄 Due'],['nbs','🎯 Next Best Step']];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{
 if(f==='nbs')h+=`<span class="pill ${filt==='nbs'?'on':''}" onclick="startNextBestStep()">${l}</span>`;
@@ -2622,10 +2589,10 @@ const messages=history.filter(function(m){return m.role==='user'||m.role==='assi
 try{
 const ctrl=new AbortController();
 const timeout=setTimeout(function(){ctrl.abort();},45000);
-const resp=await fetch('https://api.anthropic.com/v1/messages',{
+const resp=await fetch(AI_PROXY,{
 method:'POST',
-headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1024,system:CHAT_SYSTEM,messages:messages}),
+headers:{'Content-Type':'application/json','x-api-secret':AI_SECRET},
+body:JSON.stringify({model:'sonnet',max_tokens:1024,system:CHAT_SYSTEM,messages:messages}),
 signal:ctrl.signal
 });
 clearTimeout(timeout);
@@ -2775,7 +2742,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.3.7';
+const APP_VERSION='9.5.0';
 
 // ===== SHARED AI PROXY =====
 const AI_PROXY='https://toranot.netlify.app/api/claude';
