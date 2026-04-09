@@ -1213,6 +1213,13 @@ h+=`<div style="font-size:9px;color:#059669;border-top:1px solid #bbf7d0;padding
 h+=`</div>`;
 }
 }
+// Built-in explanation (every question has one)
+if(ans&&!examMode&&q.e){
+h+=`<div style="margin-top:8px;padding:10px 12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;font-size:11px;line-height:1.7;color:#1e40af;direction:rtl;text-align:right">`;
+h+=`<div style="font-weight:700;margin-bottom:4px;font-size:10px">📝 הסבר</div>`;
+h+=`<div>${q.e.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
+h+=`</div>`;
+}
 // AI Explain button
 if(ans&&!examMode){
   var _aiIdx=pool[qi];
