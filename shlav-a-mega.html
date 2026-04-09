@@ -532,7 +532,8 @@ const re=/הצעד הבא|הטיפול המתאים|first[- ]line|הטיפול �
 pool=[];
 QZ.forEach((q,i)=>{if(re.test(q.q))pool.push(i);});
 for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-qi=0;sel=null;ans=false;filt='nbs';render();
+qi=0;sel=null;ans=false;
+_sessionOk=0;_sessionNo=0;_sessionBest={};_sessionWorse={};_sessionStart=Date.now();_sessionSaved=false;filt='nbs';render();
 }
 
 // ===== WARD MODE STATE =====
@@ -653,19 +654,29 @@ const IMA_WEIGHTS=[5,3,6,5,8,8,10,5,7,4,4,5,3,3,5,5,4,6,5,4,5,4,5,3,4,3,4,5,6,5,
 
 // ===== SPACED REP =====
 function srScore(qIdx,correct){
-if(!S.sr[qIdx])S.sr[qIdx]={ef:2.5,n:0,next:0,ts:[],at:0};
+if(!S.sr[qIdx])S.sr[qIdx]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};
 const s=S.sr[qIdx];
+if(s.tot===undefined){s.tot=0;s.ok=0;}
 const elapsed=Math.round((Date.now()-qStartTime)/1000);
 if(!s.ts)s.ts=[];
 s.ts.push(elapsed);if(s.ts.length>10)s.ts.shift();
 s.at=Math.round(s.ts.reduce((a,b)=>a+b,0)/s.ts.length);
+s.tot++;if(correct)s.ok++;
 const q=correct?4:1;
 s.ef=Math.max(1.3,s.ef+(.1-(5-q)*(.08+(5-q)*.02)));
 s.n=correct?s.n+1:0;
 const days=s.n<=1?1:s.n===2?3:Math.round((s.n-1)*s.ef);
 s.next=Date.now()+days*86400000;
+// session tracking
+_sessionOk+=correct?1:0;_sessionNo+=correct?0:1;
+if(correct&&QZ[qIdx])_sessionBest[QZ[qIdx].ti]=((_sessionBest[QZ[qIdx].ti]||0)+1);
+if(!correct&&QZ[qIdx])_sessionWorse[QZ[qIdx].ti]=((_sessionWorse[QZ[qIdx].ti]||0)+1);
 qStartTime=Date.now();
 save();
+}
+function isChronicFail(qIdx){
+const s=S.sr[qIdx];
+return s&&s.tot>=4&&s.ok/s.tot<0.35;
 }
 function getDueQuestions(){
 const now=Date.now();
@@ -737,6 +748,11 @@ function go(t){tab=t;renderTabs();render()}
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
 let onCallMode=false,flipRevealed=false;
+// Session tracking for end-of-session summary
+let _sessionOk=0,_sessionNo=0,_sessionBest={},_sessionWorse={},_sessionStart=Date.now();
+let _sessionSaved=false;
+// Mock exam pacing
+let _mockAnswered=0;
 let qStartTime=Date.now();
 function buildPool(){
 if(filt==='weak'){
@@ -1003,6 +1019,7 @@ function checkMockIntercept(){
   if(mockExamResults&&q.ti>=0){
     if(correct)mockExamResults.byTopic[q.ti].ok++;
     else mockExamResults.byTopic[q.ti].no++;
+    _mockAnswered++;
   }
 }
 function endExam(){
@@ -1148,10 +1165,19 @@ let h=pomoActive?`<div class="pomo-bar"><div class="pomo-fill" id="pomo-fill" st
 <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#ecfdf5;border-radius:10px;margin-bottom:10px;font-size:11px">
 <span>⏱️ Pomodoro</span><span class="timer" id="pomo-time" style="font-weight:700">${fmtT(pomoSec)}</span>
 <button onclick="stopPomodoro()" style="font-size:10px;color:#dc2626;font-weight:600">Stop</button></div>`:'';
-h+=examMode?`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:8px 12px;background:#0f172a;border-radius:12px;color:#fff">
-<span style="font-weight:700;font-size:13px">📋 Exam Mode</span>
+h+=examMode?(()=>{
+  const answered=S.qOk+S.qNo;
+  const isMock=!!mockExamResults;
+  const target=isMock?108:72; // 10800/100 vs 10800/150
+  const elapsed=10800-examSec;
+  const avgSec=answered>0?Math.floor(elapsed/answered):0;
+  const paceOk=avgSec<=target*1.1;
+  const paceStr=answered>0?`avg ${fmtT(avgSec)}/q · ${paceOk?'<span style="color:#4ade80">✓</span>':'<span style="color:#f87171">⚠️ slow</span>'}`:'';
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:8px 12px;background:#0f172a;border-radius:12px;color:#fff">
+<span style="font-weight:700;font-size:11px">${isMock?'🎯 Mock':'📋 Exam'}<br><span style="font-size:9px;font-weight:400">${paceStr}</span></span>
 <span id="etimer" class="timer" style="font-size:16px;font-weight:700">${fmtT(examSec)}</span>
-<span style="font-size:11px">${qi+1}/150</span></div>`:'';
+<span style="font-size:11px">${qi+1}/${isMock?pool.length:150}</span></div>`;
+})():'';
 if(!examMode){
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
 <div class="sec-t">Quiz</div>
@@ -1183,8 +1209,9 @@ if(!pool.length){h+=`<div class="card" style="padding:24px;text-align:center"><p
 h+=`<div class="progress-bar"><div class="fill" style="width:${Math.round((qi+1)/pool.length*100)}%"></div></div>`;
 h+=`<div class="card" style="padding:16px">`;
 const topicName=q.ti>=0&&TOPICS[q.ti]?TOPICS[q.ti]:'';
+const _cf=isChronicFail(pool[qi]);
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-<div style="display:flex;gap:4px;flex-wrap:wrap"><span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libChOpen=${ref.ch};loadLibChapter(${ref.ch});render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open in Library">📖 ${ref.l}</span>`;return '';})()}</div>
+<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}<span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libChOpen=${ref.ch};loadLibChapter(${ref.ch});render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open in Library">📖 ${ref.l}</span>`;return '';})()}</div>
 <div style="display:flex;align-items:center;gap:8px">
 <button onclick="speakQuestion()" class="speech-btn${isSpeaking?' speaking':''}" title="Read aloud">🔊</button>
 <button onclick="shareQ()" id="shbtn" class="share-btn" title="Share">📋 שתף</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px" title="Bookmark">${bk?'🔖':'🏷️'}</button>
@@ -1477,6 +1504,13 @@ h+=`</div>`;
 if(sylSec==='harAll'){
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — For ALL Residents</div>
+<button onclick="toggleHarrisonAI()" style="font-size:10px;padding:4px 10px;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-bottom:8px">❓ Ask AI about any Harrison chapter</button>
+<div id="harrison-ai-box" style="display:none;margin-bottom:10px;padding:10px;background:#eff6ff;border-radius:10px">
+<div style="font-size:10px;color:#0284c7;font-weight:600;margin-bottom:6px">Ask anything from Harrison's (board-relevant)</div>
+<textarea id="harrison-ai-q" class="search-box" placeholder="e.g. מה הקריטריונים לאי ספיקת לב לפי Harrison Ch 286?" style="width:100%;font-size:11px;direction:rtl;height:60px;resize:none"></textarea>
+<button onclick="submitHarrisonAI()" style="font-size:11px;padding:6px;width:100%;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-top:4px">שאל</button>
+<div id="harrison-ai-answer" style="display:none;margin-top:8px;font-size:11px;line-height:1.7;direction:rtl;text-align:right;padding:8px;background:#fff;border-radius:8px"></div>
+</div>
 <div style="font-size:10px;color:#64748b;margin-bottom:10px">התמחות בסיס + התמחות-על · ${SYL_HAR_ALL.length} chapters</div>`;
 const _harMap={"14":"harrison/Ch14_Pain_Pathophysiology_and_Management.pdf","15":"harrison/Ch15_Chest_Discomfort.pdf","16":"harrison/Ch16_Abdominal_Pain.pdf","17":"harrison/Ch17_Headache.pdf","18":"harrison/Ch18_Low_back_pain.pdf","20":"harrison/Ch20_Fever.pdf","22":"harrison/Ch22_Fever_of_Unknown_Origin.pdf","26":"harrison/Ch026_Neurologic_Causes_of_Weakness_and_Paralysis.pdf","30":"harrison/Ch30_Coma.pdf","39":"harrison/Ch39_Dyspnea.pdf","40":"harrison/Ch40_Cough.pdf","41":"harrison/Ch41_Hemoptysis.pdf","42":"harrison/Ch42_Hypoxia_and_Cyanosis.pdf","43":"harrison/Ch43_Edema.pdf","48":"harrison/Ch48_Nausea_Vomiting_and_Indigestion.pdf","49":"harrison/Ch49_Diarrhea_and_Constipation.pdf","50":"harrison/Ch50_Unintentional_Weight_Loss.pdf","51":"harrison/Ch51_Gastrointestinal_Bleeding.pdf","52":"harrison/Ch52_Jaundice.pdf","53":"harrison/Ch53_Abdominal_Swelling_and_Ascites.pdf","55":"harrison/Ch55_Azotemia_and_Urinary_Abnormalities.pdf","56":"harrison/Ch56_Fluid_and_Electrolyte_Disturbances.pdf","57":"harrison/Ch57_Hypercalcemia_and_Hypocalcemia.pdf","58":"harrison/Ch58_Acidosis_and_Alkalosis.pdf","66":"harrison/Ch66_Anemia_and_Polycythemia.pdf","67":"harrison/Ch67_Disorders_of_Granulocytes_and_Monocytes.pdf","69":"harrison/Ch69_Bleeding_and_Thrombosis.pdf","70":"harrison/Ch70_Enlargement_of_Lymph_Nodes_and_Spleen.pdf","79":"harrison/Ch79_Infections_in_Patients_with_Cancer.pdf","80":"harrison/Ch80_Oncologic_Emergencies.pdf","102":"harrison/Ch102_Iron_Deficiency_and_Other_Hypoproliferat.pdf","120":"harrison/Ch120_Disorders_of_Platelets_and_Vessel_Wall.pdf","121":"harrison/Ch121_Coagulation_Disorders.pdf","127":"harrison/Ch127_Approach_to_the_Acutely_Ill_Infected_Febrile_.pdf","133":"harrison/Ch133_Infective_Endocarditis.pdf","136":"harrison/Ch136_Osteomyelitis.pdf","142":"harrison/Ch142_Encephalitis.pdf","143":"harrison/Ch143_Acute_Meningitis.pdf","147":"harrison/Ch147_Infections_Acquired_in_Health_Care_Facilities.pdf","243":"harrison/Ch243_Approach_to_the_Patient_with_Possible_Cardiov.pdf","247":"harrison/Ch247_Electrocardiography.pdf","285":"harrison/Ch285_Non-ST-Segment_Elevation_Acute_Coronary_Syndr.pdf","286":"harrison/Ch286_ST-Segment_Elevation_Myocardial_Infarction.pdf","295":"harrison/Ch295_Approach_to_the_Patient_with_Disease_of_the_R.pdf","305":"harrison/Ch305_Disorders_of_the_Pleura.pdf","311":"harrison/Ch311_Approach_to_the_Patient_with_Critical_Illness.pdf","314":"harrison/Ch314_Approach_to_the_Patient_with_Shock.pdf","315":"harrison/Ch315_Sepsis_and_Septic_Shock.pdf","316":"harrison/Ch316_Cardiogenic_Shock_and_Pulmonary_Edema.pdf","317":"harrison/Ch317_Cardiovascular_Collapse,_Cardiac_Arrest,_and_.pdf","319":"harrison/Ch319_Approach_to_the_Patient_with_Renal_Disease_or.pdf","321":"harrison/Ch321_Acute_Kidney_Injury.pdf","322":"harrison/Ch322_Chronic_Kidney_Disease.pdf","332":"harrison/Ch332_Approach_to_the_Patient_with_Gastrointestinal.pdf","347":"harrison/Ch347_Approach_to_the_Patient_with_Liver_Disease.pdf","355":"harrison/Ch355_Cirrhosis_and_Its_Complications.pdf","375":"harrison/Ch375_The_Vasculitis_Syndromes.pdf","379":"harrison/Ch379_Sarcoidosis.pdf","382":"harrison/Ch382_Approach_to_Articular_and_Musculoskeletal_Dis.pdf","384":"harrison/Ch384_Gout_and_Other_Crystal-Associated_Arthropathi.pdf","387":"harrison/Ch387_Periarticular_Disorders_of_the_Extremities.pdf","388":"harrison/Ch388_Approach_to_the_Patient_with_Endocrine_Disord.pdf","433":"harrison/Ch433_Approach_to_the_Patient_with_Neurologic_Disea.pdf","436":"harrison/Ch436_Seizures_and_Epilepsy.pdf","437":"harrison/Ch437_Introduction_to_Cerebrovascular_Diseases.pdf","438":"harrison/Ch438_Ischemic_Stroke.pdf","439":"harrison/Ch439_Intracerebral_Hemorrhage.pdf","458":"harrison/Ch458_Guillain-Barr%23U00e9_Syndrome_and_Other_Immune.pdf","459":"harrison/Ch459_Myasthenia_Gravis_and_Other_Diseases_of_the_N.pdf"};
 SYL_HAR_ALL.forEach(c=>{
@@ -1596,6 +1630,141 @@ function renderPriorityMatrix(){
   h+=`</div>`;
   return h;
 }
+function renderWrongAnswerLog(){
+  const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+  // Get chronically failing + recently answered wrong questions
+  const chronic=[];const recentWrong=[];
+  Object.entries(S.sr||{}).forEach(([idx,s])=>{
+    const q=QZ[+idx];if(!q)return;
+    if(s.tot>=4&&s.ok/s.tot<0.35)chronic.push({idx:+idx,q,s});
+    else if(s.n===0&&s.tot>=1)recentWrong.push({idx:+idx,q,s});
+  });
+  chronic.sort((a,b)=>a.s.ok/a.s.tot-b.s.ok/b.s.tot);
+  recentWrong.sort((a,b)=>(b.s.ts?.slice(-1)[0]||0)-(a.s.ts?.slice(-1)[0]||0));
+  
+  let h='';
+  // Wrong answer key reporter (still useful, now prominent)
+  const curQ=pool.length&&qi<pool.length?QZ[pool[qi]]:null;
+  if(curQ){
+    h+=`<div style="margin-bottom:12px;padding:10px;background:#fffbeb;border-radius:10px;border:1px solid #fde68a">
+<div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:6px">❌ Report wrong answer key for current question</div>
+<input id="reportInput" class="search-box" placeholder="מה לדעתך התשובה הנכונה ולמה?" style="font-size:11px;margin-bottom:6px;direction:rtl">
+<button class="btn" style="font-size:10px;width:100%;background:#d97706;color:#fff" onclick="S._reportType='wrong_answer';submitReport()">שלח לבדיקת AI</button>
+<div id="fbStatus" style="font-size:10px;margin-top:4px;display:none"></div>
+<div id="aiVerifyResult" style="display:none;margin-top:8px;padding:10px;border-radius:8px;font-size:10px;line-height:1.6"></div>
+</div>`;
+  }
+  
+  // Chronic failures
+  if(chronic.length>0){
+    h+=`<div style="font-weight:700;font-size:11px;margin-bottom:6px;color:#dc2626">🔴 Chronic Failures — read the chapter, not drill</div>`;
+    chronic.slice(0,5).forEach(({idx,q,s})=>{
+      const acc=Math.round(s.ok/s.tot*100);
+      const topic=q.ti>=0?TOPICS_L[q.ti]:'';
+      h+=`<div style="padding:8px;background:#fef2f2;border-radius:8px;margin-bottom:6px;cursor:pointer" onclick="filt='all';pool=[${idx}];qi=0;sel=null;ans=false;flipRevealed=false;tab='quiz';render()">
+<div style="font-size:10px;font-weight:600;line-height:1.4">${q.q.slice(0,80)}${q.q.length>80?'…':''}</div>
+<div style="display:flex;gap:8px;margin-top:4px"><span style="font-size:9px;color:#dc2626">${s.ok}/${s.tot} (${acc}%)</span><span style="font-size:9px;color:#94a3b8">${topic}</span></div>
+</div>`;
+    });
+  }
+  
+  // Recently wrong (last streak broken)
+  const shown=recentWrong.slice(0,8);
+  if(shown.length>0){
+    h+=`<div style="font-weight:700;font-size:11px;margin-bottom:6px;margin-top:10px;color:#d97706">⚠️ Recently Wrong — retry these</div>`;
+    shown.forEach(({idx,q,s})=>{
+      const topic=q.ti>=0?TOPICS_L[q.ti]:'';
+      h+=`<div style="padding:8px;background:#fffbeb;border-radius:8px;margin-bottom:4px;cursor:pointer" onclick="filt='all';pool=[${idx}];qi=0;sel=null;ans=false;tab='quiz';render()">
+<div style="font-size:10px;line-height:1.4">${q.q.slice(0,75)}${q.q.length>75?'…':''}</div>
+<div style="font-size:9px;color:#94a3b8;margin-top:2px">${topic}</div>
+</div>`;
+    });
+  }
+  
+  if(!chronic.length&&!shown.length&&!curQ)h+='<div style="font-size:11px;color:#94a3b8;text-align:center;padding:20px">No data yet — answer some questions first</div>';
+  return h;
+}
+function toggleHarrisonAI(){
+  const b=document.getElementById('harrison-ai-box');
+  if(b)b.style.display=b.style.display==='none'?'block':'none';
+}
+async function submitHarrisonAI(){
+  const q=document.getElementById('harrison-ai-q')?.value?.trim();
+  const ans=document.getElementById('harrison-ai-answer');
+  if(!q||!ans)return;
+  ans.style.display='block';ans.innerHTML='⏳ ...';
+  const prompt=`You are an expert internist helping an Israeli geriatrics resident study Harrison's Internal Medicine 22e for the שלב א׳ board exam.
+
+Question: ${q}
+
+Answer in HEBREW (4-6 sentences). Cite the relevant Harrison chapter if known. Focus on geriatric-specific caveats, Beers criteria interactions, and what the exam is likely to test. If a specific threshold/criterion/number is asked, lead with it.`;
+  try{
+    const txt=await callAI([{role:'user',content:prompt}],600,'sonnet');
+    ans.innerHTML=sanitize(txt);
+    document.getElementById('harrison-ai-q').value='';
+  }catch(e){ans.innerHTML='⚠️ Failed: '+e.message;}
+}
+async function aiSummarizeChapter(chNum,chTitle){
+  const box=document.getElementById('quiz-me-box');
+  if(!box)return;
+  box.innerHTML='<div style="text-align:center;padding:16px;color:#64748b">⏳ מסכם את הפרק...</div>';
+  let chText='';
+  if(window._libData){
+    const ch=window._libData.chapters.find(c=>c.ch===chNum);
+    if(ch&&ch.sections)chText=ch.sections.slice(0,8).map(s=>s.title+(s.content?': '+s.content.slice(0,300):'')).join('\n').slice(0,3500);
+  }
+  const prompt=`You are summarizing Hazzard's Geriatric Medicine Ch ${chNum}: ${chTitle} for the Israeli geriatrics board exam (שלב א׳).
+
+Chapter content:
+${chText||'Chapter '+chNum+': '+chTitle}
+
+Create a board-focused summary in HEBREW with:
+1. 5-7 key facts/thresholds the examiner will test (specific numbers, criteria)
+2. 2-3 "exam traps" — common wrong answers and why they're wrong
+3. One clinical pearl specific to geriatric practice at SZMC
+
+Format as clean bullet points. Be concise and high-yield.`;
+  try{
+    const txt=await callAI([{role:'user',content:prompt}],800,'sonnet');
+    box.innerHTML=`<div style="margin-top:12px;padding:14px;background:#f0fdf4;border-radius:10px;border-left:4px solid #059669">
+<div style="font-weight:700;font-size:12px;color:#065f46;margin-bottom:8px">📝 Board Summary — Ch ${chNum}: ${chTitle}</div>
+<div style="font-size:11px;line-height:1.8;direction:rtl;text-align:right;white-space:pre-wrap">${sanitize(txt)}</div>
+</div>`;
+  }catch(e){box.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px">⚠️ Failed: '+e.message+'</div>';}
+}
+function toggleAskAI(){
+  const box=document.getElementById('ask-ai-box');
+  if(!box)return;
+  box.style.display=box.style.display==='none'?'block':'none';
+  if(box.style.display==='block'){const inp=document.getElementById('ask-ai-input');if(inp)inp.focus();}
+}
+async function submitAskAI(chNum,chTitle){
+  const inp=document.getElementById('ask-ai-input');
+  const ansBox=document.getElementById('ask-ai-answer');
+  if(!inp||!ansBox)return;
+  const q=inp.value.trim();
+  if(!q)return;
+  ansBox.style.display='block';
+  ansBox.innerHTML='⏳ ...';
+  let chText='';
+  if(window._libData){
+    const ch=window._libData.chapters.find(c=>c.ch===chNum);
+    if(ch&&ch.sections)chText=ch.sections.slice(0,8).map(s=>s.title+(s.content?': '+s.content.slice(0,200):'')).join('\n').slice(0,2500);
+  }
+  const prompt=`You are an expert geriatrics educator helping an Israeli geriatrics resident study Hazzard's Ch ${chNum}: ${chTitle}.
+
+Chapter context:
+${chText||`Hazzard Geriatric Medicine Chapter ${chNum}`}
+
+Student question: ${q}
+
+Answer concisely in HEBREW (3-5 sentences). Focus on board exam relevance. If the question involves a specific number/threshold/criterion, state it explicitly.`;
+  try{
+    const txt=await callAI([{role:'user',content:prompt}],500,'sonnet');
+    ansBox.innerHTML=sanitize(txt);
+    inp.value='';
+  }catch(e){ansBox.innerHTML='⚠️ Failed: '+e.message;}
+}
 async function quizMeOnChapter(chNum,chTitle){
   // Show loading state in Library
   const el=document.getElementById('quiz-me-box');
@@ -1692,8 +1861,8 @@ if(libChOpen!==null && _hazChapters && _hazChapters[String(libChOpen)]){
 const ch=_hazChapters[String(libChOpen)];
 h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
 <button onclick="libChOpen=null;render()" style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">← Back</button>
-<div style="font-size:13px;font-weight:700">Ch ${libChOpen}: ${ch.title}</div><button onclick="quizMeOnChapter(libChOpen,ch.title)" style="font-size:10px;padding:4px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">🧠 Quiz me</button></div>`;
-h+=`<div id="quiz-me-box"></div>`;
+<div style="font-size:13px;font-weight:700">Ch ${libChOpen}: ${ch.title}</div><button onclick="quizMeOnChapter(libChOpen,ch.title)" style="font-size:10px;padding:4px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">🧠 Quiz me</button><button onclick="aiSummarizeChapter(libChOpen,ch.title)" style="font-size:10px;padding:4px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">📝 Summary</button><button onclick="toggleAskAI()" style="font-size:10px;padding:4px 10px;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer">❓ Ask AI</button></div>`;
+h+=`<div id="quiz-me-box"></div><div id="ask-ai-box" style="display:none;margin-bottom:8px"><div style="display:flex;gap:6px;padding:10px;background:#eff6ff;border-radius:10px"><input id="ask-ai-input" class="search-box" placeholder="שאל שאלה על הפרק הזה..." style="flex:1;margin:0;font-size:11px;direction:rtl"><button onclick="submitAskAI(libChOpen,ch.title)" style="font-size:11px;padding:6px 12px;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer">שלח</button></div><div id="ask-ai-answer" style="display:none;padding:10px;background:#fff;border-radius:10px;margin-top:6px;font-size:11px;line-height:1.7;direction:rtl;text-align:right"></div></div>`;
 h+=`<div class="card" style="padding:16px">`;
 ch.sections.forEach(sec=>{
 const lvl=sec.level||1;
@@ -2277,12 +2446,55 @@ const TOPIC_REF={
   31:{s:'haz',ch:6,l:'Hazzard Ch 6'},  // Driving → Sex/Gender (nearest)
 };
 
+function saveSessionSummary(){
+  try{
+    const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+    const dur=Math.floor((Date.now()-_sessionStart)/1000);
+    const best=Object.entries(_sessionBest).sort((a,b)=>b[1]-a[1])[0];
+    const worse=Object.entries(_sessionWorse).sort((a,b)=>b[1]-a[1])[0];
+    const sess={
+      date:new Date().toISOString(),
+      ok:_sessionOk,no:_sessionNo,dur,
+      best:best?{ti:+best[0],name:TOPICS_L[+best[0]],n:best[1]}:null,
+      worse:worse?{ti:+worse[0],name:TOPICS_L[+worse[0]],n:worse[1]}:null,
+      due:getDueQuestions().length
+    };
+    const hist=JSON.parse(localStorage.getItem('samega_sessions')||'[]');
+    hist.push(sess);if(hist.length>30)hist.splice(0,hist.length-30);
+    localStorage.setItem('samega_sessions',JSON.stringify(hist));
+  }catch(e){}
+}
+function renderSessionCard(){
+  try{
+    const hist=JSON.parse(localStorage.getItem('samega_sessions')||'[]');
+    if(!hist.length)return '';
+    const last=hist[hist.length-1];
+    const tot=last.ok+last.no;
+    const pct=tot?Math.round(last.ok/tot*100):0;
+    const mins=Math.round(last.dur/60);
+    const today=new Date().toDateString();
+    const sessDate=new Date(last.date).toDateString();
+    if(sessDate!==today)return '';
+    return `<div class="card" style="padding:14px;margin-bottom:10px;border-left:4px solid #7c3aed">
+<div style="font-weight:700;font-size:12px;margin-bottom:6px;color:#7c3aed">📊 Today's Session</div>
+<div style="display:flex;gap:12px;margin-bottom:8px">
+  <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:${pct>=70?'#059669':pct>=50?'#d97706':'#dc2626'}">${pct}%</div><div style="font-size:9px;color:#94a3b8">${last.ok}/${tot} correct</div></div>
+  <div style="text-align:center"><div style="font-size:18px;font-weight:700">${mins}m</div><div style="font-size:9px;color:#94a3b8">duration</div></div>
+  <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#f59e0b">${last.due}</div><div style="font-size:9px;color:#94a3b8">due tomorrow</div></div>
+</div>
+${last.best?`<div style="font-size:10px;margin-bottom:2px">✅ Best: <b>${last.best.name}</b> (${last.best.n} correct)</div>`:''}
+${last.worse?`<div style="font-size:10px">🔴 Worst: <b>${last.worse.name}</b> (${last.worse.n} wrong)</div>`:''}
+<button onclick="this.parentElement.style.display='none'" style="margin-top:8px;font-size:9px;color:#94a3b8;background:none;border:none;cursor:pointer">dismiss</button>
+</div>`;
+  }catch(e){return '';}
+}
 function renderTrack(){
 const done=Object.values(S.ck).filter(Boolean).length;
 const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
 const bkCount=Object.values(S.bk).filter(Boolean).length;
 const dueN=getDueQuestions().length;
-let h=`<div class="sec-t">Progress</div><div class="sec-s">Syllabus · Bookmarks · Spaced Repetition</div>`;
+let h=renderSessionCard();
+h+=`<div class="sec-t">Progress</div><div class="sec-s">Syllabus · Bookmarks · Spaced Repetition</div>`;
 if(S.streak>0)h+=`<div style="text-align:center;margin-bottom:12px"><span class="streak-badge">🔥 ${S.streak} day${S.streak>1?'s':''} streak</span></div>`;
 h+=`<div class="stats">
 <div class="stat"><div class="n" style="color:rgb(var(--em))">${done}/40</div><div class="l">Topics</div></div>
@@ -2419,19 +2631,10 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 </div>
 <div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
 </div></div>`;
-// Error Reporter — inline input, no ugly prompt()
+// Study Journal — wrong answer log + personal notes
 h+=`<div class="card" style="padding:14px;margin-top:12px">
-<div style="font-weight:700;font-size:12px;margin-bottom:6px">🐞 Report Issue</div>
-<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
-<button class="btn" style="font-size:10px;background:${S._reportType==='bug'?'#dc2626':'#fef2f2'};color:${S._reportType==='bug'?'#fff':'#dc2626'}" onclick="S._reportType='bug';render()">🐛 Bug</button>
-<button class="btn" style="font-size:10px;background:${S._reportType==='wrong_answer'?'#d97706':'#fffbeb'};color:${S._reportType==='wrong_answer'?'#fff':'#d97706'}" onclick="S._reportType='wrong_answer';render()">❌ Wrong Answer</button>
-<button class="btn" style="font-size:10px;background:${S._reportType==='feature'?'#3b82f6':'#eff6ff'};color:${S._reportType==='feature'?'#fff':'#3b82f6'}" onclick="S._reportType='feature';render()">💡 Feature</button>
-<button class="btn" style="font-size:10px;background:#f1f5f9;color:#64748b" onclick="copyDiagnostics()">📋 Diag</button>
-</div>
-${S._reportType?`<input id="reportInput" class="search-box" placeholder="${S._reportType==='wrong_answer'?'מה התשובה הנכונה ולמה?':S._reportType==='bug'?'תאר את הבאג':'תאר את הפיצ׳ר'}" style="font-size:11px;margin-bottom:6px;direction:rtl">
-<button class="btn btn-p" style="font-size:10px;width:100%" onclick="submitReport()">שלח</button>`:''}
-<div id="fbStatus" style="font-size:10px;margin-top:6px;display:none"></div>
-<div id="aiVerifyResult" style="display:none;margin-top:8px;padding:10px;border-radius:8px;font-size:10px;line-height:1.6"></div>
+<div style="font-weight:700;font-size:12px;margin-bottom:10px">📓 Study Journal</div>
+${renderWrongAnswerLog()}
 </div>`;
 // API key settings card
 var _storedKey=getApiKey();
@@ -2857,7 +3060,12 @@ case'flash':el.innerHTML=renderFlash();break;
 case'drugs':el.innerHTML=renderDrugs();break;
 case'calc':el.innerHTML=renderCalc();break;
 case'osce':el.innerHTML=renderOsce();break;
-case'track':el.innerHTML=renderTrack();break;
+case'track':
+  // Save session summary when switching to track tab
+  if(!_sessionSaved&&(_sessionOk+_sessionNo)>=5){
+    saveSessionSummary();_sessionSaved=true;
+  }
+  el.innerHTML=renderTrack();break;
 case'search':el.innerHTML=renderSearch();break;
 case'chat':el.innerHTML=renderChat();break;
 case'law':el.innerHTML=renderEOLTree();break;
