@@ -781,7 +781,23 @@ pool=[];
 const due=getDueQuestions();
 if(filt==='due'){pool=due.length?due:[];}
 else if(filt==='topic'&&topicFilt>=0){QZ.forEach((q,i)=>{if(q.ti===topicFilt)pool.push(i)});}
-else{QZ.forEach((q,i)=>{if(filt==='all'||q.t.includes(filt))pool.push(i)});}
+else{
+  QZ.forEach((q,i)=>{if(filt==='all'||q.t.includes(filt))pool.push(i)});
+  if(filt==='all'){
+    // Smart shuffle: prioritize struggling questions over pure random
+    const due=new Set(getDueQuestions());
+    const tier1=[],tier2=[],tier3=[],tier4=[];
+    pool.forEach(i=>{
+      const s=S.sr[i];
+      if(due.has(i))tier1.push(i);
+      else if(s&&s.ef<1.8)tier2.push(i);  // chronic struggle
+      else if(s&&s.ef<2.2)tier3.push(i);  // imperfect
+      else tier4.push(i);                  // unseen/mastered
+    });
+    const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+    pool=[...shuffle(tier1),...shuffle(tier2),...shuffle(tier3),...shuffle(tier4)];
+  }
+}
 for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
 qi=0;sel=null;ans=false;
 }
@@ -868,7 +884,13 @@ checkMockIntercept();
 ans=true;
 const q=QZ[pool[qi]];
 if(sel===q.c){S.qOk++;srScore(pool[qi],true);}
-else{S.qNo++;srScore(pool[qi],false);
+else{S.qNo++;
+  // Store which distractor was chosen for future mistake-pattern analysis
+  if(!S.sr[pool[qi]])S.sr[pool[qi]]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};
+  if(!S.sr[pool[qi]].wc)S.sr[pool[qi]].wc={};
+  const _wci=String(sel);
+  S.sr[pool[qi]].wc[_wci]=(S.sr[pool[qi]].wc[_wci]||0)+1;
+  srScore(pool[qi],false);
   const _apk='autopsy_'+pool[qi];
   if(!localStorage.getItem(_apk)){setTimeout(()=>aiAutopsy(pool[qi]),400);}
 }
@@ -2446,6 +2468,50 @@ const TOPIC_REF={
   31:{s:'haz',ch:6,l:'Hazzard Ch 6'},  // Driving → Sex/Gender (nearest)
 };
 
+function renderExamTrendCard(){
+  const OLD_EX=new Set(['2021','2022','יוני 23']);
+  const NEW_EX=new Set(['ספט 24','יוני 25','2025-א']);
+  const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+  const oldTot=QZ.filter(q=>OLD_EX.has(q.t)).length||1;
+  const newTot=QZ.filter(q=>NEW_EX.has(q.t)).length||1;
+  const trends=TOPICS_L.map((name,ti)=>{
+    const oldN=QZ.filter(q=>OLD_EX.has(q.t)&&q.ti===ti).length;
+    const newN=QZ.filter(q=>NEW_EX.has(q.t)&&q.ti===ti).length;
+    const delta=(newN/newTot - oldN/oldTot)*100;
+    return{ti,name,oldN,newN,oldPct:oldN/oldTot*100,newPct:newN/newTot*100,delta};
+  }).filter(r=>r.oldN+r.newN>0);
+  
+  const growing=trends.filter(r=>r.delta>0.5).sort((a,b)=>b.delta-a.delta).slice(0,6);
+  const shrinking=trends.filter(r=>r.delta<-0.5).sort((a,b)=>a.delta-b.delta).slice(0,4);
+  
+  let h=`<div class="card" style="padding:14px;margin-bottom:10px;border-left:4px solid #7c3aed">
+<div style="font-weight:700;font-size:12px;margin-bottom:4px;color:#7c3aed">📈 Exam Trend — 2021-22 vs ספט24–25-א</div>
+<div style="font-size:9px;color:#94a3b8;margin-bottom:10px">Where the exam is heading. Study accordingly.</div>`;
+  
+  h+=`<div style="font-size:10px;font-weight:700;color:#059669;margin-bottom:5px">▲ GROWING — prioritize</div>`;
+  growing.forEach(r=>{
+    const barW=Math.min(100,Math.round(r.delta*15));
+    h+=`<div style="margin-bottom:5px">
+<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px">
+  <span style="font-weight:${r.delta>1.5?'700':'400'}">${r.name}</span>
+  <span style="color:#059669">+${r.delta.toFixed(1)}pp · ${r.newPct.toFixed(1)}% of exam</span>
+</div>
+<div style="height:4px;background:#e2e8f0;border-radius:2px"><div style="width:${barW}%;height:100%;background:#10b981;border-radius:2px"></div></div>
+</div>`;
+  });
+  
+  h+=`<div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:5px;margin-top:10px">▼ SHRINKING — less priority</div>`;
+  shrinking.forEach(r=>{
+    h+=`<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px">
+<span style="color:#64748b">${r.name}</span>
+<span style="color:#dc2626">${r.delta.toFixed(1)}pp</span>
+</div>`;
+  });
+  
+  h+=`<div style="font-size:9px;color:#94a3b8;margin-top:8px;border-top:1px solid #f1f5f9;padding-top:6px">Old: 2021+2022+יוני23 (${oldTot}q) · New: ספט24+יוני25+2025-א (${newTot}q)</div>`;
+  h+=`</div>`;
+  return h;
+}
 function saveSessionSummary(){
   try{
     const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
@@ -2494,6 +2560,7 @@ const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
 const bkCount=Object.values(S.bk).filter(Boolean).length;
 const dueN=getDueQuestions().length;
 let h=renderSessionCard();
+h+=renderExamTrendCard();
 h+=`<div class="sec-t">Progress</div><div class="sec-s">Syllabus · Bookmarks · Spaced Repetition</div>`;
 if(S.streak>0)h+=`<div style="text-align:center;margin-bottom:12px"><span class="streak-badge">🔥 ${S.streak} day${S.streak>1?'s':''} streak</span></div>`;
 h+=`<div class="stats">
