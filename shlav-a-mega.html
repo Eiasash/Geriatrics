@@ -1001,7 +1001,7 @@ async function explainWithAI(qIdx){
     var res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-opus-4-6',max_tokens:400,
+      body:JSON.stringify({model:'opus',max_tokens:400,
         messages:[{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה לשאלה הבאה מתחום הגריאטריה. עגן תמיד בתשובה הנכונה הנל.\n\nשאלה: '+q.q+'\nאפשרויות: '+q.o.join(' / ')+'\nתשובה נכונה: '+correct}]}),
       signal:ctrl.signal
     });
@@ -1029,7 +1029,7 @@ const wrongOpts=q.o.filter((_,i)=>i!==q.c);
 const res=await fetch(AI_PROXY,{
 method:'POST',
 headers:{'Content-Type':'application/json','x-api-secret':AI_SECRET},
-body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,
+body:JSON.stringify({model:'sonnet',max_tokens:500,
 messages:[{role:'user',content:`Geriatric board exam question. For EACH wrong option, explain in 1-2 sentences why it's wrong HERE and when it WOULD be correct.
 
 Question: ${q.q}
@@ -2845,7 +2845,7 @@ const APP_VERSION='9.3.7';
 // ===== SHARED AI PROXY =====
 const AI_PROXY='https://toranot.netlify.app/api/claude';
 const AI_SECRET='shlav-a-mega-2026';
-async function callAI(messages,maxTokens=400,model='claude-sonnet-4-20250514'){
+async function callAI(messages,maxTokens=400,model='sonnet'){
 try{
 const pr=await fetch(AI_PROXY,{
 method:'POST',
