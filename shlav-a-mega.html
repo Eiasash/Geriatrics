@@ -307,7 +307,8 @@ const d=new Date();
 const day=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
 const h=String(d.getHours()).padStart(2,'0');
 const m=String(d.getMinutes()).padStart(2,'0');
-el.textContent='SZMC · Hazzard 8e + Harrison 22e · P005-2026 · '+day+' '+h+':'+m;
+const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+el.textContent=day+' '+d.getDate()+' '+mon+' · '+h+':'+m;
 }
 upd();setInterval(upd,30000);
 })();
@@ -317,9 +318,9 @@ upd();setInterval(upd,30000);
 
 <a href="#main-content" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v9.2</span></h1>
+<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v9.3</span></h1>
 <button class="dm-btn" onclick="toggleStudyMode()" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode">🌓</button>
-<p id="hdr-sub">SZMC · Hazzard 8e + Harrison 22e · P005-2026</p>
+<p id="hdr-sub">Loading...</p>
 </div>
 
 <div class="ct" id="ct" role="main"></div>
@@ -1175,7 +1176,7 @@ h+=`</div>`;
 // Blind recall & Distractor Autopsy toggles
 h+=`<div style="display:flex;gap:8px;margin-bottom:10px;font-size:10px">
 <span class="tt-wrap"><label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" ${blindRecall?'checked':''} onchange="blindRecall=this.checked;render()"> 🙈 Cover Options</label><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">Hides answer choices — forces you to recall the answer before seeing options.</div></span>
-<label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" ${autopsyMode?'checked':''} onchange="autopsyMode=this.checked;render()"> 🔬 Distractor Autopsy</label>
+<span class="tt-wrap"><label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" ${autopsyMode?'checked':''} onchange="autopsyMode=this.checked;render()"> 🔬 Distractor Autopsy</label><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">After answering, explains WHY each wrong option is wrong — builds distractor recognition skill.</div></span>
 </div>`;
 h+=`<div style="margin-bottom:10px"><select class="calc-in" style="font-size:11px;padding:6px 10px" onchange="this.value===-1?setFilt('all'):setTopicFilt(parseInt(this.value))">
 <option value="-1"${filt!=='topic'?' selected':''}>📂 Filter by topic…</option>`;
