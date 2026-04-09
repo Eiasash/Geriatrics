@@ -1,4 +1,4 @@
-const CACHE='shlav-a-v9.3.3';
+const CACHE='shlav-a-v9.3.4';
 const URLS=['shlav-a-mega.html','manifest.json'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(URLS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
