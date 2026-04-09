@@ -1,4 +1,4 @@
-const CACHE='shlav-a-v10.0';
+const CACHE='shlav-a-v9.7.0';
 const HTML_URLS=['shlav-a-mega.html','manifest.json'];
 const JSON_DATA_URLS=['data/questions.json','data/topics.json','data/notes.json','data/drugs.json','data/flashcards.json','data/tabs.json','data/osce.json'];
 const ALL_URLS=[...HTML_URLS,...JSON_DATA_URLS];
