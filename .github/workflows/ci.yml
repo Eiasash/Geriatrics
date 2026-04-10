@@ -285,3 +285,9 @@ jobs:
               sys.exit(1)
           print(f'OK: Brace balance ({opens} pairs)')
           "
+
+      # ── Vitest Test Suite ──
+      - name: Install test dependencies
+        run: npm ci
+      - name: Run Vitest tests
+        run: npx vitest run
