@@ -868,6 +868,7 @@ qi=0;sel=null;ans=false;return;}
 
 pool=[];
 const due=getDueQuestions();
+let smartShuffled=false;
 if(filt==='due'){pool=due.length?due:[];}
 else if(filt==='topic'&&topicFilt>=0){QZ.forEach((q,i)=>{if(q.ti===topicFilt)pool.push(i)});}
 else{
@@ -886,10 +887,10 @@ else{
     });
     const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
     pool=[...shuffle(tier1),...shuffle(tier2),...shuffle(tier3),...shuffle(tier4)];
-  } else {
-    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+    smartShuffled=true;
   }
 }
+if(!smartShuffled){for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}}
 qi=0;sel=null;ans=false;
 }
 buildPool();
