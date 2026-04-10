@@ -183,14 +183,23 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `9` (for app v9.7)
+- Currently both at version `9.10`
 - Update both when making changes to ensure users get cache-busted
+
+### Testing
+```bash
+npm test             # Run all tests (vitest, 41 tests)
+```
+
+Vitest test suite validates data integrity and app structure:
+- `tests/dataIntegrity.test.js` — 30 tests: question schema/duplicates/topic coverage, notes, drugs, flashcards, OSCE, topics, cross-file referential integrity
+- `tests/appIntegrity.test.js` — 11 tests: HTML structure (RTL, viewport, PWA), SW version sync, security checks (eval, innerHTML), manifest validation
 
 ---
 
 ## CI Pipeline (GitHub Actions)
 
-Runs on push to `main` and all PRs. Uses Python only (no Node.js in CI).
+Runs on push to `main` and all PRs. Python-based data validation + Vitest test suite.
 
 | Check | Threshold |
 |-------|-----------|
@@ -207,7 +216,7 @@ Runs on push to `main` and all PRs. Uses Python only (no Node.js in CI).
 | innerHTML sanitization | Audit for unsanitized innerHTML usage |
 | Topic coverage | >= 5 questions per topic (all 40 topics) |
 
-**CI never runs Node.js.** Scripts in `scripts/` are run locally only.
+**Vitest tests** (41 tests, 2 files) validate data schemas and app structure. Run `npm test` before pushing.
 
 ---
 
