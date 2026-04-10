@@ -5,8 +5,8 @@
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (95 KB, ~1,427 lines, self-contained HTML/CSS/JS)
-- **App version**: v9.7
+- **Main file**: `shlav-a-mega.html` (~236 KB, ~3,800 lines, self-contained HTML/CSS/JS)
+- **App version**: v9.10
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -39,26 +39,26 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.7)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.10)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
 │
-├── data/                    # Lazy-loaded JSON data (v9.7+ split architecture)
-│   ├── questions.json       # 1,031 MCQs (primary runtime source)
+├── data/                    # Lazy-loaded JSON data — single source of truth
+│   ├── questions.json       # 1,419 MCQs (primary runtime source)
 │   ├── notes.json           # 40 study topic notes
 │   ├── drugs.json           # 53 Beers/ACB drugs database
 │   ├── flashcards.json      # 159 high-yield flashcards
-│   ├── osce.json            # 11 OSCE station scenarios
-│   ├── tabs.json            # 10 tab definitions for app navigation
+│   ├── osce.json            # OSCE station scenarios
+│   ├── tabs.json            # Tab definitions for app navigation
 │   └── topics.json          # 40 topic keyword mappings for auto-tagging
 │
-├── questions.json           # 1,432 MCQs (root copy — includes all questions + explanations)
-├── notes.json               # 40 study notes (root copy)
-├── drugs.json               # 53 drugs (root copy)
-├── flashcards.json          # 159 flashcards (root copy)
 ├── explanations_cache.json  # Pre-generated AI explanations (2.3 MB)
 ├── hazzard_chapters.json    # Hazzard's 8e textbook content (structured JSON)
+│
+├── questions/               # Question images for exams with figures
+│   ├── image_map.json       # Maps question IDs to image files
+│   └── images/              # PNG images referenced by exam questions
 │
 ├── scripts/
 │   ├── generate_explanations.cjs   # Bulk explanation generator (Claude API)
@@ -70,26 +70,37 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 │       ├── exam-patterns.md # Repeating question stems and frequencies
 │       └── legal-ethics.md  # Israeli law summaries
 │
+├── laws/                    # Israeli legal/regulatory documents
+│   ├── P005-2026-syllabus.pdf
+│   ├── dying_patient_law.html
+│   ├── driving_report_form.docx
+│   └── ...                  # MOH/MoJ PDFs and legal references
+│
 ├── .claude/
 │   ├── launch.json          # Dev server: python -m http.server 3737
 │   ├── agents/              # Agent workflow prompts (note-updater, question-explainer)
 │   ├── commands/            # Slash command definitions (see Skills section)
-│   └── skills/              # Skill files (shlav-a-mega.md)
+│   └── skills/              # Skill files (shlav-a-mega.md, supabase)
 │
 ├── .github/
-│   └── workflows/ci.yml     # Validation CI (21 checks — JSON schema, duplicates, etc.)
+│   └── workflows/ci.yml     # Validation CI — JSON schema, duplicates, version sync, etc.
+│
+├── tests/
+│   ├── dataIntegrity.test.js  # 30 tests: question schema, duplicates, topic coverage
+│   └── appIntegrity.test.js   # 11 tests: HTML structure, SW sync, security
 │
 ├── supabase-setup.sql        # Supabase RLS schema
 ├── .mcp.json                 # MCP server config (Supabase)
 │
-├── harrison/                 # Harrison's 22e chapter PDFs (30 chapters)
+├── harrison/                 # Harrison's 22e chapter PDFs (~48 chapters)
+├── hazzard_marked/           # Hazzard's 8e annotated/marked chapter PDFs
 ├── article_*.pdf             # 6 mandatory clinical reference articles
-└── hazzard_part*.pdf         # Hazzard's Geriatric Medicine 8e
+└── hazzard_part*.pdf         # Hazzard's Geriatric Medicine 8e (original PDFs)
 ```
 
-### Data Architecture (v9.7)
+### Data Architecture (v9.10)
 
-In v9.7, data was split from the monolithic HTML into lazy-loaded JSON chunks in the `data/` directory. The root-level JSON files are the canonical complete copies (with all questions + explanations), while `data/` contains the runtime-loaded versions. The service worker caches from `data/`.
+All runtime data lives in `data/`. The app and service worker load exclusively from `data/*.json`. Build scripts (`scripts/`) also read/write `data/questions.json` directly. There are no root-level JSON duplicates — `data/` is the single source of truth.
 
 ---
 
@@ -183,7 +194,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `9.10`
+- Currently both at version `9.10` (sw.js cache key: `shlav-a-v9.10`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
@@ -315,12 +326,12 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 
 ## Adding New Questions — Checklist
 
-1. Read `questions.json` to understand existing format
+1. Read `data/questions.json` to understand existing format
 2. Check topic index from the TOPICS list above — pick the most specific `ti`
 3. Validate: exactly 4 options, `c` index in 0–3, valid `t` year string
 4. Fuzzy-check for near-duplicates (first 80 chars)
 5. Append to the JSON array (do not sort or reorder existing entries)
-6. Update both `data/questions.json` and root `questions.json` if needed
+6. Run `npm test` to validate schema and detect duplicates
 7. Update question count in `README.md`
 
 ---
@@ -333,6 +344,7 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 - All localStorage operations must use the established keys (`samega`, `samega_ex`, `samega_apikey`)
 - `explainWithAI()` must handle errors gracefully and cache results in localStorage
 - Data loads lazily from `data/*.json` — do not inline large data back into HTML
+- `data/` is the single source of truth for all JSON data — no root-level copies
 
 ---
 

@@ -162,7 +162,7 @@ function parseQuestions(raw) {
 }
 
 // Load existing questions
-const qPath = path.join(__dirname, '..', 'questions.json');
+const qPath = path.join(__dirname, '..', 'data', 'questions.json');
 const existing = JSON.parse(fs.readFileSync(qPath, 'utf8'));
 console.log(`Existing questions: ${existing.length}`);
 
