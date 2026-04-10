@@ -122,7 +122,7 @@ Standalone, offline-capable PWA with 1,419 real IMA exam questions, textbook-sou
 ## Data Sources
 
 - **Questions:** 1,432 MCQs from official IMA Shlav A exams (2021–2025) with verified answer keys
-- **Study Notes:** Hazzard's 8e, GRS 8e, Washington Manual, SZMC DAG, Harrison's 22e chapters
+- **Study Notes:** Hazzard's 8e, Washington Manual, SZMC DAG, Harrison's 22e chapters
 - **Drugs:** Beers Criteria 2023 + ACB Scale (53 drugs)
 - **Regulations:** Patient Rights Law, Dying Patient Act, Continuing POA, Takanah 12b
 
