@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f172a">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://ima-contentfiles.s3.amazonaws.com https://ima-files.s3.amazonaws.com; connect-src 'self' https://*.supabase.co https://api.anthropic.com https://toranot.netlify.app;">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩺</text></svg>">
 <link rel="manifest" href="manifest.json">
 <title>Shlav A Mega — Board Prep</title>
@@ -442,7 +443,7 @@ window.save=idbSave;
 save=idbSave;
 }catch(e){console.warn('IDB migration failed, using localStorage:',e);}
 }
-migrateToIDB().then(()=>{renderTabs();render();if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_help','1');setTimeout(showHelp,500);}});
+migrateToIDB().then(()=>{renderTabs();render();if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_help','1');setTimeout(showHelp,500);}}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();});
 
 // ===== SCREEN WAKE LOCK =====
 let wakeLock=null;
@@ -3652,12 +3653,11 @@ const st=document.getElementById('fbStatus');
 if(st){st.textContent='⏳ שולח...';st.style.display='block';st.style.color='#64748b';}
 const diag=getDiagnostics();
 const payload={type,msg,context,diag,ts:new Date().toISOString(),v:APP_VERSION};
-const fb=JSON.parse(localStorage.getItem('shlav_feedback')||'[]');
+let fb;try{fb=JSON.parse(localStorage.getItem('shlav_feedback')||'[]');}catch(e){fb=[];}
 fb.push(payload);if(fb.length>50)fb.splice(0,fb.length-50);
 localStorage.setItem('shlav_feedback',JSON.stringify(fb));
-const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtybWx6d3dlbHF2bGZzbHdsdG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NjQxMDksImV4cCI6MjA4NzU0MDEwOX0.PFSuFgHA-WBnrgs4stmloxvOORSX0CiXDPsW2dinAAQ';
-fetch('https://krmlzwwelqvlfslwltol.supabase.co/rest/v1/shlav_feedback',{
-method:'POST',headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Prefer':'return=minimal'},
+fetch(SUPA_URL+'/rest/v1/shlav_feedback',{
+method:'POST',headers:{'Content-Type':'application/json','apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON,'Prefer':'return=minimal'},
 body:JSON.stringify({message:msg,diagnostics:diag,app_version:APP_VERSION,type,context})
 }).catch(()=>{});
 if(type==='wrong_answer'&&qObj){
