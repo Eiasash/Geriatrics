@@ -15,7 +15,7 @@ jobs:
       # ── JSON Parse Validity ──
       - name: Validate JSON files parse correctly
         run: |
-          for f in questions.json notes.json drugs.json flashcards.json; do
+          for f in data/questions.json data/notes.json data/drugs.json data/flashcards.json data/osce.json data/topics.json data/tabs.json; do
             echo "Checking $f..."
             python3 -c "import json,sys; json.load(open('$f')); print('  OK')"
           done
@@ -23,7 +23,7 @@ jobs:
       # ── Question Count ──
       - name: Check question count (must be > 900)
         run: |
-          COUNT=$(python3 -c "import json; print(len(json.load(open('questions.json'))))")
+          COUNT=$(python3 -c "import json; print(len(json.load(open('data/questions.json'))))")
           echo "Question count: $COUNT"
           if [ "$COUNT" -le 900 ]; then
             echo "ERROR: Expected > 900 questions, got $COUNT"
@@ -36,7 +36,7 @@ jobs:
         run: |
           python3 -c "
           import json, sys
-          qs = json.load(open('questions.json'))
+          qs = json.load(open('data/questions.json'))
           errors = []
           for i, q in enumerate(qs):
               if not q.get('q'):
@@ -66,7 +66,7 @@ jobs:
         run: |
           python3 -c "
           import json, sys
-          qs = json.load(open('questions.json'))
+          qs = json.load(open('data/questions.json'))
           seen = {}
           conflicts = []
           dupes = []
@@ -100,7 +100,7 @@ jobs:
         run: |
           python3 -c "
           import json, sys
-          notes = json.load(open('notes.json'))
+          notes = json.load(open('data/notes.json'))
           errors = []
           ids_found = set()
           for i, n in enumerate(notes):
@@ -130,7 +130,7 @@ jobs:
         run: |
           python3 -c "
           import json, sys
-          drugs = json.load(open('drugs.json'))
+          drugs = json.load(open('data/drugs.json'))
           errors = []
           required = ['name', 'heb', 'acb', 'beers', 'cat', 'risk']
           for i, d in enumerate(drugs):
@@ -155,7 +155,7 @@ jobs:
         run: |
           python3 -c "
           import json, sys
-          fc = json.load(open('flashcards.json'))
+          fc = json.load(open('data/flashcards.json'))
           errors = []
           for i, c in enumerate(fc):
               if not c.get('f'):
@@ -218,7 +218,7 @@ jobs:
         run: |
           python3 -c "
           import json, sys
-          qs = json.load(open('questions.json'))
+          qs = json.load(open('data/questions.json'))
           TOPICS = [
               'Biology of Aging','Demography','CGA','Frailty','Falls','Delirium',
               'Dementia','Depression','Polypharmacy/Beers','Nutrition','Pressure Injuries',
