@@ -467,5 +467,5 @@ Search: "חולה נוטה למות" or "שלב סופי" or "הנחיות מק�
 | Missing | Priority |
 |---------|----------|
 | קבלת החלטות נתמכת — full law text (תיקון 18 לחוק הכשרות) | Medium |
-| Hazzard's 8th ed chapters 2–6, 34, 62 — verify correct edition in repo | Verify |
+| Hazzard's 8e full index — ensure all 8e chapters (excluding 2–6, 34, 62 per P005-2026) are fully indexed in project knowledge | High |
 | FRAILTY_TARGETS — CFS × condition × target (HbA1c, SBP, anticoag, statin) | Medium |
