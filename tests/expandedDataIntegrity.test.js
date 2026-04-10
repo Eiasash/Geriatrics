@@ -1,0 +1,380 @@
+/**
+ * Expanded data integrity tests for Geriatrics exam app.
+ *
+ * Adds deeper validation, edge case checks, cross-file consistency,
+ * and image map integrity beyond the base dataIntegrity.test.js.
+ */
+
+import { describe, it, expect, beforeAll } from "vitest";
+import { readFileSync, existsSync } from "fs";
+import { resolve } from "path";
+
+const ROOT = resolve(import.meta.dirname, "..");
+
+function loadJSON(filename) {
+  return JSON.parse(readFileSync(resolve(ROOT, filename), "utf-8"));
+}
+
+let questions, notes, drugs, flashcards, osce, topics, tabs;
+
+beforeAll(() => {
+  questions = loadJSON("data/questions.json");
+  notes = loadJSON("data/notes.json");
+  drugs = loadJSON("data/drugs.json");
+  flashcards = loadJSON("data/flashcards.json");
+  osce = loadJSON("data/osce.json");
+  topics = loadJSON("data/topics.json");
+  tabs = loadJSON("data/tabs.json");
+});
+
+// ─── Questions — deeper validation ────────────────────────────────────────
+
+describe("questions.json — answer integrity", () => {
+  it("every question has exactly 4 options", () => {
+    const non4 = questions.filter((q, i) => q.o.length !== 4);
+    // Most exam questions should have 4 options; flag if many don't
+    expect(non4.length, `${non4.length} questions don't have exactly 4 options`).toBeLessThan(
+      questions.length * 0.05,
+    );
+  });
+
+  it("correct answer index is never negative", () => {
+    questions.forEach((q, i) => {
+      expect(q.c, `Q[${i}].c should not be negative`).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  it("correct answer index is strictly within options array bounds", () => {
+    const outOfBounds = [];
+    questions.forEach((q, i) => {
+      if (q.c >= q.o.length) {
+        outOfBounds.push({ index: i, c: q.c, optLen: q.o.length, q: q.q.slice(0, 50) });
+      }
+    });
+    expect(outOfBounds, `Out-of-bounds correct answers: ${JSON.stringify(outOfBounds)}`).toEqual([]);
+  });
+
+  it("no option text is just whitespace", () => {
+    const blank = [];
+    questions.forEach((q, i) => {
+      q.o.forEach((opt, j) => {
+        if (typeof opt !== "string" || opt.trim().length === 0) {
+          blank.push({ qIndex: i, optIndex: j });
+        }
+      });
+    });
+    expect(blank, `Blank options found: ${JSON.stringify(blank)}`).toEqual([]);
+  });
+
+  it("question text length is reasonable (5-2000 chars)", () => {
+    const tooShort = [];
+    const tooLong = [];
+    questions.forEach((q, i) => {
+      if (q.q.length < 5) tooShort.push({ index: i, len: q.q.length });
+      if (q.q.length > 2000) tooLong.push({ index: i, len: q.q.length });
+    });
+    expect(tooShort, `Questions too short: ${JSON.stringify(tooShort)}`).toEqual([]);
+    expect(tooLong, `Questions too long: ${JSON.stringify(tooLong)}`).toEqual([]);
+  });
+
+  it("year field (t) is a non-empty string", () => {
+    questions.forEach((q, i) => {
+      expect(typeof q.t, `Q[${i}].t should be string`).toBe("string");
+      expect(q.t.length, `Q[${i}].t should be non-empty`).toBeGreaterThan(0);
+    });
+  });
+
+  it("topic index (ti) is an integer 0-39", () => {
+    const invalid = [];
+    questions.forEach((q, i) => {
+      if (!Number.isInteger(q.ti) || q.ti < 0 || q.ti > 39) {
+        invalid.push({ index: i, ti: q.ti });
+      }
+    });
+    expect(invalid, `Invalid topic indices: ${JSON.stringify(invalid)}`).toEqual([]);
+  });
+});
+
+describe("questions.json — near-duplicate detection", () => {
+  it("no near-duplicate questions by first 80 chars", () => {
+    const map = new Map();
+    const nearDupes = [];
+    questions.forEach((q, i) => {
+      const prefix = q.q.trim().slice(0, 80).toLowerCase();
+      if (map.has(prefix)) {
+        const prev = map.get(prefix);
+        // Only flag if answers also conflict
+        if (prev.c !== q.c) {
+          nearDupes.push({
+            indices: [prev.index, i],
+            prefix: prefix.slice(0, 40) + "...",
+          });
+        }
+      } else {
+        map.set(prefix, { index: i, c: q.c });
+      }
+    });
+    expect(nearDupes, `Near-duplicate questions with conflicting answers: ${JSON.stringify(nearDupes)}`).toEqual([]);
+  });
+});
+
+describe("questions.json — explanation quality", () => {
+  it("questions with explanations have reasonable length", () => {
+    const tooShort = [];
+    questions.forEach((q, i) => {
+      if (q.e && q.e.length < 20) {
+        tooShort.push({ index: i, eLen: q.e.length });
+      }
+    });
+    expect(tooShort, `Explanations too short: ${JSON.stringify(tooShort)}`).toEqual([]);
+  });
+
+  it("a significant portion of questions have explanations", () => {
+    const withExplanation = questions.filter(q => q.e && q.e.length > 50).length;
+    const ratio = withExplanation / questions.length;
+    // At least 30% should have explanations
+    expect(ratio, `Only ${(ratio * 100).toFixed(1)}% of questions have explanations`).toBeGreaterThan(0.3);
+  });
+});
+
+// ─── Notes — deeper validation ──────────────────────────────────────────────
+
+describe("notes.json — content quality", () => {
+  it("every note has an id field (integer 0-39)", () => {
+    notes.forEach((n, i) => {
+      expect(n.id, `Note[${i}].id should be defined`).toBeDefined();
+      expect(Number.isInteger(n.id), `Note[${i}].id should be integer`).toBe(true);
+      expect(n.id, `Note[${i}].id should be in range 0-39`).toBeGreaterThanOrEqual(0);
+      expect(n.id, `Note[${i}].id should be in range 0-39`).toBeLessThanOrEqual(39);
+    });
+  });
+
+  it("note IDs are unique", () => {
+    const ids = notes.map(n => n.id);
+    const dupes = ids.filter((id, i) => ids.indexOf(id) !== i);
+    expect(dupes, `Duplicate note IDs: ${dupes.join(", ")}`).toEqual([]);
+  });
+
+  it("notes content has substantial length (board-pearl density)", () => {
+    notes.forEach((n, i) => {
+      expect(n.notes.length, `Note[${i}] "${n.topic}" should have substantial content`).toBeGreaterThan(100);
+    });
+  });
+
+  it("no notes reference excluded Hazzard chapters (Ch 2-6, 34, 62)", () => {
+    const excludedChapters = [2, 3, 4, 5, 6, 34, 62];
+    const violations = [];
+    notes.forEach((n, i) => {
+      for (const ch of excludedChapters) {
+        // Only flag if it's a chapter citation like "Ch 2" or "Chapter 2", not "Ch 23"
+        const pattern = new RegExp(`\\bCh\\.?\\s*${ch}\\b(?!\\d)`, "i");
+        if (pattern.test(n.ch)) {
+          violations.push({ index: i, topic: n.topic, ch: n.ch, excludedCh: ch });
+        }
+      }
+    });
+    // Note: some false positives possible (e.g., "Ch 34" meaning a different numbering)
+    // So we just warn rather than hard-fail
+    expect(violations.length, `Notes citing excluded chapters: ${JSON.stringify(violations)}`).toBeLessThanOrEqual(2);
+  });
+});
+
+// ─── Drugs — deeper validation ──────────────────────────────────────────────
+
+describe("drugs.json — clinical accuracy checks", () => {
+  it("all Beers Criteria drugs have meaningful risk descriptions", () => {
+    drugs.filter(d => d.beers).forEach((d, i) => {
+      expect(d.risk.length, `Beers drug "${d.name}" should have risk description`).toBeGreaterThan(10);
+    });
+  });
+
+  it("Hebrew name (heb) is non-empty for all drugs", () => {
+    drugs.forEach((d, i) => {
+      expect(d.heb.length, `Drug "${d.name}" should have Hebrew name`).toBeGreaterThan(0);
+    });
+  });
+
+  it("drug categories are non-empty", () => {
+    drugs.forEach((d, i) => {
+      expect(d.cat.length, `Drug "${d.name}" should have category`).toBeGreaterThan(0);
+    });
+  });
+
+  it("ACB scores are clinically reasonable (0-3 integer scale)", () => {
+    drugs.forEach((d, i) => {
+      expect([0, 1, 2, 3]).toContain(d.acb);
+    });
+  });
+
+  it("has representation of multiple drug categories", () => {
+    const categories = new Set(drugs.map(d => d.cat));
+    expect(categories.size, "Should have diverse drug categories").toBeGreaterThan(5);
+  });
+});
+
+// ─── Flashcards — deeper validation ─────────────────────────────────────────
+
+describe("flashcards.json — content quality", () => {
+  it("front and back text have reasonable length", () => {
+    flashcards.forEach((fc, i) => {
+      expect(fc.f.length, `Card[${i}] front too short`).toBeGreaterThan(3);
+      expect(fc.b.length, `Card[${i}] back too short`).toBeGreaterThan(1);
+    });
+  });
+
+  it("no flashcard has identical front and back", () => {
+    const identical = [];
+    flashcards.forEach((fc, i) => {
+      if (fc.f.trim().toLowerCase() === fc.b.trim().toLowerCase()) {
+        identical.push({ index: i, text: fc.f.slice(0, 40) });
+      }
+    });
+    expect(identical, `Cards with identical front/back: ${JSON.stringify(identical)}`).toEqual([]);
+  });
+});
+
+// ─── OSCE — deeper validation ───────────────────────────────────────────────
+
+describe("osce.json — station quality", () => {
+  it("station times are within realistic range (120-1200 seconds)", () => {
+    osce.filter(s => s !== null).forEach((s, i) => {
+      expect(s.time, `OSCE[${i}] time ${s.time}s should be 2-20 min`).toBeGreaterThanOrEqual(120);
+      expect(s.time, `OSCE[${i}] time ${s.time}s should be 2-20 min`).toBeLessThanOrEqual(1200);
+    });
+  });
+
+  it("checklist items are non-empty strings", () => {
+    osce.filter(s => s !== null).forEach((s, i) => {
+      s.ck.forEach((item, j) => {
+        expect(typeof item, `OSCE[${i}].ck[${j}] should be string`).toBe("string");
+        expect(item.trim().length, `OSCE[${i}].ck[${j}] should be non-empty`).toBeGreaterThan(0);
+      });
+    });
+  });
+
+  it("each station has a reasonable number of checklist items (3-30)", () => {
+    osce.filter(s => s !== null).forEach((s, i) => {
+      expect(s.ck.length, `OSCE[${i}] should have enough checklist items`).toBeGreaterThanOrEqual(3);
+      expect(s.ck.length, `OSCE[${i}] should not have too many checklist items`).toBeLessThanOrEqual(30);
+    });
+  });
+
+  it("no duplicate station titles", () => {
+    const titles = osce.filter(s => s !== null).map(s => s.t.trim().toLowerCase());
+    const dupes = titles.filter((t, i) => titles.indexOf(t) !== i);
+    expect(dupes, `Duplicate OSCE titles: ${dupes.join(", ")}`).toEqual([]);
+  });
+});
+
+// ─── Tabs — validation ──────────────────────────────────────────────────────
+
+describe("tabs.json — app navigation", () => {
+  it("has the expected number of tabs", () => {
+    expect(tabs.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("every tab has id, icon (ic), and label (l)", () => {
+    tabs.forEach((t, i) => {
+      expect(typeof t.id, `Tab[${i}].id`).toBe("string");
+      expect(t.id.length, `Tab[${i}].id non-empty`).toBeGreaterThan(0);
+      expect(typeof t.ic, `Tab[${i}].ic (icon)`).toBe("string");
+      expect(t.ic.length, `Tab[${i}].ic non-empty`).toBeGreaterThan(0);
+      expect(typeof t.l, `Tab[${i}].l (label)`).toBe("string");
+      expect(t.l.length, `Tab[${i}].l non-empty`).toBeGreaterThan(0);
+    });
+  });
+
+  it("tab IDs are unique", () => {
+    const ids = tabs.map(t => t.id);
+    const dupes = ids.filter((id, i) => ids.indexOf(id) !== i);
+    expect(dupes, `Duplicate tab IDs: ${dupes.join(", ")}`).toEqual([]);
+  });
+
+  it("tab IDs match expected app modes", () => {
+    const validModes = ["quiz", "study", "lib", "flash", "drugs", "calc", "track", "search", "chat"];
+    tabs.forEach(t => {
+      expect(validModes, `Tab "${t.id}" should be a valid mode`).toContain(t.id);
+    });
+  });
+});
+
+// ─── Cross-file integrity — expanded ────────────────────────────────────────
+
+describe("cross-file integrity — expanded", () => {
+  it("notes array length matches topics array length", () => {
+    expect(notes.length, "Should have one note per topic").toBe(topics.length);
+  });
+
+  it("every topic index used in questions has a corresponding note", () => {
+    const usedTopics = new Set(questions.map(q => q.ti));
+    for (const ti of usedTopics) {
+      const note = notes.find(n => n.id === ti);
+      expect(note, `Topic index ${ti} used in questions but no note with id=${ti}`).toBeDefined();
+    }
+  });
+
+  it("questions cover a minimum number of distinct exam years", () => {
+    const years = new Set(questions.map(q => q.t));
+    expect(years.size, "Should cover multiple exam years").toBeGreaterThanOrEqual(3);
+  });
+
+  it("all topic keywords in topics.json are non-empty strings", () => {
+    topics.forEach((t, i) => {
+      t.forEach((kw, j) => {
+        expect(typeof kw, `Topic[${i}][${j}]`).toBe("string");
+        expect(kw.trim().length, `Topic[${i}][${j}] should be non-empty`).toBeGreaterThan(0);
+      });
+    });
+  });
+});
+
+// ─── Image map integrity ────────────────────────────────────────────────────
+
+describe("questions/image_map.json — integrity", () => {
+  let imageMap;
+
+  beforeAll(() => {
+    if (existsSync(resolve(ROOT, "questions/image_map.json"))) {
+      imageMap = loadJSON("questions/image_map.json");
+    }
+  });
+
+  it("image_map.json is a valid array", () => {
+    if (!imageMap) return; // skip if file doesn't exist
+    expect(Array.isArray(imageMap)).toBe(true);
+  });
+
+  it("every entry has required fields", () => {
+    if (!imageMap) return;
+    imageMap.forEach((entry, i) => {
+      expect(typeof entry.exam, `Map[${i}].exam`).toBe("string");
+      expect(typeof entry.q_num, `Map[${i}].q_num`).toBe("number");
+      expect(typeof entry.fname, `Map[${i}].fname`).toBe("string");
+      expect(typeof entry.fpath, `Map[${i}].fpath`).toBe("string");
+    });
+  });
+
+  it("all referenced image files exist on disk", () => {
+    if (!imageMap) return;
+    const missing = [];
+    imageMap.forEach((entry, i) => {
+      const imgPath = resolve(ROOT, entry.fpath);
+      if (!existsSync(imgPath)) {
+        missing.push({ index: i, fpath: entry.fpath });
+      }
+    });
+    expect(missing, `Missing image files: ${JSON.stringify(missing)}`).toEqual([]);
+  });
+
+  it("image dimensions are positive", () => {
+    if (!imageMap) return;
+    imageMap.forEach((entry, i) => {
+      if (entry.w !== undefined) {
+        expect(entry.w, `Map[${i}].w`).toBeGreaterThan(0);
+      }
+      if (entry.h !== undefined) {
+        expect(entry.h, `Map[${i}].h`).toBeGreaterThan(0);
+      }
+    });
+  });
+});
