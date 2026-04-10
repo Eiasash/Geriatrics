@@ -28,7 +28,7 @@ const path  = require('path');
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const QUESTIONS_PATH = path.resolve(__dirname, '..', 'questions.json');
+const QUESTIONS_PATH = path.resolve(__dirname, '..', 'data', 'questions.json');
 const CONFIG_PATH    = path.resolve(__dirname, '..', 'config.json');
 
 const MODEL          = 'claude-opus-4-6';
