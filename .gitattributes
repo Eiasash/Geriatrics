@@ -1,0 +1,21 @@
+# Binary files — prevent Git from mangling line endings or diffing
+*.pdf binary
+*.docx binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+
+# Large JSON data files — treat as binary for diff performance
+explanations_cache.json binary
+hazzard_chapters.json binary
+
+# Force LF line endings for web/code files
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf

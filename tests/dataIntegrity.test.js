@@ -251,9 +251,9 @@ describe("cross-file referential integrity", () => {
     });
   });
 
-  it("root questions.json matches data/questions.json in count", () => {
-    const rootQuestions = loadJSON("questions.json");
-    // Root may have more (includes explanations), but data/ should have at least as many
-    expect(questions.length).toBeGreaterThanOrEqual(rootQuestions.length - 50);
+  it("all question topic indices reference valid topics", () => {
+    const topicCount = topics.length;
+    const invalid = questions.filter((q, i) => q.ti < 0 || q.ti >= topicCount);
+    expect(invalid.length, `${invalid.length} questions have out-of-range ti`).toBe(0);
   });
 });
