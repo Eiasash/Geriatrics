@@ -1631,6 +1631,7 @@ h+=`</div>`;
 return h;
 }
 // Sudden Death check/next
+function sdCheck(){if(sel===null)return;ans=true;const q=QZ[sdPool[sdQi]];if(sel===q.c){sdStreak++;S.qOk++;srScore(sdPool[sdQi],true);save();render();}else{S.qNo++;srScore(sdPool[sdQi],false);save();render();setTimeout(()=>endSuddenDeath(),800);}}
 function sdNext(){sdQi++;if(sdQi>=sdPool.length)sdQi=0;sel=null;ans=false;autopsyDistractor=-1;render();}
 
 // ===== STUDY NOTES =====
