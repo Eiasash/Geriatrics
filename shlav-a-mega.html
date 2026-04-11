@@ -78,31 +78,7 @@ input,textarea,select{font:inherit}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
 @media(min-width:768px){.ct{padding:20px 16px 88px;max-width:800px}.tabs button{min-width:64px;font-size:11px}.hdr h1{font-size:18px}}
 @media(min-width:1024px){.ct{max-width:900px}.card{padding:16px}}
-.dark{background:#0f172a;color:#e2e8f0}
-.dark .card{background:#1e293b;border-color:#334155}
-.dark .hdr{background:linear-gradient(135deg,#020617,#0f172a)}
-.dark .tabs{background:#1e293b;border-color:#334155}
-.dark .tabs button:not(.on){color:#64748b}
-.dark .pill:not(.on){background:#1e293b;color:#94a3b8;border-color:#334155}
-.dark .qo{border-color:#334155;color:#e2e8f0}
-.dark .qo:not(.lk):hover{border-color:#1d4ed8;background:#172554}
-.dark .qo.sel{border-color:rgb(var(--sky));background:#1e3a5f}
-.dark .qo.dim{border-color:#1e293b;color:#475569}
-.dark .search-box{background:#1e293b;border-color:#334155;color:#e2e8f0}
-.dark .stat{background:#1e293b;border-color:#334155}
-.dark .fc{background:#1e293b;border-color:#334155;color:#e2e8f0}
-.dark .acc-h:hover{background:#1e293b}
-.dark .calc-in{background:#1e293b;border-color:#334155;color:#e2e8f0}
-.dark .ck{border-color:#334155;color:#e2e8f0}
-.dark .drug-row{border-color:#334155}
-.dark .topic{color:#e2e8f0}
-.dark .topic.done{background:#064e3b;border-color:#059669}
-.dark .sec-t{color:#f1f5f9}
-.dark .sec-s{color:#94a3b8}
-.dark .btn-o{background:#334155;color:#e2e8f0}
 .dm-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px;padding:4px;opacity:.7}
-@keyframes fadeIn{from{opacity:.6}to{opacity:1}}
-.fade-in{animation:fadeIn .15s ease}
 .tabs button{min-height:44px}
 .qo{min-height:44px;display:flex;align-items:center}
 .ck{min-height:44px}
@@ -115,24 +91,20 @@ input,textarea,select{font:inherit}
 .hdr p{font-size:11px}
 .progress-bar{height:3px;background:#e2e8f0;border-radius:2px;margin-bottom:10px;overflow:hidden}
 .progress-bar .fill{height:100%;background:rgb(var(--sky));border-radius:2px;transition:width .3s ease}
-.dark .progress-bar{background:#334155}
-.dark .qo.ok{border-color:rgb(var(--em));background:#064e3b;color:#a7f3d0}
-.dark .qo.no{border-color:rgb(var(--red));background:#450a0a;color:#fca5a5}
-.dark .qo.dim{border-color:#1e293b;color:#475569}
-.dark .drug-row{border-color:#334155;color:#e2e8f0}
-.dark .badge-r{background:#450a0a;color:#fca5a5}
-.dark .badge-y{background:#451a03;color:#fde68a}
-.dark .badge-g{background:#064e3b;color:#6ee7b7}
-.dark .ck:hover{background:#1e293b}
-.dark .topic:hover{background:#334155}
-.dark .osce-scenario{background:#1e293b !important;border-color:#334155 !important}
-.dark .calc-result{background:#1e293b !important}
-.dark a{color:#60a5fa}
-.dark .explain-box{background:#064e3b !important;border-color:#059669 !important;color:#a7f3d0 !important}
-.dark .tag-topic{background:#064e3b !important;color:#6ee7b7 !important}
-.dark .tag-year{background:#1e3a5f !important;color:#93c5fd !important}
+body.dark .progress-bar{background:#334155}
+body.dark .badge-r{background:#450a0a;color:#fca5a5}
+body.dark .badge-y{background:#451a03;color:#fde68a}
+body.dark .badge-g{background:#064e3b;color:#6ee7b7}
+body.dark .ck:hover{background:#1e293b}
+body.dark .calc-result{background:#1e293b !important}
+body.dark a{color:#60a5fa}
+body.dark .explain-box{background:#064e3b !important;border-color:#059669 !important;color:#a7f3d0 !important}
+body.dark .tag-topic{background:#064e3b !important;color:#6ee7b7 !important}
+body.dark .tag-year{background:#1e3a5f !important;color:#93c5fd !important}
+body.dark .sec-s{color:#94a3b8}
+body.dark .btn-o{background:#334155;color:#e2e8f0}
 .streak-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#fffbeb;color:#d97706;border:1px solid #fde68a}
-.dark .streak-badge{background:#451a03;border-color:#92400e}
+body.dark .streak-badge{background:#451a03;border-color:#92400e}
 @media print{.tabs,.hdr,.dm-btn,button{display:none !important}.ct{padding:0;max-width:100%}.card{break-inside:avoid;border:1px solid #ccc;margin-bottom:8px}.ab{max-height:none !important}.stat,.stats{break-inside:avoid}body{background:#fff;color:#000;font-size:12pt}}
 .fade-in{animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
@@ -152,7 +124,7 @@ body.dark .qo.ok{background:#064e3b;border-color:#065f46;color:#a7f3d0}
 body.dark .qo.no{background:#450a0a;border-color:#7f1d1d;color:#fca5a5}
 body.dark .qo.dim{border-color:#1e293b;color:#475569}
 body.dark .pill:not(.on){background:#1e293b;color:#94a3b8;border-color:#334155}
-body.dark .search-box,.dark .calc-in{background:#1e293b;border-color:#334155;color:#e2e8f0}
+body.dark .search-box,body.dark .calc-in{background:#1e293b;border-color:#334155;color:#e2e8f0}
 body.dark select{background:#1e293b;color:#e2e8f0}
 body.dark .acc-h:hover{background:#1e293b}
 body.dark .fc{background:#1e293b;border-color:#334155;color:#e2e8f0}
@@ -162,8 +134,6 @@ body.dark .ck{border-color:#334155;color:#e2e8f0}
 body.dark .stat{background:#1e293b;border-color:#334155}
 body.dark .sec-t{color:#f1f5f9}
 body.dark .drug-row{border-color:#334155;color:#e2e8f0}
-body.dark .osce-card{border-color:#334155;color:#e2e8f0}
-body.dark .osce-card:hover{border-color:#475569}
 
 /* ===== BLIND RECALL BLUR ===== */
 .qo-blur{filter:blur(8px);transition:filter .25s ease;user-select:none}
@@ -175,7 +145,7 @@ body.dark .osce-card:hover{border-color:#475569}
 .sudden-death-banner{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;padding:10px 14px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;animation:pulse-red 2s infinite}
 @keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
 .leaderboard-row{display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid #f1f5f9;font-size:11px}
-.dark .leaderboard-row{border-color:#334155}
+body.dark .leaderboard-row{border-color:#334155}
 
 /* ===== POMODORO ===== */
 .pomo-bar{position:fixed;top:0;left:0;right:0;height:4px;background:#e2e8f0;z-index:60}
@@ -194,7 +164,7 @@ body.dark .osce-card:hover{border-color:#475569}
 .med-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:16px;font-size:10px;font-weight:600;background:#eff6ff;color:#1d4ed8;cursor:pointer;border:1px solid #bfdbfe;margin:2px}
 .med-chip .x{font-size:12px;font-weight:700;margin-left:2px;opacity:.6}
 .med-chip .x:hover{opacity:1}
-.dark .med-chip{background:#1e3a5f;color:#93c5fd;border-color:#1e40af}
+body.dark .med-chip{background:#1e3a5f;color:#93c5fd;border-color:#1e40af}
 .acb-meter{height:10px;border-radius:5px;background:#e2e8f0;overflow:hidden;margin:6px 0}
 .acb-meter .acb-fill{height:100%;border-radius:5px;transition:width .3s}
 
@@ -203,37 +173,37 @@ body.dark .osce-card:hover{border-color:#475569}
 .dt-node:hover{border-color:rgb(var(--sky))}
 .dt-node.active{border-color:rgb(var(--em));background:#ecfdf5}
 .dt-node.inactive{opacity:.4}
-.dark .dt-node{border-color:#334155}
-.dark .dt-node.active{border-color:#059669;background:#064e3b}
+body.dark .dt-node{border-color:#334155}
+body.dark .dt-node.active{border-color:#059669;background:#064e3b}
 .dt-result{padding:14px;border-radius:12px;border:2px solid rgb(var(--em));background:#ecfdf5;font-size:12px;line-height:1.7}
-.dark .dt-result{background:#064e3b;border-color:#059669;color:#a7f3d0}
+body.dark .dt-result{background:#064e3b;border-color:#059669;color:#a7f3d0}
 
 /* ===== LAB OVERLAY ===== */
 .lab-modal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .lab-sheet{background:#fff;width:calc(100% - 24px);max-width:600px;max-height:85vh;border-radius:20px;overflow-y:auto;padding:20px 16px;animation:fadeIn .2s ease}
-.dark .lab-sheet{background:#1e293b;color:#e2e8f0}
+body.dark .lab-sheet{background:#1e293b;color:#e2e8f0}
 .range-bar{height:8px;border-radius:4px;background:#e2e8f0;position:relative;margin:8px 0}
 .range-bar .normal{position:absolute;height:100%;background:#bbf7d0;border-radius:4px}
 .range-bar .marker{position:absolute;width:3px;height:16px;top:-4px;background:#1e293b;border-radius:2px}
-.dark .range-bar{background:#334155}
-.dark .range-bar .marker{background:#f1f5f9}
+body.dark .range-bar{background:#334155}
+body.dark .range-bar .marker{background:#f1f5f9}
 .frailty-slider{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:linear-gradient(to right,#bbf7d0,#fde68a,#fecaca);outline:none}
 .frailty-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#1e293b;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
-.dark .frailty-slider::-webkit-slider-thumb{background:#e2e8f0;border-color:#334155}
+body.dark .frailty-slider::-webkit-slider-thumb{background:#e2e8f0;border-color:#334155}
 
 /* ===== CHEAT SHEET ===== */
 .aging-row{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid #f1f5f9;font-size:10px}
 .aging-row .cell{padding:8px 10px;line-height:1.5}
 .aging-row .normal-cell{background:#f0fdf4;color:#166534}
 .aging-row .path-cell{background:#fef2f2;color:#991b1b}
-.dark .aging-row{border-color:#334155}
-.dark .aging-row .normal-cell{background:#064e3b;color:#6ee7b7}
-.dark .aging-row .path-cell{background:#450a0a;color:#fca5a5}
+body.dark .aging-row{border-color:#334155}
+body.dark .aging-row .normal-cell{background:#064e3b;color:#6ee7b7}
+body.dark .aging-row .path-cell{background:#450a0a;color:#fca5a5}
 
 /* ===== DISTRACTOR AUTOPSY ===== */
 .distractor-highlight{border:2px solid #f59e0b !important;background:#fffbeb !important;position:relative}
 .distractor-highlight::before{content:'🔍';position:absolute;top:-8px;right:-8px;font-size:14px}
-.dark .distractor-highlight{background:#451a03 !important;border-color:#d97706 !important}
+body.dark .distractor-highlight{background:#451a03 !important;border-color:#d97706 !important}
 
 /* ===== SPEECH BUTTON ===== */
 .speech-btn{font-size:18px;padding:4px;opacity:.5;cursor:pointer;border:none;background:none;transition:.15s}
@@ -250,7 +220,7 @@ body.dark .osce-card:hover{border-color:#475569}
 /* ===== VOICE PARSER ===== */
 .voice-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;cursor:pointer}
 .voice-btn.listening{background:#dc2626;color:#fff;animation:pulse-red 1.5s infinite}
-.dark .voice-btn{background:#450a0a;border-color:#7f1d1d}
+body.dark .voice-btn{background:#450a0a;border-color:#7f1d1d}
 
 /* Night/Study Mode */
 body.study{background:#1a1008;color:#e8d5b0}
@@ -314,7 +284,7 @@ upd();setInterval(upd,30000);
 
 <a href="#main-content" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v9.10</span></h1>
+<h1>Shlav A Mega <span style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle">v9.14</span></h1>
 <button class="dm-btn" onclick="toggleStudyMode()" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode">🌓</button><button class="dm-btn" onclick="showHelp()" title="Help" aria-label="Help" style="right:82px;font-size:11px">❓</button>
 <p id="hdr-sub">Loading...</p>
 </div>
@@ -892,7 +862,7 @@ else{
 if(!smartShuffled){for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}}
 qi=0;sel=null;ans=false;
 }
-buildPool();
+if(QZ.length)buildPool();
 
 function setFilt(f){filt=f;topicFilt=-1;buildPool();render()}
 function setTopicFilt(ti){filt='topic';topicFilt=ti;buildPool();render()}
@@ -917,7 +887,7 @@ function onCallPick(correct){
 function renderOnCall(){
   if(!pool.length)return '<div style="padding:40px;text-align:center;color:#94a3b8">No questions available</div>';
   const qIdx=pool[qi];const q=QZ[qIdx];
-  const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+  const TOPICS_L=TOPICS;
   const topic=q.ti>=0?TOPICS_L[q.ti]:'';
   const correct=q.o[q.c];
   let h='<div style="min-height:100vh;padding:16px;display:flex;flex-direction:column;gap:12px">';
@@ -1193,7 +1163,7 @@ function endMockExam(){
   render();
 }
 function showMockExamResult(pct,correct,tot,elapsed,byTopic){
-  const TOPICS_LOCAL=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+  const TOPICS_LOCAL=TOPICS;
   const pass=pct>=60;
   // per-topic breakdown sorted by accuracy ascending (worst first)
   const rows=Object.entries(byTopic).map(([ti,s])=>{
@@ -1863,7 +1833,7 @@ h+=`<div class="card" style="padding:14px">
 <div id="harrison-ai-answer" style="display:none;margin-top:8px;font-size:11px;line-height:1.7;direction:rtl;text-align:right;padding:8px;background:#fff;border-radius:8px"></div>
 </div>
 <div style="font-size:10px;color:#64748b;margin-bottom:10px">התמחות בסיס + התמחות-על · ${SYL_HAR_ALL.length} chapters</div>`;
-const _harMap={"14":"harrison/Ch14_Pain_Pathophysiology_and_Management.pdf","15":"harrison/Ch15_Chest_Discomfort.pdf","16":"harrison/Ch16_Abdominal_Pain.pdf","17":"harrison/Ch17_Headache.pdf","18":"harrison/Ch18_Low_back_pain.pdf","20":"harrison/Ch20_Fever.pdf","22":"harrison/Ch22_Fever_of_Unknown_Origin.pdf","26":"harrison/Ch026_Neurologic_Causes_of_Weakness_and_Paralysis.pdf","30":"harrison/Ch30_Coma.pdf","39":"harrison/Ch39_Dyspnea.pdf","40":"harrison/Ch40_Cough.pdf","41":"harrison/Ch41_Hemoptysis.pdf","42":"harrison/Ch42_Hypoxia_and_Cyanosis.pdf","43":"harrison/Ch43_Edema.pdf","48":"harrison/Ch48_Nausea_Vomiting_and_Indigestion.pdf","49":"harrison/Ch49_Diarrhea_and_Constipation.pdf","50":"harrison/Ch50_Unintentional_Weight_Loss.pdf","51":"harrison/Ch51_Gastrointestinal_Bleeding.pdf","52":"harrison/Ch52_Jaundice.pdf","53":"harrison/Ch53_Abdominal_Swelling_and_Ascites.pdf","55":"harrison/Ch55_Azotemia_and_Urinary_Abnormalities.pdf","56":"harrison/Ch56_Fluid_and_Electrolyte_Disturbances.pdf","57":"harrison/Ch57_Hypercalcemia_and_Hypocalcemia.pdf","58":"harrison/Ch58_Acidosis_and_Alkalosis.pdf","66":"harrison/Ch66_Anemia_and_Polycythemia.pdf","67":"harrison/Ch67_Disorders_of_Granulocytes_and_Monocytes.pdf","69":"harrison/Ch69_Bleeding_and_Thrombosis.pdf","70":"harrison/Ch70_Enlargement_of_Lymph_Nodes_and_Spleen.pdf","79":"harrison/Ch79_Infections_in_Patients_with_Cancer.pdf","80":"harrison/Ch80_Oncologic_Emergencies.pdf","102":"harrison/Ch102_Iron_Deficiency_and_Other_Hypoproliferat.pdf","120":"harrison/Ch120_Disorders_of_Platelets_and_Vessel_Wall.pdf","121":"harrison/Ch121_Coagulation_Disorders.pdf","127":"harrison/Ch127_Approach_to_the_Acutely_Ill_Infected_Febrile_.pdf","133":"harrison/Ch133_Infective_Endocarditis.pdf","136":"harrison/Ch136_Osteomyelitis.pdf","142":"harrison/Ch142_Encephalitis.pdf","143":"harrison/Ch143_Acute_Meningitis.pdf","147":"harrison/Ch147_Infections_Acquired_in_Health_Care_Facilities.pdf","243":"harrison/Ch243_Approach_to_the_Patient_with_Possible_Cardiov.pdf","247":"harrison/Ch247_Electrocardiography.pdf","285":"harrison/Ch285_Non-ST-Segment_Elevation_Acute_Coronary_Syndr.pdf","286":"harrison/Ch286_ST-Segment_Elevation_Myocardial_Infarction.pdf","295":"harrison/Ch295_Approach_to_the_Patient_with_Disease_of_the_R.pdf","305":"harrison/Ch305_Disorders_of_the_Pleura.pdf","311":"harrison/Ch311_Approach_to_the_Patient_with_Critical_Illness.pdf","314":"harrison/Ch314_Approach_to_the_Patient_with_Shock.pdf","315":"harrison/Ch315_Sepsis_and_Septic_Shock.pdf","316":"harrison/Ch316_Cardiogenic_Shock_and_Pulmonary_Edema.pdf","317":"harrison/Ch317_Cardiovascular_Collapse,_Cardiac_Arrest,_and_.pdf","319":"harrison/Ch319_Approach_to_the_Patient_with_Renal_Disease_or.pdf","321":"harrison/Ch321_Acute_Kidney_Injury.pdf","322":"harrison/Ch322_Chronic_Kidney_Disease.pdf","332":"harrison/Ch332_Approach_to_the_Patient_with_Gastrointestinal.pdf","347":"harrison/Ch347_Approach_to_the_Patient_with_Liver_Disease.pdf","355":"harrison/Ch355_Cirrhosis_and_Its_Complications.pdf","375":"harrison/Ch375_The_Vasculitis_Syndromes.pdf","379":"harrison/Ch379_Sarcoidosis.pdf","382":"harrison/Ch382_Approach_to_Articular_and_Musculoskeletal_Dis.pdf","384":"harrison/Ch384_Gout_and_Other_Crystal-Associated_Arthropathi.pdf","387":"harrison/Ch387_Periarticular_Disorders_of_the_Extremities.pdf","388":"harrison/Ch388_Approach_to_the_Patient_with_Endocrine_Disord.pdf","433":"harrison/Ch433_Approach_to_the_Patient_with_Neurologic_Disea.pdf","436":"harrison/Ch436_Seizures_and_Epilepsy.pdf","437":"harrison/Ch437_Introduction_to_Cerebrovascular_Diseases.pdf","438":"harrison/Ch438_Ischemic_Stroke.pdf","439":"harrison/Ch439_Intracerebral_Hemorrhage.pdf","458":"harrison/Ch458_Guillain-Barr%23U00e9_Syndrome_and_Other_Immune.pdf","459":"harrison/Ch459_Myasthenia_Gravis_and_Other_Diseases_of_the_N.pdf"};
+const _harMap=HARRISON_PDF_MAP;
 SYL_HAR_ALL.forEach(c=>{
 const _pdf=_harMap[String(c.ch)];
 h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
@@ -1947,7 +1917,7 @@ const HAZZARD_MARKED_PARTS=[
 ];
 // ===== TOPIC PRIORITY MATRIX (added to Track tab) =====
 function renderPriorityMatrix(){
-  const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+  const TOPICS_L=TOPICS;
   const EF_FREQ=[0,34,30,28,36,43,178,39,63,36,20,27,19,22,50,40,22,94,70,78,18,80,43,21,46,27,29,52,10,11,7,0,6,9,26,19,23,9,17,0];
   const maxFreq=Math.max(...EF_FREQ);
   const tSt=S.ts||{};
@@ -1995,7 +1965,7 @@ function renderPriorityMatrix(){
   return h;
 }
 function renderWrongAnswerLog(){
-  const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+  const TOPICS_L=TOPICS;
   // Get chronically failing + recently answered wrong questions
   const chronic=[];const recentWrong=[];
   Object.entries(S.sr||{}).forEach(([idx,s])=>{
@@ -2768,7 +2738,7 @@ const TOPIC_REF={
 function renderExamTrendCard(){
   const OLD_EX=new Set(['2021','2022','יוני 23']);
   const NEW_EX=new Set(['ספט 24','יוני 25','2025-א']);
-  const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+  const TOPICS_L=TOPICS;
   const oldTot=QZ.filter(q=>OLD_EX.has(q.t)).length||1;
   const newTot=QZ.filter(q=>NEW_EX.has(q.t)).length||1;
   const trends=TOPICS_L.map((name,ti)=>{
@@ -2811,7 +2781,7 @@ function renderExamTrendCard(){
 }
 function saveSessionSummary(){
   try{
-    const TOPICS_L=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+    const TOPICS_L=TOPICS;
     const dur=Math.floor((Date.now()-_sessionStart)/1000);
     const best=Object.entries(_sessionBest).sort((a,b)=>b[1]-a[1])[0];
     const worse=Object.entries(_sessionWorse).sort((a,b)=>b[1]-a[1])[0];
@@ -3330,7 +3300,7 @@ if(_storedKey){
 h+='<div style="font-size:9px;color:#94a3b8">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
-<div>Shlav A Mega v9.10 · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · build ${BUILD_HASH}</div>
+<div>Shlav A Mega v${APP_VERSION} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · build ${BUILD_HASH}</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
 return h;
@@ -3763,7 +3733,7 @@ else if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>{const b
 }
 function shareApp(){
 const url=location.href;
-if(navigator.share){navigator.share({title:'Shlav A Mega — Geriatrics Board Prep',text:'959 IMA questions + Hazzard\'s 8e + Harrison\'s 22e + Calculators + Spaced Repetition',url:url}).catch(()=>{});}
+if(navigator.share){navigator.share({title:'Shlav A Mega — Geriatrics Board Prep',text:'1434 IMA questions + Hazzard\'s 8e + Harrison\'s 22e + Calculators + Spaced Repetition',url:url}).catch(()=>{});}
 else if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>alert('✅ Link copied!'));}
 }
 
@@ -3784,7 +3754,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.13';
+const APP_VERSION='9.14';
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
   if(examMode&&(S.qOk+S.qNo)>0){
@@ -3826,7 +3796,7 @@ function getTopicTrend(ti){
     return curr-prev; // positive = improving
   }catch(e){return null;}
 }
-const BUILD_HASH=(()=>{const d=new Date('2026-04-10T00:00:00Z');return d.toISOString().slice(0,10).replace(/-/g,'');})();
+const BUILD_HASH=(()=>{const d=new Date('2026-04-11T00:00:00Z');return d.toISOString().slice(0,10).replace(/-/g,'');})();
 
 // ===== SHARED AI PROXY =====
 const AI_PROXY='https://toranot.netlify.app/api/claude';
@@ -3961,9 +3931,9 @@ ov.innerHTML=`<div style="max-width:420px;margin:0 auto;background:#fff;border-r
 <div style="font-size:16px;font-weight:800">🩺 Shlav A Mega</div>
 <button onclick="this.closest('#help-overlay').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8" aria-label="Close help">✕</button>
 </div>
-<div style="font-size:10px;color:#64748b;margin-bottom:16px">Israeli Geriatrics Board Exam Prep (שלב א׳) · 1419 IMA Questions · Works Offline</div>
+<div style="font-size:10px;color:#64748b;margin-bottom:16px">Israeli Geriatrics Board Exam Prep (שלב א׳) · 1434 IMA Questions · Works Offline</div>
 ${sec('Quiz Filters','📝','#059669',
-'<b>הכל</b> — All 1419 questions, shuffled<br>'+
+'<b>הכל</b> — All 1434 questions, shuffled<br>'+
 '<b>2022–2025</b> — Filter by exam year<br>'+
 '<b>🔥 Hard</b> — Questions you got wrong, worst-first<br>'+
 '<b>⏱️ Slow</b> — Questions that took you &gt;60s<br>'+
@@ -4013,7 +3983,7 @@ navigator.serviceWorker.getRegistrations().then(regs=>{
 regs.forEach(r=>r.update());
 });
 caches.keys().then(ks=>{
-const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v9.13');
+const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v9.14');
 old.forEach(k=>{caches.delete(k);console.log('Deleted old cache:',k);});
 });
 navigator.serviceWorker.register('sw.js').then(reg=>{

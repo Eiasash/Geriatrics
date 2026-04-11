@@ -94,7 +94,7 @@ describe("service worker version sync", () => {
 
     const appVersion = appVersionMatch[1];
     const cacheVersion = cacheMatch[1];
-    // Cache format: "shlav-a-v9.10.0", APP_VERSION: "9.10"
+    // Cache format: "shlav-a-v9.14", APP_VERSION: "9.14"
     // Just verify the major.minor aligns
     expect(cacheVersion, `CACHE "${cacheVersion}" contains APP_VERSION "${appVersion}"`).toContain(
       appVersion.split(".").slice(0, 2).join(".")
