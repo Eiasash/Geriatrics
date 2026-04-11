@@ -899,7 +899,7 @@ function endMiniExam(){
 clearInterval(examTimer);examTimer=null;examMode=false;
 const tot=_sessionOk+_sessionNo;const pct=tot?Math.round(_sessionOk/tot*100):0;
 const topicName=TOPICS[miniExamTopic]||'Topic';
-alert(\`🎯 Mini Exam: \${topicName}\n\n\${pct}% (\${_sessionOk}/\${tot})\n\${pct>=70?'Great!':pct>=50?'Getting there':'Needs more work'}\`);
+alert('🎯 Mini Exam: '+topicName+'\n\n'+pct+'% ('+_sessionOk+'/'+tot+')\n'+(pct>=70?'Great!':pct>=50?'Getting there':'Needs more work'));
 miniExamTopic=-1;render();
 }
 function setFilt(f){filt=f;topicFilt=-1;buildPool();render()}
@@ -1441,7 +1441,7 @@ ${!pomoActive?'<span class="tt-wrap"><button onclick="startPomodoro()" class="bt
 </div>`;
 h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
 const _trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
-const filts=[['all',\`הכל (\${QZ.length})\`],['2021','21'],['2022','22'],['יוני 23','Jun23'],['2023-ב','23-ב'],['מאי 24','May24'],['ספט 24','Sep24'],['יוני 25','Jun25'],['2025-א','25-א'],['Hazzard','📕 Haz'],['hard','🔥 Hard'],['slow','⏱️ Slow'],['weak','🎯 Weak'],['due','🔄 Due'],['traps',\`🪤 Traps (\${_trapCount})\`],['nbs','🎯 Next Best Step']];
+const filts=[['all',`הכל (${QZ.length})`],['2021','21'],['2022','22'],['יוני 23','Jun23'],['2023-ב','23-ב'],['מאי 24','May24'],['ספט 24','Sep24'],['יוני 25','Jun25'],['2025-א','25-א'],['Hazzard','📕 Haz'],['hard','🔥 Hard'],['slow','⏱️ Slow'],['weak','🎯 Weak'],['due','🔄 Due'],['traps',`🪤 Traps (${_trapCount})`],['nbs','🎯 Next Best Step']];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{
 if(f==='nbs')h+=`<span class="pill ${filt==='nbs'?'on':''}" onclick="startNextBestStep()">${l}</span>`;
