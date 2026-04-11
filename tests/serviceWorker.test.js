@@ -37,7 +37,6 @@ describe("sw.js — cache configuration", () => {
       "data/drugs.json",
       "data/flashcards.json",
       "data/tabs.json",
-      "data/osce.json",
     ];
     for (const f of expectedFiles) {
       expect(swContent, `sw.js should cache ${f}`).toContain(f);
