@@ -794,6 +794,7 @@ const _dataPromise = (async function loadDataArrays() {
 
 let tab='quiz';
 let libSec='haz-pdf';
+let harChOpen=null,_harData=null,_harLoading=false;
 function renderTabs(){
 document.getElementById('tb').innerHTML=TABS.map(t=>
 `<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" aria-label="${t.l}"><span class="ic">${t.ic}</span>${t.l}</button>`
@@ -2182,23 +2183,6 @@ h+=`</div>`;
 if(libSec==='haz-pdf'){
 h+=`<div style="padding:8px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;margin-bottom:12px;font-size:10px;color:#92400e;line-height:1.5">
 ⚠️ Large PDFs — first load may take a moment on mobile.</div>`;
-h+=`<div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px">📚 Original</div>`;
-HAZZARD_PARTS.forEach((p,i)=>{
-h+=`<a href="${p.file}" download="${p.file.split('/').pop()}" style="text-decoration:none;display:block">
-<div class="card" style="padding:12px;cursor:pointer;border-left:4px solid ${p.color}">
-<div style="display:flex;align-items:flex-start;gap:10px">
-<div style="width:32px;height:32px;border-radius:8px;background:${p.color}15;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-<span style="font-size:14px;font-weight:700;color:${p.color}">${i+1}</span></div>
-<div style="flex:1;min-width:0">
-<div style="font-size:11px;font-weight:700">${p.title}</div>
-<div style="font-size:9px;color:rgb(var(--sky));font-weight:600;margin-top:2px">${p.ch}</div>
-<div style="font-size:9px;color:#64748b;margin-top:2px">${p.desc}</div>
-${p.exam?`<div style="font-size:9px;color:${p.exam&&p.exam.includes('מוחרג')?'#dc2626':'#f59e0b'};font-weight:700;margin-top:3px">${p.exam}</div>`:''}
-</div>
-<span style="font-size:14px;color:#94a3b8;align-self:center">↗</span>
-</div></div></a>`;
-});
-h+=`<div style="font-size:11px;font-weight:700;color:#64748b;margin:14px 0 8px">✏️ Annotated (Marked)</div>`;
 HAZZARD_MARKED_PARTS.forEach((p,i)=>{
 h+=`<a href="${p.file}" download="${p.file.split('/').pop()}" style="text-decoration:none;display:block">
 <div class="card" style="padding:12px;cursor:pointer;border-left:4px solid ${p.color}">
