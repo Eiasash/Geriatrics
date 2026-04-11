@@ -164,4 +164,18 @@ describe("sw.js — version alignment with app", () => {
     const appVersion = appVersionMatch[1];
     expect(swVersion).toContain(appVersion.split(".").slice(0, 2).join("."));
   });
+
+  it("HTML cache cleanup exempts the exact sw.js CACHE key", () => {
+    const cacheKeyMatch = swContent.match(/CACHE\s*=\s*'([^']+)'/);
+    expect(cacheKeyMatch, "CACHE key found in sw.js").not.toBeNull();
+    const swCacheKey = cacheKeyMatch[1];
+
+    // The HTML cleanup code filters old caches: k !== '<current-cache-key>'
+    // This must match the sw.js CACHE exactly or the current cache gets deleted
+    const cleanupMatch = html.match(/ks\.filter\(k=>k\.startsWith\('shlav-a-'\)&&k!=='([^']+)'\)/);
+    expect(cleanupMatch, "Cache cleanup filter found in HTML").not.toBeNull();
+    const htmlExemptKey = cleanupMatch[1];
+
+    expect(htmlExemptKey, `HTML cleanup exempts "${htmlExemptKey}" but sw.js CACHE is "${swCacheKey}"`).toBe(swCacheKey);
+  });
 });
