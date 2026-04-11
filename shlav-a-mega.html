@@ -824,9 +824,6 @@ const _dataPromise = (async function loadDataArrays() {
 
 let tab='quiz';
 let libSec='haz-pdf';
-let libChOpen=null;
-let _hazChapters=null;
-let _hazLoading=false;
 function renderTabs(){
 document.getElementById('tb').innerHTML=TABS.map(t=>
 `<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" aria-label="${t.l}"><span class="ic">${t.ic}</span>${t.l}</button>`
@@ -1456,7 +1453,7 @@ if(timedMode&&!ans){
 const topicName=q.ti>=0&&TOPICS[q.ti]?TOPICS[q.ti]:'';
 const _cf=isChronicFail(pool[qi]);
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}<span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libChOpen=${ref.ch};loadLibChapter(${ref.ch});render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open in Library">📖 ${ref.l}</span>`;return '';})()}</div>
+<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}<span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libSec='haz-pdf';render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open Hazzard PDFs">📕 ${ref.l}</span>`;return '';})()}</div>
 <div style="display:flex;align-items:center;gap:8px">
 <button onclick="speakQuestion()" class="speech-btn${isSpeaking?' speaking':''}" title="Read aloud" aria-label="Read question aloud">🔊</button>
 <button onclick="shareQ()" id="shbtn" class="share-btn" title="Share" aria-label="Share question">📋 שתף</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px" title="Bookmark" aria-label="${bk?'Remove bookmark':'Bookmark question'}">${bk?'🔖':'🏷️'}</button>
@@ -2327,22 +2324,6 @@ h+=`<div style="text-align:center;margin-top:8px;padding:8px;font-size:9px;color
 return h;
 }
 
-async function openHazChapter(ch){
-libChOpen=ch;
-if(_hazChapters){render();return;}
-if(_hazLoading)return;
-_hazLoading=true;
-render(); // show loading
-try{
-const r=await fetch('hazzard_chapters.json');
-_hazChapters=await r.json();
-window._libData={chapters:Object.entries(_hazChapters).map(([k,v])=>({ch:+k,...v}))};
-}catch(e){
-console.error('Failed to load Hazzard chapters',e);
-_hazChapters={};
-}
-_hazLoading=false;
-render();
 }
 
 
@@ -3762,7 +3743,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.11';
+const APP_VERSION='9.12';
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
   if(examMode&&(S.qOk+S.qNo)>0){
@@ -3991,7 +3972,7 @@ navigator.serviceWorker.getRegistrations().then(regs=>{
 regs.forEach(r=>r.update());
 });
 caches.keys().then(ks=>{
-const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v9.11');
+const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v9.12');
 old.forEach(k=>{caches.delete(k);console.log('Deleted old cache:',k);});
 });
 navigator.serviceWorker.register('sw.js').then(reg=>{
