@@ -827,7 +827,7 @@ let _hazChapters=null;
 let _hazLoading=false;
 function renderTabs(){
 document.getElementById('tb').innerHTML=TABS.map(t=>
-`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')"><span class="ic">${t.ic}</span>${t.l}</button>`
+`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" aria-label="${t.l}"><span class="ic">${t.ic}</span>${t.l}</button>`
 ).join('');
 }
 function go(t){tab=t;renderTabs();render()}
@@ -925,12 +925,12 @@ function renderOnCall(){
   // Header
   h+=`<div style="display:flex;justify-content:space-between;align-items:center">
     <div style="font-size:11px;color:#64748b">${qi+1}/${pool.length} · ${filt}</div>
-    <button onclick="exitOnCallMode()" style="font-size:11px;padding:4px 10px;background:#f1f5f9;border:none;border-radius:8px;cursor:pointer">✕ Exit</button>
+    <button onclick="exitOnCallMode()" style="font-size:11px;padding:4px 10px;background:#f1f5f9;border:none;border-radius:8px;cursor:pointer" aria-label="Exit on-call mode">✕ Exit</button>
   </div>`;
   // Topic tag
   if(topic)h+=`<div style="font-size:10px;background:#f0fdf4;color:#166534;padding:3px 10px;border-radius:20px;display:inline-block;align-self:flex-start;font-weight:600">${topic}</div>`;
   // Question card - large text
-  h+=`<div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);flex:1;cursor:${flipRevealed?'default':'pointer'}" ${flipRevealed?'':'onclick="flipCard()"'}>
+  h+=`<div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);flex:1;cursor:${flipRevealed?'default':'pointer'}" ${flipRevealed?'':'onclick="flipCard()" role="button" tabindex="0" aria-label="Flip card to reveal answer"'}>
     <div style="font-size:16px;line-height:1.6;font-weight:500;direction:rtl;text-align:right;margin-bottom:${flipRevealed?'16px':'0'}">${q.q}</div>`;
   if(!flipRevealed){
     h+=`<div style="text-align:center;margin-top:20px;color:#94a3b8;font-size:13px">👆 tap to reveal answer</div>`;
@@ -949,8 +949,8 @@ function renderOnCall(){
   // Rate buttons (only after flip)
   if(flipRevealed){
     h+=`<div style="display:flex;gap:12px">
-      <button onclick="onCallPick(false)" style="flex:1;padding:18px;background:#fef2f2;color:#dc2626;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px">✗</button>
-      <button onclick="onCallPick(true)" style="flex:1;padding:18px;background:#f0fdf4;color:#16a34a;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px">✓</button>
+      <button onclick="onCallPick(false)" style="flex:1;padding:18px;background:#fef2f2;color:#dc2626;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px" aria-label="Wrong answer">✗</button>
+      <button onclick="onCallPick(true)" style="flex:1;padding:18px;background:#f0fdf4;color:#16a34a;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px" aria-label="Correct answer">✓</button>
     </div>`;
   }
   h+=`</div>`;
@@ -1219,7 +1219,7 @@ ${rows.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0
   </div>
   <div style="font-size:10px;font-weight:700;color:${r.acc>=70?'#059669':r.acc>=50?'#d97706':'#dc2626'};min-width:28px;text-align:right">${r.acc}%</div>
 </div>`).join('')}
-<button onclick="document.getElementById('mexModal').remove()" style="margin-top:16px;width:100%;padding:10px;background:#0f172a;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Close</button>
+<button onclick="document.getElementById('mexModal').remove()" style="margin-top:16px;width:100%;padding:10px;background:#0f172a;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer" aria-label="Close exam results">Close</button>
 </div></div>`;
   document.body.insertAdjacentHTML('beforeend',html);
 }
@@ -1356,7 +1356,7 @@ if(sdQi>=sdPool.length)sdQi=0;
 const q=QZ[sdPool[sdQi]];
 let h=`<div class="sudden-death-banner"><span style="font-weight:700;font-size:13px">💀 Sudden Death</span>
 <span style="font-size:16px;font-weight:700">🔥 ${sdStreak}</span>
-<button class="btn" style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;padding:4px 10px" onclick="endSuddenDeath()">Quit</button></div>`;
+<button class="btn" style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;padding:4px 10px" onclick="endSuddenDeath()" aria-label="Quit sudden death mode">Quit</button></div>`;
 h+=`<div class="card" style="padding:16px">`;
 if(timedMode&&!ans){
   h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
@@ -1364,7 +1364,7 @@ if(timedMode&&!ans){
 <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
   <div id="timed-bar" style="height:100%;width:${Math.round(timedSec/90*100)}%;background:${timedSec>45?'#10b981':timedSec>22?'#f59e0b':'#ef4444'};border-radius:3px;transition:width .9s linear"></div>
 </div>
-<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;white-space:nowrap">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
+<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;white-space:nowrap" aria-label="${timedPaused?'Resume timer':'Pause timer'}">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
 </div>`;
 }
 const _isFlagQ=(S.flagged||{})[pool[qi]];
@@ -1375,10 +1375,10 @@ q.o.forEach((o,i)=>{
 let cls='qo';
 if(ans){cls+=' lk';if(i===q.c)cls+=' ok';else if(i===sel)cls+=' no';else cls+=' dim';}
 else if(i===sel)cls+=' sel';
-h+=`<button class="${cls}" onclick="pick(${i})">${o}</button>`;
+h+=`<button class="${cls}" onclick="pick(${i})" aria-label="Option ${i+1}: ${o}">${o}</button>`;
 });
-if(!ans)h+=`<button class="btn btn-p" onclick="sdCheck()"${sel===null?' disabled':''}>בדוק</button>`;
-else h+=`<button class="btn btn-d" onclick="sdNext()">הבאה ←</button>`;
+if(!ans)h+=`<button class="btn btn-p" onclick="sdCheck()"${sel===null?' disabled':''} aria-label="Check answer">בדוק</button>`;
+else h+=`<button class="btn btn-d" onclick="sdNext()" aria-label="Next question">הבאה ←</button>`;
 h+=`</div>`;
 // Leaderboard
 if(sdLeaderboard.length){
@@ -1397,7 +1397,7 @@ const dueN=getDueQuestions().length;
 let h=pomoActive?`<div class="pomo-bar"><div class="pomo-fill" id="pomo-fill" style="width:${(3000-pomoSec)/3000*100}%"></div></div>
 <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#ecfdf5;border-radius:10px;margin-bottom:10px;font-size:11px">
 <span>⏱️ Pomodoro</span><span class="timer" id="pomo-time" style="font-weight:700">${fmtT(pomoSec)}</span>
-<button onclick="stopPomodoro()" style="font-size:10px;color:#dc2626;font-weight:600">Stop</button></div>`:'';
+<button onclick="stopPomodoro()" style="font-size:10px;color:#dc2626;font-weight:600" aria-label="Stop pomodoro timer">Stop</button></div>`:'';
 h+=examMode?(()=>{
   const answered=S.qOk+S.qNo;
   const isMock=!!mockExamResults;
@@ -1415,9 +1415,9 @@ if(!examMode){
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
 <div class="sec-t">Quiz</div>
 <div style="display:flex;gap:4px;flex-wrap:wrap">
-<button onclick="startExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px">📋 Exam (150q)</button><button onclick="startMockExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px;background:#7c3aed;color:#fff">🎯 Mock (100q)</button>
-<span class="tt-wrap"><button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:5px 12px;background:#fef2f2;color:#dc2626">💀 Sudden Death</button><button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:5px 12px;background:#0f172a;color:#7dd3fc">🌙 On-call</button><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">One wrong answer ends the session. Builds high-stakes exam pressure.</div></span>
-${!pomoActive?'<span class="tt-wrap"><button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:5px 12px;background:#ecfdf5;color:#059669">⏱️ Pomodoro</button><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">25min focus / 5min break study timer. Helps maintain concentration.</div></span>':''}
+<button onclick="startExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px" aria-label="Start exam with 150 questions">📋 Exam (150q)</button><button onclick="startMockExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px;background:#7c3aed;color:#fff" aria-label="Start mock exam with 100 questions">🎯 Mock (100q)</button>
+<span class="tt-wrap"><button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:5px 12px;background:#fef2f2;color:#dc2626" aria-label="Start sudden death mode">💀 Sudden Death</button><button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:5px 12px;background:#0f172a;color:#7dd3fc" aria-label="Start on-call mode">🌙 On-call</button><button class="tt-icon" tabindex="0" aria-label="Info about sudden death mode">ⓘ</button><div class="tt-box">One wrong answer ends the session. Builds high-stakes exam pressure.</div></span>
+${!pomoActive?'<span class="tt-wrap"><button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:5px 12px;background:#ecfdf5;color:#059669" aria-label="Start pomodoro timer">⏱️ Pomodoro</button><button class="tt-icon" tabindex="0" aria-label="Info about pomodoro timer">ⓘ</button><div class="tt-box">25min focus / 5min break study timer. Helps maintain concentration.</div></span>':''}
 </div>
 </div>`;
 h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
@@ -1448,7 +1448,7 @@ if(timedMode&&!ans){
 <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
   <div id="timed-bar" style="height:100%;width:${Math.round(timedSec/90*100)}%;background:${timedSec>45?'#10b981':timedSec>22?'#f59e0b':'#ef4444'};border-radius:3px;transition:width .9s linear"></div>
 </div>
-<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;white-space:nowrap">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
+<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;white-space:nowrap" aria-label="${timedPaused?'Resume timer':'Pause timer'}">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
 </div>`;
 }
 const topicName=q.ti>=0&&TOPICS[q.ti]?TOPICS[q.ti]:'';
@@ -1456,8 +1456,8 @@ const _cf=isChronicFail(pool[qi]);
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
 <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}<span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libChOpen=${ref.ch};loadLibChapter(${ref.ch});render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open in Library">📖 ${ref.l}</span>`;return '';})()}</div>
 <div style="display:flex;align-items:center;gap:8px">
-<button onclick="speakQuestion()" class="speech-btn${isSpeaking?' speaking':''}" title="Read aloud">🔊</button>
-<button onclick="shareQ()" id="shbtn" class="share-btn" title="Share">📋 שתף</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px" title="Bookmark">${bk?'🔖':'🏷️'}</button>
+<button onclick="speakQuestion()" class="speech-btn${isSpeaking?' speaking':''}" title="Read aloud" aria-label="Read question aloud">🔊</button>
+<button onclick="shareQ()" id="shbtn" class="share-btn" title="Share" aria-label="Share question">📋 שתף</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px" title="Bookmark" aria-label="${bk?'Remove bookmark':'Bookmark question'}">${bk?'🔖':'🏷️'}</button>
 <span style="color:#94a3b8;font-size:10px">${qi+1}/${pool.length}</span>
 </div></div>`;
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="auto">${q.q}</p>`;
@@ -1470,22 +1470,22 @@ if(ans){cls+=' lk';if(origI===q.c)cls+=' ok';else if(origI===sel)cls+=' no';else
 else if(origI===sel)cls+=' sel';
 const blurCls=blindRecall&&!ans&&origI!==sel?' qo-blur':'';
 const autopsyCls=(autopsyMode&&ans&&origI!==q.c&&origI===autopsyDistractor)?' distractor-highlight':'';
-h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${origI})"><span>${o}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
+h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${origI})" aria-label="Option ${origI+1}"><span>${o}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
 });
 h+=`<div style="display:flex;gap:6px;margin-top:14px">`;
-if(!ans){h+=`<button class="btn btn-p" onclick="check()"${sel===null?' disabled':''}>בדוק</button>`;if(!examMode)h+=`<button class="btn" onclick="showAnswerHardFail()" style="background:#fff3e0;color:#d97706;font-size:11px;padding:6px 14px;margin-left:6px">👁 לא יודע</button>`;}
-else h+=`<button class="btn btn-d" onclick="next()">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
+if(!ans){h+=`<button class="btn btn-p" onclick="check()"${sel===null?' disabled':''} aria-label="Check answer">בדוק</button>`;if(!examMode)h+=`<button class="btn" onclick="showAnswerHardFail()" style="background:#fff3e0;color:#d97706;font-size:11px;padding:6px 14px;margin-left:6px" aria-label="Show answer">👁 לא יודע</button>`;}
+else h+=`<button class="btn btn-d" onclick="next()" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
 h+=`</div>`;
 
 // Teach-Back box
 if(ans&&!examMode&&sel===q.c){
 if(!teachBackState){
 h+='<div style="margin-top:12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:12px">';
-h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:12px;font-weight:700;color:#065f46;direction:rtl">🎓 Teach-Back: הסבר מדוע זו התשובה הנכונה</span><button onclick="startVoiceTeachBack()" id="tb-mic-btn" style="font-size:16px;padding:4px 8px;background:#ecfdf5;border:none;border-radius:8px;cursor:pointer" title="הקלט קולי">🎙️</button></div>';
-h+='<textarea id="tbInput" dir="rtl" style="width:100%;min-height:60px;resize:vertical;font-family:Heebo,sans-serif;border:1px solid #a7f3d0;border-radius:8px;padding:8px;font-size:12px" placeholder="הקלד את ההסבר שלך..."></textarea>';
+h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:12px;font-weight:700;color:#065f46;direction:rtl">🎓 Teach-Back: הסבר מדוע זו התשובה הנכונה</span><button onclick="startVoiceTeachBack()" id="tb-mic-btn" style="font-size:16px;padding:4px 8px;background:#ecfdf5;border:none;border-radius:8px;cursor:pointer" title="הקלט קולי" aria-label="Record voice teach-back">🎙️</button></div>';
+h+='<textarea id="tbInput" dir="rtl" style="width:100%;min-height:60px;resize:vertical;font-family:Heebo,sans-serif;border:1px solid #a7f3d0;border-radius:8px;padding:8px;font-size:12px" placeholder="הקלד את ההסבר שלך..." aria-label="Teach-back explanation"></textarea>';
 h+='<div style="display:flex;gap:8px;margin-top:8px">';
-h+='<button class="btn btn-g" style="flex:1;font-size:11px" onclick="var v=document.getElementById(\'tbInput\')?.value?.trim();if(v){gradeTeachBack(pool[qi],v);}else{teachBackState=\'skip\';render();}">🤖 Grade it</button>';
-h+='<button class="btn btn-o" style="font-size:11px" onclick="teachBackState=\'skip\';render()">דלג</button>';
+h+='<button class="btn btn-g" style="flex:1;font-size:11px" onclick="var v=document.getElementById(\'tbInput\')?.value?.trim();if(v){gradeTeachBack(pool[qi],v);}else{teachBackState=\'skip\';render();}" aria-label="Grade teach-back with AI">🤖 Grade it</button>';
+h+='<button class="btn btn-o" style="font-size:11px" onclick="teachBackState=\'skip\';render()" aria-label="Skip teach-back">דלג</button>';
 h+='</div></div>';
 }else if(teachBackState==='grading'){
 h+='<div style="margin-top:12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:12px;text-align:center"><div style="font-size:12px;color:#065f46">⏳ Grading...</div></div>';
@@ -1839,11 +1839,11 @@ h+=`</div>`;
 if(sylSec==='harAll'){
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — For ALL Residents</div>
-<button onclick="toggleHarrisonAI()" style="font-size:10px;padding:4px 10px;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-bottom:8px">❓ Ask AI about any Harrison chapter</button>
+<button onclick="toggleHarrisonAI()" style="font-size:10px;padding:4px 10px;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-bottom:8px" aria-label="Ask AI about Harrison chapter">❓ Ask AI about any Harrison chapter</button>
 <div id="harrison-ai-box" style="display:none;margin-bottom:10px;padding:10px;background:#eff6ff;border-radius:10px">
 <div style="font-size:10px;color:#0284c7;font-weight:600;margin-bottom:6px">Ask anything from Harrison's (board-relevant)</div>
 <textarea id="harrison-ai-q" class="search-box" placeholder="e.g. מה הקריטריונים לאי ספיקת לב לפי Harrison Ch 286?" style="width:100%;font-size:11px;direction:rtl;height:60px;resize:none"></textarea>
-<button onclick="submitHarrisonAI()" style="font-size:11px;padding:6px;width:100%;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-top:4px">שאל</button>
+<button onclick="submitHarrisonAI()" style="font-size:11px;padding:6px;width:100%;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-top:4px" aria-label="Submit Harrison AI question">שאל</button>
 <div id="harrison-ai-answer" style="display:none;margin-top:8px;font-size:11px;line-height:1.7;direction:rtl;text-align:right;padding:8px;background:#fff;border-radius:8px"></div>
 </div>
 <div style="font-size:10px;color:#64748b;margin-bottom:10px">התמחות בסיס + התמחות-על · ${SYL_HAR_ALL.length} chapters</div>`;
@@ -1997,7 +1997,7 @@ function renderWrongAnswerLog(){
     h+=`<div style="margin-bottom:12px;padding:10px;background:#fffbeb;border-radius:10px;border:1px solid #fde68a">
 <div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:6px">❌ Report wrong answer key for current question</div>
 <input id="reportInput" class="search-box" placeholder="מה לדעתך התשובה הנכונה ולמה?" style="font-size:11px;margin-bottom:6px;direction:rtl">
-<button class="btn" style="font-size:10px;width:100%;background:#d97706;color:#fff" onclick="S._reportType='wrong_answer';submitReport()">שלח לבדיקת AI</button>
+<button class="btn" style="font-size:10px;width:100%;background:#d97706;color:#fff" onclick="S._reportType='wrong_answer';submitReport()" aria-label="Submit report for AI review">שלח לבדיקת AI</button>
 <div id="fbStatus" style="font-size:10px;margin-top:4px;display:none"></div>
 <div id="aiVerifyResult" style="display:none;margin-top:8px;padding:10px;border-radius:8px;font-size:10px;line-height:1.6"></div>
 </div>`;
@@ -2208,7 +2208,7 @@ if(libChOpen!==null && _hazChapters && _hazChapters[String(libChOpen)]){
 // Render chapter content
 const ch=_hazChapters[String(libChOpen)];
 h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-<button onclick="libChOpen=null;render()" style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">← Back</button>
+<button onclick="libChOpen=null;render()" style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer" aria-label="Back to library">← Back</button>
 <div style="font-size:13px;font-weight:700">Ch ${libChOpen}: ${ch.title}</div><button onclick="quizMeOnChapter(libChOpen,ch.title)" style="font-size:10px;padding:4px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">🧠 Quiz me</button><button onclick="aiSummarizeChapter(libChOpen,ch.title)" style="font-size:10px;padding:4px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">📝 Summary</button><button onclick="toggleAskAI()" style="font-size:10px;padding:4px 10px;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer">❓ Ask AI</button></div>`;
 h+=`<div id="quiz-me-box"></div><div id="ask-ai-box" style="display:none;margin-bottom:8px"><div style="display:flex;gap:6px;padding:10px;background:#eff6ff;border-radius:10px"><input id="ask-ai-input" class="search-box" placeholder="שאל שאלה על הפרק הזה..." style="flex:1;margin:0;font-size:11px;direction:rtl"><button onclick="submitAskAI(libChOpen,ch.title)" style="font-size:11px;padding:6px 12px;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer">שלח</button></div><div id="ask-ai-answer" style="display:none;padding:10px;background:#fff;border-radius:10px;margin-top:6px;font-size:11px;line-height:1.7;direction:rtl;text-align:right"></div></div>`;
 h+=`<div class="card" style="padding:16px">`;
@@ -2218,7 +2218,7 @@ if(timedMode&&!ans){
 <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
   <div id="timed-bar" style="height:100%;width:${Math.round(timedSec/90*100)}%;background:${timedSec>45?'#10b981':timedSec>22?'#f59e0b':'#ef4444'};border-radius:3px;transition:width .9s linear"></div>
 </div>
-<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;white-space:nowrap">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
+<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;white-space:nowrap" aria-label="${timedPaused?'Resume timer':'Pause timer'}">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
 </div>`;
 }
 ch.sections.forEach(sec=>{
@@ -2398,21 +2398,21 @@ h+=`<div style="display:flex;gap:6px;margin-bottom:12px">
 <span class="badge badge-y">📖 Learning: ${fcLearning}</span>
 <span class="badge" style="background:#f1f5f9;color:#64748b">🆕 New: ${fcNew}</span>
 </div>`;
-h+=`<div class="fc" onclick="S.fcFlip=!S.fcFlip;save();render()" style="border-color:${S.fcFlip?'rgb(var(--em))':'rgb(var(--sky))'}">
+h+=`<div class="fc" onclick="S.fcFlip=!S.fcFlip;save();render()" style="border-color:${S.fcFlip?'rgb(var(--em))':'rgb(var(--sky))'}" role="button" tabindex="0" aria-label="${S.fcFlip?'Show question':'Show answer'}">
 <p style="font-size:${S.fcFlip?'12px':'14px'};font-weight:${S.fcFlip?'400':'700'};line-height:1.7;color:${S.fcFlip?'#334155':'#1e293b'}">
 ${S.fcFlip?f.b:f.f}</p>
 <p style="font-size:9px;color:#94a3b8;margin-top:12px">${S.fcFlip?'Tap for question':'Tap to reveal answer'} · ${S.fci%FLASH.length+1}/${FLASH.length}</p>
 </div>`;
 h+=`<div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
-<button class="btn btn-o" onclick="S.fci=(S.fci-1+FLASH.length)%FLASH.length;S.fcFlip=false;save();render()">← Prev</button>
-<button class="btn btn-p" onclick="S.fci++;S.fcFlip=false;save();render()">Next →</button>
+<button class="btn btn-o" onclick="S.fci=(S.fci-1+FLASH.length)%FLASH.length;S.fcFlip=false;save();render()" aria-label="Previous flashcard">← Prev</button>
+<button class="btn btn-p" onclick="S.fci++;S.fcFlip=false;save();render()" aria-label="Next flashcard">Next →</button>
 </div>`;
 if(S.fcFlip){h+=`<div style="display:flex;gap:6px;justify-content:center;margin-top:8px">
-<button class="btn" style="background:#fef2f2;color:#dc2626" onclick="fcRate(0)">🔄 שוב</button>
-<button class="btn" style="background:#fffbeb;color:#d97706" onclick="fcRate(1)">🤔 קשה</button>
-<button class="btn" style="background:#ecfdf5;color:#059669" onclick="fcRate(2)">✅ קל</button>
+<button class="btn" style="background:#fef2f2;color:#dc2626" onclick="fcRate(0)" aria-label="Rate: Again">🔄 שוב</button>
+<button class="btn" style="background:#fffbeb;color:#d97706" onclick="fcRate(1)" aria-label="Rate: Hard">🤔 קשה</button>
+<button class="btn" style="background:#ecfdf5;color:#059669" onclick="fcRate(2)" aria-label="Rate: Easy">✅ קל</button>
 </div>`;}
-h+=`<div style="text-align:center;margin-top:8px"><button onclick="S.fci=Math.floor(Math.random()*FLASH.length);S.fcFlip=false;save();render()" style="font-size:10px;color:rgb(var(--sky));text-decoration:underline">🔀 Random</button></div>`;
+h+=`<div style="text-align:center;margin-top:8px"><button onclick="S.fci=Math.floor(Math.random()*FLASH.length);S.fcFlip=false;save();render()" style="font-size:10px;color:rgb(var(--sky));text-decoration:underline" aria-label="Random flashcard">🔀 Random</button></div>`;
 return h;
 }
 
@@ -2509,7 +2509,7 @@ h+=`<label style="display:flex;justify-content:space-between;align-items:center;
 h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center">
 <span style="font-size:22px;font-weight:700;color:${gds>=5?'#dc2626':'#059669'}">${gds}/15</span>
 <p style="font-size:10px;color:#64748b;margin-top:2px">${gds>=10?'Severe depression — refer':gds>=5?'Positive screen — evaluate further':'Normal'}</p>
-<button id="copy-gds" onclick="copyReport('gds')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px">📋 העתק דוח</button>
+<button id="copy-gds" onclick="copyReport('gds')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy GDS report">📋 העתק דוח</button>
 </div></div>`;
 
 // Braden Scale
@@ -2535,7 +2535,7 @@ const bradenClr=bradenScore<=12?'#dc2626':bradenScore<=14?'#d97706':bradenScore<
 h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${bradenClr}">${bradenScore}/23</span>
 <p style="font-size:10px;color:#64748b;margin-top:2px">${bradenRisk}${bradenScore<=18?' — Implement prevention protocol':''}</p>
-<button id="copy-braden" onclick="copyReport('braden')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px">📋 העתק דוח</button>
+<button id="copy-braden" onclick="copyReport('braden')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Braden report">📋 העתק דוח</button>
 </div></div>`;
 
 // PADUA VTE Score
@@ -2570,7 +2570,7 @@ h+=`<label style="display:flex;justify-content:space-between;align-items:center;
 h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${katzScore>=5?'#059669':katzScore>=3?'#d97706':'#dc2626'}">${katzScore}/6</span>
 <p style="font-size:10px;color:#64748b;margin-top:2px">${katzScore===6?'Full independence':katzScore>=4?'Moderate dependence':katzScore>=2?'Severe dependence':'Total dependence'}</p>
-<button id="copy-katz" onclick="copyReport('katz')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px">📋 העתק דוח</button>
+<button id="copy-katz" onclick="copyReport('katz')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Katz ADL report">📋 העתק דוח</button>
 </div></div>`;
 
 // Lawton IADL Scale
@@ -2611,7 +2611,7 @@ const at4Score=(parseFloat(calcVals.at4_1)||0)+(parseFloat(calcVals.at4_2)||0)+(
 h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${at4Score>=4?'#dc2626':at4Score>=1?'#d97706':'#059669'}">${at4Score}</span>
 <p style="font-size:10px;color:#64748b;margin-top:2px">${at4Score>=4?'Possible delirium ± cognitive impairment':at4Score>=1?'Possible cognitive impairment':'No delirium or cognitive impairment detected'}</p>
-<button id="copy-4at" onclick="copyReport('4at')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px">📋 העתק דוח</button>
+<button id="copy-4at" onclick="copyReport('4at')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy 4AT delirium report">📋 העתק דוח</button>
 </div></div>`;
 
 // MNA-SF (Mini Nutritional Assessment - Short Form)
@@ -2669,7 +2669,7 @@ const nortonClr=nortonScore<=12?'#dc2626':nortonScore<=14?'#d97706':'#059669';
 h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${nortonClr}">${nortonScore}/20</span>
 <p style="font-size:10px;color:#64748b;margin-top:2px">${nortonScore<=12?'High risk — implement prevention':'Norton ≤14 moderate risk, >14 lower risk'}${nortonScore<=14?' — Turn schedule + skin assessment':''}</p>
-<button id="copy-norton" onclick="copyReport('norton')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px">📋 העתק דוח</button>
+<button id="copy-norton" onclick="copyReport('norton')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Norton report">📋 העתק דוח</button>
 </div></div>`;
 
 // Morse Fall Scale
@@ -2697,7 +2697,7 @@ const morseClr=morseScore>=45?'#dc2626':morseScore>=25?'#d97706':'#059669';
 h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${morseClr}">${morseScore}</span>
 <p style="font-size:10px;color:#64748b;margin-top:2px">${morseScore>=45?'High fall risk — implement fall bundle':morseScore>=25?'Moderate risk — standard interventions':'Low risk'}</p>
-<button id="copy-morse" onclick="copyReport('morse')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px">📋 העתק דוח</button>
+<button id="copy-morse" onclick="copyReport('morse')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Morse Falls report">📋 העתק דוח</button>
 </div></div>`;
 
 return h;
@@ -2864,7 +2864,7 @@ function renderSessionCard(){
 </div>
 ${last.best?`<div style="font-size:10px;margin-bottom:2px">✅ Best: <b>${last.best.name}</b> (${last.best.n} correct)</div>`:''}
 ${last.worse?`<div style="font-size:10px">🔴 Worst: <b>${last.worse.name}</b> (${last.worse.n} wrong)</div>`:''}
-<button onclick="this.parentElement.style.display='none'" style="margin-top:8px;font-size:9px;color:#94a3b8;background:none;border:none;cursor:pointer">dismiss</button>
+<button onclick="this.parentElement.style.display='none'" style="margin-top:8px;font-size:9px;color:#94a3b8;background:none;border:none;cursor:pointer" aria-label="Dismiss notification">dismiss</button>
 </div>`;
   }catch(e){return '';}
 }
@@ -2930,7 +2930,7 @@ var fk='bkf_'+topic.replace(/[^a-z0-9]/gi,'_');
 var open=S[fk];
 var qs=_byTopic[topic];
 h+='<div style="margin-bottom:6px">';
-h+='<div onclick="S[\''+fk+'\']=' + '!S[\''+fk+'\'];save();render()" style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f8fafc;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600">';
+h+='<div onclick="S[\''+fk+'\']=' + '!S[\''+fk+'\'];save();render()" style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f8fafc;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600" role="button" tabindex="0" aria-expanded="'+(open?'true':'false')+'" aria-label="'+topic+'">';
 h+='<span>📁 '+topic+' ('+qs.length+')</span><span>'+(open?'▼':'▶')+'</span></div>';
 if(open){qs.forEach(function(e){h+='<div style="padding:6px 12px;font-size:10px;border-bottom:1px solid #f1f5f9" class="heb" dir="rtl">'+e.q.q.substring(0,90)+'...</div>';});}
 h+='</div>';
@@ -3007,9 +3007,9 @@ h+=`</div>`;}
 // ROI Matrix and Radar chart removed — accuracy bars above are sufficient
 h+=renderPriorityMatrix();
 
-TOPICS.forEach((t,i)=>{h+=`<div class="topic${S.ck[i]?' done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()" style="display:${S._sylOpen?'flex':'none'}">
-<input type="checkbox" ${S.ck[i]?'checked':''} readonly style="width:13px;height:13px"><span>${t}</span></div>`;});
-h+=`<div onclick="S._sylOpen=!S._sylOpen;render()" style="text-align:center;padding:8px;cursor:pointer;font-size:10px;color:rgb(var(--sky));font-weight:600">${S._sylOpen?'▲ Collapse':'▼ Show '+TOPICS.length+' topics'}</div>`;
+TOPICS.forEach((t,i)=>{h+=`<div class="topic${S.ck[i]?' done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()" style="display:${S._sylOpen?'flex':'none'}" role="checkbox" aria-checked="${S.ck[i]?'true':'false'}" tabindex="0" aria-label="${t}">
+<input type="checkbox" ${S.ck[i]?'checked':''} readonly style="width:13px;height:13px" tabindex="-1"><span>${t}</span></div>`;});
+h+=`<div onclick="S._sylOpen=!S._sylOpen;render()" style="text-align:center;padding:8px;cursor:pointer;font-size:10px;color:rgb(var(--sky));font-weight:600" role="button" tabindex="0" aria-expanded="${S._sylOpen}" aria-label="Toggle syllabus topics">${S._sylOpen?'▲ Collapse':'▼ Show '+TOPICS.length+' topics'}</div>`;
 h+=`</div>`;
 // IMA Links
 h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">📥 IMA Exam Archive</div><div style="font-size:10px">`;
@@ -3025,20 +3025,20 @@ h+=`</div></div>`;
 h+=`<div class="card" style="padding:14px;text-align:center;margin-top:12px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">🔗 Share with Friends</div>
 <div style="font-size:10px;color:#64748b;margin-bottom:10px">Share this app with fellow geriatric medicine residents</div>
-<button class="btn btn-p" onclick="shareApp()" style="margin-bottom:8px">📤 Share App Link</button>
+<button class="btn btn-p" onclick="shareApp()" style="margin-bottom:8px" aria-label="Share app link">📤 Share App Link</button>
 </div>`;
 // Data management
 h+=`<div class="card" style="padding:14px;margin-top:12px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
 <div style="font-size:10px;color:#64748b;margin-bottom:10px">Your progress is saved automatically in your browser. Export to backup or transfer between devices.</div>
 <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
-<button class="btn btn-p" onclick="exportProgress()">📥 Export Progress</button>
-<button class="btn btn-g" onclick="importProgress()">📤 Import Progress</button>
-<button class="btn btn-o" onclick="if(confirm('Reset ALL data? This cannot be undone.')){localStorage.removeItem('${LS}');location.reload()}">🗑️ Reset</button>
+<button class="btn btn-p" onclick="exportProgress()" aria-label="Export progress">📥 Export Progress</button>
+<button class="btn btn-g" onclick="importProgress()" aria-label="Import progress">📤 Import Progress</button>
+<button class="btn btn-o" onclick="if(confirm('Reset ALL data? This cannot be undone.')){localStorage.removeItem('${LS}');location.reload()}" aria-label="Reset all data">🗑️ Reset</button>
 </div>
 <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px">
-<button id="cloud-backup-btn" class="btn" style="background:#e0f2fe;color:#0284c7" onclick="cloudBackup()">☁️ Backup to Cloud</button>
-<button class="btn" style="background:#f0fdf4;color:#15803d" onclick="cloudRestore()">☁️ Restore from Cloud</button>
+<button id="cloud-backup-btn" class="btn" style="background:#e0f2fe;color:#0284c7" onclick="cloudBackup()" aria-label="Backup to cloud">☁️ Backup to Cloud</button>
+<button class="btn" style="background:#f0fdf4;color:#15803d" onclick="cloudRestore()" aria-label="Restore from cloud">☁️ Restore from Cloud</button>
 </div>
 <div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
 </div></div>`;
@@ -3056,12 +3056,12 @@ if(!_storedKey){h+='<div style="padding:8px 10px;background:#fffbeb;border:1px s
 if(_storedKey){
   h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
   h+='<div style="flex:1;font-size:11px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:8px;padding:6px 10px;color:#065f46">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
-  h+='<button class="btn btn-o" style="font-size:11px" onclick="setApiKey(\'\');render()">הסר</button>';
+  h+='<button class="btn btn-o" style="font-size:11px" onclick="setApiKey(\'\');render()" aria-label="Remove API key">הסר</button>';
   h+='</div>';
 } else {
   h+='<div style="display:flex;gap:8px;margin-bottom:8px">';
-  h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-..." class="calc-in" style="flex:1;margin:0;font-size:11px">';
-  h+='<button class="btn btn-p" style="font-size:11px" onclick="var v=document.getElementById(\'apiKeyInput\').value.trim();if(v){setApiKey(v);render();}">שמור</button>';
+  h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-..." class="calc-in" style="flex:1;margin:0;font-size:11px" aria-label="Claude API key">';
+  h+='<button class="btn btn-p" style="font-size:11px" onclick="var v=document.getElementById(\'apiKeyInput\').value.trim();if(v){setApiKey(v);render();}" aria-label="Save API key">שמור</button>';
   h+='</div>';
 }
 h+='<div style="font-size:9px;color:#94a3b8">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
@@ -3079,7 +3079,7 @@ function renderSearch(){
 let h=`<div class="sec-t">🔍 Search</div><div class="sec-s">Search across all ${QZ.length} questions + ${NOTES.length} study notes + ${DRUGS.length} drugs</div>`;
 h+=`<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
 <input class="search-box" style="margin-bottom:0;flex:1" placeholder="Type to search..." oninput="srchQ=this.value;render()" value="${srchQ}" id="srchi">
-<button class="voice-btn${voiceListening?' listening':''}" onclick="startVoiceParser()">${voiceListening?'🔴 Listening...':'🎤 Voice'}</button>
+<button class="voice-btn${voiceListening?' listening':''}" onclick="startVoiceParser()" aria-label="${voiceListening?'Stop voice input':'Start voice input'}">${voiceListening?'🔴 Listening...':'🎤 Voice'}</button>
 </div>`;
 if(voiceTranscript&&srchQ){h+=`<div style="font-size:10px;color:#64748b;margin-bottom:8px;padding:6px 10px;background:#f8fafc;border-radius:8px" dir="auto">🎤 "${voiceTranscript}"</div>`;}
 if(srchQ.length>=2){
@@ -3119,7 +3119,7 @@ h+=`<input class="search-box" placeholder="Search drug to add..." oninput="filte
 h+=`<div style="display:none;max-height:200px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px" id="mblist">`;
 DRUGS.forEach(d=>{
 const inBasket=medBasket.includes(d.name);
-h+=`<div class="mb-item" style="padding:8px 12px;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:11px;display:flex;justify-content:space-between;align-items:center;${inBasket?'background:#ecfdf5':''}" onclick="toggleMedBasket('${d.name.replace(/'/g,"\\'")}');render()" data-drug="${d.name.toLowerCase()} ${d.heb}">
+h+=`<div class="mb-item" style="padding:8px 12px;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:11px;display:flex;justify-content:space-between;align-items:center;${inBasket?'background:#ecfdf5':''}" onclick="toggleMedBasket('${d.name.replace(/'/g,"\\'")}');render()" data-drug="${d.name.toLowerCase()} ${d.heb}" role="option" aria-selected="${inBasket?'true':'false'}">
 <span>${d.name} ${d.heb?'('+d.heb+')':''}</span>
 <span>${inBasket?'✅':'+'} ${d.acb?'ACB:'+d.acb:''} ${d.beers?'BEERS':''}</span></div>`;
 });
@@ -3168,32 +3168,32 @@ h+=`<div class="dt-node ${eolState.competent===true?'active':eolState.competent=
 <div style="font-weight:700;margin-bottom:4px">1. Is the patient competent (כשיר)?</div>
 <div style="font-size:10px;color:#64748b">Can understand, appreciate, reason, and communicate a decision</div>
 <div style="display:flex;gap:6px;margin-top:8px">
-<button class="btn ${eolState.competent===true?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('competent',true)">Yes — Competent</button>
-<button class="btn ${eolState.competent===false?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('competent',false)">No — Incompetent</button>
+<button class="btn ${eolState.competent===true?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('competent',true)" aria-label="Patient is competent">Yes — Competent</button>
+<button class="btn ${eolState.competent===false?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('competent',false)" aria-label="Patient is not competent">No — Incompetent</button>
 </div></div>`;
 
 h+=`<div class="dt-node ${eolState.terminal===true?'active':eolState.terminal===false?'inactive':''}" onclick="setEol('terminal',true)">
 <div style="font-weight:700;margin-bottom:4px">2. Terminal prognosis <6 months?</div>
 <div style="font-size:10px;color:#64748b" dir="auto">חוק החולה הנוטה למות 2005 applies if terminal</div>
 <div style="display:flex;gap:6px;margin-top:8px">
-<button class="btn ${eolState.terminal===true?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('terminal',true)">Yes — Terminal</button>
-<button class="btn ${eolState.terminal===false?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('terminal',false)">No</button>
+<button class="btn ${eolState.terminal===true?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('terminal',true)" aria-label="Terminal prognosis">Yes — Terminal</button>
+<button class="btn ${eolState.terminal===false?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('terminal',false)" aria-label="Not terminal">No</button>
 </div></div>`;
 
 if(eolState.competent===false){
 h+=`<div class="dt-node ${eolState.directive===true?'active':''}" onclick="setEol('directive',true)">
 <div style="font-weight:700;margin-bottom:4px" dir="auto">3. Advance directive exists (ייפוי כוח מתמשך)?</div>
 <div style="display:flex;gap:6px;margin-top:8px">
-<button class="btn ${eolState.directive===true?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('directive',true)">Yes</button>
-<button class="btn ${eolState.directive===false?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('directive',false)">No</button>
+<button class="btn ${eolState.directive===true?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('directive',true)" aria-label="Has advance directive">Yes</button>
+<button class="btn ${eolState.directive===false?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('directive',false)" aria-label="No advance directive">No</button>
 </div></div>`;
 
 if(eolState.directive===false){
 h+=`<div class="dt-node ${eolState.proxy===true?'active':''}" onclick="setEol('proxy',true)">
 <div style="font-weight:700;margin-bottom:4px" dir="auto">4. Is there a proxy / surrogate (מקבל החלטות)?</div>
 <div style="display:flex;gap:6px;margin-top:8px">
-<button class="btn ${eolState.proxy===true?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('proxy',true)">Yes</button>
-<button class="btn ${eolState.proxy===false?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('proxy',false)">No</button>
+<button class="btn ${eolState.proxy===true?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('proxy',true)" aria-label="Has proxy decision maker">Yes</button>
+<button class="btn ${eolState.proxy===false?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('proxy',false)" aria-label="No proxy decision maker">No</button>
 </div></div>`;
 }
 }
@@ -3208,7 +3208,7 @@ h+=`<div class="dt-result" dir="auto" style="margin-top:12px">
 <div style="font-weight:700;margin-bottom:4px">⚡ Actions:</div>
 <ul style="margin:0 0 0 16px;font-size:11px">${result.actions.map(a=>`<li>${a}</li>`).join('')}</ul>
 </div>`;
-h+=`<button onclick="eolState={competent:null,terminal:null,directive:null,proxy:null};render()" class="btn btn-o" style="margin-top:8px;font-size:10px">🔄 Reset</button>`;
+h+=`<button onclick="eolState={competent:null,terminal:null,directive:null,proxy:null};render()" class="btn btn-o" style="margin-top:8px;font-size:10px" aria-label="Reset decision tree">🔄 Reset</button>`;
 }
 return h;
 }
@@ -3326,7 +3326,7 @@ function renderChat(){
 let h='<div class="sec-t">💬 AI Chat</div><div class="sec-s">Claude-powered geriatrics Q&A — board prep focus</div>';
 h+='<div class="card" style="display:flex;flex-direction:column;height:calc(100vh - 200px);overflow:hidden">';
 h+='<div class="chat-disclaimer" style="margin:10px 10px 0">⚠️ AI mentor — not a substitute for clinical judgment. For board prep use only.</div>';
-if(S.chat.length>0){h+='<div style="padding:4px 10px;text-align:left"><button onclick="clearChat()" style="font-size:10px;color:#94a3b8;background:none;border:none;cursor:pointer">🗑 נקה שיחה</button></div>';}
+if(S.chat.length>0){h+='<div style="padding:4px 10px;text-align:left"><button onclick="clearChat()" style="font-size:10px;color:#94a3b8;background:none;border:none;cursor:pointer" aria-label="Clear chat history">🗑 נקה שיחה</button></div>';}
 h+='<div class="chat-msgs" id="chat-msgs">';
 if(S.chat.length===0){
 h+='<div style="padding:8px 4px 12px"><div class="heb" style="font-size:11px;color:#64748b;margin-bottom:10px;text-align:right">התחל שיחה — בחר נושא או כתוב שאלה חופשית:</div>';
@@ -3696,7 +3696,7 @@ const sec=(title,icon,color,items)=>`<div style="margin-bottom:14px">
 ov.innerHTML=`<div style="max-width:420px;margin:0 auto;background:#fff;border-radius:16px;padding:20px;color:#1e293b;font-size:11px;line-height:1.7">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
 <div style="font-size:16px;font-weight:800">🩺 Shlav A Mega</div>
-<button onclick="this.closest('#help-overlay').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8">✕</button>
+<button onclick="this.closest('#help-overlay').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8" aria-label="Close help">✕</button>
 </div>
 <div style="font-size:10px;color:#64748b;margin-bottom:16px">Israeli Geriatrics Board Exam Prep (שלב א׳) · 1419 IMA Questions · Works Offline</div>
 ${sec('Quiz Filters','📝','#059669',
@@ -3737,7 +3737,7 @@ ${sec('Progress Tracking','📊','#f59e0b',
 </div>
 <div style="text-align:center;font-size:9px;color:#94a3b8;line-height:1.5">
 صدقة جارية الى من نحب<br>Ceaseless Charity — To the People That We Love<br><br>
-<button onclick="shareApp()" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:6px 16px;font-size:10px;font-weight:600;cursor:pointer">📤 Share with Friends</button>
+<button onclick="shareApp()" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:6px 16px;font-size:10px;font-weight:600;cursor:pointer" aria-label="Share app with friends">📤 Share with Friends</button>
 </div>
 </div>`;
 document.body.appendChild(ov);
