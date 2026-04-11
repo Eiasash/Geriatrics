@@ -2167,7 +2167,7 @@ let h=`<div class="sec-t">📖 Library</div>
 <div class="sec-s">Textbooks · Laws · Articles · Exam PDFs</div>`;
 // Sub-tabs
 const libTabs=[
-{id:'haz-pdf',l:'📕 Hazzard PDFs',c:'#dc2626'},
+{id:'haz-pdf',l:'📕 Hazzard',c:'#dc2626'},
 {id:'harrison',l:'📗 Harrison',c:'#8b5cf6'},
 {id:'laws',l:'⚖️ Laws',c:'#f59e0b'},
 {id:'articles',l:'📄 Articles',c:'#3b82f6'},
@@ -2181,10 +2181,8 @@ h+=`</div>`;
 
 // ===== HAZZARD ALL PDFs =====
 if(libSec==='haz-pdf'){
-h+=`<div style="padding:8px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;margin-bottom:12px;font-size:10px;color:#92400e;line-height:1.5">
-⚠️ Large PDFs — first load may take a moment on mobile.</div>`;
 HAZZARD_MARKED_PARTS.forEach((p,i)=>{
-h+=`<a href="${p.file}" download="${p.file.split('/').pop()}" style="text-decoration:none;display:block">
+h+=`<a href="${p.file}" target="_blank" style="text-decoration:none;display:block">
 <div class="card" style="padding:12px;cursor:pointer;border-left:4px solid ${p.color}">
 <div style="display:flex;align-items:flex-start;gap:10px">
 <div style="width:32px;height:32px;border-radius:8px;background:${p.color}15;display:flex;align-items:center;justify-content:center;flex-shrink:0">
@@ -2195,7 +2193,7 @@ h+=`<a href="${p.file}" download="${p.file.split('/').pop()}" style="text-decora
 <div style="font-size:9px;color:#64748b;margin-top:2px">${p.desc}</div>
 ${p.exam?`<div style="font-size:9px;color:${p.exam&&p.exam.includes('מוחרג')?'#dc2626':'#f59e0b'};font-weight:700;margin-top:3px">${p.exam}</div>`:''}
 </div>
-<span style="font-size:14px;color:#94a3b8;align-self:center">↗</span>
+<span style="font-size:14px;color:#94a3b8;align-self:center">›</span>
 </div></div></a>`;
 });
 }
