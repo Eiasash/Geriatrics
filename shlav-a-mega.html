@@ -1923,11 +1923,11 @@ return h;
 
 // ===== TEXTBOOK (Hazzard's 8e PDFs) =====
 const HAZZARD_PARTS=[
-{file:'hazzard_part01.pdf',title:'Part I — Principles of Gerontology',ch:'Front Matter + Ch 1–6',desc:'Biology of Aging, Demography, Immunology, Psychosocial Aspects, Sex Differences, Social Determinants',color:'#3b82f6',exam:'⭐ Ch 2-6 required for exam'},
+{file:'hazzard_part01.pdf',title:'Part I — Principles of Gerontology',ch:'Front Matter + Ch 1–6',desc:'Biology of Aging, Demography, Immunology, Psychosocial Aspects, Sex Differences, Social Determinants',color:'#3b82f6',exam:'⛔ Ch 2-6 מוחרגים מהסילבוס'},
 {file:'hazzard_part02.pdf',title:'Part II-A — Assessment',ch:'Ch 7–13',desc:'Decision Making, Geriatric Assessment, Mental Status, Decisional Capacity, Prevention, Age-Friendly Care, Global Geriatrics',color:'#8b5cf6'},
 {file:'hazzard_part03.pdf',title:'Part II-B — Care Settings & Management',ch:'Ch 14–30',desc:'Hospital/ED/LTC/Home Care, Transitions, Prescribing, Substance Use, Perioperative, Anesthesia, Surgery, Nutrition',color:'#06b6d4'},
-{file:'hazzard_part04.pdf',title:'Part II-C + III-A — Sensory, Sexuality & Geriatric Syndromes',ch:'Ch 31–48',desc:'Swallowing, Oral, Vision, Hearing, Sexuality, Prostate + Frailty, Falls, Sleep, Syncope, Pressure Injuries, Incontinence, Elder Mistreatment',color:'#f59e0b',exam:'⭐ Ch 34 (Sexuality) required for exam'},
-{file:'hazzard_part05.pdf',title:'Part III-B,C — Mobility & Mentation',ch:'Ch 49–66',desc:'Sarcopenia, Mobility, Osteoporosis, OA, Hip Fractures, Rehab + Aging Brain, Cognition, Delirium, Dementia, Parkinson, CVA, Depression, Psychiatry',color:'#ec4899',exam:'⭐ Ch 62 (Depression) required for exam'},
+{file:'hazzard_part04.pdf',title:'Part II-C + III-A — Sensory, Sexuality & Geriatric Syndromes',ch:'Ch 31–48',desc:'Swallowing, Oral, Vision, Hearing, Sexuality, Prostate + Frailty, Falls, Sleep, Syncope, Pressure Injuries, Incontinence, Elder Mistreatment',color:'#f59e0b',exam:'⛔ Ch 34 מוחרג מהסילבוס'},
+{file:'hazzard_part05.pdf',title:'Part III-B,C — Mobility & Mentation',ch:'Ch 49–66',desc:'Sarcopenia, Mobility, Osteoporosis, OA, Hip Fractures, Rehab + Aging Brain, Cognition, Delirium, Dementia, Parkinson, CVA, Depression, Psychiatry',color:'#ec4899',exam:'⛔ Ch 62 מוחרג מהסילבוס'},
 {file:'hazzard_part06.pdf',title:'Part IV — Palliative Medicine & Ethics',ch:'Ch 67–72',desc:'Palliative Care, Pain Management, Nonpain Symptoms, Communication, Ethical Issues',color:'#10b981'},
 {file:'hazzard_part07a1.pdf',title:'Part V-A — Cardiovascular, Pulmonary, Nephrology, GI',ch:'Ch 73–87',desc:'Heart Disease, Valvular, HF, Arrhythmias, PVD, HTN, COPD, Kidney, GI Disorders, Hepatic, Constipation',color:'#ef4444'},
 {file:'hazzard_part07a2.pdf',title:'Part V-B — Oncology & Hematology',ch:'Ch 88–96',desc:'Cancer Principles, Breast, Prostate, Lung, GI & Skin Cancer, Anemia, Leukemia/Lymphoma, Coagulation',color:'#f97316'},
@@ -1937,11 +1937,11 @@ const HAZZARD_PARTS=[
 ];
 // ===== Hazzard's — Annotated/Marked PDFs =====
 const HAZZARD_MARKED_PARTS=[
-{file:'hazzard_marked/part01.pdf',title:'Part 1 — Marked',ch:'Front Matter + Ch 1–6',desc:'Principles of Gerontology — annotated',color:'#3b82f6',exam:'⭐ Ch 2-6 required for exam'},
+{file:'hazzard_marked/part01.pdf',title:'Part 1 — Marked',ch:'Front Matter + Ch 1–6',desc:'Principles of Gerontology — annotated',color:'#3b82f6',exam:'⛔ Ch 2-6 מוחרגים מהסילבוס'},
 {file:'hazzard_marked/part02.pdf',title:'Part 2 — Marked',ch:'Ch 7–13',desc:'Assessment — annotated',color:'#8b5cf6'},
 {file:'hazzard_marked/part03.pdf',title:'Part 3 — Marked',ch:'Ch 14–30',desc:'Care Settings & Management — annotated',color:'#06b6d4'},
-{file:'hazzard_marked/part04.pdf',title:'Part 4 — Marked',ch:'Ch 31–48',desc:'Sensory, Sexuality & Geriatric Syndromes — annotated',color:'#f59e0b',exam:'⭐ Ch 34 required for exam'},
-{file:'hazzard_marked/part05.pdf',title:'Part 5 — Marked',ch:'Ch 49–66',desc:'Mobility & Mentation — annotated',color:'#ec4899',exam:'⭐ Ch 62 required for exam'},
+{file:'hazzard_marked/part04.pdf',title:'Part 4 — Marked',ch:'Ch 31–48',desc:'Sensory, Sexuality & Geriatric Syndromes — annotated',color:'#f59e0b',exam:'⛔ Ch 34 מוחרג מהסילבוס'},
+{file:'hazzard_marked/part05.pdf',title:'Part 5 — Marked',ch:'Ch 49–66',desc:'Mobility & Mentation — annotated',color:'#ec4899',exam:'⛔ Ch 62 מוחרג מהסילבוס'},
 {file:'hazzard_marked/part06.pdf',title:'Part 6 — Marked',ch:'Ch 67–72',desc:'Palliative Medicine & Ethics — annotated',color:'#10b981'},
 {file:'hazzard_marked/part07.pdf',title:'Part 7 — Marked',ch:'Ch 73–87',desc:'Cardiovascular, Pulmonary, Nephrology, GI — annotated',color:'#ef4444'},
 {file:'hazzard_marked/part08.pdf',title:'Part 8 — Marked',ch:'Ch 88–96',desc:'Oncology & Hematology — annotated',color:'#f97316'},
@@ -2254,17 +2254,23 @@ h+=`</div>`;
 h+=`<div class="card" style="padding:20px;text-align:center"><div style="font-size:13px;color:#64748b">Loading chapter...</div></div>`;
 } else {
 h+=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">📕 Hazzard's 8th — Required Chapters</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">Read in-app with formatted sections · כל הספר — למעט Ch 2-6,34,62 — required for שלב א'</div>`;
+<div style="font-size:13px;font-weight:700;margin-bottom:6px">📕 Hazzard's 8th — In-App Reader</div>
+<div style="padding:8px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;margin-bottom:10px">
+<div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:2px">⛔ פרקים מוחרגים מסילבוס P005-2026</div>
+<div style="font-size:9px;color:#b91c1c;line-height:1.5">הפרקים הבאים <strong>אינם נדרשים לבחינת שלב א</strong> ומוחרגים במפורש מסילבוס P005-2026. זמינים לקריאה כרקע כללי בלבד.</div>
+</div>`;
 HAZ_CH.forEach(c=>{
-h+=`<div onclick="openHazChapter(${c.ch})" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;cursor:pointer">
-<span style="background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;min-width:40px;text-align:center">Ch ${c.ch}</span>
+h+=`<div onclick="openHazChapter(${c.ch})" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;opacity:0.75">
+<span style="background:#94a3b8;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;min-width:40px;text-align:center">Ch ${c.ch}</span>
 <div style="flex:1">
-<div style="font-size:12px;font-weight:600">${c.t}</div>
-<div style="font-size:9px;color:#94a3b8;margin-top:2px">${c.s} sections · ~${Math.round(c.w/1000)}k words · ${Math.round(c.w/250)} min read</div>
+<div style="font-size:12px;font-weight:600;color:#64748b;text-decoration:line-through">${c.t}</div>
+<div style="font-size:9px;color:#94a3b8;margin-top:2px">${c.s} sections · ~${Math.round(c.w/1000)}k words · <span style="color:#dc2626;font-weight:700">מוחרג</span></div>
 </div>
-<span style="font-size:18px;color:#94a3b8">›</span></div>`;
+<span style="font-size:18px;color:#cbd5e1">›</span></div>`;
 });
+h+=`<div style="margin-top:10px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px">
+<div style="font-size:9px;color:#166534;line-height:1.5">✅ <strong>כל שאר פרקי הספר (101 פרקים) — נדרשים לבחינה.</strong> לפרקים המלאים, עיין ב-All PDFs.</div>
+</div>`;
 h+=`</div>`;
 }
 }
@@ -2284,7 +2290,7 @@ h+=`<a href="${p.file}" target="_blank" rel="noopener" style="text-decoration:no
 <div style="font-size:11px;font-weight:700">${p.title}</div>
 <div style="font-size:9px;color:rgb(var(--sky));font-weight:600;margin-top:2px">${p.ch}</div>
 <div style="font-size:9px;color:#64748b;margin-top:2px">${p.desc}</div>
-${p.exam?`<div style="font-size:9px;color:#f59e0b;font-weight:700;margin-top:3px">${p.exam}</div>`:''}
+${p.exam?`<div style="font-size:9px;color:${p.exam&&p.exam.includes('מוחרג')?'#dc2626':'#f59e0b'};font-weight:700;margin-top:3px">${p.exam}</div>`:''}
 </div>
 <span style="font-size:14px;color:#94a3b8;align-self:center">↗</span>
 </div></div></a>`;
@@ -2300,7 +2306,7 @@ h+=`<a href="${p.file}" target="_blank" rel="noopener" style="text-decoration:no
 <div style="font-size:11px;font-weight:700">${p.title}</div>
 <div style="font-size:9px;color:rgb(var(--sky));font-weight:600;margin-top:2px">${p.ch}</div>
 <div style="font-size:9px;color:#64748b;margin-top:2px">${p.desc}</div>
-${p.exam?`<div style="font-size:9px;color:#f59e0b;font-weight:700;margin-top:3px">${p.exam}</div>`:''}
+${p.exam?`<div style="font-size:9px;color:${p.exam&&p.exam.includes('מוחרג')?'#dc2626':'#f59e0b'};font-weight:700;margin-top:3px">${p.exam}</div>`:''}
 </div>
 <span style="font-size:14px;color:#94a3b8;align-self:center">↗</span>
 </div></div></a>`;
