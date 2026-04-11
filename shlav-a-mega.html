@@ -3082,11 +3082,18 @@ function renderStudyPlan(){
               accBadge = `<span style="background:${badgeColor}20;color:${badgeColor};padding:2px 6px;border-radius:4px;font-size:8px;font-weight:600">${acc}%</span>`;
             }
 
-            h += `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;font-size:10px;margin-bottom:4px;cursor:pointer" onclick="event.stopPropagation();S.sp=S.sp||{};S.sp['${topic.n.replace(/'/g,"\\'")}']=!S.sp['${topic.n.replace(/'/g,"\\'")}']; save();render()" role="checkbox" aria-checked="${isChecked?'true':'false'}" tabindex="0">
+            h += `<div style="border-radius:8px;margin-bottom:4px;background:${isChecked?'#f8fafc':'transparent'}">
+            <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:10px;cursor:pointer" onclick="event.stopPropagation();S.sp=S.sp||{};S.sp['${topic.n.replace(/'/g,"\\'")}']=!S.sp['${topic.n.replace(/'/g,"\\'")}']; save();render()" role="checkbox" aria-checked="${isChecked?'true':'false'}" tabindex="0">
             <input type="checkbox" ${isChecked?'checked':''} readonly style="width:14px;height:14px;flex-shrink:0;cursor:pointer" tabindex="-1">
             <span style="flex:1;${isChecked?'color:#94a3b8;text-decoration:line-through':'color:#1e293b'}">${topic.n}</span>
             ${accBadge}
             <span style="color:#94a3b8;font-size:9px;white-space:nowrap">${topic.hrs}</span>
+            </div>
+            <div style="display:flex;gap:4px;padding:0 8px 6px 36px">
+            <button onclick="event.stopPropagation();openNote=${topic.ti};go('study')" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#0D7377;cursor:pointer;white-space:nowrap" aria-label="Open notes for ${topic.n.replace(/'/g,'')}">📖 Notes</button>
+            <button onclick="event.stopPropagation();setTopicFilt(${topic.ti});go('quiz')" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#3b82f6;cursor:pointer;white-space:nowrap" aria-label="Quiz ${topic.n.replace(/'/g,'')}">📝 Quiz</button>
+            <button onclick="event.stopPropagation();S.chat=[];go('chat');setTimeout(function(){sendChatStarter('Give me a concise board-review summary of ${topic.n.replace(/'/g,"\\'")} in geriatrics. Cover: key definitions, diagnostic criteria, management pearls, exam traps, and must-know numbers. Format with bold headings.')},100)" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#7c3aed;cursor:pointer;white-space:nowrap" aria-label="AI summary of ${topic.n.replace(/'/g,'')}">🤖 Summarize</button>
+            </div>
             </div>`;
           });
 
