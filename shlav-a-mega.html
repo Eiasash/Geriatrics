@@ -358,10 +358,12 @@ let FLASH=[];
 
 // ===== STATE =====
 const LS='samega';
-let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,chat:[],studyMode:false};
+let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,chat:[],studyMode:false,sp:{},spOpen:true};
 if(!S.chat)S.chat=[];
 if(S.studyMode===undefined)S.studyMode=false;
 if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;
+if(!S.sp)S.sp={};
+if(S.spOpen===undefined)S.spOpen=true;
 let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>{
   localStorage.setItem(LS,JSON.stringify(S));
   // Warn if localStorage approaching 5MB limit
@@ -2897,12 +2899,216 @@ function calcEstScore(){
   });
   return totalWeight>0?Math.round(weightedScore/totalWeight*100):null;
 }
+
+// ===== STUDY PLAN DATA =====
+const STUDY_PLAN = [
+  { tier: 1, label: 'Tier 1 — Know Cold', color: '#dc3545', desc: '~40% of exam', domains: [
+    { name: 'Geriatric Syndromes', topics: [
+      { n: 'Delirium', ti: 5, hrs: '4-5h' },
+      { n: 'Dementia — Alzheimer\'s', ti: 6, hrs: '6-8h' },
+      { n: 'Dementia — Other Types (DLB, FTD, VaD, NPH)', ti: 6, hrs: '4-5h' },
+      { n: 'BPSD', ti: 6, hrs: '3h' },
+      { n: 'Falls & Gait', ti: 4, hrs: '4-5h' },
+      { n: 'Urinary Incontinence', ti: 11, hrs: '3-4h' },
+      { n: 'Pressure Injuries', ti: 10, hrs: '2-3h' },
+      { n: 'Depression & Late-Life Mood', ti: 7, hrs: '3-4h' },
+      { n: 'Frailty & Sarcopenia', ti: 3, hrs: '3h' },
+    ]},
+    { name: 'Pharmacology & Assessment', topics: [
+      { n: 'Geriatric Pharmacology (Beers/STOPP/START)', ti: 8, hrs: '5-6h' },
+      { n: 'CGA', ti: 2, hrs: '3-4h' },
+      { n: 'Functional Assessment (FIM)', ti: 36, hrs: '2-3h' },
+      { n: 'Cognitive Assessment', ti: 6, hrs: '2h' },
+    ]},
+    { name: 'Palliative & Ethics', topics: [
+      { n: 'Palliative Care', ti: 28, hrs: '4-5h' },
+      { n: 'Ethics & Capacity', ti: 29, hrs: '3-4h' },
+      { n: 'Pain Management', ti: 14, hrs: '3h' },
+    ]},
+    { name: 'Nutrition & Rehab', topics: [
+      { n: 'Malnutrition & Nutritional Assessment', ti: 9, hrs: '3h' },
+      { n: 'Rehabilitation & FIM', ti: 36, hrs: '3-4h' },
+      { n: 'Dysphagia', ti: 9, hrs: '2h' },
+    ]},
+  ]},
+  { tier: 2, label: 'Tier 2 — High Yield', color: '#fd7e14', desc: '~30% of exam', domains: [
+    { name: 'Endocrine & Metabolic', topics: [
+      { n: 'Osteoporosis', ti: 15, hrs: '4-5h' },
+      { n: 'Diabetes in Elderly', ti: 22, hrs: '3-4h' },
+      { n: 'Thyroid Disease', ti: 23, hrs: '2-3h' },
+    ]},
+    { name: 'Cardiovascular', topics: [
+      { n: 'Heart Failure', ti: 18, hrs: '3-4h' },
+      { n: 'Hypertension', ti: 19, hrs: '2-3h' },
+      { n: 'Atrial Fibrillation', ti: 17, hrs: '2-3h' },
+      { n: 'Aortic Stenosis / Valvular', ti: 17, hrs: '2h' },
+    ]},
+    { name: 'Neurologic', topics: [
+      { n: 'Parkinson\'s & Parkinsonism', ti: 20, hrs: '4h' },
+      { n: 'Stroke', ti: 20, hrs: '3h' },
+      { n: 'Seizures in Elderly', ti: 20, hrs: '2h' },
+      { n: 'Dizziness & Vertigo', ti: 4, hrs: '2-3h' },
+    ]},
+    { name: 'ID & Perioperative', topics: [
+      { n: 'Infections in Elderly', ti: 27, hrs: '4h' },
+      { n: 'Perioperative Care', ti: 38, hrs: '3h' },
+      { n: 'VTE (DVT/PE)', ti: 17, hrs: '2h' },
+    ]},
+    { name: 'Renal & GI', topics: [
+      { n: 'AKI & CKD', ti: 24, hrs: '3h' },
+      { n: 'Constipation', ti: 12, hrs: '2h' },
+      { n: 'GI Bleeding & Hepatobiliary', ti: 12, hrs: '2h' },
+      { n: 'Electrolyte Disorders', ti: 24, hrs: '2-3h' },
+    ]},
+    { name: 'Sleep & Substance', topics: [
+      { n: 'Sleep Disorders', ti: 13, hrs: '2-3h' },
+      { n: 'Substance Use & Alcohol', ti: 8, hrs: '1-2h' },
+    ]},
+  ]},
+  { tier: 3, label: 'Tier 3 — Important', color: '#0D7377', desc: '~20% of exam', domains: [
+    { name: 'Heme/Onc & MSK', topics: [
+      { n: 'Anemia', ti: 25, hrs: '2-3h' },
+      { n: 'Cancer & Geriatric Oncology', ti: 26, hrs: '3h' },
+      { n: 'Arthritis (OA, RA, Crystal)', ti: 16, hrs: '3h' },
+      { n: 'Hip Fracture', ti: 15, hrs: '2-3h' },
+    ]},
+    { name: 'Sensory & Skin', topics: [
+      { n: 'Hearing Loss', ti: 37, hrs: '2h' },
+      { n: 'Visual Impairment', ti: 37, hrs: '2h' },
+      { n: 'Dermatologic Conditions', ti: 37, hrs: '2h' },
+    ]},
+    { name: 'Pulm & Special', topics: [
+      { n: 'COPD & Respiratory', ti: 21, hrs: '2-3h' },
+      { n: 'Elder Abuse', ti: 30, hrs: '1-2h' },
+      { n: 'Long-Term Care', ti: 35, hrs: '2h' },
+      { n: 'Driving Fitness', ti: 31, hrs: '1-2h' },
+      { n: 'Prevention & Immunizations', ti: 0, hrs: '2h' },
+    ]},
+  ]},
+  { tier: 4, label: 'Tier 4 — Lower Yield', color: '#6c757d', desc: '~10% of exam', domains: [
+    { name: 'Foundations & Less Common', topics: [
+      { n: 'Gerontology Intro', ti: 0, hrs: '1h' },
+      { n: 'Demography & Epidemiology', ti: 1, hrs: '1-2h' },
+      { n: 'Social Aspects', ti: 35, hrs: '1h' },
+      { n: 'Exercise & Physical Activity', ti: 3, hrs: '1h' },
+      { n: 'Fecal Incontinence', ti: 12, hrs: '1h' },
+      { n: 'Sexual Health', ti: 0, hrs: '1h' },
+      { n: 'Geriatric EM', ti: 39, hrs: '1-2h' },
+      { n: 'Home Care', ti: 35, hrs: '1h' },
+      { n: 'Technology & Aging', ti: 35, hrs: '1h' },
+      { n: 'Anxiety, Late-Life Psychosis', ti: 7, hrs: '1-2h' },
+    ]},
+  ]},
+];
+
+function renderStudyPlan(){
+  const spOpen = S.spOpen !== undefined ? S.spOpen : true;
+  if (spOpen !== S.spOpen) S.spOpen = spOpen;
+
+  // Count total topics and checked topics
+  let totalTopics = 0, checkedTopics = 0;
+  STUDY_PLAN.forEach(tier => {
+    tier.domains.forEach(domain => {
+      domain.topics.forEach(topic => {
+        totalTopics++;
+        if(S.sp && S.sp[topic.n]) checkedTopics++;
+      });
+    });
+  });
+
+  const spPct = totalTopics > 0 ? Math.round(checkedTopics / totalTopics * 100) : 0;
+
+  let h = `<div class="card" style="margin-bottom:12px">
+  <div style="padding:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="S.spOpen=!S.spOpen;save();render()" role="button" tabindex="0" aria-expanded="${spOpen?'true':'false'}" aria-label="Study Plan">
+    <div style="display:flex;align-items:center;gap:8px;flex:1">
+      <div style="font-size:16px">📅</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px;margin-bottom:2px">Study Plan — Hazzard's 8e</div>
+        <div style="font-size:9px;color:#64748b">${checkedTopics}/${totalTopics} topics (${spPct}%)</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:#94a3b8;transition:transform .2s" class="${spOpen?'':''}">▼</div>
+  </div>`;
+
+  if(spOpen){
+    // Progress bar
+    h += `<div style="padding:0 14px;margin-bottom:10px">
+    <div style="width:100%;height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden">
+      <div style="width:${spPct}%;height:100%;background:rgb(var(--em));border-radius:3px;transition:width .3s ease"></div>
+    </div>
+    </div>`;
+
+    // Tiers
+    STUDY_PLAN.forEach(tier => {
+      const tierOpen = S['sp_t' + tier.tier] !== undefined ? S['sp_t' + tier.tier] : true;
+
+      // Count topics for this tier
+      let tierTopics = 0, tierChecked = 0;
+      tier.domains.forEach(domain => {
+        domain.topics.forEach(topic => {
+          tierTopics++;
+          if(S.sp && S.sp[topic.n]) tierChecked++;
+        });
+      });
+
+      h += `<div style="border-top:1px solid #f1f5f9;padding:0">
+      <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:#f8fafc" onclick="S['sp_t${tier.tier}']=!S['sp_t${tier.tier}'];save();render()" role="button" tabindex="0" aria-expanded="${tierOpen?'true':'false'}">
+        <div style="display:flex;align-items:center;gap:8px;flex:1">
+          <div style="width:20px;height:20px;border-radius:8px;background:${tier.color};display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">${tier.tier}</div>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:11px">${tier.label}</div>
+            <div style="font-size:8px;color:#94a3b8;margin-top:1px">${tierChecked}/${tierTopics} · ${tier.desc}</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#94a3b8;transition:transform .2s;transform:${tierOpen?'':'rotate(-90deg)'}">${tierOpen?'▼':'▶'}</div>
+      </div>`;
+
+      if(tierOpen){
+        tier.domains.forEach(domain => {
+          h += `<div style="padding:8px 14px;border-top:1px solid #f1f5f9">
+          <div style="font-size:10px;font-weight:600;color:#475569;margin-bottom:6px">${domain.name}</div>`;
+
+          domain.topics.forEach(topic => {
+            const isChecked = S.sp && S.sp[topic.n];
+            const tSt = getTopicStats();
+            const topicStat = tSt[topic.ti];
+            let accBadge = '';
+            if(topicStat && topicStat.tot > 0){
+              const acc = Math.round(topicStat.ok / topicStat.tot * 100);
+              let badgeColor = '#94a3b8';
+              if(acc >= 70) badgeColor = '#059669';
+              else if(acc >= 50) badgeColor = '#d97706';
+              else badgeColor = '#dc2626';
+              accBadge = `<span style="background:${badgeColor}20;color:${badgeColor};padding:2px 6px;border-radius:4px;font-size:8px;font-weight:600">${acc}%</span>`;
+            }
+
+            h += `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;font-size:10px;margin-bottom:4px;cursor:pointer" onclick="event.stopPropagation();S.sp=S.sp||{};S.sp['${topic.n.replace(/'/g,"\\'")}']=!S.sp['${topic.n.replace(/'/g,"\\'")}']; save();render()" role="checkbox" aria-checked="${isChecked?'true':'false'}" tabindex="0">
+            <input type="checkbox" ${isChecked?'checked':''} readonly style="width:14px;height:14px;flex-shrink:0;cursor:pointer" tabindex="-1">
+            <span style="flex:1;${isChecked?'color:#94a3b8;text-decoration:line-through':'color:#1e293b'}">${topic.n}</span>
+            ${accBadge}
+            <span style="color:#94a3b8;font-size:9px;white-space:nowrap">${topic.hrs}</span>
+            </div>`;
+          });
+
+          h += `</div>`;
+        });
+      }
+
+      h += `</div>`;
+    });
+  }
+
+  h += `</div>`;
+  return h;
+}
+
 function renderTrack(){
 const done=Object.values(S.ck).filter(Boolean).length;
 const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
 const bkCount=Object.values(S.bk).filter(Boolean).length;
 const dueN=getDueQuestions().length;
-let h=renderSessionCard();
+let h=renderStudyPlan();
+h+=renderSessionCard();
 h+=renderExamTrendCard();
 h+=`<div class="sec-t">Progress</div><div class="sec-s">Syllabus · Bookmarks · Spaced Repetition</div>`;
 if(S.streak>0)h+=`<div style="text-align:center;margin-bottom:12px"><span class="streak-badge">🔥 ${S.streak} day${S.streak>1?'s':''} streak</span></div>`;
