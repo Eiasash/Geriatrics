@@ -2900,6 +2900,74 @@ function calcEstScore(){
   return totalWeight>0?Math.round(weightedScore/totalWeight*100):null;
 }
 
+// ===== HAZZARD'S 8e CHAPTER → PDF PAGE MAPPING =====
+// Maps topic names to {ch: 'Chapter(s)', p: PDF page number}
+// PDF: https://drive.google.com/file/d/1sW0asEfszQJvbeAqd8Lzcf6Q20JPq77r/view
+const HAZ_PDF='https://drive.google.com/file/d/1sW0asEfszQJvbeAqd8Lzcf6Q20JPq77r/view';
+const HAZ_CHAPTERS = {
+  'Delirium': {ch:'58',p:914},
+  'Dementia — Alzheimer\'s': {ch:'59',p:928},
+  'Dementia — Other Types (DLB, FTD, VaD, NPH)': {ch:'60',p:954},
+  'BPSD': {ch:'61',p:970},
+  'Falls & Gait': {ch:'43–44',p:668},
+  'Urinary Incontinence': {ch:'54',p:840},
+  'Pressure Injuries': {ch:'55',p:852},
+  'Depression & Late-Life Mood': {ch:'63',p:1016},
+  'Frailty & Sarcopenia': {ch:'42',p:650},
+  'Geriatric Pharmacology (Beers/STOPP/START)': {ch:'22–23',p:336},
+  'CGA': {ch:'14',p:226},
+  'Functional Assessment (FIM)': {ch:'15',p:242},
+  'Cognitive Assessment': {ch:'13',p:214},
+  'Palliative Care': {ch:'31',p:472},
+  'Ethics & Capacity': {ch:'30',p:440},
+  'Pain Management': {ch:'56',p:870},
+  'Malnutrition & Nutritional Assessment': {ch:'46',p:714},
+  'Rehabilitation & FIM': {ch:'29',p:434},
+  'Dysphagia': {ch:'47',p:734},
+  'Osteoporosis': {ch:'78',p:1244},
+  'Diabetes in Elderly': {ch:'72',p:1132},
+  'Thyroid Disease': {ch:'73',p:1150},
+  'Heart Failure': {ch:'68',p:1090},
+  'Hypertension': {ch:'67',p:1080},
+  'Atrial Fibrillation': {ch:'69',p:1106},
+  'Aortic Stenosis / Valvular': {ch:'70',p:1112},
+  'Parkinson\'s & Parkinsonism': {ch:'65',p:1042},
+  'Stroke': {ch:'66',p:1056},
+  'Seizures in Elderly': {ch:'66',p:1056},
+  'Dizziness & Vertigo': {ch:'44',p:678},
+  'Infections in Elderly': {ch:'83–84',p:1312},
+  'Perioperative Care': {ch:'27–28',p:406},
+  'VTE (DVT/PE)': {ch:'71',p:1124},
+  'AKI & CKD': {ch:'74',p:1168},
+  'Constipation': {ch:'48–49',p:754},
+  'GI Bleeding & Hepatobiliary': {ch:'75',p:1184},
+  'Electrolyte Disorders': {ch:'24',p:364},
+  'Sleep Disorders': {ch:'57',p:888},
+  'Substance Use & Alcohol': {ch:'25',p:380},
+  'Anemia': {ch:'76',p:1200},
+  'Cancer & Geriatric Oncology': {ch:'77',p:1228},
+  'Arthritis (OA, RA, Crystal)': {ch:'79–80',p:1254},
+  'Hip Fracture': {ch:'78',p:1244},
+  'Hearing Loss': {ch:'40',p:628},
+  'Visual Impairment': {ch:'39',p:610},
+  'Dermatologic Conditions': {ch:'41',p:640},
+  'COPD & Respiratory': {ch:'82',p:1302},
+  'Elder Abuse': {ch:'33',p:504},
+  'Long-Term Care': {ch:'21',p:322},
+  'Driving Fitness': {ch:'35',p:538},
+  'Prevention & Immunizations': {ch:'19–20',p:298},
+  'Gerontology Intro': {ch:'1',p:38},
+  'Demography & Epidemiology': {ch:'7–8',p:144},
+  'Social Aspects': {ch:'9',p:168},
+  'Exercise & Physical Activity': {ch:'50',p:776},
+  'Fecal Incontinence': {ch:'49',p:764},
+  'Sexual Health': {ch:'53',p:828},
+  'Geriatric EM': {ch:'37',p:582},
+  'Home Care': {ch:'11',p:192},
+  'Technology & Aging': {ch:'12',p:206},
+  'Anxiety, Late-Life Psychosis': {ch:'64',p:1032},
+};
+
 // ===== STUDY PLAN DATA =====
 const STUDY_PLAN = [
   { tier: 1, label: 'Tier 1 — Know Cold', color: '#dc3545', desc: '~40% of exam', domains: [
@@ -3089,7 +3157,8 @@ function renderStudyPlan(){
             ${accBadge}
             <span style="color:#94a3b8;font-size:9px;white-space:nowrap">${topic.hrs}</span>
             </div>
-            <div style="display:flex;gap:4px;padding:0 8px 6px 36px">
+            <div style="display:flex;gap:4px;padding:0 8px 6px 36px;flex-wrap:wrap">
+            ${HAZ_CHAPTERS[topic.n]?`<button onclick="event.stopPropagation();window.open(HAZ_PDF+'#page='+HAZ_CHAPTERS['${topic.n.replace(/'/g,"\\'")}'].p,'_blank')" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#b45309;cursor:pointer;white-space:nowrap" aria-label="Read Hazzard's chapter for ${topic.n.replace(/'/g,'')}">📕 Ch ${HAZ_CHAPTERS[topic.n].ch}</button>`:''}
             <button onclick="event.stopPropagation();openNote=${topic.ti};go('study')" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#0D7377;cursor:pointer;white-space:nowrap" aria-label="Open notes for ${topic.n.replace(/'/g,'')}">📖 Notes</button>
             <button onclick="event.stopPropagation();setTopicFilt(${topic.ti});go('quiz')" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#3b82f6;cursor:pointer;white-space:nowrap" aria-label="Quiz ${topic.n.replace(/'/g,'')}">📝 Quiz</button>
             <button onclick="event.stopPropagation();S.chat=[];go('chat');setTimeout(function(){sendChatStarter('Give me a concise board-review summary of ${topic.n.replace(/'/g,"\\'")} in geriatrics. Cover: key definitions, diagnostic criteria, management pearls, exam traps, and must-know numbers. Format with bold headings.')},100)" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#7c3aed;cursor:pointer;white-space:nowrap" aria-label="AI summary of ${topic.n.replace(/'/g,'')}">🤖 Summarize</button>
@@ -3734,7 +3803,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.10';
+const APP_VERSION='9.11';
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
   if(examMode&&(S.qOk+S.qNo)>0){
@@ -3963,7 +4032,7 @@ navigator.serviceWorker.getRegistrations().then(regs=>{
 regs.forEach(r=>r.update());
 });
 caches.keys().then(ks=>{
-const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v9.10');
+const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v9.11');
 old.forEach(k=>{caches.delete(k);console.log('Deleted old cache:',k);});
 });
 navigator.serviceWorker.register('sw.js').then(reg=>{
