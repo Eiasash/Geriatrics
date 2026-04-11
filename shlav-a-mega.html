@@ -813,7 +813,23 @@ let _sessionSaved=false;
 // Mock exam pacing
 let _mockAnswered=0;
 let qStartTime=Date.now();
+// ===== FEATURES: Confidence, Wrong-Reason, Difficulty =====
+let _confidence=null; // null,0(unsure),1(maybe),2(confident)
+let _wrongReason=null; // null until classified after wrong answer
+let _diffRating=null; // null,'easy','med','hard'
+// Feature 3: Exam trap detection — questions where >40% pick same wrong distractor
+function isExamTrap(qIdx){
+const s=S.sr[qIdx];if(!s||!s.wc)return false;
+const totalAttempts=s.tot||0;if(totalAttempts<3)return false;
+const maxWrong=Math.max(...Object.values(s.wc));
+return maxWrong/totalAttempts>=0.4;
+}
 function buildPool(){
+if(filt==='traps'){
+pool=QZ.map((_,i)=>i).filter(i=>isExamTrap(i));
+for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+qi=0;sel=null;ans=false;return;
+}
 if(filt==='weak'){
 const ts=getTopicStats();
 const weakTopics=TOPICS.map((_,i)=>({i,s:ts[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>=3).sort((a,b)=>{const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).slice(0,10).map(p=>p.i);
@@ -865,6 +881,27 @@ qi=0;sel=null;ans=false;
 }
 if(QZ.length)buildPool();
 
+// Feature 2: Topic-locked mini-exam
+let miniExamTopic=-1,miniExamResults=null;
+function startTopicMiniExam(ti){
+miniExamTopic=ti;miniExamResults=null;
+pool=QZ.map((_,i)=>i).filter(i=>QZ[i].ti===ti);
+for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+pool=pool.slice(0,20);
+qi=0;sel=null;ans=false;_sessionOk=0;_sessionNo=0;_sessionStart=Date.now();
+examMode=true;examSec=1800;filt='topic';topicFilt=ti;
+if(examTimer)clearInterval(examTimer);
+examTimer=setInterval(()=>{examSec--;if(examSec<=0){clearInterval(examTimer);endMiniExam();}
+const el=document.getElementById('etimer');if(el)el.textContent=fmtT(examSec);},1000);
+render();
+}
+function endMiniExam(){
+clearInterval(examTimer);examTimer=null;examMode=false;
+const tot=_sessionOk+_sessionNo;const pct=tot?Math.round(_sessionOk/tot*100):0;
+const topicName=TOPICS[miniExamTopic]||'Topic';
+alert(\`🎯 Mini Exam: \${topicName}\n\n\${pct}% (\${_sessionOk}/\${tot})\n\${pct>=70?'Great!':pct>=50?'Getting there':'Needs more work'}\`);
+miniExamTopic=-1;render();
+}
 function setFilt(f){filt=f;topicFilt=-1;buildPool();render()}
 function setTopicFilt(ti){filt='topic';topicFilt=ti;buildPool();render()}
 
@@ -940,12 +977,20 @@ async function runExplainOnCall(qIdx){
   }catch(e){btn.textContent='🤖 הסבר AI';btn.disabled=false;}
 }
 function pick(i){if(ans)return;sel=i;render()}
+function _storeDiff(qIdx,d){if(!S.sr[qIdx])S.sr[qIdx]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};S.sr[qIdx].diff=d;save();}
 function check(){
 if(sel===null)return;
 checkMockIntercept();
-if(timedMode)clearInterval(timedInt); // stop countdown when answer submitted
+if(timedMode)clearInterval(timedInt);
 ans=true;
 const q=QZ[pool[qi]];
+// Feature 9: store confidence in SR data
+if(_confidence!==null){
+if(!S.sr[pool[qi]])S.sr[pool[qi]]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};
+if(!S.sr[pool[qi]].conf)S.sr[pool[qi]].conf={sure_ok:0,sure_no:0,unsure_ok:0,unsure_no:0};
+const _ck=(_confidence>=2?'sure':'unsure')+'_'+(sel===q.c?'ok':'no');
+S.sr[pool[qi]].conf[_ck]++;
+}
 if(sel===q.c){S.qOk++;srScore(pool[qi],true);}
 else{S.qNo++;
   // Store which distractor was chosen for future mistake-pattern analysis
@@ -954,6 +999,7 @@ else{S.qNo++;
   const _wci=String(sel);
   S.sr[pool[qi]].wc[_wci]=(S.sr[pool[qi]].wc[_wci]||0)+1;
   srScore(pool[qi],false);
+  // Feature 1: store wrong reason later via onclick
   const _apk='autopsy_'+pool[qi];
   if(!localStorage.getItem(_apk)){setTimeout(()=>aiAutopsy(pool[qi]),400);}
 }
@@ -963,7 +1009,7 @@ function next(){
 qStartTime=Date.now();
 if(examMode&&mockExamResults&&qi+1>=pool.length){endMockExam();return;}
 if(examMode&&!mockExamResults&&qi+1>=Math.min(pool.length,150)){endExam();return;}
-qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;_optShuffle=null;
+qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;_optShuffle=null;_confidence=null;_wrongReason=null;_diffRating=null;
 if(timedMode){clearInterval(timedInt);timedSec=90;render();setTimeout(startTimedQ,100);}
 else render();
 }
@@ -1002,7 +1048,10 @@ async function explainWithAI(qIdx){
   var q=QZ[qIdx];
   var correct=q.o[q.c];
   try{
-    var txt=await callAI([{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה לשאלה הבאה מתחום הגריאטריה. עגן תמיד בתשובה הנכונה הנל.\n\nשאלה: '+q.q+'\nאפשרויות: '+q.o.join(' / ')+'\nתשובה נכונה: '+correct}],400,'sonnet');
+    // Feature 8: Detect language — bilingual if question has English terms
+    var _qLang=(q.q.match(/[a-zA-Z]/g)||[]).length/q.q.length>0.25?'en':'he';
+    var _langInstr=_qLang==='en'?'Explain in English (3-4 sentences) why this is the correct answer. Be concise and exam-focused.':'הסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה לשאלה הבאה מתחום הגריאטריה. עגן תמיד בתשובה הנכונה הנל.';
+    var txt=await callAI([{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\n'+_langInstr+'\n\nשאלה: '+q.q+'\nאפשרויות: '+q.o.join(' / ')+'\nתשובה נכונה: '+correct}],400,'sonnet');
     _exCache[qIdx]={text:txt};
     localStorage.setItem('samega_ex',JSON.stringify(_exCache));
   }catch(e){
@@ -1391,7 +1440,8 @@ ${!pomoActive?'<span class="tt-wrap"><button onclick="startPomodoro()" class="bt
 </div>
 </div>`;
 h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
-const filts=[['all',`הכל (${QZ.length})`],['2021','21'],['2022','22'],['יוני 23','Jun23'],['2023-ב','23-ב'],['מאי 24','May24'],['ספט 24','Sep24'],['יוני 25','Jun25'],['2025-א','25-א'],['Hazzard','📕 Haz'],['hard','🔥 Hard'],['slow','⏱️ Slow'],['weak','🎯 Weak'],['due','🔄 Due'],['nbs','🎯 Next Best Step']];
+const _trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
+const filts=[['all',\`הכל (\${QZ.length})\`],['2021','21'],['2022','22'],['יוני 23','Jun23'],['2023-ב','23-ב'],['מאי 24','May24'],['ספט 24','Sep24'],['יוני 25','Jun25'],['2025-א','25-א'],['Hazzard','📕 Haz'],['hard','🔥 Hard'],['slow','⏱️ Slow'],['weak','🎯 Weak'],['due','🔄 Due'],['traps',\`🪤 Traps (\${_trapCount})\`],['nbs','🎯 Next Best Step']];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{
 if(f==='nbs')h+=`<span class="pill ${filt==='nbs'?'on':''}" onclick="startNextBestStep()">${l}</span>`;
@@ -1404,10 +1454,16 @@ h+=`<div style="display:flex;gap:8px;margin-bottom:10px;font-size:10px">
 <span class="tt-wrap"><label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" ${autopsyMode?'checked':''} onchange="autopsyMode=this.checked;render()"> 🔬 Distractor Autopsy</label><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">After answering, explains WHY each wrong option is wrong — builds distractor recognition skill.</div></span>
 <span class="tt-wrap"><label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" ${timedMode?'checked':''} onchange="timedMode=this.checked;if(timedMode){clearInterval(timedInt);timedSec=90;render();setTimeout(startTimedQ,50);}else{stopTimedMode();}"> ⏱ Timed (90s)</label><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">90-second countdown per question. Auto-advances when time runs out — marks as wrong. Builds exam-condition reflexes.</div></span>
 </div>`;
-h+=`<div style="margin-bottom:10px"><select class="calc-in" style="font-size:11px;padding:6px 10px" onchange="this.value===-1?setFilt('all'):setTopicFilt(parseInt(this.value))">
+h+=`<div style="display:flex;gap:6px;margin-bottom:10px"><select class="calc-in" style="font-size:11px;padding:6px 10px;flex:1" onchange="this.value===-1?setFilt('all'):setTopicFilt(parseInt(this.value))">
 <option value="-1"${filt!=='topic'?' selected':''}>📂 Filter by topic…</option>`;
 TOPICS.forEach((t,i)=>{h+=`<option value="${i}"${filt==='topic'&&topicFilt===i?' selected':''}>${t}</option>`;});
-h+=`</select></div>`;
+h+=`</select>`;
+// Feature 2: Topic mini-exam button
+if(filt==='topic'&&topicFilt>=0){
+const _tqCount=QZ.filter(q=>q.ti===topicFilt).length;
+h+=`<button class="btn btn-d" style="font-size:10px;padding:6px 12px;white-space:nowrap" onclick="startTopicMiniExam(${topicFilt})" aria-label="Start topic mini-exam">🎯 Mini Exam (${Math.min(_tqCount,20)}q)</button>`;
+}
+h+=`</div>`;
 }
 if(!pool.length){h+=`<div class="card" style="padding:24px;text-align:center"><p style="font-size:13px;color:#94a3b8">${filt==='due'?'🎉 No questions due for review!':'No questions match this filter.'}</p></div>`;return h;}
 h+=`<div class="progress-bar"><div class="fill" style="width:${Math.round((qi+1)/pool.length*100)}%"></div></div>`;
@@ -1424,7 +1480,7 @@ if(timedMode&&!ans){
 const topicName=q.ti>=0&&TOPICS[q.ti]?TOPICS[q.ti]:'';
 const _cf=isChronicFail(pool[qi]);
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}<span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libSec='haz-pdf';render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open Hazzard PDFs">📕 ${ref.l}</span>`;return '';})()}</div>
+<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}${isExamTrap(pool[qi])?'<span title="Exam trap — many people pick the same wrong answer" style="font-size:12px;cursor:default">🪤</span>':''}<span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libSec='haz-pdf';render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open Hazzard PDFs">📕 ${ref.l}</span>`;return '';})()}</div>
 <div style="display:flex;align-items:center;gap:8px">
 <button onclick="speakQuestion()" class="speech-btn${isSpeaking?' speaking':''}" title="Read aloud" aria-label="Read question aloud">🔊</button>
 <button onclick="shareQ()" id="shbtn" class="share-btn" title="Share" aria-label="Share question">📋 שתף</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px" title="Bookmark" aria-label="${bk?'Remove bookmark':'Bookmark question'}">${bk?'🔖':'🏷️'}</button>
@@ -1443,8 +1499,50 @@ const autopsyCls=(autopsyMode&&ans&&origI!==q.c&&origI===autopsyDistractor)?' di
 h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${origI})" aria-label="Option ${origI+1}"><span>${o}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
 });
 h+=`<div style="display:flex;gap:6px;margin-top:14px">`;
-if(!ans){h+=`<button class="btn btn-p" onclick="check()"${sel===null?' disabled':''} aria-label="Check answer">בדוק</button>`;if(!examMode)h+=`<button class="btn" onclick="showAnswerHardFail()" style="background:#fff3e0;color:#d97706;font-size:11px;padding:6px 14px;margin-left:6px" aria-label="Show answer">👁 לא יודע</button>`;}
-else h+=`<button class="btn btn-d" onclick="next()" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
+if(!ans){
+if(!examMode&&sel!==null&&_confidence===null){
+// Feature 9: Confidence before reveal
+h+=`<div style="margin-bottom:8px;font-size:10px;color:#64748b;font-weight:600">How sure are you?</div>
+<div style="display:flex;gap:6px;margin-bottom:10px">
+<button class="btn" style="flex:1;background:#fef2f2;color:#dc2626;font-size:13px;padding:8px" onclick="_confidence=0;render()">😬</button>
+<button class="btn" style="flex:1;background:#fffbeb;color:#d97706;font-size:13px;padding:8px" onclick="_confidence=1;render()">🤔</button>
+<button class="btn" style="flex:1;background:#f0fdf4;color:#059669;font-size:13px;padding:8px" onclick="_confidence=2;render()">😎</button>
+</div>`;
+}
+const _confLabel=_confidence===0?'😬':_confidence===1?'🤔':_confidence===2?'😎':'';
+h+=`<button class="btn btn-p" onclick="check()"${sel===null||(!examMode&&_confidence===null)?' disabled':''} aria-label="Check answer">${_confLabel} בדוק</button>`;if(!examMode)h+=`<button class="btn" onclick="showAnswerHardFail()" style="background:#fff3e0;color:#d97706;font-size:11px;padding:6px 14px;margin-left:6px" aria-label="Show answer">👁 לא יודע</button>`;}
+else{
+// Feature 1: Why-wrong classification (required after wrong, non-exam)
+if(!examMode&&sel!==q.c&&!_wrongReason){
+h+=`<div style="margin-bottom:8px">
+<div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:6px">Why did you get it wrong?</div>
+<div style="display:flex;gap:4px;flex-wrap:wrap">
+<button class="btn" style="font-size:10px;padding:6px 10px;background:#fef2f2;color:#991b1b" onclick="_wrongReason='no_knowledge';save();render()">📚 Didn't know</button>
+<button class="btn" style="font-size:10px;padding:6px 10px;background:#fffbeb;color:#92400e" onclick="_wrongReason='misread';save();render()">👓 Misread</button>
+<button class="btn" style="font-size:10px;padding:6px 10px;background:#eff6ff;color:#1e40af" onclick="_wrongReason='between_2';save();render()">⚖️ Between 2</button>
+<button class="btn" style="font-size:10px;padding:6px 10px;background:#f5f3ff;color:#6d28d9" onclick="_wrongReason='silly';save();render()">🤦 Silly mistake</button>
+</div></div>`;
+}
+// Feature 4: Cross-link to chapter after wrong answer
+if(!examMode&&sel!==q.c&&q.ti>=0){
+const _chRef=TOPIC_REF[q.ti];
+if(_chRef&&_chRef.s==='haz'){
+h+=`<button class="btn" onclick="tab='lib';libSec='harrison';render()" style="font-size:10px;padding:5px 12px;background:#ede9fe;color:#7c3aed;margin-bottom:6px;width:100%">📖 Read: ${_chRef.l} — you're weak here</button>`;
+}
+}
+// Feature 7: Optional difficulty rating
+if(!examMode){
+h+=`<div style="display:flex;gap:4px;margin-bottom:8px;align-items:center">
+<span style="font-size:9px;color:#94a3b8">Difficulty:</span>
+<button class="btn" style="font-size:9px;padding:3px 8px;${_diffRating==='easy'?'background:#dcfce7;color:#166534':'background:#f8fafc;color:#94a3b8'}" onclick="_diffRating='easy';_storeDiff(pool[qi],'easy')">Easy</button>
+<button class="btn" style="font-size:9px;padding:3px 8px;${_diffRating==='med'?'background:#fef9c3;color:#854d0e':'background:#f8fafc;color:#94a3b8'}" onclick="_diffRating='med';_storeDiff(pool[qi],'med')">Medium</button>
+<button class="btn" style="font-size:9px;padding:3px 8px;${_diffRating==='hard'?'background:#fecaca;color:#991b1b':'background:#f8fafc;color:#94a3b8'}" onclick="_diffRating='hard';_storeDiff(pool[qi],'hard')">Hard</button>
+</div>`;
+}
+// Next button — blocked if wrong + no classification (non-exam)
+const _blocked=!examMode&&sel!==q.c&&!_wrongReason;
+h+=`<button class="btn btn-d" onclick="next()"${_blocked?' disabled':''} aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
+}
 h+=`</div>`;
 
 // Teach-Back box
@@ -2218,6 +2316,19 @@ ${nextCh?`<button onclick="openHarrisonChapter(${nextCh})" style="font-size:10px
 </div>
 <div id="quiz-me-box"></div>
 <div class="card" style="padding:16px">`;
+// Feature 4: Show question stats for this topic in chapter reader
+const _relTopics=Object.entries(TOPIC_REF).filter(([ti,ref])=>ref.s==='haz').map(([ti])=>+ti);
+const _chTopicIdx=_relTopics.find(ti=>{const ref=TOPIC_REF[ti];return ref&&String(ref.ch)===String(harChOpen);});
+if(_chTopicIdx!==undefined){
+const _ts=getTopicStats()[_chTopicIdx]||{ok:0,no:0,tot:0};
+const _tpct=_ts.tot?Math.round(_ts.ok/_ts.tot*100):null;
+const _tqCount=QZ.filter(q=>q.ti===_chTopicIdx).length;
+h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;background:#f5f3ff;border-radius:10px;font-size:10px;align-items:center">
+<span>📝 ${_tqCount} questions on this topic</span>
+${_tpct!==null?`<span style="font-weight:700;color:${_tpct>=70?'#059669':_tpct>=50?'#d97706':'#dc2626'}">${_tpct}% accuracy</span>`:'<span style="color:#94a3b8">Not attempted yet</span>'}
+<button onclick="tab='quiz';filt='topic';topicFilt=${_chTopicIdx};buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer">▶ Drill</button>
+</div>`;
+}
 ch.sections.forEach(sec=>{
 if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:#7c3aed;margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid #ede9fe">${sec.title}</div>`;}
 sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:#1e293b;margin:0 0 10px;text-align:justify">${p}</p>`;});
@@ -2777,6 +2888,70 @@ function saveSessionSummary(){
     localStorage.setItem('samega_sessions',JSON.stringify(hist));
   }catch(e){}
 }
+// ===== FEATURE 5: Daily Study Plan =====
+function renderDailyPlan(){
+if(!S.examDate&&!localStorage.getItem('shlav_exam_date'))return '';
+const examDate=S.examDate||localStorage.getItem('shlav_exam_date')||'';
+const daysLeft=examDate?Math.max(0,Math.ceil((new Date(examDate)-Date.now())/864e5)):null;
+const dueN=getDueQuestions().length;
+const tSt=getTopicStats();
+const weakest=TOPICS.map((t,i)=>({name:t,i,s:tSt[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>=3).sort((a,b)=>{
+const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).slice(0,3);
+const trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
+let h=`<div class="card" style="padding:14px;margin-bottom:10px;border-left:4px solid #059669">
+<div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#059669">📋 Today's Study Plan</div>`;
+if(daysLeft!==null)h+=`<div style="font-size:10px;color:#64748b;margin-bottom:10px">${daysLeft} days to exam · ${new Date(examDate).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>`;
+h+=`<div style="font-size:11px;line-height:2">`;
+// Step 1: Due questions
+if(dueN>0)h+=`<div>1️⃣ <b>${dueN} due questions</b> (~${Math.round(dueN*1.5)} min) <button onclick="setFilt('due');tab='quiz';render()" style="font-size:9px;padding:2px 8px;background:#eff6ff;color:#3b82f6;border:none;border-radius:6px;cursor:pointer">▶ Start</button></div>`;
+else h+=`<div>1️⃣ ✅ No questions due — you're caught up!</div>`;
+// Step 2: Weakest topic
+if(weakest.length){
+const w=weakest[0];
+const wPct=w.s.tot?Math.round(w.s.ok/w.s.tot*100):0;
+const ref=TOPIC_REF[w.i];
+h+=`<div>2️⃣ Read: <b>${w.name}</b> (${wPct}% accuracy, ${QZ.filter(q=>q.ti===w.i).length} questions) ${ref?`<button onclick="tab='lib';libSec='harrison';render()" style="font-size:9px;padding:2px 8px;background:#ede9fe;color:#7c3aed;border:none;border-radius:6px;cursor:pointer">📖 Open</button>`:''}</div>`;
+h+=`<div>3️⃣ Drill: <b>20q mini-exam on ${w.name}</b> <button onclick="startTopicMiniExam(${w.i})" style="font-size:9px;padding:2px 8px;background:#dcfce7;color:#166534;border:none;border-radius:6px;cursor:pointer">🎯 Start</button></div>`;
+}
+// Step 3: Traps
+if(trapCount>0)h+=`<div>4️⃣ Review <b>${trapCount} trap questions</b> <button onclick="setFilt('traps');tab='quiz';render()" style="font-size:9px;padding:2px 8px;background:#fffbeb;color:#92400e;border:none;border-radius:6px;cursor:pointer">🪤 Start</button></div>`;
+h+=`</div></div>`;
+return h;
+}
+function setExamDate(){
+const d=prompt('Enter exam date (YYYY-MM-DD):',S.examDate||'');
+if(d&&/^\d{4}-\d{2}-\d{2}$/.test(d)){S.examDate=d;localStorage.setItem('shlav_exam_date',d);save();render();}
+}
+// ===== FEATURE 10: Cheat Sheet Export =====
+function exportCheatSheet(){
+const tSt=getTopicStats();
+const ranked=TOPICS.map((t,i)=>({name:t,i,s:tSt[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>0).sort((a,b)=>{
+const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;});
+const weak15=ranked.slice(0,15);
+let doc='<html><head><meta charset="UTF-8"><title>Shlav A — Cheat Sheet</title>';
+doc+='<style>body{font-family:Inter,system-ui,sans-serif;max-width:700px;margin:0 auto;padding:16px;font-size:11px;color:#1e293b}';
+doc+='h1{font-size:16px;margin-bottom:4px}h2{font-size:13px;color:#dc2626;margin:12px 0 4px;border-bottom:1px solid #e2e8f0;padding-bottom:2px}';
+doc+='.bar{height:6px;background:#e2e8f0;border-radius:3px;margin:2px 0 6px}.fill{height:100%;border-radius:3px}';
+doc+='.topic{margin-bottom:10px;padding:8px;border:1px solid #e2e8f0;border-radius:8px;page-break-inside:avoid}';
+doc+='.stat{font-size:10px;color:#64748b}@media print{body{font-size:10px}}</style></head><body>';
+doc+='<h1>🩺 Shlav A — Personal Weak Topics Cheat Sheet</h1>';
+doc+='<p style="color:#64748b;font-size:10px">Generated '+new Date().toLocaleDateString('en-GB')+' · '+QZ.length+' questions analyzed</p>';
+weak15.forEach((p,idx)=>{
+const pct=p.s.tot?Math.round(p.s.ok/p.s.tot*100):0;
+const clr=pct>=70?'#10b981':pct>=50?'#f59e0b':'#ef4444';
+const note=NOTES.find(n=>n.id===p.i||NOTES.indexOf(n)===p.i);
+const keyFacts=note?note.notes.split(/\n|\. /).filter(s=>s.length>15).slice(0,5):[];
+doc+='<div class="topic">';
+doc+='<h2>#'+(idx+1)+' '+p.name+' — '+pct+'% ('+p.s.ok+'/'+p.s.tot+')</h2>';
+doc+='<div class="bar"><div class="fill" style="width:'+pct+'%;background:'+clr+'"></div></div>';
+if(keyFacts.length){doc+='<ul style="margin:4px 0;padding-left:16px">';keyFacts.forEach(f=>{doc+='<li>'+f.trim()+'</li>';});doc+='</ul>';}
+doc+='</div>';
+});
+doc+='<p style="text-align:center;color:#94a3b8;margin-top:16px;font-size:9px">صدقة جارية الى من نحب</p>';
+doc+='</body></html>';
+const w=window.open('','_blank');w.document.write(doc);w.document.close();
+setTimeout(()=>w.print(),500);
+}
 function renderSessionCard(){
   try{
     const hist=JSON.parse(localStorage.getItem('samega_sessions')||'[]');
@@ -3115,7 +3290,43 @@ const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
 const bkCount=Object.values(S.bk).filter(Boolean).length;
 const dueN=getDueQuestions().length;
 let h=renderStudyPlan();
+// Feature 5: Exam date + daily plan
+if(!S.examDate&&!localStorage.getItem('shlav_exam_date')){
+h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
+<div style="font-size:12px;font-weight:700;margin-bottom:6px">📅 When is your exam?</div>
+<button class="btn btn-p" onclick="setExamDate()" style="font-size:11px">Set Exam Date</button>
+</div>`;
+}else{
+h+=renderDailyPlan();
+}
 h+=renderSessionCard();
+// Feature 9: Confidence accuracy matrix
+const _confStats={sure_ok:0,sure_no:0,unsure_ok:0,unsure_no:0};
+Object.values(S.sr||{}).forEach(s=>{if(s.conf){Object.entries(s.conf).forEach(([k,v])=>{if(_confStats[k]!==undefined)_confStats[k]+=v;});}});
+const _confTotal=Object.values(_confStats).reduce((a,b)=>a+b,0);
+if(_confTotal>=10){
+const _blindSpots=_confStats.sure_no;
+const _lucky=_confStats.unsure_ok;
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="font-weight:700;font-size:12px;margin-bottom:8px">🎯 Confidence Matrix (${_confTotal} rated)</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;text-align:center">
+<div style="padding:8px;background:#dcfce7;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.sure_ok}</div>😎✅ Confident + Right</div>
+<div style="padding:8px;background:#fecaca;border-radius:8px"><div style="font-size:16px;font-weight:700;color:#dc2626">${_confStats.sure_no}</div>😎❌ BLIND SPOTS</div>
+<div style="padding:8px;background:#fef9c3;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.unsure_ok}</div>😬✅ Lucky</div>
+<div style="padding:8px;background:#f1f5f9;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.unsure_no}</div>😬❌ Expected miss</div>
+</div>
+${_blindSpots>0?`<div style="margin-top:8px;font-size:10px;color:#dc2626;font-weight:600">⚠️ ${_blindSpots} blind spots — you were confident but wrong. These are your most dangerous gaps.</div>`:''}
+</div>`;
+}
+// Feature 10: Cheat sheet export button
+h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
+<button class="btn btn-d" onclick="exportCheatSheet()" style="font-size:11px" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</button>
+<div style="font-size:9px;color:#94a3b8;margin-top:4px">Print-ready 2-page summary of your 15 weakest topics</div>
+</div>`;
+// Feature 5: Change exam date
+if(S.examDate||localStorage.getItem('shlav_exam_date')){
+h+=`<div style="text-align:center;margin-bottom:10px"><button onclick="setExamDate()" style="font-size:9px;color:#94a3b8;background:none;border:none;cursor:pointer;text-decoration:underline">📅 Change exam date</button></div>`;
+}
 h+=renderExamTrendCard();
 h+=`<div class="sec-t">Progress</div><div class="sec-s">Syllabus · Bookmarks · Spaced Repetition</div>`;
 if(S.streak>0)h+=`<div style="text-align:center;margin-bottom:12px"><span class="streak-badge">🔥 ${S.streak} day${S.streak>1?'s':''} streak</span></div>`;
