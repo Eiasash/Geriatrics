@@ -2246,29 +2246,53 @@ ${p.exam?`<div style="font-size:9px;color:${p.exam&&p.exam.includes('מוחרג'
 });
 }
 
-// ===== HARRISON =====
+// ===== HARRISON IN-APP READER =====
 if(libSec==='harrison'){
+if(harChOpen!==null&&_harData&&_harData[String(harChOpen)]){
+const ch=_harData[String(harChOpen)];
+const allSylChNums=[...SYL_HAR_ALL,...SYL_HAR_BASE].map(c=>c.ch).sort((a,b)=>a-b);
+const curIdx=allSylChNums.indexOf(harChOpen);
+const prevCh=curIdx>0?allSylChNums[curIdx-1]:null;
+const nextCh=curIdx<allSylChNums.length-1?allSylChNums[curIdx+1]:null;
+h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+<button onclick="harChOpen=null;render()" style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">← Back</button>
+<div style="font-size:12px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ch ${harChOpen}: ${ch.title}</div>
+</div>
+<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+${prevCh?`<button onclick="openHarrisonChapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">‹ Ch ${prevCh}</button>`:''}
+<button onclick="quizMeOnChapter(harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">🧠 Quiz</button>
+<button onclick="aiSummarizeChapter(harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">📝 Summary</button>
+${nextCh?`<button onclick="openHarrisonChapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">Ch ${nextCh} ›</button>`:''}
+</div>
+<div id="quiz-me-box"></div>
+<div class="card" style="padding:16px">`;
+ch.sections.forEach(sec=>{
+if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:#7c3aed;margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid #ede9fe">${sec.title}</div>`;}
+sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:#1e293b;margin:0 0 10px;text-align:justify">${p}</p>`;});
+});
+h+=`</div>`;
+}else if(_harLoading){
+h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:#64748b">⏳ Loading Harrison's chapter...</div></div>`;
+}else{
+const allSylChs=[...SYL_HAR_ALL,...SYL_HAR_BASE].sort((a,b)=>a.ch-b.ch);
+const allChNums=SYL_HAR_ALL.map(c=>c.ch);
 h+=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — All Residents</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">${SYL_HAR_ALL.length} chapters · Click for PDF</div>`;
-const _harMap=HARRISON_PDF_MAP;
-SYL_HAR_ALL.forEach(c=>{
-const _pdf=_harMap[String(c.ch)];
-h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
-<span style="background:#8b5cf6;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:44px;text-align:center">Ch ${c.ch}</span>
-<span style="font-size:11px;flex:1">${c.t}</span>${_pdf?`<a href="${_pdf}" download style="font-size:10px;padding:3px 7px;background:#ede9fe;color:#7c3aed;border-radius:6px;text-decoration:none;flex-shrink:0">📄</a>`:''}</div>`;
+<div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — In-App Reader</div>
+<div style="font-size:10px;color:#64748b;margin-bottom:12px">${allSylChs.length} required chapters · <span style="color:#7c3aed">purple</span> = all examinees · <span style="color:#06b6d4">teal</span> = base track only</div>`;
+allSylChs.forEach(c=>{
+const isAll=allChNums.includes(c.ch);
+const harCh=_harData&&_harData[String(c.ch)];
+const wc=harCh?`~${Math.round(harCh.wordCount/250)} min`:'tap to load';
+h+=`<div onclick="openHarrisonChapter(${c.ch})" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;cursor:pointer">
+<span style="background:${isAll?'#7c3aed':'#06b6d4'};color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;min-width:42px;text-align:center">Ch ${c.ch}</span>
+<div style="flex:1;min-width:0">
+<div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.t}</div>
+<div style="font-size:9px;color:#94a3b8;margin-top:2px">${wc}</div>
+</div>
+<span style="font-size:18px;color:#94a3b8">›</span></div>`;
 });
 h+=`</div>`;
-h+=`<div class="card" style="padding:14px;margin-top:8px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — Base Additional</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">${SYL_HAR_BASE.length} additional chapters</div>`;
-SYL_HAR_BASE.forEach(c=>{
-const _pdf=_harMap[String(c.ch)];
-h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
-<span style="background:#06b6d4;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:44px;text-align:center">Ch ${c.ch}</span>
-<span style="font-size:11px;flex:1">${c.t}</span>${_pdf?`<a href="${_pdf}" download style="font-size:10px;padding:3px 7px;background:#e0f2fe;color:#0284c7;border-radius:6px;text-decoration:none;flex-shrink:0">📄</a>`:''}</div>`;
-});
-h+=`</div>`;
+}
 }
 
 // ===== LAWS =====
@@ -2327,6 +2351,23 @@ return h;
 }
 
 
+
+async function openHarrisonChapter(ch){
+harChOpen=ch;
+if(_harData){render();return;}
+if(_harLoading)return;
+_harLoading=true;
+render();
+try{
+const r=await fetch('harrison_chapters.json');
+_harData=await r.json();
+}catch(e){
+console.error('Failed to load Harrison chapters',e);
+_harData={};
+}
+_harLoading=false;
+render();
+}
 
 // ===== FLASHCARDS =====
 function renderFlash(){
@@ -3743,7 +3784,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.12';
+const APP_VERSION='9.13';
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
   if(examMode&&(S.qOk+S.qNo)>0){
@@ -3972,7 +4013,7 @@ navigator.serviceWorker.getRegistrations().then(regs=>{
 regs.forEach(r=>r.update());
 });
 caches.keys().then(ks=>{
-const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v9.12');
+const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v9.13');
 old.forEach(k=>{caches.delete(k);console.log('Deleted old cache:',k);});
 });
 navigator.serviceWorker.register('sw.js').then(reg=>{
