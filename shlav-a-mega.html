@@ -2282,21 +2282,60 @@ h+=`</div>`;
 
 // ===== HAZZARD ALL PDFs =====
 if(libSec==='haz-pdf'){
-HAZZARD_MARKED_PARTS.forEach((p,i)=>{
-h+=`<a href="${p.file}" target="_blank" style="text-decoration:none;display:block">
-<div class="card" style="padding:12px;cursor:pointer;border-left:4px solid ${p.color}">
-<div style="display:flex;align-items:flex-start;gap:10px">
-<div style="width:32px;height:32px;border-radius:8px;background:${p.color}15;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-<span style="font-size:14px;font-weight:700;color:${p.color}">${i+1}</span></div>
+// Build sorted chapter list from HAZ_CHAPTERS
+const _hazEntries=Object.entries(HAZ_CHAPTERS).map(([name,info])=>{
+const chNum=parseInt(info.ch);
+const partNum=chNum<=6?1:chNum<=13?2:chNum<=30?3:chNum<=48?4:chNum<=66?5:chNum<=72?6:chNum<=78?7:chNum<=80?8:9;
+const partColors=['','#3b82f6','#8b5cf6','#06b6d4','#f59e0b','#ec4899','#059669','#dc2626','#7c3aed','#64748b'];
+const partNames=['','Gerontology','Assessment','Care & Management','Syndromes & Senses','Mobility & Mentation','Palliative & CVD','Organ Systems','MSK','Resp & ID'];
+return {name,ch:info.ch,p:info.p,chNum,part:partNum,color:partColors[partNum],partName:partNames[partNum]};
+}).sort((a,b)=>a.chNum-b.chNum||a.p-b.p);
+// Remove duplicate chapters (keep first by page)
+const _seen=new Set();
+const _hazUniq=_hazEntries.filter(e=>{const k=e.ch+':'+e.p;if(_seen.has(k))return false;_seen.add(k);return true;});
+// Group by part
+let _curPart=0;
+h+=`<div class="card" style="padding:14px">
+<div style="font-size:13px;font-weight:700;margin-bottom:4px">📕 Hazzard's Geriatric Medicine 8e</div>
+<div style="font-size:10px;color:#64748b;margin-bottom:8px">${_hazUniq.length} chapters · tap to open PDF at page · <span style="color:#dc2626">⛔ = excluded from syllabus</span></div>`;
+_hazUniq.forEach(e=>{
+if(e.part!==_curPart){
+_curPart=e.part;
+h+=`<div style="font-size:10px;font-weight:800;color:${e.color};margin:14px 0 6px;padding:4px 0;border-bottom:2px solid ${e.color}20;text-transform:uppercase;letter-spacing:.5px">Part ${e.part} — ${e.partName}</div>`;
+}
+// Find topic index for this chapter to show stats
+const _ti=Object.entries(TOPIC_REF).find(([ti,ref])=>ref&&ref.s==='haz'&&String(ref.ch)===String(e.ch));
+const _stats=_ti?getTopicStats()[+_ti[0]]:null;
+const _pct=_stats&&_stats.tot?Math.round(_stats.ok/_stats.tot*100):null;
+const _qCnt=_ti?QZ.filter(q=>q.ti===+_ti[0]).length:0;
+h+=`<div onclick="window.open(HAZ_PDF+'#page='+${e.p},'_blank')" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f1f5f9;cursor:pointer">
+<span style="background:${e.color};color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;min-width:46px;text-align:center">Ch ${e.ch}</span>
 <div style="flex:1;min-width:0">
-<div style="font-size:11px;font-weight:700">${p.title}</div>
-<div style="font-size:9px;color:rgb(var(--sky));font-weight:600;margin-top:2px">${p.ch}</div>
-<div style="font-size:9px;color:#64748b;margin-top:2px">${p.desc}</div>
-${p.exam?`<div style="font-size:9px;color:${p.exam&&p.exam.includes('מוחרג')?'#dc2626':'#f59e0b'};font-weight:700;margin-top:3px">${p.exam}</div>`:''}
+<div style="font-size:11.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.name}</div>
+<div style="font-size:9px;color:#94a3b8;margin-top:2px">p. ${e.p}${_qCnt?' · '+_qCnt+' Qs':''}${_pct!==null?' · <span style=\"font-weight:700;color:'+(_pct>=70?'#059669':_pct>=50?'#d97706':'#dc2626')+'\">'+_pct+'%</span>':''}</div>
 </div>
-<span style="font-size:14px;color:#94a3b8;align-self:center">›</span>
-</div></div></a>`;
+${_ti?`<button onclick="event.stopPropagation();tab='quiz';filt='topic';topicFilt=${_ti[0]};buildPool();render()" style="font-size:9px;padding:3px 8px;background:#faf5ff;color:#7c3aed;border:none;border-radius:6px;cursor:pointer;flex-shrink:0">▶</button>`:''}
+<span style="font-size:18px;color:#94a3b8">›</span></div>`;
 });
+h+=`</div>`;
+// Annotated PDFs section (collapsible)
+h+=`<div class="card" style="padding:14px;margin-top:8px">
+<div onclick="document.getElementById('haz-annotated').style.display=document.getElementById('haz-annotated').style.display==='none'?'block':'none'" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+<div style="font-size:12px;font-weight:700">📝 Annotated Part PDFs</div>
+<div style="font-size:9px;color:#64748b;flex:1">Your marked-up copies</div>
+<span style="font-size:14px;color:#94a3b8" id="haz-ann-chevron">▸</span>
+</div>
+<div id="haz-annotated" style="display:none;margin-top:10px">`;
+HAZZARD_MARKED_PARTS.forEach((p,i)=>{
+h+=`<a href="${p.file}" target="_blank" style="text-decoration:none;display:block;padding:8px 0;border-bottom:1px solid #f1f5f9">
+<div style="display:flex;align-items:center;gap:8px">
+<span style="background:${p.color};color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px">${i+1}</span>
+<div style="flex:1;font-size:11px;font-weight:600">${p.ch} — ${p.desc}</div>
+${p.exam?`<span style="font-size:9px;color:#dc2626;font-weight:700">${p.exam.includes('מוחרג')?'⛔':''}</span>`:''}
+<span style="font-size:14px;color:#94a3b8">›</span>
+</div></a>`;
+});
+h+=`</div></div>`;
 }
 
 // ===== HARRISON IN-APP READER =====
