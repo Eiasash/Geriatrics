@@ -382,7 +382,7 @@ tx.onerror=()=>resolve();
 });}
 // Migrate localStorage → IndexedDB on first run
 async function migrateToIDB(){
-await _dataPromise;
+if(typeof _dataPromise!=='undefined') await _dataPromise; else await new Promise(r=>{const iv=setInterval(()=>{if(typeof QZ!=='undefined'&&QZ.length){clearInterval(iv);r();}},50);setTimeout(()=>{clearInterval(iv);r();},5000);});
 
 try{
 await openIDB();
@@ -915,8 +915,8 @@ function setTopicFilt(ti){filt='topic';topicFilt=ti;buildPool();render()}
 // ===== FEATURE 4: RESCUE DRILL =====
 function getWeakTopics(n=3){
 const stats=getTopicStats();
-const scored=stats.map((s,ti)=>({ti,pct:s.tot?Math.round(s.ok/s.tot*100):null,tot:s.tot,ok:s.ok}))
-  .filter(s=>s.tot>=3) // only topics with enough data
+const scored=Object.entries(stats).map(([ti,s])=>({ti:Number(ti),pct:s.tot?Math.round(s.ok/s.tot*100):null,tot:s.tot,ok:s.ok}))
+  .filter(s=>s.tot>=3)
   .sort((a,b)=>a.pct-b.pct);
 return scored.slice(0,n);
 }
@@ -1058,8 +1058,8 @@ h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:#fffbeb;b
 h+=`<div class="card" style="padding:14px;margin-bottom:8px">
 <div style="font-size:12px;font-weight:700;margin-bottom:8px">🗺️ Topic Mastery Map</div>
 <div style="display:flex;flex-wrap:wrap;gap:3px">`;
-stats.forEach((s,ti)=>{
-if(!TOPICS[ti])return;
+Object.entries(stats).forEach(([ti,s])=>{
+ti=Number(ti);if(!TOPICS[ti])return;
 const pct=s.tot>=2?Math.round(s.ok/s.tot*100):null;
 const color=pct===null?'#e2e8f0':pct>=80?'#059669':pct>=60?'#84cc16':pct>=40?'#f59e0b':'#ef4444';
 const bg=pct===null?'#f8fafc':pct>=80?'#ecfdf5':pct>=60?'#f7fee7':pct>=40?'#fffbeb':'#fef2f2';
@@ -3827,8 +3827,8 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px">
 <div style="font-size:12px;font-weight:700;margin-bottom:8px">🗺️ Topic Mastery Heatmap</div>
 <div style="display:flex;flex-wrap:wrap;gap:3px">`;
 const _heatStats=getTopicStats();
-_heatStats.forEach((s,ti)=>{
-if(!TOPICS[ti])return;
+Object.entries(_heatStats).forEach(([ti,s])=>{
+ti=Number(ti);if(!TOPICS[ti])return;
 const _hp=s.tot>=2?Math.round(s.ok/s.tot*100):null;
 const _hc=_hp===null?'#e2e8f0':_hp>=80?'#059669':_hp>=60?'#84cc16':_hp>=40?'#f59e0b':'#ef4444';
 const _hbg=_hp===null?'#f8fafc':_hp>=80?'#ecfdf5':_hp>=60?'#f7fee7':_hp>=40?'#fffbeb':'#fef2f2';
@@ -4601,8 +4601,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.26';
+const APP_VERSION='9.27';
 const CHANGELOG={
+'9.27':[
+'🐛 Changelog Fix — תצוגת changelog תקינה במקום קוד גולמי',
+'🐛 Track Fix — תיקון stats.map/forEach (object ≠ array)',
+'🐛 IDB Init Fix — תיקון _dataPromise hoisting error'
+],
 '9.22':[
 '✅ AI ללא מפתח — proxy משותף, לא צריך API key',
 '🏷️ Header — כותרת דינמית עם גרסה',
@@ -4812,9 +4817,9 @@ ov.innerHTML=`<div style="max-width:420px;margin:0 auto;background:#fff;border-r
 </div>
 <div style="font-size:10px;color:#64748b;margin-bottom:16px">Israeli Geriatrics Board Exam Prep (שלב א׳ גריאטריה) · P005-2026 · Hazzard's 8e + Harrison's 22e · Works Offline</div>
 <div style="padding:10px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:10px;margin-bottom:14px">
-<div style="font-weight:700;font-size:11px;margin-bottom:6px;color:#065f46">🆕 What's New in v\${APP_VERSION}</div>
+<div style="font-weight:700;font-size:11px;margin-bottom:6px;color:#065f46">🆕 What's New in v${APP_VERSION}</div>
 <div style="font-size:10px;line-height:1.7;color:#047857">
-\${(CHANGELOG[APP_VERSION]||CHANGELOG[Object.keys(CHANGELOG).sort().pop()]||['No changelog available']).map(c=>'<b>'+c.split(' — ')[0]+'</b>'+(c.includes(' — ')?' — '+c.split(' — ').slice(1).join(' — '):'')).join('<br>')}
+${(CHANGELOG[APP_VERSION]||CHANGELOG[Object.keys(CHANGELOG).sort().pop()]||['No changelog available']).map(c=>'<b>'+c.split(' — ')[0]+'</b>'+(c.includes(' — ')?' — '+c.split(' — ').slice(1).join(' — '):'')).join('<br>')}
 </div></div>
 ${sec('Quiz Filters','📝','#059669',
 '<b>הכל</b> — All 1,550 questions, shuffled<br>'+
