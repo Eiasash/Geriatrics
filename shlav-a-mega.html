@@ -787,7 +787,7 @@ const _dataPromise = (async function loadDataArrays() {
     var ct = document.getElementById('ct');
     if (ct) ct.innerHTML = '<div style="padding:20px;color:red;text-align:center">' +
       '<b>Error loading data</b><br>Please refresh the page or clear cache.' +
-      '<br><small>' + error.message + '</small></div>';
+      '<br><small>' + sanitize(error.message) + '</small></div>';
     throw error;
   }
 })();
@@ -1316,7 +1316,7 @@ const formatted=txt.replace(/✗/g,'<b style="color:#dc2626">✗</b>')
 _exCache[_apKey]=formatted;
 localStorage.setItem('samega_ex',JSON.stringify(_exCache));
 }catch(e){
-_exCache[_apKey]='<span style="color:#dc2626">Error: '+e.message.substring(0,40)+'</span>';
+_exCache[_apKey]='<span style="color:#dc2626">Error: '+sanitize(e.message).substring(0,40)+'</span>';
 }
 render();
 }
@@ -2380,7 +2380,7 @@ Answer in HEBREW (4-6 sentences). Cite the relevant Harrison chapter if known. F
     const txt=await callAI([{role:'user',content:prompt}],600,'sonnet');
     ans.innerHTML=sanitize(txt);
     document.getElementById('harrison-ai-q').value='';
-  }catch(e){ans.innerHTML='⚠️ Failed: '+e.message;}
+  }catch(e){ans.innerHTML='⚠️ Failed: '+sanitize(e.message);}
 }
 async function aiSummarizeChapter(chNum,chTitle){
   const box=document.getElementById('quiz-me-box');
@@ -2408,7 +2408,7 @@ Format as clean bullet points. Be concise and high-yield.`;
 <div style="font-weight:700;font-size:12px;color:#065f46;margin-bottom:8px">📝 Board Summary — Ch ${chNum}: ${chTitle}</div>
 <div style="font-size:11px;line-height:1.8;direction:rtl;text-align:right;white-space:pre-wrap">${sanitize(txt)}</div>
 </div>`;
-  }catch(e){box.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px">⚠️ Failed: '+e.message+'</div>';}
+  }catch(e){box.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px">⚠️ Failed: '+sanitize(e.message)+'</div>';}
 }
 function toggleAskAI(){
   const box=document.getElementById('ask-ai-box');
@@ -2441,13 +2441,13 @@ Answer concisely in HEBREW (3-5 sentences). Focus on board exam relevance. If th
     const txt=await callAI([{role:'user',content:prompt}],500,'sonnet');
     ansBox.innerHTML=sanitize(txt);
     inp.value='';
-  }catch(e){ansBox.innerHTML='⚠️ Failed: '+e.message;}
+  }catch(e){ansBox.innerHTML='⚠️ Failed: '+sanitize(e.message);}
 }
 // ===== FEATURE 5: AI QUESTION GENERATION FROM CHAPTERS =====
 async function generateQuestionsFromChapter(source,chNum,chTitle){
 const box=document.getElementById('quiz-me-box');
 if(!box)return;
-box.innerHTML='<div class="card" style="padding:16px;text-align:center"><div style="font-size:12px;color:#0ea5e9">✨ Generating board-style questions from Ch '+chNum+'...</div><div style="font-size:10px;color:#94a3b8;margin-top:4px">This takes 15-20 seconds</div></div>';
+box.innerHTML='<div class="card" style="padding:16px;text-align:center"><div style="font-size:12px;color:#0ea5e9">✨ Generating board-style questions from Ch '+sanitize(chNum)+'...</div><div style="font-size:10px;color:#94a3b8;margin-top:4px">This takes 15-20 seconds</div></div>';
 const chData=source==='haz'?(_hazData&&_hazData[String(chNum)]):(_harData&&_harData[String(chNum)]);
 if(!chData){box.innerHTML='<div class="card" style="padding:16px;color:#dc2626">Chapter data not loaded</div>';return;}
 const excerpt=chData.sections.slice(0,5).map(s=>s.content.join(' ').slice(0,800)).join('\n');
@@ -2493,7 +2493,7 @@ questions.forEach((gq,i)=>{
 html+='</div>';
 box.innerHTML=html;
 }catch(err){
-box.innerHTML='<div class="card" style="padding:16px;color:#dc2626">Error: '+err.message+'</div>';
+box.innerHTML='<div class="card" style="padding:16px;color:#dc2626">Error: '+sanitize(err.message)+'</div>';
 }
 }
 function approveGeneratedQ(gq){
@@ -2568,7 +2568,7 @@ box.innerHTML=html;
 async function quizMeOnChapter(chNum,chTitle){
   // Show loading state in Library
   const el=document.getElementById('quiz-me-box');
-  if(el){el.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">⏳ Generating questions from Ch '+chNum+'...</div>';}
+  if(el){el.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">⏳ Generating questions from Ch '+sanitize(chNum)+'...</div>';}
   // Get chapter text from already-loaded data
   let chapterText='';
   if(window._libData&&window._libData.chapters){
@@ -2615,7 +2615,7 @@ c = 0-based index of correct answer. No markdown, no preamble.`;
     h+='</div>';
     if(el)el.innerHTML=h;
   }catch(e){
-    if(el)el.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px">⚠️ Failed to generate: '+e.message+'</div>';
+    if(el)el.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px">⚠️ Failed to generate: '+sanitize(e.message)+'</div>';
   }
 }
 function addChapterQsToBank(jsonStr){
@@ -4440,7 +4440,7 @@ S.chat.push({role:'assistant',text:data.content[0].text});
 }catch(e){
 const offline=!navigator.onLine||e.message.includes('Failed to fetch');
 const timedOut=e.name==='AbortError';
-S.chat.push({role:'error',text:offline?'📡 אין חיבור לאינטרנט':timedOut?'⏱️ תם הזמן':'⚠️ '+e.message});
+S.chat.push({role:'error',text:offline?'📡 אין חיבור לאינטרנט':timedOut?'⏱️ תם הזמן':'⚠️ '+sanitize(e.message)});
 }
 chatLoading=false;save();render();
 setTimeout(function(){const el=document.getElementById('chat-msgs');if(el)el.scrollTop=el.scrollHeight;},50);
