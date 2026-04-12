@@ -3948,7 +3948,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.18.1';
+const APP_VERSION='9.19';
 {const hv=document.getElementById('headerVer');if(hv)hv.textContent='v'+APP_VERSION;}
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
@@ -4101,6 +4101,7 @@ aiBox.innerHTML=`<div style="font-weight:700;margin-bottom:4px;color:${isWrong?'
 aiBox.style.display='block';aiBox.style.background=isWrong?'#fef2f2':'#f0fdf4';aiBox.style.border=`1px solid ${isWrong?'#fecaca':'#bbf7d0'}`;
 }
 if(st){st.textContent=isWrong?'⚠️ AI confirmed error':'✅ AI: answer key OK';st.style.color=isWrong?'#dc2626':'#059669';}
+saveAnswerReport(pool[qi],msg,aiText);
 }catch(e){if(st){st.textContent='✅ Saved';st.style.color='#059669';}}
 }else{
 if(st){st.textContent='✅ '+labels[type]+' saved';st.style.color='#059669';}
@@ -4183,6 +4184,34 @@ document.body.appendChild(ov);
 // PWA + Background Sync + Daily Notification
 if('serviceWorker' in navigator){
 // ===== UPDATE BANNER =====
+// ===== SYLLABUS CONFIG =====
+const SYLLABUS_VERSION='P005-2026';
+
+// ===== PROACTIVE VERSION CHECK =====
+(async function checkForUpdate(){
+try{
+const r=await fetch('sw.js',{cache:'no-store'});
+const txt=await r.text();
+const m=txt.match(/CACHE='shlav-a-v([^']+)'/);
+if(m&&m[1]!==APP_VERSION){
+console.log('Update available: sw='+m[1]+' app='+APP_VERSION);
+setTimeout(showUpdateBanner,1000);
+}
+}catch(e){}
+})();
+
+// ===== WRONG ANSWER REPORTS → SUPABASE =====
+async function saveAnswerReport(qIdx, userReason, aiVerdict){
+try{
+const q=QZ[qIdx];
+await fetch(SUPA_URL+'/rest/v1/answer_reports',{
+method:'POST',
+headers:{'apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON,'Content-Type':'application/json','Prefer':'return=minimal'},
+body:JSON.stringify({app:'geriatrics',question_idx:qIdx,question_text:(q.q||'').slice(0,200),current_answer:q.c,reported_answer:(userReason||'').slice(0,50),user_reason:userReason||'',ai_verdict:aiVerdict||'',device_id:_sbDeviceId()})
+});
+}catch(e){console.warn('Report save failed:',e.message);}
+}
+
 function showUpdateBanner(){
 const existing=document.getElementById('update-banner');
 if(existing)return;
