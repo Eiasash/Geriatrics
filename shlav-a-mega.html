@@ -794,12 +794,14 @@ const _dataPromise = (async function loadDataArrays() {
 // ===== END DATA LOADER =====
 
 let tab='quiz';
+let learnSub='study'; // sub-tab within Learn: study|flash|drugs
+let moreSub='calc';   // sub-tab within More: calc|search|chat|feedback
 let libSec='haz-pdf';
 let harChOpen=null,_harData=null,_harLoading=false;
 let hazChOpen=null,_hazData=null,_hazLoading=false;
 function renderTabs(){
 document.getElementById('tb').innerHTML=TABS.map(t=>
-`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" aria-label="${t.l}"><span class="ic">${t.ic}</span>${t.l}</button>`
+`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" aria-label="${t.l}" style="transition:all .15s ease"><span class="ic">${t.ic}</span>${t.l}</button>`
 ).join('');
 }
 function go(t){tab=t;renderTabs();render()}
@@ -1674,18 +1676,20 @@ h+=examMode?(()=>{
 <span style="font-weight:700;font-size:11px">${isMock?'🎯 Mock':'📋 Exam'}<br><span style="font-size:9px;font-weight:400">${paceStr}</span></span>
 <span id="etimer" class="timer" style="font-size:16px;font-weight:700">${fmtT(examSec)}</span>
 <span style="font-size:11px">${qi+1}/${isMock?pool.length:150}</span>
-<button onclick="if(confirm('סיים מבחן? הציון ייחשב על מה שענית עד עכשיו')){${isMock?'endMockExam()':'endExam()'}}" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer">✕ סיים</button></div>`;
+<button onclick="if(confirm('סיים מבחן?\n\nהציון ייחשב על ${qi+1} שאלות שענית עד עכשיו.')){${isMock?'endMockExam()':'endExam()'}}" style="background:#dc2626;color:#fff;border:none;border-radius:10px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(220,38,38,.3)">⏹ סיים</button></div>`;
 })():'';
 if(!examMode){
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
 <div class="sec-t">Quiz</div>
 <div style="display:flex;gap:4px;flex-wrap:wrap">
-<button onclick="startExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px" aria-label="Start exam with 150 questions">📋 Exam (150q)</button><button onclick="startMockExam()" class="btn btn-d" style="font-size:10px;padding:5px 12px;background:#7c3aed;color:#fff" aria-label="Start mock exam with 100 questions">🎯 Mock (100q)</button>
-<span class="tt-wrap"><button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:5px 12px;background:#fef2f2;color:#dc2626" aria-label="Start sudden death mode">💀 Sudden Death</button><button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:5px 12px;background:#0f172a;color:#7dd3fc" aria-label="Start on-call mode">🌙 On-call</button><button class="tt-icon" tabindex="0" aria-label="Info about sudden death mode">ⓘ</button><div class="tt-box">One wrong answer ends the session. Builds high-stakes exam pressure.</div></span>
-${!pomoActive?'<span class="tt-wrap"><button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:5px 12px;background:#ecfdf5;color:#059669" aria-label="Start pomodoro timer">⏱️ Pomodoro</button><button class="tt-icon" tabindex="0" aria-label="Info about pomodoro timer">ⓘ</button><div class="tt-box">25min focus / 5min break study timer. Helps maintain concentration.</div></span>':''}
+<button onclick="startMockExam()" class="btn" style="font-size:10px;padding:6px 14px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-weight:700" aria-label="Start mock exam">🎯 Mock Exam</button>
+<button onclick="startExam()" class="btn" style="font-size:10px;padding:6px 12px;background:#0f172a;color:#fff;border:none;border-radius:8px" aria-label="Start full exam">📋 Full (150q)</button>
+<button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:6px 12px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:8px" aria-label="Sudden death">💀</button>
+<button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:6px 12px;background:#0f172a;color:#7dd3fc;border:none;border-radius:8px" aria-label="On-call mode">🌙</button>
+${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:6px 12px;background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;border-radius:8px" aria-label="Pomodoro">⏱️</button>':''}
 </div>
 </div>`;
-h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
+h+=`<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:10px;padding-bottom:4px;-webkit-overflow-scrolling:touch">`;
 const _trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
 const filts=[['all',`הכל (${QZ.length})`],['2021','21'],['2022','22'],['יוני 23','Jun23'],['2023-ב','23-ב'],['מאי 24','May24'],['ספט 24','Sep24'],['יוני 25','Jun25'],['2025-א','25-א'],['Hazzard',`🤖 AI (${QZ.filter(q=>q.t==='Hazzard').length})`],['hard','🔥 Hard'],['slow','⏱️ Slow'],['weak','🎯 Weak'],['due','🔄 Due'],['traps',`🪤 Traps (${_trapCount})`],['nbs','🎯 Next Best Step']];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
@@ -4314,6 +4318,73 @@ const CHAT_STARTERS=[
 const CHAT_SYSTEM="You are a senior geriatrician and mentor at Shaare Zedek Medical Center in Jerusalem. The user is a geriatrics fellow preparing for their shlav-aleph (board) exam (P005-2026). Answer in the same language as the question (Hebrew or English). Be concise, clinically precise. Focus on Hazzard's 8e, Harrison's 22e, Beers criteria, STOPP/START, CGA, FRAX, and exam-relevant guidelines.";
 let chatLoading=false;
 
+// ===== FEATURE: FEEDBACK SYSTEM =====
+function renderFeedback(){
+let h='<div class="sec-t">💡 Feedback & Feature Requests</div>';
+h+='<div class="sec-s">Help improve Shlav A Mega for everyone. AI reviews every submission.</div>';
+h+='<div class="card" style="padding:16px;margin-bottom:12px">';
+h+='<div style="font-size:12px;font-weight:700;margin-bottom:8px">Submit Feedback</div>';
+h+='<select id="fb-type" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;margin-bottom:8px;background:#f8fafc">';
+h+='<option value="bug">🐛 Bug Report</option>';
+h+='<option value="feature">✨ Feature Request</option>';
+h+='<option value="content">📝 Content Fix (wrong answer/explanation)</option>';
+h+='<option value="ux">🎨 UX/Design Improvement</option>';
+h+='<option value="other">💬 Other</option>';
+h+='</select>';
+h+='<textarea id="fb-text" dir="auto" placeholder="Describe your feedback in detail..." style="width:100%;min-height:100px;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:12px;font-family:inherit;resize:vertical;margin-bottom:8px"></textarea>';
+h+='<button onclick="submitFeedback()" class="btn" style="width:100%;padding:10px;background:#7c3aed;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">📤 Submit Feedback</button>';
+h+='</div>';
+// Recent feedback
+let fb=[];try{fb=JSON.parse(localStorage.getItem('samega_fb_sent')||'[]');}catch(e){}
+if(fb.length){
+h+='<div class="card" style="padding:14px">';
+h+='<div style="font-size:12px;font-weight:700;margin-bottom:8px">📋 Your Submissions ('+fb.length+')</div>';
+fb.slice(-5).reverse().forEach(f=>{
+  h+='<div style="padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:10px">';
+  h+='<span style="font-weight:600">'+({bug:'🐛',feature:'✨',content:'📝',ux:'🎨',other:'💬'}[f.type]||'💬')+' '+f.type+'</span>';
+  h+=' · <span style="color:#64748b">'+new Date(f.ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'})+'</span>';
+  h+='<div style="color:#475569;margin-top:2px;line-height:1.5">'+f.text.slice(0,120)+(f.text.length>120?'...':'')+'</div>';
+  if(f.aiResponse){h+='<div style="color:#7c3aed;margin-top:4px;padding:6px 8px;background:#f5f3ff;border-radius:6px;font-size:9px;line-height:1.5">🤖 '+f.aiResponse+'</div>';}
+  h+='</div>';
+});
+h+='</div>';
+}
+return h;
+}
+async function submitFeedback(){
+const type=document.getElementById('fb-type')?.value||'other';
+const text=document.getElementById('fb-text')?.value?.trim();
+if(!text){alert('Please describe your feedback');return;}
+const entry={type,text,ts:Date.now(),version:APP_VERSION,uid:localStorage.getItem('samega_uid')||'anon'};
+// Save locally
+let fb=[];try{fb=JSON.parse(localStorage.getItem('samega_fb_sent')||'[]');}catch(e){}
+fb.push(entry);
+localStorage.setItem('samega_fb_sent',JSON.stringify(fb));
+// Submit to Supabase
+try{
+  await fetch(SUPA_URL+'/rest/v1/shlav_feedback',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON},
+    body:JSON.stringify(entry)
+  });
+}catch(e){console.warn('Feedback submit failed',e);}
+// AI analysis of the feedback
+try{
+  const aiPrompt='A user submitted this feedback for a medical study app. Briefly acknowledge it and assess feasibility in 1-2 sentences. Type: '+type+'. Feedback: '+text;
+  const res=await fetch('https://toranot.netlify.app/api/claude',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({prompt:aiPrompt,secret:'shlav-a-mega-2026'})
+  });
+  const data=await res.json();
+  const aiText=data.content||data.text||data.response||'';
+  if(aiText){
+    fb[fb.length-1].aiResponse=aiText.slice(0,300);
+    localStorage.setItem('samega_fb_sent',JSON.stringify(fb));
+  }
+}catch(e){}
+render();
+}
+
 function renderChat(){
 let h='<div class="sec-t">💬 AI Chat</div><div class="sec-s">Claude-powered geriatrics Q&A — board prep focus</div>';
 h+='<div class="card" style="display:flex;flex-direction:column;height:calc(100vh - 200px);overflow:hidden">';
@@ -4434,11 +4505,21 @@ const sv={srchi:document.getElementById('srchi')?.value,nfilt:document.getElemen
 if(tab!==lastTab){el.classList.remove('fade-in');void el.offsetWidth;el.classList.add('fade-in');window.scrollTo({top:0});lastTab=tab;}
 switch(tab){
 case'quiz':el.innerHTML=onCallMode?renderOnCall():renderQuiz();break;
-case'study':el.innerHTML=renderStudy();break;
+case'learn':
+  {const _subBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:#f1f5f9;border-radius:12px">'+
+  [{id:'study',ic:'📚',l:'Study'},{id:'flash',ic:'🃏',l:'Cards'},{id:'drugs',ic:'💊',l:'Drugs'}].map(s=>
+    '<button onclick="learnSub=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(learnSub===s.id?'700':'400')+';cursor:pointer;background:'+(learnSub===s.id?'#fff':'transparent')+';color:'+(learnSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(learnSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>'
+  ).join('')+'</div>';
+  let _body='';
+  if(learnSub==='study')_body=renderStudy();
+  else if(learnSub==='flash')_body=renderFlash();
+  else if(learnSub==='drugs')_body=renderDrugs();
+  el.innerHTML=_subBar+_body;}break;
+case'study':tab='learn';learnSub='study';el.innerHTML='';render();break;
+case'flash':tab='learn';learnSub='flash';el.innerHTML='';render();break;
+case'drugs':tab='learn';learnSub='drugs';el.innerHTML='';render();break;
 case'lib':el.innerHTML=renderLibrary();break;
-case'flash':el.innerHTML=renderFlash();break;
-case'drugs':el.innerHTML=renderDrugs();break;
-case'calc':el.innerHTML=renderCalc();break;
+case'calc':tab='more';moreSub='calc';el.innerHTML='';render();break;
 // OSCE removed v9.9
 case'track':
   // Save session summary when switching to track tab
@@ -4446,8 +4527,19 @@ case'track':
     saveSessionSummary();_sessionSaved=true;
   }
   el.innerHTML=renderTrack();break;
-case'search':el.innerHTML=renderSearch();break;
-case'chat':el.innerHTML=renderChat();break;
+case'more':
+  {const _moreBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:#f1f5f9;border-radius:12px">'+
+  [{id:'calc',ic:'🧮',l:'Calc'},{id:'search',ic:'🔍',l:'Search'},{id:'chat',ic:'💬',l:'Chat'},{id:'feedback',ic:'💡',l:'Feedback'}].map(s=>
+    '<button onclick="moreSub=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(moreSub===s.id?'700':'400')+';cursor:pointer;background:'+(moreSub===s.id?'#fff':'transparent')+';color:'+(moreSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(moreSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>'
+  ).join('')+'</div>';
+  let _mBody='';
+  if(moreSub==='calc')_mBody=renderCalc();
+  else if(moreSub==='search')_mBody=renderSearch();
+  else if(moreSub==='chat')_mBody=renderChat();
+  else if(moreSub==='feedback')_mBody=renderFeedback();
+  el.innerHTML=_moreBar+_mBody;}break;
+case'search':tab='more';moreSub='search';el.innerHTML='';render();break;
+case'chat':tab='more';moreSub='chat';el.innerHTML='';render();break;
 case'book':case'syl':tab='lib';el.innerHTML=renderLibrary();break;
 default:tab='quiz';el.innerHTML=renderQuiz();break;
 }
@@ -4509,7 +4601,37 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.25';
+const APP_VERSION='9.26';
+const CHANGELOG={
+'9.22':[
+'✅ AI ללא מפתח — proxy משותף, לא צריך API key',
+'🏷️ Header — כותרת דינמית עם גרסה',
+'🔧 Cache Fix — ניקוי אוטומטי',
+'📊 1,550 שאלות — 40 נושאים, 159 כרטיסיות'
+],
+'9.24':[
+'📕 Hazzard Reader — 108 פרקים בתוך האפליקציה',
+'🔍 Quiz/Summary — כפתורים ישירים מתוך הפרק',
+'📖 Topic Cards — לחיצה פותחת פרק in-app'
+],
+'9.25':[
+'⚡ FSRS Confidence — Again/Hard/Good/Easy אחרי תשובה נכונה',
+'📈 Mock Exam Prediction — השוואה היסטורית + חיזוי ציון',
+'🔬 Distractor Autopsy — הסבר אוטומטי לכל תשובה שגויה',
+'🚨 Rescue Drill — תרגול ממוקד ב-3 נושאים החלשים',
+'✨ AI Question Generation — יצירת שאלות מתוך פרקי Hazzard/Harrison',
+'📊 Analytics Dashboard — Readiness Score, Heatmap, Calendar, Streak',
+'🏆 Leaderboard — דירוג אנונימי עם Supabase',
+'📖 Spaced Reading — מעקב קריאת פרקים + תזכורות'
+],
+'9.26':[
+'🎨 UI Polish — עיצוב מלוטש, tabs מאוחדים',
+'🗂️ Tab Consolidation — 9 → 5 tabs: Quiz, Learn, Library, Track, More',
+'⏹️ End Exam — סיום מבחן בכל רגע עם סיכום מלא',
+'💡 Feedback System — שליחת פידבק + תגובת AI אוטומטית',
+'📋 Dynamic Changelog — עדכון אוטומטי לפי גרסה'
+]
+};
 {const hv=document.getElementById('headerVer');if(hv)hv.textContent='v'+APP_VERSION;}
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
@@ -4690,13 +4812,9 @@ ov.innerHTML=`<div style="max-width:420px;margin:0 auto;background:#fff;border-r
 </div>
 <div style="font-size:10px;color:#64748b;margin-bottom:16px">Israeli Geriatrics Board Exam Prep (שלב א׳ גריאטריה) · P005-2026 · Hazzard's 8e + Harrison's 22e · Works Offline</div>
 <div style="padding:10px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:10px;margin-bottom:14px">
-<div style="font-weight:700;font-size:11px;margin-bottom:6px;color:#065f46">🆕 What's New in v9.22</div>
+<div style="font-weight:700;font-size:11px;margin-bottom:6px;color:#065f46">🆕 What's New in v\${APP_VERSION}</div>
 <div style="font-size:10px;line-height:1.7;color:#047857">
-<b>✅ AI ללא מפתח</b> — כל פיצ'רי ה-AI עובדים דרך proxy משותף. לא צריך מפתח API אישי.<br>
-<b>🏷️ Header</b> — כותרת מעודכנת עם תווית Geriatrics וגרסה דינמית.<br>
-<b>🔧 Cache Fix</b> — ניקוי cache דינמי — לא צריך עדכון ידני בכל שדרוג גרסה.<br>
-<b>📊 1,550 שאלות</b> — כל השאלות מתויגות לפי 40 נושאים. 159 כרטיסיות, 40 סיכומים, 53 תרופות.<br>
-<b>🧪 207 בדיקות</b> — CI עם 21 בדיקות אוטומטיות + 207 unit tests שעוברים.
+\${(CHANGELOG[APP_VERSION]||CHANGELOG[Object.keys(CHANGELOG).sort().pop()]||['No changelog available']).map(c=>'<b>'+c.split(' — ')[0]+'</b>'+(c.includes(' — ')?' — '+c.split(' — ').slice(1).join(' — '):'')).join('<br>')}
 </div></div>
 ${sec('Quiz Filters','📝','#059669',
 '<b>הכל</b> — All 1,550 questions, shuffled<br>'+
