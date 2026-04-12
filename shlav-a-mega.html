@@ -821,7 +821,9 @@ let _diffRating=null; // null,'easy','med','hard'
 function isExamTrap(qIdx){
 const s=S.sr[qIdx];if(!s||!s.wc)return false;
 const totalAttempts=s.tot||0;if(totalAttempts<3)return false;
-const maxWrong=Math.max(...Object.values(s.wc));
+const wrongValues=Object.values(s.wc);
+if(!wrongValues.length)return false;
+const maxWrong=Math.max(...wrongValues);
 return maxWrong/totalAttempts>=0.4;
 }
 function buildPool(){
