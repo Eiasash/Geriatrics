@@ -378,3 +378,133 @@ describe("questions/image_map.json — integrity", () => {
     });
   });
 });
+
+// ─── OSCE — null entry validation ──────────────────────────────────────────
+
+describe("osce.json — no null entries", () => {
+  it("every entry is a valid object (no nulls)", () => {
+    osce.forEach((s, i) => {
+      expect(s, `OSCE[${i}] should not be null`).not.toBeNull();
+      expect(typeof s, `OSCE[${i}] should be an object`).toBe("object");
+    });
+  });
+
+  it("every station has required fields (t, sc, ck, time)", () => {
+    osce.forEach((s, i) => {
+      expect(typeof s.t, `OSCE[${i}].t`).toBe("string");
+      expect(s.t.length, `OSCE[${i}].t non-empty`).toBeGreaterThan(0);
+      expect(typeof s.sc, `OSCE[${i}].sc`).toBe("string");
+      expect(s.sc.length, `OSCE[${i}].sc non-empty`).toBeGreaterThan(0);
+      expect(Array.isArray(s.ck), `OSCE[${i}].ck is array`).toBe(true);
+      expect(s.ck.length, `OSCE[${i}].ck non-empty`).toBeGreaterThan(0);
+      expect(typeof s.time, `OSCE[${i}].time`).toBe("number");
+      expect(s.time, `OSCE[${i}].time > 0`).toBeGreaterThan(0);
+    });
+  });
+});
+
+// ─── Topics — all 40 have non-empty keyword arrays ─────────────────────────
+
+describe("topics.json — keyword completeness", () => {
+  it("has exactly 40 topics", () => {
+    expect(topics.length).toBe(40);
+  });
+
+  it("all 40 topics have non-empty keyword arrays", () => {
+    topics.forEach((t, i) => {
+      expect(Array.isArray(t), `Topic[${i}] is array`).toBe(true);
+      expect(t.length, `Topic[${i}] has at least one keyword`).toBeGreaterThan(0);
+      t.forEach((kw, j) => {
+        expect(typeof kw, `Topic[${i}][${j}] is string`).toBe("string");
+        expect(kw.trim().length, `Topic[${i}][${j}] is non-empty after trim`).toBeGreaterThan(0);
+      });
+    });
+  });
+});
+
+// ─── Tabs — validates tab structure ────────────────────────────────────────
+
+describe("tabs.json — structure validation", () => {
+  it("has required tab fields (id, ic, l)", () => {
+    tabs.forEach((t, i) => {
+      expect(typeof t.id, `Tab[${i}].id`).toBe("string");
+      expect(typeof t.ic, `Tab[${i}].ic`).toBe("string");
+      expect(typeof t.l, `Tab[${i}].l`).toBe("string");
+      expect(t.id.length).toBeGreaterThan(0);
+      expect(t.ic.length).toBeGreaterThan(0);
+      expect(t.l.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("tab IDs are unique", () => {
+    const ids = tabs.map(t => t.id);
+    const unique = new Set(ids);
+    expect(unique.size).toBe(ids.length);
+  });
+});
+
+// ─── Cross-reference: question topic index maps to valid topic ─────────────
+
+describe("cross-reference — question topics to topics.json", () => {
+  it("every question topic index maps to a valid topic in topics.json", () => {
+    const invalid = [];
+    questions.forEach((q, i) => {
+      if (q.ti < 0 || q.ti >= topics.length) {
+        invalid.push({ index: i, ti: q.ti });
+      }
+    });
+    expect(invalid, `Questions with invalid topic index: ${JSON.stringify(invalid)}`).toEqual([]);
+  });
+
+  it("every topic in topics.json is referenced by at least one question", () => {
+    const usedTopics = new Set(questions.map(q => q.ti));
+    for (let i = 0; i < topics.length; i++) {
+      expect(usedTopics.has(i), `Topic ${i} has no questions`).toBe(true);
+    }
+  });
+});
+
+// ─── Notes coverage: every topic has at least one note ─────────────────────
+
+describe("notes coverage — every topic has a note", () => {
+  it("every topic index 0-39 has a corresponding note entry", () => {
+    const noteIds = new Set(notes.map(n => n.id));
+    for (let i = 0; i < 40; i++) {
+      expect(noteIds.has(i), `Topic ${i} should have a note entry`).toBe(true);
+    }
+  });
+
+  it("notes have non-empty content", () => {
+    notes.forEach((n, i) => {
+      expect(n.notes.length, `Note[${i}] "${n.topic}" should have content`).toBeGreaterThan(0);
+    });
+  });
+});
+
+// ─── Flashcard quality: all have non-empty front and back ──────────────────
+
+describe("flashcard quality — front and back validation", () => {
+  it("all flashcards have non-empty front (f)", () => {
+    flashcards.forEach((fc, i) => {
+      expect(typeof fc.f, `Card[${i}].f is string`).toBe("string");
+      expect(fc.f.trim().length, `Card[${i}].f is non-empty after trim`).toBeGreaterThan(0);
+    });
+  });
+
+  it("all flashcards have non-empty back (b)", () => {
+    flashcards.forEach((fc, i) => {
+      expect(typeof fc.b, `Card[${i}].b is string`).toBe("string");
+      expect(fc.b.trim().length, `Card[${i}].b is non-empty after trim`).toBeGreaterThan(0);
+    });
+  });
+
+  it("no flashcard has whitespace-only content", () => {
+    const bad = [];
+    flashcards.forEach((fc, i) => {
+      if (fc.f.trim().length === 0 || fc.b.trim().length === 0) {
+        bad.push({ index: i, f: fc.f.slice(0, 20), b: fc.b.slice(0, 20) });
+      }
+    });
+    expect(bad, `Flashcards with whitespace-only content: ${JSON.stringify(bad)}`).toEqual([]);
+  });
+});
