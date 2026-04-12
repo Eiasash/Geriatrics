@@ -3496,7 +3496,11 @@ h+='<div style="font-size:9px;color:#94a3b8">API key נשמר ב-localStorage ב
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
 <div>Shlav A Mega v${APP_VERSION} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · build ${BUILD_HASH}</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
-<div style="margin-top:4px">صدقة جارية الى من نحب</div></div>`;
+<div style="margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+<button onclick="applyUpdate()" style="font-size:10px;padding:5px 14px;background:#0D7377;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600">🔄 Force Update</button>
+<a href="https://eiasash.github.io/InternalMedicine/" target="_blank" style="font-size:10px;padding:5px 14px;background:#4f46e5;color:#fff;border:none;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">🏥 Internal Medicine App →</a>
+</div>
+<div style="margin-top:6px">صدقة جارية الى من نحب</div></div>`;
 return h;
 }
 
@@ -3948,7 +3952,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.15';
+const APP_VERSION='9.16';
 {const hv=document.getElementById('headerVer');if(hv)hv.textContent='v'+APP_VERSION;}
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
@@ -4182,6 +4186,30 @@ document.body.appendChild(ov);
 
 // PWA + Background Sync + Daily Notification
 if('serviceWorker' in navigator){
+// ===== UPDATE BANNER =====
+function showUpdateBanner(){
+const existing=document.getElementById('update-banner');
+if(existing)return;
+const b=document.createElement('div');
+b.id='update-banner';
+b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#0D7377,#14919B);color:#fff;padding:12px 16px;font-size:12px;display:flex;align-items:center;gap:10px;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.3)';
+b.innerHTML=`<div><b>🆕 עדכון זמין!</b> גרסה חדשה מוכנה</div>
+<div style="display:flex;gap:6px;flex-shrink:0">
+<button onclick="applyUpdate()" style="background:#fff;color:#0D7377;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer">🔄 עדכן עכשיו</button>
+<button onclick="this.closest('#update-banner').remove()" style="background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">✕</button>
+</div>`;
+document.body.prepend(b);
+}
+function applyUpdate(){
+if(navigator.serviceWorker&&navigator.serviceWorker.controller){
+navigator.serviceWorker.getRegistrations().then(regs=>{
+regs.forEach(r=>{if(r.waiting)r.waiting.postMessage({type:'SKIP_WAITING'});});
+});
+}
+caches.keys().then(ks=>{ks.forEach(k=>caches.delete(k));});
+setTimeout(()=>window.location.reload(true),500);
+}
+
 // Force update — clears old cache-first SW
 navigator.serviceWorker.getRegistrations().then(regs=>{
 regs.forEach(r=>r.update());
@@ -4191,6 +4219,12 @@ const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v'+APP_VERSION);
 old.forEach(k=>{caches.delete(k);console.log('Deleted old cache:',k);});
 });
 navigator.serviceWorker.register('sw.js').then(reg=>{
+// Detect waiting worker = update available
+if(reg.waiting){showUpdateBanner();}
+reg.addEventListener('updatefound',()=>{
+const nw=reg.installing;
+if(nw){nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller){showUpdateBanner();}});}
+});
 // Schedule daily notification at 07:00
 function scheduleDailyNotification(){
 const now=new Date();
