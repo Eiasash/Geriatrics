@@ -974,7 +974,7 @@ async function runExplainOnCall(qIdx){
   try{
     const txt=await callAI([{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה. עגן בתשובה הנכונה. שאלה: '+q.q+'\nתשובה נכונה: '+correct}],400,'sonnet');
     _exCache[qIdx]=txt;try{localStorage.setItem('samega_ex',JSON.stringify(_exCache));}catch(e){}
-    box.innerHTML='<div style="font-size:12px;color:#475569;line-height:1.7;direction:rtl;text-align:right;margin-top:8px">'+txt+'</div>';
+    box.innerHTML='<div style="font-size:12px;color:#475569;line-height:1.7;direction:rtl;text-align:right;margin-top:8px">'+sanitize(txt)+'</div>';
     btn.remove();
   }catch(e){btn.textContent='🤖 הסבר AI';btn.disabled=false;}
 }
@@ -3887,10 +3887,6 @@ case'track':
   el.innerHTML=renderTrack();break;
 case'search':el.innerHTML=renderSearch();break;
 case'chat':el.innerHTML=renderChat();break;
-case'law':el.innerHTML=renderEOLTree();break;
-case'labs':el.innerHTML=renderLabOverlay();break;
-case'aging':el.innerHTML=renderAgingSheet();break;
-case'basket':el.innerHTML=renderMedBasket();break;
 case'book':case'syl':tab='lib';el.innerHTML=renderLibrary();break;
 default:tab='quiz';el.innerHTML=renderQuiz();break;
 }
@@ -3931,7 +3927,7 @@ else if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>{const b
 }
 function shareApp(){
 const url=location.href;
-if(navigator.share){navigator.share({title:'Shlav A Mega — Geriatrics Board Prep',text:'1434 IMA questions + Hazzard\'s 8e + Harrison\'s 22e + Calculators + Spaced Repetition',url:url}).catch(()=>{});}
+if(navigator.share){navigator.share({title:'Shlav A Mega — Geriatrics Board Prep',text:'1,470 IMA questions + Hazzard\'s 8e + Harrison\'s 22e + Calculators + Spaced Repetition',url:url}).catch(()=>{});}
 else if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>alert('✅ Link copied!'));}
 }
 
@@ -3952,7 +3948,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.17';
+const APP_VERSION='9.18';
 {const hv=document.getElementById('headerVer');if(hv)hv.textContent='v'+APP_VERSION;}
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
@@ -4101,7 +4097,7 @@ const aiText=await callAI([{role:'user',content:`Geriatric board exam. A student
 const isWrong=aiText.startsWith('VERDICT: WRONG');
 const aiBox=document.getElementById('aiVerifyResult');
 if(aiBox){
-aiBox.innerHTML=`<div style="font-weight:700;margin-bottom:4px;color:${isWrong?'#dc2626':'#059669'}">${isWrong?'⚠️ AI agrees — answer key may be wrong':'✅ AI: answer key is correct'}</div><div>${aiText.replace(/VERDICT: (CORRECT|WRONG)/,'').trim()}</div>`;
+aiBox.innerHTML=`<div style="font-weight:700;margin-bottom:4px;color:${isWrong?'#dc2626':'#059669'}">${isWrong?'⚠️ AI agrees — answer key may be wrong':'✅ AI: answer key is correct'}</div><div>${sanitize(aiText.replace(/VERDICT: (CORRECT|WRONG)/,'').trim())}</div>`;
 aiBox.style.display='block';aiBox.style.background=isWrong?'#fef2f2':'#f0fdf4';aiBox.style.border=`1px solid ${isWrong?'#fecaca':'#bbf7d0'}`;
 }
 if(st){st.textContent=isWrong?'⚠️ AI confirmed error':'✅ AI: answer key OK';st.style.color=isWrong?'#dc2626':'#059669';}
@@ -4132,16 +4128,16 @@ ov.innerHTML=`<div style="max-width:420px;margin:0 auto;background:#fff;border-r
 </div>
 <div style="font-size:10px;color:#64748b;margin-bottom:16px">Israeli Geriatrics Board Exam Prep (שלב א׳ גריאטריה) · P005-2026 · Hazzard's 8e + Harrison's 22e · Works Offline</div>
 <div style="padding:10px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:10px;margin-bottom:14px">
-<div style="font-weight:700;font-size:11px;margin-bottom:6px;color:#065f46">🆕 What's New in v9.15</div>
+<div style="font-weight:700;font-size:11px;margin-bottom:6px;color:#065f46">🆕 What's New in v9.18</div>
 <div style="font-size:10px;line-height:1.7;color:#047857">
 <b>✅ AI ללא מפתח</b> — כל פיצ'רי ה-AI עובדים דרך proxy משותף. לא צריך מפתח API אישי.<br>
 <b>🏷️ Header</b> — כותרת מעודכנת עם תווית Geriatrics וגרסה דינמית.<br>
 <b>🔧 Cache Fix</b> — ניקוי cache דינמי — לא צריך עדכון ידני בכל שדרוג גרסה.<br>
-<b>📊 1,434 שאלות</b> — כל השאלות מתויגות לפי 40 נושאים. 159 כרטיסיות, 40 סיכומים, 53 תרופות.<br>
+<b>📊 1,470 שאלות</b> — כל השאלות מתויגות לפי 40 נושאים. 159 כרטיסיות, 40 סיכומים, 53 תרופות.<br>
 <b>🧪 207 בדיקות</b> — CI עם 21 בדיקות אוטומטיות + 207 unit tests שעוברים.
 </div></div>
 ${sec('Quiz Filters','📝','#059669',
-'<b>הכל</b> — All 1434 questions, shuffled<br>'+
+'<b>הכל</b> — All 1,470 questions, shuffled<br>'+
 '<b>2022–2025</b> — Filter by exam year<br>'+
 '<b>🔥 Hard</b> — Questions you got wrong, worst-first<br>'+
 '<b>⏱️ Slow</b> — Questions that took you &gt;60s<br>'+
