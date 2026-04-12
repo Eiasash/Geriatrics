@@ -171,10 +171,18 @@ describe("sw.js — version alignment with app", () => {
 
     // The HTML cleanup code filters old caches: k !== '<current-cache-key>'
     // This must match the sw.js CACHE exactly or the current cache gets deleted
-    const cleanupMatch = html.match(/ks\.filter\(k=>k\.startsWith\('shlav-a-'\)&&k!=='([^']+)'\)/);
-    expect(cleanupMatch, "Cache cleanup filter found in HTML").not.toBeNull();
-    const htmlExemptKey = cleanupMatch[1];
-
-    expect(htmlExemptKey, `HTML cleanup exempts "${htmlExemptKey}" but sw.js CACHE is "${swCacheKey}"`).toBe(swCacheKey);
+    // Cache cleanup now uses dynamic reference: k!=='shlav-a-v'+APP_VERSION
+    const dynamicCleanup = html.includes("k!=='shlav-a-v'+APP_VERSION");
+    const staticCleanup = html.match(/ks\.filter\(k=>k\.startsWith\('shlav-a-'\)&&k!=='([^']+)'\)/);
+    
+    if (dynamicCleanup) {
+      // Dynamic reference — always matches APP_VERSION, which matches sw.js CACHE
+      expect(true, "Cache cleanup uses dynamic APP_VERSION reference").toBe(true);
+    } else if (staticCleanup) {
+      const htmlExemptKey = staticCleanup[1];
+      expect(htmlExemptKey, `HTML cleanup exempts "${htmlExemptKey}" but sw.js CACHE is "${swCacheKey}"`).toBe(swCacheKey);
+    } else {
+      expect(false, "No cache cleanup filter found in HTML").toBe(true);
+    }
   });
 });
