@@ -1,47 +1,27 @@
 [
   {
     "id": "quiz",
-    "ic": "📝",
+    "ic": "\ud83d\udcdd",
     "l": "Quiz"
   },
   {
-    "id": "study",
-    "ic": "📚",
-    "l": "Study"
+    "id": "learn",
+    "ic": "\ud83d\udcda",
+    "l": "Learn"
   },
   {
     "id": "lib",
-    "ic": "📖",
+    "ic": "\ud83d\udcd6",
     "l": "Library"
   },
   {
-    "id": "flash",
-    "ic": "🃏",
-    "l": "Cards"
-  },
-  {
-    "id": "drugs",
-    "ic": "💊",
-    "l": "Drugs"
-  },
-  {
-    "id": "calc",
-    "ic": "🧮",
-    "l": "Calc"
-  },
-  {
     "id": "track",
-    "ic": "📊",
+    "ic": "\ud83d\udcca",
     "l": "Track"
   },
   {
-    "id": "search",
-    "ic": "🔍",
-    "l": "Search"
-  },
-  {
-    "id": "chat",
-    "ic": "💬",
-    "l": "Chat"
+    "id": "more",
+    "ic": "\u2699\ufe0f",
+    "l": "More"
   }
 ]
