@@ -1443,7 +1443,7 @@ ${!pomoActive?'<span class="tt-wrap"><button onclick="startPomodoro()" class="bt
 </div>`;
 h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">`;
 const _trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
-const filts=[['all',`הכל (${QZ.length})`],['2021','21'],['2022','22'],['יוני 23','Jun23'],['2023-ב','23-ב'],['מאי 24','May24'],['ספט 24','Sep24'],['יוני 25','Jun25'],['2025-א','25-א'],['Hazzard','📕 Haz'],['hard','🔥 Hard'],['slow','⏱️ Slow'],['weak','🎯 Weak'],['due','🔄 Due'],['traps',`🪤 Traps (${_trapCount})`],['nbs','🎯 Next Best Step']];
+const filts=[['all',`הכל (${QZ.length})`],['2021','21'],['2022','22'],['יוני 23','Jun23'],['2023-ב','23-ב'],['מאי 24','May24'],['ספט 24','Sep24'],['יוני 25','Jun25'],['2025-א','25-א'],['Hazzard',`🤖 AI (${QZ.filter(q=>q.t==='Hazzard').length})`],['hard','🔥 Hard'],['slow','⏱️ Slow'],['weak','🎯 Weak'],['due','🔄 Due'],['traps',`🪤 Traps (${_trapCount})`],['nbs','🎯 Next Best Step']];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{
 if(f==='nbs')h+=`<span class="pill ${filt==='nbs'?'on':''}" onclick="startNextBestStep()">${l}</span>`;
@@ -1482,7 +1482,7 @@ if(timedMode&&!ans){
 const topicName=q.ti>=0&&TOPICS[q.ti]?TOPICS[q.ti]:'';
 const _cf=isChronicFail(pool[qi]);
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}${isExamTrap(pool[qi])?'<span title="Exam trap — many people pick the same wrong answer" style="font-size:12px;cursor:default">🪤</span>':''}<span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libSec='haz-pdf';render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open Hazzard PDFs">📕 ${ref.l}</span>`;return '';})()}</div>
+<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}${isExamTrap(pool[qi])?'<span title="Exam trap — many people pick the same wrong answer" style="font-size:12px;cursor:default">🪤</span>':''}<span class="tag-year" style="background:${q.t==='Hazzard'?'#faf5ff':'#eff6ff'};color:${q.t==='Hazzard'?'#7c3aed':'#1d4ed8'};font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t==='Hazzard'?'🤖 AI — Hazzard\'s':'📝 '+q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libSec='haz-pdf';render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open Hazzard PDFs">📕 ${ref.l}</span>`;return '';})()}</div>
 <div style="display:flex;align-items:center;gap:8px">
 <button onclick="speakQuestion()" class="speech-btn${isSpeaking?' speaking':''}" title="Read aloud" aria-label="Read question aloud">🔊</button>
 <button onclick="shareQ()" id="shbtn" class="share-btn" title="Share" aria-label="Share question">📋 שתף</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px" title="Bookmark" aria-label="${bk?'Remove bookmark':'Bookmark question'}">${bk?'🔖':'🏷️'}</button>
@@ -3530,7 +3530,7 @@ dRes.forEach(d=>{h+=`<div class="card" style="padding:10px"><span style="font-we
 }
 if(qRes.length){
 h+=`<div style="font-weight:700;font-size:12px;margin:8px 0 6px">📝 Questions (${Math.min(qRes.length,15)} shown)</div>`;
-qRes.slice(0,15).forEach(i=>{h+=`<div class="card heb" dir="rtl" style="padding:10px;font-size:11px;line-height:1.5"><span class="badge" style="background:#eff6ff;color:#1d4ed8">${QZ[i].t}</span> ${QZ[i].q.substring(0,120)}...</div>`;});
+qRes.slice(0,15).forEach(i=>{h+=`<div class="card heb" dir="rtl" style="padding:10px;font-size:11px;line-height:1.5"><span class="badge" style="background:${QZ[i].t==='Hazzard'?'#faf5ff':'#eff6ff'};color:${QZ[i].t==='Hazzard'?'#7c3aed':'#1d4ed8'}">${QZ[i].t==='Hazzard'?'🤖 AI':'📝 '+QZ[i].t}</span> ${QZ[i].q.substring(0,120)}...</div>`;});
 }
 }
 return h;
