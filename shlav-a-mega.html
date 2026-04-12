@@ -3046,7 +3046,19 @@ function calcEstScore(){
 // ===== HAZZARD'S 8e CHAPTER → PDF PAGE MAPPING =====
 // Maps topic names to {ch: 'Chapter(s)', p: PDF page number}
 // PDF: https://drive.google.com/file/d/1sW0asEfszQJvbeAqd8Lzcf6Q20JPq77r/view
-const HAZ_PDF='https://drive.google.com/file/d/1sW0asEfszQJvbeAqd8Lzcf6Q20JPq77r/view';
+function getHazPdf(chStr){
+const ch=parseInt(chStr);
+if(ch<=6)return 'hazzard_part01.pdf';
+if(ch<=13)return 'hazzard_part02.pdf';
+if(ch<=30)return 'hazzard_part03.pdf';
+if(ch<=48)return 'hazzard_part04.pdf';
+if(ch<=66)return 'hazzard_part05.pdf';
+if(ch<=72)return 'hazzard_part06.pdf';
+if(ch<=87)return 'hazzard_part07a1.pdf';
+if(ch<=96)return 'hazzard_part07a2.pdf';
+if(ch<=108)return 'hazzard_part07b.pdf';
+return 'hazzard_part01.pdf';
+}
 const HAZ_CHAPTERS = {
   'Delirium': {ch:'58',p:914},
   'Dementia — Alzheimer\'s': {ch:'59',p:928},
@@ -3301,7 +3313,7 @@ function renderStudyPlan(){
             <span style="color:#94a3b8;font-size:9px;white-space:nowrap">${topic.hrs}</span>
             </div>
             <div style="display:flex;gap:4px;padding:0 8px 6px 36px;flex-wrap:wrap">
-            ${HAZ_CHAPTERS[topic.n]?`<button onclick="event.stopPropagation();window.open(HAZ_PDF+'#page='+HAZ_CHAPTERS['${topic.n.replace(/'/g,"\\'")}'].p,'_blank')" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#b45309;cursor:pointer;white-space:nowrap" aria-label="Read Hazzard's chapter for ${topic.n.replace(/'/g,'')}">📕 Ch ${HAZ_CHAPTERS[topic.n].ch}</button>`:''}
+            ${HAZ_CHAPTERS[topic.n]?`<button onclick="event.stopPropagation();window.open(getHazPdf(HAZ_CHAPTERS['${topic.n.replace(/'/g,"\\'")}'].ch),'_blank')" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#b45309;cursor:pointer;white-space:nowrap" aria-label="Read Hazzard's chapter for ${topic.n.replace(/'/g,'')}">📕 Ch ${HAZ_CHAPTERS[topic.n].ch}</button>`:''}
             <button onclick="event.stopPropagation();openNote=${topic.ti};go('study')" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#0D7377;cursor:pointer;white-space:nowrap" aria-label="Open notes for ${topic.n.replace(/'/g,'')}">📖 Notes</button>
             <button onclick="event.stopPropagation();setTopicFilt(${topic.ti});go('quiz')" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#3b82f6;cursor:pointer;white-space:nowrap" aria-label="Quiz ${topic.n.replace(/'/g,'')}">📝 Quiz</button>
             <button onclick="event.stopPropagation();S.chat=[];go('chat');setTimeout(function(){sendChatStarter('Give me a concise board-review summary of ${topic.n.replace(/'/g,"\\'")} in geriatrics. Cover: key definitions, diagnostic criteria, management pearls, exam traps, and must-know numbers. Format with bold headings.')},100)" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#7c3aed;cursor:pointer;white-space:nowrap" aria-label="AI summary of ${topic.n.replace(/'/g,'')}">🤖 Summarize</button>
