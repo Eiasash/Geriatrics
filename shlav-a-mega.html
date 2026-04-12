@@ -1430,7 +1430,8 @@ h+=examMode?(()=>{
   return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:8px 12px;background:#0f172a;border-radius:12px;color:#fff">
 <span style="font-weight:700;font-size:11px">${isMock?'🎯 Mock':'📋 Exam'}<br><span style="font-size:9px;font-weight:400">${paceStr}</span></span>
 <span id="etimer" class="timer" style="font-size:16px;font-weight:700">${fmtT(examSec)}</span>
-<span style="font-size:11px">${qi+1}/${isMock?pool.length:150}</span></div>`;
+<span style="font-size:11px">${qi+1}/${isMock?pool.length:150}</span>
+<button onclick="if(confirm('סיים מבחן? הציון ייחשב על מה שענית עד עכשיו')){${isMock?'endMockExam()':'endExam()'}}" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer">✕ סיים</button></div>`;
 })():'';
 if(!examMode){
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -1705,7 +1706,7 @@ return h;
 function filterNotes(v){render();}
 
 // ===== SYLLABUS (P005-2026 Official IMA) =====
-let sylSec='haz';
+let sylSec='harAll';
 const SYL_HAZ_EXCLUDED=new Set([2,3,4,5,6,34,62]);
 const SYL_HAZ=[
 {ch:1,t:'The Scope of Geriatric Medicine'},
@@ -1905,24 +1906,18 @@ let h=`<div class="sec-t">📋 סילבוס שלב א׳ — גריאטריה</di
 <div class="sec-s">P005-2026 · IMA Scientific Council · Official Required Sources</div>`;
 // Section pills
 h+=`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">`;
-[['haz','🔬 Hazzard\'s'],['harAll','🧠 Harrison\'s (All)'],['harBase','⚕️ Harrison\'s (Base)'],['laws','⚖️ Laws'],['articles','📄 Articles']].forEach(([id,l])=>{
+[['harAll','🧠 Harrison\'s (All)'],['harBase','⚕️ Harrison\'s (Base)'],['laws','⚖️ Laws'],['articles','📄 Articles']].forEach(([id,l])=>{
 h+=`<span class="pill ${sylSec===id?'on':''}" onclick="sylSec='${id}';render()">${l}</span>`;
 });
+h+=`<span class="pill" onclick="tab='lib';libSec='haz-pdf';render()" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca">📕 Hazzard → Library</span>`;
 h+=`</div>`;
 
 if(sylSec==='haz'){
-h+=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">📕 Hazzard's Geriatric Medicine & Gerontology 8e</div>
-<div style="font-size:10px;color:#dc2626;font-weight:600;margin-bottom:10px;padding:6px 10px;background:#fef2f2;border-radius:6px">⚠️ כל הספר נדרש — למעט פרקים 2-6, 34, 62 בלבד (101 פרקים מתוך 108)</div>`;
-// Show excluded chapters note first
-h+=`<div style="padding:8px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:10px;margin-bottom:10px;color:#dc2626;font-weight:600">
-❌ מוחרגים (לא נדרשים): Ch 2, 3, 4, 5, 6, 34, 62</div>`;
-SYL_HAZ.forEach(c=>{
-h+=`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9">
-<span style="background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:36px;text-align:center">Ch ${c.ch}</span>
-<span style="font-size:11px">${c.t}</span></div>`;
-});
-h+=`</div>`;
+h+=`<div class="card" style="padding:20px;text-align:center">
+<div style="font-size:13px;font-weight:700;margin-bottom:8px">📕 Hazzard's moved to Library</div>
+<div style="font-size:11px;color:#64748b;margin-bottom:12px">All 61 chapters with page links, drill buttons & accuracy stats</div>
+<button onclick="tab='lib';libSec='haz-pdf';render()" class="btn btn-p" style="font-size:12px;padding:8px 20px">📕 Open Hazzard in Library</button>
+</div>`;
 }
 if(sylSec==='harAll'){
 h+=`<div class="card" style="padding:14px">
@@ -3987,7 +3982,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.22';
+const APP_VERSION='9.23';
 {const hv=document.getElementById('headerVer');if(hv)hv.textContent='v'+APP_VERSION;}
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
