@@ -4178,7 +4178,7 @@ navigator.serviceWorker.getRegistrations().then(regs=>{
 regs.forEach(r=>r.update());
 });
 caches.keys().then(ks=>{
-const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v9.14');
+const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v'+APP_VERSION);
 old.forEach(k=>{caches.delete(k);console.log('Deleted old cache:',k);});
 });
 navigator.serviceWorker.register('sw.js').then(reg=>{
