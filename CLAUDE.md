@@ -6,7 +6,7 @@
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~236 KB, ~3,800 lines, self-contained HTML/CSS/JS)
-- **App version**: v9.10
+- **App version**: v9.18
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -39,13 +39,13 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.10)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.18)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
 │
 ├── data/                    # Lazy-loaded JSON data — single source of truth
-│   ├── questions.json       # 1,419 MCQs (primary runtime source)
+│   ├── questions.json       # 1,470 MCQs (primary runtime source)
 │   ├── notes.json           # 40 study topic notes
 │   ├── drugs.json           # 53 Beers/ACB drugs database
 │   ├── flashcards.json      # 159 high-yield flashcards
@@ -86,8 +86,11 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 │   └── workflows/ci.yml     # Validation CI — JSON schema, duplicates, version sync, etc.
 │
 ├── tests/
-│   ├── dataIntegrity.test.js  # 30 tests: question schema, duplicates, topic coverage
-│   └── appIntegrity.test.js   # 11 tests: HTML structure, SW sync, security
+│   ├── dataIntegrity.test.js        # 25 tests: question schema, duplicates, topic coverage
+│   ├── expandedDataIntegrity.test.js # 50 tests: deeper data validation
+│   ├── appIntegrity.test.js         # 16 tests: HTML structure, SW sync, security
+│   ├── serviceWorker.test.js        # 25 tests: SW cache config, fetch strategy, version sync
+│   └── appLogic.test.js             # 91 tests: quiz engine, FSRS, sanitization, AI, study plan
 │
 ├── supabase-setup.sql        # Supabase RLS schema
 ├── .mcp.json                 # MCP server config (Supabase)
@@ -98,7 +101,7 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 └── hazzard_part*.pdf         # Hazzard's Geriatric Medicine 8e (original PDFs)
 ```
 
-### Data Architecture (v9.10)
+### Data Architecture (v9.18)
 
 All runtime data lives in `data/`. The app and service worker load exclusively from `data/*.json`. Build scripts (`scripts/`) also read/write `data/questions.json` directly. There are no root-level JSON duplicates — `data/` is the single source of truth.
 
@@ -194,15 +197,15 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `9.10` (sw.js cache key: `shlav-a-v9.10`)
+- Currently both at version `9.18` (sw.js cache key: `shlav-a-v9.18`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, 103 tests)
+npm test             # Run all tests (vitest, 207 tests)
 ```
 
-**103 tests across 4 files** — run `npm test` to see current count.
+**207 tests across 5 files** — run `npm test` to see current count.
 
 **Auto-expand rule:** Every feature, improvement, or bug fix MUST include new or updated tests:
 - New data file or field → schema validation test
@@ -211,14 +214,15 @@ npm test             # Run all tests (vitest, 103 tests)
 - Modified data processing → edge case + boundary tests
 - After adding tests, update the test count in this section
 
-**Test file inventory (4 files, 103 tests):**
+**Test file inventory (5 files, 207 tests):**
 
 | File | Tests | Description |
 |------|-------|-------------|
-| `tests/dataIntegrity.test.js` | 24 | Question schema/duplicates/topic coverage, notes, drugs, flashcards, OSCE, topics, cross-file referential integrity |
-| `tests/expandedDataIntegrity.test.js` | 48 | Deeper validation: answer integrity, option bounds, whitespace, year field, topic distribution balance, notes content length, drugs ACB/Beers cross-checks, flashcard length, OSCE null entries, tabs schema, image map integrity |
-| `tests/appIntegrity.test.js` | 11 | HTML structure (RTL, viewport, PWA), SW version sync, security checks (eval, innerHTML), manifest validation |
-| `tests/serviceWorker.test.js` | 20 | SW cache configuration, URL lists, version sync, fetch strategy routing, file existence checks |
+| `tests/dataIntegrity.test.js` | 25 | Question schema/duplicates/topic coverage, notes, drugs, flashcards, OSCE, topics, cross-file referential integrity |
+| `tests/expandedDataIntegrity.test.js` | 50 | Deeper validation: answer integrity, option bounds, whitespace, year field, topic distribution balance, notes content length, drugs ACB/Beers cross-checks, flashcard length, OSCE null entries, tabs schema, image map integrity |
+| `tests/appIntegrity.test.js` | 16 | HTML structure (RTL, viewport, PWA), SW version sync, security checks (eval, innerHTML), manifest validation |
+| `tests/serviceWorker.test.js` | 25 | SW cache configuration, URL lists, version sync, fetch strategy routing, file existence checks |
+| `tests/appLogic.test.js` | 91 | Quiz engine, FSRS spaced repetition, sanitization, AI integration, study plan logic |
 
 **Test coverage by area:**
 
@@ -261,7 +265,7 @@ Runs on push to `main` and all PRs. Python-based data validation + Vitest test s
 | innerHTML sanitization | Audit for unsanitized innerHTML usage |
 | Topic coverage | >= 5 questions per topic (all 40 topics) |
 
-**Vitest tests** (103 tests, 4 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
+**Vitest tests** (207 tests, 5 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
 
 ---
 
