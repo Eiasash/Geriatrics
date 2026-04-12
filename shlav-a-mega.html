@@ -392,9 +392,9 @@ const lsData=localStorage.getItem(LS);
 if(lsData){
 await idbSet('samega',JSON.parse(lsData));
 // Keep user_id for Supabase, clear the rest
-const uid=localStorage.getItem('user_id');
+const uid=null/*user_id removed*/;
 localStorage.removeItem(LS);
-if(uid)localStorage.setItem('user_id',uid);
+if(uid)//localStorage.setItem('user_id',uid);
 }else{
 await idbSet('samega',S);
 }
@@ -3818,8 +3818,8 @@ function sendChatStarter(text){const input=document.getElementById('chat-input')
 function clearChat(){S.chat=[];chatLoading=false;save();render();}
 
 // ===== SUPABASE CLOUD SYNC =====
-const _SB_URL='https://drvocrtufqtifkgmijpg.supabase.co';
-const _SB_KEY='sb_publishable_YoJbJEr3_Ss6yunhFlNIzg_RWapShpn';
+const _SB_URL='https://krmlzwwelqvlfslwltol.supabase.co';
+const _SB_KEY=SUPA_ANON;
 function _sbDeviceId(){let id=localStorage.getItem('samega_devid');if(!id){id='dev_'+Math.random().toString(36).slice(2,12);localStorage.setItem('samega_devid',id);}return id;}
 async function cloudBackup(){
   const btn=document.getElementById('cloud-backup-btn');
@@ -3952,7 +3952,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.16';
+const APP_VERSION='9.17';
 {const hv=document.getElementById('headerVer');if(hv)hv.textContent='v'+APP_VERSION;}
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
