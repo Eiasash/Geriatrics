@@ -199,12 +199,46 @@ No build step needed. Edit and refresh.
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, 41 tests)
+npm test             # Run all tests (vitest, 103 tests)
 ```
 
-Vitest test suite validates data integrity and app structure:
-- `tests/dataIntegrity.test.js` — 30 tests: question schema/duplicates/topic coverage, notes, drugs, flashcards, OSCE, topics, cross-file referential integrity
-- `tests/appIntegrity.test.js` — 11 tests: HTML structure (RTL, viewport, PWA), SW version sync, security checks (eval, innerHTML), manifest validation
+**103 tests across 4 files** — run `npm test` to see current count.
+
+**Auto-expand rule:** Every feature, improvement, or bug fix MUST include new or updated tests:
+- New data file or field → schema validation test
+- Bug fix → regression test that reproduces the bug before the fix
+- New app feature → integrity test for the feature's HTML/JS structure
+- Modified data processing → edge case + boundary tests
+- After adding tests, update the test count in this section
+
+**Test file inventory (4 files, 103 tests):**
+
+| File | Tests | Description |
+|------|-------|-------------|
+| `tests/dataIntegrity.test.js` | 24 | Question schema/duplicates/topic coverage, notes, drugs, flashcards, OSCE, topics, cross-file referential integrity |
+| `tests/expandedDataIntegrity.test.js` | 48 | Deeper validation: answer integrity, option bounds, whitespace, year field, topic distribution balance, notes content length, drugs ACB/Beers cross-checks, flashcard length, OSCE null entries, tabs schema, image map integrity |
+| `tests/appIntegrity.test.js` | 11 | HTML structure (RTL, viewport, PWA), SW version sync, security checks (eval, innerHTML), manifest validation |
+| `tests/serviceWorker.test.js` | 20 | SW cache configuration, URL lists, version sync, fetch strategy routing, file existence checks |
+
+**Test coverage by area:**
+
+| Area | Coverage | Notes |
+|------|----------|-------|
+| Question data schema | Strong (24+ tests) | Schema, duplicates, topic coverage, bounds |
+| Answer integrity | Strong (48+ tests) | Options count, index bounds, whitespace, year tags |
+| Notes/drugs/flashcards | Good (15+ tests) | Schema, GRS exclusion, ACB distribution |
+| OSCE stations | Moderate (5+ tests) | Schema, null detection |
+| Cross-file referential integrity | Good (2+ tests) | Topic indices match topics array |
+| HTML structure | Good (6+ tests) | RTL, viewport, PWA manifest |
+| Service worker | Good (20+ tests) | Cache config, URL lists, version sync |
+| Security | Moderate (3+ tests) | eval, innerHTML, sanitization audit |
+| Image map | Moderate (2+ tests) | References valid image files |
+
+**Gaps — components not tested:**
+- App runtime behavior (quiz engine, spaced repetition, UI interactions) — monolith prevents unit testing
+- localStorage/IndexedDB persistence — runtime-only
+- AI explanation generation — requires API key
+- Supabase cloud sync — requires credentials
 
 ---
 
@@ -227,7 +261,7 @@ Runs on push to `main` and all PRs. Python-based data validation + Vitest test s
 | innerHTML sanitization | Audit for unsanitized innerHTML usage |
 | Topic coverage | >= 5 questions per topic (all 40 topics) |
 
-**Vitest tests** (41 tests, 2 files) validate data schemas and app structure. Run `npm test` before pushing.
+**Vitest tests** (103 tests, 4 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
 
 ---
 
