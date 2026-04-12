@@ -1,0 +1,211 @@
+name: Weekly Audit
+
+on:
+  schedule:
+    # Run every Sunday at 06:00 UTC
+    - cron: '0 6 * * 0'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # ── Data Integrity ──
+      - name: Validate all JSON files
+        run: |
+          for f in data/questions.json data/notes.json data/drugs.json data/flashcards.json data/osce.json data/topics.json data/tabs.json; do
+            echo "Checking $f..."
+            python3 -c "import json,sys; json.load(open('$f')); print('  OK')"
+          done
+
+      - name: Check question count and schema
+        run: |
+          python3 << 'PYEOF'
+          import json, sys
+          qs = json.load(open('data/questions.json'))
+          errors = []
+          if len(qs) < 900:
+              errors.append(f'Question count too low: {len(qs)}')
+          for i, q in enumerate(qs):
+              if not q.get('q') or len(q['q']) < 15:
+                  errors.append(f'Q{i}: question text missing or too short')
+              if not isinstance(q.get('o'), list) or len(q.get('o', [])) < 4:
+                  errors.append(f'Q{i}: needs >=4 options')
+              if not isinstance(q.get('c'), int) or q['c'] < 0 or q['c'] >= len(q.get('o', [])):
+                  errors.append(f'Q{i}: invalid correct answer index')
+              if q.get('ti') is None or not isinstance(q.get('ti'), int) or q['ti'] < 0 or q['ti'] > 39:
+                  errors.append(f'Q{i}: invalid topic index')
+              if not q.get('t'):
+                  errors.append(f'Q{i}: missing year field')
+              if not q.get('e'):
+                  errors.append(f'Q{i}: missing explanation')
+          if errors:
+              print(f'ERRORS ({len(errors)}):')
+              for e in errors[:20]:
+                  print(f'  {e}')
+              if len(errors) > 20:
+                  print(f'  ... and {len(errors)-20} more')
+              sys.exit(1)
+          print(f'OK: {len(qs)} questions, all valid')
+          PYEOF
+
+      - name: Check for conflicting duplicates
+        run: |
+          python3 -c "
+          import json, sys
+          qs = json.load(open('data/questions.json'))
+          seen = {}
+          conflicts = []
+          for i, q in enumerate(qs):
+              key = q['q'].strip()[:80]
+              if key in seen:
+                  j = seen[key]
+                  if qs[i]['c'] != qs[j]['c']:
+                      conflicts.append((j, i, key[:60]))
+              else:
+                  seen[key] = i
+          if conflicts:
+              print(f'CRITICAL: {len(conflicts)} conflicting duplicates:')
+              for j, i, k in conflicts:
+                  print(f'  Q{j} vs Q{i}: {k}...')
+              sys.exit(1)
+          print('OK: No conflicting duplicates')
+          "
+
+      - name: Check topic coverage (min 5 per topic)
+        run: |
+          python3 -c "
+          import json, sys
+          qs = json.load(open('data/questions.json'))
+          counts = {}
+          for q in qs:
+              ti = q.get('ti', -1)
+              counts[ti] = counts.get(ti, 0) + 1
+          thin = [ti for ti in range(40) if counts.get(ti, 0) < 5]
+          if thin:
+              print(f'WARNING: {len(thin)} topics with <5 questions:')
+              for ti in thin:
+                  print(f'  ti={ti}: {counts.get(ti,0)} questions')
+              sys.exit(1)
+          print(f'OK: All 40 topics have >=5 questions')
+          "
+
+      # ── Version Sync ──
+      - name: Check APP_VERSION matches SW cache
+        run: |
+          python3 << 'PYEOF'
+          import re, sys
+          html = open('shlav-a-mega.html').read()
+          sw = open('sw.js').read()
+          m_app = re.search(r"APP_VERSION='([^']+)'", html)
+          m_sw = re.search(r"CACHE='shlav-a-v([^']+)'", sw)
+          if not m_app or not m_sw:
+              print('ERROR: Version constants not found'); sys.exit(1)
+          if m_app.group(1) != m_sw.group(1):
+              print(f'MISMATCH: app={m_app.group(1)}, sw={m_sw.group(1)}'); sys.exit(1)
+          print(f'OK: Versions match (v{m_app.group(1)})')
+          PYEOF
+
+      # ── Security ──
+      - name: Check no eval() calls
+        run: |
+          python3 -c "
+          import re, sys
+          html = open('shlav-a-mega.html').read()
+          evals = [m.start() for m in re.finditer(r'\beval\s*\(', html)]
+          if evals:
+              print(f'WARNING: {len(evals)} eval() calls found'); sys.exit(1)
+          print('OK: No eval() calls')
+          "
+
+      - name: Check no GRS references
+        run: |
+          python3 -c "
+          import sys
+          html = open('shlav-a-mega.html').read()
+          data_files = ['data/questions.json','data/notes.json','data/flashcards.json']
+          for f in data_files:
+              content = open(f).read()
+              if 'GRS' in content:
+                  print(f'ERROR: GRS reference found in {f}'); sys.exit(1)
+          if 'GRS' in html:
+              print('ERROR: GRS reference found in HTML'); sys.exit(1)
+          print('OK: No GRS references in app or data')
+          "
+
+      - name: Audit innerHTML sanitization
+        run: |
+          python3 << 'PYEOF'
+          import sys
+          html = open('shlav-a-mega.html').read()
+          lines = html.split('\n')
+          warnings = []
+          for i, line in enumerate(lines, 1):
+              if '.innerHTML=' in line or '.innerHTML =' in line:
+                  after_eq = line.split('innerHTML')[1]
+                  if ('+' in after_eq or '${' in after_eq) and 'sanitize(' not in after_eq:
+                      warnings.append(f'  Line {i}: {line.strip()[:100]}')
+          if warnings:
+              print(f'WARNING: {len(warnings)} unsanitized innerHTML:')
+              for w in warnings[:10]:
+                  print(w)
+          else:
+              print('OK: All dynamic innerHTML uses sanitize()')
+          PYEOF
+
+      - name: Check JS brace balance
+        run: |
+          python3 -c "
+          import sys
+          c = open('shlav-a-mega.html').read()
+          diff = c.count('{') - c.count('}')
+          if diff != 0:
+              print(f'ERROR: Brace imbalance (diff={diff})'); sys.exit(1)
+          print(f'OK: Braces balanced')
+          "
+
+      # ── JS Syntax Check ──
+      - name: Check JS syntax with acorn
+        run: |
+          npm ci
+          node -e "
+          const html = require('fs').readFileSync('shlav-a-mega.html','utf8');
+          const start = html.lastIndexOf('<script>');
+          const end = html.lastIndexOf('</script>');
+          const js = html.substring(start+8, end);
+          try {
+            require('acorn').parse(js, { ecmaVersion: 2022, sourceType: 'script' });
+            console.log('OK: JS parses without errors');
+          } catch(e) {
+            console.error('JS SYNTAX ERROR at line', e.loc?.line, ':', e.message);
+            process.exit(1);
+          }
+          "
+
+      # ── Tests ──
+      - name: Run Vitest tests
+        run: npx vitest run
+
+      # ── Documentation Drift ──
+      - name: Check CLAUDE.md version matches app
+        run: |
+          python3 << 'PYEOF'
+          import re, sys
+          html = open('shlav-a-mega.html').read()
+          claude = open('CLAUDE.md').read()
+          m = re.search(r"APP_VERSION='([^']+)'", html)
+          if not m:
+              print('ERROR: APP_VERSION not found'); sys.exit(1)
+          ver = m.group(1)
+          if f'v{ver}' not in claude and ver not in claude:
+              print(f'WARNING: CLAUDE.md may be stale (app is v{ver})')
+          else:
+              print(f'OK: CLAUDE.md references v{ver}')
+          PYEOF
