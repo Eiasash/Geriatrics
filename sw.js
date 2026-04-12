@@ -1,4 +1,4 @@
-const CACHE='shlav-a-v9.15';
+const CACHE='shlav-a-v9.16';
 const HTML_URLS=['shlav-a-mega.html','manifest.json'];
 const JSON_DATA_URLS=['data/questions.json','data/topics.json','data/notes.json','data/drugs.json','data/flashcards.json','harrison_chapters.json','data/tabs.json'];
 const ALL_URLS=[...HTML_URLS,...JSON_DATA_URLS];
@@ -77,6 +77,12 @@ clearTx.objectStore('state').delete('pending_sync');
 // ===== DAILY PUSH NOTIFICATION (07:00 local time) =====
 // Scheduled via periodic background sync or a setInterval from the main thread.
 // The main thread sends a message with due count; SW shows notification.
+
+// Skip waiting when update banner clicked
+self.addEventListener('message',e=>{
+if(e.data&&e.data.type==='SKIP_WAITING'){self.skipWaiting();}
+});
+
 self.addEventListener('message',e=>{
 if(e.data&&e.data.type==='schedule-notification'){
 const dueCount=e.data.dueCount||0;
