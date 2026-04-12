@@ -691,7 +691,7 @@ function fsrsMigrateFromSM2(sm2entry){
   return{s,d};
 }
 // ===== END FSRS =====
-function srScore(qIdx,correct){
+function srScore(qIdx,correct,fsrsRating){
 if(!S.sr[qIdx])S.sr[qIdx]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};
 const s=S.sr[qIdx];
 if(s.tot===undefined){s.tot=0;s.ok=0;}
@@ -701,7 +701,7 @@ s.ts.push(elapsed);if(s.ts.length>10)s.ts.shift();
 s.at=Math.round(s.ts.reduce((a,b)=>a+b,0)/s.ts.length);
 s.tot++;if(correct)s.ok++;
 // FSRS-4.5 scheduling
-const rating=correct?3:1; // Good=3, Again=1
+const rating=fsrsRating||(correct?3:1); // Use explicit rating if provided
 const daysSinceReview=s.lastReview?Math.max(0,(Date.now()-s.lastReview)/86400000):0;
 // Initialize or migrate FSRS state
 if(s.fsrsS===undefined||s.fsrsD===undefined){
@@ -728,6 +728,7 @@ _sessionOk+=correct?1:0;_sessionNo+=correct?0:1;
 if(correct&&QZ[qIdx])_sessionBest[QZ[qIdx].ti]=((_sessionBest[QZ[qIdx].ti]||0)+1);
 if(!correct&&QZ[qIdx])_sessionWorse[QZ[qIdx].ti]=((_sessionWorse[QZ[qIdx].ti]||0)+1);
 qStartTime=Date.now();
+trackDailyActivity();
 save();
 }
 function isChronicFail(qIdx){
@@ -816,6 +817,7 @@ let _mockAnswered=0;
 let qStartTime=Date.now();
 // ===== FEATURES: Confidence, Wrong-Reason, Difficulty =====
 let _confidence=null; // null,0(unsure),1(maybe),2(confident)
+let _pendingSR=null; // qIdx awaiting confidence rating after correct answer
 let _wrongReason=null; // null until classified after wrong answer
 let _diffRating=null; // null,'easy','med','hard'
 // Feature 3: Exam trap detection — questions where >40% pick same wrong distractor
@@ -908,6 +910,222 @@ miniExamTopic=-1;render();
 function setFilt(f){filt=f;topicFilt=-1;buildPool();render()}
 function setTopicFilt(ti){filt='topic';topicFilt=ti;buildPool();render()}
 
+// ===== FEATURE 4: RESCUE DRILL =====
+function getWeakTopics(n=3){
+const stats=getTopicStats();
+const scored=stats.map((s,ti)=>({ti,pct:s.tot?Math.round(s.ok/s.tot*100):null,tot:s.tot,ok:s.ok}))
+  .filter(s=>s.tot>=3) // only topics with enough data
+  .sort((a,b)=>a.pct-b.pct);
+return scored.slice(0,n);
+}
+function buildRescuePool(){
+const weak=getWeakTopics(3);
+if(!weak.length){alert('Not enough data yet — answer more questions first');return;}
+const rescueQs=[];
+weak.forEach(w=>{
+  const topicQs=QZ.map((q,i)=>({i,q})).filter(x=>x.q.ti===w.ti);
+  // Prioritize questions with worst personal accuracy
+  topicQs.sort((a,b)=>{
+    const sa=S.sr[a.i],sb=S.sr[b.i];
+    const pa=sa&&sa.tot?(sa.ok/sa.tot):0.5;
+    const pb=sb&&sb.tot?(sb.ok/sb.tot):0.5;
+    return pa-pb;
+  });
+  rescueQs.push(...topicQs.slice(0,7).map(x=>x.i));
+});
+// Shuffle
+for(let i=rescueQs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[rescueQs[i],rescueQs[j]]=[rescueQs[j],rescueQs[i]];}
+pool=rescueQs;qi=0;sel=null;ans=false;_pendingSR=null;
+filt='rescue';render();
+}
+
+// ===== FEATURE 9: SPACED READING =====
+function trackChapterRead(source,ch){
+if(!S.chReads)S.chReads={};
+const key=source+'_'+ch;
+S.chReads[key]=Date.now();
+save();
+}
+function getChaptersDueForReading(source,dayThreshold=30){
+if(!S.chReads)return[];
+const now=Date.now();
+const due=[];
+Object.entries(S.chReads).forEach(([key,ts])=>{
+  if(!key.startsWith(source+'_'))return;
+  const ch=key.split('_')[1];
+  const daysSince=Math.floor((now-ts)/86400000);
+  if(daysSince>=dayThreshold)due.push({ch,daysSince,ts});
+});
+return due.sort((a,b)=>b.daysSince-a.daysSince);
+}
+
+// ===== FEATURE 7: ANALYTICS ENGINE =====
+function trackDailyActivity(){
+if(!S.dailyAct)S.dailyAct={};
+const today=new Date().toISOString().slice(0,10);
+if(!S.dailyAct[today])S.dailyAct[today]={q:0,ok:0,time:0,sessions:0};
+S.dailyAct[today].q++;
+// Keep only last 90 days
+const keys=Object.keys(S.dailyAct).sort();
+while(keys.length>90){delete S.dailyAct[keys.shift()];}
+}
+function getReadinessScore(){
+// Weighted by exam frequency distribution
+const stats=getTopicStats();
+let weightedScore=0,totalWeight=0;
+EXAM_FREQ.forEach((freq,ti)=>{
+  if(!freq)return;
+  const s=stats[ti];
+  const pct=s&&s.tot>=2?s.ok/s.tot:0;
+  weightedScore+=pct*freq;
+  totalWeight+=freq;
+});
+return totalWeight>0?Math.round(weightedScore/totalWeight*100):0;
+}
+function getStudyStreak(){
+if(!S.dailyAct)return 0;
+let streak=0;
+const d=new Date();
+for(let i=0;i<365;i++){
+  const key=d.toISOString().slice(0,10);
+  if(S.dailyAct[key]&&S.dailyAct[key].q>0)streak++;
+  else if(i>0)break; // allow today to be empty
+  d.setDate(d.getDate()-1);
+}
+return streak;
+}
+function renderAnalytics(){
+const stats=getTopicStats();
+const readiness=getReadinessScore();
+const streak=getStudyStreak();
+const totalAnswered=Object.values(S.sr||{}).reduce((a,s)=>a+(s.tot||0),0);
+const totalCorrect=Object.values(S.sr||{}).reduce((a,s)=>a+(s.ok||0),0);
+const overallPct=totalAnswered?Math.round(totalCorrect/totalAnswered*100):0;
+// Due questions
+const dueCount=getDueQuestions().length;
+// Mock exam history
+let mockHist=[];
+try{mockHist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');}catch(e){}
+// Weak topics
+const weak=getWeakTopics(5);
+
+let h='<div class="sec-t">📊 Analytics Dashboard</div>';
+// Key metrics row
+h+=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+<div class="card" style="padding:10px;text-align:center">
+<div style="font-size:22px;font-weight:800;color:${readiness>=70?'#059669':readiness>=50?'#d97706':'#dc2626'}">${readiness}%</div>
+<div style="font-size:9px;color:#64748b">Exam Readiness</div>
+</div>
+<div class="card" style="padding:10px;text-align:center">
+<div style="font-size:22px;font-weight:800;color:#7c3aed">${streak}</div>
+<div style="font-size:9px;color:#64748b">Day Streak</div>
+</div>
+<div class="card" style="padding:10px;text-align:center">
+<div style="font-size:22px;font-weight:800;color:#0ea5e9">${totalAnswered}</div>
+<div style="font-size:9px;color:#64748b">Answered</div>
+</div>
+<div class="card" style="padding:10px;text-align:center">
+<div style="font-size:22px;font-weight:800;color:${overallPct>=70?'#059669':'#d97706'}">${overallPct}%</div>
+<div style="font-size:9px;color:#64748b">Accuracy</div>
+</div>
+</div>`;
+
+// SRS due
+if(dueCount>0){
+h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:#fef2f2;border:1px solid #fecaca">
+<div style="display:flex;align-items:center;gap:8px">
+<span style="font-size:18px">🔔</span>
+<div style="flex:1"><div style="font-size:12px;font-weight:700;color:#dc2626">${dueCount} questions due for review</div>
+<div style="font-size:10px;color:#64748b">Spaced repetition items ready now</div></div>
+<button onclick="filt='due';buildPool();tab='quiz';render()" class="btn" style="font-size:10px;padding:6px 12px;background:#dc2626;color:#fff;border:none;border-radius:8px">▶ Review</button>
+</div></div>`;
+}
+
+// Rescue drill
+if(weak.length&&weak[0].pct!==null&&weak[0].pct<60){
+h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:#fffbeb;border:1px solid #fde68a">
+<div style="display:flex;align-items:center;gap:8px">
+<span style="font-size:18px">🚨</span>
+<div style="flex:1"><div style="font-size:12px;font-weight:700;color:#92400e">Rescue Drill Available</div>
+<div style="font-size:10px;color:#64748b">Weakest: ${weak.slice(0,3).map(w=>TOPICS[w.ti]+'('+w.pct+'%)').join(', ')}</div></div>
+<button onclick="buildRescuePool();tab='quiz';render()" class="btn" style="font-size:10px;padding:6px 12px;background:#f59e0b;color:#fff;border:none;border-radius:8px">🚨 Drill</button>
+</div></div>`;
+}
+
+// Topic mastery heatmap
+h+=`<div class="card" style="padding:14px;margin-bottom:8px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">🗺️ Topic Mastery Map</div>
+<div style="display:flex;flex-wrap:wrap;gap:3px">`;
+stats.forEach((s,ti)=>{
+if(!TOPICS[ti])return;
+const pct=s.tot>=2?Math.round(s.ok/s.tot*100):null;
+const color=pct===null?'#e2e8f0':pct>=80?'#059669':pct>=60?'#84cc16':pct>=40?'#f59e0b':'#ef4444';
+const bg=pct===null?'#f8fafc':pct>=80?'#ecfdf5':pct>=60?'#f7fee7':pct>=40?'#fffbeb':'#fef2f2';
+h+=`<div onclick="tab='quiz';filt='topic';topicFilt=${ti};buildPool();render()" style="padding:4px 6px;border-radius:6px;font-size:8px;background:${bg};color:${color};font-weight:700;cursor:pointer;border:1px solid ${color}30;min-width:28px;text-align:center" title="${TOPICS[ti]}: ${pct!==null?pct+'%':'no data'} (${s.tot} Qs)">${pct!==null?pct+'%':'·'}</div>`;
+});
+h+=`</div></div>`;
+
+// Mock exam trend
+if(mockHist.length>0){
+h+=`<div class="card" style="padding:14px;margin-bottom:8px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">📈 Mock Exam Trend</div>`;
+const maxScore=100;
+h+=`<div style="display:flex;align-items:flex-end;gap:4px;height:80px">`;
+mockHist.slice(-10).forEach((m,i)=>{
+const barH=Math.max(4,m.score*0.8);
+const color=m.score>=60?'#059669':'#ef4444';
+h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+<span style="font-size:8px;font-weight:700;color:${color}">${m.score}%</span>
+<div style="width:100%;height:${barH}px;background:${color};border-radius:4px 4px 0 0"></div>
+<span style="font-size:7px;color:#94a3b8">${new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span>
+</div>`;
+});
+h+=`</div>`;
+// Prediction
+const recent=mockHist.slice(-3);
+const avgRecent=Math.round(recent.reduce((a,m)=>a+m.score,0)/recent.length);
+h+=`<div style="margin-top:8px;font-size:10px;color:#64748b;text-align:center">
+Predicted score: <b style="color:${avgRecent>=60?'#059669':'#dc2626'}">${avgRecent}%</b> (avg last ${recent.length}) · Pass threshold: 60%
+</div>`;
+h+=`</div>`;
+}
+
+// Activity calendar (last 30 days)
+h+=`<div class="card" style="padding:14px;margin-bottom:8px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">📅 Activity (last 30 days)</div>
+<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px">`;
+for(let i=29;i>=0;i--){
+const d=new Date();d.setDate(d.getDate()-i);
+const key=d.toISOString().slice(0,10);
+const act=S.dailyAct&&S.dailyAct[key];
+const qCount=act?act.q:0;
+const intensity=qCount===0?0:qCount<5?1:qCount<15?2:qCount<30?3:4;
+const colors=['#f1f5f9','#dcfce7','#86efac','#22c55e','#15803d'];
+h+=`<div style="aspect-ratio:1;border-radius:3px;background:${colors[intensity]}" title="${key}: ${qCount} Qs"></div>`;
+}
+h+=`</div></div>`;
+
+// Weak topics detail
+if(weak.length){
+h+=`<div class="card" style="padding:14px;margin-bottom:8px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">🎯 Focus Areas (weakest topics)</div>`;
+weak.forEach(w=>{
+h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
+<div style="font-size:11px;flex:1">${TOPICS[w.ti]}</div>
+<div style="font-size:10px;color:#64748b">${w.ok}/${w.tot}</div>
+<div style="width:60px;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden">
+<div style="width:${w.pct}%;height:100%;background:${w.pct>=60?'#10b981':w.pct>=40?'#f59e0b':'#ef4444'};border-radius:4px"></div>
+</div>
+<div style="font-size:10px;font-weight:700;color:${w.pct>=60?'#059669':w.pct>=40?'#d97706':'#dc2626'};min-width:28px;text-align:right">${w.pct}%</div>
+<button onclick="tab='quiz';filt='topic';topicFilt=${w.ti};buildPool();render()" style="font-size:9px;padding:3px 8px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer">▶</button>
+</div>`;
+});
+h+=`</div>`;
+}
+
+return h;
+}
+
 // ===== ON-CALL FLIP CARD MODE =====
 function startOnCallMode(){onCallMode=true;flipRevealed=false;filt='due';buildPool();if(!pool.length){filt='weak';buildPool();}if(!pool.length){filt='all';buildPool();}render();}
 function exitOnCallMode(){onCallMode=false;flipRevealed=false;render();}
@@ -994,7 +1212,7 @@ if(!S.sr[pool[qi]].conf)S.sr[pool[qi]].conf={sure_ok:0,sure_no:0,unsure_ok:0,uns
 const _ck=(_confidence>=2?'sure':'unsure')+'_'+(sel===q.c?'ok':'no');
 S.sr[pool[qi]].conf[_ck]++;
 }
-if(sel===q.c){S.qOk++;srScore(pool[qi],true);}
+if(sel===q.c){S.qOk++;_pendingSR=pool[qi];}
 else{S.qNo++;
   // Store which distractor was chosen for future mistake-pattern analysis
   if(!S.sr[pool[qi]])S.sr[pool[qi]]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};
@@ -1008,10 +1226,17 @@ else{S.qNo++;
 }
 save();render();
 }
+function rateConfidence(rating){
+// rating: 1=Again, 2=Hard, 3=Good, 4=Easy
+if(_pendingSR!==null){srScore(_pendingSR,true,rating);_pendingSR=null;save();}
+next();
+}
 function next(){
 qStartTime=Date.now();
 if(examMode&&mockExamResults&&qi+1>=pool.length){endMockExam();return;}
 if(examMode&&!mockExamResults&&qi+1>=Math.min(pool.length,150)){endExam();return;}
+// Auto-commit pending SR as Good(3) if not rated
+if(_pendingSR!==null){srScore(_pendingSR,true,3);_pendingSR=null;save();}
 qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;_optShuffle=null;_confidence=null;_wrongReason=null;_diffRating=null;
 if(timedMode){clearInterval(timedInt);timedSec=90;render();setTimeout(startTimedQ,100);}
 else render();
@@ -1231,7 +1456,24 @@ function showMockExamResult(pct,correct,tot,elapsed,byTopic){
   <div style="font-size:28px;font-weight:700;color:${pass?'#059669':'#dc2626'}">${pct}%</div>
   <div style="font-size:13px;color:#64748b">${correct}/${tot} correct · ${fmtT(elapsed)}</div>
   <div style="font-size:14px;font-weight:700;margin-top:4px;color:${pass?'#059669':'#dc2626'}">${pass?'PASS ✓':'NEEDS WORK ✗'} (pass ≥60%)</div>
-</div>
+</div>`;
+// Feature 2: Historical comparison + prediction
+let _prevHist=[];try{_prevHist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');}catch(e){}
+if(_prevHist.length>1){
+const _prev=_prevHist[_prevHist.length-2];
+const _diff=pct-_prev.score;
+html+=`<div style="text-align:center;margin-bottom:8px;font-size:11px;color:${_diff>=0?'#059669':'#dc2626'}">
+${_diff>=0?'↑':'↓'} ${Math.abs(_diff)}% vs previous (${_prev.score}% on ${new Date(_prev.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'})})
+</div>`;
+// Trend prediction (linear regression of last 5)
+const _recent=_prevHist.slice(-5).concat([{score:pct}]);
+const _avgTrend=_recent.length>=3?Math.round(_recent.reduce((a,m,i)=>a+(i>0?m.score-_recent[i-1].score:0),0)/(_recent.length-1)):0;
+const _predicted=Math.max(0,Math.min(100,pct+_avgTrend*2));
+html+=`<div style="text-align:center;margin-bottom:12px;font-size:10px;color:#64748b">
+Projected next exam: <b style="color:${_predicted>=60?'#059669':'#dc2626'}">${_predicted}%</b> (based on trend of ${_avgTrend>=0?'+':''}${_avgTrend}%/exam)
+</div>`;
+}
+html+=`
 <div style="font-weight:700;font-size:12px;margin-bottom:8px;color:#475569">TOPIC BREAKDOWN (worst first):</div>
 ${rows.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9">
   <div style="font-size:11px;flex:1">${r.name}</div>
@@ -1610,7 +1852,7 @@ if(ans&&!examMode){
   }
 }
 // Distractor Autopsy — AI-powered explanation of ALL wrong options
-if(autopsyMode&&ans){
+if(ans&&!examMode){
 const wrongIdxs=q.o.map((_,i)=>i).filter(i=>i!==q.c);
 if(autopsyDistractor<0||autopsyDistractor===q.c)autopsyDistractor=wrongIdxs[Math.floor(Math.random()*wrongIdxs.length)];
 const _apKey='autopsy_'+pool[qi];
@@ -2197,6 +2439,128 @@ Answer concisely in HEBREW (3-5 sentences). Focus on board exam relevance. If th
     inp.value='';
   }catch(e){ansBox.innerHTML='⚠️ Failed: '+e.message;}
 }
+// ===== FEATURE 5: AI QUESTION GENERATION FROM CHAPTERS =====
+async function generateQuestionsFromChapter(source,chNum,chTitle){
+const box=document.getElementById('quiz-me-box');
+if(!box)return;
+box.innerHTML='<div class="card" style="padding:16px;text-align:center"><div style="font-size:12px;color:#0ea5e9">✨ Generating board-style questions from Ch '+chNum+'...</div><div style="font-size:10px;color:#94a3b8;margin-top:4px">This takes 15-20 seconds</div></div>';
+const chData=source==='haz'?(_hazData&&_hazData[String(chNum)]):(_harData&&_harData[String(chNum)]);
+if(!chData){box.innerHTML='<div class="card" style="padding:16px;color:#dc2626">Chapter data not loaded</div>';return;}
+const excerpt=chData.sections.slice(0,5).map(s=>s.content.join(' ').slice(0,800)).join('\n');
+const prompt=`Based on this geriatrics/medicine chapter content, generate exactly 5 board-style multiple-choice questions.
+
+Chapter: ${chTitle}
+Content excerpt:
+${excerpt.slice(0,3000)}
+
+Return ONLY valid JSON array, no markdown. Each question must have:
+- q: question text (Hebrew or English, clinical vignette style)
+- o: array of exactly 4 options
+- c: correct answer index (0-3)
+- e: explanation including why correct answer is right AND why each wrong option is wrong (per-distractor)
+
+Format: [{"q":"...","o":["A","B","C","D"],"c":0,"e":"..."},...]`;
+try{
+const key=getApiKey();
+const proxyUrl='https://toranot.netlify.app/api/claude';
+const body={prompt,secret:'shlav-a-mega-2026'};
+if(key)body.apiKey=key;
+const res=await fetch(proxyUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+const data=await res.json();
+const text=data.content||data.text||data.response||JSON.stringify(data);
+// Parse JSON from response
+const jsonMatch=text.match(/\[\s*\{[\s\S]*\}\s*\]/);
+if(!jsonMatch)throw new Error('No JSON array found in response');
+const questions=JSON.parse(jsonMatch[0]);
+// Display for review
+let html='<div class="card" style="padding:16px">';
+html+='<div style="font-size:13px;font-weight:700;margin-bottom:8px;color:#0ea5e9">✨ Generated '+questions.length+' Questions</div>';
+html+='<div style="font-size:10px;color:#64748b;margin-bottom:12px">Review and approve questions to add to your bank.</div>';
+questions.forEach((gq,i)=>{
+  html+='<div style="padding:10px;margin-bottom:8px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0">';
+  html+='<div style="font-size:11px;font-weight:600;margin-bottom:6px;line-height:1.5" dir="auto">'+(i+1)+'. '+gq.q+'</div>';
+  gq.o.forEach((opt,oi)=>{
+    html+='<div style="font-size:10px;padding:2px 0;color:'+(oi===gq.c?'#059669':'#64748b')+'" dir="auto">'+(oi===gq.c?'✅':'○')+' '+opt+'</div>';
+  });
+  html+='<div style="font-size:9px;color:#64748b;margin-top:4px;line-height:1.5" dir="auto">'+gq.e+'</div>';
+  html+='<button onclick="approveGeneratedQ('+JSON.stringify(gq).replace(/"/g,'&quot;')+')" style="margin-top:6px;font-size:10px;padding:4px 12px;background:#059669;color:#fff;border:none;border-radius:6px;cursor:pointer">✅ Add to Bank</button>';
+  html+='</div>';
+});
+html+='</div>';
+box.innerHTML=html;
+}catch(err){
+box.innerHTML='<div class="card" style="padding:16px;color:#dc2626">Error: '+err.message+'</div>';
+}
+}
+function approveGeneratedQ(gq){
+// Add the generated question to the local question bank
+const newQ={q:gq.q,o:gq.o,c:gq.c,t:'Hazzard',ti:0,e:gq.e};
+// Find best matching topic
+for(let ti=0;ti<TOPICS.length;ti++){
+  const topicLower=(TOPICS[ti]||'').toLowerCase();
+  const qLower=(gq.q||'').toLowerCase()+(gq.e||'').toLowerCase();
+  if(topicLower.split(/\s+/).filter(w=>w.length>3).some(w=>qLower.includes(w))){newQ.ti=ti;break;}
+}
+QZ.push(newQ);
+// Store in localStorage as pending additions
+let pending=[];try{pending=JSON.parse(localStorage.getItem('samega_pending_qs')||'[]');}catch(e){}
+pending.push(newQ);
+localStorage.setItem('samega_pending_qs',JSON.stringify(pending));
+alert('Question added! ('+QZ.length+' total). Note: pending server sync.');
+}
+
+// ===== FEATURE 8: LEADERBOARD =====
+async function submitLeaderboardScore(){
+const totalAnswered=Object.values(S.sr||{}).reduce((a,s)=>a+(s.tot||0),0);
+const totalCorrect=Object.values(S.sr||{}).reduce((a,s)=>a+(s.ok||0),0);
+const streak=getStudyStreak();
+const readiness=getReadinessScore();
+// Anonymous user hash
+let uid=localStorage.getItem('samega_uid');
+if(!uid){uid='u'+Math.random().toString(36).slice(2,10);localStorage.setItem('samega_uid',uid);}
+const payload={uid,answered:totalAnswered,correct:totalCorrect,streak,readiness,ts:new Date().toISOString()};
+try{
+  await fetch(SUPA_URL+'/rest/v1/shlav_leaderboard',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON,'Prefer':'resolution=merge-duplicates'},
+    body:JSON.stringify(payload)
+  });
+}catch(e){console.warn('Leaderboard submit failed',e);}
+}
+async function fetchLeaderboard(){
+try{
+  const res=await fetch(SUPA_URL+'/rest/v1/shlav_leaderboard?select=uid,answered,correct,streak,readiness,ts&order=readiness.desc&limit=20',{
+    headers:{'apikey':SUPA_ANON}
+  });
+  return await res.json();
+}catch(e){console.warn('Leaderboard fetch failed',e);return[];}
+}
+let _leaderboardData=null;
+async function showLeaderboard(){
+const box=document.getElementById('leaderboard-box');
+if(!box)return;
+await submitLeaderboardScore();
+box.innerHTML='<div style="text-align:center;padding:8px;font-size:10px;color:#64748b">Loading...</div>';
+const data=await fetchLeaderboard();
+_leaderboardData=data;
+const myUid=localStorage.getItem('samega_uid')||'';
+let html='';
+if(!data.length){html='<div style="font-size:10px;color:#94a3b8;text-align:center">No data yet</div>';}
+else{
+data.forEach((r,i)=>{
+  const isMe=r.uid===myUid;
+  html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9;${isMe?'background:#eff6ff;border-radius:8px;padding:6px 8px;margin:-2px -8px':''}">
+  <span style="font-size:12px;font-weight:800;color:${i<3?['#f59e0b','#94a3b8','#d97706'][i]:'#64748b'};min-width:20px">${i+1}</span>
+  <div style="flex:1;font-size:10px;font-weight:${isMe?'700':'400'}">${isMe?'You ⭐':'User '+r.uid.slice(0,4)}</div>
+  <span style="font-size:10px;color:#64748b">${r.answered} Qs</span>
+  <span style="font-size:10px;font-weight:700;color:${r.readiness>=60?'#059669':'#d97706'}">${r.readiness}%</span>
+  <span style="font-size:10px">🔥${r.streak}d</span>
+  </div>`;
+});
+}
+box.innerHTML=html;
+}
+
 async function quizMeOnChapter(chNum,chTitle){
   // Show loading state in Library
   const el=document.getElementById('quiz-me-box');
@@ -2292,6 +2656,7 @@ h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-
 <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
 ${prevCh?`<button onclick="openHazzardChapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">\u2039 Ch ${prevCh}</button>`:''}
 <button onclick="quizMeOnChapter(hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">\ud83e\udde0 Quiz</button>
+<button onclick="generateQuestionsFromChapter('haz',hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;cursor:pointer">\u2728 Generate Qs</button>
 <button onclick="aiSummarizeChapter(hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">\ud83d\udcdd Summary</button>
 <button onclick="window.open(getHazPdf(String(hazChOpen)),'_blank')" style="font-size:10px;padding:5px 10px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:8px;cursor:pointer">\ud83d\udcc4 PDF</button>
 ${nextCh?`<button onclick="openHazzardChapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">Ch ${nextCh} \u203a</button>`:''}
@@ -2386,6 +2751,7 @@ h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-
 <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
 ${prevCh?`<button onclick="openHarrisonChapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">‹ Ch ${prevCh}</button>`:''}
 <button onclick="quizMeOnChapter(harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">🧠 Quiz</button>
+<button onclick="generateQuestionsFromChapter('har',harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;cursor:pointer">✨ Generate Qs</button>
 <button onclick="aiSummarizeChapter(harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">📝 Summary</button>
 ${nextCh?`<button onclick="openHarrisonChapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">Ch ${nextCh} ›</button>`:''}
 </div>
@@ -2490,6 +2856,7 @@ return h;
 
 async function openHarrisonChapter(ch){
 harChOpen=ch;
+trackChapterRead('har',ch);
 if(_harData){render();return;}
 if(_harLoading)return;
 _harLoading=true;
@@ -2507,6 +2874,7 @@ render();
 
 async function openHazzardChapter(ch){
 hazChOpen=ch;
+trackChapterRead('haz',ch);
 if(_hazData){render();return;}
 if(_hazLoading)return;
 _hazLoading=true;
@@ -3422,6 +3790,98 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px">
 ${_blindSpots>0?`<div style="margin-top:8px;font-size:10px;color:#dc2626;font-weight:600">⚠️ ${_blindSpots} blind spots — you were confident but wrong. These are your most dangerous gaps.</div>`:''}
 </div>`;
 }
+// ===== FEATURE 7: Analytics Dashboard Cards =====
+// Readiness Score
+const _readiness=getReadinessScore();
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="width:60px;height:60px;border-radius:50%;border:4px solid ${_readiness>=70?'#059669':_readiness>=50?'#d97706':'#dc2626'};display:flex;align-items:center;justify-content:center">
+<span style="font-size:20px;font-weight:800;color:${_readiness>=70?'#059669':_readiness>=50?'#d97706':'#dc2626'}">${_readiness}%</span>
+</div>
+<div style="flex:1">
+<div style="font-weight:700;font-size:13px">Exam Readiness</div>
+<div style="font-size:10px;color:#64748b;line-height:1.5">Weighted by IMA exam topic frequency distribution. Pass threshold: 60%.</div>
+</div>
+</div></div>`;
+
+// Rescue Drill CTA
+const _weakTopics=getWeakTopics(3);
+if(_weakTopics.length&&_weakTopics[0].pct!==null&&_weakTopics[0].pct<65){
+h+=`<div class="card" style="padding:14px;margin-bottom:10px;background:linear-gradient(135deg,#fef2f2,#fffbeb);border:1px solid #fecaca">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="font-size:24px">🚨</span>
+<div style="flex:1">
+<div style="font-weight:700;font-size:12px;color:#dc2626">Rescue Drill</div>
+<div style="font-size:10px;color:#64748b">${_weakTopics.map(w=>TOPICS[w.ti]+' ('+w.pct+'%)').join(' · ')}</div>
+</div>
+<button onclick="buildRescuePool();tab='quiz';render()" class="btn" style="font-size:11px;padding:8px 16px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-weight:700">GO</button>
+</div></div>`;
+}
+
+// Topic Mastery Heatmap
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">🗺️ Topic Mastery Heatmap</div>
+<div style="display:flex;flex-wrap:wrap;gap:3px">`;
+const _heatStats=getTopicStats();
+_heatStats.forEach((s,ti)=>{
+if(!TOPICS[ti])return;
+const _hp=s.tot>=2?Math.round(s.ok/s.tot*100):null;
+const _hc=_hp===null?'#e2e8f0':_hp>=80?'#059669':_hp>=60?'#84cc16':_hp>=40?'#f59e0b':'#ef4444';
+const _hbg=_hp===null?'#f8fafc':_hp>=80?'#ecfdf5':_hp>=60?'#f7fee7':_hp>=40?'#fffbeb':'#fef2f2';
+h+=`<div onclick="tab='quiz';filt='topic';topicFilt=${ti};buildPool();render()" style="padding:4px 6px;border-radius:6px;font-size:8px;background:${_hbg};color:${_hc};font-weight:700;cursor:pointer;border:1px solid ${_hc}30;min-width:28px;text-align:center" title="${TOPICS[ti]}: ${_hp!==null?_hp+'%':'no data'} (${s.tot} Qs)">${_hp!==null?_hp+'%':'·'}</div>`;
+});
+h+=`</div></div>`;
+
+// Activity Calendar (30 days)
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">📅 Activity (last 30 days)</div>
+<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px">`;
+for(let _i=29;_i>=0;_i--){
+const _d=new Date();_d.setDate(_d.getDate()-_i);
+const _dk=_d.toISOString().slice(0,10);
+const _act=S.dailyAct&&S.dailyAct[_dk];
+const _qc=_act?_act.q:0;
+const _int=_qc===0?0:_qc<5?1:_qc<15?2:_qc<30?3:4;
+const _cols=['#f1f5f9','#dcfce7','#86efac','#22c55e','#15803d'];
+h+=`<div style="aspect-ratio:1;border-radius:3px;background:${_cols[_int]}" title="${_dk}: ${_qc} Qs"></div>`;
+}
+h+=`</div></div>`;
+
+// Spaced Reading Due (Feature 9)
+const _hazDue=getChaptersDueForReading('haz',30);
+const _harDue=getChaptersDueForReading('har',30);
+if(_hazDue.length||_harDue.length){
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">📖 Chapters Due for Re-Reading</div>`;
+if(_hazDue.length){
+h+=`<div style="font-size:10px;font-weight:600;color:#dc2626;margin-bottom:4px">Hazzard's:</div>`;
+_hazDue.slice(0,5).forEach(c=>{
+  const _chData=_hazData&&_hazData[c.ch];
+  const _title=_chData?_chData.title:'Ch '+c.ch;
+  h+=`<div onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${c.ch})" style="font-size:10px;padding:4px 0;cursor:pointer;color:#64748b;border-bottom:1px solid #f8fafc">📕 Ch ${c.ch}: ${_title} <span style="color:#dc2626;font-weight:700">(${c.daysSince}d ago)</span></div>`;
+});
+}
+if(_harDue.length){
+h+=`<div style="font-size:10px;font-weight:600;color:#7c3aed;margin-bottom:4px;margin-top:6px">Harrison's:</div>`;
+_harDue.slice(0,5).forEach(c=>{
+  const _chData=_harData&&_harData[c.ch];
+  const _title=_chData?_chData.title:'Ch '+c.ch;
+  h+=`<div onclick="tab='lib';libSec='harrison';openHarrisonChapter(${c.ch})" style="font-size:10px;padding:4px 0;cursor:pointer;color:#64748b;border-bottom:1px solid #f8fafc">📗 Ch ${c.ch}: ${_title} <span style="color:#7c3aed;font-weight:700">(${c.daysSince}d ago)</span></div>`;
+});
+}
+h+=`</div>`;
+}
+
+// Feature 8: Leaderboard
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+<span style="font-size:14px">🏆</span>
+<div style="font-size:12px;font-weight:700;flex:1">Leaderboard</div>
+<button onclick="showLeaderboard()" style="font-size:9px;padding:4px 10px;background:#f59e0b;color:#fff;border:none;border-radius:6px;cursor:pointer">Refresh</button>
+</div>
+<div id="leaderboard-box" style="font-size:10px;color:#94a3b8;text-align:center">Tap refresh to load</div>
+</div>`;
+
 // Feature 10: Cheat sheet export button
 h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
 <button class="btn btn-d" onclick="exportCheatSheet()" style="font-size:11px" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</button>
@@ -4049,7 +4509,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.24';
+const APP_VERSION='9.25';
 {const hv=document.getElementById('headerVer');if(hv)hv.textContent='v'+APP_VERSION;}
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
