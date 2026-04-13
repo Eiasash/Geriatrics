@@ -282,7 +282,7 @@ upd();setInterval(upd,30000);
 </head>
 <body>
 
-<a href="#main-content" class="skip-link">Skip to content</a>
+<a href="#ct" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
 <h1>Shlav A Mega <span style="font-size:10px;font-weight:500;color:#0D7377;vertical-align:middle">Geriatrics</span> <span id="headerVer" style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle"></span></h1>
 <button class="dm-btn" onclick="toggleStudyMode()" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode">🌓</button><button class="dm-btn" onclick="showHelp()" title="Help" aria-label="Help" style="right:82px;font-size:11px">❓</button>
@@ -1025,7 +1025,7 @@ else{S.qNo++;
   srScore(pool[qi],false);
   // Feature 1: store wrong reason later via onclick
   const _apk='autopsy_'+pool[qi];
-  if(!localStorage.getItem(_apk)){setTimeout(()=>aiAutopsy(pool[qi]),400);}
+  if(!_exCache[_apk]){setTimeout(()=>aiAutopsy(pool[qi]),400);}
 }
 save();render();
 }
@@ -1109,8 +1109,9 @@ Format each as:
 ✗ [option] — Wrong because: [reason]. Would be correct if: [scenario].
 
 Be concise. Use English for medical terms, Hebrew for context if relevant.`}],500);
-// Format nicely
-const formatted=txt.replace(/✗/g,'<b style="color:#dc2626">✗</b>')
+// Sanitize AI output first, then format
+const safeTxt=sanitize(txt);
+const formatted=safeTxt.replace(/✗/g,'<b style="color:#dc2626">✗</b>')
   .replace(/Wrong because:/g,'<span style="color:#b91c1c">Wrong because:</span>')
   .replace(/Would be correct if:/g,'<span style="color:#059669">Would be correct if:</span>')
   .replace(/\n/g,'<br>');
