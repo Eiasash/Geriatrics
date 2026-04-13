@@ -137,6 +137,9 @@ const HAZ_CH_TO_TOPIC = {
   108: 27, // Viruses → Infections
 };
 
+// Hazzard chapters EXCLUDED from P005-2026 syllabus
+const HAZ_EXCLUDED = new Set([2, 3, 4, 5, 6, 34, 62]);
+
 // Harrison chapter → pnimit topic index mapping
 const HAR_CH_TO_PNIMIT = {
   14: 19,  // Pain → Pain & Palliative
@@ -307,7 +310,7 @@ function loadChapters(opts) {
           title: data.title,
           wordCount: data.wordCount,
           text: assembleSectionText(data.sections),
-          topicIndex: HAZ_CH_TO_TOPIC[parseInt(ch)],
+          topicIndex: HAZ_EXCLUDED.has(parseInt(ch)) ? undefined : HAZ_CH_TO_TOPIC[parseInt(ch)],
         };
       }
     }
@@ -372,18 +375,26 @@ function loadExistingQuestions(opts) {
 function buildPrompt(chapter, topicName, count, appName) {
   const isGeri = appName === 'geriatrics';
   const examContext = isGeri
-    ? 'Israeli Geriatrics Board Exam (Shlav Alef, P005-2026). Focus on geriatric-specific clinical scenarios: elderly patients (65+), age-related pharmacokinetics, Beers criteria, functional assessment, goals of care, delirium vs dementia, polypharmacy, falls risk, frailty.'
-    : 'Israeli Internal Medicine Board Exam (Shlav Alef, P0064-2025). Focus on clinical reasoning, pathophysiology, diagnostic workup, treatment algorithms, and evidence-based management.';
+    ? `Israeli Geriatrics Board Exam (Shlav Alef, P005-2026).
+Key themes that MUST appear in your questions:
+- Renal dosing adjustments (CrCl-based, Cockroft-Gault in elderly)
+- Beers 2023 / STOPP-START v3 criteria (name specific drugs)
+- Functional status impact (ADL/IADL decline as presenting sign)
+- Goals-of-care tension (aggressive tx vs comfort, DNR ≠ no treatment)
+- Delirium vs dementia (acute vs chronic, CAM criteria, reversible causes)
+- Polypharmacy (drug-drug, drug-disease interactions in 65+)
+- Falls risk (orthostatic hypotension, medications, environmental)
+- Frailty (Fried criteria, CFS, sarcopenia EWGSOP2)`
+    : `Israeli Internal Medicine Board Exam (Shlav Alef, P0064-2025).
+Key themes: pathophysiology-based reasoning, diagnostic workup sequences,
+evidence-based treatment algorithms, landmark trial results, acute management.`;
 
-  // Truncate chapter text to ~6000 chars to stay within context
   let text = chapter.text;
-  if (text.length > 6000) {
-    text = text.substring(0, 6000) + '\n\n[... chapter continues ...]';
+  if (text.length > 15000) {
+    text = text.substring(0, 15000) + '\n\n[... chapter continues ...]';
   }
 
-  return `You are a medical exam question writer for the ${examContext}
-
-Based on the following textbook chapter content, generate exactly ${count} high-quality multiple-choice questions.
+  return `You are a senior medical exam question writer creating board-level MCQs for the ${examContext}
 
 CHAPTER: ${chapter.title} (${chapter.source}, Chapter ${chapter.chapter})
 TOPIC: ${topicName} (topic index: ${chapter.topicIndex})
@@ -391,17 +402,26 @@ TOPIC: ${topicName} (topic index: ${chapter.topicIndex})
 CHAPTER CONTENT:
 ${text}
 
+EXAMPLE of a board-quality question with an effective trap:
+
+{
+  "q": "An 82-year-old woman with moderate Alzheimer's disease (MMSE 16) and CKD stage 3b (eGFR 38) is admitted with a UTI. She becomes acutely agitated, pulling at her IV and trying to climb out of bed. Her family reports this is new behavior. Vital signs: T 38.2°C, HR 96, BP 110/70. Her nurse asks for a medication order. Which is the most appropriate initial pharmacological intervention?",
+  "o": ["Haloperidol 0.5 mg IV", "Lorazepam 1 mg IM", "Quetiapine 25 mg PO", "Physical restraints and observation"],
+  "c": 0,
+  "e": "This patient has hyperactive delirium superimposed on dementia, triggered by infection. The correct answer is low-dose haloperidol (0.5 mg), the first-line antipsychotic for acute delirium per most guidelines including NICE and APA.\n\nOption B (lorazepam) is the classic TRAP — benzodiazepines worsen delirium in elderly patients by increasing confusion and sedation. They are ONLY indicated for delirium tremens or seizure-related agitation. Many trainees reflexively reach for benzos for agitation, making this the most commonly chosen wrong answer.\n\nOption C (quetiapine) is reasonable for delirium but is second-line and takes 1-2 hours for onset via PO route — not appropriate for acute dangerous agitation where the patient is pulling lines.\n\nOption D (restraints) is never first-line and associated with increased mortality, injury, and worsening agitation in elderly delirious patients.\n\nClinical Pearl: In geriatric delirium, treat the CAUSE (antibiotics for UTI), use non-pharmacological measures first (reorientation, lighting, family presence), and reserve antipsychotics for dangerous agitation. Always check QTc before haloperidol. Dose-adjust for renal function."
+}
+
+Notice: the best wrong answer (lorazepam) is what a non-geriatrician would instinctively choose. EVERY question you write must have one distractor this tempting.
+
 REQUIREMENTS:
-1. Each question must be a clinical vignette (patient scenario with age, presenting complaint, relevant history)
-2. Exactly 4 answer options per question
-3. One correct answer (0-indexed: 0, 1, 2, or 3)
-4. Detailed explanation (200-400 words) covering:
-   - Why the correct answer is correct (with mechanism/evidence)
-   - Why each wrong answer is wrong (1-2 sentences each, labeled as Option A/B/C/D)
-   - A "Clinical Pearl" at the end
-5. Questions should test clinical reasoning, not just recall
-6. Vary difficulty: ~30% easy, ~50% medium, ~20% hard
-7. Include "exam traps" — questions where a common wrong answer is tempting
+1. Each question MUST be a clinical vignette with specific patient details (age, sex, comorbidities, medications, labs). No abstract "which of the following" questions.
+2. Exactly 4 answer options. One correct (0-indexed: 0-3). Randomize which position is correct.
+3. The BEST DISTRACTOR must be something a competent but non-specialist physician would pick. Explain in the explanation why it's tempting but wrong.
+4. Explanation (250-500 words): why correct answer is right (with mechanism), why EACH wrong answer is wrong (2-3 sentences each, labeled Option A/B/C/D), which option is the "exam trap" and why, and a Clinical Pearl.
+5. ${isGeri ? 'Every geriatrics question must include at least ONE of: renal dosing concern, Beers-listed drug, functional status detail, goals-of-care element, or age-specific threshold (e.g., BP target, HbA1c target in elderly).' : 'Every question must connect pathophysiology to the clinical decision — not just "what do you do" but "why this and not that".'}
+6. All questions should be HARD. No gimmes. Target the level where a well-prepared candidate gets 65-75% right.
+7. Vary the clinical settings: outpatient clinic, ED, ward, ICU, rehabilitation, nursing home, home visit.
+8. Include relevant lab values, imaging findings, or medication lists where they add to the reasoning.
 
 OUTPUT FORMAT — respond with ONLY a JSON array, no markdown fences, no preamble:
 [
@@ -411,7 +431,7 @@ OUTPUT FORMAT — respond with ONLY a JSON array, no markdown fences, no preambl
     "c": 0,
     "t": "${chapter.source}",
     "ti": ${chapter.topicIndex},
-    "e": "Detailed explanation with Option A/B/C/D analysis and Clinical Pearl."
+    "e": "Detailed explanation with trap analysis and Clinical Pearl."
   }
 ]
 
@@ -424,7 +444,7 @@ async function callClaude(prompt, apiKey, useProxy) {
     : 'https://api.anthropic.com/v1/messages';
 
   const body = {
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-opus-4-20250514',
     max_tokens: 8192,
     messages: [{ role: 'user', content: prompt }],
   };
@@ -624,7 +644,7 @@ async function main() {
       console.log(`  ✅ ${chValid} valid, ${chDupes} dupes, ${chInvalid} invalid`);
       
       // Rate limiting — 1.5s between calls
-      await new Promise(r => setTimeout(r, 1500));
+      await new Promise(r => setTimeout(r, 5000));
       
     } catch (err) {
       console.error(`  ✗ Error: ${err.message}`);
