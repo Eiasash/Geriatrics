@@ -126,6 +126,8 @@ body.dark{background:#0f172a;color:#e2e8f0;
 --yellow-bg:69 26 3;--yellow-brd:146 64 14;--yellow-fg:253 230 138;
 --red-bg:69 10 10;--red-brd:127 29 29;--red-fg:252 165 165}
 body.dark .card{background:#1e293b;border-color:#334155}
+body.dark .btn{border-color:#334155}
+body.dark input[type="checkbox"]{accent-color:#3b82f6}
 body.dark .hdr{background:linear-gradient(135deg,#000,#0f172a)}
 body.dark .tabs{background:#1e293b;border-color:#334155}
 body.dark .tabs button:not(.on){color:rgb(var(--fg2))}
@@ -428,7 +430,10 @@ window.save=idbSave;
 save=idbSave;
 }catch(e){console.warn('IDB migration failed, using localStorage:',e);}
 }
-migrateToIDB().then(()=>{renderTabs();render();if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_help','1');setTimeout(showHelp,500);}}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();});
+migrateToIDB().then(()=>{
+// v9.39: Reset study plan tier open states to collapsed
+if(S._spVer!=='9.39'){S._spVer='9.39';S.sp_t1=false;S.sp_t2=false;S.sp_t3=false;S.spOpen=false;save();}
+renderTabs();render();if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_help','1');setTimeout(showHelp,500);}}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();});
 
 // ===== SCREEN WAKE LOCK =====
 let wakeLock=null;
@@ -1099,7 +1104,7 @@ function renderExplainBox(qIdx){
   if(ex.err){container.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px 0">⚠️ '+sanitize(ex.err)+'</div>';return;}
   const _isFlagged=(S.flagged||{})[qIdx];
   container.innerHTML='<div class="explain-box" style="margin-top:8px;padding:10px 12px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--green-fg));direction:rtl;text-align:right"><div style="font-weight:700;margin-bottom:4px">🤖 הסבר AI</div><div>'+sanitize(ex.text)+'</div></div>'+
-    '<button onclick="toggleFlagExplain('+qIdx+')" style="font-size:9px;padding:2px 8px;margin-top:3px;background:'+(_isFlagged?'#fef2f2':'#f8fafc')+';color:'+(_isFlagged?'#dc2626':'#94a3b8')+';border:1px solid '+(_isFlagged?'#fecaca':'#e2e8f0')+';border-radius:6px;cursor:pointer">'+(_isFlagged?'⚑ Flagged — verify':'⚐ Flag as unreliable')+'</button>';
+    '<button onclick="toggleFlagExplain('+qIdx+')" style="font-size:9px;padding:2px 8px;margin-top:3px;background:rgb(var('+(_isFlagged?'--red-bg':'--bg2')+'));color:rgb(var('+(_isFlagged?'--red-fg':'--fg3')+'));border:1px solid rgb(var('+(_isFlagged?'--red-brd':'--brd')+'));border-radius:6px;cursor:pointer">'+(_isFlagged?'⚑ Flagged — verify':'⚐ Flag as unreliable')+'</button>';
 }
 async function explainWithAI(qIdx){
   if(_exCache[qIdx]&&!_exCache[qIdx].err){setTimeout(function(){renderExplainBox(qIdx);},0);return;}
@@ -1595,7 +1600,7 @@ else{
 // Feature 1: Why-wrong classification (required after wrong, non-exam)
 if(!examMode&&sel!==q.c&&!_wrongReason){
 h+=`<div style="margin-bottom:8px">
-<div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:6px">Why did you get it wrong?</div>
+<div style="font-size:10px;font-weight:700;color:rgb(var(--red-fg));margin-bottom:6px">Why did you get it wrong?</div>
 <div id="why-wrong-box" style="display:flex;gap:4px;flex-wrap:wrap">
 <button class="btn" style="font-size:10px;padding:6px 10px;background:rgb(var(--red-bg));color:rgb(var(--red-fg))" onclick="_wrongReason='no_knowledge';save();_updateWrongUI()">📚 Didn't know</button>
 <button class="btn" style="font-size:10px;padding:6px 10px;background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg))" onclick="_wrongReason='misread';save();_updateWrongUI()">👓 Misread</button>
@@ -2410,7 +2415,7 @@ ${_htpct!==null?`<span style="font-weight:700;color:${_htpct>=70?'#059669':_htpc
 </div>`;
 }
 ch.sections.forEach(sec=>{
-if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:#dc2626;margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid #fee2e2">${sec.title}</div>`;}
+if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:rgb(var(--red-fg));margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid rgb(var(--red-brd))">${sec.title}</div>`;}
 sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:rgb(var(--fg));margin:0 0 10px;text-align:justify">${p}</p>`;});
 });
 h+=`</div>`;
@@ -3125,7 +3130,7 @@ const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;});
 const weak15=ranked.slice(0,15);
 let doc='<html><head><meta charset="UTF-8"><title>Shlav A — Cheat Sheet</title>';
 doc+='<style>body{font-family:Inter,system-ui,sans-serif;max-width:700px;margin:0 auto;padding:16px;font-size:11px;color:rgb(var(--fg))}';
-doc+='h1{font-size:16px;margin-bottom:4px}h2{font-size:13px;color:#dc2626;margin:12px 0 4px;border-bottom:1px solid rgb(var(--brd));padding-bottom:2px}';
+doc+='h1{font-size:16px;margin-bottom:4px}h2{font-size:13px;color:rgb(var(--red-fg));margin:12px 0 4px;border-bottom:1px solid rgb(var(--brd));padding-bottom:2px}';
 doc+='.bar{height:6px;background:#e2e8f0;border-radius:3px;margin:2px 0 6px}.fill{height:100%;border-radius:3px}';
 doc+='.topic{margin-bottom:10px;padding:8px;border:1px solid rgb(var(--brd));border-radius:8px;page-break-inside:avoid}';
 doc+='.stat{font-size:10px;color:rgb(var(--fg2))}@media print{body{font-size:10px}}</style></head><body>';
@@ -4344,8 +4349,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.38';
+const APP_VERSION='9.39';
 const CHANGELOG={
+'9.39':[
+'🌓 Hazzard reader headings now readable in dark mode (adaptive red)',
+'🎨 Study Plan force-collapsed on upgrade — stops dominating Track tab',
+'🌓 Flag button, why-wrong heading, checkboxes adapt to dark mode',
+],
 '9.38':[
 '🎨 Dark mode overhaul: 400 inline colors replaced with CSS custom properties',
 '🌓 All tabs now properly adapt to dark/light mode (explanations, buttons, borders, cards)',
