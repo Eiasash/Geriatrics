@@ -719,6 +719,11 @@ const _dataPromise = (async function loadDataArrays() {
       // OSCE removed
     });
     _dataReady = true;
+    // Safe JSON parser with fallback
+    function safeJSONParse(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+      catch(e) { localStorage.removeItem(key); return fallback; }
+    }
     // Load user-generated/approved questions from localStorage
     const _xp=safeJSONParse('samega_pending_qs',[]);
     const _xc=safeJSONParse('samega_custom_qs',[]);
