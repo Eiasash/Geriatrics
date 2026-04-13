@@ -998,7 +998,7 @@ return streak;
 }
 function renderAnalytics(){
 const stats=getTopicStats();
-const readiness=getReadinessScore();
+const readiness=calcEstScore()||0;
 const streak=getStudyStreak();
 const totalAnswered=Object.values(S.sr||{}).reduce((a,s)=>a+(s.tot||0),0);
 const totalCorrect=Object.values(S.sr||{}).reduce((a,s)=>a+(s.ok||0),0);
@@ -2518,7 +2518,7 @@ async function submitLeaderboardScore(){
 const totalAnswered=Object.values(S.sr||{}).reduce((a,s)=>a+(s.tot||0),0);
 const totalCorrect=Object.values(S.sr||{}).reduce((a,s)=>a+(s.ok||0),0);
 const streak=getStudyStreak();
-const readiness=getReadinessScore();
+const readiness=calcEstScore()||0;
 // Anonymous user hash
 let uid=localStorage.getItem('samega_uid');
 if(!uid){uid='u'+Math.random().toString(36).slice(2,10);localStorage.setItem('samega_uid',uid);}
@@ -3444,13 +3444,12 @@ function calcEstScore(){
   // FSRS-aware estimated score: weight by retrievability for seen questions
   const now2=Date.now();
   // Frequency weights from historical exam distribution
-  const FREQ=[0,34,30,28,36,43,178,39,63,36,20,27,19,22,50,40,22,94,70,78,18,80,43,21,46,27,29,52,10,11,7,0,6,9,26,19,23,9,17,0];
-  const totalFreq=FREQ.reduce((a,b)=>a+b,0);
+  const totalFreq=EXAM_FREQ.reduce((a,b)=>a+b,0);
   const tSt=S.ts||{};
   const due=new Set(getDueQuestions());
   
   let weightedScore=0,totalWeight=0;
-  FREQ.forEach((freq,ti)=>{
+  EXAM_FREQ.forEach((freq,ti)=>{
     if(!freq)return;
     const s=tSt[ti]||{ok:0,no:0,tot:0};
     const weight=freq/totalFreq;
@@ -3762,10 +3761,54 @@ function renderStudyPlan(){
 
 function renderTrack(){
 const done=Object.values(S.ck).filter(Boolean).length;
-const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
+const tot=S.qOk+S.qNo;const pctN=tot?Math.round(S.qOk/tot*100):0;const pct=tot?pctN+'%':'—';
 const bkCount=Object.values(S.bk).filter(Boolean).length;
 const dueN=getDueQuestions().length;
-let h=renderStudyPlan();
+const readiness=calcEstScore();
+const streak=getStudyStreak();
+// Key metrics row
+let h=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+<div class="card" style="padding:10px;text-align:center">
+<div style="font-size:22px;font-weight:800;color:${readiness===null?'#94a3b8':readiness>=70?'#059669':readiness>=50?'#d97706':'#dc2626'}">${readiness!==null?readiness+'%':'—'}</div>
+<div style="font-size:9px;color:#64748b">Est. Score</div>
+</div>
+<div class="card" style="padding:10px;text-align:center">
+<div style="font-size:22px;font-weight:800;color:#7c3aed">${streak}</div>
+<div style="font-size:9px;color:#64748b">Day Streak</div>
+</div>
+<div class="card" style="padding:10px;text-align:center">
+<div style="font-size:22px;font-weight:800;color:#0ea5e9">${tot}</div>
+<div style="font-size:9px;color:#64748b">Answered</div>
+</div>
+<div class="card" style="padding:10px;text-align:center">
+<div style="font-size:22px;font-weight:800;color:${pctN>=70?'#059669':'#d97706'}">${pct}</div>
+<div style="font-size:9px;color:#64748b">Accuracy</div>
+</div>
+</div>`;
+// SRS due alert
+if(dueN>0){
+h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:#fef2f2;border:1px solid #fecaca">
+<div style="display:flex;align-items:center;gap:8px">
+<span style="font-size:18px">🔔</span>
+<div style="flex:1"><div style="font-size:12px;font-weight:700;color:#dc2626">${dueN} questions due for review</div>
+<div style="font-size:10px;color:#64748b">Spaced repetition items ready now</div></div>
+<button onclick="filt='due';buildPool();tab='quiz';render()" class="btn" style="font-size:10px;padding:6px 12px;background:#dc2626;color:#fff;border:none;border-radius:8px">▶ Review</button>
+</div></div>`;
+}
+// Topic mastery heatmap
+const _tStats=getTopicStats();
+h+=`<div class="card" style="padding:14px;margin-bottom:8px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">🗺️ Topic Mastery Map</div>
+<div style="display:flex;flex-wrap:wrap;gap:3px">`;
+Object.entries(_tStats).forEach(([ti,s])=>{
+ti=Number(ti);if(!TOPICS[ti])return;
+const _p=s.tot>=2?Math.round(s.ok/s.tot*100):null;
+const color=_p===null?'#e2e8f0':_p>=80?'#059669':_p>=60?'#84cc16':_p>=40?'#f59e0b':'#ef4444';
+const bg=_p===null?'#f8fafc':_p>=80?'#ecfdf5':_p>=60?'#f7fee7':_p>=40?'#fffbeb':'#fef2f2';
+h+=`<div onclick="tab='quiz';filt='topic';topicFilt=${ti};buildPool();render()" style="padding:4px 6px;border-radius:6px;font-size:8px;background:${bg};color:${color};font-weight:700;cursor:pointer;border:1px solid ${color}30;min-width:28px;text-align:center" title="${TOPICS[ti]}: ${_p!==null?_p+'%':'no data'} (${s.tot} Qs)">${_p!==null?_p+'%':'·'}</div>`;
+});
+h+=`</div></div>`;
+h+=renderStudyPlan();
 // Feature 5: Exam date + daily plan
 if(!S.examDate&&!localStorage.getItem('shlav_exam_date')){
 h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
@@ -3794,20 +3837,6 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px">
 ${_blindSpots>0?`<div style="margin-top:8px;font-size:10px;color:#dc2626;font-weight:600">⚠️ ${_blindSpots} blind spots — you were confident but wrong. These are your most dangerous gaps.</div>`:''}
 </div>`;
 }
-// ===== FEATURE 7: Analytics Dashboard Cards =====
-// Readiness Score
-const _readiness=getReadinessScore();
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">
-<div style="display:flex;align-items:center;gap:12px">
-<div style="width:60px;height:60px;border-radius:50%;border:4px solid ${_readiness>=70?'#059669':_readiness>=50?'#d97706':'#dc2626'};display:flex;align-items:center;justify-content:center">
-<span style="font-size:20px;font-weight:800;color:${_readiness>=70?'#059669':_readiness>=50?'#d97706':'#dc2626'}">${_readiness}%</span>
-</div>
-<div style="flex:1">
-<div style="font-weight:700;font-size:13px">Exam Readiness</div>
-<div style="font-size:10px;color:#64748b;line-height:1.5">Weighted by IMA exam topic frequency distribution. Pass threshold: 60%.</div>
-</div>
-</div></div>`;
-
 // Rescue Drill CTA
 const _weakTopics=getWeakTopics(3);
 if(_weakTopics.length&&_weakTopics[0].pct!==null&&_weakTopics[0].pct<65){
@@ -4601,8 +4630,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.28';
+const APP_VERSION='9.29';
 const CHANGELOG={
+'9.29':['📊 Key metrics row (Est. Score, Streak, Answered, Accuracy) at top of Track tab','🗺️ Topic Mastery Heatmap — clickable tiles per-topic, tap to drill','🔔 SRS Due Alert with quick-review button','🐛 Fix: calcEstScore uses global EXAM_FREQ instead of hardcoded local array','🧹 Removed redundant circular readiness gauge (replaced by Est. Score card)'],
 '9.28':['📊 +135 questions across 16 thin topics (1,550→1,685 total, all topics ≥25 Qs)','🤖 AI-generated board-relevant content for: biology of aging, pressure injuries, constipation, sleep, OA, thyroid, palliative care, ethics, elder abuse, driving, guardianship/POA, patient rights, community geriatrics, vision/hearing, perioperative, geriatric emergency'],
 '9.27':[
 '🐛 Changelog Fix — תצוגת changelog תקינה במקום קוד גולמי',
