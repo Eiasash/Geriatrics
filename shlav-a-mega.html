@@ -2284,11 +2284,11 @@ html+='<div style="font-size:13px;font-weight:700;margin-bottom:8px;color:#0ea5e
 html+='<div style="font-size:10px;color:#64748b;margin-bottom:12px">Review and approve questions to add to your bank.</div>';
 questions.forEach((gq,i)=>{
   html+='<div style="padding:10px;margin-bottom:8px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0">';
-  html+='<div style="font-size:11px;font-weight:600;margin-bottom:6px;line-height:1.5" dir="auto">'+(i+1)+'. '+gq.q+'</div>';
+  html+='<div style="font-size:11px;font-weight:600;margin-bottom:6px;line-height:1.5" dir="auto">'+(i+1)+'. '+sanitize(gq.q)+'</div>';
   gq.o.forEach((opt,oi)=>{
-    html+='<div style="font-size:10px;padding:2px 0;color:'+(oi===gq.c?'#059669':'#64748b')+'" dir="auto">'+(oi===gq.c?'✅':'○')+' '+opt+'</div>';
+    html+='<div style="font-size:10px;padding:2px 0;color:'+(oi===gq.c?'#059669':'#64748b')+'" dir="auto">'+(oi===gq.c?'✅':'○')+' '+sanitize(opt)+'</div>';
   });
-  html+='<div style="font-size:9px;color:#64748b;margin-top:4px;line-height:1.5" dir="auto">'+gq.e+'</div>';
+  html+='<div style="font-size:9px;color:#64748b;margin-top:4px;line-height:1.5" dir="auto">'+sanitize(gq.e)+'</div>';
   html+='<button onclick="approveGeneratedQ('+JSON.stringify(gq).replace(/"/g,'&quot;')+')" style="margin-top:6px;font-size:10px;padding:4px 12px;background:#059669;color:#fff;border:none;border-radius:6px;cursor:pointer">✅ Add to Bank</button>';
   html+='</div>';
 });
@@ -2357,10 +2357,10 @@ data.forEach((r,i)=>{
   const isMe=r.uid===myUid;
   html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9;${isMe?'background:#eff6ff;border-radius:8px;padding:6px 8px;margin:-2px -8px':''}">
   <span style="font-size:12px;font-weight:800;color:${i<3?['#f59e0b','#94a3b8','#d97706'][i]:'#64748b'};min-width:20px">${i+1}</span>
-  <div style="flex:1;font-size:10px;font-weight:${isMe?'700':'400'}">${isMe?'You ⭐':'User '+r.uid.slice(0,4)}</div>
-  <span style="font-size:10px;color:#64748b">${r.answered} Qs</span>
-  <span style="font-size:10px;font-weight:700;color:${r.readiness>=60?'#059669':'#d97706'}">${r.readiness}%</span>
-  <span style="font-size:10px">🔥${r.streak}d</span>
+  <div style="flex:1;font-size:10px;font-weight:${isMe?'700':'400'}">${isMe?'You ⭐':'User '+sanitize(r.uid).slice(0,4)}</div>
+  <span style="font-size:10px;color:#64748b">${sanitize(String(r.answered))} Qs</span>
+  <span style="font-size:10px;font-weight:700;color:${Number(r.readiness)>=60?'#059669':'#d97706'}">${sanitize(String(r.readiness))}%</span>
+  <span style="font-size:10px">🔥${sanitize(String(r.streak))}d</span>
   </div>`;
 });
 }
@@ -2410,7 +2410,7 @@ c = 0-based index of correct answer. No markdown, no preamble.`;
         const isCorrect=oi===q.c;
         h+=`<div style="font-size:11px;padding:4px 8px;margin-bottom:3px;border-radius:6px;background:${isCorrect?'#dcfce7':'#f8fafc'};color:${isCorrect?'#166534':'#475569'};font-weight:${isCorrect?'700':'400'}">${opt}${isCorrect?' ✓':''}</div>`;
       });
-      if(q.e)h+=`<div style="font-size:10px;color:#6d28d9;margin-top:8px;direction:rtl;text-align:right;line-height:1.6;border-top:1px solid #e9d5ff;padding-top:6px">💡 ${q.e}</div>`;
+      if(q.e)h+=`<div style="font-size:10px;color:#6d28d9;margin-top:8px;direction:rtl;text-align:right;line-height:1.6;border-top:1px solid #e9d5ff;padding-top:6px">💡 ${sanitize(q.e)}</div>`;
       h+='</div>';
     });
     h+='<button onclick="addChapterQsToBank('+JSON.stringify(JSON.stringify(qs)).slice(1,-1)+')" style="font-size:10px;padding:6px 14px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-top:4px">➕ Add to my question bank</button>';
@@ -4292,11 +4292,12 @@ async function cloudBackup(){
     if(res.ok||res.status===409){
       // If 409, try upsert
       if(res.status===409){
-        await fetch(_SB_URL+'/rest/v1/samega_backups?id=eq.'+_sbDeviceId(),{
+        const patchRes=await fetch(_SB_URL+'/rest/v1/samega_backups?id=eq.'+_sbDeviceId(),{
           method:'PATCH',
           headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'},
           body:JSON.stringify({data:S,updated_at:new Date().toISOString()})
         });
+        if(!patchRes.ok){const pe=await patchRes.text();alert('❌ Backup update failed: '+patchRes.status+'\n'+pe.slice(0,200));return;}
       }
       alert('✅ Progress backed up to cloud!\nDevice ID: '+_sbDeviceId().slice(0,12)+'...');
     } else {
@@ -4427,8 +4428,14 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.32';
+const APP_VERSION='9.33';
 const CHANGELOG={
+'9.33':[
+'🔒 XSS: sanitize AI-generated question fields (gq.q, gq.o, gq.e)',
+'🔒 XSS: sanitize leaderboard data from Supabase',
+'🐛 Cloud backup: check PATCH response status before showing success',
+'🧹 Remove dead code: queueBackgroundSync (never called)',
+],
 '9.32':['🛡️ Fix: guarded all localStorage parses — corrupted state no longer bricks boot','🔧 Fix: user-generated questions now persist across reload (Add to Bank actually works)','🔧 Fix: service worker skips POST requests, uses navigate mode for HTML fallback','🔧 Fix: removed wrong questions.json fallback for non-question data requests'],
 '9.31':['🔧 FSRS-4.5 extracted to shared/fsrs.js — shared engine Phase 1','📦 shared/fsrs.js loaded as external script, cached by SW','🔗 isChronicFail() now shared between apps','⚡ srScore() parity: fsrsRating parameter in both apps'],
 '9.30':['🚨 Critical fix: restore data loader — app was showing blank screen','🔄 Restore boot sequence, version check, background sync','🧮 Wire Med Basket, EOL Tree, Lab Ref, Aging Sheet into Calc tab with pill selector'],
@@ -4787,21 +4794,7 @@ Notification.requestPermission();
 scheduleDailyNotification();
 }).catch(()=>{});
 }
-// Background sync helper — call when Supabase backup fails offline
-async function queueBackgroundSync(url,body,apikey){
-try{
-if('serviceWorker' in navigator&&'SyncManager' in window){
-const reg=await navigator.serviceWorker.ready;
-// Store pending data in IDB
-if(idb){
-const tx=idb.transaction('state','readwrite');
-tx.objectStore('state').put({url,body,apikey},'pending_sync');
-await new Promise(r=>{tx.oncomplete=r;});
-}
-await reg.sync.register('supabase-backup');
-}
-}catch(e){console.warn('Background sync registration failed:',e);}
-}
+// queueBackgroundSync removed — was dead code (never called)
 
 _dataPromise.then(()=>{renderTabs();render();}).catch(()=>{});
 </script>
