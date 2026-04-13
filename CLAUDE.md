@@ -5,8 +5,8 @@
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (~299 KB, ~4,977 lines, self-contained HTML/CSS/JS)
-- **App version**: v9.28
+- **Main file**: `shlav-a-mega.html` (~301 KB, ~5,008 lines, self-contained HTML/CSS/JS)
+- **App version**: v9.29
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -16,7 +16,7 @@
 
 ### Single-File PWA
 
-All application logic lives in `shlav-a-mega.html` (~4,977 lines) — no bundler, no framework, no build step. The file contains:
+All application logic lives in `shlav-a-mega.html` (~5,008 lines) — no bundler, no framework, no build step. The file contains:
 - All CSS (1,000+ lines, responsive, RTL-aware, dark/light/study modes)
 - All JavaScript (ES6+, vanilla)
 - HTML structure
@@ -39,13 +39,13 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.28)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.29)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
 │
 ├── data/                    # Lazy-loaded JSON data — single source of truth
-│   ├── questions.json       # 1,550 MCQs (primary runtime source)
+│   ├── questions.json       # 1,685 MCQs (primary runtime source)
 │   ├── notes.json           # 40 study topic notes
 │   ├── drugs.json           # 53 Beers/ACB drugs database
 │   ├── flashcards.json      # 159 high-yield flashcards
@@ -101,7 +101,7 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 └── hazzard_part*.pdf         # Hazzard's Geriatric Medicine 8e (original PDFs)
 ```
 
-### Data Architecture (v9.28)
+### Data Architecture (v9.29)
 
 All runtime data lives in `data/`. The app and service worker load exclusively from `data/*.json`. Build scripts (`scripts/`) also read/write `data/questions.json` directly. There are no root-level JSON duplicates — `data/` is the single source of truth.
 
@@ -197,7 +197,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `9.28` (sw.js cache key: `shlav-a-v9.28`)
+- Currently both at version `9.29` (sw.js cache key: `shlav-a-v9.29`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing

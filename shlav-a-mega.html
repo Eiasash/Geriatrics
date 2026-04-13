@@ -971,19 +971,6 @@ S.dailyAct[today].q++;
 const keys=Object.keys(S.dailyAct).sort();
 while(keys.length>90){delete S.dailyAct[keys.shift()];}
 }
-function getReadinessScore(){
-// Weighted by exam frequency distribution
-const stats=getTopicStats();
-let weightedScore=0,totalWeight=0;
-EXAM_FREQ.forEach((freq,ti)=>{
-  if(!freq)return;
-  const s=stats[ti];
-  const pct=s&&s.tot>=2?s.ok/s.tot:0;
-  weightedScore+=pct*freq;
-  totalWeight+=freq;
-});
-return totalWeight>0?Math.round(weightedScore/totalWeight*100):0;
-}
 function getStudyStreak(){
 if(!S.dailyAct)return 0;
 let streak=0;
@@ -995,137 +982,6 @@ for(let i=0;i<365;i++){
   d.setDate(d.getDate()-1);
 }
 return streak;
-}
-function renderAnalytics(){
-const stats=getTopicStats();
-const readiness=calcEstScore()||0;
-const streak=getStudyStreak();
-const totalAnswered=Object.values(S.sr||{}).reduce((a,s)=>a+(s.tot||0),0);
-const totalCorrect=Object.values(S.sr||{}).reduce((a,s)=>a+(s.ok||0),0);
-const overallPct=totalAnswered?Math.round(totalCorrect/totalAnswered*100):0;
-// Due questions
-const dueCount=getDueQuestions().length;
-// Mock exam history
-let mockHist=[];
-try{mockHist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');}catch(e){}
-// Weak topics
-const weak=getWeakTopics(5);
-
-let h='<div class="sec-t">📊 Analytics Dashboard</div>';
-// Key metrics row
-h+=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
-<div class="card" style="padding:10px;text-align:center">
-<div style="font-size:22px;font-weight:800;color:${readiness>=70?'#059669':readiness>=50?'#d97706':'#dc2626'}">${readiness}%</div>
-<div style="font-size:9px;color:#64748b">Exam Readiness</div>
-</div>
-<div class="card" style="padding:10px;text-align:center">
-<div style="font-size:22px;font-weight:800;color:#7c3aed">${streak}</div>
-<div style="font-size:9px;color:#64748b">Day Streak</div>
-</div>
-<div class="card" style="padding:10px;text-align:center">
-<div style="font-size:22px;font-weight:800;color:#0ea5e9">${totalAnswered}</div>
-<div style="font-size:9px;color:#64748b">Answered</div>
-</div>
-<div class="card" style="padding:10px;text-align:center">
-<div style="font-size:22px;font-weight:800;color:${overallPct>=70?'#059669':'#d97706'}">${overallPct}%</div>
-<div style="font-size:9px;color:#64748b">Accuracy</div>
-</div>
-</div>`;
-
-// SRS due
-if(dueCount>0){
-h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:#fef2f2;border:1px solid #fecaca">
-<div style="display:flex;align-items:center;gap:8px">
-<span style="font-size:18px">🔔</span>
-<div style="flex:1"><div style="font-size:12px;font-weight:700;color:#dc2626">${dueCount} questions due for review</div>
-<div style="font-size:10px;color:#64748b">Spaced repetition items ready now</div></div>
-<button onclick="filt='due';buildPool();tab='quiz';render()" class="btn" style="font-size:10px;padding:6px 12px;background:#dc2626;color:#fff;border:none;border-radius:8px">▶ Review</button>
-</div></div>`;
-}
-
-// Rescue drill
-if(weak.length&&weak[0].pct!==null&&weak[0].pct<60){
-h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:#fffbeb;border:1px solid #fde68a">
-<div style="display:flex;align-items:center;gap:8px">
-<span style="font-size:18px">🚨</span>
-<div style="flex:1"><div style="font-size:12px;font-weight:700;color:#92400e">Rescue Drill Available</div>
-<div style="font-size:10px;color:#64748b">Weakest: ${weak.slice(0,3).map(w=>TOPICS[w.ti]+'('+w.pct+'%)').join(', ')}</div></div>
-<button onclick="buildRescuePool();tab='quiz';render()" class="btn" style="font-size:10px;padding:6px 12px;background:#f59e0b;color:#fff;border:none;border-radius:8px">🚨 Drill</button>
-</div></div>`;
-}
-
-// Topic mastery heatmap
-h+=`<div class="card" style="padding:14px;margin-bottom:8px">
-<div style="font-size:12px;font-weight:700;margin-bottom:8px">🗺️ Topic Mastery Map</div>
-<div style="display:flex;flex-wrap:wrap;gap:3px">`;
-Object.entries(stats).forEach(([ti,s])=>{
-ti=Number(ti);if(!TOPICS[ti])return;
-const pct=s.tot>=2?Math.round(s.ok/s.tot*100):null;
-const color=pct===null?'#e2e8f0':pct>=80?'#059669':pct>=60?'#84cc16':pct>=40?'#f59e0b':'#ef4444';
-const bg=pct===null?'#f8fafc':pct>=80?'#ecfdf5':pct>=60?'#f7fee7':pct>=40?'#fffbeb':'#fef2f2';
-h+=`<div onclick="tab='quiz';filt='topic';topicFilt=${ti};buildPool();render()" style="padding:4px 6px;border-radius:6px;font-size:8px;background:${bg};color:${color};font-weight:700;cursor:pointer;border:1px solid ${color}30;min-width:28px;text-align:center" title="${TOPICS[ti]}: ${pct!==null?pct+'%':'no data'} (${s.tot} Qs)">${pct!==null?pct+'%':'·'}</div>`;
-});
-h+=`</div></div>`;
-
-// Mock exam trend
-if(mockHist.length>0){
-h+=`<div class="card" style="padding:14px;margin-bottom:8px">
-<div style="font-size:12px;font-weight:700;margin-bottom:8px">📈 Mock Exam Trend</div>`;
-const maxScore=100;
-h+=`<div style="display:flex;align-items:flex-end;gap:4px;height:80px">`;
-mockHist.slice(-10).forEach((m,i)=>{
-const barH=Math.max(4,m.score*0.8);
-const color=m.score>=60?'#059669':'#ef4444';
-h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
-<span style="font-size:8px;font-weight:700;color:${color}">${m.score}%</span>
-<div style="width:100%;height:${barH}px;background:${color};border-radius:4px 4px 0 0"></div>
-<span style="font-size:7px;color:#94a3b8">${new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span>
-</div>`;
-});
-h+=`</div>`;
-// Prediction
-const recent=mockHist.slice(-3);
-const avgRecent=Math.round(recent.reduce((a,m)=>a+m.score,0)/recent.length);
-h+=`<div style="margin-top:8px;font-size:10px;color:#64748b;text-align:center">
-Predicted score: <b style="color:${avgRecent>=60?'#059669':'#dc2626'}">${avgRecent}%</b> (avg last ${recent.length}) · Pass threshold: 60%
-</div>`;
-h+=`</div>`;
-}
-
-// Activity calendar (last 30 days)
-h+=`<div class="card" style="padding:14px;margin-bottom:8px">
-<div style="font-size:12px;font-weight:700;margin-bottom:8px">📅 Activity (last 30 days)</div>
-<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px">`;
-for(let i=29;i>=0;i--){
-const d=new Date();d.setDate(d.getDate()-i);
-const key=d.toISOString().slice(0,10);
-const act=S.dailyAct&&S.dailyAct[key];
-const qCount=act?act.q:0;
-const intensity=qCount===0?0:qCount<5?1:qCount<15?2:qCount<30?3:4;
-const colors=['#f1f5f9','#dcfce7','#86efac','#22c55e','#15803d'];
-h+=`<div style="aspect-ratio:1;border-radius:3px;background:${colors[intensity]}" title="${key}: ${qCount} Qs"></div>`;
-}
-h+=`</div></div>`;
-
-// Weak topics detail
-if(weak.length){
-h+=`<div class="card" style="padding:14px;margin-bottom:8px">
-<div style="font-size:12px;font-weight:700;margin-bottom:8px">🎯 Focus Areas (weakest topics)</div>`;
-weak.forEach(w=>{
-h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
-<div style="font-size:11px;flex:1">${TOPICS[w.ti]}</div>
-<div style="font-size:10px;color:#64748b">${w.ok}/${w.tot}</div>
-<div style="width:60px;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden">
-<div style="width:${w.pct}%;height:100%;background:${w.pct>=60?'#10b981':w.pct>=40?'#f59e0b':'#ef4444'};border-radius:4px"></div>
-</div>
-<div style="font-size:10px;font-weight:700;color:${w.pct>=60?'#059669':w.pct>=40?'#d97706':'#dc2626'};min-width:28px;text-align:right">${w.pct}%</div>
-<button onclick="tab='quiz';filt='topic';topicFilt=${w.ti};buildPool();render()" style="font-size:9px;padding:3px 8px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer">▶</button>
-</div>`;
-});
-h+=`</div>`;
-}
-
-return h;
 }
 
 // ===== ON-CALL FLIP CARD MODE =====
@@ -3850,20 +3706,6 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px;background:linear-g
 <button onclick="buildRescuePool();tab='quiz';render()" class="btn" style="font-size:11px;padding:8px 16px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-weight:700">GO</button>
 </div></div>`;
 }
-
-// Topic Mastery Heatmap
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">
-<div style="font-size:12px;font-weight:700;margin-bottom:8px">🗺️ Topic Mastery Heatmap</div>
-<div style="display:flex;flex-wrap:wrap;gap:3px">`;
-const _heatStats=getTopicStats();
-Object.entries(_heatStats).forEach(([ti,s])=>{
-ti=Number(ti);if(!TOPICS[ti])return;
-const _hp=s.tot>=2?Math.round(s.ok/s.tot*100):null;
-const _hc=_hp===null?'#e2e8f0':_hp>=80?'#059669':_hp>=60?'#84cc16':_hp>=40?'#f59e0b':'#ef4444';
-const _hbg=_hp===null?'#f8fafc':_hp>=80?'#ecfdf5':_hp>=60?'#f7fee7':_hp>=40?'#fffbeb':'#fef2f2';
-h+=`<div onclick="tab='quiz';filt='topic';topicFilt=${ti};buildPool();render()" style="padding:4px 6px;border-radius:6px;font-size:8px;background:${_hbg};color:${_hc};font-weight:700;cursor:pointer;border:1px solid ${_hc}30;min-width:28px;text-align:center" title="${TOPICS[ti]}: ${_hp!==null?_hp+'%':'no data'} (${s.tot} Qs)">${_hp!==null?_hp+'%':'·'}</div>`;
-});
-h+=`</div></div>`;
 
 // Activity Calendar (30 days)
 h+=`<div class="card" style="padding:14px;margin-bottom:10px">
