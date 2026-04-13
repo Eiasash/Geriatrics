@@ -1,4 +1,4 @@
-const CACHE='shlav-a-v9.31';
+const CACHE='shlav-a-v9.32';
 const HTML_URLS=['shlav-a-mega.html','manifest.json','shared/fsrs.js'];
 const JSON_DATA_URLS=['data/questions.json','data/topics.json','data/notes.json','data/drugs.json','data/flashcards.json','harrison_chapters.json','data/hazzard_chapters.json','data/tabs.json'];
 const ALL_URLS=[...HTML_URLS,...JSON_DATA_URLS];
@@ -11,35 +11,41 @@ function shouldUseCacheFirst(url){
   return JSON_DATA_URLS.some(pattern=>url.endsWith(pattern));
 }
 
-// Network-first for HTML, cache-first for JSON data
+// Fetch strategies: navigate→HTML fallback, data→network-first, assets→cache-first
 self.addEventListener('fetch',e=>{
+  // Skip non-GET (Supabase POSTs, Claude proxy, etc)
+  if(e.request.method!=='GET')return;
+  // Skip cross-origin requests
+  if(!e.request.url.startsWith(self.location.origin))return;
+
   const url=new URL(e.request.url).pathname;
 
-  if(shouldUseCacheFirst(url)){
-    // Cache-first strategy for JSON data files
+  if(e.request.mode==='navigate'){
+    // Navigation: network-first, fallback to cached HTML shell
     e.respondWith(
-      caches.match(e.request)
-        .then(r=>r||fetch(e.request).then(res=>{
-          if(res.ok){
-            const c=res.clone();
-            caches.open(CACHE).then(cache=>cache.put(e.request,c));
-          }
+      fetch(e.request).then(res=>{
+        if(res.ok){const c=res.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c));}
+        return res;
+      }).catch(()=>caches.match('shlav-a-mega.html'))
+    );
+  }else if(shouldUseCacheFirst(url)){
+    // JSON data: cache-first, update in background
+    e.respondWith(
+      caches.match(e.request).then(r=>{
+        const netFetch=fetch(e.request).then(res=>{
+          if(res.ok){const c=res.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c));}
           return res;
-        }))
-        .catch(()=>caches.match('data/questions.json'))
+        });
+        return r||netFetch;
+      }).catch(()=>caches.match(e.request))
     );
   }else{
-    // Network-first strategy for HTML and other files
+    // Other assets (JS, manifest): cache-first with network fallback
     e.respondWith(
-      fetch(e.request)
-        .then(res=>{
-          if(res.ok){
-            const c=res.clone();
-            caches.open(CACHE).then(cache=>cache.put(e.request,c));
-          }
-          return res;
-        })
-        .catch(()=>caches.match(e.request).then(r=>r||caches.match('shlav-a-mega.html')))
+      caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+        if(res.ok){const c=res.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c));}
+        return res;
+      }))
     );
   }
 });
