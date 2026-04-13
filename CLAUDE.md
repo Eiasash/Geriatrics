@@ -6,7 +6,7 @@
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~301 KB, ~5,008 lines, self-contained HTML/CSS/JS)
-- **App version**: v9.29
+- **App version**: v9.30
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -39,7 +39,7 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.29)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.30)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
@@ -101,7 +101,7 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 └── hazzard_part*.pdf         # Hazzard's Geriatric Medicine 8e (original PDFs)
 ```
 
-### Data Architecture (v9.29)
+### Data Architecture (v9.30)
 
 All runtime data lives in `data/`. The app and service worker load exclusively from `data/*.json`. Build scripts (`scripts/`) also read/write `data/questions.json` directly. There are no root-level JSON duplicates — `data/` is the single source of truth.
 
@@ -197,7 +197,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `9.29` (sw.js cache key: `shlav-a-v9.29`)
+- Currently both at version `9.29` (sw.js cache key: `shlav-a-v9.30`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
