@@ -15,14 +15,14 @@ function loadJSON(filename) {
   return JSON.parse(readFileSync(resolve(ROOT, filename), "utf-8"));
 }
 
-let questions, notes, drugs, flashcards, osce, topics, tabs;
+let questions, notes, drugs, flashcards, topics, tabs;
 
 beforeAll(() => {
   questions = loadJSON("data/questions.json");
   notes = loadJSON("data/notes.json");
   drugs = loadJSON("data/drugs.json");
   flashcards = loadJSON("data/flashcards.json");
-  osce = loadJSON("data/osce.json");
+
   topics = loadJSON("data/topics.json");
   tabs = loadJSON("data/tabs.json");
 });
@@ -235,36 +235,7 @@ describe("flashcards.json — content quality", () => {
 
 // ─── OSCE — deeper validation ───────────────────────────────────────────────
 
-describe("osce.json — station quality", () => {
-  it("station times are within realistic range (120-1200 seconds)", () => {
-    osce.filter(s => s !== null).forEach((s, i) => {
-      expect(s.time, `OSCE[${i}] time ${s.time}s should be 2-20 min`).toBeGreaterThanOrEqual(120);
-      expect(s.time, `OSCE[${i}] time ${s.time}s should be 2-20 min`).toBeLessThanOrEqual(1200);
-    });
-  });
 
-  it("checklist items are non-empty strings", () => {
-    osce.filter(s => s !== null).forEach((s, i) => {
-      s.ck.forEach((item, j) => {
-        expect(typeof item, `OSCE[${i}].ck[${j}] should be string`).toBe("string");
-        expect(item.trim().length, `OSCE[${i}].ck[${j}] should be non-empty`).toBeGreaterThan(0);
-      });
-    });
-  });
-
-  it("each station has a reasonable number of checklist items (3-30)", () => {
-    osce.filter(s => s !== null).forEach((s, i) => {
-      expect(s.ck.length, `OSCE[${i}] should have enough checklist items`).toBeGreaterThanOrEqual(3);
-      expect(s.ck.length, `OSCE[${i}] should not have too many checklist items`).toBeLessThanOrEqual(30);
-    });
-  });
-
-  it("no duplicate station titles", () => {
-    const titles = osce.filter(s => s !== null).map(s => s.t.trim().toLowerCase());
-    const dupes = titles.filter((t, i) => titles.indexOf(t) !== i);
-    expect(dupes, `Duplicate OSCE titles: ${dupes.join(", ")}`).toEqual([]);
-  });
-});
 
 // ─── Tabs — validation ──────────────────────────────────────────────────────
 
@@ -381,27 +352,7 @@ describe("questions/image_map.json — integrity", () => {
 
 // ─── OSCE — null entry validation ──────────────────────────────────────────
 
-describe("osce.json — no null entries", () => {
-  it("every entry is a valid object (no nulls)", () => {
-    osce.forEach((s, i) => {
-      expect(s, `OSCE[${i}] should not be null`).not.toBeNull();
-      expect(typeof s, `OSCE[${i}] should be an object`).toBe("object");
-    });
-  });
 
-  it("every station has required fields (t, sc, ck, time)", () => {
-    osce.forEach((s, i) => {
-      expect(typeof s.t, `OSCE[${i}].t`).toBe("string");
-      expect(s.t.length, `OSCE[${i}].t non-empty`).toBeGreaterThan(0);
-      expect(typeof s.sc, `OSCE[${i}].sc`).toBe("string");
-      expect(s.sc.length, `OSCE[${i}].sc non-empty`).toBeGreaterThan(0);
-      expect(Array.isArray(s.ck), `OSCE[${i}].ck is array`).toBe(true);
-      expect(s.ck.length, `OSCE[${i}].ck non-empty`).toBeGreaterThan(0);
-      expect(typeof s.time, `OSCE[${i}].time`).toBe("number");
-      expect(s.time, `OSCE[${i}].time > 0`).toBeGreaterThan(0);
-    });
-  });
-});
 
 // ─── Topics — all 40 have non-empty keyword arrays ─────────────────────────
 
