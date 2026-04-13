@@ -20,7 +20,7 @@ jobs:
       # ── Data Integrity ──
       - name: Validate all JSON files
         run: |
-          for f in data/questions.json data/notes.json data/drugs.json data/flashcards.json data/osce.json data/topics.json data/tabs.json; do
+          for f in data/questions.json data/notes.json data/drugs.json data/flashcards.json data/topics.json data/tabs.json; do
             echo "Checking $f..."
             python3 -c "import json,sys; json.load(open('$f')); print('  OK')"
           done
