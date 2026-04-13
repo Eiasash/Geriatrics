@@ -295,6 +295,7 @@ upd();setInterval(upd,30000);
 
 <div class="tabs" id="tb" role="tablist" aria-label="Navigation tabs"></div>
 
+<script src="shared/fsrs.js"></script>
 <script>
 let QZ=[];
 
@@ -634,63 +635,7 @@ const IMA_WEIGHTS=[5,3,6,5,8,8,10,5,7,4,4,5,3,3,5,5,4,6,5,4,5,4,5,3,4,3,4,5,6,5,
 
 // ===== SPACED REP =====
 
-// ===== FSRS-4.5 ALGORITHM =====
-// Parameters from official FSRS-4.5 defaults (Anki 23.10+)
-const FSRS_W=[0.40255,1.18385,3.1262,15.4722,7.2102,0.5316,1.0651,0.06362,
-              1.544,0.1544,1.0070,1.9395,0.11,0.29605,2.2698,0.2315,2.9898,0.51655,0.6621];
-const FSRS_DECAY=-0.5;
-const FSRS_FACTOR=19/81;
-const FSRS_RETENTION=0.90; // target 90% retention
-
-function fsrsR(t,s){
-  // Retrievability after t days with stability s
-  if(!s||s<=0)return 0;
-  return Math.pow(1+FSRS_FACTOR*t/s,FSRS_DECAY);
-}
-function fsrsInterval(s){
-  // Days until retrievability drops to FSRS_RETENTION
-  return Math.max(1,Math.round(s/FSRS_FACTOR*(Math.pow(FSRS_RETENTION,1/FSRS_DECAY)-1)));
-}
-function fsrsInitNew(rating){
-  // rating: 1=Again,2=Hard,3=Good,4=Easy
-  const r=Math.max(0,Math.min(3,rating-1));
-  const s=Math.max(0.1,FSRS_W[r]);
-  const d=Math.min(10,Math.max(1,FSRS_W[4]-Math.exp(FSRS_W[5]*r)+1));
-  return{s,d};
-}
-function fsrsUpdate(s,d,rPrev,rating){
-  let newS,newD;
-  if(rating===1){
-    // Forgot — short-term stability
-    newS=FSRS_W[11]*Math.pow(Math.max(0.1,d),-FSRS_W[12])*
-         (Math.pow(s+1,FSRS_W[13])-1)*
-         Math.exp(FSRS_W[14]*(1-rPrev));
-    newS=Math.max(0.1,newS);
-  }else{
-    // Recalled
-    const hard=rating===2?FSRS_W[15]:1;
-    const easy=rating===4?FSRS_W[16]:1;
-    newS=s*(Math.exp(FSRS_W[8])*(11-d)*
-         Math.pow(Math.max(0.01,s),-FSRS_W[9])*
-         (Math.exp(FSRS_W[10]*(1-rPrev))-1)*
-         hard*easy+1);
-    newS=Math.max(0.1,newS);
-  }
-  // Difficulty update with mean reversion
-  const deltaD=-FSRS_W[6]*(rating-3);
-  const mr=FSRS_W[7]*(FSRS_W[4]-d);
-  newD=Math.min(10,Math.max(1,d+deltaD+mr));
-  return{s:newS,d:newD};
-}
-function fsrsMigrateFromSM2(sm2entry){
-  // Estimate FSRS state from existing SM-2 data
-  const daysLeft=Math.max(0,(sm2entry.next-Date.now())/86400000);
-  const s=Math.max(0.1,daysLeft>0?daysLeft:sm2entry.n||0.1);
-  // ef 2.5=easy(D≈1), ef 1.3=hard(D≈10)
-  const d=Math.min(10,Math.max(1,Math.round((2.5-sm2entry.ef)/(2.5-1.3)*9+1)));
-  return{s,d};
-}
-// ===== END FSRS =====
+// ===== FSRS-4.5 loaded from shared/fsrs.js =====
 function srScore(qIdx,correct,fsrsRating){
 if(!S.sr[qIdx])S.sr[qIdx]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};
 const s=S.sr[qIdx];
@@ -731,13 +676,7 @@ qStartTime=Date.now();
 trackDailyActivity();
 save();
 }
-function isChronicFail(qIdx){
-const s=S.sr[qIdx];
-if(!s)return false;
-const lowAccuracy=s.tot>=4&&s.ok/s.tot<0.35;
-const highDifficulty=s.fsrsD&&s.fsrsD>=8&&s.tot>=3;
-return lowAccuracy||highDifficulty;
-}
+// isChronicFail() loaded from shared/fsrs.js
 function getDueQuestions(){
 const now=Date.now();
 return Object.entries(S.sr).filter(([k,v])=>v.next<=now).map(([k])=>parseInt(k)).slice(0,20);
@@ -1585,7 +1524,7 @@ if(timedMode&&!ans){
 </div>`;
 }
 const topicName=q.ti>=0&&TOPICS[q.ti]?TOPICS[q.ti]:'';
-const _cf=isChronicFail(pool[qi]);
+const _cf=isChronicFail(S.sr[pool[qi]]);
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
 <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}${isExamTrap(pool[qi])?'<span title="Exam trap — many people pick the same wrong answer" style="font-size:12px;cursor:default">🪤</span>':''}<span class="tag-year" style="background:${q.t==='Hazzard'?'#faf5ff':'#eff6ff'};color:${q.t==='Hazzard'?'#7c3aed':'#1d4ed8'};font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t==='Hazzard'?'🤖 AI — Hazzard\'s':'📝 '+q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libSec='haz-pdf';render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open Hazzard PDFs">📕 ${ref.l}</span>`;return '';})()}</div>
 <div style="display:flex;align-items:center;gap:8px">
@@ -4482,8 +4421,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.30';
+const APP_VERSION='9.31';
 const CHANGELOG={
+'9.31':['🔧 FSRS-4.5 extracted to shared/fsrs.js — shared engine Phase 1','📦 shared/fsrs.js loaded as external script, cached by SW','🔗 isChronicFail() now shared between apps','⚡ srScore() parity: fsrsRating parameter in both apps'],
 '9.30':['🚨 Critical fix: restore data loader — app was showing blank screen','🔄 Restore boot sequence, version check, background sync','🧮 Wire Med Basket, EOL Tree, Lab Ref, Aging Sheet into Calc tab with pill selector'],
 '9.29':['📊 Key metrics row (Est. Score, Streak, Answered, Accuracy) at top of Track tab','🗺️ Topic Mastery Heatmap — clickable tiles per-topic, tap to drill','🔔 SRS Due Alert with quick-review button','🐛 Fix: calcEstScore uses global EXAM_FREQ instead of hardcoded local array','🧹 Removed redundant circular readiness gauge (replaced by Est. Score card)'],
 '9.28':['📊 +135 questions across 16 thin topics (1,550→1,685 total, all topics ≥25 Qs)','🤖 AI-generated board-relevant content for: biology of aging, pressure injuries, constipation, sleep, OA, thyroid, palliative care, ethics, elder abuse, driving, guardianship/POA, patient rights, community geriatrics, vision/hearing, perioperative, geriatric emergency'],
