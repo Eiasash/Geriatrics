@@ -6,7 +6,7 @@
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~299 KB, ~4,977 lines, self-contained HTML/CSS/JS)
-- **App version**: v9.27
+- **App version**: v9.28
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -39,7 +39,7 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.27)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.28)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
@@ -101,7 +101,7 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 └── hazzard_part*.pdf         # Hazzard's Geriatric Medicine 8e (original PDFs)
 ```
 
-### Data Architecture (v9.27)
+### Data Architecture (v9.28)
 
 All runtime data lives in `data/`. The app and service worker load exclusively from `data/*.json`. Build scripts (`scripts/`) also read/write `data/questions.json` directly. There are no root-level JSON duplicates — `data/` is the single source of truth.
 
@@ -197,15 +197,15 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `9.27` (sw.js cache key: `shlav-a-v9.27`)
+- Currently both at version `9.28` (sw.js cache key: `shlav-a-v9.28`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, 207 tests)
+npm test             # Run all tests (vitest, 273 tests)
 ```
 
-**207 tests across 5 files** — run `npm test` to see current count.
+**273 tests across 5 files** — run `npm test` to see current count.
 
 **Auto-expand rule:** Every feature, improvement, or bug fix MUST include new or updated tests:
 - New data file or field → schema validation test
@@ -214,7 +214,7 @@ npm test             # Run all tests (vitest, 207 tests)
 - Modified data processing → edge case + boundary tests
 - After adding tests, update the test count in this section
 
-**Test file inventory (5 files, 207 tests):**
+**Test file inventory (5 files, 273 tests):**
 
 | File | Tests | Description |
 |------|-------|-------------|
@@ -265,7 +265,7 @@ Runs on push to `main` and all PRs. Python-based data validation + Vitest test s
 | innerHTML sanitization | Audit for unsanitized innerHTML usage |
 | Topic coverage | >= 5 questions per topic (all 40 topics) |
 
-**Vitest tests** (207 tests, 5 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
+**Vitest tests** (273 tests, 5 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
 
 ---
 
@@ -465,7 +465,7 @@ Reach **300+ tests** with coverage of every data file, every engine function, an
 ## TODO / Improvement Roadmap
 
 ### High Priority
-- [ ] **Update package.json version** — Currently `9.14.0`, should match APP_VERSION `9.27`
+- [ ] **Update package.json version** — Currently `9.14.0`, should match APP_VERSION `9.28`
 - [ ] **Add weekly-audit.yml** — Weekly CI audit for CLAUDE.md drift, dead code, JS syntax (acorn), GRS content checks (exists in InternalMedicine sibling, port to this repo)
 - [ ] **Expand test suite to 300+** — See Test Coverage Recommendations above
 - [ ] **Add test:coverage script** — `vitest run --coverage` with @vitest/coverage-v8 thresholds (50% lines, 40% branches)
