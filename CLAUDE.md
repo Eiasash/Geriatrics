@@ -5,8 +5,8 @@
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (~305 KB, ~4,970 lines, self-contained HTML/CSS/JS)
-- **App version**: v9.26
+- **Main file**: `shlav-a-mega.html` (~299 KB, ~4,977 lines, self-contained HTML/CSS/JS)
+- **App version**: v9.27
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -16,7 +16,7 @@
 
 ### Single-File PWA
 
-All application logic lives in `shlav-a-mega.html` — no bundler, no framework, no build step. The file contains:
+All application logic lives in `shlav-a-mega.html` (~4,977 lines) — no bundler, no framework, no build step. The file contains:
 - All CSS (1,000+ lines, responsive, RTL-aware, dark/light/study modes)
 - All JavaScript (ES6+, vanilla)
 - HTML structure
@@ -39,13 +39,13 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.26)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.27)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
 │
 ├── data/                    # Lazy-loaded JSON data — single source of truth
-│   ├── questions.json       # 1,169 MCQs (primary runtime source)
+│   ├── questions.json       # 1,550 MCQs (primary runtime source)
 │   ├── notes.json           # 40 study topic notes
 │   ├── drugs.json           # 53 Beers/ACB drugs database
 │   ├── flashcards.json      # 159 high-yield flashcards
@@ -101,7 +101,7 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 └── hazzard_part*.pdf         # Hazzard's Geriatric Medicine 8e (original PDFs)
 ```
 
-### Data Architecture (v9.26)
+### Data Architecture (v9.27)
 
 All runtime data lives in `data/`. The app and service worker load exclusively from `data/*.json`. Build scripts (`scripts/`) also read/write `data/questions.json` directly. There are no root-level JSON duplicates — `data/` is the single source of truth.
 
@@ -197,7 +197,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `9.26` (sw.js cache key: `shlav-a-v9.26`)
+- Currently both at version `9.27` (sw.js cache key: `shlav-a-v9.27`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
@@ -253,7 +253,7 @@ Runs on push to `main` and all PRs. Python-based data validation + Vitest test s
 | Check | Threshold |
 |-------|-----------|
 | JSON parse validity | questions, notes, drugs, flashcards |
-| Question count | Must be > 900 |
+| Question count | Must be > 1400 |
 | Question schema | `q` (string), `o` (array >= 2), `c` (valid index), `ti` (int >= 0) |
 | Notes schema | `topic` and `notes` fields present; **NO GRS references** |
 | Drugs schema | `name`, `heb`, `acb`, `beers`, `cat`, `risk` fields present |
@@ -402,6 +402,93 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 - Version prefix: `v9.7`, `v9.6.1`, etc.
 - Imperative tense: `fix:`, `feat:`, `Add`, `Update`
 - Clear scope describing the feature or issue
+
+---
+
+## Codebase Metrics
+
+| Metric | Value |
+|--------|-------|
+| Main app LOC | ~4,977 |
+| Questions | 1,550 (all with explanations) |
+| Topics | 40 |
+| Notes | 40 |
+| Flashcards | 159 |
+| Drugs | 53 |
+| OSCE stations | 10 |
+| Question images | 30 |
+| Past exams | 9 sessions (2021–2025) |
+| Hazzard chapters | 9 parts (annotated) |
+| Harrison chapters | ~48 PDFs |
+| Articles | 6 |
+| Test files | 5 |
+| Tests | 207 |
+| CI pipeline | GitHub Actions + weekly audit |
+
+---
+
+## Test Coverage Recommendations
+
+### Current Coverage Summary
+
+| Area | Status | Tests |
+|------|--------|-------|
+| Question schema & duplicates | Strong | 25+ |
+| Answer integrity & bounds | Strong | 50+ |
+| Notes/drugs/flashcards/OSCE schema | Good | 15+ |
+| Cross-file referential integrity | Good | 2+ |
+| HTML structure & PWA | Good | 16 |
+| Service worker config & sync | Good | 25 |
+| FSRS spaced repetition | Good | 20+ |
+| Quiz engine logic | Good | 30+ |
+| Security (eval/innerHTML) | Moderate | 3+ |
+| Image map integrity | Moderate | 2+ |
+
+### Recommended Additions (Priority Order)
+
+1. **OSCE station validation** — Expand from 5 to 15+ tests; validate scenario completeness, task arrays, tip arrays, and cross-reference with topic index
+2. **Explanation quality checks** — Test that all 1,550 `e` fields are non-empty, >= 50 chars, contain no HTML injection, and are valid Hebrew/English text
+3. **Hazzard chapter JSON** — Validate `hazzard_chapters.json` structure, chapter numbering, and cross-reference with notes.json `ch` field
+4. **Exam year tag consistency** — Validate that each `t` field matches known exam sessions, test distribution balance across years
+5. **Topic distribution balance** — Add quantitative tests: no single topic should have >15% or <1% of total questions
+6. **Drug interaction cross-checks** — Test ACB score ranges (0-3), Beers flag consistency, category string validity
+7. **Study plan logic** — Test `STUDY_PLAN` structure, topic ordering, and weekly schedule generation
+8. **AI proxy routing** — Mock tests for `callAI()` proxy-first/fallback routing logic
+9. **Service worker background sync** — Test `supabase-backup` sync tag registration and retry logic
+10. **Accessibility audit** — Automated check that all interactive elements have >= 44px touch targets in CSS
+
+### Long-Term Goal
+Reach **300+ tests** with coverage of every data file, every engine function, and every CI validation rule having a corresponding Vitest test.
+
+---
+
+## TODO / Improvement Roadmap
+
+### High Priority
+- [ ] **Update package.json version** — Currently `9.14.0`, should match APP_VERSION `9.27`
+- [ ] **Add weekly-audit.yml** — Weekly CI audit for CLAUDE.md drift, dead code, JS syntax (acorn), GRS content checks (exists in InternalMedicine sibling, port to this repo)
+- [ ] **Expand test suite to 300+** — See Test Coverage Recommendations above
+- [ ] **Add test:coverage script** — `vitest run --coverage` with @vitest/coverage-v8 thresholds (50% lines, 40% branches)
+
+### Medium Priority
+- [ ] **Port features from InternalMedicine v9.33** — Changelog rendering fix, stats.map crash fix, IDB hoisting fix, Rescue Drill mode, Activity Tracking
+- [ ] **Add Hazzard chapter JSON tests** — Validate structure of `hazzard_chapters.json` and `data/hazzard_chapters.json`
+- [ ] **OSCE expansion** — Add more OSCE stations covering all 40 topics (currently 10 stations)
+- [ ] **Add flashcard spaced repetition** — FSRS already exists for questions; extend to flashcard review scheduling
+- [ ] **Harrison-generated questions** — Expand AI-generated question bank from Hazzard's chapters (like InternalMedicine's Harrison tag)
+
+### Low Priority
+- [ ] **PWA install prompt** — Add beforeinstallprompt handler for mobile install
+- [ ] **Push notifications** — Daily review reminders (service worker already supports push)
+- [ ] **Supabase cloud sync UI** — Add user-facing sync status indicator and manual sync button
+- [ ] **Performance monitoring** — Add basic performance metrics (load time, data fetch time) to help optimize
+- [ ] **Content-Security-Policy meta tag** — Add CSP to `shlav-a-mega.html` to match InternalMedicine's CSP setup
+
+### Content Roadmap
+- [ ] **2025-ב exam questions** — Parse and add questions from the next exam session when available
+- [ ] **Flashcard expansion** — Target 200+ flashcards covering all 40 topics (currently 159)
+- [ ] **Notes update** — Ensure all 40 notes reflect latest Hazzard's 8e + Harrison's 22e content
+- [ ] **Image coverage** — Add question images for newer exam sessions (currently 30 images)
 
 ---
 
