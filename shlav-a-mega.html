@@ -796,6 +796,7 @@ const _dataPromise = (async function loadDataArrays() {
 let tab='quiz';
 let learnSub='study'; // sub-tab within Learn: study|flash|drugs
 let moreSub='calc';   // sub-tab within More: calc|search|chat|feedback
+let calcView='calc'; // sub-view within Calc: calc|basket|eol|lab|aging
 let libSec='haz-pdf';
 let harChOpen=null,_harData=null,_harLoading=false;
 let hazChOpen=null,_hazData=null,_hazLoading=false;
@@ -2807,7 +2808,16 @@ return h;
 let calcVals={};
 function calcUp(k,v){calcVals[k]=parseFloat(v)||0;render();}
 function renderCalc(){
-let h=`<div class="sec-t">🧮 Clinical Calculators</div><div class="sec-s">CrCl · CHA₂DS₂-VASc · CURB-65 · GDS-15 · Braden · PADUA</div>`;
+// Tool selector pills
+const _cv=[{id:'calc',l:'🧮 Calculators'},{id:'basket',l:'🧺 Med Basket'},{id:'eol',l:'🕊️ EOL Tree'},{id:'lab',l:'🔬 Lab Ref'},{id:'aging',l:'📋 Aging Sheet'}];
+let h=`<div style="display:flex;gap:4px;overflow-x:auto;padding:4px 0;margin-bottom:8px">`;
+_cv.forEach(v=>{h+=`<button onclick="calcView='${v.id}';render()" style="white-space:nowrap;padding:6px 12px;border:none;border-radius:20px;font-size:10px;font-weight:${calcView===v.id?'700':'400'};cursor:pointer;background:${calcView===v.id?'#0f172a':'#f1f5f9'};color:${calcView===v.id?'#fff':'#64748b'}">${v.l}</button>`;});
+h+=`</div>`;
+if(calcView==='basket')return h+renderMedBasket();
+if(calcView==='eol')return h+renderEOLTree();
+if(calcView==='lab')return h+renderLabOverlay();
+if(calcView==='aging')return h+renderAgingSheet();
+h+=`<div class="sec-s">CrCl · CHA₂DS₂-VASc · CURB-65 · GDS-15 · Braden · PADUA</div>`;
 
 // CrCl
 const age=calcVals.age||75,wt=calcVals.wt||55,cr=calcVals.cr||1.0,fem=calcVals.fem===undefined?0.85:calcVals.fem;
@@ -4472,8 +4482,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.29';
+const APP_VERSION='9.30';
 const CHANGELOG={
+'9.30':['🚨 Critical fix: restore data loader — app was showing blank screen','🔄 Restore boot sequence, version check, background sync','🧮 Wire Med Basket, EOL Tree, Lab Ref, Aging Sheet into Calc tab with pill selector'],
 '9.29':['📊 Key metrics row (Est. Score, Streak, Answered, Accuracy) at top of Track tab','🗺️ Topic Mastery Heatmap — clickable tiles per-topic, tap to drill','🔔 SRS Due Alert with quick-review button','🐛 Fix: calcEstScore uses global EXAM_FREQ instead of hardcoded local array','🧹 Removed redundant circular readiness gauge (replaced by Est. Score card)'],
 '9.28':['📊 +135 questions across 16 thin topics (1,550→1,685 total, all topics ≥25 Qs)','🤖 AI-generated board-relevant content for: biology of aging, pressure injuries, constipation, sleep, OA, thyroid, palliative care, ethics, elder abuse, driving, guardianship/POA, patient rights, community geriatrics, vision/hearing, perioperative, geriatric emergency'],
 '9.27':[
