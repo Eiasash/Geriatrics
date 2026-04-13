@@ -1564,7 +1564,7 @@ if(ans){cls+=' lk';if(origI===q.c)cls+=' ok';else if(origI===sel)cls+=' no';else
 else if(origI===sel)cls+=' sel';
 const blurCls=blindRecall&&!ans&&origI!==sel?' qo-blur':'';
 const autopsyCls=(autopsyMode&&ans&&origI!==q.c&&origI===autopsyDistractor)?' distractor-highlight':'';
-h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${origI})" aria-label="Option ${origI+1}"><span>${o}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
+h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${origI})" aria-label="Option ${origI+1}"><span>${sanitize(o)}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
 });
 h+=`<div style="display:flex;gap:6px;margin-top:14px">`;
 if(!ans){
@@ -1660,7 +1660,7 @@ h+=`</div>`;
 if(ans&&!examMode&&q.e){
 h+=`<div style="margin-top:8px;padding:10px 12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;font-size:11px;line-height:1.7;color:#1e40af;direction:rtl;text-align:right">`;
 h+=`<div style="font-weight:700;margin-bottom:4px;font-size:10px">📝 הסבר</div>`;
-h+=`<div>${q.e.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
+h+=`<div>${sanitize(q.e).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
 h+=`</div>`;
 }
 // AI Explain button
@@ -3513,7 +3513,7 @@ ti=Number(ti);if(!TOPICS[ti])return;
 const _p=s.tot>=2?Math.round(s.ok/s.tot*100):null;
 const color=_p===null?'#e2e8f0':_p>=80?'#059669':_p>=60?'#84cc16':_p>=40?'#f59e0b':'#ef4444';
 const bg=_p===null?'#f8fafc':_p>=80?'#ecfdf5':_p>=60?'#f7fee7':_p>=40?'#fffbeb':'#fef2f2';
-h+=`<div onclick="tab='quiz';filt='topic';topicFilt=${ti};buildPool();render()" style="padding:4px 6px;border-radius:6px;font-size:8px;background:${bg};color:${color};font-weight:700;cursor:pointer;border:1px solid ${color}30;min-width:28px;text-align:center" title="${TOPICS[ti]}: ${_p!==null?_p+'%':'no data'} (${s.tot} Qs)">${_p!==null?_p+'%':'·'}</div>`;
+h+=`<div onclick="tab='quiz';filt='topic';topicFilt=${ti};buildPool();render()" style="padding:4px 6px;border-radius:6px;font-size:7px;background:${bg};color:${color};font-weight:700;cursor:pointer;border:1px solid ${color}30;min-width:32px;text-align:center;line-height:1.3" title="${TOPICS[ti]}: ${_p!==null?_p+'%':'no data'} (${s.tot} Qs)"><div style="font-size:6px;opacity:0.8;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:40px">${TOPICS[ti].split(' ')[0].substring(0,6)}</div>${_p!==null?_p+'%':'·'}</div>`;
 });
 h+=`</div></div>`;
 h+=renderStudyPlan();
@@ -4325,8 +4325,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.35';
+const APP_VERSION='9.36';
 const CHANGELOG={
+'9.36':[
+'🔒 XSS: sanitize built-in explanation (q.e) and option text',
+'🎨 Topic Mastery Map: tiles now show abbreviated topic name + percentage',
+],
 '9.35':[
 '🐛 Fix 79 AI questions with wrong answer keys (explanation said C but key was A, etc.)',
 '🐛 Fix: AI explanation no longer disappears when tapping why-wrong buttons',
