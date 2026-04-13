@@ -20,6 +20,8 @@
  *   --output     output file (default: generated-questions-{timestamp}.json)
  *   --api-key    Anthropic API key (or set ANTHROPIC_API_KEY env var)
  *   --proxy      use toranot proxy instead of direct API (default: false)
+ *   --concurrency  parallel API calls per batch (default: 5)
+ *   --resume     resume from previous run (loads existing output + skips done chapters)
  */
 
 const fs = require('fs');
@@ -257,6 +259,8 @@ function parseArgs() {
     output: null,
     apiKey: process.env.ANTHROPIC_API_KEY || null,
     proxy: false,
+    concurrency: 5,
+    resume: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -269,6 +273,8 @@ function parseArgs() {
       case '--output': opts.output = args[++i]; break;
       case '--api-key': opts.apiKey = args[++i]; break;
       case '--proxy': opts.proxy = true; break;
+      case '--concurrency': opts.concurrency = parseInt(args[++i]); break;
+      case '--resume': opts.resume = true; break;
     }
   }
 
@@ -386,8 +392,13 @@ Key themes that MUST appear in your questions:
 - Falls risk (orthostatic hypotension, medications, environmental)
 - Frailty (Fried criteria, CFS, sarcopenia EWGSOP2)`
     : `Israeli Internal Medicine Board Exam (Shlav Alef, P0064-2025).
-Key themes: pathophysiology-based reasoning, diagnostic workup sequences,
-evidence-based treatment algorithms, landmark trial results, acute management.`;
+Key themes that MUST appear in your questions:
+- Pathophysiology-based reasoning (mechanism → diagnosis → treatment)
+- Diagnostic workup sequences (what to order first and why)
+- Evidence-based treatment (landmark trials: DIGIT-HF, ECLIPSE, BALANCE, SELECT-GCA, FIRE, STELLAR)
+- Acute management priorities (ABCs, time-sensitive interventions)
+- Drug interactions and contraindications
+- Interpretation of labs, imaging, ECG in clinical context`;
 
   let text = chapter.text;
   if (text.length > 15000) {
@@ -592,78 +603,122 @@ async function main() {
   const existingQs = loadExistingQuestions(opts);
   console.log(`📋 Existing questions: ${existingQs.length}`);
 
-  const allGenerated = [];
+  const outFile = opts.output || `generated-questions-${Date.now()}.json`;
+  const outPath = path.resolve(outFile);
+  const progressPath = outPath.replace('.json', '.progress.json');
+
+  // Resume: load existing progress
+  let allGenerated = [];
+  let completedKeys = new Set();
+  if (opts.resume && fs.existsSync(outPath)) {
+    allGenerated = JSON.parse(fs.readFileSync(outPath, 'utf-8'));
+    console.log(`♻️  Resuming: loaded ${allGenerated.length} existing questions from ${outFile}`);
+  }
+  if (opts.resume && fs.existsSync(progressPath)) {
+    const prog = JSON.parse(fs.readFileSync(progressPath, 'utf-8'));
+    completedKeys = new Set(prog);
+    console.log(`♻️  Skipping ${completedKeys.size} already-completed chapters`);
+  }
+
+  // Filter out completed chapters
+  const remaining = targetChapters.filter(([key, ch]) => {
+    if (completedKeys.has(key)) return false;
+    if (ch.text.length < 200) return false;
+    return true;
+  });
+  console.log(`\n⏳ ${remaining.length} chapters to process (${opts.concurrency} parallel)\n`);
+
   let totalValid = 0, totalDupes = 0, totalInvalid = 0;
 
-  for (const [key, chapter] of targetChapters) {
+  // Process a single chapter — returns { valid, dupes, invalid, questions, key }
+  async function processChapter(key, chapter) {
     const topicName = TOPICS[chapter.topicIndex];
-    console.log(`\n📖 ${chapter.source} Ch ${chapter.chapter}: "${chapter.title.substring(0, 40)}" → ${topicName}`);
-
-    if (chapter.text.length < 200) {
-      console.log('  ⏭ Skipping — chapter text too short');
-      continue;
-    }
-
+    const label = `${chapter.source} Ch ${chapter.chapter}`;
     try {
       const prompt = buildPrompt(chapter, topicName, opts.count, opts.app);
-      console.log(`  🤖 Calling Claude (${Math.round(prompt.length / 4)} tokens est.)...`);
+      console.log(`  🤖 ${label}: "${chapter.title.substring(0, 35)}" → ${topicName} (${Math.round(prompt.length / 4)} tok)...`);
       
       const response = await callClaude(prompt, opts.apiKey, opts.proxy);
       const questions = parseGeneratedQuestions(response);
       
       if (!questions.length) {
-        console.log('  ✗ No questions parsed from response');
-        continue;
+        console.log(`  ✗ ${label}: No questions parsed`);
+        return { valid: 0, dupes: 0, invalid: 0, questions: [], key };
       }
 
-      let chValid = 0, chDupes = 0, chInvalid = 0;
+      let valid = 0, dupes = 0, invalid = 0;
+      const goodQs = [];
       
       for (const q of questions) {
-        // Force correct source and topic
         q.t = chapter.source;
         q.ti = chapter.topicIndex;
         
         const errors = validateQuestion(q, TOPICS.length);
-        if (errors.length) {
-          chInvalid++;
-          continue;
-        }
+        if (errors.length) { invalid++; continue; }
+        if (isDuplicate(q, [...existingQs, ...allGenerated, ...goodQs])) { dupes++; continue; }
         
-        if (isDuplicate(q, [...existingQs, ...allGenerated])) {
-          chDupes++;
-          continue;
-        }
-        
-        allGenerated.push(q);
-        chValid++;
+        goodQs.push(q);
+        valid++;
       }
       
-      totalValid += chValid;
-      totalDupes += chDupes;
-      totalInvalid += chInvalid;
-      console.log(`  ✅ ${chValid} valid, ${chDupes} dupes, ${chInvalid} invalid`);
-      
-      // Rate limiting — 1.5s between calls
-      await new Promise(r => setTimeout(r, 5000));
-      
+      console.log(`  ✅ ${label}: ${valid} valid, ${dupes} dupes, ${invalid} invalid`);
+      return { valid, dupes, invalid, questions: goodQs, key };
     } catch (err) {
-      console.error(`  ✗ Error: ${err.message}`);
+      console.error(`  ✗ ${label}: ${err.message.substring(0, 100)}`);
+      return { valid: 0, dupes: 0, invalid: 0, questions: [], key };
     }
   }
 
-  // Save output
-  const outFile = opts.output || `generated-questions-${Date.now()}.json`;
-  const outPath = path.resolve(outFile);
-  fs.writeFileSync(outPath, JSON.stringify(allGenerated, null, 2), 'utf-8');
+  // Process in parallel batches
+  const BATCH = opts.concurrency;
+  for (let i = 0; i < remaining.length; i += BATCH) {
+    const batch = remaining.slice(i, i + BATCH);
+    const batchNum = Math.floor(i / BATCH) + 1;
+    const totalBatches = Math.ceil(remaining.length / BATCH);
+    console.log(`\n── Batch ${batchNum}/${totalBatches} (${batch.length} chapters) ──`);
+    
+    const results = await Promise.allSettled(
+      batch.map(([key, ch]) => processChapter(key, ch))
+    );
+
+    for (const r of results) {
+      if (r.status === 'fulfilled' && r.value) {
+        totalValid += r.value.valid;
+        totalDupes += r.value.dupes;
+        totalInvalid += r.value.invalid;
+        allGenerated.push(...r.value.questions);
+        completedKeys.add(r.value.key);
+      }
+    }
+
+    // Incremental save after each batch
+    fs.writeFileSync(outPath, JSON.stringify(allGenerated, null, 2), 'utf-8');
+    fs.writeFileSync(progressPath, JSON.stringify([...completedKeys]), 'utf-8');
+    console.log(`  💾 Saved: ${allGenerated.length} total questions (${completedKeys.size}/${targetChapters.length} chapters done)`);
+
+    // Rate limit between batches (not between individual calls within a batch)
+    if (i + BATCH < remaining.length) {
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
 
   console.log(`\n${'='.repeat(60)}`);
-  console.log(`✅ Generated: ${totalValid} questions`);
+  console.log(`✅ Generated: ${totalValid} questions (this run)`);
+  console.log(`📦 Total in file: ${allGenerated.length} questions`);
   console.log(`🔄 Duplicates skipped: ${totalDupes}`);
   console.log(`❌ Invalid skipped: ${totalInvalid}`);
   console.log(`📁 Saved to: ${outPath}`);
   console.log(`\nTo merge into questions.json:`);
   console.log(`  node scripts/merge-questions.js ${outFile}`);
+  if (totalValid < remaining.length * opts.count * 0.5) {
+    console.log(`\n💡 Some chapters failed. Re-run with --resume to retry them:`);
+    console.log(`  node scripts/generate-questions.cjs --app ${opts.app} --all --count ${opts.count} --output ${outFile} --resume`);
+  }
   console.log(`${'='.repeat(60)}\n`);
+  // Clean up progress file on full completion
+  if (completedKeys.size >= targetChapters.length && fs.existsSync(progressPath)) {
+    fs.unlinkSync(progressPath);
+  }
 }
 
 main().catch(err => {
