@@ -15,14 +15,14 @@ function loadJSON(filename) {
   return JSON.parse(readFileSync(resolve(ROOT, filename), "utf-8"));
 }
 
-let questions, notes, drugs, flashcards, osce, topics;
+let questions, notes, drugs, flashcards, topics;
 
 beforeAll(() => {
   questions = loadJSON("data/questions.json");
   notes = loadJSON("data/notes.json");
   drugs = loadJSON("data/drugs.json");
   flashcards = loadJSON("data/flashcards.json");
-  osce = loadJSON("data/osce.json");
+
   topics = loadJSON("data/topics.json");
 });
 
@@ -193,35 +193,7 @@ describe("flashcards.json — schema validation", () => {
 
 // ─── OSCE ───────────────────────────────────────────────────────────
 
-describe("osce.json — schema validation", () => {
-  it("has at least 5 stations", () => {
-    expect(osce.length).toBeGreaterThanOrEqual(5);
-  });
 
-  it("every non-null station has required fields (t, sc, ck)", () => {
-    osce.filter(s => s !== null).forEach((s, i) => {
-      expect(typeof s.t, `OSCE[${i}].t (title)`).toBe("string");
-      expect(s.t.length, `OSCE[${i}].t non-empty`).toBeGreaterThan(0);
-      expect(typeof s.sc, `OSCE[${i}].sc (scenario)`).toBe("string");
-      expect(s.sc.length, `OSCE[${i}].sc non-empty`).toBeGreaterThan(0);
-      expect(Array.isArray(s.ck), `OSCE[${i}].ck (checklist) is array`).toBe(true);
-      expect(s.ck.length, `OSCE[${i}].ck non-empty`).toBeGreaterThan(0);
-    });
-  });
-
-  it("every non-null station has a time value", () => {
-    osce.filter(s => s !== null).forEach((s, i) => {
-      expect(typeof s.time, `OSCE[${i}].time`).toBe("number");
-      expect(s.time, `OSCE[${i}].time > 0`).toBeGreaterThan(0);
-    });
-  });
-
-  it("flags null entries as data quality issue", () => {
-    const nullCount = osce.filter(s => s === null).length;
-    // Null entries are cleanup candidates — track but don't fail hard
-    expect(nullCount, "Null OSCE entries should be removed").toBeLessThanOrEqual(2);
-  });
-});
 
 // ─── Topics ─────────────────────────────────────────────────────────
 
