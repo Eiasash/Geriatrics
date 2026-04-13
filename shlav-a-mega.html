@@ -1950,89 +1950,7 @@ const SYL_ARTICLES=[
 {t:'Dementia Prevention and Treatment: A Narrative Review',j:'JAMA Internal Medicine'},
 {t:'Age-Related Hearing Loss',j:'NEJM'},
 ];
-function renderSyllabus(){
-let h=`<div class="sec-t">📋 סילבוס שלב א׳ — גריאטריה</div>
-<div class="sec-s">P005-2026 · IMA Scientific Council · Official Required Sources</div>`;
-// Section pills
-h+=`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">`;
-[['harAll','🧠 Harrison\'s (All)'],['harBase','⚕️ Harrison\'s (Base)'],['laws','⚖️ Laws'],['articles','📄 Articles']].forEach(([id,l])=>{
-h+=`<span class="pill ${sylSec===id?'on':''}" onclick="sylSec='${id}';render()">${l}</span>`;
-});
-h+=`<span class="pill" onclick="tab='lib';libSec='haz-pdf';render()" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca">📕 Hazzard → Library</span>`;
-h+=`</div>`;
-
-if(sylSec==='haz'){
-h+=`<div class="card" style="padding:20px;text-align:center">
-<div style="font-size:13px;font-weight:700;margin-bottom:8px">📕 Hazzard's moved to Library</div>
-<div style="font-size:11px;color:#64748b;margin-bottom:12px">All 61 chapters with page links, drill buttons & accuracy stats</div>
-<button onclick="tab='lib';libSec='haz-pdf';render()" class="btn btn-p" style="font-size:12px;padding:8px 20px">📕 Open Hazzard in Library</button>
-</div>`;
-}
-if(sylSec==='harAll'){
-h+=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — For ALL Residents</div>
-<button onclick="toggleHarrisonAI()" style="font-size:10px;padding:4px 10px;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-bottom:8px" aria-label="Ask AI about Harrison chapter">❓ Ask AI about any Harrison chapter</button>
-<div id="harrison-ai-box" style="display:none;margin-bottom:10px;padding:10px;background:#eff6ff;border-radius:10px">
-<div style="font-size:10px;color:#0284c7;font-weight:600;margin-bottom:6px">Ask anything from Harrison's (board-relevant)</div>
-<textarea id="harrison-ai-q" class="search-box" placeholder="e.g. מה הקריטריונים לאי ספיקת לב לפי Harrison Ch 286?" style="width:100%;font-size:11px;direction:rtl;height:60px;resize:none"></textarea>
-<button onclick="submitHarrisonAI()" style="font-size:11px;padding:6px;width:100%;background:#0284c7;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-top:4px" aria-label="Submit Harrison AI question">שאל</button>
-<div id="harrison-ai-answer" style="display:none;margin-top:8px;font-size:11px;line-height:1.7;direction:rtl;text-align:right;padding:8px;background:#fff;border-radius:8px"></div>
-</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">התמחות בסיס + התמחות-על · ${SYL_HAR_ALL.length} chapters</div>`;
-const _harMap=HARRISON_PDF_MAP;
-SYL_HAR_ALL.forEach(c=>{
-const _pdf=_harMap[String(c.ch)];
-h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
-<span style="background:#8b5cf6;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:44px;text-align:center">Ch ${c.ch}</span>
-<span style="font-size:11px;flex:1">${c.t}</span>${_pdf?`<a href="${_pdf}" download style="font-size:10px;padding:3px 7px;background:#ede9fe;color:#7c3aed;border-radius:6px;text-decoration:none;flex-shrink:0">📄 PDF</a>`:''}
-</div>`;
-});
-h+=`</div>`;
-}
-if(sylSec==='harBase'){
-h+=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — Base Specialization Additional</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">תוספת למבחן התמחות בסיס · ${SYL_HAR_BASE.length} chapters</div>`;
-SYL_HAR_BASE.forEach(c=>{
-const _pdf=_harMap[String(c.ch)];
-h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9">
-<span style="background:#06b6d4;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;min-width:44px;text-align:center">Ch ${c.ch}</span>
-<span style="font-size:11px;flex:1">${c.t}</span>${_pdf?`<a href="${_pdf}" download style="font-size:10px;padding:3px 7px;background:#e0f2fe;color:#0284c7;border-radius:6px;text-decoration:none;flex-shrink:0">📄 PDF</a>`:''}
-</div>`;
-});
-h+=`</div>`;
-}
-if(sylSec==='laws'){
-h+=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">⚖️ חוקים, נהלי משרד הבריאות ופרסומים ישראליים</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">${SYL_LAWS.length} items · Israeli regulations & guidelines</div>`;
-SYL_LAWS.forEach((l,i)=>{
-h+=`<div class="heb" style="padding:8px 0;border-bottom:1px solid #f1f5f9">
-<div style="display:flex;align-items:flex-start;gap:8px">
-<span style="background:#f59e0b;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;flex-shrink:0">${i+1}</span>
-<div style="flex:1"><div style="font-size:11px;font-weight:600">${l.n}</div>
-<div style="font-size:9px;color:#94a3b8;margin-top:2px">${l.s}</div></div>${l.f?`<a href="${l.f}" target="_blank" style="font-size:10px;padding:3px 7px;background:#fffbeb;color:#d97706;border-radius:6px;text-decoration:none;flex-shrink:0;white-space:nowrap">📄 צפה</a>`:''}
-</div></div>`;
-});
-h+=`</div>`;
-}
-if(sylSec==='articles'){
-h+=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">📄 מאמרים נדרשים</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">${SYL_ARTICLES.length} required journal articles</div>`;
-const _artMap={"0":"article_beers_2023.pdf","1":"article_vascog2.pdf","2":"article_alzheimer_iwg.pdf","3":"article_alzheimer_aa.pdf","4":"article_dementia_prevention.pdf","5":"article_hearing_loss.pdf"};
-SYL_ARTICLES.forEach((a,i)=>{
-const _apdf=_artMap[String(i)];
-h+=`<div style="padding:8px 0;border-bottom:1px solid #f1f5f9;display:flex;align-items:flex-start;gap:8px">
-<div style="flex:1"><div style="font-size:11px;font-weight:600;line-height:1.5">${i+1}. ${a.t}</div>
-<div style="font-size:9px;color:rgb(var(--sky));margin-top:2px">${a.j}</div></div>${_apdf?`<a href="${_apdf}" download style="font-size:10px;padding:3px 7px;background:#eff6ff;color:#3b82f6;border-radius:6px;text-decoration:none;flex-shrink:0">📄 PDF</a>`:''}</div>`;
-});
-h+=`</div>`;
-}
-h+=`<div style="text-align:center;margin-top:12px;font-size:9px;color:#94a3b8">
-<a href="https://ima-contentfiles.s3.amazonaws.com/P005-2026.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">View original P005-2026.pdf ↗</a></div>`;
-return h;
-}
+// renderSyllabus removed — dead code (83 lines)
 
 // ===== TEXTBOOK (Hazzard's 8e PDFs) =====
 const HAZZARD_PARTS=[
@@ -2212,39 +2130,8 @@ Format as clean bullet points. Be concise and high-yield.`;
 </div>`;
   }catch(e){box.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px">⚠️ Failed: '+sanitize(e.message)+'</div>';}
 }
-function toggleAskAI(){
-  const box=document.getElementById('ask-ai-box');
-  if(!box)return;
-  box.style.display=box.style.display==='none'?'block':'none';
-  if(box.style.display==='block'){const inp=document.getElementById('ask-ai-input');if(inp)inp.focus();}
-}
-async function submitAskAI(chNum,chTitle){
-  const inp=document.getElementById('ask-ai-input');
-  const ansBox=document.getElementById('ask-ai-answer');
-  if(!inp||!ansBox)return;
-  const q=inp.value.trim();
-  if(!q)return;
-  ansBox.style.display='block';
-  ansBox.innerHTML='⏳ ...';
-  let chText='';
-  if(window._libData){
-    const ch=window._libData.chapters.find(c=>c.ch===chNum);
-    if(ch&&ch.sections)chText=ch.sections.slice(0,8).map(s=>s.title+(s.content?': '+s.content.slice(0,200):'')).join('\n').slice(0,2500);
-  }
-  const prompt=`You are an expert geriatrics educator helping an Israeli geriatrics resident study Hazzard's Ch ${chNum}: ${chTitle}.
-
-Chapter context:
-${chText||`Hazzard Geriatric Medicine Chapter ${chNum}`}
-
-Student question: ${q}
-
-Answer concisely in HEBREW (3-5 sentences). Focus on board exam relevance. If the question involves a specific number/threshold/criterion, state it explicitly.`;
-  try{
-    const txt=await callAI([{role:'user',content:prompt}],500,'sonnet');
-    ansBox.innerHTML=sanitize(txt);
-    inp.value='';
-  }catch(e){ansBox.innerHTML='⚠️ Failed: '+sanitize(e.message);}
-}
+// toggleAskAI removed — dead code
+// submitAskAI removed — dead code
 // ===== FEATURE 5: AI QUESTION GENERATION FROM CHAPTERS =====
 async function generateQuestionsFromChapter(source,chNum,chTitle){
 const box=document.getElementById('quiz-me-box');
@@ -3079,13 +2966,7 @@ if(btn){btn.textContent='✅ הועתק';setTimeout(()=>btn.textContent='📋 ה
 
 let oi=-1,oint=null,ocks={};
 function exitO(){if(oint)clearInterval(oint);oi=-1;orun=false;render();}
-function togOT(){
-if(orun){clearInterval(oint);orun=false;render();return;}
-orun=true;oint=setInterval(()=>{if(otime<=0){clearInterval(oint);orun=false;render();return;}
-otime--;const el=document.getElementById('oc');if(el){el.textContent=fmtT(otime);if(otime<=60)el.style.color='#ef4444';}
-},1000);render();
-}
-function togOck(j){ocks[j]=!ocks[j];render();}
+// togOT, togOck removed — dead code
 
 // renderOsce removed v9.10
 // ===== TRACKER =====
@@ -4434,7 +4315,7 @@ const CHANGELOG={
 '🔒 XSS: sanitize AI-generated question fields (gq.q, gq.o, gq.e)',
 '🔒 XSS: sanitize leaderboard data from Supabase',
 '🐛 Cloud backup: check PATCH response status before showing success',
-'🧹 Remove dead code: queueBackgroundSync (never called)',
+'🧹 Remove 7 dead functions: queueBackgroundSync, toggleAskAI, submitAskAI, copyDiagnostics, togOT, togOck, renderSyllabus',
 ],
 '9.32':['🛡️ Fix: guarded all localStorage parses — corrupted state no longer bricks boot','🔧 Fix: user-generated questions now persist across reload (Add to Bank actually works)','🔧 Fix: service worker skips POST requests, uses navigate mode for HTML fallback','🔧 Fix: removed wrong questions.json fallback for non-question data requests'],
 '9.31':['🔧 FSRS-4.5 extracted to shared/fsrs.js — shared engine Phase 1','📦 shared/fsrs.js loaded as external script, cached by SW','🔗 isChronicFail() now shared between apps','⚡ srScore() parity: fsrsRating parameter in both apps'],
@@ -4580,19 +4461,7 @@ return `Shlav A Mega v${APP_VERSION}\n`+
 `Storage: ${(JSON.stringify(S).length/1024).toFixed(1)}KB · Online: ${navigator.onLine}\n`+
 `Dark: ${S.dark?'on':'off'} · SW: ${navigator.serviceWorker?'registered':'none'}`;
 }
-function copyDiagnostics(){
-const d=getDiagnostics();
-if(navigator.clipboard){navigator.clipboard.writeText(d).then(()=>{
-const st=document.getElementById('fbStatus');if(st){st.textContent='✅ Diagnostics copied to clipboard';st.style.display='block';st.style.color='#059669';setTimeout(()=>st.style.display='none',3000);}
-}).catch(()=>{
-// Fallback for mobile
-const ta=document.createElement('textarea');ta.value=d;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
-const st=document.getElementById('fbStatus');if(st){st.textContent='✅ Copied (fallback)';st.style.display='block';st.style.color='#059669';setTimeout(()=>st.style.display='none',3000);}
-});}else{
-// No clipboard API — show in alert
-alert(d);
-}
-}
+// copyDiagnostics removed — dead code
 async function submitReport(){
 const type=S._reportType;
 if(!type)return;
