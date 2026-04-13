@@ -1610,6 +1610,17 @@ h+=`<div style="display:flex;gap:4px;margin-bottom:8px;align-items:center">
 // Next button — blocked if wrong + no classification (non-exam)
 const _blocked=!examMode&&sel!==q.c&&!_wrongReason;
 h+=`<button id="next-btn" class="btn btn-d" onclick="next()"${_blocked?' disabled':''} style="${_blocked?'opacity:0.5':''}" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
+// Compact wrong answer report — in context, right where it matters
+if(!examMode&&ans){
+h+=`<div id="report-wrong-box" style="margin-top:8px">
+<button onclick="document.getElementById('report-wrong-expand').style.display=document.getElementById('report-wrong-expand').style.display==='none'?'block':'none'" style="font-size:9px;padding:3px 8px;background:#fffbeb;color:#92400e;border:1px solid #fde68a;border-radius:6px;cursor:pointer">⚠️ Report wrong answer key</button>
+<div id="report-wrong-expand" style="display:none;margin-top:6px;padding:10px;background:#fffbeb;border-radius:10px;border:1px solid #fde68a">
+<input id="reportInput" class="search-box" placeholder="מה לדעתך התשובה הנכונה ולמה?" style="font-size:11px;margin-bottom:6px;direction:rtl">
+<button class="btn" style="font-size:10px;width:100%;background:#d97706;color:#fff" onclick="S._reportType='wrong_answer';submitReport()">שלח לבדיקת AI</button>
+<div id="fbStatus" style="font-size:10px;margin-top:4px;display:none"></div>
+<div id="aiVerifyResult" style="display:none;margin-top:8px;padding:10px;border-radius:8px;font-size:10px;line-height:1.6"></div>
+</div></div>`;
+}
 }
 h+=`</div>`;
 
@@ -3359,7 +3370,7 @@ const STUDY_PLAN = [
 ];
 
 function renderStudyPlan(){
-  const spOpen = S.spOpen !== undefined ? S.spOpen : true;
+  const spOpen = S.spOpen !== undefined ? S.spOpen : false;
   if (spOpen !== S.spOpen) S.spOpen = spOpen;
 
   // Count total topics and checked topics
@@ -3397,7 +3408,7 @@ function renderStudyPlan(){
 
     // Tiers
     STUDY_PLAN.forEach(tier => {
-      const tierOpen = S['sp_t' + tier.tier] !== undefined ? S['sp_t' + tier.tier] : true;
+      const tierOpen = S['sp_t' + tier.tier] !== undefined ? S['sp_t' + tier.tier] : false;
 
       // Count topics for this tier
       let tierTopics = 0, tierChecked = 0;
@@ -3757,11 +3768,7 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 </div>
 <div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
 </div></div>`;
-// Study Journal — wrong answer log + personal notes
-h+=`<div class="card" style="padding:14px;margin-top:12px">
-<div style="font-weight:700;font-size:12px;margin-bottom:10px">📓 Study Journal</div>
-${renderWrongAnswerLog()}
-</div>`;
+// Study Journal moved — wrong answer reporting now in Quiz tab post-answer UI
 // API key settings card
 var _storedKey=getApiKey();
 h+='<div class="card" style="padding:14px;margin-top:10px;border:2px solid '+(_storedKey?'#bbf7d0':'#fde68a')+'">';
@@ -4325,8 +4332,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.36';
+const APP_VERSION='9.37';
 const CHANGELOG={
+'9.37':[
+'🎨 Track tab declutter: Study Plan collapsed by default, Study Journal removed',
+'🎨 Report wrong answer moved into Quiz tab (in context after each answer)',
+'🎨 Study Plan tiers start collapsed — tap to expand',
+],
 '9.36':[
 '🔒 XSS: sanitize built-in explanation (q.e) and option text',
 '🎨 Topic Mastery Map: tiles now show abbreviated topic name + percentage',
