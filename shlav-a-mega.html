@@ -1057,6 +1057,17 @@ function setApiKey(k){if(k)localStorage.setItem('samega_apikey',k.trim());else l
 let teachBackState=null;
 // ===== AI EXPLAIN =====
 let _exCache={};try{_exCache=JSON.parse(localStorage.getItem('samega_ex')||'{}')}catch(e){}
+function _updateWrongUI(){
+  // Update just the why-wrong container without full re-render (preserves AI explanation)
+  const el=document.getElementById('why-wrong-box');
+  if(el){
+    const labels={'no_knowledge':'📚 Didn\'t know','misread':'👓 Misread','between_2':'⚖️ Between 2','silly':'🤦 Silly mistake'};
+    el.innerHTML='<div style="font-size:10px;color:#059669;font-weight:600">✅ '+labels[_wrongReason]+'</div>';
+  }
+  // Unblock the next button
+  const nb=document.getElementById('next-btn');
+  if(nb){nb.disabled=false;nb.style.opacity='1';}
+}
 let _exLoading=false,_exIdx=-1;
 function toggleFlagExplain(qIdx){
   if(!S.flagged)S.flagged={};
@@ -1573,11 +1584,11 @@ else{
 if(!examMode&&sel!==q.c&&!_wrongReason){
 h+=`<div style="margin-bottom:8px">
 <div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:6px">Why did you get it wrong?</div>
-<div style="display:flex;gap:4px;flex-wrap:wrap">
-<button class="btn" style="font-size:10px;padding:6px 10px;background:#fef2f2;color:#991b1b" onclick="_wrongReason='no_knowledge';save();render()">📚 Didn't know</button>
-<button class="btn" style="font-size:10px;padding:6px 10px;background:#fffbeb;color:#92400e" onclick="_wrongReason='misread';save();render()">👓 Misread</button>
-<button class="btn" style="font-size:10px;padding:6px 10px;background:#eff6ff;color:#1e40af" onclick="_wrongReason='between_2';save();render()">⚖️ Between 2</button>
-<button class="btn" style="font-size:10px;padding:6px 10px;background:#f5f3ff;color:#6d28d9" onclick="_wrongReason='silly';save();render()">🤦 Silly mistake</button>
+<div id="why-wrong-box" style="display:flex;gap:4px;flex-wrap:wrap">
+<button class="btn" style="font-size:10px;padding:6px 10px;background:#fef2f2;color:#991b1b" onclick="_wrongReason='no_knowledge';save();_updateWrongUI()">📚 Didn't know</button>
+<button class="btn" style="font-size:10px;padding:6px 10px;background:#fffbeb;color:#92400e" onclick="_wrongReason='misread';save();_updateWrongUI()">👓 Misread</button>
+<button class="btn" style="font-size:10px;padding:6px 10px;background:#eff6ff;color:#1e40af" onclick="_wrongReason='between_2';save();_updateWrongUI()">⚖️ Between 2</button>
+<button class="btn" style="font-size:10px;padding:6px 10px;background:#f5f3ff;color:#6d28d9" onclick="_wrongReason='silly';save();_updateWrongUI()">🤦 Silly mistake</button>
 </div></div>`;
 }
 // Feature 4: Cross-link to chapter after wrong answer
@@ -1598,7 +1609,7 @@ h+=`<div style="display:flex;gap:4px;margin-bottom:8px;align-items:center">
 }
 // Next button — blocked if wrong + no classification (non-exam)
 const _blocked=!examMode&&sel!==q.c&&!_wrongReason;
-h+=`<button class="btn btn-d" onclick="next()"${_blocked?' disabled':''} aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
+h+=`<button id="next-btn" class="btn btn-d" onclick="next()"${_blocked?' disabled':''} style="${_blocked?'opacity:0.5':''}" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
 }
 h+=`</div>`;
 
@@ -4314,8 +4325,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.34';
+const APP_VERSION='9.35';
 const CHANGELOG={
+'9.35':[
+'🐛 Fix 79 AI questions with wrong answer keys (explanation said C but key was A, etc.)',
+'🐛 Fix: AI explanation no longer disappears when tapping why-wrong buttons',
+'🎨 Why-wrong buttons now update inline without full re-render',
+],
 '9.34':[
 '📊 +1,477 AI-generated questions (Harrison 294 + Hazzard 1,183) — total 3,397',
 '🧠 Coverage boost: all 40 topics now ≥30 questions',
