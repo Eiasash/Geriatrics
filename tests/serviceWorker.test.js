@@ -83,9 +83,20 @@ describe("sw.js — cache strategy", () => {
     expect(swContent).toContain("shlav-a-mega.html");
   });
 
-  it("has fallback to questions.json for data fetch failures", () => {
-    // Cache-first catch falls back to questions.json
-    expect(swContent).toMatch(/catch.*caches\.match.*questions\.json/s);
+  it("does NOT fall back to questions.json for arbitrary data failures", () => {
+    // Fixed: each data request falls back to its own cache, not questions.json
+    const dataFallbackSection = swContent.match(/shouldUseCacheFirst[\s\S]*?\.catch\((.*?)\)/);
+    if (dataFallbackSection) {
+      expect(dataFallbackSection[1]).not.toContain('questions.json');
+    }
+  });
+
+  it("skips non-GET requests", () => {
+    expect(swContent).toMatch(/request\.method\s*!==\s*'GET'/);
+  });
+
+  it("uses navigate mode for HTML fallback", () => {
+    expect(swContent).toMatch(/request\.mode\s*===\s*'navigate'/);
   });
 });
 

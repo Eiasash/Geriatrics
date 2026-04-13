@@ -1,0 +1,132 @@
+[
+  {
+    "q": "A 72-year-old Black woman with diabetes presents to your clinic reporting difficulty managing her blood glucose levels. She mentions feeling uncomfortable asking questions during medical visits and often feels rushed. She lives alone in a low-income neighborhood with limited access to fresh groceries. Which concept from social determinants of health best explains her complex healthcare experience?",
+    "o": [
+      "Intersectionality - recognizing how her age, race, and gender simultaneously influence her healthcare experience",
+      "Simple additive discrimination - each identity factor contributes equally to her healthcare challenges",
+      "Primary ageism - her age is the main barrier to effective diabetes management",
+      "Individual responsibility - her personal choices are the primary determinant of her health outcomes"
+    ],
+    "c": 0,
+    "t": "Hazzard",
+    "ti": 35,
+    "e": "This case exemplifies intersectionality, where multiple social identities (age, race, gender) interact simultaneously to create unique healthcare challenges that cannot be understood by examining each factor separately. The patient's experience managing diabetes is inseparable from navigating healthcare as an older Black woman, where she may face ageism, racism, and gender-based discrimination concurrently. Her hesitation to ask questions may reflect internalized expectations from previous encounters where these identities intersected negatively. The neighborhood context adds socioeconomic factors that compound these challenges. Intersectionality emphasizes that disadvantage is not simply additive - her experience as an older Black woman is qualitatively different from the sum of separate age, race, and gender effects. Understanding this complexity is crucial for providing culturally responsive care that addresses the root causes of health disparities rather than focusing solely on individual behaviors. **Clinical Pearl:** Always consider how multiple identities interact simultaneously in healthcare encounters, as older adults cannot compartmentalize their age, race, gender, or other identities when seeking care."
+  },
+  {
+    "q": "A 68-year-old Latino immigrant male living in a low-income senior housing facility reports avoiding the community health center despite having uncontrolled hypertension. He mentions past experiences where staff seemed impatient with his limited English and made assumptions about his insurance status. This scenario best illustrates which type of racism affecting older adults?",
+    "o": [
+      "Organizational racism - systemic barriers within healthcare institutions that disadvantage certain groups",
+      "Internalized racism - the patient's own biases about his cultural background",
+      "Historical racism - discrimination from past decades affecting current health",
+      "Interpersonal racism - only individual staff member attitudes matter"
+    ],
+    "c": 0,
+    "t": "Hazzard",
+    "ti": 35,
+    "e": "This vignette demonstrates organizational (institutional) racism, where healthcare systems create structural barriers that systematically disadvantage certain populations. The patient's experience reflects institutional policies and practices that fail to accommodate language diversity, cultural differences, and varying insurance situations - creating barriers that disproportionately affect Latino older adults. This form of racism operates through seemingly neutral institutional practices (lack of interpreters, assumptions about insurance, time pressures) that have discriminatory effects. Unlike interpersonal racism which involves individual prejudice, organizational racism is embedded in institutional structures and policies. The patient's avoidance behavior represents a rational response to institutional barriers rather than personal preference. This type of discrimination is particularly harmful because it's often less visible than overt interpersonal racism, yet creates systemic exclusion from healthcare. For older adults, organizational racism compounds with ageism, creating multiple barriers to accessing appropriate care. Addressing this requires institutional changes in policies, procedures, staff training, and resource allocation rather than just individual attitude changes. **Clinical Pearl:** Examine your institution's policies and practices for hidden barriers that may systematically exclude or disadvantage certain populations, particularly older adults from marginalized communities."
+  },
+  {
+    "q": "An 82-year-old White woman from an affluent neighborhood and a 79-year-old Black woman from a low-income area both have similar cardiac conditions but demonstrate markedly different health outcomes and access to specialized care. The community health assessment reveals this pattern across many residents. This situation primarily demonstrates:",
+    "o": [
+      "Health disparities - systematic differences in health outcomes between population groups",
+      "Individual health variations - normal differences in how people respond to treatment",
+      "Age-related decline - expected deterioration in health with advancing age",
+      "Random health outcomes - unpredictable differences in disease progression"
+    ],
+    "c": 0,
+    "t": "Hazzard",
+    "ti": 35,
+    "e": "This scenario illustrates health disparities - systematic, potentially avoidable differences in health outcomes between different population groups that are closely linked with social, economic, and environmental disadvantage. The key indicator is that this pattern exists across many residents, not just these two individuals, suggesting structural rather than individual causes. Health disparities reflect the cumulative impact of social determinants of health including neighborhood resources, healthcare access, environmental conditions, and historical disadvantages that affect entire communities. The fact that both women are of similar age with similar conditions but have different outcomes based on race and neighborhood socioeconomic status demonstrates how social factors, rather than biological factors alone, drive health differences. This pattern represents a failure to achieve health equity - the assurance of optimal health conditions for all people. For geriatricians, recognizing health disparities is crucial because older adults have had lifelong exposure to these systematic differences, which accumulate over time. Addressing disparities requires understanding how social determinants affect health across the lifespan and advocating for policy changes that address root causes rather than just treating individual patients. **Clinical Pearl:** When you observe consistent patterns of different health outcomes between population groups in your practice, investigate underlying social and structural factors rather than attributing differences to individual characteristics or behaviors."
+  },
+  {
+    "q": "A 76-year-old transgender woman of color presents to your long-term care facility for admission. Staff express concerns about room assignments and care protocols, and some residents' families have complained. The patient has experienced discrimination in previous healthcare settings. Your approach should prioritize:",
+    "o": [
+      "Health equity principles - ensuring optimal health conditions while centering this historically disenfranchised individual",
+      "Majority comfort - accommodating other residents' and families' preferences to maintain facility harmony",
+      "Age-focused care - treating her the same as any other older adult without acknowledging identity differences",
+      "Separate accommodations - providing isolated care to avoid potential conflicts"
+    ],
+    "c": 0,
+    "t": "Hazzard",
+    "ti": 35,
+    "e": "This situation requires applying health equity principles, which involve ensuring optimal health conditions for all people while specifically centering those who are historically disenfranchised and most vulnerable. The patient represents multiple intersecting marginalized identities (age, transgender status, race) that compound her vulnerability to discrimination and poor health outcomes. Health equity is an ongoing process that requires actively addressing barriers and discrimination rather than maintaining status quo practices that perpetuate disparities. The approach must recognize that 'treating everyone the same' (option C) ignores the reality that marginalized individuals face additional barriers and discrimination. Accommodating discriminatory preferences (option B) perpetuates institutional discrimination, while segregation (option D) reinforces marginalization. Health equity requires institutional commitment to inclusive policies, staff education about LGBTQ+ and culturally responsive care, and creating environments where all residents can thrive. This includes appropriate pronouns, respectful care practices, inclusive policies, and addressing bias among staff and other residents. The patient's previous negative healthcare experiences highlight the importance of proactive measures to ensure equitable treatment. Age should not exclude anyone from achieving their health potential, and older adults deserve dignity and respect regardless of their identities. **Clinical Pearl:** Health equity requires proactive measures to center and protect historically marginalized individuals, not neutral policies that maintain existing disparities."
+  },
+  {
+    "q": "A 70-year-old Native American man living on a reservation has diabetes complications and limited access to specialty care due to geographic isolation and historical underfunding of Indian Health Services. His family has experienced generational trauma from boarding schools. His current health challenges are best understood through:",
+    "o": [
+      "Historical perspective - recognizing how colonialism and contemporary policies continue to affect health access and outcomes",
+      "Individual lifestyle choices - focusing primarily on personal health behaviors and compliance",
+      "Geographic determinism - accepting that rural location naturally limits healthcare access",
+      "Cultural barriers - assuming traditional practices conflict with modern medical care"
+    ],
+    "c": 0,
+    "t": "Hazzard",
+    "ti": 35,
+    "e": "This case requires a historical perspective to understand how colonialism, forced assimilation policies, and contemporary underfunding continue to create lasting effects on Indigenous health. The boarding school experience represents historical trauma that disrupted cultural practices, family structures, and traditional healing systems while creating intergenerational trauma that affects current health behaviors and healthcare relationships. Contemporary underfunding of Indian Health Services reflects ongoing policy decisions that maintain health disparities rather than geographic inevitability. The historical lens reveals how social identities and health disparities have been constructed over time through deliberate policies that denied resources and opportunities to Indigenous populations. Geographic isolation itself often results from historical forced relocations rather than natural settlement patterns. Understanding this history is crucial because it explains current health disparities as products of systematic disenfranchisement rather than individual failures or cultural deficits. This perspective emphasizes that addressing health disparities requires acknowledging and remedying historical injustices through policy changes, resource allocation, and culturally responsive care that honors Indigenous healing traditions alongside Western medicine. For geriatricians, this means understanding how lifetime exposure to these historical and contemporary forces affects older Indigenous adults' health and healthcare relationships, and advocating for systemic changes that address root causes of disparities. **Clinical Pearl:** Current health disparities among historically marginalized older adults reflect cumulative effects of systematic disenfranchisement across the lifespan, requiring both individual care and systemic advocacy."
+  },
+  {
+    "q": "A 78-year-old woman with moderate dementia is hospitalized for pneumonia. Her daughter presents a living will stating 'no heroic measures' but is now requesting intubation because 'mother wouldn't want to die from something treatable.' The patient cannot participate in decision-making. According to principles of advance care planning, what is the most appropriate approach?",
+    "o": [
+      "Follow the daughter's current wishes as the healthcare proxy",
+      "Honor the written advance directive regardless of family input",
+      "Convene an ethics committee to override family disagreement",
+      "Explore what 'no heroic measures' meant to the patient in this context"
+    ],
+    "c": 3,
+    "t": "Hazzard",
+    "ti": 34,
+    "e": "This case illustrates the complexity of interpreting advance directives in real clinical situations. The correct answer emphasizes that advance directives should reflect the patient's values and preferences, but terms like 'no heroic measures' are often vague and require interpretation. The goal is not rigid adherence to written words, but understanding what the patient would have wanted in this specific situation. The daughter's change of heart may reflect a disconnect between abstract future planning and concrete present reality. Effective advance care planning involves ongoing conversations about values, goals, and preferences in various scenarios, not just completion of legal documents. Clinical Pearl: Advance directives work best when they capture the patient's underlying values and decision-making framework rather than just specific treatment preferences, as medical situations are often more nuanced than anticipated during planning discussions."
+  },
+  {
+    "q": "An 82-year-old man with end-stage heart failure is presented with options for cardiac resynchronization therapy. When the cardiologist explains '30% chance of improvement,' the patient chooses the procedure. When the geriatrician later explains '70% chance it won't help,' the patient declines. This scenario best demonstrates which aspect of medical decision-making theory?",
+    "o": [
+      "Expected utility theory showing rational decision-making",
+      "Prospect theory demonstrating framing effects on choices",
+      "Patient autonomy requiring multiple informed consents",
+      "Cognitive impairment affecting decision-making capacity"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 34,
+    "e": "This vignette perfectly illustrates prospect theory and framing effects described by Kahneman and Tversky. The same statistical information (30% improvement rate) leads to opposite decisions when framed as a gain ('30% chance of improvement') versus a loss ('70% chance it won't help'). When presented as potential gains, people tend to be risk-averse and choose the intervention. When framed as potential losses, people become risk-seeking and may avoid the intervention. This demonstrates that human decision-making deviates from purely rational models and is significantly influenced by how information is presented. Both physicians presented accurate information, but the framing dramatically affected the patient's choice. This highlights the importance of recognizing cognitive biases in medical decision-making and the need for clinicians to be aware of how their communication style influences patient choices. Clinical Pearl: Present medical information in multiple frames and check patient understanding to ensure decisions align with their true values rather than being driven by presentation bias."
+  },
+  {
+    "q": "A 72-year-old woman with advancing Parkinson's disease wants to complete an advance directive. She states, 'I've seen what this disease does. I want to focus on comfort when I can't care for myself anymore.' Which approach best supports patient-centered advance care planning?",
+    "o": [
+      "Complete a standard living will form checking 'no life-sustaining treatments'",
+      "Explore her values about independence, dignity, and quality of life",
+      "Defer planning until she develops more severe symptoms",
+      "Focus on specific medical interventions she would accept or refuse"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 34,
+    "e": "Effective advance care planning goes beyond completing legal documents to understanding the patient's underlying values, goals, and what constitutes acceptable quality of life. This patient has expressed core values around independence and dignity that should guide future medical decisions. Rather than focusing solely on specific treatments (which may not be predictable), exploring her values about what makes life meaningful helps surrogate decision-makers apply her preferences to unforeseen situations. The patient's statement about 'focusing on comfort' when she 'can't care for herself' provides valuable insight into her priorities and thresholds for shifting from curative to comfort-focused care. This values-based approach enables more nuanced decision-making that honors patient autonomy even when capacity is lost. It also helps families understand the reasoning behind preferences, making them more confident in implementing decisions that align with the patient's wishes. Clinical Pearl: Values-based advance care planning creates a decision-making framework that can be applied to various clinical scenarios, making it more useful than rigid treatment-specific directives."
+  },
+  {
+    "q": "A 69-year-old man with multiple comorbidities is discussing goals of care. He says, 'I want everything done to keep me alive.' His wife privately tells you, 'He's afraid of being a burden. He really values his independence above all else.' What principle should guide your approach to advance care planning?",
+    "o": [
+      "Respect patient confidentiality and honor his stated preference for life-sustaining care",
+      "Facilitate further discussion to explore underlying values and concerns with both present",
+      "Document the wife's input as primary since she knows him best",
+      "Recommend psychiatric evaluation for decision-making capacity"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 34,
+    "e": "This case highlights the complexity of advance care planning when stated preferences may not align with underlying values. The patient's blanket statement of 'wanting everything done' may reflect fear, inadequate understanding, or social pressure rather than his true preferences. His wife's insight about his fear of being a burden and valuing independence suggests deeper exploration is needed. The goal is not to honor either the patient's initial statement or his wife's interpretation, but to create a safe space for the patient to explore his own values, fears, and preferences. This requires skilled communication to address his concerns about being a burden while respecting his autonomy. The clinician should facilitate joint discussions that allow the patient to express his authentic preferences while having family support. This approach honors patient-centered care while recognizing that initial statements about advance directives may not reflect fully considered preferences. Understanding the patient's fears and values leads to more meaningful and sustainable advance care planning. Clinical Pearl: 'I want everything done' often signals the need for deeper exploration of values, fears, and understanding rather than acceptance at face value."
+  },
+  {
+    "q": "An 85-year-old woman with dementia develops recurrent aspiration pneumonia. She has no advance directive, and her three adult children disagree about feeding tube placement. One child says, 'Mom always said she didn't want to be kept alive artificially.' Another says, 'She loved food and cooking - she wouldn't want to starve.' The third wants 'whatever gives her the best chance.' What best represents evidence-based advance care planning principles?",
+    "o": [
+      "Place the feeding tube since there's no written advance directive",
+      "Follow the majority decision of the children as surrogates",
+      "Focus on what the patient would have wanted based on her known values and preferences",
+      "Recommend court appointment of a guardian to make decisions"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 34,
+    "e": "This case demonstrates the importance of substituted judgment - making decisions based on what the patient would have wanted rather than what surrogates think is best or what medical options exist. While written advance directives are helpful, their absence doesn't invalidate the patient's right to have her values guide decisions. The children are each focusing on different aspects of their mother's values: autonomy, enjoyment, and survival. The clinical team should facilitate family meetings to explore what they knew about their mother's values, priorities, and previously expressed preferences about medical care and quality of life. This process involves gathering information about her personality, religious beliefs, previous medical decisions, and statements about end-of-life care. The goal is to construct what she would have decided if she could participate in this decision. Evidence shows that feeding tubes don't improve outcomes in advanced dementia and may increase suffering. This medical information should be shared while focusing on honoring the patient's likely preferences. Clinical Pearl: Substituted judgment requires reconstructing the patient's likely decision based on their known values, not choosing what surrogates or clinicians think is best."
+  }
+]

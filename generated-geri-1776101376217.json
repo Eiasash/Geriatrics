@@ -1,0 +1,522 @@
+[
+  {
+    "q": "A 72-year-old woman is brought to clinic by her daughter for cognitive concerns. During examination, when asked to name a wristwatch, she responds 'It's the thing you use to tell time.' She can describe its function perfectly but cannot produce the word 'watch.' Her speech is fluent, comprehension is intact, and she can repeat phrases normally. What type of deficit is this patient demonstrating?",
+    "o": [
+      "Anomia",
+      "Wernicke's aphasia",
+      "Broca's aphasia",
+      "Global aphasia"
+    ],
+    "c": 0,
+    "t": "Hazzard",
+    "ti": 2,
+    "e": "This patient demonstrates anomia, a naming deficit where patients use circumlocutory responses or descriptive terms instead of proper names. The patient's fluent speech, intact comprehension, and preserved repetition with isolated naming difficulties is classic for anomia. Wernicke's aphasia would present with fluent but nonsensical speech and impaired comprehension. Broca's aphasia involves nonfluent, effortful speech with preserved comprehension but impaired repetition. Global aphasia would show deficits in all language domains including comprehension, repetition, and fluency. Clinical Pearl: Anomia can occur in early dementia, delirium, or following head trauma in elderly patients, and adequate vision must be confirmed before attributing errors to naming deficits."
+  },
+  {
+    "q": "An 85-year-old man with Parkinson's disease is asked to write his name and address during a mental status examination. His writing starts normal-sized but becomes progressively smaller as he continues writing the sentence. What neurological sign is this patient exhibiting?",
+    "o": [
+      "Aphasic agraphia",
+      "Mechanical agraphia",
+      "Micrographia",
+      "Disconnection agraphia"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 2,
+    "e": "This patient exhibits micrographia, a characteristic feature of parkinsonism where script becomes progressively smaller as the patient writes. This occurs due to the bradykinesia and motor control difficulties inherent in Parkinson's disease. Aphasic agraphia would accompany other aphasic symptoms and show language-based writing errors. Mechanical agraphia occurs with limb paresis, apraxia, or movement disorders like tremor, but doesn't show the progressive size reduction characteristic of micrographia. Disconnection agraphia results from corpus callosum injury and presents differently. Clinical Pearl: In elderly patients with movement disorders, micrographia can be an early and prominent sign that affects functional independence, particularly when filling out forms or writing checks."
+  },
+  {
+    "q": "A 78-year-old woman presents to the emergency department with acute confusion. During mental status testing, she states the year is 2010 (current year 2024), believes she's at home rather than the hospital, but knows her own name and recognizes family members. When asked why she's there, she says she doesn't know. Which aspect of orientation is most preserved in this patient?",
+    "o": [
+      "Orientation to time",
+      "Orientation to place",
+      "Orientation to person",
+      "Orientation to situation"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 2,
+    "e": "This patient's orientation to person is most preserved, as she knows her own name and recognizes family members. Her orientation to time is severely impaired (14-year error), orientation to place is impaired (believes she's at home rather than hospital), and orientation to situation is impaired (doesn't know why she's there). Orientation to person typically remains intact longest in cognitive impairment and is considered the most basic form of orientation. The pattern described suggests delirium, given the acute presentation with disorientation in multiple spheres while maintaining personal identity. Clinical Pearl: In elderly patients with acute confusion, preserved orientation to person with impaired time, place, and situation orientation suggests delirium rather than advanced dementia, where all orientations would be more uniformly impaired."
+  },
+  {
+    "q": "A 69-year-old retired engineer presents with memory complaints. During cognitive testing, when asked 'What does the saying Birds of a feather flock together mean?' he responds 'Birds have feathers and they fly in groups.' His wife reports he's become very literal in conversations and has difficulty with social situations. What cognitive domain is primarily affected?",
+    "o": [
+      "Memory",
+      "Language comprehension",
+      "Abstract thinking",
+      "Visuospatial skills"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 2,
+    "e": "This patient demonstrates impaired abstract thinking, evidenced by his concrete, literal interpretation of the proverb rather than understanding its metaphorical meaning about similar people associating together. Abstract thinking deficits are nonspecific indicators of cerebral dysfunction but are disproportionately severe in frontal lobe disorders. The combination of literal thinking and social difficulties suggests possible frontotemporal dementia affecting the orbitofrontal-subcortical circuits. Memory appears intact enough for him to report concerns, language comprehension is adequate as he understood the words, and no visuospatial issues are described. Clinical Pearl: Loss of abstraction ability with preserved concrete thinking often indicates frontal lobe dysfunction in elderly patients and may be accompanied by changes in social judgment and personality, distinguishing it from typical Alzheimer's disease presentations."
+  },
+  {
+    "q": "An 82-year-old man with mild cognitive impairment is asked to draw a clock showing 3:15. He draws a perfect circle but places all numbers on the right side of the clock face, leaving the left side blank. The hands are correctly positioned relative to the numbers he drew. What does this finding most likely indicate?",
+    "o": [
+      "Executive dysfunction",
+      "Unilateral spatial neglect",
+      "Constructional apraxia",
+      "Visual field defect"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 2,
+    "e": "This patient demonstrates unilateral spatial neglect, specifically left-sided neglect, where he ignores the left half of the clock face while attending only to the right side. This typically results from right parietal lobe dysfunction. Executive dysfunction would present as poor planning (like making the clock too small for numbers) but wouldn't show this lateralized pattern. Constructional apraxia would involve difficulty with the overall construction and spatial relationships, not selective neglect of one side. A visual field defect (hemianopia) might cause similar symptoms, but the patient would typically compensate by turning his head or moving his eyes, and the drawing pattern would be different. Clinical Pearl: Unilateral neglect in elderly patients often indicates right hemisphere stroke or other focal brain lesions and significantly impacts functional independence and safety, requiring specialized rehabilitation approaches."
+  },
+  {
+    "q": "A 76-year-old woman with frontotemporal dementia is evaluated for decision-making capacity. When presented with the scenario 'If you were in a strange town and wanted to find a friend, what would you do?' she responds 'I would walk around until I found them.' Her family reports she recently gave her life savings to a telephone scammer. What cognitive domain is most impaired?",
+    "o": [
+      "Memory",
+      "Language",
+      "Judgment and problem-solving",
+      "Visuospatial skills"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 2,
+    "e": "This patient demonstrates severely impaired judgment and problem-solving abilities. Her unrealistic response to finding a friend (walking around randomly) and vulnerability to financial scams indicate poor judgment and inability to generate practical solutions. This pattern is characteristic of frontotemporal dementia affecting the orbitofrontal-subcortical circuits, which produce marked alterations in social judgment. Appropriate responses would include using a phone book, internet, or asking for directions. Her language appears intact as she can communicate her thoughts, memory isn't directly tested here, and visuospatial skills aren't relevant to this scenario. Clinical Pearl: Impaired judgment and problem-solving in elderly patients, especially when accompanied by social disinhibition and poor financial decisions, strongly suggests frontotemporal dementia and requires immediate evaluation of decision-making capacity and protective measures."
+  },
+  {
+    "q": "A 73-year-old man presents to clinic after his wife noticed writing difficulties. During examination, when asked to copy intersecting pentagons, he draws the shapes accurately but repeatedly traces over the same lines multiple times and adds extra unnecessary elements. What type of abnormality is this patient demonstrating?",
+    "o": [
+      "Unilateral neglect",
+      "Perseveration",
+      "Constructional apraxia",
+      "Visual agnosia"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 2,
+    "e": "This patient demonstrates perseveration, characterized by repeating elements and adding unnecessary components to drawing tasks. Perseveration involves the pathological continuation or repetition of an activity beyond its appropriate endpoint. This can occur with various neurological conditions including dementia, frontal lobe dysfunction, and toxic-metabolic encephalopathies. Unilateral neglect would involve ignoring one side of the figure. Constructional apraxia would manifest as inability to reproduce shapes accurately or spatial relationships, not repetitive tracing. Visual agnosia would involve failure to recognize objects despite intact vision, which isn't described here. Clinical Pearl: Perseveration in drawing tasks in elderly patients often indicates frontal lobe dysfunction or advancing dementia and may correlate with repetitive behaviors in daily activities, helping families understand and manage behavioral changes."
+  },
+  {
+    "q": "An 80-year-old retired mathematics professor presents with cognitive complaints. During mental status examination, when asked to multiply 23 x 4, he becomes frustrated and cannot perform the calculation despite his educational background. His language and memory appear intact. Brain imaging shows posterior parietal atrophy. What is the most likely explanation for his calculation difficulty?",
+    "o": [
+      "Normal age-related cognitive decline",
+      "Depression affecting concentration",
+      "Acalculia due to parietal dysfunction",
+      "Anxiety about testing"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 2,
+    "e": "This patient demonstrates acalculia due to parietal lobe dysfunction. Given his background as a mathematics professor, his inability to perform calculations that should be routine represents a significant decline from baseline. The posterior parietal atrophy on imaging supports this diagnosis, as this region is crucial for numerical processing and calculation abilities. Normal age-related decline wouldn't typically cause such pronounced deficits in a person's area of expertise. While depression can affect concentration, the specific nature of the deficit and imaging findings point to a neurological cause. Anxiety might impair performance but wouldn't explain the anatomical correlation. Clinical Pearl: Acalculia in elderly patients, especially those with strong mathematical backgrounds, should prompt evaluation for posterior parietal dysfunction, which may be an early sign of Alzheimer's disease or other neurodegenerative conditions affecting this region."
+  },
+  {
+    "q": "A 77-year-old woman is brought to the emergency department with acute confusion following a urinary tract infection. During assessment, she cannot follow simple commands like 'close your eyes' but her family insists her hearing is normal. When the examiner speaks louder, she still cannot follow commands. Before concluding this represents comprehension deficits, what must be ensured?",
+    "o": [
+      "Visual acuity is intact",
+      "Hearing is actually tested",
+      "Motor function is normal",
+      "Attention is assessed"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 2,
+    "e": "Despite family reports of normal hearing, hearing must be actually tested before attributing command-following difficulties to comprehension deficits. The chapter specifically emphasizes that in older adults, it's crucial to establish that hearing is intact before testing comprehension, as failure to follow commands may reflect inability to hear rather than impaired comprehension. This is particularly important in acute confusional states where patients may have wax impaction, medication effects, or other factors affecting hearing. While visual acuity, motor function, and attention are important, the specific scenario of command-following with reported normal hearing directly addresses the text's emphasis on hearing assessment. Clinical Pearl: In elderly patients with acute confusion, always perform objective hearing assessment before attributing command-following difficulties to cognitive impairment, as hearing loss is common and easily treatable, potentially improving apparent cognitive function."
+  },
+  {
+    "q": "A 71-year-old man with a history of stroke affecting the left hemisphere presents for cognitive evaluation. He can speak fluently and repeat phrases normally, but when asked to read a paragraph aloud, he cannot do so despite having adequate vision. He also cannot write coherently. His comprehension of spoken language is impaired. What condition does this presentation most likely represent?",
+    "o": [
+      "Alexia without agraphia",
+      "Alexia with agraphia",
+      "Pure alexia",
+      "Gerstmann syndrome"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 2,
+    "e": "This patient presents with alexia with agraphia, characterized by both reading and writing difficulties in the setting of comprehension deficits following left hemisphere stroke. The chapter states that most aphasias have concomitant alexias, and this patient's impaired comprehension suggests an aphasic syndrome with associated reading and writing deficits. Alexia without agraphia would preserve writing ability and typically occurs with intact comprehension. Pure alexia typically refers to isolated reading difficulty without other language problems. Gerstmann syndrome includes agraphia, acalculia, right-left disorientation, and finger agnosia, but typically occurs without aphasia, unlike this patient who has comprehension deficits. Clinical Pearl: In elderly stroke patients, the combination of reading, writing, and comprehension difficulties suggests a more extensive left hemisphere lesion affecting language networks, requiring comprehensive speech therapy evaluation and potentially different rehabilitation approaches than isolated deficits."
+  },
+  {
+    "q": "A 72-year-old woman presents to your clinic complaining of difficulty falling asleep for the past 6 months. She reports lying awake for 2-3 hours before falling asleep and feels tired during the day. Her medical history includes hypertension, osteoarthritis, and GERD. Current medications include lisinopril 10mg daily, omeprazole 20mg daily, and ibuprofen 600mg twice daily for joint pain. She drinks 2 cups of coffee in the morning and 1 cup at 8 PM while watching TV. What is the most likely contributing factor to her insomnia?",
+    "o": [
+      "Evening caffeine consumption",
+      "Lisinopril causing sleep disruption",
+      "Omeprazole affecting sleep architecture",
+      "Age-related decline in sleep efficiency"
+    ],
+    "c": 0,
+    "t": "Hazzard",
+    "ti": 13,
+    "e": "Evening caffeine consumption is the most likely contributing factor to this patient's insomnia. Caffeine is a stimulant that can significantly disrupt sleep initiation when consumed close to bedtime. The patient's habit of drinking coffee at 8 PM is a clear precipitating and perpetuating factor for her sleep difficulties. Caffeine has a half-life of 3-7 hours, meaning significant amounts remain in the system well into typical bedtime hours. Lisinopril, an ACE inhibitor, is not typically associated with sleep disruption and is generally well-tolerated regarding sleep. While some antihypertensives can affect sleep, lisinopril is not known for this side effect. Omeprazole, a proton pump inhibitor, does not commonly cause sleep disturbances and may actually improve sleep by reducing GERD symptoms that could disrupt sleep. While age-related decline in sleep efficiency is a real phenomenon affecting older adults, the timing of this patient's symptoms (6 months) and the clear behavioral factor (evening caffeine) make the caffeine consumption the more likely primary contributor. The patient also has multiple medical conditions (hypertension, arthritis, GERD) that are epidemiologically associated with insomnia, but the modifiable factor of evening caffeine intake should be addressed first. Clinical Pearl: Always assess caffeine intake timing in older adults with insomnia, as many are unaware that evening caffeine consumption significantly impacts sleep initiation, and this represents an easily modifiable contributing factor."
+  },
+  {
+    "q": "An 78-year-old man with mild cognitive impairment is brought by his daughter for evaluation of sleep problems. She reports that for the past month, he has been increasingly restless at night, wandering around the house, and sleeping during the day in his chair. His sleep-wake cycle appears completely reversed. He takes donepezil 10mg daily and has no other significant medical history. Vital signs are normal. What is the most appropriate initial management approach?",
+    "o": [
+      "Prescribe zolpidem 5mg at bedtime",
+      "Recommend sleep hygiene measures and light therapy",
+      "Start melatonin 10mg two hours before desired bedtime",
+      "Refer immediately for polysomnography"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 13,
+    "e": "Sleep hygiene measures and light therapy represent the most appropriate initial management approach for this patient with disrupted circadian rhythms. This patient presents with classic circadian rhythm disorder, common in patients with cognitive impairment, where the normal sleep-wake cycle becomes reversed or fragmented. Non-pharmacologic interventions, particularly light therapy and structured sleep hygiene, are first-line treatments and are especially important in older adults with cognitive impairment who are at higher risk for medication side effects. Prescribing zolpidem is inappropriate as sedative-hypnotics are included in the Beers criteria for potentially inappropriate medications in older adults, particularly those with cognitive impairment. These medications increase risks of falls, confusion, and paradoxical agitation in this population. Starting melatonin 10mg is not the best initial approach because this dose is too high (typical doses are 0.5-3mg), and melatonin should be tried after optimizing sleep hygiene and environmental interventions. Additionally, the timing (two hours before bedtime) may not be optimal for circadian rhythm adjustment. Polysomnography referral is not indicated for typical insomnia or circadian rhythm disorders unless sleep-disordered breathing or other specific sleep disorders are suspected. The clinical presentation doesn't suggest these conditions. Effective sleep hygiene measures include maintaining consistent bedtimes, ensuring adequate daytime light exposure, limiting daytime napping, and creating an appropriate sleep environment. Light therapy helps reset circadian rhythms naturally. Clinical Pearl: In older adults with cognitive impairment and reversed sleep-wake cycles, prioritize non-pharmacologic interventions first, as this population is particularly vulnerable to adverse effects from sleep medications."
+  },
+  {
+    "q": "A 69-year-old woman presents with a 3-month history of difficulty staying asleep following her husband's death. She falls asleep easily but awakens multiple times during the night and cannot return to sleep. She has started taking diphenhydramine 50mg nightly, which provides some relief but causes morning grogginess. Her medical history includes hypertension and type 2 diabetes. She asks about continuing the diphenhydramine long-term. What is your best recommendation?",
+    "o": [
+      "Continue diphenhydramine as it's providing benefit",
+      "Switch to prescription zolpidem for better efficacy",
+      "Discontinue diphenhydramine and refer for cognitive behavioral therapy for insomnia",
+      "Reduce diphenhydramine dose to 25mg to minimize side effects"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 13,
+    "e": "Discontinuing diphenhydramine and referring for cognitive behavioral therapy for insomnia (CBT-I) is the best recommendation. This patient's insomnia appears to be grief-related, with a clear precipitating factor (spouse's death) fitting the insomnia model of predisposing, precipitating, and perpetuating factors. Diphenhydramine is included in the Beers criteria as potentially inappropriate for older adults due to its strong anticholinergic properties, which can cause cognitive impairment, constipation, urinary retention, and increased fall risk. The morning grogginess she experiences is a concerning side effect indicating the medication's prolonged effects. CBT-I is recommended as first-line treatment for insomnia in adults by multiple practice guidelines and has superior long-term efficacy compared to pharmacotherapy with fewer side effects. Continuing diphenhydramine long-term is inappropriate given the Beers criteria recommendations and her already experiencing adverse effects. The anticholinergic burden is particularly concerning in older adults and can worsen with continued use. Switching to zolpidem is not advisable as sedative-hypnotics are also potentially inappropriate in older adults per Beers criteria, associated with increased fall risk, cognitive impairment, and potential for dependence. These medications don't address the underlying grief and poor sleep habits. Reducing diphenhydramine to 25mg doesn't eliminate the fundamental problems with anticholinergic medications in older adults and may still cause adverse effects while potentially being less effective. Additionally, even lower doses carry risks and don't provide the comprehensive approach needed for chronic insomnia. CBT-I addresses maladaptive sleep behaviors and thoughts that perpetuate insomnia, making it ideal for this patient's situation. Clinical Pearl: Diphenhydramine and other anticholinergic sleep aids should be avoided in older adults due to significant risk of cognitive impairment, falls, and other adverse effects; CBT-I offers superior long-term outcomes without these risks."
+  },
+  {
+    "q": "An 81-year-old man with Parkinson's disease, heart failure, and chronic kidney disease presents with worsening insomnia over the past 2 months. He reports difficulty falling asleep and frequent awakenings due to nocturia (4-5 times per night). His medications include carbidopa/levodopa, metoprolol, furosemide 40mg twice daily, and atorvastatin. His daughter mentions he has been napping 2-3 hours each afternoon. Which intervention is most likely to improve his sleep quality?",
+    "o": [
+      "Add trazodone 50mg at bedtime for sleep",
+      "Reduce afternoon napping and optimize diuretic timing",
+      "Increase furosemide dose to improve fluid management",
+      "Switch metoprolol to a different antihypertensive"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 13,
+    "e": "Reducing afternoon napping and optimizing diuretic timing is most likely to improve this patient's sleep quality. This addresses two key perpetuating factors for his insomnia: excessive daytime sleeping and poorly timed diuretic administration causing nocturia. Prolonged afternoon naps (2-3 hours) significantly reduce sleep drive at night, creating a vicious cycle where poor nighttime sleep leads to daytime napping, which further worsens nighttime sleep. Limiting naps to 20-30 minutes or eliminating them entirely can restore normal circadian rhythm. Additionally, taking furosemide twice daily with the second dose later in the day likely contributes to nocturia. Moving the second dose earlier (ideally completing diuretic dosing by mid-afternoon) can reduce nighttime urination frequency while maintaining therapeutic effect for heart failure management. Adding trazodone is not the best initial approach because it doesn't address the underlying behavioral and medication timing issues perpetuating the insomnia. While trazodone is sometimes used off-label for sleep, it carries risks in older adults including orthostatic hypotension, sedation, and potential drug interactions, particularly concerning given his multiple comorbidities. Increasing furosemide dose is inappropriate without evidence of worsening heart failure and could worsen nocturia, electrolyte imbalances, and kidney function. The goal should be optimizing timing, not increasing dose. Switching metoprolol is unnecessary as beta-blockers, while potentially affecting sleep architecture, are not the primary issue here. Metoprolol is appropriate for his heart failure management, and changing it could destabilize his cardiac condition without addressing the main sleep disruptors. The patient's Parkinson's disease may also contribute to sleep disturbances, but addressing modifiable factors first is most appropriate. Clinical Pearl: In older adults with heart failure and nocturia-related insomnia, optimizing diuretic timing (completing doses by mid-afternoon) and limiting excessive daytime napping are key non-pharmacologic interventions that address perpetuating factors for poor sleep."
+  },
+  {
+    "q": "A 75-year-old woman presents to the emergency department with confusion and agitation that developed over 24 hours. Her daughter reports that her mother, who lives independently, has had trouble sleeping for several weeks and began taking 'sleeping pills' she bought at the pharmacy. On examination, the patient is disoriented, has dilated pupils, dry mucous membranes, and urinary retention. Her vital signs show tachycardia. What is the most likely cause of her presentation?",
+    "o": [
+      "Anticholinergic toxicity from diphenhydramine",
+      "Benzodiazepine withdrawal syndrome",
+      "Paradoxical reaction to zolpidem",
+      "Underlying urinary tract infection"
+    ],
+    "c": 0,
+    "t": "Hazzard",
+    "ti": 13,
+    "e": "Anticholinergic toxicity from diphenhydramine is the most likely cause of this patient's presentation. The clinical picture is classic for anticholinergic poisoning: acute confusion, agitation, dilated pupils, dry mucous membranes, urinary retention, and tachycardia. This constellation of symptoms fits the mnemonic for anticholinergic toxicity: 'blind as a bat, dry as a bone, red as a beet, hot as a hare, mad as a hatter.' Diphenhydramine is the most common over-the-counter sleep aid that older adults purchase, and it has potent anticholinergic properties. Older adults are particularly susceptible to anticholinergic toxicity due to age-related changes in drug metabolism and increased blood-brain barrier permeability. Even therapeutic doses can cause these severe effects in vulnerable elderly patients, and the effects can accumulate over days to weeks of use. Benzodiazepine withdrawal syndrome is unlikely because there's no history of benzodiazepine use, and withdrawal typically presents with anxiety, tremors, and potential seizures rather than the anticholinergic symptoms described. The timeline also doesn't fit withdrawal patterns. Paradoxical reaction to zolpidem could cause agitation and confusion but wouldn't typically cause the full anticholinergic syndrome with dilated pupils, dry mucous membranes, and urinary retention. Zolpidem reactions are usually limited to behavioral changes and confusion. While urinary tract infection can cause delirium in older adults, it wouldn't explain the anticholinergic physical findings like dilated pupils and dry mucous membranes. UTI-related delirium typically doesn't present with these specific autonomic signs. The acute onset over 24 hours, combined with recent initiation of over-the-counter sleep medication and classic anticholinergic signs, strongly points to diphenhydramine toxicity. Treatment would involve discontinuation and supportive care, with physostigmine reserved for severe cases. Clinical Pearl: Older adults are extremely susceptible to anticholinergic toxicity from over-the-counter sleep aids like diphenhydramine, which can cause severe delirium even at recommended doses - always inquire about OTC medication use in elderly patients with acute confusion."
+  },
+  {
+    "q": "A 70-year-old man with a history of falls, mild cognitive impairment, and chronic insomnia is currently taking zolpidem 10mg nightly, which his previous physician prescribed 2 years ago. He continues to have poor sleep quality and reports feeling unsteady at night when getting up to use the bathroom. His daughter is concerned about his fall risk. According to current geriatric prescribing guidelines, what is the most appropriate management?",
+    "o": [
+      "Continue zolpidem but reduce dose to 5mg",
+      "Switch to a longer-acting benzodiazepine like temazepam",
+      "Gradually taper zolpidem and initiate cognitive behavioral therapy for insomnia",
+      "Add melatonin 3mg while continuing zolpidem"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 13,
+    "e": "Gradually tapering zolpidem and initiating cognitive behavioral therapy for insomnia (CBT-I) is the most appropriate management according to current geriatric prescribing guidelines. Zolpidem is included in the Beers criteria as potentially inappropriate for older adults due to increased risk of cognitive impairment, delirium, falls, fractures, and motor vehicle accidents. This patient has multiple risk factors that make continued zolpidem use particularly dangerous: history of falls, mild cognitive impairment, and he's experiencing unsteadiness at night. The combination of these factors significantly increases his risk of serious injury. CBT-I is recommended as first-line treatment for chronic insomnia and has demonstrated superior long-term efficacy compared to pharmacotherapy without the associated risks. Continuing zolpidem at 5mg, while a lower dose, still carries the same qualitative risks identified in the Beers criteria. Even reduced doses can impair cognition and increase fall risk in older adults, particularly those with existing cognitive impairment. The unsteadiness he reports suggests the medication is already affecting his balance and mobility. Switching to temazepam, a longer-acting benzodiazepine, would be even more inappropriate. Benzodiazepines are also Beers criteria medications for older adults with similar risks to zolpidem, but longer-acting agents pose greater risks due to prolonged sedation and increased fall risk. This would likely worsen his unsteadiness and cognitive symptoms. Adding melatonin while continuing zolpidem doesn't address the fundamental safety concerns with zolpidem use and could potentially increase sedation. This approach fails to eliminate the inappropriate medication and may add unnecessary polypharmacy. Zolpidem should be tapered gradually (typically over 2-4 weeks) to prevent rebound insomnia, while simultaneously implementing CBT-I techniques to address the underlying sleep issues without medication-related risks. Clinical Pearl: Zolpidem and other sedative-hypnotics should be avoided in older adults with fall risk and cognitive impairment per Beers criteria; CBT-I provides effective long-term insomnia treatment without these safety concerns."
+  },
+  {
+    "q": "An 83-year-old woman with multiple comorbidities including diabetes, heart failure, and arthritis presents with chronic insomnia that has been ongoing for 8 months. She has tried sleep hygiene measures without success. She is interested in medication but is concerned about side effects. Her current medications include metformin, lisinopril, furosemide, and acetaminophen. Her creatinine is 1.4 mg/dL. Which medication option has the best risk-benefit profile for this patient?",
+    "o": [
+      "Diphenhydramine 25mg at bedtime",
+      "Low-dose melatonin 1mg, 2 hours before bedtime",
+      "Zolpidem 5mg at bedtime",
+      "Lorazepam 0.5mg at bedtime"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 13,
+    "e": "Low-dose melatonin 1mg, taken 2 hours before bedtime, has the best risk-benefit profile for this elderly patient with multiple comorbidities. Melatonin is not included in the Beers criteria and has a relatively safe side effect profile in older adults, with minimal drug interactions and no significant effects on cognition, balance, or fall risk. The timing (2 hours before bedtime) is appropriate for melatonin's mechanism of action in promoting sleep onset through circadian rhythm regulation. The 1mg dose is conservative and appropriate for initial treatment in an elderly patient. Diphenhydramine is inappropriate due to its inclusion in the Beers criteria for older adults. Its strong anticholinergic properties can cause confusion, urinary retention, constipation, and increased fall risk - particularly concerning given her multiple comorbidities and age. Anticholinergic medications are especially problematic in older adults and can worsen cognitive function and increase mortality risk. Zolpidem 5mg, while a reduced dose, is still included in the Beers criteria for older adults due to increased risk of falls, cognitive impairment, and delirium. Given her age (83) and multiple comorbidities, she's at high risk for these adverse effects. The potential benefits don't outweigh the established risks in this population. Lorazepam is a benzodiazepine that's strongly discouraged in older adults per Beers criteria. Benzodiazepines increase fall risk, cause cognitive impairment, and can lead to tolerance and dependence. They're particularly problematic in older adults with multiple comorbidities and can interact with other medications. While melatonin isn't universally effective for insomnia, it represents the safest pharmacologic option when behavioral interventions have failed. If melatonin proves ineffective, other approaches like trazodone at low doses might be considered, but melatonin should be tried first given its superior safety profile. The patient's kidney function (creatinine 1.4) doesn't significantly affect melatonin metabolism, unlike other sleep medications that might require dose adjustments. Clinical Pearl: When pharmacologic treatment for insomnia is necessary in older adults with multiple comorbidities, low-dose melatonin offers the best safety profile and should be tried before other sleep medications that carry significant risks per Beers criteria."
+  },
+  {
+    "q": "A 68-year-old man presents for routine follow-up and mentions that he's been having trouble sleeping since his retirement 6 months ago. He reports lying in bed for hours unable to fall asleep, then sleeping until late morning. He often takes naps in the afternoon and goes to bed at different times each night. He's started having a glass of wine or two before bed to help him relax. Which aspect of his presentation represents the most concerning perpetuating factor for his insomnia?",
+    "o": [
+      "Retirement as a life stressor",
+      "Irregular bedtime schedule and excessive time in bed",
+      "Use of alcohol as a sleep aid",
+      "Afternoon napping"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 13,
+    "e": "Irregular bedtime schedule and excessive time in bed represents the most concerning perpetuating factor for this patient's insomnia. This creates a fundamental disruption of circadian rhythm and sleep drive, forming the core behavioral pattern that maintains chronic insomnia. When patients spend excessive time in bed trying to force sleep and maintain irregular bedtimes, they develop conditioned arousal and lose the natural association between bed and sleep. This pattern becomes self-reinforcing: poor sleep leads to spending more time in bed trying to 'catch up,' which further disrupts sleep efficiency and circadian rhythms. Sleep restriction therapy, a key component of cognitive behavioral therapy for insomnia, specifically targets this issue by limiting time in bed to match actual sleep time and maintaining consistent bedtimes. Retirement as a life stressor was the precipitating factor that triggered his insomnia initially, but after 6 months, this has transitioned from an acute stressor to a chronic pattern. While retirement represents the original trigger, it's no longer the active factor maintaining his sleep disturbance - the maladaptive sleep behaviors have taken over this role. Using alcohol as a sleep aid is certainly problematic and represents a perpetuating factor, but it's not the most fundamental issue. While alcohol can initially cause sedation, it disrupts sleep architecture and causes rebound alertness, worsening sleep quality. However, addressing this alone wouldn't resolve the underlying sleep pattern disruption. Afternoon napping contributes to the problem by reducing sleep drive at bedtime, but it's secondary to the irregular schedule and excessive time in bed. The napping is likely a consequence of poor nighttime sleep rather than the primary maintaining factor. The most effective intervention would focus on sleep restriction and schedule regularization, establishing consistent bedtimes and wake times while limiting time in bed to actual sleep duration. This addresses the core behavioral pattern perpetuating the chronic insomnia. Clinical Pearl: In chronic insomnia, irregular bedtimes and excessive time in bed become the primary perpetuating factors that maintain sleep disturbance long after the original precipitating stressor has resolved - addressing these behavioral patterns is crucial for long-term improvement."
+  },
+  {
+    "q": "A 77-year-old woman with moderate dementia is brought to clinic by her son who reports that she has become increasingly agitated at night over the past month, wandering the house and calling out for her deceased mother. During the day, she sleeps frequently in her chair. Her medications include donepezil and sertraline. The son asks about giving her some 'sleeping medicine' to help her sleep through the night. What is the most evidence-based approach for managing her sleep disturbance?",
+    "o": [
+      "Start low-dose zolpidem 5mg at bedtime",
+      "Implement structured light exposure, activity scheduling, and sleep hygiene",
+      "Begin melatonin 5mg one hour before desired bedtime",
+      "Add quetiapine 25mg at bedtime for sedation"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 13,
+    "e": "Implementing structured light exposure, activity scheduling, and sleep hygiene represents the most evidence-based approach for managing sleep disturbances in dementia patients. This patient presents with classic sundowning behavior and circadian rhythm disruption common in moderate dementia. The combination of nighttime agitation, daytime sleeping, and confusion about deceased family members suggests significant circadian rhythm disorder. Non-pharmacologic interventions are particularly important in dementia patients who are extremely vulnerable to medication side effects. Bright light therapy during daytime hours, structured activities to prevent excessive daytime sleeping, consistent meal times, and optimized sleep environment can help reset disrupted circadian rhythms without the risks associated with sedating medications. Starting zolpidem is contraindicated in this population. Sedative-hypnotics are strongly discouraged in dementia patients per Beers criteria due to increased risk of falls, worsening confusion, paradoxical agitation, and acceleration of cognitive decline. These medications can worsen behavioral symptoms and increase mortality risk in dementia patients. Beginning melatonin at 5mg represents too high a starting dose and incorrect timing. While melatonin may have some benefit in dementia-related sleep disorders, doses should start much lower (0.5-1mg) and be given 2-3 hours before desired bedtime for circadian rhythm effects. However, evidence for melatonin effectiveness in dementia is limited. Adding quetiapine for sedation is inappropriate and potentially dangerous. Antipsychotics carry FDA black box warnings for increased mortality in dementia patients and should only be used for severe behavioral symptoms that pose safety risks, not for sleep disturbances. Quetiapine can cause metabolic syndrome, movement disorders, and worsening confusion. The structured approach should include maintaining consistent wake times, maximizing daytime light exposure, engaging in purposeful activities during the day, limiting daytime napping, and creating a calm evening environment. These interventions address the underlying circadian disruption while avoiding medication risks. Clinical Pearl: In dementia patients with sleep-wake cycle disruption, structured non-pharmacologic interventions targeting circadian rhythm regulation are first-line treatment, as sedating medications can worsen cognition and behavioral symptoms while increasing serious adverse events."
+  },
+  {
+    "q": "An 85-year-old woman living in assisted living presents with her daughter for evaluation of chronic insomnia. The patient reports taking diphenhydramine 50mg nightly for the past year, which initially helped but is now less effective. She complains of daytime drowsiness, dry mouth, and occasional confusion. Her medical history includes hypertension, osteoarthritis, and mild cognitive impairment. Recent falls prompted this visit. What is the most appropriate next step in management?",
+    "o": [
+      "Increase diphenhydramine dose to 75mg for better efficacy",
+      "Gradually taper diphenhydramine and implement sleep hygiene measures",
+      "Switch to zolpidem 5mg to avoid anticholinergic effects",
+      "Add melatonin 3mg while continuing current diphenhydramine dose"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 13,
+    "e": "Gradually tapering diphenhydramine and implementing sleep hygiene measures is the most appropriate next step. This patient presents with classic anticholinergic side effects from chronic diphenhydramine use: daytime drowsiness, dry mouth, confusion, and importantly, falls. Diphenhydramine is included in the Beers criteria as potentially inappropriate for older adults due to its strong anticholinergic properties, which are particularly dangerous in patients with cognitive impairment and fall risk. The medication has lost effectiveness due to tolerance, a common problem with chronic antihistamine use for sleep. The anticholinergic burden is causing more harm than benefit, contributing to her cognitive symptoms and fall risk. Gradual tapering prevents rebound insomnia while sleep hygiene measures address the underlying sleep issues through safer, evidence-based approaches. Increasing diphenhydramine dose would be extremely inappropriate and dangerous. Higher doses would increase anticholinergic toxicity risk, potentially worsening confusion, fall risk, urinary retention, and other serious side effects. The medication has already demonstrated tolerance, making dose escalation unlikely to improve efficacy while guaranteeing increased adverse effects. Switching to zolpidem doesn't solve the fundamental problem because zolpidem is also included in Beers criteria for older adults, particularly those with cognitive impairment and fall history. While it avoids anticholinergic effects, it increases fall risk, confusion, and complex sleep behaviors. This represents substituting one inappropriate medication for another rather than addressing the underlying sleep issues safely. Adding melatonin while continuing diphenhydramine fails to address the serious anticholinergic toxicity and fall risk from ongoing diphenhydramine use. This approach adds potential drug interactions and sedation while maintaining the dangerous anticholinergic burden. The diphenhydramine must be discontinued for safety reasons. The tapering process should occur over 1-2 weeks to minimize rebound effects, while simultaneously implementing sleep hygiene education, addressing environmental factors in assisted living, and evaluating other contributors to insomnia such as pain from osteoarthritis or medication timing. Clinical Pearl: Chronic diphenhydramine use in older adults often leads to tolerance with persistent anticholinergic toxicity - gradual discontinuation with non-pharmacologic sleep interventions is essential, especially in patients with cognitive impairment and fall risk."
+  },
+  {
+    "q": "An 82-year-old woman with a history of chronic kidney disease (eGFR 25 mL/min/1.73m²), heart failure, and knee osteoarthritis presents with worsening knee pain that limits her ability to perform activities of daily living. She has tried acetaminophen and topical NSAIDs with minimal relief. Physical therapy was discontinued due to poor tolerance. She is not a surgical candidate due to her cardiac comorbidities. What is the most appropriate next step in her pain management?",
+    "o": [
+      "Start ibuprofen 400mg three times daily",
+      "Initiate tramadol at the lowest effective dose",
+      "Begin celecoxib 200mg daily",
+      "Prescribe naproxen with a proton pump inhibitor"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 16,
+    "e": "Tramadol is the correct choice for this elderly patient with multiple contraindications to NSAIDs. With an eGFR of 25 mL/min/1.73m², she has stage 4 CKD, and the chapter specifically states that patients with CKD stage IV or V should avoid NSAIDs due to nephrotoxicity risk. Tramadol, as a weak μ-opioid receptor inhibitor that also inhibits serotonin and norepinephrine reuptake, is indicated when patients have contraindications to NSAIDs or inadequate response to other treatments, and when they are not surgical candidates. Option A (ibuprofen) is contraindicated due to her severe CKD and could worsen her kidney function and heart failure. Option C (celecoxib) is also an NSAID and carries the same nephrotoxicity risks, plus increased cardiovascular risk in patients with heart disease. Option D (naproxen with PPI) addresses GI protection but not the fundamental nephrotoxicity concern in advanced CKD. While tramadol has side effects including nausea, dizziness, and somnolence that are concerning in elderly patients, it should be started at the lowest dose for the shortest duration possible. Clinical Pearl: In elderly patients with advanced CKD (stage 4-5), all NSAIDs including COX-2 selective inhibitors are contraindicated due to nephrotoxicity risk, making tramadol the preferred option when non-NSAID analgesics are insufficient."
+  },
+  {
+    "q": "A 78-year-old man with osteoarthritis of both knees, coronary artery disease, and a history of peptic ulcer disease controlled on omeprazole presents for medication review. He currently takes low-dose aspirin 81mg daily for cardioprotection and ibuprofen 600mg three times daily for knee pain. His pain is well-controlled, but you are concerned about drug interactions. What modification should be made to his regimen?",
+    "o": [
+      "Discontinue the low-dose aspirin",
+      "Replace ibuprofen with celecoxib while continuing aspirin",
+      "Increase omeprazole dose",
+      "Continue current regimen as tolerated"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 16,
+    "e": "Replacing ibuprofen with celecoxib while continuing aspirin is the correct answer. The chapter specifically mentions that concomitant use of low-dose aspirin and nonselective NSAIDs like ibuprofen may render aspirin less effective for cardioprotection and stroke prevention. This interaction occurs because ibuprofen can interfere with aspirin's irreversible binding to COX-1, reducing its antiplatelet effect. Celecoxib, being a COX-2 selective inhibitor, does not interfere with aspirin's cardioprotective mechanism. Option A (discontinuing aspirin) is inappropriate as this patient has coronary artery disease requiring antiplatelet therapy. Option C (increasing omeprazole) doesn't address the drug interaction between ibuprofen and aspirin, though the PPI does provide appropriate GI protection. Option D (continuing current regimen) ignores the significant drug interaction that could compromise his cardiovascular protection. While celecoxib may carry some cardiovascular risks, in this case the benefit of maintaining effective antiplatelet therapy with aspirin outweighs this concern, especially since he already has established coronary disease requiring secondary prevention. The patient's history of peptic ulcer disease makes the GI-sparing properties of celecoxib an additional advantage. Clinical Pearl: Nonselective NSAIDs like ibuprofen can interfere with aspirin's cardioprotective effects, making COX-2 selective inhibitors preferable in patients requiring both anti-inflammatory therapy and cardiovascular protection."
+  },
+  {
+    "q": "An 85-year-old frail woman with severe hip and knee osteoarthritis, mild cognitive impairment, and a history of multiple falls presents with inadequate pain control despite trials of acetaminophen, topical therapies, and physical therapy. She has contraindications to NSAIDs due to chronic kidney disease. Her family requests stronger pain medication. She is not a surgical candidate due to frailty. What is the most appropriate counseling regarding opioid therapy?",
+    "o": [
+      "Strong opioids like oxycodone are first-line therapy for severe OA pain",
+      "Opioids should be avoided entirely in elderly patients with OA",
+      "Tramadol should be trialed before considering stronger opioids, with careful monitoring",
+      "Opioids are safe in elderly patients if started at standard adult doses"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 16,
+    "e": "Tramadol should be trialed before stronger opioids with careful monitoring is the correct approach. The chapter emphasizes that tramadol should be trialed prior to any non-tramadol opioids in OA patients. This patient meets criteria for opioid consideration: contraindications to NSAIDs, inadequate response to other treatments, and not being a surgical candidate. However, the chapter specifically warns that narcotic agents are poorly tolerated in older people due to increased sensitivity to side effects including constipation, urinary retention, confusion, and sedation. Her history of mild cognitive impairment and multiple falls makes her particularly vulnerable to opioid-related confusion and fall risk. Option A is incorrect because strong opioids are not first-line and should only be considered after failure of all other treatments including tramadol. Option B is too restrictive - while opioids carry significant risks in elderly patients, they may be necessary in select cases when other treatments have failed. Option D is dangerous because elderly patients require lower starting doses and careful titration due to age-related pharmacokinetic changes and increased sensitivity to side effects. If tramadol is prescribed, it should be at the lowest dose for the shortest duration, with adjuvant non-narcotic therapies, and close monitoring for side effects including falls risk and cognitive changes. Clinical Pearl: In frail elderly patients, tramadol should be the first opioid trial before stronger agents, started at the lowest dose with careful monitoring for cognitive effects and falls risk."
+  },
+  {
+    "q": "A 73-year-old man with knee osteoarthritis asks about starting glucosamine and chondroitin supplements that his neighbor recommended. He has mild knee pain that interferes with his daily walks but is otherwise managing well with occasional acetaminophen. His medical history includes well-controlled diabetes and hypertension. What is the most evidence-based recommendation?",
+    "o": [
+      "Recommend pharmaceutical-grade glucosamine sulfate available in the US",
+      "Advise against glucosamine and chondroitin based on current evidence",
+      "Suggest starting with chondroitin alone as it has fewer side effects",
+      "Recommend a 6-month trial as supplements are harmless"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 16,
+    "e": "Advising against glucosamine and chondroitin based on current evidence is correct. The chapter clearly states that while these naturally occurring cartilage constituents are popular supplements, their use is highly controversial. Although some clinical trials showed efficacy, these were primarily industry-sponsored and used pharmaceutical-grade glucosamine sulfate not available in the United States. Most importantly, the best available data with the lowest risk of bias indicate that these supplements were no more effective than placebo. Both the American College of Rheumatology/Arthritis Foundation (ACR/AF) and Osteoarthritis Research Society International (OARSI) recommend against using either glucosamine or chondroitin sulfate to treat knee or hip OA. Option A is incorrect because pharmaceutical-grade glucosamine sulfate is not available in the US market. Option C is wrong because there's no evidence supporting chondroitin alone, and the guidelines recommend against both supplements. Option D suggests these supplements are harmless, but this ignores the lack of efficacy evidence and potential for false hope or delayed appropriate treatment. The chapter notes that studies on nutraceuticals are often small, exhibit various forms of bias, and have short follow-up times. Given this patient's mild symptoms that are currently manageable, focusing on proven therapies like continued appropriate use of acetaminophen, physical therapy, and lifestyle modifications would be more beneficial. Clinical Pearl: Despite their popularity and marketing claims, glucosamine and chondroitin supplements lack robust evidence for efficacy in osteoarthritis and are not recommended by major rheumatology guidelines."
+  },
+  {
+    "q": "An 80-year-old woman with bilateral knee osteoarthritis and depression presents with worsening pain that significantly impacts her quality of life. She cannot tolerate NSAIDs due to a history of GI bleeding and has chronic kidney disease stage 3. Her depression is currently untreated. She has tried acetaminophen and topical preparations with limited benefit. What treatment option addresses both her pain and comorbid condition?",
+    "o": [
+      "Tramadol for pain management only",
+      "Duloxetine for both depression and OA pain",
+      "Intra-articular corticosteroid injections",
+      "Low-dose oxycodone"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 16,
+    "e": "Duloxetine for both depression and OA pain is the optimal choice. The chapter specifically mentions that serotonin and norepinephrine reuptake inhibitors, such as duloxetine, show promise in OA treatment. It has demonstrated moderate efficacy in treating knee OA symptoms when used alone or combined with NSAIDs, with effects likely similar for hip and hand OA. This represents an ideal opportunity to address both her untreated depression and OA pain with a single medication, following the geriatric principle of avoiding polypharmacy when possible. Option A (tramadol) would address pain but not her depression, missing an opportunity for comprehensive care. While tramadol is appropriate for patients with NSAID contraindications, it doesn't address her comorbid mental health condition. Option C (intra-articular injections) could provide temporary pain relief but doesn't address the depression and may have limitations in frequency of administration. Option D (oxycodone) is inappropriate as first-line therapy and could worsen depression, plus carries significant risks in elderly patients including sedation, confusion, and falls. The chapter does note that tolerability may be a limiting factor with duloxetine, so careful monitoring for side effects is important. Common side effects include nausea, dry mouth, fatigue, and dizziness, which may be particularly concerning in elderly patients at risk for falls. However, the dual benefit for both conditions makes it the most appropriate choice. Clinical Pearl: Duloxetine offers a dual benefit for elderly patients with both osteoarthritis and depression, representing an evidence-based approach that can reduce polypharmacy while addressing multiple conditions."
+  },
+  {
+    "q": "A 79-year-old man with severe hip osteoarthritis, atrial fibrillation on warfarin, and a history of heart failure presents for pain management. He has tried acetaminophen and physical therapy with minimal improvement. His cardiologist wants to avoid any medications that might worsen his heart failure or interact with anticoagulation. What is the most appropriate analgesic choice?",
+    "o": [
+      "Diclofenac with gastroprotection",
+      "Meloxicam 7.5mg daily",
+      "Tramadol starting at low dose",
+      "Celecoxib 100mg twice daily"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 16,
+    "e": "Tramadol starting at low dose is the most appropriate choice. This patient has multiple cardiovascular comorbidities and is on anticoagulation, making him high-risk for NSAID-related complications. The chapter specifically mentions that patients with cardiovascular disease are at increased risk for adverse events with NSAIDs, particularly diclofenac. Additionally, NSAIDs can worsen heart failure through sodium retention and reduced renal function. The concurrent use of warfarin increases bleeding risk when combined with NSAIDs, especially with gastroprotection agents. Option A (diclofenac) is specifically mentioned as having increased cardiovascular risk and would be particularly dangerous in this patient with multiple cardiovascular conditions. Option B (meloxicam) is a COX-2 selective NSAID but still carries cardiovascular and heart failure risks. Option D (celecoxib) is also a COX-2 inhibitor with cardiovascular warnings, especially concerning in patients with existing heart disease. Tramadol, while having its own side effect profile including potential for drug interactions and increased fall risk, does not carry the cardiovascular, renal, and anticoagulant interaction risks of NSAIDs. The chapter emphasizes starting at the lowest dose in elderly patients due to increased sensitivity to side effects. Careful monitoring for drug interactions with warfarin is important, though tramadol has less interaction potential than NSAIDs. Clinical Pearl: In elderly patients with cardiovascular disease and anticoagulation, tramadol is preferred over NSAIDs due to reduced cardiovascular risk and fewer drug interactions, though careful monitoring for other side effects remains essential."
+  },
+  {
+    "q": "A 76-year-old woman with hand osteoarthritis and a history of chronic kidney disease (eGFR 45 mL/min/1.73m²) reports worsening pain affecting her ability to perform fine motor tasks. She has tried acetaminophen with limited success. Her nephrologist is concerned about any medications that might affect kidney function. Which NSAID option has the lowest nephrotoxic potential if anti-inflammatory therapy is needed?",
+    "o": [
+      "Ibuprofen 400mg twice daily",
+      "Nonacetylated salicylates",
+      "Naproxen 220mg twice daily",
+      "Indomethacin 25mg twice daily"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 16,
+    "e": "Nonacetylated salicylates have the lowest nephrotoxic potential among the options listed. The chapter specifically mentions that nonacetylated salicylates, along with sulindac and nabumetone, may be less nephrotoxic than other NSAIDs. This patient has moderate CKD (stage 3) with an eGFR of 45 mL/min/1.73m², making nephrotoxicity a significant concern. While the chapter states that patients with CKD stage IV or V (eGFR <30) should avoid NSAIDs entirely, those with stage 3 CKD require careful consideration and monitoring if anti-inflammatory therapy is deemed necessary. Option A (ibuprofen) is a traditional NSAID with standard nephrotoxicity risk and would not be preferred in this patient with existing kidney disease. Option C (naproxen) similarly carries typical NSAID nephrotoxicity risks without the potentially reduced renal effects of nonacetylated salicylates. Option D (indomethacin) is actually associated with higher rates of adverse effects, including renal complications, making it a poor choice in elderly patients with kidney disease. Nonacetylated salicylates work differently from traditional NSAIDs - they have anti-inflammatory and analgesic properties but don't significantly inhibit COX enzymes, which may account for their potentially reduced nephrotoxicity. However, even with this potentially safer option, careful monitoring of kidney function would be essential, and the patient should be counseled about signs of worsening renal function. Clinical Pearl: Nonacetylated salicylates may offer a lower nephrotoxicity profile compared to traditional NSAIDs in patients with moderate CKD, though careful monitoring remains essential."
+  },
+  {
+    "q": "An 83-year-old man with bilateral knee osteoarthritis, mild dementia (MMSE 24/30), and residing in assisted living presents with family concerns about his increasing confusion and two recent falls. He was started on oxycodone 5mg twice daily three weeks ago for knee pain, which has improved significantly. His other medications include donepezil and metoprolol. What is the most appropriate next step?",
+    "o": [
+      "Increase oxycodone dose for better pain control",
+      "Continue oxycodone but add fall prevention measures",
+      "Gradually taper oxycodone and reassess pain management options",
+      "Add a stimulant medication to counter sedation"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 16,
+    "e": "Gradually tapering oxycodone and reassessing pain management options is the correct approach. The chapter explicitly warns that narcotic agents are poorly tolerated in older people due to increased sensitivity to side effects including confusion and sedation, and notes that fall risk may be increased in a population already vulnerable due to joint disease and other risk factors. This patient's timeline of increased confusion and falls correlating with oxycodone initiation strongly suggests opioid-related adverse effects. His baseline mild dementia makes him particularly susceptible to opioid-induced cognitive impairment. Option A (increasing the dose) would likely worsen his confusion and fall risk, which is contraindicated given his current symptoms. Option B (continuing with fall prevention measures) doesn't address the underlying cause of his increased confusion and falls, which appears to be opioid-related. Option D (adding stimulants) introduces additional medication risks and doesn't address the fundamental problem of opioid intolerance in this vulnerable elderly patient. The chapter emphasizes that if narcotics are used in older people, they should be prescribed at the lowest dose for the shortest possible time, and adjuvant non-narcotic pain relievers should be considered. Alternative approaches for this patient might include optimizing acetaminophen, topical preparations, tramadol (if still needed), physical therapy modifications appropriate for his cognitive status, or intra-articular injections. The goal is maintaining functional status and safety while managing pain appropriately. Clinical Pearl: Opioid-induced confusion and falls in elderly patients with dementia often necessitate discontinuation and transition to safer analgesic alternatives, as the risks typically outweigh benefits in this vulnerable population."
+  },
+  {
+    "q": "A 75-year-old woman with knee osteoarthritis and multiple comorbidities including heart failure, diabetes, and osteoporosis presents for follow-up. She reports that her pain has been well-controlled with celecoxib, but recent echocardiogram shows worsening left ventricular function. Her cardiologist is concerned about continuing NSAIDs. She previously failed trials of acetaminophen and topical agents. What is the most appropriate alternative pain management strategy?",
+    "o": [
+      "Switch to ibuprofen with gastroprotection",
+      "Trial of duloxetine",
+      "Initiate immediate-release morphine",
+      "Recommend glucosamine supplementation"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 16,
+    "e": "A trial of duloxetine is the most appropriate alternative. The chapter mentions that duloxetine, a serotonin and norepinephrine reuptake inhibitor, shows promise in OA treatment with moderate efficacy for knee OA symptoms. Given her worsening heart failure, all NSAIDs should be avoided as they can worsen heart failure through fluid retention and reduced renal function. COX-2 inhibitors like celecoxib also carry cardiovascular risks that are particularly concerning in patients with existing heart disease. Option A (switching to ibuprofen) would not solve the cardiovascular concerns and might actually worsen them, as traditional NSAIDs carry both cardiovascular and heart failure risks. Option C (immediate-release morphine) represents a significant escalation to strong opioids without trying intermediate options, and the chapter emphasizes that potent narcotics should only be considered after failure of all other treatments. Additionally, opioids carry significant risks in elderly patients including confusion, sedation, and falls. Option D (glucosamine) is specifically not recommended by major guidelines, as the chapter states that ACR/AF and OARSI recommend against glucosamine use for knee OA based on lack of efficacy evidence. Duloxetine offers several advantages: it doesn't carry cardiovascular risks like NSAIDs, it may help with any concurrent mood symptoms common in chronic pain patients, and it has demonstrated efficacy in knee OA. The chapter notes that tolerability may be limiting, so starting at a low dose and monitoring for side effects would be appropriate. Clinical Pearl: Duloxetine provides an effective NSAID alternative for OA pain in patients with cardiovascular contraindications, offering analgesic benefits without the cardiac risks associated with COX inhibitors."
+  },
+  {
+    "q": "An 87-year-old frail man with severe hip osteoarthritis is brought by his daughter for pain management. He has tried multiple conservative treatments without success and is not a surgical candidate due to severe cardiac disease. He was started on tramadol 2 months ago, but his pain remains inadequately controlled. The daughter asks about stronger pain medications. His functional status has declined, and he spends most of the day in bed due to pain. What counseling is most appropriate regarding escalation to stronger opioids?",
+    "o": [
+      "Strong opioids are contraindicated in patients over 85",
+      "Strong opioids may be considered given failed conservative treatments and non-surgical status",
+      "Tramadol should be increased to maximum dose first",
+      "Strong opioids should only be used for cancer-related pain"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 16,
+    "e": "Strong opioids may be considered given failed conservative treatments and non-surgical status is the most appropriate counseling. The chapter specifically states that more potent narcotic medicines such as oxycodone, hydrocodone, or morphine may be considered in some OA patients only after failure of all other treatments. This patient meets the criteria outlined: he has severe OA-related pain and disability despite trying other treatments, and he is unable to undergo joint replacement surgery due to comorbid conditions (severe cardiac disease). The chapter identifies patients who are unwilling or unable to undergo surgery due to comorbidities as reasonable candidates for stronger opioids. Option A is incorrect as age alone is not an absolute contraindication, though advanced age does increase risks. Option C (maximizing tramadol first) might be considered, but the chapter indicates that failure of tramadol can lead to consideration of stronger opioids. Option D is too restrictive - the chapter clearly discusses strong opioids for OA pain in specific circumstances. However, this decision requires careful consideration of the risks. The chapter emphasizes that narcotic agents are poorly tolerated in older people due to increased sensitivity to side effects including constipation, urinary retention, confusion, and sedation, plus increased fall risk. If prescribed, the lowest dose should be used for the shortest possible time, with adjuvant non-narcotic therapies. Given his frailty and advanced age, careful monitoring, family education about side effects, and consideration of goals of care discussions would be essential components of treatment planning. Clinical Pearl: Strong opioids may be appropriate for elderly OA patients who have failed other treatments and are not surgical candidates, but require careful risk-benefit analysis and the lowest effective doses with close monitoring."
+  },
+  {
+    "q": "A 72-year-old man presents to clinic for routine follow-up. He has been feeling well but mentions mild fatigue over the past 3 months. His past medical history includes hypertension and diabetes mellitus type 2. Physical examination reveals no lymphadenopathy or organomegaly. Laboratory studies show: WBC 18,000/μL with 85% lymphocytes, Hemoglobin 11.2 g/dL, Platelets 180,000/μL. Flow cytometry demonstrates monoclonal B-lymphocytes expressing CD5, CD20, and CD23 with weak surface immunoglobulin expression. What is the most appropriate next step in management?",
+    "o": [
+      "Immediate initiation of chemotherapy with fludarabine-based regimen",
+      "Watch and wait approach with regular monitoring",
+      "Urgent bone marrow biopsy",
+      "Allogeneic stem cell transplant evaluation"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 25,
+    "e": "The correct answer is watch and wait approach with regular monitoring. This patient has newly diagnosed chronic lymphocytic leukemia (CLL) based on the lymphocyte count >5×10⁹/L and characteristic immunophenotype. However, he is asymptomatic except for mild fatigue, has no bulky lymphadenopathy or organomegaly, and his hemoglobin and platelet counts are adequate. In CLL, treatment is indicated only for symptomatic disease, progressive disease, or significant cytopenias. Asymptomatic patients with early-stage disease should be monitored with regular clinical assessments and laboratory studies. Immediate chemotherapy (option A) is incorrect because treatment should not be initiated in asymptomatic patients as it does not improve overall survival and exposes patients to unnecessary toxicity. Bone marrow biopsy (option C) is not routinely needed for CLL diagnosis when peripheral blood flow cytometry is diagnostic. Allogeneic stem cell transplant (option D) is not appropriate for elderly patients with CLL due to high morbidity and mortality, and the availability of effective oral therapies. Clinical Pearl: CLL is predominantly a disease of older adults with median age at diagnosis of 70 years. Many patients are asymptomatic at diagnosis and can be managed with observation alone for years, making the 'watch and wait' approach standard care for early-stage asymptomatic disease."
+  },
+  {
+    "q": "An 68-year-old woman with chronic lymphocytic leukemia diagnosed 3 years ago presents with progressive fatigue, weight loss of 10 pounds over 2 months, and increasing lymphadenopathy. Her current medications include metformin, lisinopril, and atorvastatin. Physical examination shows palpable cervical, axillary, and inguinal lymph nodes measuring 3-4 cm. Laboratory studies reveal: WBC 45,000/μL, Hemoglobin 8.2 g/dL, Platelets 85,000/μL. She has a history of atrial fibrillation and mild heart failure (EF 45%). Which treatment consideration is most important when selecting first-line therapy?",
+    "o": [
+      "Age alone precludes aggressive therapy",
+      "Cardiac comorbidities may influence choice of targeted therapy",
+      "Immediate allogeneic stem cell transplant evaluation",
+      "High-dose chemotherapy is the standard of care"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 25,
+    "e": "The correct answer is that cardiac comorbidities may influence choice of targeted therapy. This patient has symptomatic, progressive CLL requiring treatment based on constitutional symptoms, progressive lymphadenopathy, and cytopenias. Modern CLL treatment involves targeted therapies including BTK inhibitors (ibrutinib, acalabrutinib) and BCL-2 inhibitors (venetoclax). However, ibrutinib is associated with increased risk of atrial fibrillation and can worsen heart failure, making it less suitable for this patient with existing cardiac comorbidities. Acalabrutinib or venetoclax-based regimens might be preferred alternatives. Age alone (option A) does not preclude treatment as many targeted therapies are well-tolerated in elderly patients. Allogeneic stem cell transplant (option C) is not appropriate for elderly patients with CLL due to high treatment-related mortality and availability of effective less toxic therapies. High-dose chemotherapy (option D) is not standard care, especially in elderly patients where targeted therapies are preferred due to better tolerability profiles. The selection of CLL therapy in older adults requires careful consideration of comorbidities, particularly cardiovascular conditions, as different targeted agents have distinct side effect profiles. Clinical Pearl: In elderly CLL patients, treatment selection should be individualized based on comorbidities and functional status rather than age alone. Cardiac comorbidities are particularly important when choosing between different targeted therapies, as some agents like ibrutinib have specific cardiovascular risks."
+  },
+  {
+    "q": "A 75-year-old man with chronic myeloid leukemia in chronic phase has been treated with imatinib 400mg daily for 18 months. He presents for routine follow-up reporting good adherence to therapy. His comorbidities include osteoarthritis and mild chronic kidney disease (eGFR 55). Laboratory studies show: WBC 8,500/μL with no immature cells, Hemoglobin 12.1 g/dL, Platelets 220,000/μL. Cytogenetic analysis shows Philadelphia chromosome in 15% of metaphases (previously 95% at diagnosis). PCR for BCR-ABL shows 0.5% on international scale. What is the most appropriate management?",
+    "o": [
+      "Switch to second-generation TKI for faster molecular response",
+      "Continue current imatinib therapy with regular monitoring",
+      "Reduce imatinib dose due to age and kidney disease",
+      "Add hydroxyurea to improve cytogenetic response"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 25,
+    "e": "The correct answer is to continue current imatinib therapy with regular monitoring. This patient demonstrates an excellent response to imatinib with achievement of major cytogenetic response (Ph+ <35% of metaphases) and major molecular response (BCR-ABL ≤0.1% IS). He is tolerating therapy well without significant side effects. His kidney function, while mildly reduced, does not require dose adjustment as imatinib is primarily metabolized hepatically. Switching to second-generation TKI (option A) is unnecessary as the patient has achieved appropriate milestones and there is no survival benefit demonstrated with second-generation TKIs over imatinib, particularly relevant in elderly patients where long-term safety data favors imatinib. Reducing imatinib dose (option C) is inappropriate as the patient is responding well and tolerating full dose; dose reductions should only be made for significant toxicity or drug interactions. Adding hydroxyurea (option D) is not indicated as the patient already has excellent disease control with single-agent targeted therapy. Long-term adherence to daily TKI therapy is critical for maintaining response in CML. The patient's age and mild comorbidities do not preclude continued therapy, and imatinib remains an excellent choice for elderly CML patients due to its established long-term safety profile. Clinical Pearl: Imatinib remains an excellent first-line choice for elderly CML patients due to extensive long-term safety data and good tolerability. Treatment responses should be monitored with regular cytogenetic and molecular studies, but therapy should be continued as long as patients maintain response without significant toxicity."
+  },
+  {
+    "q": "An 82-year-old woman presents to the emergency department with a 3-week history of progressive weakness, bruising, and shortness of breath. Her daughter reports she has been increasingly confused and has fallen twice in the past week. Past medical history includes hypertension and mild cognitive impairment. Physical examination reveals pallor, scattered petechiae, and splenomegaly. Laboratory studies show: WBC 65,000/μL with 80% blasts, Hemoglobin 6.8 g/dL, Platelets 25,000/μL. Bone marrow biopsy confirms acute myeloid leukemia. What is the most appropriate initial management approach?",
+    "o": [
+      "Immediate intensive chemotherapy with cytarabine and daunorubicin",
+      "Best supportive care with transfusions and comfort measures",
+      "Low-dose cytarabine or hypomethylating agents",
+      "Urgent allogeneic stem cell transplant evaluation"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 25,
+    "e": "The correct answer is low-dose cytarabine or hypomethylating agents. This 82-year-old patient presents with acute myeloid leukemia (AML) but has several factors suggesting she would not tolerate intensive chemotherapy: advanced age, cognitive impairment, recent falls, and overall frail presentation. For elderly patients with AML who are not candidates for intensive therapy, low-intensity treatments such as low-dose cytarabine, hypomethylating agents (azacitidine, decitabine), or newer targeted agents provide meaningful clinical benefit with improved tolerability compared to intensive chemotherapy. Intensive chemotherapy (option A) would likely result in significant treatment-related morbidity and mortality in this frail elderly patient with cognitive impairment. While this approach might be considered in fit elderly patients, her functional decline and falls suggest poor performance status. Best supportive care alone (option B) may be premature without attempting less intensive but potentially effective therapy, though it remains an option if low-intensity therapy is not tolerated. Allogeneic stem cell transplant (option D) is not feasible in an 82-year-old with cognitive impairment and frailty. Treatment decisions in elderly AML patients require careful assessment of functional status, comorbidities, and patient/family goals of care. Low-intensity therapies can provide disease control and symptom improvement while maintaining quality of life. Clinical Pearl: Treatment selection for elderly AML patients should be based on functional status and comorbidities rather than chronological age alone. Low-intensity therapies offer meaningful benefit for patients unsuitable for intensive chemotherapy while avoiding excessive toxicity in this vulnerable population."
+  },
+  {
+    "q": "A 69-year-old man with chronic lymphocytic leukemia has been on ibrutinib therapy for 8 months with good disease control. He presents with a 2-day history of palpitations and was found to have new-onset atrial fibrillation with rapid ventricular response. His blood pressure is stable at 135/85 mmHg. He has no prior cardiac history except mild hypertension. Current medications include ibrutinib 420mg daily and amlodipine. Echocardiogram shows normal ejection fraction. What is the most appropriate management of his CLL therapy?",
+    "o": [
+      "Continue ibrutinib and manage atrial fibrillation with rate control",
+      "Discontinue ibrutinib permanently and switch to chemotherapy",
+      "Hold ibrutinib temporarily and switch to acalabrutinib",
+      "Reduce ibrutinib dose to 280mg daily"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 25,
+    "e": "The correct answer is to hold ibrutinib temporarily and switch to acalabrutinib. Ibrutinib is associated with increased risk of atrial fibrillation, occurring in approximately 6-16% of patients, likely due to off-target effects on cardiac ion channels. When atrial fibrillation develops on ibrutinib, switching to acalabrutinib (a second-generation BTK inhibitor with more selective targeting) is recommended as it has a significantly lower incidence of atrial fibrillation while maintaining similar efficacy for CLL. Continuing ibrutinib (option A) would likely perpetuate the atrial fibrillation and potentially worsen it, especially given that this is new-onset after starting ibrutinib. Permanent discontinuation with switch to chemotherapy (option B) is unnecessarily aggressive as other targeted options (acalabrutinib, venetoclax-based regimens) are available and better tolerated than chemotherapy in elderly patients. Dose reduction (option D) may not adequately address the atrial fibrillation risk and could compromise disease control. The patient will also need appropriate anticoagulation management for the atrial fibrillation, which requires careful consideration given the bleeding risks associated with BTK inhibitors. Cardio-oncology consultation may be beneficial for optimal management of both the CLL and cardiac complications. This case illustrates the importance of recognizing specific toxicities associated with targeted therapies and having sequential treatment options available. Clinical Pearl: Atrial fibrillation is a recognized complication of ibrutinib therapy in elderly patients. When it occurs, switching to acalabrutinib often allows continuation of effective BTK inhibition with reduced cardiac toxicity, avoiding the need for less effective or more toxic alternatives."
+  },
+  {
+    "q": "A 77-year-old woman with multiple myeloma presents with increasing back pain and fatigue over 2 weeks. She was diagnosed 6 months ago and has been receiving lenalidomide and dexamethasone with good response. Her medications include lenalidomide, dexamethasone, calcium, vitamin D, and prophylactic acyclovir. Physical examination shows tenderness over T8-T10 vertebrae. Laboratory studies reveal: Calcium 11.8 mg/dL (normal 8.5-10.5), Creatinine 2.1 mg/dL (baseline 1.2), Hemoglobin 9.1 g/dL. What is the most urgent management priority?",
+    "o": [
+      "Increase dexamethasone dose for disease progression",
+      "Immediate MRI spine and hypercalcemia management",
+      "Hold lenalidomide due to renal impairment",
+      "Initiate bisphosphonate therapy"
+    ],
+    "c": 1,
+    "t": "Hazzard",
+    "ti": 25,
+    "e": "The correct answer is immediate MRI spine and hypercalcemia management. This patient presents with the classic tetrad of multiple myeloma complications: hypercalcemia (11.8 mg/dL), renal impairment (creatinine elevated from 1.2 to 2.1), anemia, and bone disease (back pain). The combination of progressive back pain and hypercalcemia raises concern for spinal involvement with possible compression, requiring urgent MRI evaluation. Simultaneously, the hypercalcemia needs immediate management with IV fluids, calcitonin, and possibly bisphosphonates, as severe hypercalcemia can cause altered mental status, cardiac arrhythmias, and further renal deterioration - particularly dangerous in elderly patients. Increasing dexamethasone (option A) addresses only one aspect and doesn't address the immediate life-threatening complications. While disease progression is possible, the acute presentation suggests CRAB criteria complications requiring urgent intervention. Holding lenalidomide (option C) may be necessary but is not the most urgent priority compared to managing life-threatening hypercalcemia and potential spinal compression. Initiating bisphosphonates (option D) is important but secondary to immediate hypercalcemia management and spinal imaging. In elderly myeloma patients, complications can develop rapidly and require prompt recognition and management. The patient may also need oncology and possibly neurosurgery consultation if spinal compression is identified. Clinical Pearl: Multiple myeloma in elderly patients requires vigilant monitoring for CRAB criteria (hypercalcemia, renal impairment, anemia, bone lesions). When multiple complications present simultaneously, prioritize life-threatening issues like spinal compression and severe hypercalcemia while coordinating multidisciplinary care."
+  },
+  {
+    "q": "A 71-year-old man with chronic myeloid leukemia on imatinib for 2 years presents for routine follow-up. He reports good adherence but mentions occasional nausea and leg cramps. His other medications include metoprolol, furosemide for mild heart failure, and warfarin for atrial fibrillation. Recent labs show adequate disease control with undetectable BCR-ABL. He asks about drug interactions and side effects. Which concern is most important to address?",
+    "o": [
+      "Imatinib increases warfarin metabolism requiring dose adjustment",
+      "Furosemide may worsen imatinib-related fluid retention",
+      "Leg cramps suggest imatinib dose reduction is needed",
+      "Imatinib may increase bleeding risk in combination with warfarin"
+    ],
+    "c": 3,
+    "t": "Hazzard",
+    "ti": 25,
+    "e": "The correct answer is that imatinib may increase bleeding risk in combination with warfarin. Imatinib can potentiate the effects of warfarin by inhibiting CYP2C9 and CYP3A4 enzymes, potentially leading to increased INR and bleeding risk. This is particularly concerning in elderly patients who already have higher bleeding risk. Close monitoring of INR and possible warfarin dose adjustments are necessary when these medications are used concurrently. Additionally, imatinib itself can cause thrombocytopenia, further increasing bleeding risk. Imatinib actually decreases (not increases) warfarin metabolism (option A), which would require warfarin dose reduction, not increase, making this option incorrect in its mechanism. Furosemide interaction (option B) is not a major clinical concern; imatinib-related fluid retention is generally mild and manageable, and furosemide is appropriate for his heart failure. Leg cramps (option C) are a common but generally mild side effect of imatinib that can often be managed with magnesium supplementation or other supportive measures without dose reduction, especially when disease control is excellent. Given this patient's excellent molecular response (undetectable BCR-ABL), maintaining full-dose imatinib is important while carefully managing drug interactions. The combination of advanced age, atrial fibrillation requiring anticoagulation, and TKI therapy requires careful monitoring and coordination between oncology and cardiology. Clinical Pearl: Elderly patients on imatinib frequently have multiple comorbidities requiring polypharmacy. Drug interactions, particularly with warfarin, require careful monitoring as imatinib can potentiate anticoagulant effects, increasing bleeding risk in this vulnerable population."
+  },
+  {
+    "q": "An 85-year-old woman presents with 6 weeks of progressive fatigue, recurrent infections, and easy bruising. Her daughter reports she has been more confused lately and had a fall last week. Past medical history includes osteoporosis and mild dementia. Physical examination shows pallor, petechiae, and no organomegaly. Laboratory studies reveal: WBC 2,100/μL with 45% blasts, Hemoglobin 7.2 g/dL, Platelets 18,000/μL. Bone marrow biopsy confirms acute myeloid leukemia. Performance status is poor with assistance needed for activities of daily living. What is the most appropriate management approach?",
+    "o": [
+      "Intensive induction chemotherapy with cytarabine and daunorubicin",
+      "Clinical trial with investigational agents",
+      "Palliative care consultation and supportive care measures",
+      "Low-dose cytarabine therapy"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 25,
+    "e": "The correct answer is palliative care consultation and supportive care measures. This 85-year-old patient presents with AML but has multiple factors indicating very poor prognosis and limited ability to tolerate any active treatment: advanced age, poor performance status requiring assistance with ADLs, pre-existing dementia with worsening confusion, recent falls suggesting frailty, and leukopenia with high blast percentage. The goals of care should focus on comfort, symptom management, and quality of life rather than aggressive disease-directed therapy. Intensive chemotherapy (option A) would likely cause significant treatment-related morbidity and mortality without meaningful benefit given her poor functional status and cognitive impairment. The toxicity would likely worsen her quality of life substantially. Clinical trials (option B) are generally not appropriate for patients with poor performance status and significant cognitive impairment, as they may not be able to provide informed consent or tolerate protocol requirements. Low-dose cytarabine (option D), while less toxic than intensive therapy, may still cause significant side effects in this frail patient without clear benefit. Given her poor performance status and advanced dementia, supportive care focusing on symptom management, transfusion support as needed for comfort, and family support is most appropriate. Palliative care consultation can help establish realistic goals of care and provide comprehensive symptom management while supporting the family through this difficult time. Clinical Pearl: In very elderly, frail patients with AML and poor performance status, especially those with cognitive impairment, palliative care consultation and supportive measures often provide the best quality of life outcomes. Treatment decisions should always consider functional status, cognitive capacity, and realistic goals of care rather than disease characteristics alone."
+  },
+  {
+    "q": "A 73-year-old man with chronic lymphocytic leukemia presents with progressive lymphadenopathy and fatigue 6 months after completing FCR (fludarabine, cyclophosphamide, rituximab) chemotherapy. He initially had a good response but now has enlarged cervical and axillary lymph nodes. His medical history includes diabetes mellitus, hypertension, and a prior myocardial infarction 3 years ago with current EF of 50%. Laboratory studies show: WBC 28,000/μL, Hemoglobin 9.8 g/dL, Platelets 95,000/μL. What factor most influences the choice of next treatment?",
+    "o": [
+      "Age over 70 years limits treatment options to supportive care",
+      "Prior cardiac history contraindicates all targeted therapies",
+      "Early relapse after FCR indicates need for alternative mechanism",
+      "Diabetes requires dose modifications of all CLL therapies"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 25,
+    "e": "The correct answer is that early relapse after FCR indicates need for alternative mechanism. This patient has relapsed CLL within 2 years of completing FCR chemotherapy, which is considered early relapse and indicates chemorefractory disease. Retreatment with the same chemoimmunotherapy regimen would likely be ineffective and more toxic. The patient needs treatment with a different mechanism of action, such as BTK inhibitors (ibrutinib, acalabrutinib), BCL-2 inhibitors (venetoclax), or PI3K inhibitors. These targeted therapies work through different pathways than chemotherapy and can be effective even in chemotherapy-refractory disease. Age over 70 (option A) does not limit treatment options as many targeted therapies are well-tolerated in elderly patients and may be preferable to chemotherapy. Prior cardiac history (option B) influences choice between different targeted agents but doesn't contraindicate all of them; acalabrutinib has lower cardiac toxicity than ibrutinib, and venetoclax has minimal cardiac effects. Diabetes (option D) generally does not require dose modifications for CLL therapies, though blood glucose monitoring may need adjustment due to steroid components in some regimens. The cardiac history would influence selection between ibrutinib (higher atrial fibrillation risk) versus acalabrutinib or venetoclax-based regimens. However, the most important factor driving treatment selection is the early relapse indicating need for non-chemotherapy approaches. This represents a paradigm shift in CLL treatment where targeted therapies have become preferred options, especially in relapsed/refractory disease. Clinical Pearl: Early relapse after FCR chemotherapy in CLL patients indicates chemotherapy-refractory disease requiring alternative mechanisms of action. Modern targeted therapies (BTK inhibitors, BCL-2 inhibitors) are effective in this setting and generally better tolerated than additional chemotherapy in elderly patients."
+  },
+  {
+    "q": "A 78-year-old woman with polycythemia vera controlled on hydroxyurea presents with new complaints of bone pain and progressive fatigue over 3 months. Her PV has been stable for 4 years. Physical examination reveals splenomegaly (spleen palpable 6 cm below left costal margin) and pallor. Laboratory studies show: WBC 3,200/μL, Hemoglobin 8.9 g/dL, Platelets 78,000/μL, with 8% blasts in peripheral blood and teardrop cells. Lactate dehydrogenase is elevated at 850 U/L. What is the most likely explanation for these findings?",
+    "o": [
+      "Progression to acute leukemia",
+      "Hydroxyurea-induced bone marrow suppression",
+      "Transformation to myelofibrosis",
+      "Development of secondary malignancy"
+    ],
+    "c": 2,
+    "t": "Hazzard",
+    "ti": 25,
+    "e": "The correct answer is transformation to myelofibrosis. This patient presents with classic features of myelofibrotic transformation of polycythemia vera: progressive splenomegaly, cytopenias (particularly anemia and thrombocytopenia), teardrop cells (dacrocytes) on peripheral smear, elevated LDH, and constitutional symptoms. The presence of teardrop cells is particularly characteristic of myelofibrosis, representing distorted red blood cells resulting from extramedullary hematopoiesis and fibrosis. About 10-15% of patients with PV will eventually transform to myelofibrosis, typically after several years of disease. Progression to acute leukemia (option A) typically shows higher blast percentages (≥20%) and would be less likely to present with the specific combination of splenomegaly and teardrop cells. While leukemic transformation is possible in PV, the clinical picture here is more consistent with myelofibrosis. Hydroxyurea-induced bone marrow suppression (option B) would cause cytopenias but wouldn't explain the massive splenomegaly, teardrop cells, or elevated LDH. Additionally, bone marrow suppression from hydroxyurea is usually reversible with dose adjustment. Secondary malignancy (option D) is possible in elderly patients but wouldn't typically cause this specific constellation of findings with teardrop cells and the pattern of cytopenias with splenomegaly. The patient would need bone marrow biopsy to confirm myelofibrosis and assess the degree of fibrosis. Treatment options for myelofibrosis in elderly patients focus on symptom management and may include JAK inhibitors if appropriate. Clinical Pearl: Myelofibrotic transformation should be suspected in patients with established myeloproliferative neoplasms who develop progressive splenomegaly, cytopenias, and teardrop cells on peripheral smear. This represents disease evolution requiring different management approaches focused on symptom control and quality of life."
+  }
+]

@@ -719,6 +719,11 @@ const _dataPromise = (async function loadDataArrays() {
       // OSCE removed
     });
     _dataReady = true;
+    // Load user-generated/approved questions from localStorage
+    const _xp=safeJSONParse('samega_pending_qs',[]);
+    const _xc=safeJSONParse('samega_custom_qs',[]);
+    const _xAll=[..._xp,..._xc].filter(q=>q&&typeof q.q==='string'&&Array.isArray(q.o)&&q.o.length===4&&Number.isInteger(q.c)&&q.c>=0&&q.c<=3&&typeof q.ti==='number');
+    if(_xAll.length){QZ.push(..._xAll);console.log('Loaded '+_xAll.length+' user-generated questions');}
     console.log('Data loaded: ' + QZ.length + ' questions, ' + NOTES.length + ' notes');
     takeWeeklySnapshot();
   } catch (error) {
@@ -4421,8 +4426,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.31';
+const APP_VERSION='9.32';
 const CHANGELOG={
+'9.32':['🛡️ Fix: guarded all localStorage parses — corrupted state no longer bricks boot','🔧 Fix: user-generated questions now persist across reload (Add to Bank actually works)','🔧 Fix: service worker skips POST requests, uses navigate mode for HTML fallback','🔧 Fix: removed wrong questions.json fallback for non-question data requests'],
 '9.31':['🔧 FSRS-4.5 extracted to shared/fsrs.js — shared engine Phase 1','📦 shared/fsrs.js loaded as external script, cached by SW','🔗 isChronicFail() now shared between apps','⚡ srScore() parity: fsrsRating parameter in both apps'],
 '9.30':['🚨 Critical fix: restore data loader — app was showing blank screen','🔄 Restore boot sequence, version check, background sync','🧮 Wire Med Basket, EOL Tree, Lab Ref, Aging Sheet into Calc tab with pill selector'],
 '9.29':['📊 Key metrics row (Est. Score, Streak, Answered, Accuracy) at top of Track tab','🗺️ Topic Mastery Heatmap — clickable tiles per-topic, tap to drill','🔔 SRS Due Alert with quick-review button','🐛 Fix: calcEstScore uses global EXAM_FREQ instead of hardcoded local array','🧹 Removed redundant circular readiness gauge (replaced by Est. Score card)'],
