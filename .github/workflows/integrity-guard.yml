@@ -1,0 +1,250 @@
+name: Integrity Guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  js-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── GATE 1: JS Syntax Check (node --check) ──
+      # This would have caught the getWeakTopics truncation instantly
+      - name: "GATE 1: JavaScript syntax check (node --check)"
+        run: |
+          python3 << 'PYEOF'
+          import re, sys, subprocess, tempfile, os
+          html = open('shlav-a-mega.html').read()
+          scripts = re.findall(r'<script[^>]*>(.*?)</script>', html, re.DOTALL)
+          js = '\n'.join(scripts)
+          with tempfile.NamedTemporaryFile(suffix='.js', mode='w', delete=False) as f:
+              f.write(js)
+              f.flush()
+              result = subprocess.run(['node', '--check', f.name], capture_output=True, text=True)
+              if result.returncode != 0:
+                  print('FATAL: JavaScript syntax error detected!', file=sys.stderr)
+                  print(result.stderr, file=sys.stderr)
+                  os.unlink(f.name)
+                  sys.exit(1)
+              os.unlink(f.name)
+          print(f'OK: {len(js)} chars of JS pass syntax check')
+          PYEOF
+
+      # ── GATE 2: Critical Function Existence ──
+      # Every function that MUST exist for the app to boot/run
+      - name: "GATE 2: Critical functions exist"
+        run: |
+          python3 << 'PYEOF'
+          import re, sys
+          html = open('shlav-a-mega.html').read()
+          CRITICAL_FUNCTIONS = [
+              # Boot path — without these the app is dead
+              'loadDataArrays',
+              'renderTabs',
+              'render',
+              'sanitize',
+              'save',
+              'next',
+              # Core quiz engine
+              'buildPool',
+              'getDueQuestions',
+              'getWeakTopics',
+              'buildRescuePool',
+              'getStudyStreak',
+              'getTopicStats',
+              'calcEstScore',
+              'buildMockExamPool',
+              # Analytics
+              'renderTrack',
+              'trackDailyActivity',
+              'takeWeeklySnapshot',
+              # Version/update
+              'showUpdateBanner',
+              'applyUpdate',
+              'queueBackgroundSync',
+              # AI features
+              'callAI',
+              # Tab rendering (all 5 tabs + sub-tabs)
+              'renderQuiz',
+              'renderStudy',
+              'renderDrugs',
+              'renderFlash',
+              'renderLibrary',
+              'renderCalc',
+              'renderSearch',
+              'renderChat',
+              'renderFeedback',
+              # Geriatrics-specific tools
+              'renderMedBasket',
+              'renderEOLTree',
+              'renderLabOverlay',
+              'renderAgingSheet',
+              # Cloud + backup
+              'cloudBackup',
+              'cloudRestore',
+              'saveAnswerReport',
+          ]
+          missing = []
+          for fn in CRITICAL_FUNCTIONS:
+              # Match function declarations: function X(, async function X(, const X = 
+              pattern = rf'(?:(?:async\s+)?function\s+{fn}\s*\(|(?:const|let|var)\s+{fn}\s*=)'
+              if not re.search(pattern, html):
+                  missing.append(fn)
+          if missing:
+              print(f'FATAL: {len(missing)} critical functions are MISSING:', file=sys.stderr)
+              for fn in missing:
+                  print(f'  ✗ {fn}', file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: All {len(CRITICAL_FUNCTIONS)} critical functions present')
+          PYEOF
+
+      # ── GATE 3: Data Loader Integrity ──
+      # The _dataPromise IIFE must have a real function body, not be empty
+      - name: "GATE 3: Data loader is not empty"
+        run: |
+          python3 << 'PYEOF'
+          import re, sys
+          html = open('shlav-a-mega.html').read()
+          errors = []
+
+          # Check data loader has fetch calls
+          loader_start = html.find('const _dataPromise')
+          loader_end = html.find('// ===== END DATA LOADER', loader_start)
+          if loader_start < 0 or loader_end < 0:
+              errors.append('Cannot find _dataPromise or END DATA LOADER markers')
+          else:
+              loader = html[loader_start:loader_end]
+              if 'fetch(' not in loader:
+                  errors.append('Data loader has no fetch() calls — data will never load')
+              if 'questions.json' not in loader:
+                  errors.append('Data loader does not reference questions.json')
+              if len(loader) < 200:
+                  errors.append(f'Data loader suspiciously short ({len(loader)} chars) — likely truncated')
+
+          # Check version check IIFE is not empty
+          vc_match = re.search(r'PROACTIVE VERSION CHECK.*?\n(\(async.*?\)\(\);)', html, re.DOTALL)
+          if vc_match:
+              vc_body = vc_match.group(1)
+              if len(vc_body) < 50:
+                  errors.append(f'Version check IIFE is suspiciously short ({len(vc_body)} chars)')
+              if 'fetch(' not in vc_body:
+                  errors.append('Version check has no fetch() — update detection is dead')
+
+          # Check boot line exists
+          if '_dataPromise.then(' not in html:
+              errors.append('Missing _dataPromise.then() boot line — app will never render')
+
+          if errors:
+              print('FATAL: Data loader integrity failures:', file=sys.stderr)
+              for e in errors:
+                  print(f'  ✗ {e}', file=sys.stderr)
+              sys.exit(1)
+          print('OK: Data loader, version check, and boot line are intact')
+          PYEOF
+
+      # ── GATE 4: Function Count Regression Guard ──
+      # Alert if function count drops by more than 5 in one commit
+      - name: "GATE 4: Function count regression check"
+        run: |
+          python3 << 'PYEOF'
+          import re, sys, subprocess
+          html = open('shlav-a-mega.html').read()
+          current_count = len(re.findall(r'(?:async\s+)?function\s+\w+\s*\(', html))
+
+          # Get previous commit's count
+          try:
+              result = subprocess.run(
+                  ['git', 'show', 'HEAD~1:shlav-a-mega.html'],
+                  capture_output=True, text=True, timeout=10
+              )
+              if result.returncode == 0:
+                  prev_count = len(re.findall(r'(?:async\s+)?function\s+\w+\s*\(', result.stdout))
+                  diff = prev_count - current_count
+                  if diff > 5:
+                      print(f'FATAL: {diff} functions removed in one commit ({prev_count} → {current_count})', file=sys.stderr)
+                      print('This is likely an accidental mass deletion. Review carefully.', file=sys.stderr)
+                      sys.exit(1)
+                  elif diff > 0:
+                      print(f'INFO: {diff} functions removed ({prev_count} → {current_count})')
+                  else:
+                      print(f'OK: Function count stable or growing ({prev_count} → {current_count})')
+              else:
+                  print(f'OK: First commit or shallow clone — current count: {current_count}')
+          except Exception:
+              print(f'OK: Cannot compare (shallow clone?) — current count: {current_count}')
+          PYEOF
+
+      # ── GATE 5: No Truncated Code Patterns ──
+      # Detect patterns that indicate code was accidentally chopped
+      - name: "GATE 5: No truncated code patterns"
+        run: |
+          python3 << 'PYEOF'
+          import re, sys
+          html = open('shlav-a-mega.html').read()
+          lines = html.split('\n')
+          errors = []
+
+          for i, line in enumerate(lines, 1):
+              stripped = line.strip()
+              # Empty async IIFE: (async\n)();
+              if stripped == '(async' or stripped == '(async ':
+                  next_line = lines[i].strip() if i < len(lines) else ''
+                  if next_line.startswith(')'):
+                      errors.append(f'Line {i}: Empty async IIFE — "(async\\n)()" — function body was deleted')
+
+              # Orphan async keyword before unrelated code
+              if stripped == 'async' or stripped == 'async ':
+                  next_line = lines[i].strip() if i < len(lines) else ''
+                  if next_line.startswith('_') or next_line.startswith('//') or next_line.startswith('function'):
+                      errors.append(f'Line {i}: Orphan "async" keyword — function body was deleted')
+
+          # Check for unclosed arrow functions (common truncation pattern)
+          # Look for .map/filter/reduce with unclosed parens
+          arrow_funcs = re.finditer(r'\.(?:map|filter|reduce|forEach)\s*\(\s*\([^)]*\)\s*=>\s*\{', html)
+          for m in arrow_funcs:
+              # Find the line number
+              line_num = html[:m.start()].count('\n') + 1
+              # Check if the next function declaration is too close (< 3 lines)
+              after = html[m.end():m.end()+500]
+              fn_match = re.search(r'^function\s+\w+', after, re.MULTILINE)
+              if fn_match and after[:fn_match.start()].count('\n') < 2:
+                  errors.append(f'Line ~{line_num}: Arrow function in .map/.filter appears truncated — next function starts immediately')
+
+          if errors:
+              print(f'FATAL: {len(errors)} truncated code patterns detected:', file=sys.stderr)
+              for e in errors:
+                  print(f'  ✗ {e}', file=sys.stderr)
+              sys.exit(1)
+          print('OK: No truncated code patterns detected')
+          PYEOF
+
+      # ── GATE 6: SW File Integrity ──
+      - name: "GATE 6: Service worker caches all required files"
+        run: |
+          python3 << 'PYEOF'
+          import sys, os
+          sw = open('sw.js').read()
+          REQUIRED_CACHED = [
+              'shlav-a-mega.html',
+              'data/questions.json',
+              'data/topics.json',
+              'data/notes.json',
+              'data/drugs.json',
+              'data/flashcards.json',
+              'data/tabs.json',
+          ]
+          missing = [f for f in REQUIRED_CACHED if f not in sw]
+          if missing:
+              print(f'ERROR: SW missing cache entries: {missing}', file=sys.stderr)
+              sys.exit(1)
+          # Check all cached files actually exist on disk
+          not_found = [f for f in REQUIRED_CACHED if not os.path.exists(f)]
+          if not_found:
+              print(f'ERROR: SW references files that do not exist: {not_found}', file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: SW caches {len(REQUIRED_CACHED)} required files, all exist on disk')
+          PYEOF
