@@ -31,7 +31,16 @@ jobs:
                   os.unlink(f.name)
                   sys.exit(1)
               os.unlink(f.name)
-          print(f'OK: {len(js)} chars of JS pass syntax check')
+          print(f'OK: {len(js)} chars of inline JS pass syntax check')
+          # Also check shared/*.js files
+          import glob
+          for shared_file in sorted(glob.glob('shared/*.js')):
+              sr = subprocess.run(['node', '--check', shared_file], capture_output=True, text=True)
+              if sr.returncode != 0:
+                  print(f'FATAL: Syntax error in {shared_file}', file=sys.stderr)
+                  print(sr.stderr, file=sys.stderr)
+                  sys.exit(1)
+              print(f'OK: {shared_file} passes syntax check')
           PYEOF
 
       # ── GATE 2: Critical Function Existence ──
@@ -152,8 +161,14 @@ jobs:
         run: |
           python3 << 'PYEOF'
           import re, sys, subprocess
+          import glob
           html = open('shlav-a-mega.html').read()
-          current_count = len(re.findall(r'(?:async\s+)?function\s+\w+\s*\(', html))
+          # Count functions in HTML + shared/*.js
+          all_code = html
+          for shared_file in sorted(glob.glob('shared/*.js')):
+              all_code += '
+' + open(shared_file).read()
+          current_count = len(re.findall(r'(?:async\s+)?function\s+\w+\s*\(', all_code))
 
           # Get previous commit's count
           try:
@@ -162,7 +177,17 @@ jobs:
                   capture_output=True, text=True, timeout=10
               )
               if result.returncode == 0:
-                  prev_count = len(re.findall(r'(?:async\s+)?function\s+\w+\s*\(', result.stdout))
+                  prev_code = result.stdout
+                  # Also check previous shared files
+                  try:
+                      for shared_file in sorted(glob.glob('shared/*.js')):
+                          sr = subprocess.run(['git', 'show', f'HEAD~1:{shared_file}'], capture_output=True, text=True, timeout=10)
+                          if sr.returncode == 0:
+                              prev_code += '
+' + sr.stdout
+                  except Exception:
+                      pass
+                  prev_count = len(re.findall(r'(?:async\s+)?function\s+\w+\s*\(', prev_code))
                   diff = prev_count - current_count
                   if diff > 5:
                       print(f'FATAL: {diff} functions removed in one commit ({prev_count} → {current_count})', file=sys.stderr)
@@ -236,6 +261,7 @@ jobs:
               'data/drugs.json',
               'data/flashcards.json',
               'data/tabs.json',
+              'shared/fsrs.js',
           ]
           missing = [f for f in REQUIRED_CACHED if f not in sw]
           if missing:
