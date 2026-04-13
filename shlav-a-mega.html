@@ -237,7 +237,13 @@ body.dark .distractor-highlight{background:#451a03 !important;border-color:#d977
 body.dark .voice-btn{background:#450a0a;border-color:#7f1d1d}
 
 /* Night/Study Mode */
-body.study{background:#1a1008;color:#e8d5b0}
+body.study{background:#1a1008;color:#e8d5b0;
+--bg:26 16 8;--bg2:34 21 8;--bg3:34 21 8;--fg:232 213 176;--fg2:160 128 96;--fg3:122 92 48;
+--brd:61 42 18;--card-bg:34 21 8;
+--green-bg:15 40 10;--green-brd:30 80 20;--green-fg:140 220 120;
+--blue-bg:10 25 50;--blue-brd:40 80 140;--blue-fg:140 180 240;
+--yellow-bg:50 35 5;--yellow-brd:120 80 20;--yellow-fg:240 200 100;
+--red-bg:50 15 10;--red-brd:120 40 30;--red-fg:240 160 140}
 body.study .card{background:#221508;border-color:#3d2a12}
 body.study .hdr{background:linear-gradient(135deg,#0d0804,#1a1008)}
 body.study .tabs{background:#221508;border-color:#3d2a12}
@@ -432,7 +438,7 @@ save=idbSave;
 }
 migrateToIDB().then(()=>{
 // v9.39: Reset study plan tier open states to collapsed
-if(S._spVer!=='9.39'){S._spVer='9.39';S.sp_t1=false;S.sp_t2=false;S.sp_t3=false;S.spOpen=false;save();}
+if(S._spVer!=='9.40'){S._spVer='9.40';S['sp_t1']=false;S['sp_t2']=false;S['sp_t3']=false;S['sp_t4']=false;S.spOpen=false;save();}
 renderTabs();render();if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_help','1');setTimeout(showHelp,500);}}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();});
 
 // ===== SCREEN WAKE LOCK =====
@@ -1601,7 +1607,7 @@ else{
 if(!examMode&&sel!==q.c&&!_wrongReason){
 h+=`<div style="margin-bottom:8px">
 <div style="font-size:10px;font-weight:700;color:rgb(var(--red-fg));margin-bottom:6px">Why did you get it wrong?</div>
-<div id="why-wrong-box" style="display:flex;gap:4px;flex-wrap:wrap">
+<div id="why-wrong-box" style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
 <button class="btn" style="font-size:10px;padding:6px 10px;background:rgb(var(--red-bg));color:rgb(var(--red-fg))" onclick="_wrongReason='no_knowledge';save();_updateWrongUI()">📚 Didn't know</button>
 <button class="btn" style="font-size:10px;padding:6px 10px;background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg))" onclick="_wrongReason='misread';save();_updateWrongUI()">👓 Misread</button>
 <button class="btn" style="font-size:10px;padding:6px 10px;background:rgb(var(--blue-bg));color:rgb(var(--blue-fg))" onclick="_wrongReason='between_2';save();_updateWrongUI()">⚖️ Between 2</button>
@@ -3597,7 +3603,7 @@ const _dk=_d.toISOString().slice(0,10);
 const _act=S.dailyAct&&S.dailyAct[_dk];
 const _qc=_act?_act.q:0;
 const _int=_qc===0?0:_qc<5?1:_qc<15?2:_qc<30?3:4;
-const _cols=['#f1f5f9','#dcfce7','#86efac','#22c55e','#15803d'];
+const _cols=[document.body.classList.contains('dark')||document.body.classList.contains('study')?'#1e293b':'#f1f5f9','#dcfce7','#86efac','#22c55e','#15803d'];
 h+=`<div style="aspect-ratio:1;border-radius:3px;background:${_cols[_int]}" title="${_dk}: ${_qc} Qs"></div>`;
 }
 h+=`</div></div>`;
@@ -4349,8 +4355,14 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.39';
+const APP_VERSION='9.40';
 const CHANGELOG={
+'9.40':[
+'🌓 Study mode (candle): all CSS vars now override properly — no more white boxes',
+'🎨 Study Plan: force-collapsed on v9.40 upgrade (migration actually runs now)',
+'🎨 Why-wrong buttons: 2×2 grid layout instead of vertical stack',
+'🌓 Activity calendar tiles adapt to dark/study mode',
+],
 '9.39':[
 '🌓 Hazzard reader headings now readable in dark mode (adaptive red)',
 '🎨 Study Plan force-collapsed on upgrade — stops dominating Track tab',
