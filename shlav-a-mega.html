@@ -13,68 +13,74 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Heebo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--sky:59 130 246;--em:16 185 129;--sl8:30 41 59;--red:239 68 68;--amb:245 158 11}
-body{font-family:'Inter',system-ui,sans-serif;background:#f8fafc;color:#1e293b;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+:root{--sky:59 130 246;--em:16 185 129;--sl8:30 41 59;--red:239 68 68;--amb:245 158 11;
+--bg:248 250 252;--bg2:241 245 249;--bg3:255 255 255;--fg:30 41 59;--fg2:100 116 139;--fg3:148 163 184;
+--brd:226 232 240;--card-bg:255 255 255;
+--green-bg:240 253 244;--green-brd:187 247 208;--green-fg:22 101 52;
+--blue-bg:239 246 255;--blue-brd:191 219 254;--blue-fg:30 64 175;
+--yellow-bg:255 251 235;--yellow-brd:253 230 138;--yellow-fg:146 64 14;
+--red-bg:254 242 242;--red-brd:254 202 202;--red-fg:153 27 27}
+body{font-family:'Inter',system-ui,sans-serif;background:rgb(var(--bg));color:rgb(var(--fg));-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .heb{font-family:'Heebo',sans-serif;direction:rtl;text-align:right}
 button{cursor:pointer;border:none;background:none;font:inherit}
 input,textarea,select{font:inherit}
 .hdr{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:10px 16px;position:sticky;top:0;z-index:40}
 .hdr h1{font-size:16px;font-weight:700;letter-spacing:-.5px}
-.hdr p{font-size:10px;color:#64748b;margin-top:1px}
-.tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;z-index:50;box-shadow:0 -2px 10px rgba(0,0,0,.06);padding-bottom:max(4px,env(safe-area-inset-bottom));overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hdr p{font-size:10px;color:rgb(var(--fg2));margin-top:1px}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:rgb(var(--card-bg));border-top:1px solid #e2e8f0;display:flex;z-index:50;box-shadow:0 -2px 10px rgba(0,0,0,.06);padding-bottom:max(4px,env(safe-area-inset-bottom));overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tabs button{flex:0 0 auto;min-width:52px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px 6px;transition:.15s;font-size:10px;font-weight:600}
 .tabs button.on{color:rgb(var(--sky))}
-.tabs button:not(.on){color:#94a3b8}
+.tabs button:not(.on){color:rgb(var(--fg3))}
 .tabs .ic{font-size:18px}
 .ct{max-width:640px;margin:0 auto;padding:12px 12px 80px}
-.card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:10px}
+.card{background:rgb(var(--card-bg));border-radius:16px;border:1px solid rgb(var(--brd));box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:10px}
 .pill{display:inline-block;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;transition:.15s;cursor:pointer}
 .pill.on{background:rgb(var(--sky));color:#fff;box-shadow:0 2px 6px rgba(59,130,246,.25)}
-.pill:not(.on){background:#fff;color:#64748b;border:1px solid #e2e8f0}
+.pill:not(.on){background:rgb(var(--card-bg));color:rgb(var(--fg2));border:1px solid rgb(var(--brd))}
 .qo{width:100%;text-align:right;padding:12px 14px;border-radius:12px;border:2px solid #e2e8f0;font-size:12px;line-height:1.6;transition:.15s;margin-bottom:6px;font-family:'Heebo',sans-serif;display:block}
 .qo:not(.lk):hover{border-color:#bae6fd;background:#f0f9ff}
-.qo.sel{border-color:rgb(var(--sky));background:#eff6ff}
-.qo.ok{border-color:rgb(var(--em));background:#ecfdf5;color:#065f46}
-.qo.no{border-color:rgb(var(--red));background:#fef2f2;color:#991b1b}
+.qo.sel{border-color:rgb(var(--sky));background:rgb(var(--blue-bg))}
+.qo.ok{border-color:rgb(var(--em));background:#ecfdf5;color:rgb(var(--green-fg))}
+.qo.no{border-color:rgb(var(--red));background:rgb(var(--red-bg));color:rgb(var(--red-fg))}
 .qo.dim{border-color:#f1f5f9;color:#cbd5e1}
 .btn{padding:7px 18px;border-radius:12px;font-size:12px;font-weight:700;transition:.15s;display:inline-block}
 .btn:disabled{opacity:.35}
 .btn-p{background:rgb(var(--sky));color:#fff}
 .btn-d{background:rgb(var(--sl8));color:#fff}
 .btn-g{background:rgb(var(--em));color:#fff}
-.btn-o{background:#f1f5f9;color:#475569}
+.btn-o{background:rgb(var(--bg2));color:rgb(var(--fg2))}
 .ab{max-height:0;overflow:hidden;transition:max-height .3s ease}.ab.op{max-height:5000px}
 .acc-h{width:100%;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;text-align:left;transition:.1s}
-.acc-h:hover{background:#f8fafc}
+.acc-h:hover{background:rgb(var(--bg2))}
 .acc-ic{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex-shrink:0}
-.acc-ar{font-size:10px;color:#94a3b8;transition:transform .2s}
+.acc-ar{font-size:10px;color:rgb(var(--fg3));transition:transform .2s}
 .acc-ar.op{transform:rotate(180deg)}
 .stats{display:flex;gap:6px;margin-bottom:12px}
-.stat{flex:1;background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:10px 8px;text-align:center}
+.stat{flex:1;background:rgb(var(--card-bg));border-radius:14px;border:1px solid rgb(var(--brd));padding:10px 8px;text-align:center}
 .stat .n{font-size:20px;font-weight:700}
-.stat .l{font-size:9px;color:#64748b;text-transform:uppercase;font-weight:600;letter-spacing:.5px;margin-top:2px}
-.fc{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:24px 20px;min-height:180px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:.2s;user-select:none}
+.stat .l{font-size:9px;color:rgb(var(--fg2));text-transform:uppercase;font-weight:600;letter-spacing:.5px;margin-top:2px}
+.fc{background:rgb(var(--card-bg));border-radius:16px;border:1px solid rgb(var(--brd));padding:24px 20px;min-height:180px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:.2s;user-select:none}
 .fc:active{transform:scale(.98)}
-.search-box{width:100%;border:1px solid #e2e8f0;border-radius:12px;padding:8px 12px;font-size:12px;margin-bottom:12px}
+.search-box{width:100%;border:1px solid rgb(var(--brd));border-radius:12px;padding:8px 12px;font-size:12px;margin-bottom:12px}
 .search-box:focus{outline:none;border-color:rgb(var(--sky));box-shadow:0 0 0 3px rgba(59,130,246,.15)}
 .timer{font-variant-numeric:tabular-nums;font-family:'Inter',monospace}
-.ck{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:10px;border:1px solid #e2e8f0;font-size:11px;cursor:pointer;margin-bottom:5px}
-.ck:hover{background:#f8fafc}
-.ck.done span{text-decoration:line-through;color:#94a3b8}
+.ck{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:10px;border:1px solid rgb(var(--brd));font-size:11px;cursor:pointer;margin-bottom:5px}
+.ck:hover{background:rgb(var(--bg2))}
+.ck.done span{text-decoration:line-through;color:rgb(var(--fg3))}
 .topic{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:10px;font-size:11px;cursor:pointer;transition:.1s}
-.topic:hover{background:#f1f5f9}
+.topic:hover{background:rgb(var(--bg2))}
 .topic.done{background:#ecfdf5;border:1px solid #a7f3d0}
-.drug-row{padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:11px}
+.drug-row{padding:8px 12px;border-bottom:1px solid rgb(var(--brd));font-size:11px}
 .drug-row:last-child{border:none}
 .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700}
-.badge-r{background:#fef2f2;color:#dc2626}
-.badge-y{background:#fffbeb;color:#d97706}
+.badge-r{background:rgb(var(--red-bg));color:#dc2626}
+.badge-y{background:rgb(var(--yellow-bg));color:#d97706}
 .badge-g{background:#ecfdf5;color:#059669}
-.calc-in{width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:8px}
+.calc-in{width:100%;border:1px solid rgb(var(--brd));border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:8px}
 .calc-in:focus{outline:none;border-color:rgb(var(--sky))}
-.sec-t{font-size:16px;font-weight:700;color:#1e293b;margin-bottom:3px}
-.sec-s{font-size:10px;color:#64748b;margin-bottom:14px}
+.sec-t{font-size:16px;font-weight:700;color:rgb(var(--fg));margin-bottom:3px}
+.sec-s{font-size:10px;color:rgb(var(--fg2));margin-bottom:14px}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
 @media(min-width:768px){.ct{padding:20px 16px 88px;max-width:800px}.tabs button{min-width:64px;font-size:11px}.hdr h1{font-size:18px}}
 @media(min-width:1024px){.ct{max-width:900px}.card{padding:16px}}
@@ -101,35 +107,41 @@ body.dark a{color:#60a5fa}
 body.dark .explain-box{background:#064e3b !important;border-color:#059669 !important;color:#a7f3d0 !important}
 body.dark .tag-topic{background:#064e3b !important;color:#6ee7b7 !important}
 body.dark .tag-year{background:#1e3a5f !important;color:#93c5fd !important}
-body.dark .sec-s{color:#94a3b8}
+body.dark .sec-s{color:rgb(var(--fg3))}
 body.dark .btn-o{background:#334155;color:#e2e8f0}
-.streak-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#fffbeb;color:#d97706;border:1px solid #fde68a}
-body.dark .streak-badge{background:#451a03;border-color:#92400e}
-@media print{.tabs,.hdr,.dm-btn,button{display:none !important}.ct{padding:0;max-width:100%}.card{break-inside:avoid;border:1px solid #ccc;margin-bottom:8px}.ab{max-height:none !important}.stat,.stats{break-inside:avoid}body{background:#fff;color:#000;font-size:12pt}}
+.streak-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgb(var(--yellow-bg));color:#d97706;border:1px solid rgb(var(--yellow-brd))}
+body.dark .streak-badge{background:#451a03;border-color:rgb(var(--yellow-fg))}
+@media print{.tabs,.hdr,.dm-btn,button{display:none !important}.ct{padding:0;max-width:100%}.card{break-inside:avoid;border:1px solid #ccc;margin-bottom:8px}.ab{max-height:none !important}.stat,.stats{break-inside:avoid}body{background:rgb(var(--card-bg));color:#000;font-size:12pt}}
 .fade-in{animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 .share-btn{font-size:13px;padding:2px 6px;opacity:.5;cursor:pointer;border:none;background:none}
 .share-btn:hover{opacity:1}
-.empty{text-align:center;padding:32px 16px;color:#94a3b8;font-size:12px;line-height:1.7}
+.empty{text-align:center;padding:32px 16px;color:rgb(var(--fg3));font-size:12px;line-height:1.7}
 
-body.dark{background:#0f172a;color:#e2e8f0}
+body.dark{background:#0f172a;color:#e2e8f0;
+--bg:15 23 42;--bg2:30 41 59;--bg3:30 41 59;--fg:226 232 240;--fg2:148 163 184;--fg3:100 116 139;
+--brd:51 65 85;--card-bg:30 41 59;
+--green-bg:6 78 59;--green-brd:5 150 105;--green-fg:167 243 208;
+--blue-bg:23 37 84;--blue-brd:59 130 246;--blue-fg:147 197 253;
+--yellow-bg:69 26 3;--yellow-brd:146 64 14;--yellow-fg:253 230 138;
+--red-bg:69 10 10;--red-brd:127 29 29;--red-fg:252 165 165}
 body.dark .card{background:#1e293b;border-color:#334155}
 body.dark .hdr{background:linear-gradient(135deg,#000,#0f172a)}
 body.dark .tabs{background:#1e293b;border-color:#334155}
-body.dark .tabs button:not(.on){color:#64748b}
+body.dark .tabs button:not(.on){color:rgb(var(--fg2))}
 body.dark .qo{border-color:#334155;color:#e2e8f0}
-body.dark .qo:not(.lk):hover{border-color:#475569;background:#1e293b}
+body.dark .qo:not(.lk):hover{border-color:rgb(var(--fg2));background:#1e293b}
 body.dark .qo.sel{border-color:rgb(var(--sky));background:#172554}
-body.dark .qo.ok{background:#064e3b;border-color:#065f46;color:#a7f3d0}
+body.dark .qo.ok{background:#064e3b;border-color:rgb(var(--green-fg));color:#a7f3d0}
 body.dark .qo.no{background:#450a0a;border-color:#7f1d1d;color:#fca5a5}
-body.dark .qo.dim{border-color:#1e293b;color:#475569}
-body.dark .pill:not(.on){background:#1e293b;color:#94a3b8;border-color:#334155}
+body.dark .qo.dim{border-color:rgb(var(--fg));color:rgb(var(--fg2))}
+body.dark .pill:not(.on){background:#1e293b;color:rgb(var(--fg3));border-color:#334155}
 body.dark .search-box,body.dark .calc-in{background:#1e293b;border-color:#334155;color:#e2e8f0}
 body.dark select{background:#1e293b;color:#e2e8f0}
 body.dark .acc-h:hover{background:#1e293b}
 body.dark .fc{background:#1e293b;border-color:#334155;color:#e2e8f0}
 body.dark .topic:hover{background:#1e293b}
-body.dark .topic.done{background:#064e3b;border-color:#065f46}
+body.dark .topic.done{background:#064e3b;border-color:rgb(var(--green-fg))}
 body.dark .ck{border-color:#334155;color:#e2e8f0}
 body.dark .stat{background:#1e293b;border-color:#334155}
 body.dark .sec-t{color:#f1f5f9}
@@ -138,13 +150,13 @@ body.dark .drug-row{border-color:#334155;color:#e2e8f0}
 /* ===== BLIND RECALL BLUR ===== */
 .qo-blur{filter:blur(8px);transition:filter .25s ease;user-select:none}
 .qo-blur:active,.qo-blur:focus,.qo-blur.revealed{filter:none}
-.qo-blur::after{content:'Tap to reveal';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:#94a3b8;pointer-events:none;opacity:.9}
+.qo-blur::after{content:'Tap to reveal';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:rgb(var(--fg3));pointer-events:none;opacity:.9}
 .qo{position:relative}
 
 /* ===== SUDDEN DEATH ===== */
 .sudden-death-banner{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;padding:10px 14px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;animation:pulse-red 2s infinite}
 @keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
-.leaderboard-row{display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid #f1f5f9;font-size:11px}
+.leaderboard-row{display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid rgb(var(--brd));font-size:11px}
 body.dark .leaderboard-row{border-color:#334155}
 
 /* ===== POMODORO ===== */
@@ -161,10 +173,10 @@ body.dark .leaderboard-row{border-color:#334155}
 
 
 /* ===== MED BASKET ===== */
-.med-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:16px;font-size:10px;font-weight:600;background:#eff6ff;color:#1d4ed8;cursor:pointer;border:1px solid #bfdbfe;margin:2px}
+.med-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:16px;font-size:10px;font-weight:600;background:rgb(var(--blue-bg));color:#1d4ed8;cursor:pointer;border:1px solid rgb(var(--blue-brd));margin:2px}
 .med-chip .x{font-size:12px;font-weight:700;margin-left:2px;opacity:.6}
 .med-chip .x:hover{opacity:1}
-body.dark .med-chip{background:#1e3a5f;color:#93c5fd;border-color:#1e40af}
+body.dark .med-chip{background:#1e3a5f;color:#93c5fd;border-color:rgb(var(--blue-fg))}
 .acb-meter{height:10px;border-radius:5px;background:#e2e8f0;overflow:hidden;margin:6px 0}
 .acb-meter .acb-fill{height:100%;border-radius:5px;transition:width .3s}
 
@@ -180,28 +192,28 @@ body.dark .dt-result{background:#064e3b;border-color:#059669;color:#a7f3d0}
 
 /* ===== LAB OVERLAY ===== */
 .lab-modal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.lab-sheet{background:#fff;width:calc(100% - 24px);max-width:600px;max-height:85vh;border-radius:20px;overflow-y:auto;padding:20px 16px;animation:fadeIn .2s ease}
+.lab-sheet{background:rgb(var(--card-bg));width:calc(100% - 24px);max-width:600px;max-height:85vh;border-radius:20px;overflow-y:auto;padding:20px 16px;animation:fadeIn .2s ease}
 body.dark .lab-sheet{background:#1e293b;color:#e2e8f0}
 .range-bar{height:8px;border-radius:4px;background:#e2e8f0;position:relative;margin:8px 0}
 .range-bar .normal{position:absolute;height:100%;background:#bbf7d0;border-radius:4px}
 .range-bar .marker{position:absolute;width:3px;height:16px;top:-4px;background:#1e293b;border-radius:2px}
 body.dark .range-bar{background:#334155}
-body.dark .range-bar .marker{background:#f1f5f9}
+body.dark .range-bar .marker{background:rgb(var(--bg2))}
 .frailty-slider{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:linear-gradient(to right,#bbf7d0,#fde68a,#fecaca);outline:none}
 .frailty-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#1e293b;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 body.dark .frailty-slider::-webkit-slider-thumb{background:#e2e8f0;border-color:#334155}
 
 /* ===== CHEAT SHEET ===== */
-.aging-row{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid #f1f5f9;font-size:10px}
+.aging-row{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid rgb(var(--brd));font-size:10px}
 .aging-row .cell{padding:8px 10px;line-height:1.5}
-.aging-row .normal-cell{background:#f0fdf4;color:#166534}
-.aging-row .path-cell{background:#fef2f2;color:#991b1b}
+.aging-row .normal-cell{background:rgb(var(--green-bg));color:rgb(var(--green-fg))}
+.aging-row .path-cell{background:rgb(var(--red-bg));color:rgb(var(--red-fg))}
 body.dark .aging-row{border-color:#334155}
 body.dark .aging-row .normal-cell{background:#064e3b;color:#6ee7b7}
 body.dark .aging-row .path-cell{background:#450a0a;color:#fca5a5}
 
 /* ===== DISTRACTOR AUTOPSY ===== */
-.distractor-highlight{border:2px solid #f59e0b !important;background:#fffbeb !important;position:relative}
+.distractor-highlight{border:2px solid #f59e0b !important;background:rgb(var(--yellow-bg)) !important;position:relative}
 .distractor-highlight::before{content:'🔍';position:absolute;top:-8px;right:-8px;font-size:14px}
 body.dark .distractor-highlight{background:#451a03 !important;border-color:#d97706 !important}
 
@@ -215,10 +227,10 @@ body.dark .distractor-highlight{background:#451a03 !important;border-color:#d977
 .roi-grid{position:relative;width:100%;aspect-ratio:1.4;border-left:2px solid #64748b;border-bottom:2px solid #64748b;margin:12px 0}
 .roi-dot{position:absolute;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;cursor:pointer;transition:.2s;border:2px solid rgba(255,255,255,.8);text-align:center;line-height:1.1;overflow:hidden}
 .roi-dot:hover{transform:scale(1.3);z-index:5}
-.roi-label{position:absolute;font-size:9px;color:#64748b;font-weight:600}
+.roi-label{position:absolute;font-size:9px;color:rgb(var(--fg2));font-weight:600}
 
 /* ===== VOICE PARSER ===== */
-.voice-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;cursor:pointer}
+.voice-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;background:rgb(var(--red-bg));color:#dc2626;border:1px solid rgb(var(--red-brd));cursor:pointer}
 .voice-btn.listening{background:#dc2626;color:#fff;animation:pulse-red 1.5s infinite}
 body.dark .voice-btn{background:#450a0a;border-color:#7f1d1d}
 
@@ -237,30 +249,30 @@ body.study .stat{background:#221508;border-color:#3d2a12}
 body.study .fc{background:#221508;border-color:#3d2a12;color:#e8d5b0}
 body.study .sec-t{color:#e8d5b0}
 .chat-msgs{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
-.chat-msg-user{background:#eff6ff;border-radius:12px 12px 2px 12px;padding:8px 12px;font-size:12px;align-self:flex-end;max-width:85%}
-.chat-msg-ai{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px 12px 12px 2px;padding:8px 12px;font-size:12px;align-self:flex-start;max-width:90%;white-space:pre-wrap;line-height:1.6}
-.chat-msg-err{background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:8px 12px;font-size:11px;color:#dc2626}
+.chat-msg-user{background:rgb(var(--blue-bg));border-radius:12px 12px 2px 12px;padding:8px 12px;font-size:12px;align-self:flex-end;max-width:85%}
+.chat-msg-ai{background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:12px 12px 12px 2px;padding:8px 12px;font-size:12px;align-self:flex-start;max-width:90%;white-space:pre-wrap;line-height:1.6}
+.chat-msg-err{background:rgb(var(--red-bg));border:1px solid rgb(var(--red-brd));border-radius:12px;padding:8px 12px;font-size:11px;color:#dc2626}
 .chat-input-row{display:flex;gap:6px;padding:8px 10px;border-top:1px solid #e2e8f0}
-.chat-starter{display:block;width:100%;text-align:right;padding:8px 12px;border-radius:10px;border:1px solid #e2e8f0;font-size:11px;margin-bottom:5px;background:#fff;cursor:pointer;font-family:'Heebo',sans-serif}
-.chat-starter:hover{background:#eff6ff;border-color:#bae6fd}
-.chat-disclaimer{font-size:10px;color:#d97706;padding:5px 8px;background:#fffbeb;border-radius:8px;border:1px solid #fde68a}
+.chat-starter{display:block;width:100%;text-align:right;padding:8px 12px;border-radius:10px;border:1px solid rgb(var(--brd));font-size:11px;margin-bottom:5px;background:rgb(var(--card-bg));cursor:pointer;font-family:'Heebo',sans-serif}
+.chat-starter:hover{background:rgb(var(--blue-bg));border-color:#bae6fd}
+.chat-disclaimer{font-size:10px;color:#d97706;padding:5px 8px;background:rgb(var(--yellow-bg));border-radius:8px;border:1px solid rgb(var(--yellow-brd))}
 .typing-dots{display:flex;gap:4px;align-items:center;padding:2px 0}.typing-dots span{width:6px;height:6px;border-radius:50%;background:#94a3b8;animation:tdot 1.2s infinite}.typing-dots span:nth-child(2){animation-delay:.2s}.typing-dots span:nth-child(3){animation-delay:.4s}
 @keyframes tdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
 body.dark .chat-msg-ai{background:#1e293b;border-color:#334155;color:#e2e8f0}
 body.dark .chat-msg-user{background:#1e3a5f;color:#e2e8f0}
 body.dark .chat-starter{background:#1e293b;border-color:#334155;color:#e2e8f0}
 body.dark .chat-input-row{border-color:#334155}
-body.dark .chat-disclaimer{background:#422006;border-color:#92400e;color:#fcd34d}
+body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg));color:#fcd34d}
 .skip-link{position:absolute;left:-9999px;top:4px;z-index:9999;padding:6px 12px;background:#3b82f6;color:#fff;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none}
 .skip-link:focus{left:4px}
 :focus-visible{outline:2px solid #3b82f6;outline-offset:2px}
 
 /* ===== TOOLTIPS ===== */
 .tt-wrap{position:relative;display:inline-flex;align-items:center;gap:3px}
-.tt-icon{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:#e2e8f0;color:#64748b;font-size:9px;font-weight:700;cursor:help;flex-shrink:0;line-height:1;border:none;padding:0}
+.tt-icon{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:#e2e8f0;color:rgb(var(--fg2));font-size:9px;font-weight:700;cursor:help;flex-shrink:0;line-height:1;border:none;padding:0}
 .tt-icon:focus{outline:2px solid rgb(var(--sky));outline-offset:1px}
 .tt-box{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1e293b;color:#f1f5f9;font-size:10px;line-height:1.5;padding:7px 10px;border-radius:8px;width:180px;z-index:999;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.3)}
-.tt-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e293b}
+.tt-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgb(var(--fg))}
 .tt-icon:hover+.tt-box,.tt-icon:focus+.tt-box{display:block}
 </style>
 
@@ -284,7 +296,7 @@ upd();setInterval(upd,30000);
 
 <a href="#ct" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span style="font-size:10px;font-weight:500;color:#0D7377;vertical-align:middle">Geriatrics</span> <span id="headerVer" style="font-size:9px;font-weight:400;color:#64748b;vertical-align:middle"></span></h1>
+<h1>Shlav A Mega <span style="font-size:10px;font-weight:500;color:#0D7377;vertical-align:middle">Geriatrics</span> <span id="headerVer" style="font-size:9px;font-weight:400;color:rgb(var(--fg2));vertical-align:middle"></span></h1>
 <button class="dm-btn" onclick="toggleStudyMode()" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode">🌓</button><button class="dm-btn" onclick="showHelp()" title="Help" aria-label="Help" style="right:82px;font-size:11px">❓</button>
 <p id="hdr-sub">Loading...</p>
 </div>
@@ -461,9 +473,9 @@ function renderPomoOverlay(){
 if(!pomoBreak)return;
 if(document.getElementById('pomo-overlay'))return;
 const div=document.createElement('div');div.id='pomo-overlay';div.className='pomo-overlay';
-div.innerHTML=`<h2>Break Time</h2><p style="font-size:13px;margin-bottom:16px;color:#94a3b8">Rest your eyes. Stand up. Stretch.</p>
+div.innerHTML=`<h2>Break Time</h2><p style="font-size:13px;margin-bottom:16px;color:rgb(var(--fg3))">Rest your eyes. Stand up. Stretch.</p>
 <div class="pomo-break-timer" id="pomo-break-display">${fmtT(pomoBreakSec)}</div>
-<p style="font-size:10px;margin-top:12px;color:#64748b">Auto-resumes in ${Math.ceil(pomoBreakSec/60)} min</p>`;
+<p style="font-size:10px;margin-top:12px;color:rgb(var(--fg2))">Auto-resumes in ${Math.ceil(pomoBreakSec/60)} min</p>`;
 document.body.appendChild(div);
 const iv=setInterval(()=>{const d=document.getElementById('pomo-break-display');
 if(!pomoBreak||!d){clearInterval(iv);const o=document.getElementById('pomo-overlay');if(o)o.remove();return;}
@@ -952,7 +964,7 @@ function onCallPick(correct){
   },600);
 }
 function renderOnCall(){
-  if(!pool.length)return '<div style="padding:40px;text-align:center;color:#94a3b8">No questions available</div>';
+  if(!pool.length)return '<div style="padding:40px;text-align:center;color:rgb(var(--fg3))">No questions available</div>';
   const qIdx=pool[qi];const q=QZ[qIdx];
   const TOPICS_L=TOPICS;
   const topic=q.ti>=0?TOPICS_L[q.ti]:'';
@@ -960,33 +972,33 @@ function renderOnCall(){
   let h='<div style="min-height:100vh;padding:16px;display:flex;flex-direction:column;gap:12px">';
   // Header
   h+=`<div style="display:flex;justify-content:space-between;align-items:center">
-    <div style="font-size:11px;color:#64748b">${qi+1}/${pool.length} · ${filt}</div>
-    <button onclick="exitOnCallMode()" style="font-size:11px;padding:4px 10px;background:#f1f5f9;border:none;border-radius:8px;cursor:pointer" aria-label="Exit on-call mode">✕ Exit</button>
+    <div style="font-size:11px;color:rgb(var(--fg2))">${qi+1}/${pool.length} · ${filt}</div>
+    <button onclick="exitOnCallMode()" style="font-size:11px;padding:4px 10px;background:rgb(var(--bg2));border:none;border-radius:8px;cursor:pointer" aria-label="Exit on-call mode">✕ Exit</button>
   </div>`;
   // Topic tag
-  if(topic)h+=`<div style="font-size:10px;background:#f0fdf4;color:#166534;padding:3px 10px;border-radius:20px;display:inline-block;align-self:flex-start;font-weight:600">${topic}</div>`;
+  if(topic)h+=`<div style="font-size:10px;background:rgb(var(--green-bg));color:rgb(var(--green-fg));padding:3px 10px;border-radius:20px;display:inline-block;align-self:flex-start;font-weight:600">${topic}</div>`;
   // Question card - large text
-  h+=`<div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);flex:1;cursor:${flipRevealed?'default':'pointer'}" ${flipRevealed?'':'onclick="flipCard()" role="button" tabindex="0" aria-label="Flip card to reveal answer"'}>
+  h+=`<div style="background:rgb(var(--card-bg));border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);flex:1;cursor:${flipRevealed?'default':'pointer'}" ${flipRevealed?'':'onclick="flipCard()" role="button" tabindex="0" aria-label="Flip card to reveal answer"'}>
     <div style="font-size:16px;line-height:1.6;font-weight:500;direction:rtl;text-align:right;margin-bottom:${flipRevealed?'16px':'0'}">${q.q}</div>`;
   if(!flipRevealed){
-    h+=`<div style="text-align:center;margin-top:20px;color:#94a3b8;font-size:13px">👆 tap to reveal answer</div>`;
+    h+=`<div style="text-align:center;margin-top:20px;color:rgb(var(--fg3));font-size:13px">👆 tap to reveal answer</div>`;
   } else {
     // Show correct answer prominently
     h+=`<div style="background:#dcfce7;border-radius:12px;padding:14px;margin-bottom:12px">
-      <div style="font-size:10px;color:#166534;font-weight:700;margin-bottom:6px">✓ CORRECT ANSWER</div>
+      <div style="font-size:10px;color:rgb(var(--green-fg));font-weight:700;margin-bottom:6px">✓ CORRECT ANSWER</div>
       <div style="font-size:14px;font-weight:600;direction:rtl;text-align:right">${correct}</div>
     </div>`;
     // Explanation if available
     const ex=_exCache&&_exCache[qIdx];
-    if(ex){h+=`<div style="font-size:12px;color:#475569;line-height:1.7;direction:rtl;text-align:right;border-top:1px solid #e2e8f0;padding-top:10px">${ex}</div>`;}
-    else{h+=`<button onclick="runExplainOnCall(${qIdx})" id="oc-exp-${qIdx}" style="font-size:11px;padding:5px 12px;background:#eff6ff;color:#3b82f6;border:none;border-radius:8px;cursor:pointer;margin-bottom:8px">🤖 הסבר AI</button><div id="oc-exp-box-${qIdx}"></div>`;}
+    if(ex){h+=`<div style="font-size:12px;color:rgb(var(--fg2));line-height:1.7;direction:rtl;text-align:right;border-top:1px solid #e2e8f0;padding-top:10px">${ex}</div>`;}
+    else{h+=`<button onclick="runExplainOnCall(${qIdx})" id="oc-exp-${qIdx}" style="font-size:11px;padding:5px 12px;background:rgb(var(--blue-bg));color:#3b82f6;border:none;border-radius:8px;cursor:pointer;margin-bottom:8px">🤖 הסבר AI</button><div id="oc-exp-box-${qIdx}"></div>`;}
   }
   h+=`</div>`;
   // Rate buttons (only after flip)
   if(flipRevealed){
     h+=`<div style="display:flex;gap:12px">
-      <button onclick="onCallPick(false)" style="flex:1;padding:18px;background:#fef2f2;color:#dc2626;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px" aria-label="Wrong answer">✗</button>
-      <button onclick="onCallPick(true)" style="flex:1;padding:18px;background:#f0fdf4;color:#16a34a;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px" aria-label="Correct answer">✓</button>
+      <button onclick="onCallPick(false)" style="flex:1;padding:18px;background:rgb(var(--red-bg));color:#dc2626;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px" aria-label="Wrong answer">✗</button>
+      <button onclick="onCallPick(true)" style="flex:1;padding:18px;background:rgb(var(--green-bg));color:#16a34a;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px" aria-label="Correct answer">✓</button>
     </div>`;
   }
   h+=`</div>`;
@@ -1001,7 +1013,7 @@ async function runExplainOnCall(qIdx){
   try{
     const txt=await callAI([{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה. עגן בתשובה הנכונה. שאלה: '+q.q+'\nתשובה נכונה: '+correct}],400,'sonnet');
     _exCache[qIdx]=txt;try{localStorage.setItem('samega_ex',JSON.stringify(_exCache));}catch(e){}
-    box.innerHTML='<div style="font-size:12px;color:#475569;line-height:1.7;direction:rtl;text-align:right;margin-top:8px">'+sanitize(txt)+'</div>';
+    box.innerHTML='<div style="font-size:12px;color:rgb(var(--fg2));line-height:1.7;direction:rtl;text-align:right;margin-top:8px">'+sanitize(txt)+'</div>';
     btn.remove();
   }catch(e){btn.textContent='🤖 הסבר AI';btn.disabled=false;}
 }
@@ -1081,12 +1093,12 @@ function toggleFlagExplain(qIdx){
 function renderExplainBox(qIdx){
   var container=document.getElementById('ai-explain-'+qIdx);
   if(!container)return;
-  if(_exLoading&&_exIdx===qIdx){container.innerHTML='<div style="color:#64748b;font-size:11px;padding:8px 0">⏳ מחשב הסבר...</div>';return;}
+  if(_exLoading&&_exIdx===qIdx){container.innerHTML='<div style="color:rgb(var(--fg2));font-size:11px;padding:8px 0">⏳ מחשב הסבר...</div>';return;}
   var ex=_exCache[qIdx];
   if(!ex)return;
   if(ex.err){container.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px 0">⚠️ '+sanitize(ex.err)+'</div>';return;}
   const _isFlagged=(S.flagged||{})[qIdx];
-  container.innerHTML='<div class="explain-box" style="margin-top:8px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:11px;line-height:1.7;color:#166534;direction:rtl;text-align:right"><div style="font-weight:700;margin-bottom:4px">🤖 הסבר AI</div><div>'+sanitize(ex.text)+'</div></div>'+
+  container.innerHTML='<div class="explain-box" style="margin-top:8px;padding:10px 12px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--green-fg));direction:rtl;text-align:right"><div style="font-weight:700;margin-bottom:4px">🤖 הסבר AI</div><div>'+sanitize(ex.text)+'</div></div>'+
     '<button onclick="toggleFlagExplain('+qIdx+')" style="font-size:9px;padding:2px 8px;margin-top:3px;background:'+(_isFlagged?'#fef2f2':'#f8fafc')+';color:'+(_isFlagged?'#dc2626':'#94a3b8')+';border:1px solid '+(_isFlagged?'#fecaca':'#e2e8f0')+';border-radius:6px;cursor:pointer">'+(_isFlagged?'⚑ Flagged — verify':'⚐ Flag as unreliable')+'</button>';
 }
 async function explainWithAI(qIdx){
@@ -1111,7 +1123,7 @@ async function explainWithAI(qIdx){
 async function aiAutopsy(qIdx){
 const q=QZ[qIdx];
 const _apKey='autopsy_'+qIdx;
-_exCache[_apKey]='<div style="color:#64748b">⏳ AI analyzing each option...</div>';
+_exCache[_apKey]='<div style="color:rgb(var(--fg2))">⏳ AI analyzing each option...</div>';
 render();
 try{
 const wrongOpts=q.o.filter((_,i)=>i!==q.c);
@@ -1270,11 +1282,11 @@ function showMockExamResult(pct,correct,tot,elapsed,byTopic){
     return{ti:+ti,name:TOPICS_LOCAL[+ti]||'Other',ok:s.ok,no:s.no,n,acc};
   }).filter(Boolean).sort((a,b)=>a.acc-b.acc);
   let html=`<div style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;overflow-y:auto;padding:16px" id="mexModal">
-<div style="background:#fff;border-radius:16px;max-width:480px;margin:0 auto;padding:20px;font-family:Inter,sans-serif">
+<div style="background:rgb(var(--card-bg));border-radius:16px;max-width:480px;margin:0 auto;padding:20px;font-family:Inter,sans-serif">
 <div style="text-align:center;margin-bottom:16px">
   <div style="font-size:48px">${pass?'🎉':'💪'}</div>
   <div style="font-size:28px;font-weight:700;color:${pass?'#059669':'#dc2626'}">${pct}%</div>
-  <div style="font-size:13px;color:#64748b">${correct}/${tot} correct · ${fmtT(elapsed)}</div>
+  <div style="font-size:13px;color:rgb(var(--fg2))">${correct}/${tot} correct · ${fmtT(elapsed)}</div>
   <div style="font-size:14px;font-weight:700;margin-top:4px;color:${pass?'#059669':'#dc2626'}">${pass?'PASS ✓':'NEEDS WORK ✗'} (pass ≥60%)</div>
 </div>`;
 // Feature 2: Historical comparison + prediction
@@ -1289,15 +1301,15 @@ ${_diff>=0?'↑':'↓'} ${Math.abs(_diff)}% vs previous (${_prev.score}% on ${ne
 const _recent=_prevHist.slice(-5).concat([{score:pct}]);
 const _avgTrend=_recent.length>=3?Math.round(_recent.reduce((a,m,i)=>a+(i>0?m.score-_recent[i-1].score:0),0)/(_recent.length-1)):0;
 const _predicted=Math.max(0,Math.min(100,pct+_avgTrend*2));
-html+=`<div style="text-align:center;margin-bottom:12px;font-size:10px;color:#64748b">
+html+=`<div style="text-align:center;margin-bottom:12px;font-size:10px;color:rgb(var(--fg2))">
 Projected next exam: <b style="color:${_predicted>=60?'#059669':'#dc2626'}">${_predicted}%</b> (based on trend of ${_avgTrend>=0?'+':''}${_avgTrend}%/exam)
 </div>`;
 }
 html+=`
-<div style="font-weight:700;font-size:12px;margin-bottom:8px;color:#475569">TOPIC BREAKDOWN (worst first):</div>
-${rows.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9">
+<div style="font-weight:700;font-size:12px;margin-bottom:8px;color:rgb(var(--fg2))">TOPIC BREAKDOWN (worst first):</div>
+${rows.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgb(var(--brd))">
   <div style="font-size:11px;flex:1">${r.name}</div>
-  <div style="font-size:10px;color:#64748b">${r.ok}/${r.n}</div>
+  <div style="font-size:10px;color:rgb(var(--fg2))">${r.ok}/${r.n}</div>
   <div style="width:60px;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden">
     <div style="width:${r.acc}%;height:100%;background:${r.acc>=70?'#10b981':r.acc>=50?'#f59e0b':'#ef4444'};border-radius:4px"></div>
   </div>
@@ -1444,17 +1456,17 @@ let h=`<div class="sudden-death-banner"><span style="font-weight:700;font-size:1
 h+=`<div class="card" style="padding:16px">`;
 if(timedMode&&!ans){
   h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-<span id="timed-count" style="font-size:11px;font-weight:700;color:#64748b;min-width:24px">${timedSec}s</span>
+<span id="timed-count" style="font-size:11px;font-weight:700;color:rgb(var(--fg2));min-width:24px">${timedSec}s</span>
 <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
   <div id="timed-bar" style="height:100%;width:${Math.round(timedSec/90*100)}%;background:${timedSec>45?'#10b981':timedSec>22?'#f59e0b':'#ef4444'};border-radius:3px;transition:width .9s linear"></div>
 </div>
-<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;white-space:nowrap" aria-label="${timedPaused?'Resume timer':'Pause timer'}">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
+<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:6px;cursor:pointer;white-space:nowrap" aria-label="${timedPaused?'Resume timer':'Pause timer'}">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
 </div>`;
 }
 const _isFlagQ=(S.flagged||{})[pool[qi]];
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px">${_isFlagQ?'<span style="color:#dc2626;font-size:11px" title="Explanation flagged — verify">⚑ </span>':''  }${q.q}</p>`;
-if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid #e2e8f0;cursor:pointer" onclick="viewImg(this.src)" loading="lazy"><button onclick="event.stopPropagation();removeQImage(${pool[qi]})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer">✕</button></div>`;}
-if(!q.img&&!examMode){h+=`<div style="margin-bottom:10px"><button onclick="uploadQImage(${pool[qi]})" style="font-size:10px;padding:4px 12px;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">📷 Attach Image</button><span id="img-status-${pool[qi]}" style="font-size:10px;color:#94a3b8;margin-left:6px"></span></div>`;}
+if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy"><button onclick="event.stopPropagation();removeQImage(${pool[qi]})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer">✕</button></div>`;}
+if(!q.img&&!examMode){h+=`<div style="margin-bottom:10px"><button onclick="uploadQImage(${pool[qi]})" style="font-size:10px;padding:4px 12px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">📷 Attach Image</button><span id="img-status-${pool[qi]}" style="font-size:10px;color:rgb(var(--fg3));margin-left:6px"></span></div>`;}
 q.o.forEach((o,i)=>{
 let cls='qo';
 if(ans){cls+=' lk';if(i===q.c)cls+=' ok';else if(i===sel)cls+=' no';else cls+=' dim';}
@@ -1467,7 +1479,7 @@ h+=`</div>`;
 // Leaderboard
 if(sdLeaderboard.length){
 h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🏆 Leaderboard</div>`;
-sdLeaderboard.forEach((e,i)=>{h+=`<div class="leaderboard-row"><span>${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)} ${e.streak} questions</span><span style="color:#94a3b8">${e.date}</span></div>`;});
+sdLeaderboard.forEach((e,i)=>{h+=`<div class="leaderboard-row"><span>${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)} ${e.streak} questions</span><span style="color:rgb(var(--fg3))">${e.date}</span></div>`;});
 h+=`</div>`;}
 return h;
 }
@@ -1502,7 +1514,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <div style="display:flex;gap:4px;flex-wrap:wrap">
 <button onclick="startMockExam()" class="btn" style="font-size:10px;padding:6px 14px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-weight:700" aria-label="Start mock exam">🎯 Mock Exam</button>
 <button onclick="startExam()" class="btn" style="font-size:10px;padding:6px 12px;background:#0f172a;color:#fff;border:none;border-radius:8px" aria-label="Start full exam">📋 Full (150q)</button>
-<button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:6px 12px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:8px" aria-label="Sudden death">💀</button>
+<button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:6px 12px;background:rgb(var(--red-bg));color:#dc2626;border:1px solid rgb(var(--red-brd));border-radius:8px" aria-label="Sudden death">💀</button>
 <button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:6px 12px;background:#0f172a;color:#7dd3fc;border:none;border-radius:8px" aria-label="On-call mode">🌙</button>
 ${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:6px 12px;background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;border-radius:8px" aria-label="Pomodoro">⏱️</button>':''}
 </div>
@@ -1533,29 +1545,29 @@ h+=`<button class="btn btn-d" style="font-size:10px;padding:6px 12px;white-space
 }
 h+=`</div>`;
 }
-if(!pool.length){h+=`<div class="card" style="padding:24px;text-align:center"><p style="font-size:13px;color:#94a3b8">${filt==='due'?'🎉 No questions due for review!':'No questions match this filter.'}</p></div>`;return h;}
+if(!pool.length){h+=`<div class="card" style="padding:24px;text-align:center"><p style="font-size:13px;color:rgb(var(--fg3))">${filt==='due'?'🎉 No questions due for review!':'No questions match this filter.'}</p></div>`;return h;}
 h+=`<div class="progress-bar"><div class="fill" style="width:${Math.round((qi+1)/pool.length*100)}%"></div></div>`;
 h+=`<div class="card" style="padding:16px">`;
 if(timedMode&&!ans){
   h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-<span id="timed-count" style="font-size:11px;font-weight:700;color:#64748b;min-width:24px">${timedSec}s</span>
+<span id="timed-count" style="font-size:11px;font-weight:700;color:rgb(var(--fg2));min-width:24px">${timedSec}s</span>
 <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
   <div id="timed-bar" style="height:100%;width:${Math.round(timedSec/90*100)}%;background:${timedSec>45?'#10b981':timedSec>22?'#f59e0b':'#ef4444'};border-radius:3px;transition:width .9s linear"></div>
 </div>
-<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;white-space:nowrap" aria-label="${timedPaused?'Resume timer':'Pause timer'}">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
+<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:6px;cursor:pointer;white-space:nowrap" aria-label="${timedPaused?'Resume timer':'Pause timer'}">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
 </div>`;
 }
 const topicName=q.ti>=0&&TOPICS[q.ti]?TOPICS[q.ti]:'';
 const _cf=isChronicFail(S.sr[pool[qi]]);
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}${isExamTrap(pool[qi])?'<span title="Exam trap — many people pick the same wrong answer" style="font-size:12px;cursor:default">🪤</span>':''}<span class="tag-year" style="background:${q.t==='Hazzard'?'#faf5ff':'#eff6ff'};color:${q.t==='Hazzard'?'#7c3aed':'#1d4ed8'};font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t==='Hazzard'?'🤖 AI — Hazzard\'s':'📝 '+q.t}</span>${topicName?`<span class="tag-topic" style="background:#f0fdf4;color:#166534;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libSec='haz-pdf';render();" style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open Hazzard PDFs">📕 ${ref.l}</span>`;return '';})()}</div>
+<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}${isExamTrap(pool[qi])?'<span title="Exam trap — many people pick the same wrong answer" style="font-size:12px;cursor:default">🪤</span>':''}<span class="tag-year" style="background:${q.t==='Hazzard'?'#faf5ff':'#eff6ff'};color:${q.t==='Hazzard'?'#7c3aed':'#1d4ed8'};font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t==='Hazzard'?'🤖 AI — Hazzard\'s':'📝 '+q.t}</span>${topicName?`<span class="tag-topic" style="background:rgb(var(--green-bg));color:rgb(var(--green-fg));font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libSec='haz-pdf';render();" style="background:#fef3c7;color:rgb(var(--yellow-fg));font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open Hazzard PDFs">📕 ${ref.l}</span>`;return '';})()}</div>
 <div style="display:flex;align-items:center;gap:8px">
 <button onclick="speakQuestion()" class="speech-btn${isSpeaking?' speaking':''}" title="Read aloud" aria-label="Read question aloud">🔊</button>
 <button onclick="shareQ()" id="shbtn" class="share-btn" title="Share" aria-label="Share question">📋 שתף</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px" title="Bookmark" aria-label="${bk?'Remove bookmark':'Bookmark question'}">${bk?'🔖':'🏷️'}</button>
-<span style="color:#94a3b8;font-size:10px">${qi+1}/${pool.length}</span>
+<span style="color:rgb(var(--fg3));font-size:10px">${qi+1}/${pool.length}</span>
 </div></div>`;
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="auto">${q.q}</p>`;
-if(q.img){h+=`<div style="margin-bottom:14px;text-align:center"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid #e2e8f0;cursor:pointer" onclick="viewImg(this.src)" loading="lazy"></div>`;}
+if(q.img){h+=`<div style="margin-bottom:14px;text-align:center"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy"></div>`;}
 const _shuf=getOptShuffle(pool[qi],q);
 _shuf.forEach((origI,dispJ)=>{
 const o=q.o[origI];
@@ -1570,11 +1582,11 @@ h+=`<div style="display:flex;gap:6px;margin-top:14px">`;
 if(!ans){
 if(!examMode&&sel!==null&&_confidence===null){
 // Feature 9: Confidence before reveal
-h+=`<div style="margin-bottom:8px;font-size:10px;color:#64748b;font-weight:600">How sure are you?</div>
+h+=`<div style="margin-bottom:8px;font-size:10px;color:rgb(var(--fg2));font-weight:600">How sure are you?</div>
 <div style="display:flex;gap:6px;margin-bottom:10px">
-<button class="btn" style="flex:1;background:#fef2f2;color:#dc2626;font-size:13px;padding:8px" onclick="_confidence=0;render()">😬</button>
-<button class="btn" style="flex:1;background:#fffbeb;color:#d97706;font-size:13px;padding:8px" onclick="_confidence=1;render()">🤔</button>
-<button class="btn" style="flex:1;background:#f0fdf4;color:#059669;font-size:13px;padding:8px" onclick="_confidence=2;render()">😎</button>
+<button class="btn" style="flex:1;background:rgb(var(--red-bg));color:#dc2626;font-size:13px;padding:8px" onclick="_confidence=0;render()">😬</button>
+<button class="btn" style="flex:1;background:rgb(var(--yellow-bg));color:#d97706;font-size:13px;padding:8px" onclick="_confidence=1;render()">🤔</button>
+<button class="btn" style="flex:1;background:rgb(var(--green-bg));color:#059669;font-size:13px;padding:8px" onclick="_confidence=2;render()">😎</button>
 </div>`;
 }
 const _confLabel=_confidence===0?'😬':_confidence===1?'🤔':_confidence===2?'😎':'';
@@ -1585,9 +1597,9 @@ if(!examMode&&sel!==q.c&&!_wrongReason){
 h+=`<div style="margin-bottom:8px">
 <div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:6px">Why did you get it wrong?</div>
 <div id="why-wrong-box" style="display:flex;gap:4px;flex-wrap:wrap">
-<button class="btn" style="font-size:10px;padding:6px 10px;background:#fef2f2;color:#991b1b" onclick="_wrongReason='no_knowledge';save();_updateWrongUI()">📚 Didn't know</button>
-<button class="btn" style="font-size:10px;padding:6px 10px;background:#fffbeb;color:#92400e" onclick="_wrongReason='misread';save();_updateWrongUI()">👓 Misread</button>
-<button class="btn" style="font-size:10px;padding:6px 10px;background:#eff6ff;color:#1e40af" onclick="_wrongReason='between_2';save();_updateWrongUI()">⚖️ Between 2</button>
+<button class="btn" style="font-size:10px;padding:6px 10px;background:rgb(var(--red-bg));color:rgb(var(--red-fg))" onclick="_wrongReason='no_knowledge';save();_updateWrongUI()">📚 Didn't know</button>
+<button class="btn" style="font-size:10px;padding:6px 10px;background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg))" onclick="_wrongReason='misread';save();_updateWrongUI()">👓 Misread</button>
+<button class="btn" style="font-size:10px;padding:6px 10px;background:rgb(var(--blue-bg));color:rgb(var(--blue-fg))" onclick="_wrongReason='between_2';save();_updateWrongUI()">⚖️ Between 2</button>
 <button class="btn" style="font-size:10px;padding:6px 10px;background:#f5f3ff;color:#6d28d9" onclick="_wrongReason='silly';save();_updateWrongUI()">🤦 Silly mistake</button>
 </div></div>`;
 }
@@ -1601,10 +1613,10 @@ h+=`<button class="btn" onclick="tab='lib';libSec='harrison';render()" style="fo
 // Feature 7: Optional difficulty rating
 if(!examMode){
 h+=`<div style="display:flex;gap:4px;margin-bottom:8px;align-items:center">
-<span style="font-size:9px;color:#94a3b8">Difficulty:</span>
-<button class="btn" style="font-size:9px;padding:3px 8px;${_diffRating==='easy'?'background:#dcfce7;color:#166534':'background:#f8fafc;color:#94a3b8'}" onclick="_diffRating='easy';_storeDiff(pool[qi],'easy')">Easy</button>
-<button class="btn" style="font-size:9px;padding:3px 8px;${_diffRating==='med'?'background:#fef9c3;color:#854d0e':'background:#f8fafc;color:#94a3b8'}" onclick="_diffRating='med';_storeDiff(pool[qi],'med')">Medium</button>
-<button class="btn" style="font-size:9px;padding:3px 8px;${_diffRating==='hard'?'background:#fecaca;color:#991b1b':'background:#f8fafc;color:#94a3b8'}" onclick="_diffRating='hard';_storeDiff(pool[qi],'hard')">Hard</button>
+<span style="font-size:9px;color:rgb(var(--fg3))">Difficulty:</span>
+<button class="btn" style="font-size:9px;padding:3px 8px;${_diffRating==='easy'?'background:#dcfce7;color:rgb(var(--green-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='easy';_storeDiff(pool[qi],'easy')">Easy</button>
+<button class="btn" style="font-size:9px;padding:3px 8px;${_diffRating==='med'?'background:#fef9c3;color:#854d0e':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='med';_storeDiff(pool[qi],'med')">Medium</button>
+<button class="btn" style="font-size:9px;padding:3px 8px;${_diffRating==='hard'?'background:#fecaca;color:rgb(var(--red-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='hard';_storeDiff(pool[qi],'hard')">Hard</button>
 </div>`;
 }
 // Next button — blocked if wrong + no classification (non-exam)
@@ -1613,8 +1625,8 @@ h+=`<button id="next-btn" class="btn btn-d" onclick="next()"${_blocked?' disable
 // Compact wrong answer report — in context, right where it matters
 if(!examMode&&ans){
 h+=`<div id="report-wrong-box" style="margin-top:8px">
-<button onclick="document.getElementById('report-wrong-expand').style.display=document.getElementById('report-wrong-expand').style.display==='none'?'block':'none'" style="font-size:9px;padding:3px 8px;background:#fffbeb;color:#92400e;border:1px solid #fde68a;border-radius:6px;cursor:pointer">⚠️ Report wrong answer key</button>
-<div id="report-wrong-expand" style="display:none;margin-top:6px;padding:10px;background:#fffbeb;border-radius:10px;border:1px solid #fde68a">
+<button onclick="document.getElementById('report-wrong-expand').style.display=document.getElementById('report-wrong-expand').style.display==='none'?'block':'none'" style="font-size:9px;padding:3px 8px;background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg));border:1px solid rgb(var(--yellow-brd));border-radius:6px;cursor:pointer">⚠️ Report wrong answer key</button>
+<div id="report-wrong-expand" style="display:none;margin-top:6px;padding:10px;background:rgb(var(--yellow-bg));border-radius:10px;border:1px solid rgb(var(--yellow-brd))">
 <input id="reportInput" class="search-box" placeholder="מה לדעתך התשובה הנכונה ולמה?" style="font-size:11px;margin-bottom:6px;direction:rtl">
 <button class="btn" style="font-size:10px;width:100%;background:#d97706;color:#fff" onclick="S._reportType='wrong_answer';submitReport()">שלח לבדיקת AI</button>
 <div id="fbStatus" style="font-size:10px;margin-top:4px;display:none"></div>
@@ -1627,19 +1639,19 @@ h+=`</div>`;
 // Teach-Back box
 if(ans&&!examMode&&sel===q.c){
 if(!teachBackState){
-h+='<div style="margin-top:12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:12px">';
-h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:12px;font-weight:700;color:#065f46;direction:rtl">🎓 Teach-Back: הסבר מדוע זו התשובה הנכונה</span><button onclick="startVoiceTeachBack()" id="tb-mic-btn" style="font-size:16px;padding:4px 8px;background:#ecfdf5;border:none;border-radius:8px;cursor:pointer" title="הקלט קולי" aria-label="Record voice teach-back">🎙️</button></div>';
+h+='<div style="margin-top:12px;background:rgb(var(--green-bg));border:1px solid #a7f3d0;border-radius:12px;padding:12px">';
+h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:12px;font-weight:700;color:rgb(var(--green-fg));direction:rtl">🎓 Teach-Back: הסבר מדוע זו התשובה הנכונה</span><button onclick="startVoiceTeachBack()" id="tb-mic-btn" style="font-size:16px;padding:4px 8px;background:#ecfdf5;border:none;border-radius:8px;cursor:pointer" title="הקלט קולי" aria-label="Record voice teach-back">🎙️</button></div>';
 h+='<textarea id="tbInput" dir="rtl" style="width:100%;min-height:60px;resize:vertical;font-family:Heebo,sans-serif;border:1px solid #a7f3d0;border-radius:8px;padding:8px;font-size:12px" placeholder="הקלד את ההסבר שלך..." aria-label="Teach-back explanation"></textarea>';
 h+='<div style="display:flex;gap:8px;margin-top:8px">';
 h+='<button class="btn btn-g" style="flex:1;font-size:11px" onclick="var v=document.getElementById(\'tbInput\')?.value?.trim();if(v){gradeTeachBack(pool[qi],v);}else{teachBackState=\'skip\';render();}" aria-label="Grade teach-back with AI">🤖 Grade it</button>';
 h+='<button class="btn btn-o" style="font-size:11px" onclick="teachBackState=\'skip\';render()" aria-label="Skip teach-back">דלג</button>';
 h+='</div></div>';
 }else if(teachBackState==='grading'){
-h+='<div style="margin-top:12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:12px;text-align:center"><div style="font-size:12px;color:#065f46">⏳ Grading...</div></div>';
+h+='<div style="margin-top:12px;background:rgb(var(--green-bg));border:1px solid #a7f3d0;border-radius:12px;padding:12px;text-align:center"><div style="font-size:12px;color:rgb(var(--green-fg))">⏳ Grading...</div></div>';
 }else if(teachBackState&&teachBackState!=='skip'){
 var scoreEmoji=teachBackState.score===3?'🟢':teachBackState.score===2?'🟡':'🔴';
 var scoreLabel=teachBackState.score===3?'Excellent!':teachBackState.score===2?'Partial':'Needs work';
-h+='<div style="margin-top:12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:12px">';
+h+='<div style="margin-top:12px;background:rgb(var(--green-bg));border:1px solid #a7f3d0;border-radius:12px;padding:12px">';
 h+='<div style="font-size:13px;font-weight:700;margin-bottom:4px">'+scoreEmoji+' '+scoreLabel+'</div>';
 if(teachBackState.feedback){
   const axes=[['mechanism','מנגנון'],['criteria','קריטריון'],['exception','חריג']];
@@ -1659,17 +1671,17 @@ const relevant=sentences.filter(s=>s.length>20).filter(s=>{
 const sl=s.toLowerCase(),ql=q.q.toLowerCase(),cl=correctText.toLowerCase();
 return cl.split(/\s+/).filter(w=>w.length>3).some(w=>sl.includes(w.toLowerCase()))||ql.split(/\s+/).filter(w=>w.length>4).some(w=>sl.includes(w.toLowerCase()));
 }).slice(0,3);
-h+=`<div class="explain-box" style="margin-top:10px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:11px;line-height:1.7;color:#166534">`;
+h+=`<div class="explain-box" style="margin-top:10px;padding:10px 12px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--green-fg))">`;
 h+=`<div style="font-weight:700;margin-bottom:4px">💡 ${note.topic}</div>`;
 if(relevant.length)h+=`<div style="margin-bottom:6px">${relevant.join('. ')}.</div>`;
-else h+=`<div style="margin-bottom:6px;color:#64748b;font-style:italic">Correct answer: <b>${correctText}</b></div>`;
+else h+=`<div style="margin-bottom:6px;color:rgb(var(--fg2));font-style:italic">Correct answer: <b>${correctText}</b></div>`;
 h+=`<div style="font-size:9px;color:#059669;border-top:1px solid #bbf7d0;padding-top:4px;margin-top:4px">📖 Source: ${note.ch} · ${q.t}</div>`;
 h+=`</div>`;
 }
 }
 // Built-in explanation (every question has one)
 if(ans&&!examMode&&q.e){
-h+=`<div style="margin-top:8px;padding:10px 12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;font-size:11px;line-height:1.7;color:#1e40af;direction:rtl;text-align:right">`;
+h+=`<div style="margin-top:8px;padding:10px 12px;background:rgb(var(--blue-bg));border:1px solid rgb(var(--blue-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--blue-fg));direction:rtl;text-align:right">`;
 h+=`<div style="font-weight:700;margin-bottom:4px;font-size:10px">📝 הסבר</div>`;
 h+=`<div>${sanitize(q.e).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
 h+=`</div>`;
@@ -1689,23 +1701,23 @@ if(ans&&!examMode){
 const wrongIdxs=q.o.map((_,i)=>i).filter(i=>i!==q.c);
 if(autopsyDistractor<0||autopsyDistractor===q.c)autopsyDistractor=wrongIdxs[Math.floor(Math.random()*wrongIdxs.length)];
 const _apKey='autopsy_'+pool[qi];
-h+=`<div style="padding:12px;margin-top:10px;border:2px solid #f59e0b;border-radius:12px;background:#fffbeb">
+h+=`<div style="padding:12px;margin-top:10px;border:2px solid #f59e0b;border-radius:12px;background:rgb(var(--yellow-bg))">
 <div style="font-weight:700;font-size:11px;margin-bottom:6px">🔬 Distractor Autopsy</div>`;
 // Check if we have cached AI autopsy
 if(_exCache[_apKey]){
-h+=`<div style="font-size:11px;line-height:1.7;color:#1e293b" dir="auto">${_exCache[_apKey]}</div>`;
+h+=`<div style="font-size:11px;line-height:1.7;color:rgb(var(--fg))" dir="auto">${_exCache[_apKey]}</div>`;
 } else {
-h+=`<div style="font-size:11px;line-height:1.6;color:#92400e" dir="auto">`;
+h+=`<div style="font-size:11px;line-height:1.6;color:rgb(var(--yellow-fg))" dir="auto">`;
 wrongIdxs.forEach(wi=>{
-h+=`<div style="margin-bottom:6px"><b style="color:#dc2626">✗ ${q.o[wi]}</b> — <span style="color:#64748b">why wrong here?</span></div>`;
+h+=`<div style="margin-bottom:6px"><b style="color:#dc2626">✗ ${q.o[wi]}</b> — <span style="color:rgb(var(--fg2))">why wrong here?</span></div>`;
 });
 h+=`</div>`;
-h+=`<button class="btn" style="font-size:10px;background:#fef3c7;color:#92400e;margin-top:6px;width:100%" onclick="aiAutopsy(${pool[qi]})">🤖 AI: Explain why each is wrong</button>`;
+h+=`<button class="btn" style="font-size:10px;background:#fef3c7;color:rgb(var(--yellow-fg));margin-top:6px;width:100%" onclick="aiAutopsy(${pool[qi]})">🤖 AI: Explain why each is wrong</button>`;
 }
 h+=`</div>`;
 }
-h+=`<div style="display:flex;gap:16px;margin-top:10px;padding-top:8px;border-top:1px solid #f1f5f9;font-size:10px;color:#94a3b8">
-<span>✅ ${S.qOk}</span><span>❌ ${S.qNo}</span><span>📊 ${pct}</span>${S.sr[pool[qi]]?.at?`<span style="color:#94a3b8">⏱${S.sr[pool[qi]].at}s avg</span>`:""}</div>`;
+h+=`<div style="display:flex;gap:16px;margin-top:10px;padding-top:8px;border-top:1px solid rgb(var(--brd));font-size:10px;color:rgb(var(--fg3))">
+<span>✅ ${S.qOk}</span><span>❌ ${S.qNo}</span><span>📊 ${pct}</span>${S.sr[pool[qi]]?.at?`<span style="color:rgb(var(--fg3))">⏱${S.sr[pool[qi]].at}s avg</span>`:""}</div>`;
 h+=`</div>`;
 return h;
 }
@@ -1724,7 +1736,7 @@ NOTES.filter(n=>n.topic.toLowerCase().includes(fv)||n.notes.toLowerCase().includ
 const i=n.id;
 h+=`<div class="card"><button class="acc-h" onclick="toggleNote(${i})">
 <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:12px">${n.topic}</span>
-<span style="font-size:9px;color:#94a3b8">${n.ch}</span></div>
+<span style="font-size:9px;color:rgb(var(--fg3))">${n.ch}</span></div>
 <span class="acc-ar${openNote===i?' op':''}">▼</span></button>`;
 if(openNote===i){
 const _fmtNote=function(txt){
@@ -1735,7 +1747,7 @@ function fmtLine(line){
 // Section headers: ▸ HEADING — render as a styled block header
 if(/^▸\s+/.test(line)){
 const title=line.replace(/^▸\s+/,'');
-return '<div style="margin:14px 0 6px;padding:5px 10px;background:linear-gradient(90deg,#eff6ff,transparent);border-left:3px solid #3b82f6;border-radius:0 4px 4px 0;font-size:10px;font-weight:800;color:#1e40af;text-transform:uppercase;letter-spacing:.6px">'+title+'</div>';
+return '<div style="margin:14px 0 6px;padding:5px 10px;background:linear-gradient(90deg,#eff6ff,transparent);border-left:3px solid #3b82f6;border-radius:0 4px 4px 0;font-size:10px;font-weight:800;color:rgb(var(--blue-fg));text-transform:uppercase;letter-spacing:.6px">'+title+'</div>';
 }
 // Sub-headers: ALL-CAPS word followed by colon at line start (e.g. "Tai Chi:", "RACF setting:")
 line=line.replace(/^([A-Z][A-Z\s\/&\-()]{2,40}):/,'<strong style="color:#0f172a">$1:</strong>');
@@ -1760,20 +1772,20 @@ if(lines.length===1&&/^▸\s+/.test(lines[0])){
 return fmtLine(lines[0]);
 }
 const fmt=lines.map(fmtLine).join('<br>');
-return '<p style="font-size:11.5px;line-height:1.9;margin:0 0 10px;color:#1e293b">'+fmt+'</p>';
+return '<p style="font-size:11.5px;line-height:1.9;margin:0 0 10px;color:rgb(var(--fg))">'+fmt+'</p>';
 }).join('');
 }
 let h='<div style="font-size:10px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📝 Clinical Notes</div>';
 h+=fmtBlock(clinicalNotes.trim());
 if(boardPearls.trim()){
-h+='<div style="margin-top:16px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px">';
+h+='<div style="margin-top:16px;padding:10px 12px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:8px">';
 h+='<div style="font-size:10px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📖 Hazzard\'s 8e — Board Pearls</div>';
-h+='<p style="font-size:11px;line-height:1.85;margin:0;color:#14532d">'+boardPearls.trim().replace(/(≥\d[\d.]*|≤\d[\d.]*|[<>]\d[\d.]*|\d+%)/g,'<b>$1</b>').replace(/\(SOE=[A-C]\)/g,'<span style="background:#dcfce7;color:#166534;padding:1px 4px;border-radius:3px;font-size:9px;font-weight:700">$&</span>').replace(/\b(INCREASES|AVOID|DO NOT)\b/g,'<span style="color:#dc2626;font-weight:700">$1</span>')+'</p>';
+h+='<p style="font-size:11px;line-height:1.85;margin:0;color:#14532d">'+boardPearls.trim().replace(/(≥\d[\d.]*|≤\d[\d.]*|[<>]\d[\d.]*|\d+%)/g,'<b>$1</b>').replace(/\(SOE=[A-C]\)/g,'<span style="background:#dcfce7;color:rgb(var(--green-fg));padding:1px 4px;border-radius:3px;font-size:9px;font-weight:700">$&</span>').replace(/\b(INCREASES|AVOID|DO NOT)\b/g,'<span style="color:#dc2626;font-weight:700">$1</span>')+'</p>';
 h+='</div>';
 }
 return h;
 };
-h+=`<div style="padding:10px 14px 14px;border-top:1px solid #f1f5f9">${_fmtNote(n.notes)}</div>`;
+h+=`<div style="padding:10px 14px 14px;border-top:1px solid rgb(var(--brd))">${_fmtNote(n.notes)}</div>`;
 }
 h+=`</div>`;
 });
@@ -2023,18 +2035,18 @@ function renderPriorityMatrix(){
   }).filter(r=>r.freq>0).sort((a,b)=>b.priority-a.priority);
   
   let h='<div style="font-weight:700;font-size:12px;margin:14px 0 8px;color:#0f172a">🎯 Priority Matrix — where to study next</div>';
-  h+='<div style="font-size:9px;color:#94a3b8;margin-bottom:8px">Score = exam frequency × your gap. Higher = drill harder.</div>';
+  h+='<div style="font-size:9px;color:rgb(var(--fg3));margin-bottom:8px">Score = exam frequency × your gap. Higher = drill harder.</div>';
   rows.slice(0,15).forEach((r,rank)=>{
     const accStr=r.acc===null?'untested':`${Math.round(r.acc*100)}%`;
     const barW=Math.round(r.priority);
     const color=r.priority>=60?'#dc2626':r.priority>=30?'#f59e0b':'#10b981';
     const trend=getTopicTrend(r.ti);
-    const trendStr=trend===null?'':trend>5?'<span style="color:#059669;font-size:10px">↑</span>':trend<-5?'<span style="color:#dc2626;font-size:10px">↓</span>':'<span style="color:#94a3b8;font-size:10px">→</span>';
+    const trendStr=trend===null?'':trend>5?'<span style="color:#059669;font-size:10px">↑</span>':trend<-5?'<span style="color:#dc2626;font-size:10px">↓</span>':'<span style="color:rgb(var(--fg3));font-size:10px">→</span>';
     h+=`<div style="margin-bottom:6px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
         <div style="font-size:11px;font-weight:${rank<5?'700':'400'}">${rank+1}. ${r.name} ${trendStr}</div>
         <div style="display:flex;gap:8px;align-items:center">
-          <span style="font-size:9px;color:#64748b">${r.s.tot}q · ${accStr}</span>
+          <span style="font-size:9px;color:rgb(var(--fg2))">${r.s.tot}q · ${accStr}</span>
           <span style="font-size:10px;font-weight:700;color:${color}">${r.priority}</span>
         </div>
       </div>
@@ -2047,9 +2059,9 @@ function renderPriorityMatrix(){
   h+=`<div id="pmFull" style="display:none">`;
   rows.slice(15).forEach((r,rank)=>{
     const accStr=r.acc===null?'untested':`${Math.round(r.acc*100)}%`;
-    h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f1f5f9;font-size:10px">
+    h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgb(var(--brd));font-size:10px">
       <span>${rank+16}. ${r.name}</span>
-      <span style="color:#64748b">${r.s.tot}q · ${accStr}</span>
+      <span style="color:rgb(var(--fg2))">${r.s.tot}q · ${accStr}</span>
     </div>`;
   });
   h+=`</div>`;
@@ -2071,8 +2083,8 @@ function renderWrongAnswerLog(){
   // Wrong answer key reporter (still useful, now prominent)
   const curQ=pool.length&&qi<pool.length?QZ[pool[qi]]:null;
   if(curQ){
-    h+=`<div style="margin-bottom:12px;padding:10px;background:#fffbeb;border-radius:10px;border:1px solid #fde68a">
-<div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:6px">❌ Report wrong answer key for current question</div>
+    h+=`<div style="margin-bottom:12px;padding:10px;background:rgb(var(--yellow-bg));border-radius:10px;border:1px solid rgb(var(--yellow-brd))">
+<div style="font-size:11px;font-weight:700;color:rgb(var(--yellow-fg));margin-bottom:6px">❌ Report wrong answer key for current question</div>
 <input id="reportInput" class="search-box" placeholder="מה לדעתך התשובה הנכונה ולמה?" style="font-size:11px;margin-bottom:6px;direction:rtl">
 <button class="btn" style="font-size:10px;width:100%;background:#d97706;color:#fff" onclick="S._reportType='wrong_answer';submitReport()" aria-label="Submit report for AI review">שלח לבדיקת AI</button>
 <div id="fbStatus" style="font-size:10px;margin-top:4px;display:none"></div>
@@ -2086,9 +2098,9 @@ function renderWrongAnswerLog(){
     chronic.slice(0,5).forEach(({idx,q,s})=>{
       const acc=Math.round(s.ok/s.tot*100);
       const topic=q.ti>=0?TOPICS_L[q.ti]:'';
-      h+=`<div style="padding:8px;background:#fef2f2;border-radius:8px;margin-bottom:6px;cursor:pointer" onclick="filt='all';pool=[${idx}];qi=0;sel=null;ans=false;flipRevealed=false;tab='quiz';render()">
+      h+=`<div style="padding:8px;background:rgb(var(--red-bg));border-radius:8px;margin-bottom:6px;cursor:pointer" onclick="filt='all';pool=[${idx}];qi=0;sel=null;ans=false;flipRevealed=false;tab='quiz';render()">
 <div style="font-size:10px;font-weight:600;line-height:1.4">${q.q.slice(0,80)}${q.q.length>80?'…':''}</div>
-<div style="display:flex;gap:8px;margin-top:4px"><span style="font-size:9px;color:#dc2626">${s.ok}/${s.tot} (${acc}%) · D=${s.fsrsD?s.fsrsD.toFixed(1):'?'}</span><span style="font-size:9px;color:#94a3b8">${topic}</span></div>
+<div style="display:flex;gap:8px;margin-top:4px"><span style="font-size:9px;color:#dc2626">${s.ok}/${s.tot} (${acc}%) · D=${s.fsrsD?s.fsrsD.toFixed(1):'?'}</span><span style="font-size:9px;color:rgb(var(--fg3))">${topic}</span></div>
 </div>`;
     });
   }
@@ -2099,14 +2111,14 @@ function renderWrongAnswerLog(){
     h+=`<div style="font-weight:700;font-size:11px;margin-bottom:6px;margin-top:10px;color:#d97706">⚠️ Recently Wrong — retry these</div>`;
     shown.forEach(({idx,q,s})=>{
       const topic=q.ti>=0?TOPICS_L[q.ti]:'';
-      h+=`<div style="padding:8px;background:#fffbeb;border-radius:8px;margin-bottom:4px;cursor:pointer" onclick="filt='all';pool=[${idx}];qi=0;sel=null;ans=false;tab='quiz';render()">
+      h+=`<div style="padding:8px;background:rgb(var(--yellow-bg));border-radius:8px;margin-bottom:4px;cursor:pointer" onclick="filt='all';pool=[${idx}];qi=0;sel=null;ans=false;tab='quiz';render()">
 <div style="font-size:10px;line-height:1.4">${q.q.slice(0,75)}${q.q.length>75?'…':''}</div>
-<div style="font-size:9px;color:#94a3b8;margin-top:2px">${topic}</div>
+<div style="font-size:9px;color:rgb(var(--fg3));margin-top:2px">${topic}</div>
 </div>`;
     });
   }
   
-  if(!chronic.length&&!shown.length&&!curQ)h+='<div style="font-size:11px;color:#94a3b8;text-align:center;padding:20px">No data yet — answer some questions first</div>';
+  if(!chronic.length&&!shown.length&&!curQ)h+='<div style="font-size:11px;color:rgb(var(--fg3));text-align:center;padding:20px">No data yet — answer some questions first</div>';
   return h;
 }
 function toggleHarrisonAI(){
@@ -2132,7 +2144,7 @@ Answer in HEBREW (4-6 sentences). Cite the relevant Harrison chapter if known. F
 async function aiSummarizeChapter(chNum,chTitle){
   const box=document.getElementById('quiz-me-box');
   if(!box)return;
-  box.innerHTML='<div style="text-align:center;padding:16px;color:#64748b">⏳ מסכם את הפרק...</div>';
+  box.innerHTML='<div style="text-align:center;padding:16px;color:rgb(var(--fg2))">⏳ מסכם את הפרק...</div>';
   let chText='';
   if(window._libData){
     const ch=window._libData.chapters.find(c=>c.ch===chNum);
@@ -2151,8 +2163,8 @@ Create a board-focused summary in HEBREW with:
 Format as clean bullet points. Be concise and high-yield.`;
   try{
     const txt=await callAI([{role:'user',content:prompt}],800,'sonnet');
-    box.innerHTML=`<div style="margin-top:12px;padding:14px;background:#f0fdf4;border-radius:10px;border-left:4px solid #059669">
-<div style="font-weight:700;font-size:12px;color:#065f46;margin-bottom:8px">📝 Board Summary — Ch ${chNum}: ${chTitle}</div>
+    box.innerHTML=`<div style="margin-top:12px;padding:14px;background:rgb(var(--green-bg));border-radius:10px;border-left:4px solid #059669">
+<div style="font-weight:700;font-size:12px;color:rgb(var(--green-fg));margin-bottom:8px">📝 Board Summary — Ch ${chNum}: ${chTitle}</div>
 <div style="font-size:11px;line-height:1.8;direction:rtl;text-align:right;white-space:pre-wrap">${sanitize(txt)}</div>
 </div>`;
   }catch(e){box.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px">⚠️ Failed: '+sanitize(e.message)+'</div>';}
@@ -2163,7 +2175,7 @@ Format as clean bullet points. Be concise and high-yield.`;
 async function generateQuestionsFromChapter(source,chNum,chTitle){
 const box=document.getElementById('quiz-me-box');
 if(!box)return;
-box.innerHTML='<div class="card" style="padding:16px;text-align:center"><div style="font-size:12px;color:#0ea5e9">✨ Generating board-style questions from Ch '+sanitize(chNum)+'...</div><div style="font-size:10px;color:#94a3b8;margin-top:4px">This takes 15-20 seconds</div></div>';
+box.innerHTML='<div class="card" style="padding:16px;text-align:center"><div style="font-size:12px;color:#0ea5e9">✨ Generating board-style questions from Ch '+sanitize(chNum)+'...</div><div style="font-size:10px;color:rgb(var(--fg3));margin-top:4px">This takes 15-20 seconds</div></div>';
 const chData=source==='haz'?(_hazData&&_hazData[String(chNum)]):(_harData&&_harData[String(chNum)]);
 if(!chData){box.innerHTML='<div class="card" style="padding:16px;color:#dc2626">Chapter data not loaded</div>';return;}
 const excerpt=chData.sections.slice(0,5).map(s=>s.content.join(' ').slice(0,800)).join('\n');
@@ -2195,14 +2207,14 @@ const questions=JSON.parse(jsonMatch[0]);
 // Display for review
 let html='<div class="card" style="padding:16px">';
 html+='<div style="font-size:13px;font-weight:700;margin-bottom:8px;color:#0ea5e9">✨ Generated '+questions.length+' Questions</div>';
-html+='<div style="font-size:10px;color:#64748b;margin-bottom:12px">Review and approve questions to add to your bank.</div>';
+html+='<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:12px">Review and approve questions to add to your bank.</div>';
 questions.forEach((gq,i)=>{
-  html+='<div style="padding:10px;margin-bottom:8px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0">';
+  html+='<div style="padding:10px;margin-bottom:8px;background:rgb(var(--bg2));border-radius:10px;border:1px solid rgb(var(--brd))">';
   html+='<div style="font-size:11px;font-weight:600;margin-bottom:6px;line-height:1.5" dir="auto">'+(i+1)+'. '+sanitize(gq.q)+'</div>';
   gq.o.forEach((opt,oi)=>{
     html+='<div style="font-size:10px;padding:2px 0;color:'+(oi===gq.c?'#059669':'#64748b')+'" dir="auto">'+(oi===gq.c?'✅':'○')+' '+sanitize(opt)+'</div>';
   });
-  html+='<div style="font-size:9px;color:#64748b;margin-top:4px;line-height:1.5" dir="auto">'+sanitize(gq.e)+'</div>';
+  html+='<div style="font-size:9px;color:rgb(var(--fg2));margin-top:4px;line-height:1.5" dir="auto">'+sanitize(gq.e)+'</div>';
   html+='<button onclick="approveGeneratedQ('+JSON.stringify(gq).replace(/"/g,'&quot;')+')" style="margin-top:6px;font-size:10px;padding:4px 12px;background:#059669;color:#fff;border:none;border-radius:6px;cursor:pointer">✅ Add to Bank</button>';
   html+='</div>';
 });
@@ -2260,19 +2272,19 @@ async function showLeaderboard(){
 const box=document.getElementById('leaderboard-box');
 if(!box)return;
 await submitLeaderboardScore();
-box.innerHTML='<div style="text-align:center;padding:8px;font-size:10px;color:#64748b">Loading...</div>';
+box.innerHTML='<div style="text-align:center;padding:8px;font-size:10px;color:rgb(var(--fg2))">Loading...</div>';
 const data=await fetchLeaderboard();
 _leaderboardData=data;
 const myUid=localStorage.getItem('samega_uid')||'';
 let html='';
-if(!data.length){html='<div style="font-size:10px;color:#94a3b8;text-align:center">No data yet</div>';}
+if(!data.length){html='<div style="font-size:10px;color:rgb(var(--fg3));text-align:center">No data yet</div>';}
 else{
 data.forEach((r,i)=>{
   const isMe=r.uid===myUid;
-  html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9;${isMe?'background:#eff6ff;border-radius:8px;padding:6px 8px;margin:-2px -8px':''}">
+  html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgb(var(--brd));${isMe?'background:rgb(var(--blue-bg));border-radius:8px;padding:6px 8px;margin:-2px -8px':''}">
   <span style="font-size:12px;font-weight:800;color:${i<3?['#f59e0b','#94a3b8','#d97706'][i]:'#64748b'};min-width:20px">${i+1}</span>
   <div style="flex:1;font-size:10px;font-weight:${isMe?'700':'400'}">${isMe?'You ⭐':'User '+sanitize(r.uid).slice(0,4)}</div>
-  <span style="font-size:10px;color:#64748b">${sanitize(String(r.answered))} Qs</span>
+  <span style="font-size:10px;color:rgb(var(--fg2))">${sanitize(String(r.answered))} Qs</span>
   <span style="font-size:10px;font-weight:700;color:${Number(r.readiness)>=60?'#059669':'#d97706'}">${sanitize(String(r.readiness))}%</span>
   <span style="font-size:10px">🔥${sanitize(String(r.streak))}d</span>
   </div>`;
@@ -2284,7 +2296,7 @@ box.innerHTML=html;
 async function quizMeOnChapter(chNum,chTitle){
   // Show loading state in Library
   const el=document.getElementById('quiz-me-box');
-  if(el){el.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">⏳ Generating questions from Ch '+sanitize(chNum)+'...</div>';}
+  if(el){el.innerHTML='<div style="text-align:center;padding:20px;color:rgb(var(--fg2))">⏳ Generating questions from Ch '+sanitize(chNum)+'...</div>';}
   // Get chapter text from already-loaded data
   let chapterText='';
   if(window._libData&&window._libData.chapters){
@@ -2370,16 +2382,16 @@ const curIdx=allHazChNums.indexOf(hazChOpen);
 const prevCh=curIdx>0?allHazChNums[curIdx-1]:null;
 const nextCh=curIdx<allHazChNums.length-1?allHazChNums[curIdx+1]:null;
 h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-<button onclick="hazChOpen=null;render()" style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">\u2190 Back</button>
+<button onclick="hazChOpen=null;render()" style="background:rgb(var(--bg2));border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">\u2190 Back</button>
 <div style="font-size:12px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ch ${hazChOpen}: ${ch.title}</div>
 </div>
 <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-${prevCh?`<button onclick="openHazzardChapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">\u2039 Ch ${prevCh}</button>`:''}
+${prevCh?`<button onclick="openHazzardChapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">\u2039 Ch ${prevCh}</button>`:''}
 <button onclick="quizMeOnChapter(hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">\ud83e\udde0 Quiz</button>
 <button onclick="generateQuestionsFromChapter('haz',hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;cursor:pointer">\u2728 Generate Qs</button>
 <button onclick="aiSummarizeChapter(hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">\ud83d\udcdd Summary</button>
-<button onclick="window.open(getHazPdf(String(hazChOpen)),'_blank')" style="font-size:10px;padding:5px 10px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:8px;cursor:pointer">\ud83d\udcc4 PDF</button>
-${nextCh?`<button onclick="openHazzardChapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">Ch ${nextCh} \u203a</button>`:''}
+<button onclick="window.open(getHazPdf(String(hazChOpen)),'_blank')" style="font-size:10px;padding:5px 10px;background:rgb(var(--red-bg));color:#dc2626;border:1px solid rgb(var(--red-brd));border-radius:8px;cursor:pointer">\ud83d\udcc4 PDF</button>
+${nextCh?`<button onclick="openHazzardChapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">Ch ${nextCh} \u203a</button>`:''}
 </div>
 <div id="quiz-me-box"></div>
 <div class="card" style="padding:16px">`;
@@ -2391,19 +2403,19 @@ const _hti=+_hazChTopicIdx[0];
 const _hts=getTopicStats()[_hti]||{ok:0,no:0,tot:0};
 const _htpct=_hts.tot?Math.round(_hts.ok/_hts.tot*100):null;
 const _htqCount=QZ.filter(q=>q.ti===_hti).length;
-h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;background:#fef2f2;border-radius:10px;font-size:10px;align-items:center">
+h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;background:rgb(var(--red-bg));border-radius:10px;font-size:10px;align-items:center">
 <span>\ud83d\udcdd ${_htqCount} questions on this topic</span>
-${_htpct!==null?`<span style="font-weight:700;color:${_htpct>=70?'#059669':_htpct>=50?'#d97706':'#dc2626'}">${_htpct}% accuracy</span>`:'<span style="color:#94a3b8">Not attempted yet</span>'}
+${_htpct!==null?`<span style="font-weight:700;color:${_htpct>=70?'#059669':_htpct>=50?'#d97706':'#dc2626'}">${_htpct}% accuracy</span>`:'<span style="color:rgb(var(--fg3))">Not attempted yet</span>'}
 <button onclick="tab='quiz';filt='topic';topicFilt=${_hti};buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer">\u25b6 Drill</button>
 </div>`;
 }
 ch.sections.forEach(sec=>{
 if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:#dc2626;margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid #fee2e2">${sec.title}</div>`;}
-sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:#1e293b;margin:0 0 10px;text-align:justify">${p}</p>`;});
+sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:rgb(var(--fg));margin:0 0 10px;text-align:justify">${p}</p>`;});
 });
 h+=`</div>`;
 }else if(_hazLoading){
-h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:#64748b">\u23f3 Loading Hazzard's chapter...</div></div>`;
+h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">\u23f3 Loading Hazzard's chapter...</div></div>`;
 }else{
 // Chapter list view
 const _hazEntries=Object.entries(HAZ_CHAPTERS).map(([name,info])=>{
@@ -2418,7 +2430,7 @@ Object.entries(TOPIC_REF).forEach(([ti,ref])=>{if(ref&&ref.s==='haz')_hazTopicMa
 
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">\ud83d\udcd5 Hazzard's Geriatric Medicine 8e</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">${_hazEntries.length} chapters \u00b7 Tap to read in-app \u00b7 <span style="color:#dc2626">red</span> = Part I \u00b7 colors by part</div>`;
+<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${_hazEntries.length} chapters \u00b7 Tap to read in-app \u00b7 <span style="color:#dc2626">red</span> = Part I \u00b7 colors by part</div>`;
 _hazEntries.forEach(e=>{
 const _ti=_hazTopicMap[String(e.ch)];
 const _stats=_ti!==undefined?getTopicStats()[_ti]:null;
@@ -2426,29 +2438,29 @@ const _pct=_stats&&_stats.tot?Math.round(_stats.ok/_stats.tot*100):null;
 const _qCnt=_ti!==undefined?QZ.filter(q=>q.ti===_ti).length:0;
 const hazCh=_hazData&&_hazData[String(e.chNum)];
 const wc=hazCh?`~${Math.round(hazCh.wordCount/250)} min`:'tap to load';
-h+=`<div onclick="openHazzardChapter(${e.chNum})" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f1f5f9;cursor:pointer">
+h+=`<div onclick="openHazzardChapter(${e.chNum})" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgb(var(--brd));cursor:pointer">
 <span style="background:${e.color};color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;min-width:46px;text-align:center">Ch ${e.ch}</span>
 <div style="flex:1;min-width:0">
 <div style="font-size:11.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.name}</div>
-<div style="font-size:9px;color:#94a3b8;margin-top:2px">${wc}${_qCnt?' \u00b7 '+_qCnt+' Qs':''}${_pct!==null?' \u00b7 <span style=\"font-weight:700;color:'+(_pct>=70?'#059669':_pct>=50?'#d97706':'#dc2626')+'\">'+_pct+'%</span>':''}</div>
+<div style="font-size:9px;color:rgb(var(--fg3));margin-top:2px">${wc}${_qCnt?' \u00b7 '+_qCnt+' Qs':''}${_pct!==null?' \u00b7 <span style=\"font-weight:700;color:'+(_pct>=70?'#059669':_pct>=50?'#d97706':'#dc2626')+'\">'+_pct+'%</span>':''}</div>
 </div>
-${_ti!==undefined?`<button onclick="event.stopPropagation();tab='quiz';filt='topic';topicFilt=${_ti};buildPool();render()" style="font-size:9px;padding:3px 8px;background:#fef2f2;color:#dc2626;border:none;border-radius:6px;cursor:pointer;flex-shrink:0">\u25b6</button>`:''}\n<span style="font-size:18px;color:#94a3b8">\u203a</span></div>`;
+${_ti!==undefined?`<button onclick="event.stopPropagation();tab='quiz';filt='topic';topicFilt=${_ti};buildPool();render()" style="font-size:9px;padding:3px 8px;background:rgb(var(--red-bg));color:#dc2626;border:none;border-radius:6px;cursor:pointer;flex-shrink:0">\u25b6</button>`:''}\n<span style="font-size:18px;color:rgb(var(--fg3))">\u203a</span></div>`;
 });
 h+=`</div>`;
 // Annotated PDFs section (collapsible)
 h+=`<div class="card" style="padding:14px;margin-top:8px">
 <div onclick="document.getElementById('haz-annotated').style.display=document.getElementById('haz-annotated').style.display==='none'?'block':'none'" style="display:flex;align-items:center;gap:8px;cursor:pointer">
 <div style="font-size:12px;font-weight:700">\ud83d\udcdd Annotated Part PDFs</div>
-<div style="font-size:9px;color:#64748b;flex:1">Your marked-up copies</div>
-<span style="font-size:14px;color:#94a3b8" id="haz-ann-chevron">\u25b8</span>
+<div style="font-size:9px;color:rgb(var(--fg2));flex:1">Your marked-up copies</div>
+<span style="font-size:14px;color:rgb(var(--fg3))" id="haz-ann-chevron">\u25b8</span>
 </div>
 <div id="haz-annotated" style="display:none;margin-top:10px">`;
 HAZZARD_MARKED_PARTS.forEach((p,i)=>{
-h+=`<a href="${p.file}" target="_blank" style="text-decoration:none;display:block;padding:8px 0;border-bottom:1px solid #f1f5f9">
+h+=`<a href="${p.file}" target="_blank" style="text-decoration:none;display:block;padding:8px 0;border-bottom:1px solid rgb(var(--brd))">
 <div style="display:flex;align-items:center;gap:8px">
 <span style="background:${p.color};color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px">${i+1}</span>
 <div style="flex:1;font-size:11px;font-weight:600">${p.ch} \u2014 ${p.desc}</div>
-${p.exam?`<span style="font-size:9px;color:#dc2626;font-weight:700">${p.exam.includes('\u05de\u05d5\u05d7\u05e8\u05d2')?'\u26d4':''}</span>`:''}\n<span style="font-size:14px;color:#94a3b8">\u203a</span>
+${p.exam?`<span style="font-size:9px;color:#dc2626;font-weight:700">${p.exam.includes('\u05de\u05d5\u05d7\u05e8\u05d2')?'\u26d4':''}</span>`:''}\n<span style="font-size:14px;color:rgb(var(--fg3))">\u203a</span>
 </div></a>`;
 });
 h+=`</div></div>`;
@@ -2465,15 +2477,15 @@ const curIdx=allSylChNums.indexOf(harChOpen);
 const prevCh=curIdx>0?allSylChNums[curIdx-1]:null;
 const nextCh=curIdx<allSylChNums.length-1?allSylChNums[curIdx+1]:null;
 h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-<button onclick="harChOpen=null;render()" style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">← Back</button>
+<button onclick="harChOpen=null;render()" style="background:rgb(var(--bg2));border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">← Back</button>
 <div style="font-size:12px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ch ${harChOpen}: ${ch.title}</div>
 </div>
 <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-${prevCh?`<button onclick="openHarrisonChapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">‹ Ch ${prevCh}</button>`:''}
+${prevCh?`<button onclick="openHarrisonChapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">‹ Ch ${prevCh}</button>`:''}
 <button onclick="quizMeOnChapter(harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">🧠 Quiz</button>
 <button onclick="generateQuestionsFromChapter('har',harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;cursor:pointer">✨ Generate Qs</button>
 <button onclick="aiSummarizeChapter(harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">📝 Summary</button>
-${nextCh?`<button onclick="openHarrisonChapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">Ch ${nextCh} ›</button>`:''}
+${nextCh?`<button onclick="openHarrisonChapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">Ch ${nextCh} ›</button>`:''}
 </div>
 <div id="quiz-me-box"></div>
 <div class="card" style="padding:16px">`;
@@ -2486,34 +2498,34 @@ const _tpct=_ts.tot?Math.round(_ts.ok/_ts.tot*100):null;
 const _tqCount=QZ.filter(q=>q.ti===_chTopicIdx).length;
 h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;background:#f5f3ff;border-radius:10px;font-size:10px;align-items:center">
 <span>📝 ${_tqCount} questions on this topic</span>
-${_tpct!==null?`<span style="font-weight:700;color:${_tpct>=70?'#059669':_tpct>=50?'#d97706':'#dc2626'}">${_tpct}% accuracy</span>`:'<span style="color:#94a3b8">Not attempted yet</span>'}
+${_tpct!==null?`<span style="font-weight:700;color:${_tpct>=70?'#059669':_tpct>=50?'#d97706':'#dc2626'}">${_tpct}% accuracy</span>`:'<span style="color:rgb(var(--fg3))">Not attempted yet</span>'}
 <button onclick="tab='quiz';filt='topic';topicFilt=${_chTopicIdx};buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer">▶ Drill</button>
 </div>`;
 }
 ch.sections.forEach(sec=>{
 if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:#7c3aed;margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid #ede9fe">${sec.title}</div>`;}
-sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:#1e293b;margin:0 0 10px;text-align:justify">${p}</p>`;});
+sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:rgb(var(--fg));margin:0 0 10px;text-align:justify">${p}</p>`;});
 });
 h+=`</div>`;
 }else if(_harLoading){
-h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:#64748b">⏳ Loading Harrison's chapter...</div></div>`;
+h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">⏳ Loading Harrison's chapter...</div></div>`;
 }else{
 const allSylChs=[...SYL_HAR_ALL,...SYL_HAR_BASE].sort((a,b)=>a.ch-b.ch);
 const allChNums=SYL_HAR_ALL.map(c=>c.ch);
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — In-App Reader</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:12px">${allSylChs.length} required chapters · <span style="color:#7c3aed">purple</span> = all examinees · <span style="color:#06b6d4">teal</span> = base track only</div>`;
+<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:12px">${allSylChs.length} required chapters · <span style="color:#7c3aed">purple</span> = all examinees · <span style="color:#06b6d4">teal</span> = base track only</div>`;
 allSylChs.forEach(c=>{
 const isAll=allChNums.includes(c.ch);
 const harCh=_harData&&_harData[String(c.ch)];
 const wc=harCh?`~${Math.round(harCh.wordCount/250)} min`:'tap to load';
-h+=`<div onclick="openHarrisonChapter(${c.ch})" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;cursor:pointer">
+h+=`<div onclick="openHarrisonChapter(${c.ch})" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgb(var(--brd));cursor:pointer">
 <span style="background:${isAll?'#7c3aed':'#06b6d4'};color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;min-width:42px;text-align:center">Ch ${c.ch}</span>
 <div style="flex:1;min-width:0">
 <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.t}</div>
-<div style="font-size:9px;color:#94a3b8;margin-top:2px">${wc}</div>
+<div style="font-size:9px;color:rgb(var(--fg3));margin-top:2px">${wc}</div>
 </div>
-<span style="font-size:18px;color:#94a3b8">›</span></div>`;
+<span style="font-size:18px;color:rgb(var(--fg3))">›</span></div>`;
 });
 h+=`</div>`;
 }
@@ -2523,13 +2535,13 @@ h+=`</div>`;
 if(libSec==='laws'){
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">⚖️ חוקים, נהלים ופרסומים</div>
-<div class="heb" style="font-size:10px;color:#64748b;margin-bottom:10px">${SYL_LAWS.length} items</div>`;
+<div class="heb" style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${SYL_LAWS.length} items</div>`;
 SYL_LAWS.forEach((l,i)=>{
-h+=`<div class="heb" style="padding:8px 0;border-bottom:1px solid #f1f5f9">
+h+=`<div class="heb" style="padding:8px 0;border-bottom:1px solid rgb(var(--brd))">
 <div style="display:flex;align-items:flex-start;gap:8px">
 <span style="background:#f59e0b;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;flex-shrink:0">${i+1}</span>
 <div style="flex:1"><div style="font-size:11px;font-weight:600">${l.n}</div>
-<div style="font-size:9px;color:#94a3b8;margin-top:2px">${l.s}</div></div>${l.f?`<a href="${l.f}" target="_blank" style="font-size:10px;padding:3px 7px;background:#fffbeb;color:#d97706;border-radius:6px;text-decoration:none;flex-shrink:0;white-space:nowrap">📄</a>`:''}</div></div>`;
+<div style="font-size:9px;color:rgb(var(--fg3));margin-top:2px">${l.s}</div></div>${l.f?`<a href="${l.f}" target="_blank" style="font-size:10px;padding:3px 7px;background:rgb(var(--yellow-bg));color:#d97706;border-radius:6px;text-decoration:none;flex-shrink:0;white-space:nowrap">📄</a>`:''}</div></div>`;
 });
 h+=`</div>`;
 }
@@ -2538,13 +2550,13 @@ h+=`</div>`;
 if(libSec==='articles'){
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📄 Required Articles</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">${SYL_ARTICLES.length} journal articles</div>`;
+<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${SYL_ARTICLES.length} journal articles</div>`;
 const _artMap={"0":"article_beers_2023.pdf","1":"article_vascog2.pdf","2":"article_alzheimer_iwg.pdf","3":"article_alzheimer_aa.pdf","4":"article_dementia_prevention.pdf","5":"article_hearing_loss.pdf"};
 SYL_ARTICLES.forEach((a,i)=>{
 const _apdf=_artMap[String(i)];
-h+=`<div style="padding:8px 0;border-bottom:1px solid #f1f5f9;display:flex;align-items:flex-start;gap:8px">
+h+=`<div style="padding:8px 0;border-bottom:1px solid rgb(var(--brd));display:flex;align-items:flex-start;gap:8px">
 <div style="flex:1"><div style="font-size:11px;font-weight:600;line-height:1.5">${i+1}. ${a.t}</div>
-<div style="font-size:9px;color:rgb(var(--sky));margin-top:2px">${a.j}</div></div>${_apdf?`<a href="${_apdf}" download style="font-size:10px;padding:3px 7px;background:#eff6ff;color:#3b82f6;border-radius:6px;text-decoration:none;flex-shrink:0">📄</a>`:''}</div>`;
+<div style="font-size:9px;color:rgb(var(--sky));margin-top:2px">${a.j}</div></div>${_apdf?`<a href="${_apdf}" download style="font-size:10px;padding:3px 7px;background:rgb(var(--blue-bg));color:#3b82f6;border-radius:6px;text-decoration:none;flex-shrink:0">📄</a>`:''}</div>`;
 });
 h+=`</div>`;
 }
@@ -2554,20 +2566,20 @@ if(libSec==='exams'){
 const examYears=[...new Set(QZ.map(q=>q.t))].sort();
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📝 Past Exams in Question Bank</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">${QZ.length} questions from ${examYears.length} exam sessions</div>`;
+<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${QZ.length} questions from ${examYears.length} exam sessions</div>`;
 examYears.forEach(yr=>{
 const cnt=QZ.filter(q=>q.t===yr).length;
-h+=`<div onclick="tab='quiz';filt='${yr}';buildPool();render()" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;cursor:pointer">
+h+=`<div onclick="tab='quiz';filt='${yr}';buildPool();render()" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgb(var(--brd));cursor:pointer">
 <span style="background:#06b6d4;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;min-width:60px;text-align:center">${yr}</span>
 <span style="font-size:11px;flex:1">${cnt} questions</span>
-<span style="font-size:14px;color:#94a3b8">›</span></div>`;
+<span style="font-size:14px;color:rgb(var(--fg3))">›</span></div>`;
 });
 h+=`</div>`;
 }
 
-h+=`<div style="text-align:center;margin-top:12px;font-size:9px;color:#94a3b8">
+h+=`<div style="text-align:center;margin-top:12px;font-size:9px;color:rgb(var(--fg3))">
 <a href="https://ima-contentfiles.s3.amazonaws.com/P005-2026.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">P005-2026 Syllabus ↗</a></div>`;
-h+=`<div style="text-align:center;margin-top:8px;padding:8px;font-size:9px;color:#94a3b8;line-height:1.5">
+h+=`<div style="text-align:center;margin-top:8px;padding:8px;font-size:9px;color:rgb(var(--fg3));line-height:1.5">
 صدقة جارية الى من نحب<br>Ceaseless Charity — To the People That We Love</div>`;
 return h;
 }
@@ -2620,20 +2632,20 @@ let h=`<div class="sec-t">🃏 Flashcards</div><div class="sec-s">${FLASH.length
 h+=`<div style="display:flex;gap:6px;margin-bottom:12px">
 <span class="badge badge-g">✅ Known: ${fcKnown}</span>
 <span class="badge badge-y">📖 Learning: ${fcLearning}</span>
-<span class="badge" style="background:#f1f5f9;color:#64748b">🆕 New: ${fcNew}</span>
+<span class="badge" style="background:rgb(var(--bg2));color:rgb(var(--fg2))">🆕 New: ${fcNew}</span>
 </div>`;
 h+=`<div class="fc" onclick="S.fcFlip=!S.fcFlip;save();render()" style="border-color:${S.fcFlip?'rgb(var(--em))':'rgb(var(--sky))'}" role="button" tabindex="0" aria-label="${S.fcFlip?'Show question':'Show answer'}">
 <p style="font-size:${S.fcFlip?'12px':'14px'};font-weight:${S.fcFlip?'400':'700'};line-height:1.7;color:${S.fcFlip?'#334155':'#1e293b'}">
 ${S.fcFlip?f.b:f.f}</p>
-<p style="font-size:9px;color:#94a3b8;margin-top:12px">${S.fcFlip?'Tap for question':'Tap to reveal answer'} · ${S.fci%FLASH.length+1}/${FLASH.length}</p>
+<p style="font-size:9px;color:rgb(var(--fg3));margin-top:12px">${S.fcFlip?'Tap for question':'Tap to reveal answer'} · ${S.fci%FLASH.length+1}/${FLASH.length}</p>
 </div>`;
 h+=`<div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
 <button class="btn btn-o" onclick="S.fci=(S.fci-1+FLASH.length)%FLASH.length;S.fcFlip=false;save();render()" aria-label="Previous flashcard">← Prev</button>
 <button class="btn btn-p" onclick="S.fci++;S.fcFlip=false;save();render()" aria-label="Next flashcard">Next →</button>
 </div>`;
 if(S.fcFlip){h+=`<div style="display:flex;gap:6px;justify-content:center;margin-top:8px">
-<button class="btn" style="background:#fef2f2;color:#dc2626" onclick="fcRate(0)" aria-label="Rate: Again">🔄 שוב</button>
-<button class="btn" style="background:#fffbeb;color:#d97706" onclick="fcRate(1)" aria-label="Rate: Hard">🤔 קשה</button>
+<button class="btn" style="background:rgb(var(--red-bg));color:#dc2626" onclick="fcRate(0)" aria-label="Rate: Again">🔄 שוב</button>
+<button class="btn" style="background:rgb(var(--yellow-bg));color:#d97706" onclick="fcRate(1)" aria-label="Rate: Hard">🤔 קשה</button>
 <button class="btn" style="background:#ecfdf5;color:#059669" onclick="fcRate(2)" aria-label="Rate: Easy">✅ קל</button>
 </div>`;}
 h+=`<div style="text-align:center;margin-top:8px"><button onclick="S.fci=Math.floor(Math.random()*FLASH.length);S.fcFlip=false;save();render()" style="font-size:10px;color:rgb(var(--sky));text-decoration:underline" aria-label="Random flashcard">🔀 Random</button></div>`;
@@ -2648,16 +2660,16 @@ h+=`<input class="search-box" placeholder="Search drug name..." oninput="drugSea
 const fv=drugSearch.toLowerCase();
 const filtered=DRUGS.filter(d=>!fv||d.name.toLowerCase().includes(fv)||d.heb.includes(fv)||(d.cat||'').toLowerCase().includes(fv));
 h+=`<div class="card">`;
-if(!filtered.length)h+=`<div style="padding:16px;text-align:center;color:#94a3b8;font-size:12px">No drugs found</div>`;
+if(!filtered.length)h+=`<div style="padding:16px;text-align:center;color:rgb(var(--fg3));font-size:12px">No drugs found</div>`;
 filtered.forEach(d=>{
 h+=`<div class="drug-row"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-<span style="font-weight:700;font-size:12px">${d.name} ${d.heb?'<span style="color:#94a3b8">('+d.heb+')</span>':''}</span>
+<span style="font-weight:700;font-size:12px">${d.name} ${d.heb?'<span style="color:rgb(var(--fg3))">('+d.heb+')</span>':''}</span>
 <div style="display:flex;gap:4px">
 ${d.beers?'<span class="badge badge-r">BEERS</span>':''}
 ${d.acb>=3?'<span class="badge badge-r">ACB '+d.acb+'</span>':d.acb>=2?'<span class="badge badge-y">ACB '+d.acb+'</span>':d.acb>=1?'<span class="badge badge-g">ACB '+d.acb+'</span>':''}
 </div></div>
-<div style="font-size:10px;color:#64748b">${d.cat||''}</div>
-<div style="font-size:10px;color:#475569;margin-top:2px">${d.risk}</div></div>`;
+<div style="font-size:10px;color:rgb(var(--fg2))">${d.cat||''}</div>
+<div style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${d.risk}</div></div>`;
 });
 h+=`</div>`;
 return h;
@@ -2683,15 +2695,15 @@ const age=calcVals.age||75,wt=calcVals.wt||55,cr=calcVals.cr||1.0,fem=calcVals.f
 const crcl=Math.max(0,Math.round(((140-age)*wt*fem)/(72*cr)));
 h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">Cockcroft-Gault CrCl</h3>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<div><label style="font-size:10px;color:#64748b">Age</label><input class="calc-in" type="number" value="${age}" onchange="calcUp('age',this.value)"></div>
-<div><label style="font-size:10px;color:#64748b">Weight (kg)</label><input class="calc-in" type="number" value="${wt}" onchange="calcUp('wt',this.value)"></div>
-<div><label style="font-size:10px;color:#64748b">Creatinine</label><input class="calc-in" type="number" step="0.1" value="${cr}" onchange="calcUp('cr',this.value)"></div>
-<div><label style="font-size:10px;color:#64748b">Sex</label><select class="calc-in" onchange="calcUp('fem',this.value)">
+<div><label style="font-size:10px;color:rgb(var(--fg2))">Age</label><input class="calc-in" type="number" value="${age}" onchange="calcUp('age',this.value)"></div>
+<div><label style="font-size:10px;color:rgb(var(--fg2))">Weight (kg)</label><input class="calc-in" type="number" value="${wt}" onchange="calcUp('wt',this.value)"></div>
+<div><label style="font-size:10px;color:rgb(var(--fg2))">Creatinine</label><input class="calc-in" type="number" step="0.1" value="${cr}" onchange="calcUp('cr',this.value)"></div>
+<div><label style="font-size:10px;color:rgb(var(--fg2))">Sex</label><select class="calc-in" onchange="calcUp('fem',this.value)">
 <option value="0.85" ${fem<1?'selected':''}>Female (×0.85)</option><option value="1" ${fem>=1?'selected':''}>Male (×1)</option></select></div>
 </div>
-<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center">
+<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center">
 <span style="font-size:22px;font-weight:700;color:${crcl<30?'#dc2626':crcl<60?'#d97706':'#059669'}">${crcl} ml/min</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${crcl<30?'CKD 4-5: Avoid metformin, adjust all renally-cleared drugs':crcl<60?'CKD 3: Dose adjust many drugs':'CKD 1-2: Mild impairment'}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${crcl<30?'CKD 4-5: Avoid metformin, adjust all renally-cleared drugs':crcl<60?'CKD 3: Dose adjust many drugs':'CKD 1-2: Mild impairment'}</p>
 </div></div>`;
 
 // CHA2DS2-VASc
@@ -2706,9 +2718,9 @@ h+=`<label style="display:flex;justify-content:space-between;align-items:center;
 <input type="checkbox" ${on?'checked':''} onchange="calcUp('${k}',this.checked?${pts}:0)" style="width:16px;height:16px">
 </label>`;
 });
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center">
 <span style="font-size:22px;font-weight:700;color:${cha>=2?'#dc2626':'#d97706'}">${cha}</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${cha>=2?'Anticoagulate (DOAC preferred, Apixaban safest in CKD)':cha===1?'Consider anticoagulation':'Low risk — consider no therapy'}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${cha>=2?'Anticoagulate (DOAC preferred, Apixaban safest in CKD)':cha===1?'Consider anticoagulation':'Low risk — consider no therapy'}</p>
 </div></div>`;
 
 
@@ -2724,9 +2736,9 @@ h+=`<label style="display:flex;justify-content:space-between;align-items:center;
 </label>`;
 });
 const curbRisk=curb<=1?'Low risk (<2% mortality) — consider outpatient':curb===2?'Moderate (9%) — short inpatient or supervised outpatient':'High (15-40%) — ICU if 4-5';
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center">
 <span style="font-size:22px;font-weight:700;color:${curb>=3?'#dc2626':curb>=2?'#d97706':'#059669'}">${curb}</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${curbRisk}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${curbRisk}</p>
 </div></div>`;
 
 // GDS-15 Quick Score
@@ -2739,9 +2751,9 @@ const k='gds_'+i,on=calcVals[k]||0;
 h+=`<label style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f8fafc;font-size:10px;cursor:pointer">
 <span>${l}</span><input type="checkbox" ${on?'checked':''} onchange="calcUp('${k}',this.checked?1:0)" style="width:14px;height:14px"></label>`;
 });
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center">
 <span style="font-size:22px;font-weight:700;color:${gds>=5?'#dc2626':'#059669'}">${gds}/15</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${gds>=10?'Severe depression — refer':gds>=5?'Positive screen — evaluate further':'Normal'}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${gds>=10?'Severe depression — refer':gds>=5?'Positive screen — evaluate further':'Normal'}</p>
 <button id="copy-gds" onclick="copyReport('gds')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy GDS report">📋 העתק דוח</button>
 </div></div>`;
 
@@ -2758,16 +2770,16 @@ const bradenScore=bradenSubs.reduce((s,[k])=>s+(calcVals[k]||1),0);
 h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">Braden Scale (Pressure Injury Risk)</h3>`;
 bradenSubs.forEach(([k,label,opts])=>{
 const v=calcVals[k]||1;
-h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:#64748b;font-weight:600">${label}</label>
+h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:rgb(var(--fg2));font-weight:600">${label}</label>
 <select class="calc-in" style="font-size:11px" onchange="calcUp('${k}',this.selectedIndex+1)">`;
 opts.forEach((o,i)=>{h+=`<option value="${i+1}"${v===i+1?' selected':''}>${o}</option>`;});
 h+=`</select></div>`;
 });
 const bradenRisk=bradenScore<=12?'High Risk':bradenScore<=14?'Moderate Risk':bradenScore<=18?'Mild Risk':'No Risk';
 const bradenClr=bradenScore<=12?'#dc2626':bradenScore<=14?'#d97706':bradenScore<=18?'#2563eb':'#059669';
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${bradenClr}">${bradenScore}/23</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${bradenRisk}${bradenScore<=18?' — Implement prevention protocol':''}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${bradenRisk}${bradenScore<=18?' — Implement prevention protocol':''}</p>
 <button id="copy-braden" onclick="copyReport('braden')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Braden report">📋 העתק דוח</button>
 </div></div>`;
 
@@ -2787,9 +2799,9 @@ h+=`<label style="display:flex;justify-content:space-between;align-items:center;
 <input type="checkbox" ${on?'checked':''} onchange="calcUp('${k}',this.checked?${pts}:0)" style="width:16px;height:16px">
 </label>`;
 });
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${paduaScore>=4?'#dc2626':'#059669'}">${paduaScore}</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${paduaScore>=4?'High VTE risk (≥4) — Pharmacological prophylaxis recommended':'Low VTE risk (<4) — Mechanical prophylaxis or early mobilization'}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${paduaScore>=4?'High VTE risk (≥4) — Pharmacological prophylaxis recommended':'Low VTE risk (<4) — Mechanical prophylaxis or early mobilization'}</p>
 </div></div>`;
 
 
@@ -2800,9 +2812,9 @@ h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight
 katzItems.forEach((l,i)=>{const k='katz_'+i,on=calcVals[k]||0;
 h+=`<label style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f8fafc;font-size:11px;cursor:pointer">
 <span>${l} (Independent=1)</span><input type="checkbox" ${on?'checked':''} onchange="calcUp('${k}',this.checked?1:0)" style="width:16px;height:16px"></label>`;});
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${katzScore>=5?'#059669':katzScore>=3?'#d97706':'#dc2626'}">${katzScore}/6</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${katzScore===6?'Full independence':katzScore>=4?'Moderate dependence':katzScore>=2?'Severe dependence':'Total dependence'}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${katzScore===6?'Full independence':katzScore>=4?'Moderate dependence':katzScore>=2?'Severe dependence':'Total dependence'}</p>
 <button id="copy-katz" onclick="copyReport('katz')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Katz ADL report">📋 העתק דוח</button>
 </div></div>`;
 
@@ -2813,37 +2825,37 @@ h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight
 lawtonItems.forEach((l,i)=>{const k='law_'+i,on=calcVals[k]||0;
 h+=`<label style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f8fafc;font-size:11px;cursor:pointer">
 <span>${l} (Independent=1)</span><input type="checkbox" ${on?'checked':''} onchange="calcUp('${k}',this.checked?1:0)" style="width:16px;height:16px"></label>`;});
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${lawtonScore>=6?'#059669':lawtonScore>=4?'#d97706':'#dc2626'}">${lawtonScore}/8</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${lawtonScore===8?'Fully independent':lawtonScore>=5?'Partially dependent':'Significantly dependent'} in IADLs</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${lawtonScore===8?'Fully independent':lawtonScore>=5?'Partially dependent':'Significantly dependent'} in IADLs</p>
 </div></div>`;
 
 // 4AT Rapid Delirium Screen
 h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">4AT (Rapid Delirium Screen)</h3>`;
 const at4_1=[['Normal (0)','0'],['Mild sleepiness <10s (0)','0'],['Clearly abnormal (4)','4']];
-h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:#64748b;font-weight:600">1. Alertness</label>
+h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:rgb(var(--fg2));font-weight:600">1. Alertness</label>
 <select class="calc-in" style="font-size:11px" onchange="calcUp('at4_1',this.value)">`;
 at4_1.forEach(([l,v])=>{h+=`<option value="${v}"${String(calcVals.at4_1||0)===v?' selected':''}>${l}</option>`;});
 h+=`</select></div>`;
 const at4_2=[['No mistakes (0)','0'],['1 mistake (1)','1'],['2+ mistakes or untestable (2)','2']];
-h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:#64748b;font-weight:600">2. AMT4 (age, DOB, place, year)</label>
+h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:rgb(var(--fg2));font-weight:600">2. AMT4 (age, DOB, place, year)</label>
 <select class="calc-in" style="font-size:11px" onchange="calcUp('at4_2',this.value)">`;
 at4_2.forEach(([l,v])=>{h+=`<option value="${v}"${String(calcVals.at4_2||0)===v?' selected':''}>${l}</option>`;});
 h+=`</select></div>`;
 const at4_3=[['Achieves 7+ months correctly (0)','0'],['Starts but <7 / refuses (1)','1'],['Untestable (2)','2']];
-h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:#64748b;font-weight:600">3. Attention (months backwards)</label>
+h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:rgb(var(--fg2));font-weight:600">3. Attention (months backwards)</label>
 <select class="calc-in" style="font-size:11px" onchange="calcUp('at4_3',this.value)">`;
 at4_3.forEach(([l,v])=>{h+=`<option value="${v}"${String(calcVals.at4_3||0)===v?' selected':''}>${l}</option>`;});
 h+=`</select></div>`;
 const at4_4=[['No (0)','0'],['Yes (4)','4']];
-h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:#64748b;font-weight:600">4. Acute change or fluctuating course</label>
+h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:rgb(var(--fg2));font-weight:600">4. Acute change or fluctuating course</label>
 <select class="calc-in" style="font-size:11px" onchange="calcUp('at4_4',this.value)">`;
 at4_4.forEach(([l,v])=>{h+=`<option value="${v}"${String(calcVals.at4_4||0)===v?' selected':''}>${l}</option>`;});
 h+=`</select></div>`;
 const at4Score=(parseFloat(calcVals.at4_1)||0)+(parseFloat(calcVals.at4_2)||0)+(parseFloat(calcVals.at4_3)||0)+(parseFloat(calcVals.at4_4)||0);
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${at4Score>=4?'#dc2626':at4Score>=1?'#d97706':'#059669'}">${at4Score}</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${at4Score>=4?'Possible delirium ± cognitive impairment':at4Score>=1?'Possible cognitive impairment':'No delirium or cognitive impairment detected'}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${at4Score>=4?'Possible delirium ± cognitive impairment':at4Score>=1?'Possible cognitive impairment':'No delirium or cognitive impairment detected'}</p>
 <button id="copy-4at" onclick="copyReport('4at')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy 4AT delirium report">📋 העתק דוח</button>
 </div></div>`;
 
@@ -2859,14 +2871,14 @@ const mna_items=[
 ];
 mna_items.forEach(([k,label,opts])=>{
 const v=String(calcVals[k]||0);
-h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:#64748b;font-weight:600">${label}</label>
+h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:rgb(var(--fg2));font-weight:600">${label}</label>
 <select class="calc-in" style="font-size:11px" onchange="calcUp('${k}',this.value)">`;
 opts.forEach(o=>{const val=o.match(/\((\d+)\)/)[1];h+=`<option value="${val}"${v===val?' selected':''}>${o}</option>`;});
 h+=`</select></div>`;});
 const mnaScore=mna_items.reduce((s,[k])=>s+(parseFloat(calcVals[k])||0),0);
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${mnaScore<=7?'#dc2626':mnaScore<=11?'#d97706':'#059669'}">${mnaScore}/14</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${mnaScore>=12?'Normal nutritional status':mnaScore>=8?'At risk of malnutrition':'Malnourished'}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${mnaScore>=12?'Normal nutritional status':mnaScore>=8?'At risk of malnutrition':'Malnourished'}</p>
 </div></div>`;
 
 // Clinical Frailty Scale
@@ -2877,9 +2889,9 @@ h+=`<select class="calc-in" style="font-size:11px" onchange="calcUp('cfs',this.v
 cfsOpts.forEach((o,i)=>{h+=`<option value="${i+1}"${cfsV==i+1?' selected':''}>${o}</option>`;});
 h+=`</select>`;
 const cfsClr=cfsV>=7?'#dc2626':cfsV>=5?'#d97706':cfsV>=4?'#2563eb':'#059669';
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${cfsClr}">${cfsV}/9</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${cfsV>=7?'Severely frail — high mortality, consider goals of care':cfsV>=5?'Frail — increased vulnerability to adverse outcomes':cfsV>=4?'Pre-frail / vulnerable':'Fit / not frail'}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${cfsV>=7?'Severely frail — high mortality, consider goals of care':cfsV>=5?'Frail — increased vulnerability to adverse outcomes':cfsV>=4?'Pre-frail / vulnerable':'Fit / not frail'}</p>
 </div></div>`;
 
 // Norton Scale (Pressure Injury)
@@ -2894,14 +2906,14 @@ const nortonScore=nortonSubs.reduce((s,[k])=>s+(calcVals[k]||1),0);
 h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">Norton Scale (Pressure Injury Risk)</h3>`;
 nortonSubs.forEach(([k,label,opts])=>{
 const v=calcVals[k]||1;
-h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:#64748b;font-weight:600">${label}</label>
+h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:rgb(var(--fg2));font-weight:600">${label}</label>
 <select class="calc-in" style="font-size:11px" onchange="calcUp('${k}',this.selectedIndex+1)">`;
 opts.forEach((o,i)=>{h+=`<option value="${i+1}"${v===i+1?' selected':''}>${o}</option>`;});
 h+=`</select></div>`;});
 const nortonClr=nortonScore<=12?'#dc2626':nortonScore<=14?'#d97706':'#059669';
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${nortonClr}">${nortonScore}/20</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${nortonScore<=12?'High risk — implement prevention':'Norton ≤14 moderate risk, >14 lower risk'}${nortonScore<=14?' — Turn schedule + skin assessment':''}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${nortonScore<=12?'High risk — implement prevention':'Norton ≤14 moderate risk, >14 lower risk'}${nortonScore<=14?' — Turn schedule + skin assessment':''}</p>
 <button id="copy-norton" onclick="copyReport('norton')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Norton report">📋 העתק דוח</button>
 </div></div>`;
 
@@ -2916,7 +2928,7 @@ h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight
 morseItems.forEach(([k,l,pts])=>{
 if(Array.isArray(pts)){
 const v=String(calcVals[k]||0);
-h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:#64748b;font-weight:600">${l}</label>
+h+=`<div style="margin-bottom:8px"><label style="font-size:10px;color:rgb(var(--fg2));font-weight:600">${l}</label>
 <select class="calc-in" style="font-size:11px" onchange="calcUp('${k}',this.value)">`;
 pts.forEach(o=>{const val=o.match(/\((\d+)\)/)[1];h+=`<option value="${val}"${v===val?' selected':''}>${o}</option>`;});
 h+=`</select></div>`;
@@ -2927,9 +2939,9 @@ h+=`<label style="display:flex;justify-content:space-between;align-items:center;
 }});
 const morseScore=morseItems.reduce((s,[k,,pts])=>{if(Array.isArray(pts))return s+(parseFloat(calcVals[k])||0);return s+(calcVals[k]||0);},0);
 const morseClr=morseScore>=45?'#dc2626':morseScore>=25?'#d97706':'#059669';
-h+=`<div style="margin-top:10px;padding:10px;background:#eff6ff;border-radius:10px;text-align:center" class="calc-result">
+h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));border-radius:10px;text-align:center" class="calc-result">
 <span style="font-size:22px;font-weight:700;color:${morseClr}">${morseScore}</span>
-<p style="font-size:10px;color:#64748b;margin-top:2px">${morseScore>=45?'High fall risk — implement fall bundle':morseScore>=25?'Moderate risk — standard interventions':'Low risk'}</p>
+<p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${morseScore>=45?'High fall risk — implement fall bundle':morseScore>=25?'Moderate risk — standard interventions':'Low risk'}</p>
 <button id="copy-morse" onclick="copyReport('morse')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Morse Falls report">📋 העתק דוח</button>
 </div></div>`;
 
@@ -3027,7 +3039,7 @@ function renderExamTrendCard(){
   
   let h=`<div class="card" style="padding:14px;margin-bottom:10px;border-left:4px solid #7c3aed">
 <div style="font-weight:700;font-size:12px;margin-bottom:4px;color:#7c3aed">📈 Exam Trend — 2021-22 vs ספט24–25-א</div>
-<div style="font-size:9px;color:#94a3b8;margin-bottom:10px">Where the exam is heading. Study accordingly.</div>`;
+<div style="font-size:9px;color:rgb(var(--fg3));margin-bottom:10px">Where the exam is heading. Study accordingly.</div>`;
   
   h+=`<div style="font-size:10px;font-weight:700;color:#059669;margin-bottom:5px">▲ GROWING — prioritize</div>`;
   growing.forEach(r=>{
@@ -3044,12 +3056,12 @@ function renderExamTrendCard(){
   h+=`<div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:5px;margin-top:10px">▼ SHRINKING — less priority</div>`;
   shrinking.forEach(r=>{
     h+=`<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px">
-<span style="color:#64748b">${r.name}</span>
+<span style="color:rgb(var(--fg2))">${r.name}</span>
 <span style="color:#dc2626">${r.delta.toFixed(1)}pp</span>
 </div>`;
   });
   
-  h+=`<div style="font-size:9px;color:#94a3b8;margin-top:8px;border-top:1px solid #f1f5f9;padding-top:6px">Old: 2021+2022+יוני23 (${oldTot}q) · New: ספט24+יוני25+2025-א (${newTot}q)</div>`;
+  h+=`<div style="font-size:9px;color:rgb(var(--fg3));margin-top:8px;border-top:1px solid rgb(var(--brd));padding-top:6px">Old: 2021+2022+יוני23 (${oldTot}q) · New: ספט24+יוני25+2025-א (${newTot}q)</div>`;
   h+=`</div>`;
   return h;
 }
@@ -3083,10 +3095,10 @@ const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).sl
 const trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
 let h=`<div class="card" style="padding:14px;margin-bottom:10px;border-left:4px solid #059669">
 <div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#059669">📋 Today's Study Plan</div>`;
-if(daysLeft!==null)h+=`<div style="font-size:10px;color:#64748b;margin-bottom:10px">${daysLeft} days to exam · ${new Date(examDate).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>`;
+if(daysLeft!==null)h+=`<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${daysLeft} days to exam · ${new Date(examDate).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>`;
 h+=`<div style="font-size:11px;line-height:2">`;
 // Step 1: Due questions
-if(dueN>0)h+=`<div>1️⃣ <b>${dueN} due questions</b> (~${Math.round(dueN*1.5)} min) <button onclick="setFilt('due');tab='quiz';render()" style="font-size:9px;padding:2px 8px;background:#eff6ff;color:#3b82f6;border:none;border-radius:6px;cursor:pointer">▶ Start</button></div>`;
+if(dueN>0)h+=`<div>1️⃣ <b>${dueN} due questions</b> (~${Math.round(dueN*1.5)} min) <button onclick="setFilt('due');tab='quiz';render()" style="font-size:9px;padding:2px 8px;background:rgb(var(--blue-bg));color:#3b82f6;border:none;border-radius:6px;cursor:pointer">▶ Start</button></div>`;
 else h+=`<div>1️⃣ ✅ No questions due — you're caught up!</div>`;
 // Step 2: Weakest topic
 if(weakest.length){
@@ -3094,10 +3106,10 @@ const w=weakest[0];
 const wPct=w.s.tot?Math.round(w.s.ok/w.s.tot*100):0;
 const ref=TOPIC_REF[w.i];
 h+=`<div>2️⃣ Read: <b>${w.name}</b> (${wPct}% accuracy, ${QZ.filter(q=>q.ti===w.i).length} questions) ${ref?`<button onclick="tab='lib';libSec='harrison';render()" style="font-size:9px;padding:2px 8px;background:#ede9fe;color:#7c3aed;border:none;border-radius:6px;cursor:pointer">📖 Open</button>`:''}</div>`;
-h+=`<div>3️⃣ Drill: <b>20q mini-exam on ${w.name}</b> <button onclick="startTopicMiniExam(${w.i})" style="font-size:9px;padding:2px 8px;background:#dcfce7;color:#166534;border:none;border-radius:6px;cursor:pointer">🎯 Start</button></div>`;
+h+=`<div>3️⃣ Drill: <b>20q mini-exam on ${w.name}</b> <button onclick="startTopicMiniExam(${w.i})" style="font-size:9px;padding:2px 8px;background:#dcfce7;color:rgb(var(--green-fg));border:none;border-radius:6px;cursor:pointer">🎯 Start</button></div>`;
 }
 // Step 3: Traps
-if(trapCount>0)h+=`<div>4️⃣ Review <b>${trapCount} trap questions</b> <button onclick="setFilt('traps');tab='quiz';render()" style="font-size:9px;padding:2px 8px;background:#fffbeb;color:#92400e;border:none;border-radius:6px;cursor:pointer">🪤 Start</button></div>`;
+if(trapCount>0)h+=`<div>4️⃣ Review <b>${trapCount} trap questions</b> <button onclick="setFilt('traps');tab='quiz';render()" style="font-size:9px;padding:2px 8px;background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg));border:none;border-radius:6px;cursor:pointer">🪤 Start</button></div>`;
 h+=`</div></div>`;
 return h;
 }
@@ -3112,13 +3124,13 @@ const ranked=TOPICS.map((t,i)=>({name:t,i,s:tSt[i]||{ok:0,no:0,tot:0}})).filter(
 const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;});
 const weak15=ranked.slice(0,15);
 let doc='<html><head><meta charset="UTF-8"><title>Shlav A — Cheat Sheet</title>';
-doc+='<style>body{font-family:Inter,system-ui,sans-serif;max-width:700px;margin:0 auto;padding:16px;font-size:11px;color:#1e293b}';
-doc+='h1{font-size:16px;margin-bottom:4px}h2{font-size:13px;color:#dc2626;margin:12px 0 4px;border-bottom:1px solid #e2e8f0;padding-bottom:2px}';
+doc+='<style>body{font-family:Inter,system-ui,sans-serif;max-width:700px;margin:0 auto;padding:16px;font-size:11px;color:rgb(var(--fg))}';
+doc+='h1{font-size:16px;margin-bottom:4px}h2{font-size:13px;color:#dc2626;margin:12px 0 4px;border-bottom:1px solid rgb(var(--brd));padding-bottom:2px}';
 doc+='.bar{height:6px;background:#e2e8f0;border-radius:3px;margin:2px 0 6px}.fill{height:100%;border-radius:3px}';
-doc+='.topic{margin-bottom:10px;padding:8px;border:1px solid #e2e8f0;border-radius:8px;page-break-inside:avoid}';
-doc+='.stat{font-size:10px;color:#64748b}@media print{body{font-size:10px}}</style></head><body>';
+doc+='.topic{margin-bottom:10px;padding:8px;border:1px solid rgb(var(--brd));border-radius:8px;page-break-inside:avoid}';
+doc+='.stat{font-size:10px;color:rgb(var(--fg2))}@media print{body{font-size:10px}}</style></head><body>';
 doc+='<h1>🩺 Shlav A — Personal Weak Topics Cheat Sheet</h1>';
-doc+='<p style="color:#64748b;font-size:10px">Generated '+new Date().toLocaleDateString('en-GB')+' · '+QZ.length+' questions analyzed</p>';
+doc+='<p style="color:rgb(var(--fg2));font-size:10px">Generated '+new Date().toLocaleDateString('en-GB')+' · '+QZ.length+' questions analyzed</p>';
 weak15.forEach((p,idx)=>{
 const pct=p.s.tot?Math.round(p.s.ok/p.s.tot*100):0;
 const clr=pct>=70?'#10b981':pct>=50?'#f59e0b':'#ef4444';
@@ -3130,7 +3142,7 @@ doc+='<div class="bar"><div class="fill" style="width:'+pct+'%;background:'+clr+
 if(keyFacts.length){doc+='<ul style="margin:4px 0;padding-left:16px">';keyFacts.forEach(f=>{doc+='<li>'+f.trim()+'</li>';});doc+='</ul>';}
 doc+='</div>';
 });
-doc+='<p style="text-align:center;color:#94a3b8;margin-top:16px;font-size:9px">صدقة جارية الى من نحب</p>';
+doc+='<p style="text-align:center;color:rgb(var(--fg3));margin-top:16px;font-size:9px">صدقة جارية الى من نحب</p>';
 doc+='</body></html>';
 const w=window.open('','_blank');w.document.write(doc);w.document.close();
 setTimeout(()=>w.print(),500);
@@ -3149,13 +3161,13 @@ function renderSessionCard(){
     return `<div class="card" style="padding:14px;margin-bottom:10px;border-left:4px solid #7c3aed">
 <div style="font-weight:700;font-size:12px;margin-bottom:6px;color:#7c3aed">📊 Today's Session</div>
 <div style="display:flex;gap:12px;margin-bottom:8px">
-  <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:${pct>=70?'#059669':pct>=50?'#d97706':'#dc2626'}">${pct}%</div><div style="font-size:9px;color:#94a3b8">${last.ok}/${tot} correct</div></div>
-  <div style="text-align:center"><div style="font-size:18px;font-weight:700">${mins}m</div><div style="font-size:9px;color:#94a3b8">duration</div></div>
-  <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#f59e0b">${last.due}</div><div style="font-size:9px;color:#94a3b8">due tomorrow</div></div>
+  <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:${pct>=70?'#059669':pct>=50?'#d97706':'#dc2626'}">${pct}%</div><div style="font-size:9px;color:rgb(var(--fg3))">${last.ok}/${tot} correct</div></div>
+  <div style="text-align:center"><div style="font-size:18px;font-weight:700">${mins}m</div><div style="font-size:9px;color:rgb(var(--fg3))">duration</div></div>
+  <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#f59e0b">${last.due}</div><div style="font-size:9px;color:rgb(var(--fg3))">due tomorrow</div></div>
 </div>
 ${last.best?`<div style="font-size:10px;margin-bottom:2px">✅ Best: <b>${last.best.name}</b> (${last.best.n} correct)</div>`:''}
 ${last.worse?`<div style="font-size:10px">🔴 Worst: <b>${last.worse.name}</b> (${last.worse.n} wrong)</div>`:''}
-<button onclick="this.parentElement.style.display='none'" style="margin-top:8px;font-size:9px;color:#94a3b8;background:none;border:none;cursor:pointer" aria-label="Dismiss notification">dismiss</button>
+<button onclick="this.parentElement.style.display='none'" style="margin-top:8px;font-size:9px;color:rgb(var(--fg3));background:none;border:none;cursor:pointer" aria-label="Dismiss notification">dismiss</button>
 </div>`;
   }catch(e){return '';}
 }
@@ -3392,16 +3404,16 @@ function renderStudyPlan(){
       <div style="font-size:16px">📅</div>
       <div style="flex:1">
         <div style="font-weight:700;font-size:13px;margin-bottom:2px">Study Plan — Hazzard's 8e</div>
-        <div style="font-size:9px;color:#64748b">${checkedTopics}/${totalTopics} topics (${spPct}%)</div>
+        <div style="font-size:9px;color:rgb(var(--fg2))">${checkedTopics}/${totalTopics} topics (${spPct}%)</div>
       </div>
     </div>
-    <div style="font-size:12px;color:#94a3b8;transition:transform .2s" class="${spOpen?'':''}">▼</div>
+    <div style="font-size:12px;color:rgb(var(--fg3));transition:transform .2s" class="${spOpen?'':''}">▼</div>
   </div>`;
 
   if(spOpen){
     // Progress bar
     h += `<div style="padding:0 14px;margin-bottom:10px">
-    <div style="width:100%;height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden">
+    <div style="width:100%;height:6px;background:rgb(var(--bg2));border-radius:3px;overflow:hidden">
       <div style="width:${spPct}%;height:100%;background:rgb(var(--em));border-radius:3px;transition:width .3s ease"></div>
     </div>
     </div>`;
@@ -3419,22 +3431,22 @@ function renderStudyPlan(){
         });
       });
 
-      h += `<div style="border-top:1px solid #f1f5f9;padding:0">
-      <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:#f8fafc" onclick="S['sp_t${tier.tier}']=!S['sp_t${tier.tier}'];save();render()" role="button" tabindex="0" aria-expanded="${tierOpen?'true':'false'}">
+      h += `<div style="border-top:1px solid rgb(var(--brd));padding:0">
+      <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:rgb(var(--bg2))" onclick="S['sp_t${tier.tier}']=!S['sp_t${tier.tier}'];save();render()" role="button" tabindex="0" aria-expanded="${tierOpen?'true':'false'}">
         <div style="display:flex;align-items:center;gap:8px;flex:1">
           <div style="width:20px;height:20px;border-radius:8px;background:${tier.color};display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">${tier.tier}</div>
           <div style="flex:1">
             <div style="font-weight:600;font-size:11px">${tier.label}</div>
-            <div style="font-size:8px;color:#94a3b8;margin-top:1px">${tierChecked}/${tierTopics} · ${tier.desc}</div>
+            <div style="font-size:8px;color:rgb(var(--fg3));margin-top:1px">${tierChecked}/${tierTopics} · ${tier.desc}</div>
           </div>
         </div>
-        <div style="font-size:10px;color:#94a3b8;transition:transform .2s;transform:${tierOpen?'':'rotate(-90deg)'}">${tierOpen?'▼':'▶'}</div>
+        <div style="font-size:10px;color:rgb(var(--fg3));transition:transform .2s;transform:${tierOpen?'':'rotate(-90deg)'}">${tierOpen?'▼':'▶'}</div>
       </div>`;
 
       if(tierOpen){
         tier.domains.forEach(domain => {
-          h += `<div style="padding:8px 14px;border-top:1px solid #f1f5f9">
-          <div style="font-size:10px;font-weight:600;color:#475569;margin-bottom:6px">${domain.name}</div>`;
+          h += `<div style="padding:8px 14px;border-top:1px solid rgb(var(--brd))">
+          <div style="font-size:10px;font-weight:600;color:rgb(var(--fg2));margin-bottom:6px">${domain.name}</div>`;
 
           domain.topics.forEach(topic => {
             const isChecked = S.sp && S.sp[topic.n];
@@ -3453,15 +3465,15 @@ function renderStudyPlan(){
             h += `<div style="border-radius:8px;margin-bottom:4px;background:${isChecked?'#f8fafc':'transparent'}">
             <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:10px;cursor:pointer" onclick="event.stopPropagation();S.sp=S.sp||{};S.sp['${topic.n.replace(/'/g,"\\'")}']=!S.sp['${topic.n.replace(/'/g,"\\'")}']; save();render()" role="checkbox" aria-checked="${isChecked?'true':'false'}" tabindex="0">
             <input type="checkbox" ${isChecked?'checked':''} readonly style="width:14px;height:14px;flex-shrink:0;cursor:pointer" tabindex="-1">
-            <span style="flex:1;${isChecked?'color:#94a3b8;text-decoration:line-through':'color:#1e293b'}">${topic.n}</span>
+            <span style="flex:1;${isChecked?'color:rgb(var(--fg3));text-decoration:line-through':'color:rgb(var(--fg))'}">${topic.n}</span>
             ${accBadge}
-            <span style="color:#94a3b8;font-size:9px;white-space:nowrap">${topic.hrs}</span>
+            <span style="color:rgb(var(--fg3));font-size:9px;white-space:nowrap">${topic.hrs}</span>
             </div>
             <div style="display:flex;gap:4px;padding:0 8px 6px 36px;flex-wrap:wrap">
-            ${HAZ_CHAPTERS[topic.n]?`<button onclick="event.stopPropagation();tab='lib';libSec='haz-pdf';openHazzardChapter(parseInt(HAZ_CHAPTERS['${topic.n.replace(/'/g,"\\'")}'].ch))" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#b45309;cursor:pointer;white-space:nowrap" aria-label="Read Hazzard's chapter for ${topic.n.replace(/'/g,'')}">📕 Ch ${HAZ_CHAPTERS[topic.n].ch}</button>`:''}
-            <button onclick="event.stopPropagation();openNote=${topic.ti};go('study')" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#0D7377;cursor:pointer;white-space:nowrap" aria-label="Open notes for ${topic.n.replace(/'/g,'')}">📖 Notes</button>
-            <button onclick="event.stopPropagation();setTopicFilt(${topic.ti});go('quiz')" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#3b82f6;cursor:pointer;white-space:nowrap" aria-label="Quiz ${topic.n.replace(/'/g,'')}">📝 Quiz</button>
-            <button onclick="event.stopPropagation();S.chat=[];go('chat');setTimeout(function(){sendChatStarter('Give me a concise board-review summary of ${topic.n.replace(/'/g,"\\'")} in geriatrics. Cover: key definitions, diagnostic criteria, management pearls, exam traps, and must-know numbers. Format with bold headings.')},100)" style="font-size:9px;padding:3px 8px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#7c3aed;cursor:pointer;white-space:nowrap" aria-label="AI summary of ${topic.n.replace(/'/g,'')}">🤖 Summarize</button>
+            ${HAZ_CHAPTERS[topic.n]?`<button onclick="event.stopPropagation();tab='lib';libSec='haz-pdf';openHazzardChapter(parseInt(HAZ_CHAPTERS['${topic.n.replace(/'/g,"\\'")}'].ch))" style="font-size:9px;padding:3px 8px;border:1px solid rgb(var(--brd));border-radius:6px;background:rgb(var(--card-bg));color:#b45309;cursor:pointer;white-space:nowrap" aria-label="Read Hazzard's chapter for ${topic.n.replace(/'/g,'')}">📕 Ch ${HAZ_CHAPTERS[topic.n].ch}</button>`:''}
+            <button onclick="event.stopPropagation();openNote=${topic.ti};go('study')" style="font-size:9px;padding:3px 8px;border:1px solid rgb(var(--brd));border-radius:6px;background:rgb(var(--card-bg));color:#0D7377;cursor:pointer;white-space:nowrap" aria-label="Open notes for ${topic.n.replace(/'/g,'')}">📖 Notes</button>
+            <button onclick="event.stopPropagation();setTopicFilt(${topic.ti});go('quiz')" style="font-size:9px;padding:3px 8px;border:1px solid rgb(var(--brd));border-radius:6px;background:rgb(var(--card-bg));color:#3b82f6;cursor:pointer;white-space:nowrap" aria-label="Quiz ${topic.n.replace(/'/g,'')}">📝 Quiz</button>
+            <button onclick="event.stopPropagation();S.chat=[];go('chat');setTimeout(function(){sendChatStarter('Give me a concise board-review summary of ${topic.n.replace(/'/g,"\\'")} in geriatrics. Cover: key definitions, diagnostic criteria, management pearls, exam traps, and must-know numbers. Format with bold headings.')},100)" style="font-size:9px;padding:3px 8px;border:1px solid rgb(var(--brd));border-radius:6px;background:rgb(var(--card-bg));color:#7c3aed;cursor:pointer;white-space:nowrap" aria-label="AI summary of ${topic.n.replace(/'/g,'')}">🤖 Summarize</button>
             </div>
             </div>`;
           });
@@ -3489,28 +3501,28 @@ const streak=getStudyStreak();
 let h=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
 <div class="card" style="padding:10px;text-align:center">
 <div style="font-size:22px;font-weight:800;color:${readiness===null?'#94a3b8':readiness>=70?'#059669':readiness>=50?'#d97706':'#dc2626'}">${readiness!==null?readiness+'%':'—'}</div>
-<div style="font-size:9px;color:#64748b">Est. Score</div>
+<div style="font-size:9px;color:rgb(var(--fg2))">Est. Score</div>
 </div>
 <div class="card" style="padding:10px;text-align:center">
 <div style="font-size:22px;font-weight:800;color:#7c3aed">${streak}</div>
-<div style="font-size:9px;color:#64748b">Day Streak</div>
+<div style="font-size:9px;color:rgb(var(--fg2))">Day Streak</div>
 </div>
 <div class="card" style="padding:10px;text-align:center">
 <div style="font-size:22px;font-weight:800;color:#0ea5e9">${tot}</div>
-<div style="font-size:9px;color:#64748b">Answered</div>
+<div style="font-size:9px;color:rgb(var(--fg2))">Answered</div>
 </div>
 <div class="card" style="padding:10px;text-align:center">
 <div style="font-size:22px;font-weight:800;color:${pctN>=70?'#059669':'#d97706'}">${pct}</div>
-<div style="font-size:9px;color:#64748b">Accuracy</div>
+<div style="font-size:9px;color:rgb(var(--fg2))">Accuracy</div>
 </div>
 </div>`;
 // SRS due alert
 if(dueN>0){
-h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:#fef2f2;border:1px solid #fecaca">
+h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:rgb(var(--red-bg));border:1px solid rgb(var(--red-brd))">
 <div style="display:flex;align-items:center;gap:8px">
 <span style="font-size:18px">🔔</span>
 <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#dc2626">${dueN} questions due for review</div>
-<div style="font-size:10px;color:#64748b">Spaced repetition items ready now</div></div>
+<div style="font-size:10px;color:rgb(var(--fg2))">Spaced repetition items ready now</div></div>
 <button onclick="filt='due';buildPool();tab='quiz';render()" class="btn" style="font-size:10px;padding:6px 12px;background:#dc2626;color:#fff;border:none;border-radius:8px">▶ Review</button>
 </div></div>`;
 }
@@ -3551,7 +3563,7 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px">
 <div style="padding:8px;background:#dcfce7;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.sure_ok}</div>😎✅ Confident + Right</div>
 <div style="padding:8px;background:#fecaca;border-radius:8px"><div style="font-size:16px;font-weight:700;color:#dc2626">${_confStats.sure_no}</div>😎❌ BLIND SPOTS</div>
 <div style="padding:8px;background:#fef9c3;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.unsure_ok}</div>😬✅ Lucky</div>
-<div style="padding:8px;background:#f1f5f9;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.unsure_no}</div>😬❌ Expected miss</div>
+<div style="padding:8px;background:rgb(var(--bg2));border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.unsure_no}</div>😬❌ Expected miss</div>
 </div>
 ${_blindSpots>0?`<div style="margin-top:8px;font-size:10px;color:#dc2626;font-weight:600">⚠️ ${_blindSpots} blind spots — you were confident but wrong. These are your most dangerous gaps.</div>`:''}
 </div>`;
@@ -3559,12 +3571,12 @@ ${_blindSpots>0?`<div style="margin-top:8px;font-size:10px;color:#dc2626;font-we
 // Rescue Drill CTA
 const _weakTopics=getWeakTopics(3);
 if(_weakTopics.length&&_weakTopics[0].pct!==null&&_weakTopics[0].pct<65){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px;background:linear-gradient(135deg,#fef2f2,#fffbeb);border:1px solid #fecaca">
+h+=`<div class="card" style="padding:14px;margin-bottom:10px;background:linear-gradient(135deg,#fef2f2,#fffbeb);border:1px solid rgb(var(--red-brd))">
 <div style="display:flex;align-items:center;gap:10px">
 <span style="font-size:24px">🚨</span>
 <div style="flex:1">
 <div style="font-weight:700;font-size:12px;color:#dc2626">Rescue Drill</div>
-<div style="font-size:10px;color:#64748b">${_weakTopics.map(w=>TOPICS[w.ti]+' ('+w.pct+'%)').join(' · ')}</div>
+<div style="font-size:10px;color:rgb(var(--fg2))">${_weakTopics.map(w=>TOPICS[w.ti]+' ('+w.pct+'%)').join(' · ')}</div>
 </div>
 <button onclick="buildRescuePool();tab='quiz';render()" class="btn" style="font-size:11px;padding:8px 16px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-weight:700">GO</button>
 </div></div>`;
@@ -3596,7 +3608,7 @@ h+=`<div style="font-size:10px;font-weight:600;color:#dc2626;margin-bottom:4px">
 _hazDue.slice(0,5).forEach(c=>{
   const _chData=_hazData&&_hazData[c.ch];
   const _title=_chData?_chData.title:'Ch '+c.ch;
-  h+=`<div onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${c.ch})" style="font-size:10px;padding:4px 0;cursor:pointer;color:#64748b;border-bottom:1px solid #f8fafc">📕 Ch ${c.ch}: ${_title} <span style="color:#dc2626;font-weight:700">(${c.daysSince}d ago)</span></div>`;
+  h+=`<div onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${c.ch})" style="font-size:10px;padding:4px 0;cursor:pointer;color:rgb(var(--fg2));border-bottom:1px solid #f8fafc">📕 Ch ${c.ch}: ${_title} <span style="color:#dc2626;font-weight:700">(${c.daysSince}d ago)</span></div>`;
 });
 }
 if(_harDue.length){
@@ -3604,7 +3616,7 @@ h+=`<div style="font-size:10px;font-weight:600;color:#7c3aed;margin-bottom:4px;m
 _harDue.slice(0,5).forEach(c=>{
   const _chData=_harData&&_harData[c.ch];
   const _title=_chData?_chData.title:'Ch '+c.ch;
-  h+=`<div onclick="tab='lib';libSec='harrison';openHarrisonChapter(${c.ch})" style="font-size:10px;padding:4px 0;cursor:pointer;color:#64748b;border-bottom:1px solid #f8fafc">📗 Ch ${c.ch}: ${_title} <span style="color:#7c3aed;font-weight:700">(${c.daysSince}d ago)</span></div>`;
+  h+=`<div onclick="tab='lib';libSec='harrison';openHarrisonChapter(${c.ch})" style="font-size:10px;padding:4px 0;cursor:pointer;color:rgb(var(--fg2));border-bottom:1px solid #f8fafc">📗 Ch ${c.ch}: ${_title} <span style="color:#7c3aed;font-weight:700">(${c.daysSince}d ago)</span></div>`;
 });
 }
 h+=`</div>`;
@@ -3617,17 +3629,17 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px">
 <div style="font-size:12px;font-weight:700;flex:1">Leaderboard</div>
 <button onclick="showLeaderboard()" style="font-size:9px;padding:4px 10px;background:#f59e0b;color:#fff;border:none;border-radius:6px;cursor:pointer">Refresh</button>
 </div>
-<div id="leaderboard-box" style="font-size:10px;color:#94a3b8;text-align:center">Tap refresh to load</div>
+<div id="leaderboard-box" style="font-size:10px;color:rgb(var(--fg3));text-align:center">Tap refresh to load</div>
 </div>`;
 
 // Feature 10: Cheat sheet export button
 h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
 <button class="btn btn-d" onclick="exportCheatSheet()" style="font-size:11px" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</button>
-<div style="font-size:9px;color:#94a3b8;margin-top:4px">Print-ready 2-page summary of your 15 weakest topics</div>
+<div style="font-size:9px;color:rgb(var(--fg3));margin-top:4px">Print-ready 2-page summary of your 15 weakest topics</div>
 </div>`;
 // Feature 5: Change exam date
 if(S.examDate||localStorage.getItem('shlav_exam_date')){
-h+=`<div style="text-align:center;margin-bottom:10px"><button onclick="setExamDate()" style="font-size:9px;color:#94a3b8;background:none;border:none;cursor:pointer;text-decoration:underline">📅 Change exam date</button></div>`;
+h+=`<div style="text-align:center;margin-bottom:10px"><button onclick="setExamDate()" style="font-size:9px;color:rgb(var(--fg3));background:none;border:none;cursor:pointer;text-decoration:underline">📅 Change exam date</button></div>`;
 }
 h+=renderExamTrendCard();
 h+=`<div class="sec-t">Progress</div><div class="sec-s">Syllabus · Bookmarks · Spaced Repetition</div>`;
@@ -3656,9 +3668,9 @@ var fk='bkf_'+topic.replace(/[^a-z0-9]/gi,'_');
 var open=S[fk];
 var qs=_byTopic[topic];
 h+='<div style="margin-bottom:6px">';
-h+='<div onclick="S[\''+fk+'\']=' + '!S[\''+fk+'\'];save();render()" style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f8fafc;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600" role="button" tabindex="0" aria-expanded="'+(open?'true':'false')+'" aria-label="'+topic+'">';
+h+='<div onclick="S[\''+fk+'\']=' + '!S[\''+fk+'\'];save();render()" style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgb(var(--bg2));border-radius:8px;cursor:pointer;font-size:11px;font-weight:600" role="button" tabindex="0" aria-expanded="'+(open?'true':'false')+'" aria-label="'+topic+'">';
 h+='<span>📁 '+topic+' ('+qs.length+')</span><span>'+(open?'▼':'▶')+'</span></div>';
-if(open){qs.forEach(function(e){h+='<div style="padding:6px 12px;font-size:10px;border-bottom:1px solid #f1f5f9" class="heb" dir="rtl">'+e.q.q.substring(0,90)+'...</div>';});}
+if(open){qs.forEach(function(e){h+='<div style="padding:6px 12px;font-size:10px;border-bottom:1px solid rgb(var(--brd))" class="heb" dir="rtl">'+e.q.q.substring(0,90)+'...</div>';});}
 h+='</div>';
 });
 h+='</div>';
@@ -3683,9 +3695,9 @@ const clr=pct>=70?'rgb(var(--em))':pct>=50?'rgb(var(--amb))':'rgb(var(--red))';
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #f8fafc;font-size:10px">
 <span style="flex:1">${p.name}</span>
 <div style="display:flex;align-items:center;gap:6px">
-<div style="width:50px;height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${clr};border-radius:3px"></div></div>
+<div style="width:50px;height:5px;background:rgb(var(--bg2));border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${clr};border-radius:3px"></div></div>
 <span style="width:28px;text-align:right;font-weight:600;color:${clr}">${pct}%</span>
-<span style="color:#94a3b8;font-size:8px">${p.s.tot}</span>
+<span style="color:rgb(var(--fg3));font-size:8px">${p.s.tot}</span>
 </div></div>`;
 });
 h+=`</div>`;}
@@ -3716,7 +3728,7 @@ return avgA-avgB;
 heatData.forEach(row=>{
 h+=`<tr><td style="padding:3px;text-align:right;white-space:nowrap;max-width:100px;overflow:hidden;text-overflow:ellipsis">${row.topic}</td>`;
 row.cells.forEach(c=>{
-if(c.n===0){h+=`<td style="padding:2px;text-align:center;background:#f8fafc;color:#cbd5e1">·</td>`;}
+if(c.n===0){h+=`<td style="padding:2px;text-align:center;background:rgb(var(--bg2));color:#cbd5e1">·</td>`;}
 else{
 const bg=c.pct>=75?'#dcfce7':c.pct>=50?'#fef9c3':'#fecaca';
 h+=`<td style="padding:2px;text-align:center;background:${bg};font-weight:600;border-radius:2px">${c.pct}</td>`;}
@@ -3724,7 +3736,7 @@ h+=`<td style="padding:2px;text-align:center;background:${bg};font-weight:600;bo
 h+=`</tr>`;
 });
 h+=`</tbody></table></div>`;
-h+=`<div style="display:flex;gap:8px;margin-top:6px;font-size:8px;color:#94a3b8;justify-content:center">
+h+=`<div style="display:flex;gap:8px;margin-top:6px;font-size:8px;color:rgb(var(--fg3));justify-content:center">
 <span style="display:flex;align-items:center;gap:2px"><span style="width:10px;height:10px;background:#fecaca;border-radius:2px"></span>&lt;50%</span>
 <span style="display:flex;align-items:center;gap:2px"><span style="width:10px;height:10px;background:#fef9c3;border-radius:2px"></span>50-74%</span>
 <span style="display:flex;align-items:center;gap:2px"><span style="width:10px;height:10px;background:#dcfce7;border-radius:2px"></span>&ge;75%</span>
@@ -3750,13 +3762,13 @@ h+=`</div></div>`;
 // Share with friends
 h+=`<div class="card" style="padding:14px;text-align:center;margin-top:12px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">🔗 Share with Friends</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">Share this app with fellow geriatric medicine residents</div>
+<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Share this app with fellow geriatric medicine residents</div>
 <button class="btn btn-p" onclick="shareApp()" style="margin-bottom:8px" aria-label="Share app link">📤 Share App Link</button>
 </div>`;
 // Data management
 h+=`<div class="card" style="padding:14px;margin-top:12px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
-<div style="font-size:10px;color:#64748b;margin-bottom:10px">Your progress is saved automatically in your browser. Export to backup or transfer between devices.</div>
+<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Your progress is saved automatically in your browser. Export to backup or transfer between devices.</div>
 <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
 <button class="btn btn-p" onclick="exportProgress()" aria-label="Export progress">📥 Export Progress</button>
 <button class="btn btn-g" onclick="importProgress()" aria-label="Import progress">📤 Import Progress</button>
@@ -3764,9 +3776,9 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 </div>
 <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px">
 <button id="cloud-backup-btn" class="btn" style="background:#e0f2fe;color:#0284c7" onclick="cloudBackup()" aria-label="Backup to cloud">☁️ Backup to Cloud</button>
-<button class="btn" style="background:#f0fdf4;color:#15803d" onclick="cloudRestore()" aria-label="Restore from cloud">☁️ Restore from Cloud</button>
+<button class="btn" style="background:rgb(var(--green-bg));color:#15803d" onclick="cloudRestore()" aria-label="Restore from cloud">☁️ Restore from Cloud</button>
 </div>
-<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
+<div style="font-size:9px;color:rgb(var(--fg3));text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
 </div></div>`;
 // Study Journal moved — wrong answer reporting now in Quiz tab post-answer UI
 // API key settings card
@@ -3774,10 +3786,10 @@ var _storedKey=getApiKey();
 h+='<div class="card" style="padding:14px;margin-top:10px;border:2px solid '+(_storedKey?'#bbf7d0':'#fde68a')+'">';
 h+='<div class="sec-t" style="font-size:13px">🔑 Anthropic API Key</div>';
 h+='<div class="sec-s" style="margin-bottom:10px">לשימוש ב-AI Explain ו-Teach-Back · מאוחסן בדפדפן בלבד</div>';
-if(!_storedKey){h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:8px;font-size:10px;color:#065f46;margin-bottom:10px">✅ AI פועל דרך שרת proxy — לא צריך מפתח אישי. אפשר להוסיף כגיבוי. <a href="https://console.anthropic.com/keys" target="_blank" style="color:#d97706;font-weight:700">קבל מפתח ↗</a></div>';}
+if(!_storedKey){h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;font-size:10px;color:rgb(var(--green-fg));margin-bottom:10px">✅ AI פועל דרך שרת proxy — לא צריך מפתח אישי. אפשר להוסיף כגיבוי. <a href="https://console.anthropic.com/keys" target="_blank" style="color:#d97706;font-weight:700">קבל מפתח ↗</a></div>';}
 if(_storedKey){
   h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
-  h+='<div style="flex:1;font-size:11px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:8px;padding:6px 10px;color:#065f46">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
+  h+='<div style="flex:1;font-size:11px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;padding:6px 10px;color:rgb(var(--green-fg))">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
   h+='<button class="btn btn-o" style="font-size:11px" onclick="setApiKey(\'\');render()" aria-label="Remove API key">הסר</button>';
   h+='</div>';
 } else {
@@ -3786,9 +3798,9 @@ if(_storedKey){
   h+='<button class="btn btn-p" style="font-size:11px" onclick="var v=document.getElementById(\'apiKeyInput\').value.trim();if(v){setApiKey(v);render();}" aria-label="Save API key">שמור</button>';
   h+='</div>';
 }
-h+='<div style="font-size:9px;color:#94a3b8">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
+h+='<div style="font-size:9px;color:rgb(var(--fg3))">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
 // Version footer
-h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:#94a3b8;line-height:1.8">
+h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:rgb(var(--fg3));line-height:1.8">
 <div>Shlav A Mega v${APP_VERSION} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · build ${BUILD_HASH}</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
@@ -3807,7 +3819,7 @@ h+=`<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
 <input class="search-box" style="margin-bottom:0;flex:1" placeholder="Type to search..." oninput="srchQ=this.value;render()" value="${srchQ}" id="srchi">
 <button class="voice-btn${voiceListening?' listening':''}" onclick="startVoiceParser()" aria-label="${voiceListening?'Stop voice input':'Start voice input'}">${voiceListening?'🔴 Listening...':'🎤 Voice'}</button>
 </div>`;
-if(voiceTranscript&&srchQ){h+=`<div style="font-size:10px;color:#64748b;margin-bottom:8px;padding:6px 10px;background:#f8fafc;border-radius:8px" dir="auto">🎤 "${voiceTranscript}"</div>`;}
+if(voiceTranscript&&srchQ){h+=`<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:8px;padding:6px 10px;background:rgb(var(--bg2));border-radius:8px" dir="auto">🎤 "${voiceTranscript}"</div>`;}
 if(srchQ.length>=2){
 const q=srchQ.toLowerCase();
 // Search questions
@@ -3817,15 +3829,15 @@ const nRes=NOTES.filter(n=>n.topic.toLowerCase().includes(q)||n.notes.toLowerCas
 // Search drugs
 const dRes=DRUGS.filter(d=>d.name.toLowerCase().includes(q)||d.heb.includes(q)||d.risk.toLowerCase().includes(q));
 
-h+=`<div style="font-size:11px;color:#64748b;margin-bottom:10px">${qRes.length} questions · ${nRes.length} topics · ${dRes.length} drugs</div>`;
+h+=`<div style="font-size:11px;color:rgb(var(--fg2));margin-bottom:10px">${qRes.length} questions · ${nRes.length} topics · ${dRes.length} drugs</div>`;
 
 if(nRes.length){
 h+=`<div style="font-weight:700;font-size:12px;margin-bottom:6px">📚 Study Notes</div>`;
-nRes.forEach(n=>{h+=`<div class="card" style="padding:10px"><div style="font-weight:700;font-size:11px">${n.topic}</div><div style="font-size:10px;color:#475569;margin-top:4px;line-height:1.6">${n.notes.substring(0,200)}...</div></div>`;});
+nRes.forEach(n=>{h+=`<div class="card" style="padding:10px"><div style="font-weight:700;font-size:11px">${n.topic}</div><div style="font-size:10px;color:rgb(var(--fg2));margin-top:4px;line-height:1.6">${n.notes.substring(0,200)}...</div></div>`;});
 }
 if(dRes.length){
 h+=`<div style="font-weight:700;font-size:12px;margin:8px 0 6px">💊 Drugs</div>`;
-dRes.forEach(d=>{h+=`<div class="card" style="padding:10px"><span style="font-weight:700;font-size:11px">${d.name}</span> ${d.beers?'<span class="badge badge-r">BEERS</span>':''}<div style="font-size:10px;color:#475569;margin-top:2px">${d.risk}</div></div>`;});
+dRes.forEach(d=>{h+=`<div class="card" style="padding:10px"><span style="font-weight:700;font-size:11px">${d.name}</span> ${d.beers?'<span class="badge badge-r">BEERS</span>':''}<div style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${d.risk}</div></div>`;});
 }
 if(qRes.length){
 h+=`<div style="font-weight:700;font-size:12px;margin:8px 0 6px">📝 Questions (${Math.min(qRes.length,15)} shown)</div>`;
@@ -3842,10 +3854,10 @@ function renderMedBasket(){
 let h=`<div class="sec-t">🧺 Med Basket — Polypharmacy Clash Engine</div>
 <div class="sec-s">Select drugs to check cumulative ACB + STOPP interactions</div>`;
 h+=`<input class="search-box" placeholder="Search drug to add..." oninput="filterMedList(this.value)" id="mbsrch">`;
-h+=`<div style="display:none;max-height:200px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px" id="mblist">`;
+h+=`<div style="display:none;max-height:200px;overflow-y:auto;border:1px solid rgb(var(--brd));border-radius:12px;margin-bottom:10px" id="mblist">`;
 DRUGS.forEach(d=>{
 const inBasket=medBasket.includes(d.name);
-h+=`<div class="mb-item" style="padding:8px 12px;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:11px;display:flex;justify-content:space-between;align-items:center;${inBasket?'background:#ecfdf5':''}" onclick="toggleMedBasket('${d.name.replace(/'/g,"\\'")}');render()" data-drug="${d.name.toLowerCase()} ${d.heb}" role="option" aria-selected="${inBasket?'true':'false'}">
+h+=`<div class="mb-item" style="padding:8px 12px;border-bottom:1px solid rgb(var(--brd));cursor:pointer;font-size:11px;display:flex;justify-content:space-between;align-items:center;${inBasket?'background:#ecfdf5':''}" onclick="toggleMedBasket('${d.name.replace(/'/g,"\\'")}');render()" data-drug="${d.name.toLowerCase()} ${d.heb}" role="option" aria-selected="${inBasket?'true':'false'}">
 <span>${d.name} ${d.heb?'('+d.heb+')':''}</span>
 <span>${inBasket?'✅':'+'} ${d.acb?'ACB:'+d.acb:''} ${d.beers?'BEERS':''}</span></div>`;
 });
@@ -3865,7 +3877,7 @@ h+=`<div class="card" style="padding:14px">
 <div style="font-weight:700;font-size:12px;margin-bottom:6px">Anticholinergic Burden (ACB)</div>
 <div class="acb-meter"><div class="acb-fill" style="width:${Math.min(acbTotal/6*100,100)}%;background:${acbClr}"></div></div>
 <div style="text-align:center;font-size:22px;font-weight:700;color:${acbClr}">${acbTotal}</div>
-<div style="text-align:center;font-size:10px;color:#64748b">${acbTotal>=3?'HIGH burden — cognitive decline, delirium, falls risk':acbTotal>=1?'Moderate burden — monitor closely':'Low anticholinergic burden'}</div>
+<div style="text-align:center;font-size:10px;color:rgb(var(--fg2))">${acbTotal>=3?'HIGH burden — cognitive decline, delirium, falls risk':acbTotal>=1?'Moderate burden — monitor closely':'Low anticholinergic burden'}</div>
 </div>`;
 // STOPP Warnings
 const warnings=getSTOPPWarnings();
@@ -3879,7 +3891,7 @@ h+=`<div style="padding:8px 10px;border-radius:10px;border:1px solid ${clr}30;ba
 });
 h+=`</div>`;}
 }else{
-h+=`<div style="text-align:center;padding:24px;color:#94a3b8;font-size:12px">Add drugs above to analyze interactions</div>`;
+h+=`<div style="text-align:center;padding:24px;color:rgb(var(--fg3));font-size:12px">Add drugs above to analyze interactions</div>`;
 }
 h+=`<!-- med list filter handled by filterMedList() -->`;
 return h;
@@ -3892,7 +3904,7 @@ let h=`<div class="sec-t">🕊️ EOL / Capacity Decision Tree</div>
 // Decision nodes
 h+=`<div class="dt-node ${eolState.competent===true?'active':eolState.competent===false?'inactive':''}" onclick="setEol('competent',true)">
 <div style="font-weight:700;margin-bottom:4px">1. Is the patient competent (כשיר)?</div>
-<div style="font-size:10px;color:#64748b">Can understand, appreciate, reason, and communicate a decision</div>
+<div style="font-size:10px;color:rgb(var(--fg2))">Can understand, appreciate, reason, and communicate a decision</div>
 <div style="display:flex;gap:6px;margin-top:8px">
 <button class="btn ${eolState.competent===true?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('competent',true)" aria-label="Patient is competent">Yes — Competent</button>
 <button class="btn ${eolState.competent===false?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('competent',false)" aria-label="Patient is not competent">No — Incompetent</button>
@@ -3900,7 +3912,7 @@ h+=`<div class="dt-node ${eolState.competent===true?'active':eolState.competent=
 
 h+=`<div class="dt-node ${eolState.terminal===true?'active':eolState.terminal===false?'inactive':''}" onclick="setEol('terminal',true)">
 <div style="font-weight:700;margin-bottom:4px">2. Terminal prognosis <6 months?</div>
-<div style="font-size:10px;color:#64748b" dir="auto">חוק החולה הנוטה למות 2005 applies if terminal</div>
+<div style="font-size:10px;color:rgb(var(--fg2))" dir="auto">חוק החולה הנוטה למות 2005 applies if terminal</div>
 <div style="display:flex;gap:6px;margin-top:8px">
 <button class="btn ${eolState.terminal===true?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('terminal',true)" aria-label="Terminal prognosis">Yes — Terminal</button>
 <button class="btn ${eolState.terminal===false?'btn-g':'btn-o'}" style="font-size:10px;padding:4px 12px" onclick="event.stopPropagation();setEol('terminal',false)" aria-label="Not terminal">No</button>
@@ -3960,7 +3972,7 @@ let h=`<div class="sec-t">🔬 Geriatric Lab Reference</div>
 h+=`<div class="card" style="padding:14px;margin-bottom:10px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">Frailty Level (CFS): ${frailtyLevel}/9</div>
 <input type="range" min="1" max="9" value="${frailtyLevel}" class="frailty-slider" oninput="frailtyLevel=parseInt(this.value);render()">
-<div style="display:flex;justify-content:space-between;font-size:9px;color:#64748b;margin-top:4px">
+<div style="display:flex;justify-content:space-between;font-size:9px;color:rgb(var(--fg2));margin-top:4px">
 <span>1 — Very Fit</span><span>5 — Mildly Frail</span><span>9 — Terminal</span></div>
 <div style="margin-top:8px;padding:8px 10px;background:${frailtyLevel>=7?'#fef2f2':frailtyLevel>=5?'#fffbeb':'#ecfdf5'};border-radius:8px;font-size:10px;color:${frailtyLevel>=7?'#991b1b':frailtyLevel>=5?'#92400e':'#166534'};line-height:1.5">
 ${frailtyLevel>=7?'⚠️ Severely frail: Standard lab cutoffs have reduced PPV. Many "abnormal" values are baseline. Focus on clinical significance, not numbers.':
@@ -3975,11 +3987,11 @@ const oldHi=ddimer?75*10:esr?40:l.old[1];
 h+=`<div class="card" style="padding:12px;margin-bottom:8px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
 <span style="font-weight:700;font-size:12px">${l.name}</span>
-<span style="font-size:10px;color:#64748b">${l.unit}</span></div>
+<span style="font-size:10px;color:rgb(var(--fg2))">${l.unit}</span></div>
 <div style="display:flex;gap:12px;font-size:10px;margin-bottom:6px">
 <span style="color:#2563eb">Young: ${l.young[0]}–${l.young[1]}</span>
 <span style="color:#d97706">Elderly: ${l.old[0]}–${oldHi||'age×10'}${ddimer?' (age-adjusted)':''}</span></div>
-<div style="font-size:10px;line-height:1.5;color:#475569;padding:6px 8px;background:#f8fafc;border-radius:8px">${l.note}</div>
+<div style="font-size:10px;line-height:1.5;color:rgb(var(--fg2));padding:6px 8px;background:rgb(var(--bg2));border-radius:8px">${l.note}</div>
 ${frailtyLevel>=5?`<div style="font-size:9px;color:#d97706;margin-top:4px">⚡ In frail patients: PPV of abnormal ${l.name} is reduced. Clinical correlation essential.</div>`:''}
 </div>`;
 });
@@ -4006,12 +4018,12 @@ const data=[
 let h=`<div class="sec-t">👴 Normal Aging vs. Pathology</div>
 <div class="sec-s">Physiological changes vs. disease — know the difference</div>`;
 h+=`<input class="search-box" placeholder="Search system or term..." oninput="agingSearch=this.value.toLowerCase();render()" value="${agingSearch}">`;
-h+=`<div style="border-radius:12px;overflow:hidden;border:1px solid #e2e8f0">
-<div class="aging-row" style="font-weight:700;font-size:11px;background:#f8fafc">
-<div class="cell" style="color:#166534">✅ Normal Aging</div>
-<div class="cell" style="color:#991b1b">❌ Pathology</div></div>`;
+h+=`<div style="border-radius:12px;overflow:hidden;border:1px solid rgb(var(--brd))">
+<div class="aging-row" style="font-weight:700;font-size:11px;background:rgb(var(--bg2))">
+<div class="cell" style="color:rgb(var(--green-fg))">✅ Normal Aging</div>
+<div class="cell" style="color:rgb(var(--red-fg))">❌ Pathology</div></div>`;
 data.filter(d=>!agingSearch||d.system.toLowerCase().includes(agingSearch)||d.normal.toLowerCase().includes(agingSearch)||d.path.toLowerCase().includes(agingSearch)).forEach(d=>{
-h+=`<div style="padding:6px 10px;font-weight:700;font-size:11px;background:#eff6ff;color:#1d4ed8">${d.system}</div>`;
+h+=`<div style="padding:6px 10px;font-weight:700;font-size:11px;background:rgb(var(--blue-bg));color:#1d4ed8">${d.system}</div>`;
 h+=`<div class="aging-row">
 <div class="cell normal-cell">${d.normal}</div>
 <div class="cell path-cell">${d.path}</div></div>`;
@@ -4054,14 +4066,14 @@ let h='<div class="sec-t">💡 Feedback & Feature Requests</div>';
 h+='<div class="sec-s">Help improve Shlav A Mega for everyone. AI reviews every submission.</div>';
 h+='<div class="card" style="padding:16px;margin-bottom:12px">';
 h+='<div style="font-size:12px;font-weight:700;margin-bottom:8px">Submit Feedback</div>';
-h+='<select id="fb-type" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;margin-bottom:8px;background:#f8fafc">';
+h+='<select id="fb-type" style="width:100%;padding:8px;border:1px solid rgb(var(--brd));border-radius:8px;font-size:12px;margin-bottom:8px;background:rgb(var(--bg2))">';
 h+='<option value="bug">🐛 Bug Report</option>';
 h+='<option value="feature">✨ Feature Request</option>';
 h+='<option value="content">📝 Content Fix (wrong answer/explanation)</option>';
 h+='<option value="ux">🎨 UX/Design Improvement</option>';
 h+='<option value="other">💬 Other</option>';
 h+='</select>';
-h+='<textarea id="fb-text" dir="auto" placeholder="Describe your feedback in detail..." style="width:100%;min-height:100px;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:12px;font-family:inherit;resize:vertical;margin-bottom:8px"></textarea>';
+h+='<textarea id="fb-text" dir="auto" placeholder="Describe your feedback in detail..." style="width:100%;min-height:100px;padding:10px;border:1px solid rgb(var(--brd));border-radius:10px;font-size:12px;font-family:inherit;resize:vertical;margin-bottom:8px"></textarea>';
 h+='<button onclick="submitFeedback()" class="btn" style="width:100%;padding:10px;background:#7c3aed;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">📤 Submit Feedback</button>';
 h+='</div>';
 // Recent feedback
@@ -4070,10 +4082,10 @@ if(fb.length){
 h+='<div class="card" style="padding:14px">';
 h+='<div style="font-size:12px;font-weight:700;margin-bottom:8px">📋 Your Submissions ('+fb.length+')</div>';
 fb.slice(-5).reverse().forEach(f=>{
-  h+='<div style="padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:10px">';
+  h+='<div style="padding:6px 0;border-bottom:1px solid rgb(var(--brd));font-size:10px">';
   h+='<span style="font-weight:600">'+({bug:'🐛',feature:'✨',content:'📝',ux:'🎨',other:'💬'}[f.type]||'💬')+' '+f.type+'</span>';
-  h+=' · <span style="color:#64748b">'+new Date(f.ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'})+'</span>';
-  h+='<div style="color:#475569;margin-top:2px;line-height:1.5">'+f.text.slice(0,120)+(f.text.length>120?'...':'')+'</div>';
+  h+=' · <span style="color:rgb(var(--fg2))">'+new Date(f.ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'})+'</span>';
+  h+='<div style="color:rgb(var(--fg2));margin-top:2px;line-height:1.5">'+f.text.slice(0,120)+(f.text.length>120?'...':'')+'</div>';
   if(f.aiResponse){h+='<div style="color:#7c3aed;margin-top:4px;padding:6px 8px;background:#f5f3ff;border-radius:6px;font-size:9px;line-height:1.5">🤖 '+f.aiResponse+'</div>';}
   h+='</div>';
 });
@@ -4119,10 +4131,10 @@ function renderChat(){
 let h='<div class="sec-t">💬 AI Chat</div><div class="sec-s">Claude-powered geriatrics Q&A — board prep focus</div>';
 h+='<div class="card" style="display:flex;flex-direction:column;height:calc(100vh - 200px);overflow:hidden">';
 h+='<div class="chat-disclaimer" style="margin:10px 10px 0">⚠️ AI mentor — not a substitute for clinical judgment. For board prep use only.</div>';
-if(S.chat.length>0){h+='<div style="padding:4px 10px;text-align:left"><button onclick="clearChat()" style="font-size:10px;color:#94a3b8;background:none;border:none;cursor:pointer" aria-label="Clear chat history">🗑 נקה שיחה</button></div>';}
+if(S.chat.length>0){h+='<div style="padding:4px 10px;text-align:left"><button onclick="clearChat()" style="font-size:10px;color:rgb(var(--fg3));background:none;border:none;cursor:pointer" aria-label="Clear chat history">🗑 נקה שיחה</button></div>';}
 h+='<div class="chat-msgs" id="chat-msgs">';
 if(S.chat.length===0){
-h+='<div style="padding:8px 4px 12px"><div class="heb" style="font-size:11px;color:#64748b;margin-bottom:10px;text-align:right">התחל שיחה — בחר נושא או כתוב שאלה חופשית:</div>';
+h+='<div style="padding:8px 4px 12px"><div class="heb" style="font-size:11px;color:rgb(var(--fg2));margin-bottom:10px;text-align:right">התחל שיחה — בחר נושא או כתוב שאלה חופשית:</div>';
 CHAT_STARTERS.forEach(function(s){h+='<button class="chat-starter" onclick="sendChatStarter(this.getAttribute(\'data-t\'))" data-t="'+s.replace(/"/g,'&quot;')+'">' +sanitize(s)+'</button>';});
 h+='</div>';
 }else{
@@ -4135,7 +4147,7 @@ if(chatLoading){h+='<div class="chat-msg-ai" style="padding:6px 12px"><div class
 }
 h+='</div>';
 h+='<div class="chat-input-row">';
-h+='<textarea id="chat-input" placeholder="שאל שאלה גריאטרית..." rows="2" aria-label="Chat input" style="flex:1;border:1px solid #e2e8f0;border-radius:10px;padding:8px 10px;font-size:12px;resize:none;font-family:Heebo,sans-serif;direction:rtl;text-align:right;background:inherit;color:inherit" onkeydown="if(event.key===&apos;Enter&apos;&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>';
+h+='<textarea id="chat-input" placeholder="שאל שאלה גריאטרית..." rows="2" aria-label="Chat input" style="flex:1;border:1px solid rgb(var(--brd));border-radius:10px;padding:8px 10px;font-size:12px;resize:none;font-family:Heebo,sans-serif;direction:rtl;text-align:right;background:inherit;color:inherit" onkeydown="if(event.key===&apos;Enter&apos;&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>';
 h+='<button class="btn btn-p" onclick="sendChat()" '+(chatLoading?'disabled':'')+' style="align-self:flex-end;min-width:52px" aria-label="Send">שלח</button>';
 h+='</div>';
 h+='</div>';
@@ -4237,7 +4249,7 @@ if(tab!==lastTab){el.classList.remove('fade-in');void el.offsetWidth;el.classLis
 switch(tab){
 case'quiz':el.innerHTML=onCallMode?renderOnCall():renderQuiz();break;
 case'learn':
-  {const _subBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:#f1f5f9;border-radius:12px">'+
+  {const _subBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+
   [{id:'study',ic:'📚',l:'Study'},{id:'flash',ic:'🃏',l:'Cards'},{id:'drugs',ic:'💊',l:'Drugs'}].map(s=>
     '<button onclick="learnSub=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(learnSub===s.id?'700':'400')+';cursor:pointer;background:'+(learnSub===s.id?'#fff':'transparent')+';color:'+(learnSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(learnSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>'
   ).join('')+'</div>';
@@ -4259,7 +4271,7 @@ case'track':
   }
   el.innerHTML=renderTrack();break;
 case'more':
-  {const _moreBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:#f1f5f9;border-radius:12px">'+
+  {const _moreBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+
   [{id:'calc',ic:'🧮',l:'Calc'},{id:'search',ic:'🔍',l:'Search'},{id:'chat',ic:'💬',l:'Chat'},{id:'feedback',ic:'💡',l:'Feedback'}].map(s=>
     '<button onclick="moreSub=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(moreSub===s.id?'700':'400')+';cursor:pointer;background:'+(moreSub===s.id?'#fff':'transparent')+';color:'+(moreSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(moreSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>'
   ).join('')+'</div>';
@@ -4332,8 +4344,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.37';
+const APP_VERSION='9.38';
 const CHANGELOG={
+'9.38':[
+'🎨 Dark mode overhaul: 400 inline colors replaced with CSS custom properties',
+'🌓 All tabs now properly adapt to dark/light mode (explanations, buttons, borders, cards)',
+'🎨 Green/blue/yellow/red semantic boxes adapt automatically in both themes',
+],
 '9.37':[
 '🎨 Track tab declutter: Study Plan collapsed by default, Study Journal removed',
 '🎨 Report wrong answer moved into Quiz tab (in context after each answer)',
@@ -4558,14 +4575,14 @@ ov.onclick=e=>{if(e.target===ov)ov.remove();};
 const sec=(title,icon,color,items)=>`<div style="margin-bottom:14px">
 <div style="font-weight:700;font-size:12px;margin-bottom:6px;color:${color}">${icon} ${title}</div>
 <div style="font-size:10px;line-height:1.8">${items}</div></div>`;
-ov.innerHTML=`<div style="max-width:420px;margin:0 auto;background:#fff;border-radius:16px;padding:20px;color:#1e293b;font-size:11px;line-height:1.7">
+ov.innerHTML=`<div style="max-width:420px;margin:0 auto;background:rgb(var(--card-bg));border-radius:16px;padding:20px;color:rgb(var(--fg));font-size:11px;line-height:1.7">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
 <div style="font-size:16px;font-weight:800">🩺 Shlav A Mega</div>
-<button onclick="this.closest('#help-overlay').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8" aria-label="Close help">✕</button>
+<button onclick="this.closest('#help-overlay').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:rgb(var(--fg3))" aria-label="Close help">✕</button>
 </div>
-<div style="font-size:10px;color:#64748b;margin-bottom:16px">Israeli Geriatrics Board Exam Prep (שלב א׳ גריאטריה) · P005-2026 · Hazzard's 8e + Harrison's 22e · Works Offline</div>
-<div style="padding:10px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:10px;margin-bottom:14px">
-<div style="font-weight:700;font-size:11px;margin-bottom:6px;color:#065f46">🆕 What's New in v${APP_VERSION}</div>
+<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:16px">Israeli Geriatrics Board Exam Prep (שלב א׳ גריאטריה) · P005-2026 · Hazzard's 8e + Harrison's 22e · Works Offline</div>
+<div style="padding:10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:10px;margin-bottom:14px">
+<div style="font-weight:700;font-size:11px;margin-bottom:6px;color:rgb(var(--green-fg))">🆕 What's New in v${APP_VERSION}</div>
 <div style="font-size:10px;line-height:1.7;color:#047857">
 ${(CHANGELOG[APP_VERSION]||CHANGELOG[Object.keys(CHANGELOG).sort().pop()]||['No changelog available']).map(c=>'<b>'+c.split(' — ')[0]+'</b>'+(c.includes(' — ')?' — '+c.split(' — ').slice(1).join(' — '):'')).join('<br>')}
 </div></div>
@@ -4601,11 +4618,11 @@ ${sec('Progress Tracking','📊','#f59e0b',
 '<b>☁️ Cloud Sync</b> — Backup/restore progress across devices<br>'+
 '<b>🔥 Streak</b> — Daily study streak'
 )}
-<div style="padding:10px;background:#f0fdf4;border-radius:10px;margin-bottom:12px">
+<div style="padding:10px;background:rgb(var(--green-bg));border-radius:10px;margin-bottom:12px">
 <div style="font-weight:700;font-size:11px;margin-bottom:4px">🚀 Quick Start</div>
 <div style="font-size:10px;line-height:1.7">1. Tap <b>Quiz</b> → answer questions<br>2. Check <b>🔬 Distractor Autopsy</b> for AI analysis<br>3. Review <b>Track</b> tab for weak spots<br>4. Use <b>🔥 Hard</b> filter to drill mistakes<br>5. Read <b>Library → Hazzard</b> for chapter content</div>
 </div>
-<div style="text-align:center;font-size:9px;color:#94a3b8;line-height:1.5">
+<div style="text-align:center;font-size:9px;color:rgb(var(--fg3));line-height:1.5">
 صدقة جارية الى من نحب<br>Ceaseless Charity — To the People That We Love<br><br>
 <button onclick="shareApp()" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:6px 16px;font-size:10px;font-weight:600;cursor:pointer" aria-label="Share app with friends">📤 Share with Friends</button>
 </div>
@@ -4652,7 +4669,7 @@ b.id='update-banner';
 b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#0D7377,#14919B);color:#fff;padding:12px 16px;font-size:12px;display:flex;align-items:center;gap:10px;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.3)';
 b.innerHTML=`<div><b>🆕 עדכון זמין!</b> גרסה חדשה מוכנה</div>
 <div style="display:flex;gap:6px;flex-shrink:0">
-<button onclick="applyUpdate()" style="background:#fff;color:#0D7377;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer">🔄 עדכן עכשיו</button>
+<button onclick="applyUpdate()" style="background:rgb(var(--card-bg));color:#0D7377;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer">🔄 עדכן עכשיו</button>
 <button onclick="this.closest('#update-banner').remove()" style="background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">✕</button>
 </div>`;
 document.body.prepend(b);
