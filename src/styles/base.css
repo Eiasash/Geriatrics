@@ -1,0 +1,21 @@
+/* ===== BASE RESET & CSS VARIABLES ===== */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--sky:59 130 246;--em:16 185 129;--sl8:30 41 59;--red:239 68 68;--amb:245 158 11;
+--bg:248 250 252;--bg2:241 245 249;--bg3:255 255 255;--fg:30 41 59;--fg2:100 116 139;--fg3:148 163 184;
+--brd:226 232 240;--card-bg:255 255 255;
+--green-bg:240 253 244;--green-brd:187 247 208;--green-fg:22 101 52;
+--blue-bg:239 246 255;--blue-brd:191 219 254;--blue-fg:30 64 175;
+--yellow-bg:255 251 235;--yellow-brd:253 230 138;--yellow-fg:146 64 14;
+--red-bg:254 242 242;--red-brd:254 202 202;--red-fg:153 27 27}
+body{font-family:'Inter',system-ui,sans-serif;background:rgb(var(--bg));color:rgb(var(--fg));-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.heb{font-family:'Heebo',sans-serif;direction:rtl;text-align:right}
+button{cursor:pointer;border:none;background:none;font:inherit}
+input,textarea,select{font:inherit}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
+.fade-in{animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.skip-link{position:absolute;left:-9999px;top:4px;z-index:9999;padding:6px 12px;background:#3b82f6;color:#fff;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none}
+.skip-link:focus{left:4px}
+:focus-visible{outline:2px solid #3b82f6;outline-offset:2px}
+@media print{.tabs,.hdr,.dm-btn,button{display:none !important}.ct{padding:0;max-width:100%}.card{break-inside:avoid;border:1px solid #ccc;margin-bottom:8px}.ab{max-height:none !important}.stat,.stats{break-inside:avoid}body{background:rgb(var(--card-bg));color:#000;font-size:12pt}}

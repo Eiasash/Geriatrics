@@ -1,0 +1,86 @@
+/* ===== QUIZ OPTIONS ===== */
+.qo{width:100%;text-align:right;padding:12px 14px;border-radius:12px;border:2px solid #e2e8f0;font-size:12px;line-height:1.6;transition:.15s;margin-bottom:6px;font-family:'Heebo',sans-serif;display:block;min-height:44px;display:flex;align-items:center;position:relative}
+.qo:not(.lk):hover{border-color:#bae6fd;background:#f0f9ff}
+.qo:active:not(.lk){transform:scale(.99)}
+.qo.sel{border-color:rgb(var(--sky));background:rgb(var(--blue-bg))}
+.qo.ok{border-color:rgb(var(--em));background:#ecfdf5;color:rgb(var(--green-fg))}
+.qo.no{border-color:rgb(var(--red));background:rgb(var(--red-bg));color:rgb(var(--red-fg))}
+.qo.dim{border-color:#f1f5f9;color:#cbd5e1}
+
+/* ===== BLIND RECALL BLUR ===== */
+.qo-blur{filter:blur(8px);transition:filter .25s ease;user-select:none}
+.qo-blur:active,.qo-blur:focus,.qo-blur.revealed{filter:none}
+.qo-blur::after{content:'Tap to reveal';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:rgb(var(--fg3));pointer-events:none;opacity:.9}
+
+/* ===== SUDDEN DEATH ===== */
+.sudden-death-banner{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;padding:10px 14px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;animation:pulse-red 2s infinite}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
+.leaderboard-row{display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid rgb(var(--brd));font-size:11px}
+
+/* ===== DISTRACTOR AUTOPSY ===== */
+.distractor-highlight{border:2px solid rgb(var(--brd)) !important;background:rgb(var(--bg2)) !important;position:relative}
+.distractor-highlight::before{content:'🔍';position:absolute;top:-8px;right:-8px;font-size:14px}
+
+/* ===== POMODORO ===== */
+.pomo-bar{position:fixed;top:0;left:0;right:0;height:4px;background:#e2e8f0;z-index:60}
+.pomo-bar .pomo-fill{height:100%;background:rgb(var(--em));transition:width 1s linear}
+.pomo-overlay{position:fixed;inset:0;background:rgba(15,23,42,.92);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(6px)}
+.pomo-overlay h2{font-size:24px;margin-bottom:8px}
+.pomo-overlay .pomo-break-timer{font-size:64px;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* ===== SPEECH ===== */
+.speech-btn{font-size:18px;padding:4px;opacity:.5;cursor:pointer;border:none;background:none;transition:.15s}
+.speech-btn:hover,.speech-btn.speaking{opacity:1}
+.speech-btn.speaking{animation:pulse-speak 1s infinite}
+@keyframes pulse-speak{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+/* ===== MED BASKET ===== */
+.med-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:16px;font-size:10px;font-weight:600;background:rgb(var(--blue-bg));color:#1d4ed8;cursor:pointer;border:1px solid rgb(var(--blue-brd));margin:2px}
+.med-chip .x{font-size:12px;font-weight:700;margin-left:2px;opacity:.6}
+.med-chip .x:hover{opacity:1}
+.acb-meter{height:10px;border-radius:5px;background:#e2e8f0;overflow:hidden;margin:6px 0}
+.acb-meter .acb-fill{height:100%;border-radius:5px;transition:width .3s}
+
+/* ===== DECISION TREE ===== */
+.dt-node{padding:12px;border-radius:12px;border:2px solid #e2e8f0;margin-bottom:8px;cursor:pointer;transition:.15s;font-size:12px}
+.dt-node:hover{border-color:rgb(var(--sky))}
+.dt-node.active{border-color:rgb(var(--em));background:#ecfdf5}
+.dt-node.inactive{opacity:.4}
+.dt-result{padding:14px;border-radius:12px;border:2px solid rgb(var(--em));background:#ecfdf5;font-size:12px;line-height:1.7}
+
+/* ===== LAB OVERLAY ===== */
+.lab-modal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.lab-sheet{background:rgb(var(--card-bg));width:calc(100% - 24px);max-width:600px;max-height:85vh;border-radius:20px;overflow-y:auto;padding:20px 16px;animation:fadeIn .2s ease}
+.range-bar{height:8px;border-radius:4px;background:#e2e8f0;position:relative;margin:8px 0}
+.range-bar .normal{position:absolute;height:100%;background:#bbf7d0;border-radius:4px}
+.range-bar .marker{position:absolute;width:3px;height:16px;top:-4px;background:#1e293b;border-radius:2px}
+.frailty-slider{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:linear-gradient(to right,#bbf7d0,#fde68a,#fecaca);outline:none}
+.frailty-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#1e293b;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+
+/* ===== AGING CHEAT SHEET ===== */
+.aging-row{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid rgb(var(--brd));font-size:10px}
+.aging-row .cell{padding:8px 10px;line-height:1.5}
+.aging-row .normal-cell{background:rgb(var(--green-bg));color:rgb(var(--green-fg))}
+.aging-row .path-cell{background:rgb(var(--red-bg));color:rgb(var(--red-fg))}
+
+/* ===== ROI SCATTER ===== */
+.roi-grid{position:relative;width:100%;aspect-ratio:1.4;border-left:2px solid #64748b;border-bottom:2px solid #64748b;margin:12px 0}
+.roi-dot{position:absolute;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;cursor:pointer;transition:.2s;border:2px solid rgba(255,255,255,.8);text-align:center;line-height:1.1;overflow:hidden}
+.roi-dot:hover{transform:scale(1.3);z-index:5}
+.roi-label{position:absolute;font-size:9px;color:rgb(var(--fg2));font-weight:600}
+
+/* ===== VOICE PARSER ===== */
+.voice-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;background:rgb(var(--red-bg));color:#dc2626;border:1px solid rgb(var(--red-brd));cursor:pointer}
+.voice-btn.listening{background:#dc2626;color:#fff;animation:pulse-red 1.5s infinite}
+
+/* ===== CHAT ===== */
+.chat-msgs{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.chat-msg-user{background:rgb(var(--blue-bg));border-radius:12px 12px 2px 12px;padding:8px 12px;font-size:12px;align-self:flex-end;max-width:85%}
+.chat-msg-ai{background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:12px 12px 12px 2px;padding:8px 12px;font-size:12px;align-self:flex-start;max-width:90%;white-space:pre-wrap;line-height:1.6}
+.chat-msg-err{background:rgb(var(--red-bg));border:1px solid rgb(var(--red-brd));border-radius:12px;padding:8px 12px;font-size:11px;color:#dc2626}
+.chat-input-row{display:flex;gap:6px;padding:8px 10px;border-top:1px solid #e2e8f0}
+.chat-starter{display:block;width:100%;text-align:right;padding:8px 12px;border-radius:10px;border:1px solid rgb(var(--brd));font-size:11px;margin-bottom:5px;background:rgb(var(--card-bg));cursor:pointer;font-family:'Heebo',sans-serif}
+.chat-starter:hover{background:rgb(var(--blue-bg));border-color:#bae6fd}
+.chat-disclaimer{font-size:10px;color:#d97706;padding:5px 8px;background:rgb(var(--yellow-bg));border-radius:8px;border:1px solid rgb(var(--yellow-brd))}
+.typing-dots{display:flex;gap:4px;align-items:center;padding:2px 0}.typing-dots span{width:6px;height:6px;border-radius:50%;background:#94a3b8;animation:tdot 1.2s infinite}.typing-dots span:nth-child(2){animation-delay:.2s}.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
