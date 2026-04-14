@@ -720,7 +720,6 @@ const _dataPromise = (async function loadDataArrays() {
     DRUGS: 'drugs.json',
     FLASH: 'flashcards.json',
     TABS: 'tabs.json',
-    // OSCE removed
   };
   try {
     const entries = Object.entries(files);
@@ -739,8 +738,7 @@ const _dataPromise = (async function loadDataArrays() {
       else if (varName === 'DRUGS') DRUGS = results[i];
       else if (varName === 'FLASH') FLASH = results[i];
       else if (varName === 'TABS') TABS = results[i];
-      // OSCE removed
-    });
+      });
     _dataReady = true;
     // Safe JSON parser with fallback
     function safeJSONParse(key, fallback) {
@@ -3026,14 +3024,6 @@ if(btn){btn.textContent='✅ הועתק';setTimeout(()=>btn.textContent='📋 ה
 }
 }
 
-// ===== OSCE =====
-
-
-let oi=-1,oint=null,ocks={};
-function exitO(){if(oint)clearInterval(oint);oi=-1;orun=false;render();}
-// togOT, togOck removed — dead code
-
-// renderOsce removed v9.10
 // ===== TRACKER =====
 const TOPICS=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
 // topic index → {source:'haz'|'notes', label, action} for deep link
@@ -4288,7 +4278,6 @@ case'flash':tab='learn';learnSub='flash';el.innerHTML='';render();break;
 case'drugs':tab='learn';learnSub='drugs';el.innerHTML='';render();break;
 case'lib':el.innerHTML=renderLibrary();break;
 case'calc':tab='more';moreSub='calc';el.innerHTML='';render();break;
-// OSCE removed v9.9
 case'track':
   // Save session summary when switching to track tab
   if(!_sessionSaved&&(_sessionOk+_sessionNo)>=5){
@@ -4369,8 +4358,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.42';
+const APP_VERSION='9.43';
 const CHANGELOG={
+'9.43':[
+'🗑️ OSCE removed — dead code and variables cleaned out',
+'🧪 Test coverage +33 — AI proxy routing, sanitization, SRS/FSRS, CSP tests',
+],
 '9.42':[
 '🎨 Post-answer flow: difficulty + next on same row, why-wrong emoji-only row, report button tucked',
 '🌓 Dark/study mode: replaced hardcoded hex colors with CSS vars in quiz controls',
