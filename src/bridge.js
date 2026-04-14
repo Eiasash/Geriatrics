@@ -345,6 +345,43 @@
     return (h ? h + ':' : '') + String(m).padStart(2, '0') + ':' + String(sc).padStart(2, '0');
   }
 
+  // ===== REMAP EXPLANATION LETTERS (shuffled options) =====
+  function remapExplanationLetters(text, shuf) {
+    var inv = {};
+    shuf.forEach(function (orig, disp) { inv[orig] = disp; });
+    var letters = ['A', 'B', 'C', 'D', 'E'];
+    var heb = ['א', 'ב', 'ג', 'ד', 'ה'];
+    return text.replace(/\b([A-E])\b/g, function (m, letter) {
+      var origIdx = letters.indexOf(letter);
+      if (origIdx === -1 || inv[origIdx] === undefined) return m;
+      return letters[inv[origIdx]];
+    }).replace(/(תשובה\s*)([א-ה])\b/g, function (m, prefix, letter) {
+      var origIdx = heb.indexOf(letter);
+      if (origIdx === -1 || inv[origIdx] === undefined) return m;
+      return prefix + heb[inv[origIdx]];
+    });
+  }
+
+  // ===== MOCK EXAM POOL BUILDER =====
+  function buildMockExamPool(questions, examFreq) {
+    var total = examFreq.reduce(function (a, b) { return a + b; }, 0);
+    var examPool = [];
+    var byTopic = {};
+    questions.forEach(function (q, i) {
+      var ti = q.ti >= 0 ? q.ti : 39;
+      if (!byTopic[ti]) byTopic[ti] = [];
+      byTopic[ti].push(i);
+    });
+    examFreq.forEach(function (freq, ti) {
+      if (!freq || !byTopic[ti] || !byTopic[ti].length) return;
+      var target = Math.max(1, Math.round(freq / total * 100));
+      var src = byTopic[ti].slice().sort(function () { return Math.random() - 0.5; });
+      for (var k = 0; k < Math.min(target, src.length); k++) examPool.push(src[k]);
+    });
+    examPool.sort(function () { return Math.random() - 0.5; });
+    return examPool.slice(0, 100);
+  }
+
   // ===== SAFE JSON PARSE =====
   function safeJSONParse(raw, fallback) {
     if (raw === null || raw === undefined) return fallback;
@@ -370,5 +407,7 @@
     calcEstScore: calcEstScore,
     sanitize: sanitize,
     fmtT: fmtT,
+    remapExplanationLetters: remapExplanationLetters,
+    buildMockExamPool: buildMockExamPool,
   };
 })();

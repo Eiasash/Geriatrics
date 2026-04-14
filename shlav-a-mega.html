@@ -1078,24 +1078,7 @@ function toggleBk(){S.bk[pool[qi]]=!S.bk[pool[qi]];save();render();}
 // Historical topic frequency weights (from 9 real exams, recency-weighted 2× for last 2)
 const EXAM_FREQ=[0,34,30,28,36,43,178,39,63,36,20,27,19,22,50,40,22,94,70,78,18,80,43,21,46,27,29,52,10,11,7,0,6,9,26,19,23,9,17,0];
 // target 100q: proportional + floor(1) for evergreen topics
-function buildMockExamPool(){
-  const total=EXAM_FREQ.reduce((a,b)=>a+b,0);
-  const examPool=[];
-  // Group QZ by topic
-  const byTopic={};
-  QZ.forEach((q,i)=>{const ti=q.ti>=0?q.ti:39;if(!byTopic[ti])byTopic[ti]=[];byTopic[ti].push(i);});
-  // Compute target per topic
-  EXAM_FREQ.forEach((freq,ti)=>{
-    if(!freq||!byTopic[ti]||!byTopic[ti].length)return;
-    const target=Math.max(1,Math.round(freq/total*100));
-    // shuffle that topic's questions, take target count
-    const src=[...byTopic[ti]].sort(()=>Math.random()-.5);
-    for(let k=0;k<Math.min(target,src.length);k++)examPool.push(src[k]);
-  });
-  // Trim or pad to ~100
-  examPool.sort(()=>Math.random()-.5);
-  return examPool.slice(0,100);
-}
+function buildMockExamPool(){return SM.buildMockExamPool(QZ,EXAM_FREQ);}
 let mockExamResults=null; // stores per-topic breakdown
 function startExam(){
   // Classic 150q mode (unchanged) 
@@ -1306,22 +1289,7 @@ function isMetaOption(text){
   ];
   return metaPatterns.some(p=>p.test(t));
 }
-function remapExplanationLetters(text,shuf){
-  // shuf[displayPos]=origIdx → build inverse: origIdx→displayPos
-  const inv={};shuf.forEach((orig,disp)=>{inv[orig]=disp;});
-  const letters=['A','B','C','D','E'];
-  const heb=['א','ב','ג','ד','ה'];
-  // Replace patterns like "התשובה הנכונה היא C" or "תשובה A" or "Answer B"
-  return text.replace(/\b([A-E])\b/g,(m,letter)=>{
-    const origIdx=letters.indexOf(letter);
-    if(origIdx===-1||inv[origIdx]===undefined)return m;
-    return letters[inv[origIdx]];
-  }).replace(/(תשובה\s*)([א-ה])\b/g,(m,prefix,letter)=>{
-    const origIdx=heb.indexOf(letter);
-    if(origIdx===-1||inv[origIdx]===undefined)return m;
-    return prefix+heb[inv[origIdx]];
-  });
-}
+function remapExplanationLetters(text,shuf){return SM.remapExplanationLetters(text,shuf);}
 function getOptShuffle(qIdx,q){
   // Return stable shuffle for this question in this session
   if(_optShuffle&&_optShuffle.qIdx===qIdx)return _optShuffle.map;
