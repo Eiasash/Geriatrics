@@ -3999,52 +3999,58 @@ async function cloudRestore(){
   }catch(e){alert('❌ Restore failed: '+e.message);}
 }
 
+// ===== RENDER REGISTRY =====
+// Sub-tab bar builder (shared between learn and more tabs)
+function _subTabBar(varName,items,active){
+return '<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+
+items.map(function(s){
+return '<button onclick="'+varName+'=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(active===s.id?'700':'400')+';cursor:pointer;background:'+(active===s.id?'#fff':'transparent')+';color:'+(active===s.id?'#0f172a':'#64748b')+';box-shadow:'+(active===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>';
+}).join('')+'</div>';
+}
+// Render registry: each entry returns an HTML string for its tab
+const RENDER_TAB={
+quiz:function(){return onCallMode?renderOnCall():renderQuiz();},
+learn:function(){
+  const bar=_subTabBar('learnSub',[{id:'study',ic:'📚',l:'Study'},{id:'flash',ic:'🃏',l:'Cards'},{id:'drugs',ic:'💊',l:'Drugs'}],learnSub);
+  const LEARN_SUB={study:renderStudy,flash:renderFlash,drugs:renderDrugs};
+  const fn=LEARN_SUB[learnSub];
+  return bar+(fn?fn():'');
+},
+lib:function(){return renderLibrary();},
+track:function(){
+  if(!_sessionSaved&&(_sessionOk+_sessionNo)>=5){saveSessionSummary();_sessionSaved=true;}
+  return renderTrack();
+},
+more:function(){
+  const bar=_subTabBar('moreSub',[{id:'calc',ic:'🧮',l:'Calc'},{id:'search',ic:'🔍',l:'Search'},{id:'chat',ic:'💬',l:'Chat'},{id:'feedback',ic:'💡',l:'Feedback'}],moreSub);
+  const MORE_SUB={calc:renderCalc,search:renderSearch,chat:renderChat,feedback:renderFeedback};
+  const fn=MORE_SUB[moreSub];
+  return bar+(fn?fn():'');
+}
+};
+// Tab aliases: redirect to canonical tab + set sub-tab
+const TAB_ALIAS={
+study:function(){tab='learn';learnSub='study';},
+flash:function(){tab='learn';learnSub='flash';},
+drugs:function(){tab='learn';learnSub='drugs';},
+calc:function(){tab='more';moreSub='calc';},
+search:function(){tab='more';moreSub='search';},
+chat:function(){tab='more';moreSub='chat';},
+book:function(){tab='lib';},
+syl:function(){tab='lib';},
+};
 function render(){
 const el=document.getElementById('ct');
 const focused=document.activeElement?.id;
 const sv={srchi:document.getElementById('srchi')?.value,nfilt:document.getElementById('nfilt')?.value,dsrch:document.getElementById('dsrch')?.value};
 if(tab!==lastTab){el.classList.remove('fade-in');void el.offsetWidth;el.classList.add('fade-in');window.scrollTo({top:0});lastTab=tab;}
-switch(tab){
-case'quiz':el.innerHTML=onCallMode?renderOnCall():renderQuiz();break;
-case'learn':
-  {const _subBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+
-  [{id:'study',ic:'📚',l:'Study'},{id:'flash',ic:'🃏',l:'Cards'},{id:'drugs',ic:'💊',l:'Drugs'}].map(s=>
-    '<button onclick="learnSub=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(learnSub===s.id?'700':'400')+';cursor:pointer;background:'+(learnSub===s.id?'#fff':'transparent')+';color:'+(learnSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(learnSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>'
-  ).join('')+'</div>';
-  let _body='';
-  if(learnSub==='study')_body=renderStudy();
-  else if(learnSub==='flash')_body=renderFlash();
-  else if(learnSub==='drugs')_body=renderDrugs();
-  el.innerHTML=_subBar+_body;}break;
-case'study':tab='learn';learnSub='study';el.innerHTML='';render();break;
-case'flash':tab='learn';learnSub='flash';el.innerHTML='';render();break;
-case'drugs':tab='learn';learnSub='drugs';el.innerHTML='';render();break;
-case'lib':el.innerHTML=renderLibrary();break;
-case'calc':tab='more';moreSub='calc';el.innerHTML='';render();break;
-case'track':
-  // Save session summary when switching to track tab
-  if(!_sessionSaved&&(_sessionOk+_sessionNo)>=5){
-    saveSessionSummary();_sessionSaved=true;
-  }
-  el.innerHTML=renderTrack();break;
-case'more':
-  {const _moreBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+
-  [{id:'calc',ic:'🧮',l:'Calc'},{id:'search',ic:'🔍',l:'Search'},{id:'chat',ic:'💬',l:'Chat'},{id:'feedback',ic:'💡',l:'Feedback'}].map(s=>
-    '<button onclick="moreSub=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(moreSub===s.id?'700':'400')+';cursor:pointer;background:'+(moreSub===s.id?'#fff':'transparent')+';color:'+(moreSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(moreSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>'
-  ).join('')+'</div>';
-  let _mBody='';
-  if(moreSub==='calc')_mBody=renderCalc();
-  else if(moreSub==='search')_mBody=renderSearch();
-  else if(moreSub==='chat')_mBody=renderChat();
-  else if(moreSub==='feedback')_mBody=renderFeedback();
-  el.innerHTML=_moreBar+_mBody;}break;
-case'search':tab='more';moreSub='search';el.innerHTML='';render();break;
-case'chat':tab='more';moreSub='chat';el.innerHTML='';render();break;
-case'book':case'syl':tab='lib';el.innerHTML=renderLibrary();break;
-default:tab='quiz';el.innerHTML=renderQuiz();break;
-}
-// Ward modal
-
+// Resolve aliases (study→learn, calc→more, etc.)
+const alias=TAB_ALIAS[tab];
+if(alias){alias();el.innerHTML='';render();return;}
+// Dispatch to registered renderer
+const fn=RENDER_TAB[tab];
+if(fn){el.innerHTML=fn();}
+else{tab='quiz';el.innerHTML=RENDER_TAB.quiz();}
 // Restore input values and focus
 if(sv.srchi!==undefined&&document.getElementById('srchi'))document.getElementById('srchi').value=sv.srchi;
 if(sv.nfilt!==undefined&&document.getElementById('nfilt'))document.getElementById('nfilt').value=sv.nfilt;
