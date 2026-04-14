@@ -2,110 +2,101 @@
  * Quiz scoring, spaced repetition integration, and estimated score.
  *
  * Pure functions — no DOM dependencies.
+ *
+ * FSRS functions are loaded globally from shared/fsrs.js.
  */
 
-// These are loaded globally from shared/fsrs.js in the monolith.
-// In the modular build, we import from the shared module.
-// For now, reference globals that shared/fsrs.js defines.
 /* global fsrsR, fsrsInterval, fsrsInitNew, fsrsUpdate, fsrsMigrateFromSM2 */
 
 /**
- * Score a question answer and update SR state.
+ * Core FSRS scoring — mutates srEntry in place, no side effects.
+ * This is the canonical implementation mirrored in src/bridge.js.
  *
- * @param {object} sr - S.sr object (mutated in place)
- * @param {number} qIdx - question index
+ * @param {object} srEntry - The S.sr[qIdx] object (mutated)
  * @param {boolean} correct - was the answer correct
  * @param {number} qStartTime - timestamp when question was shown
  * @param {number|null} fsrsRating - explicit FSRS rating (1-4) or null for auto
- * @returns {{ sessionOkDelta: number, sessionNoDelta: number, topicIndex: number|null }}
+ * @returns {object} The mutated srEntry
  */
-export function srScore(sr, qIdx, correct, qStartTime, fsrsRating) {
-  if (!sr[qIdx]) {
-    sr[qIdx] = { ef: 2.5, n: 0, next: 0, ts: [], at: 0, tot: 0, ok: 0 };
-  }
-  const s = sr[qIdx];
-  if (s.tot === undefined) { s.tot = 0; s.ok = 0; }
+export function srScoreCore(srEntry, correct, qStartTime, fsrsRating) {
+  if (!srEntry.ef) srEntry.ef = 2.5;
+  if (!srEntry.n) srEntry.n = 0;
+  if (!srEntry.next) srEntry.next = 0;
+  if (srEntry.tot === undefined) { srEntry.tot = 0; srEntry.ok = 0; }
 
-  // Answer time tracking
   const elapsed = Math.round((Date.now() - qStartTime) / 1000);
-  if (!s.ts) s.ts = [];
-  s.ts.push(elapsed);
-  if (s.ts.length > 10) s.ts.shift();
-  s.at = Math.round(s.ts.reduce((a, b) => a + b, 0) / s.ts.length);
-  s.tot++;
-  if (correct) s.ok++;
+  if (!srEntry.ts) srEntry.ts = [];
+  srEntry.ts.push(elapsed);
+  if (srEntry.ts.length > 10) srEntry.ts.shift();
+  srEntry.at = Math.round(srEntry.ts.reduce((a, b) => a + b, 0) / srEntry.ts.length);
+  srEntry.tot++;
+  if (correct) srEntry.ok++;
 
-  // FSRS-4.5 scheduling
   const rating = fsrsRating || (correct ? 3 : 1);
-  const daysSinceReview = s.lastReview ? Math.max(0, (Date.now() - s.lastReview) / 86400000) : 0;
+  const daysSinceReview = srEntry.lastReview
+    ? Math.max(0, (Date.now() - srEntry.lastReview) / 86400000) : 0;
 
-  // Initialize or migrate FSRS state
-  if (s.fsrsS === undefined || s.fsrsD === undefined) {
-    if (s.n > 0 || s.ef !== 2.5) {
-      const mig = fsrsMigrateFromSM2(s);
-      s.fsrsS = mig.s;
-      s.fsrsD = mig.d;
+  if (srEntry.fsrsS === undefined || srEntry.fsrsD === undefined) {
+    if (srEntry.n > 0 || srEntry.ef !== 2.5) {
+      const mig = fsrsMigrateFromSM2(srEntry);
+      srEntry.fsrsS = mig.s; srEntry.fsrsD = mig.d;
     } else {
       const init = fsrsInitNew(rating);
-      s.fsrsS = init.s;
-      s.fsrsD = init.d;
+      srEntry.fsrsS = init.s; srEntry.fsrsD = init.d;
     }
   }
 
-  const rPrev = daysSinceReview > 0 ? fsrsR(daysSinceReview, s.fsrsS) : 1;
-  const upd = fsrsUpdate(s.fsrsS, s.fsrsD, rPrev, rating);
-  s.fsrsS = Math.round(upd.s * 1000) / 1000;
-  s.fsrsD = Math.round(upd.d * 100) / 100;
-  s.lastReview = Date.now();
+  const rPrev = daysSinceReview > 0 ? fsrsR(daysSinceReview, srEntry.fsrsS) : 1;
+  const upd = fsrsUpdate(srEntry.fsrsS, srEntry.fsrsD, rPrev, rating);
+  srEntry.fsrsS = Math.round(upd.s * 1000) / 1000;
+  srEntry.fsrsD = Math.round(upd.d * 100) / 100;
+  srEntry.lastReview = Date.now();
 
-  // FSRS interval → next review
-  const fsrsDays = fsrsInterval(s.fsrsS);
-  s.next = Date.now() + fsrsDays * 86400000;
+  const fsrsDays = fsrsInterval(srEntry.fsrsS);
+  srEntry.next = Date.now() + fsrsDays * 86400000;
 
-  // Keep SM-2 ef/n as proxies for filter compatibility
-  s.n = correct ? s.n + 1 : 0;
-  s.ef = Math.round((2.5 - (s.fsrsD - 1) / (10 - 1) * (2.5 - 1.3)) * 1000) / 1000;
+  srEntry.n = correct ? srEntry.n + 1 : 0;
+  srEntry.ef = Math.round((2.5 - (srEntry.fsrsD - 1) / (10 - 1) * (2.5 - 1.3)) * 1000) / 1000;
 
-  return {
-    sessionOkDelta: correct ? 1 : 0,
-    sessionNoDelta: correct ? 0 : 1,
-  };
+  return srEntry;
 }
 
 /**
- * Calculate estimated exam score based on topic accuracy and IMA weights.
+ * Calculate estimated exam score (canonical monolith algorithm).
+ * Uses EXAM_FREQ weights + legacy topic stats + due penalty.
  *
- * @param {Array} questions - QZ array
- * @param {object} sr - S.sr object
- * @param {Array} imaWeights - IMA_WEIGHTS array
- * @returns {number} Estimated percentage score
+ * @param {number[]} examFreq - EXAM_FREQ array (40 entries)
+ * @param {object} topicStats - S.ts legacy topic stats { ti: {ok, no, tot} }
+ * @param {object} dueSet - { qIdx: true } set of due question indices
+ * @param {Array} questions - QZ array (for topic lookup)
+ * @returns {number|null} Estimated percentage score
  */
-export function calcEstScore(questions, sr, imaWeights) {
-  const topicAcc = {};
-  const topicTot = {};
+export function calcEstScore(examFreq, topicStats, dueSet, questions) {
+  const totalFreq = examFreq.reduce((a, b) => a + b, 0);
+  if (!totalFreq) return null;
 
-  questions.forEach((q, i) => {
-    const s = sr[i];
-    if (!s || !s.tot) return;
-    const ti = q.ti;
-    if (!topicAcc[ti]) { topicAcc[ti] = 0; topicTot[ti] = 0; }
-    topicAcc[ti] += s.ok || 0;
-    topicTot[ti] += s.tot;
-  });
-
-  let weightedSum = 0;
-  let weightTotal = 0;
-
-  imaWeights.forEach((w, ti) => {
-    if (topicTot[ti] && topicTot[ti] >= 3) {
-      const acc = topicAcc[ti] / topicTot[ti];
-      weightedSum += acc * w;
-      weightTotal += w;
+  let weightedScore = 0, totalWeight = 0;
+  examFreq.forEach((freq, ti) => {
+    if (!freq) return;
+    const s = topicStats[ti] || { ok: 0, no: 0, tot: 0 };
+    const weight = freq / totalFreq;
+    let acc;
+    if (s.tot < 3) {
+      acc = 0.60;
+    } else {
+      acc = s.ok / s.tot;
+      let duePenalty = 0;
+      if (dueSet && questions) {
+        for (let i = 0; i < questions.length; i++) {
+          if (questions[i] && questions[i].ti === ti && dueSet[i]) duePenalty++;
+        }
+      }
+      if (duePenalty > 0) acc = Math.max(0, acc - duePenalty * 0.02);
     }
+    weightedScore += acc * weight;
+    totalWeight += weight;
   });
-
-  if (weightTotal === 0) return 0;
-  return Math.round((weightedSum / weightTotal) * 100);
+  return totalWeight > 0 ? Math.round(weightedScore / totalWeight * 100) : null;
 }
 
 /**

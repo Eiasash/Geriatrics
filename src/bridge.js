@@ -252,6 +252,99 @@
     return { map: map, correctIndex: newCorrectIndex };
   }
 
+  // ===== SR SCORE — pure FSRS math (no side effects) =====
+  // Requires shared/fsrs.js globals: fsrsR, fsrsInterval, fsrsInitNew, fsrsUpdate, fsrsMigrateFromSM2
+  function srScoreCore(srEntry, correct, qStartTime, fsrsRating) {
+    // Initialize SR entry if needed
+    if (!srEntry.ef) srEntry.ef = 2.5;
+    if (!srEntry.n) srEntry.n = 0;
+    if (!srEntry.next) srEntry.next = 0;
+    if (srEntry.tot === undefined) { srEntry.tot = 0; srEntry.ok = 0; }
+
+    // Answer time tracking
+    var elapsed = Math.round((Date.now() - qStartTime) / 1000);
+    if (!srEntry.ts) srEntry.ts = [];
+    srEntry.ts.push(elapsed);
+    if (srEntry.ts.length > 10) srEntry.ts.shift();
+    srEntry.at = Math.round(srEntry.ts.reduce(function (a, b) { return a + b; }, 0) / srEntry.ts.length);
+    srEntry.tot++;
+    if (correct) srEntry.ok++;
+
+    // FSRS-4.5 scheduling
+    var rating = fsrsRating || (correct ? 3 : 1);
+    var daysSinceReview = srEntry.lastReview ? Math.max(0, (Date.now() - srEntry.lastReview) / 86400000) : 0;
+
+    // Initialize or migrate FSRS state
+    if (srEntry.fsrsS === undefined || srEntry.fsrsD === undefined) {
+      if (srEntry.n > 0 || srEntry.ef !== 2.5) {
+        var mig = fsrsMigrateFromSM2(srEntry);
+        srEntry.fsrsS = mig.s; srEntry.fsrsD = mig.d;
+      } else {
+        var init = fsrsInitNew(rating);
+        srEntry.fsrsS = init.s; srEntry.fsrsD = init.d;
+      }
+    }
+
+    var rPrev = daysSinceReview > 0 ? fsrsR(daysSinceReview, srEntry.fsrsS) : 1;
+    var upd = fsrsUpdate(srEntry.fsrsS, srEntry.fsrsD, rPrev, rating);
+    srEntry.fsrsS = Math.round(upd.s * 1000) / 1000;
+    srEntry.fsrsD = Math.round(upd.d * 100) / 100;
+    srEntry.lastReview = Date.now();
+
+    // FSRS interval → next review
+    var fsrsDays = fsrsInterval(srEntry.fsrsS);
+    srEntry.next = Date.now() + fsrsDays * 86400000;
+
+    // Keep SM-2 ef/n as proxies for filter compatibility
+    srEntry.n = correct ? srEntry.n + 1 : 0;
+    // ef mirrors difficulty: D=1→ef=2.5, D=10→ef=1.3
+    srEntry.ef = Math.round((2.5 - (srEntry.fsrsD - 1) / (10 - 1) * (2.5 - 1.3)) * 1000) / 1000;
+
+    return srEntry;
+  }
+
+  // ===== ESTIMATED EXAM SCORE (monolith canonical version) =====
+  // Uses EXAM_FREQ weights + legacy S.ts topic stats + due penalty
+  function calcEstScore(examFreq, topicStats, dueSet, questions) {
+    var totalFreq = examFreq.reduce(function (a, b) { return a + b; }, 0);
+    if (!totalFreq) return null;
+
+    var weightedScore = 0, totalWeight = 0;
+    examFreq.forEach(function (freq, ti) {
+      if (!freq) return;
+      var s = topicStats[ti] || { ok: 0, no: 0, tot: 0 };
+      var weight = freq / totalFreq;
+      var acc;
+      if (s.tot < 3) {
+        acc = 0.60;
+      } else {
+        acc = s.ok / s.tot;
+        // Penalize if due questions exist in this topic
+        var duePenalty = 0;
+        if (dueSet && questions) {
+          for (var i = 0; i < questions.length; i++) {
+            if (questions[i] && questions[i].ti === ti && dueSet[i]) duePenalty++;
+          }
+        }
+        if (duePenalty > 0) acc = Math.max(0, acc - duePenalty * 0.02);
+      }
+      weightedScore += acc * weight;
+      totalWeight += weight;
+    });
+    return totalWeight > 0 ? Math.round(weightedScore / totalWeight * 100) : null;
+  }
+
+  // ===== SANITIZE (XSS prevention) =====
+  function sanitize(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // ===== TIME FORMATTER =====
+  function fmtT(s) {
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sc = s % 60;
+    return (h ? h + ':' : '') + String(m).padStart(2, '0') + ':' + String(sc).padStart(2, '0');
+  }
+
   // ===== SAFE JSON PARSE =====
   function safeJSONParse(raw, fallback) {
     if (raw === null || raw === undefined) return fallback;
@@ -273,5 +366,9 @@
     shuffleOptions: shuffleOptions,
     isMetaOption: isMetaOption,
     safeJSONParse: safeJSONParse,
+    srScoreCore: srScoreCore,
+    calcEstScore: calcEstScore,
+    sanitize: sanitize,
+    fmtT: fmtT,
   };
 })();

@@ -23,6 +23,13 @@ export default [
         speechSynthesis: 'readonly',
         SpeechSynthesisUtterance: 'readonly',
         IDBKeyRange: 'readonly',
+        // FSRS globals from shared/fsrs.js
+        fsrsR: 'readonly',
+        fsrsInterval: 'readonly',
+        fsrsInitNew: 'readonly',
+        fsrsUpdate: 'readonly',
+        fsrsMigrateFromSM2: 'readonly',
+        isChronicFail: 'readonly',
         Date: 'readonly',
         Math: 'readonly',
         JSON: 'readonly',

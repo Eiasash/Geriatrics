@@ -40,3 +40,10 @@ export const IMA_WEIGHTS = [
   4, 6, 5, 4, 5, 4, 5, 3, 4, 3, 4, 5, 6, 5, 4, 3,
   3, 3, 3, 4, 3, 3, 4, 3,
 ];
+
+/** Historical exam question frequency per topic (used by calcEstScore) */
+export const EXAM_FREQ = [
+  0, 34, 30, 28, 36, 43, 178, 39, 63, 36, 20, 27, 19, 22, 50, 40,
+  22, 94, 70, 78, 18, 80, 43, 21, 46, 27, 29, 52, 10, 11, 7, 0,
+  6, 9, 26, 19, 23, 9, 17, 0,
+];

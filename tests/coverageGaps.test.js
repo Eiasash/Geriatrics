@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 
 const html = readFileSync('shlav-a-mega.html', 'utf-8');
+const bridge = readFileSync('src/bridge.js', 'utf-8');
 
 // Extract JS between first <script> and last </script>
 const scriptMatch = html.match(/<script[^>]*>([\s\S]*?)<\/script>/);
@@ -59,42 +60,45 @@ describe('AI Proxy Routing', () => {
 });
 
 describe('Sanitization', () => {
-  // Extract sanitize function for testing
-  const sanitizeMatch = html.match(/function sanitize\(s\)\{([^}]+)\}/);
+  // sanitize implementation now lives in bridge.js, monolith delegates to SM.sanitize
+  const sanitizeMatch = bridge.match(/function sanitize\(s\)\s*\{([^}]+)\}/);
   const sanitizeBody = sanitizeMatch ? sanitizeMatch[1] : '';
 
-  it('sanitize function exists', () => {
-    expect(html).toContain('function sanitize(');
+  it('sanitize function exists in bridge', () => {
+    expect(bridge).toContain('function sanitize(');
+  });
+
+  it('monolith delegates to SM.sanitize', () => {
+    expect(html).toContain('SM.sanitize(');
   });
 
   it('escapes & to &amp;', () => {
-    expect(sanitizeBody).toContain("replace(/&/g,'&amp;')");
+    expect(sanitizeBody).toContain("replace(/&/g, '&amp;')");
   });
 
   it('escapes < to &lt;', () => {
-    expect(sanitizeBody).toContain("replace(/</g,'&lt;')");
+    expect(sanitizeBody).toContain("replace(/</g, '&lt;')");
   });
 
   it('escapes > to &gt;', () => {
-    expect(sanitizeBody).toContain("replace(/>/g,'&gt;')");
+    expect(sanitizeBody).toContain("replace(/>/g, '&gt;')");
   });
 
   it('escapes double quotes to &quot;', () => {
-    expect(sanitizeBody).toContain("replace(/\"/g,'&quot;')");
+    expect(sanitizeBody).toContain("replace(/\"/g, '&quot;')");
   });
 
   it('escapes single quotes to &#39;', () => {
-    expect(sanitizeBody).toContain("replace(/'/g,'&#39;')");
+    expect(sanitizeBody).toContain("replace(/'/g, '&#39;')");
   });
 
   it('handles null/undefined input gracefully', () => {
-    expect(sanitizeBody).toContain("String(s||'')");
+    expect(sanitizeBody).toContain("String(s || '')");
   });
 
   it('sanitize is applied to user-visible content in innerHTML assignments', () => {
-    // Check that question text is sanitized before innerHTML
     const sanitizeCallCount = (html.match(/sanitize\(/g) || []).length;
-    expect(sanitizeCallCount).toBeGreaterThan(20); // used extensively
+    expect(sanitizeCallCount).toBeGreaterThan(20);
   });
 
   it('no unsanitized innerHTML with user data patterns', () => {

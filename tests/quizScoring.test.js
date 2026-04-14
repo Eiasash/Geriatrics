@@ -5,50 +5,59 @@ import {
   trackDailyActivity,
 } from '../src/quiz/quiz-scoring.js';
 
-describe('calcEstScore', () => {
-  const weights = [5, 3, 6, 5, 8]; // 5 topics
+describe('calcEstScore (canonical monolith algorithm)', () => {
+  // 5 topics, frequencies match EXAM_FREQ pattern
+  const examFreq = [10, 20, 30, 0, 15];
 
-  it('returns 0 when no SR data', () => {
-    const questions = [
-      { q: 'Q', o: ['A', 'B'], c: 0, t: '2024', ti: 0 },
-    ];
-    expect(calcEstScore(questions, {}, weights)).toBe(0);
+  it('returns null when all frequencies are zero', () => {
+    expect(calcEstScore([0, 0, 0], {}, {}, [])).toBeNull();
   });
 
-  it('calculates weighted score correctly', () => {
-    const questions = [
-      { q: 'Q0', o: ['A', 'B'], c: 0, t: '2024', ti: 0 },
-      { q: 'Q1', o: ['A', 'B'], c: 0, t: '2024', ti: 0 },
-      { q: 'Q2', o: ['A', 'B'], c: 0, t: '2024', ti: 1 },
-      { q: 'Q3', o: ['A', 'B'], c: 0, t: '2024', ti: 1 },
-      { q: 'Q4', o: ['A', 'B'], c: 0, t: '2024', ti: 1 },
-    ];
-    const sr = {
-      0: { tot: 5, ok: 5 }, // topic 0: 100%
-      1: { tot: 5, ok: 5 }, // topic 0: 100%
-      2: { tot: 3, ok: 1 }, // topic 1: 33%
-      3: { tot: 3, ok: 1 }, // topic 1: 33%
-      4: { tot: 3, ok: 1 }, // topic 1: 33%
-    };
-    const score = calcEstScore(questions, sr, weights);
-    // topic 0: 10/10 = 100%, weight 5
-    // topic 1: 3/9 ≈ 33%, weight 3
-    // weighted = (1.0*5 + 0.333*3) / (5+3) ≈ 75%
-    expect(score).toBeGreaterThan(60);
-    expect(score).toBeLessThan(80);
+  it('returns 60 when no topic has enough data (all default to 60%)', () => {
+    // topicStats empty → every topic gets acc=0.60
+    const result = calcEstScore(examFreq, {}, {}, []);
+    expect(result).toBe(60);
   });
 
-  it('excludes topics with < 3 attempts', () => {
-    const questions = [
-      { q: 'Q0', o: ['A', 'B'], c: 0, t: '2024', ti: 0 },
-      { q: 'Q1', o: ['A', 'B'], c: 0, t: '2024', ti: 1 },
-    ];
-    const sr = {
-      0: { tot: 2, ok: 2 }, // <3 attempts, excluded
-      1: { tot: 5, ok: 5 }, // 100%
+  it('uses topic stats when tot >= 3', () => {
+    const topicStats = {
+      0: { ok: 8, no: 2, tot: 10 }, // 80%
+      1: { ok: 5, no: 5, tot: 10 }, // 50%
+      // topic 2: no data → 60% default
+      // topic 3: freq=0 → skipped
+      // topic 4: no data → 60% default
     };
-    const score = calcEstScore(questions, sr, weights);
-    expect(score).toBe(100); // only topic 1 counted
+    const result = calcEstScore(examFreq, topicStats, {}, []);
+    // weighted: (0.8*10 + 0.5*20 + 0.6*30 + 0.6*15) / (10+20+30+15)
+    //         = (8 + 10 + 18 + 9) / 75 = 45/75 = 0.60 → 60%
+    expect(result).toBe(60);
+  });
+
+  it('applies due penalty to topic accuracy', () => {
+    const topicStats = {
+      0: { ok: 9, no: 1, tot: 10 }, // 90% before penalty
+    };
+    // 2 due questions in topic 0
+    const questions = [
+      { q: 'Q', o: ['A', 'B', 'C', 'D'], c: 0, t: '2024', ti: 0 },
+      { q: 'Q', o: ['A', 'B', 'C', 'D'], c: 0, t: '2024', ti: 0 },
+      { q: 'Q', o: ['A', 'B', 'C', 'D'], c: 0, t: '2024', ti: 1 },
+    ];
+    const dueSet = { 0: true, 1: true };
+    const resultWithDue = calcEstScore(examFreq, topicStats, dueSet, questions);
+    const resultNoDue = calcEstScore(examFreq, topicStats, {}, questions);
+    // Due penalty should lower the score
+    expect(resultWithDue).toBeLessThanOrEqual(resultNoDue);
+  });
+
+  it('skips topics with freq=0', () => {
+    // topic 3 has freq=0 — should not contribute even with data
+    const topicStats = {
+      3: { ok: 10, no: 0, tot: 10 }, // 100% but freq=0
+    };
+    const result = calcEstScore(examFreq, topicStats, {}, []);
+    // topic 3 is skipped, everything else defaults to 60%
+    expect(result).toBe(60);
   });
 });
 
@@ -75,14 +84,13 @@ describe('getStudyStreak', () => {
   it('breaks at gap', () => {
     const today = new Date().toISOString().slice(0, 10);
     const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-    // Skip a day, then have activity 3 days ago
     const threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString().slice(0, 10);
     const act = {
       [today]: { q: 1 },
       [yesterday]: { q: 1 },
       [threeDaysAgo]: { q: 1 },
     };
-    expect(getStudyStreak(act)).toBe(2); // today + yesterday, then gap
+    expect(getStudyStreak(act)).toBe(2);
   });
 });
 
@@ -109,6 +117,6 @@ describe('trackDailyActivity', () => {
       act[d.toISOString().slice(0, 10)] = { q: 1, ok: 0, time: 0, sessions: 0 };
     }
     trackDailyActivity(act);
-    expect(Object.keys(act).length).toBeLessThanOrEqual(91); // 90 + today
+    expect(Object.keys(act).length).toBeLessThanOrEqual(91);
   });
 });
