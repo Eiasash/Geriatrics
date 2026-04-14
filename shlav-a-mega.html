@@ -1437,6 +1437,22 @@ function isMetaOption(text){
   ];
   return metaPatterns.some(p=>p.test(t));
 }
+function remapExplanationLetters(text,shuf){
+  // shuf[displayPos]=origIdx → build inverse: origIdx→displayPos
+  const inv={};shuf.forEach((orig,disp)=>{inv[orig]=disp;});
+  const letters=['A','B','C','D','E'];
+  const heb=['א','ב','ג','ד','ה'];
+  // Replace patterns like "התשובה הנכונה היא C" or "תשובה A" or "Answer B"
+  return text.replace(/\b([A-E])\b/g,(m,letter)=>{
+    const origIdx=letters.indexOf(letter);
+    if(origIdx===-1||inv[origIdx]===undefined)return m;
+    return letters[inv[origIdx]];
+  }).replace(/(תשובה\s*)([א-ה])\b/g,(m,prefix,letter)=>{
+    const origIdx=heb.indexOf(letter);
+    if(origIdx===-1||inv[origIdx]===undefined)return m;
+    return prefix+heb[inv[origIdx]];
+  });
+}
 function getOptShuffle(qIdx,q){
   // Return stable shuffle for this question in this session
   if(_optShuffle&&_optShuffle.qIdx===qIdx)return _optShuffle.map;
@@ -1693,7 +1709,7 @@ h+=`</div>`;
 if(ans&&!examMode&&q.e){
 h+=`<div style="margin-top:8px;padding:10px 12px;background:rgb(var(--blue-bg));border:1px solid rgb(var(--blue-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--blue-fg));direction:rtl;text-align:right">`;
 h+=`<div style="font-weight:700;margin-bottom:4px;font-size:10px">📝 הסבר</div>`;
-h+=`<div>${sanitize(q.e).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
+h+=`<div>${sanitize(remapExplanationLetters(q.e,_shuf)).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
 h+=`</div>`;
 }
 // AI Explain button
