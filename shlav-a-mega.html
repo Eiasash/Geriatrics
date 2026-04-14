@@ -317,6 +317,7 @@ upd();setInterval(upd,30000);
 
 <script src="shared/fsrs.js"></script>
 <script src="src/bridge.js"></script>
+<script src="src/ui/library-view.js"></script>
 <script>
 let QZ=[];
 
@@ -2226,230 +2227,8 @@ function addChapterQsToBank(jsonStr){
     alert('✅ '+qs.length+' questions added! Reload to see them in the AI-Ch filter.');
   }catch(e){alert('Failed: '+e.message);}
 }
-// ===== LIBRARY SUB-RENDERERS =====
-function _rlHazzardReader(){
-const ch=_hazData[String(hazChOpen)];
-const allHazChNums=Object.keys(_hazData).map(Number).sort((a,b)=>a-b);
-const curIdx=allHazChNums.indexOf(hazChOpen);
-const prevCh=curIdx>0?allHazChNums[curIdx-1]:null;
-const nextCh=curIdx<allHazChNums.length-1?allHazChNums[curIdx+1]:null;
-let h=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-<button onclick="hazChOpen=null;render()" style="background:rgb(var(--bg2));border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">\u2190 Back</button>
-<div style="font-size:12px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ch ${hazChOpen}: ${ch.title}</div>
-</div>
-<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-${prevCh?`<button onclick="openHazzardChapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">\u2039 Ch ${prevCh}</button>`:''}
-<button onclick="quizMeOnChapter(hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">\ud83e\udde0 Quiz</button>
-<button onclick="generateQuestionsFromChapter('haz',hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;cursor:pointer">\u2728 Generate Qs</button>
-<button onclick="aiSummarizeChapter(hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">\ud83d\udcdd Summary</button>
-<button onclick="window.open(getHazPdf(String(hazChOpen)),'_blank')" style="font-size:10px;padding:5px 10px;background:rgb(var(--red-bg));color:#dc2626;border:1px solid rgb(var(--red-brd));border-radius:8px;cursor:pointer">\ud83d\udcc4 PDF</button>
-${nextCh?`<button onclick="openHazzardChapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">Ch ${nextCh} \u203a</button>`:''}
-</div>
-<div id="quiz-me-box"></div>
-<div class="card" style="padding:16px">`;
-const _hazRelTopics=Object.entries(TOPIC_REF).filter(([ti,ref])=>ref&&ref.s==='haz');
-const _hazChTopicIdx=_hazRelTopics.find(([ti,ref])=>String(ref.ch)===String(hazChOpen));
-if(_hazChTopicIdx){
-const _hti=+_hazChTopicIdx[0];
-const _hts=getTopicStats()[_hti]||{ok:0,no:0,tot:0};
-const _htpct=_hts.tot?Math.round(_hts.ok/_hts.tot*100):null;
-const _htqCount=QZ.filter(q=>q.ti===_hti).length;
-h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;background:rgb(var(--red-bg));border-radius:10px;font-size:10px;align-items:center">
-<span>\ud83d\udcdd ${_htqCount} questions on this topic</span>
-${_htpct!==null?`<span style="font-weight:700;color:${_htpct>=70?'#059669':_htpct>=50?'#d97706':'#dc2626'}">${_htpct}% accuracy</span>`:'<span style="color:rgb(var(--fg3))">Not attempted yet</span>'}
-<button onclick="tab='quiz';filt='topic';topicFilt=${_hti};buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer">\u25b6 Drill</button>
-</div>`;
-}
-ch.sections.forEach(sec=>{
-if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:rgb(var(--red-fg));margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid rgb(var(--red-brd))">${sec.title}</div>`;}
-sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:rgb(var(--fg));margin:0 0 10px;text-align:justify">${p}</p>`;});
-});
-h+=`</div>`;
-return h;
-}
-function _rlHazzardList(){
-const _hazEntries=Object.entries(HAZ_CHAPTERS).map(([name,info])=>{
-const chNum=parseInt(info.ch);
-const partNum=chNum<=6?1:chNum<=13?2:chNum<=30?3:chNum<=48?4:chNum<=66?5:chNum<=72?6:chNum<=87?7:chNum<=96?8:9;
-const color=['','#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#6b7280'][partNum];
-return {name,ch:info.ch,p:info.p,color,chNum};
-}).sort((a,b)=>a.chNum-b.chNum);
-const _hazTopicMap={};
-Object.entries(TOPIC_REF).forEach(([ti,ref])=>{if(ref&&ref.s==='haz')_hazTopicMap[String(ref.ch)]=+ti;});
-let h=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">\ud83d\udcd5 Hazzard's Geriatric Medicine 8e</div>
-<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${_hazEntries.length} chapters \u00b7 Tap to read in-app \u00b7 <span style="color:#dc2626">red</span> = Part I \u00b7 colors by part</div>`;
-_hazEntries.forEach(e=>{
-const _ti=_hazTopicMap[String(e.ch)];
-const _stats=_ti!==undefined?getTopicStats()[_ti]:null;
-const _pct=_stats&&_stats.tot?Math.round(_stats.ok/_stats.tot*100):null;
-const _qCnt=_ti!==undefined?QZ.filter(q=>q.ti===_ti).length:0;
-const hazCh=_hazData&&_hazData[String(e.chNum)];
-const wc=hazCh?`~${Math.round(hazCh.wordCount/250)} min`:'tap to load';
-h+=`<div onclick="openHazzardChapter(${e.chNum})" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgb(var(--brd));cursor:pointer">
-<span style="background:${e.color};color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;min-width:46px;text-align:center">Ch ${e.ch}</span>
-<div style="flex:1;min-width:0">
-<div style="font-size:11.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.name}</div>
-<div style="font-size:9px;color:rgb(var(--fg3));margin-top:2px">${wc}${_qCnt?' \u00b7 '+_qCnt+' Qs':''}${_pct!==null?' \u00b7 <span style=\"font-weight:700;color:'+(_pct>=70?'#059669':_pct>=50?'#d97706':'#dc2626')+'\">'+_pct+'%</span>':''}</div>
-</div>
-${_ti!==undefined?`<button onclick="event.stopPropagation();tab='quiz';filt='topic';topicFilt=${_ti};buildPool();render()" style="font-size:9px;padding:3px 8px;background:rgb(var(--red-bg));color:#dc2626;border:none;border-radius:6px;cursor:pointer;flex-shrink:0">\u25b6</button>`:''}\n<span style="font-size:18px;color:rgb(var(--fg3))">\u203a</span></div>`;
-});
-h+=`</div>`;
-h+=`<div class="card" style="padding:14px;margin-top:8px">
-<div onclick="document.getElementById('haz-annotated').style.display=document.getElementById('haz-annotated').style.display==='none'?'block':'none'" style="display:flex;align-items:center;gap:8px;cursor:pointer">
-<div style="font-size:12px;font-weight:700">\ud83d\udcdd Annotated Part PDFs</div>
-<div style="font-size:9px;color:rgb(var(--fg2));flex:1">Your marked-up copies</div>
-<span style="font-size:14px;color:rgb(var(--fg3))" id="haz-ann-chevron">\u25b8</span>
-</div>
-<div id="haz-annotated" style="display:none;margin-top:10px">`;
-HAZZARD_MARKED_PARTS.forEach((p,i)=>{
-h+=`<a href="${p.file}" target="_blank" style="text-decoration:none;display:block;padding:8px 0;border-bottom:1px solid rgb(var(--brd))">
-<div style="display:flex;align-items:center;gap:8px">
-<span style="background:${p.color};color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px">${i+1}</span>
-<div style="flex:1;font-size:11px;font-weight:600">${p.ch} \u2014 ${p.desc}</div>
-${p.exam?`<span style="font-size:9px;color:#dc2626;font-weight:700">${p.exam.includes('\u05de\u05d5\u05d7\u05e8\u05d2')?'\u26d4':''}</span>`:''}\n<span style="font-size:14px;color:rgb(var(--fg3))">\u203a</span>
-</div></a>`;
-});
-h+=`</div></div>`;
-return h;
-}
-function _rlHarrisonReader(){
-const ch=_harData[String(harChOpen)];
-const allSylChNums=[...SYL_HAR_ALL,...SYL_HAR_BASE].map(c=>c.ch).sort((a,b)=>a-b);
-const curIdx=allSylChNums.indexOf(harChOpen);
-const prevCh=curIdx>0?allSylChNums[curIdx-1]:null;
-const nextCh=curIdx<allSylChNums.length-1?allSylChNums[curIdx+1]:null;
-let h=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-<button onclick="harChOpen=null;render()" style="background:rgb(var(--bg2));border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">← Back</button>
-<div style="font-size:12px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ch ${harChOpen}: ${ch.title}</div>
-</div>
-<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-${prevCh?`<button onclick="openHarrisonChapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">‹ Ch ${prevCh}</button>`:''}
-<button onclick="quizMeOnChapter(harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">🧠 Quiz</button>
-<button onclick="generateQuestionsFromChapter('har',harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;cursor:pointer">✨ Generate Qs</button>
-<button onclick="aiSummarizeChapter(harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">📝 Summary</button>
-${nextCh?`<button onclick="openHarrisonChapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">Ch ${nextCh} ›</button>`:''}
-</div>
-<div id="quiz-me-box"></div>
-<div class="card" style="padding:16px">`;
-const _relTopics=Object.entries(TOPIC_REF).filter(([ti,ref])=>ref.s==='haz').map(([ti])=>+ti);
-const _chTopicIdx=_relTopics.find(ti=>{const ref=TOPIC_REF[ti];return ref&&String(ref.ch)===String(harChOpen);});
-if(_chTopicIdx!==undefined){
-const _ts=getTopicStats()[_chTopicIdx]||{ok:0,no:0,tot:0};
-const _tpct=_ts.tot?Math.round(_ts.ok/_ts.tot*100):null;
-const _tqCount=QZ.filter(q=>q.ti===_chTopicIdx).length;
-h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;background:#f5f3ff;border-radius:10px;font-size:10px;align-items:center">
-<span>📝 ${_tqCount} questions on this topic</span>
-${_tpct!==null?`<span style="font-weight:700;color:${_tpct>=70?'#059669':_tpct>=50?'#d97706':'#dc2626'}">${_tpct}% accuracy</span>`:'<span style="color:rgb(var(--fg3))">Not attempted yet</span>'}
-<button onclick="tab='quiz';filt='topic';topicFilt=${_chTopicIdx};buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer">▶ Drill</button>
-</div>`;
-}
-ch.sections.forEach(sec=>{
-if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:#7c3aed;margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid #ede9fe">${sec.title}</div>`;}
-sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:rgb(var(--fg));margin:0 0 10px;text-align:justify">${p}</p>`;});
-});
-h+=`</div>`;
-return h;
-}
-function _rlHarrisonList(){
-const allSylChs=[...SYL_HAR_ALL,...SYL_HAR_BASE].sort((a,b)=>a.ch-b.ch);
-const allChNums=SYL_HAR_ALL.map(c=>c.ch);
-let h=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — In-App Reader</div>
-<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:12px">${allSylChs.length} required chapters · <span style="color:#7c3aed">purple</span> = all examinees · <span style="color:#06b6d4">teal</span> = base track only</div>`;
-allSylChs.forEach(c=>{
-const isAll=allChNums.includes(c.ch);
-const harCh=_harData&&_harData[String(c.ch)];
-const wc=harCh?`~${Math.round(harCh.wordCount/250)} min`:'tap to load';
-h+=`<div onclick="openHarrisonChapter(${c.ch})" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgb(var(--brd));cursor:pointer">
-<span style="background:${isAll?'#7c3aed':'#06b6d4'};color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;min-width:42px;text-align:center">Ch ${c.ch}</span>
-<div style="flex:1;min-width:0">
-<div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.t}</div>
-<div style="font-size:9px;color:rgb(var(--fg3));margin-top:2px">${wc}</div>
-</div>
-<span style="font-size:18px;color:rgb(var(--fg3))">›</span></div>`;
-});
-h+=`</div>`;
-return h;
-}
-function _rlLaws(){
-let h=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">⚖️ חוקים, נהלים ופרסומים</div>
-<div class="heb" style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${SYL_LAWS.length} items</div>`;
-SYL_LAWS.forEach((l,i)=>{
-h+=`<div class="heb" style="padding:8px 0;border-bottom:1px solid rgb(var(--brd))">
-<div style="display:flex;align-items:flex-start;gap:8px">
-<span style="background:#f59e0b;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;flex-shrink:0">${i+1}</span>
-<div style="flex:1"><div style="font-size:11px;font-weight:600">${l.n}</div>
-<div style="font-size:9px;color:rgb(var(--fg3));margin-top:2px">${l.s}</div></div>${l.f?`<a href="${l.f}" target="_blank" style="font-size:10px;padding:3px 7px;background:rgb(var(--yellow-bg));color:#d97706;border-radius:6px;text-decoration:none;flex-shrink:0;white-space:nowrap">📄</a>`:''}</div></div>`;
-});
-h+=`</div>`;
-return h;
-}
-function _rlArticles(){
-let h=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">📄 Required Articles</div>
-<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${SYL_ARTICLES.length} journal articles</div>`;
-const _artMap={"0":"article_beers_2023.pdf","1":"article_vascog2.pdf","2":"article_alzheimer_iwg.pdf","3":"article_alzheimer_aa.pdf","4":"article_dementia_prevention.pdf","5":"article_hearing_loss.pdf"};
-SYL_ARTICLES.forEach((a,i)=>{
-const _apdf=_artMap[String(i)];
-h+=`<div style="padding:8px 0;border-bottom:1px solid rgb(var(--brd));display:flex;align-items:flex-start;gap:8px">
-<div style="flex:1"><div style="font-size:11px;font-weight:600;line-height:1.5">${i+1}. ${a.t}</div>
-<div style="font-size:9px;color:rgb(var(--sky));margin-top:2px">${a.j}</div></div>${_apdf?`<a href="${_apdf}" download style="font-size:10px;padding:3px 7px;background:rgb(var(--blue-bg));color:#3b82f6;border-radius:6px;text-decoration:none;flex-shrink:0">📄</a>`:''}</div>`;
-});
-h+=`</div>`;
-return h;
-}
-function _rlExams(){
-const examYears=[...new Set(QZ.map(q=>q.t))].sort();
-let h=`<div class="card" style="padding:14px">
-<div style="font-size:13px;font-weight:700;margin-bottom:4px">📝 Past Exams in Question Bank</div>
-<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${QZ.length} questions from ${examYears.length} exam sessions</div>`;
-examYears.forEach(yr=>{
-const cnt=QZ.filter(q=>q.t===yr).length;
-h+=`<div onclick="tab='quiz';filt='${yr}';buildPool();render()" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgb(var(--brd));cursor:pointer">
-<span style="background:#06b6d4;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;min-width:60px;text-align:center">${yr}</span>
-<span style="font-size:11px;flex:1">${cnt} questions</span>
-<span style="font-size:14px;color:rgb(var(--fg3))">›</span></div>`;
-});
-h+=`</div>`;
-return h;
-}
-// ===== LIBRARY MAIN RENDERER (composed from sub-renderers) =====
-function renderLibrary(){
-let h=`<div class="sec-t">📖 Library</div>
-<div class="sec-s">Textbooks · Laws · Articles · Exam PDFs</div>`;
-const libTabs=[
-{id:'haz-pdf',l:'📕 Hazzard',c:'#dc2626'},
-{id:'harrison',l:'📗 Harrison',c:'#8b5cf6'},
-{id:'laws',l:'⚖️ Laws',c:'#f59e0b'},
-{id:'articles',l:'📄 Articles',c:'#3b82f6'},
-{id:'exams',l:'📝 Exams',c:'#06b6d4'}
-];
-h+=`<div style="display:flex;gap:4px;overflow-x:auto;padding:4px 0;margin-bottom:12px;-webkit-overflow-scrolling:touch">`;
-libTabs.forEach(t=>{
-h+=`<span class="pill ${libSec===t.id?'on':''}" style="white-space:nowrap;font-size:10px" onclick="libSec='${t.id}';render()">${t.l}</span>`;
-});
-h+=`</div>`;
-if(libSec==='haz-pdf'){
-if(hazChOpen!==null&&_hazData&&_hazData[String(hazChOpen)])h+=_rlHazzardReader();
-else if(_hazLoading)h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">\u23f3 Loading Hazzard's chapter...</div></div>`;
-else h+=_rlHazzardList();
-}
-if(libSec==='harrison'){
-if(harChOpen!==null&&_harData&&_harData[String(harChOpen)])h+=_rlHarrisonReader();
-else if(_harLoading)h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">⏳ Loading Harrison's chapter...</div></div>`;
-else h+=_rlHarrisonList();
-}
-if(libSec==='laws')h+=_rlLaws();
-if(libSec==='articles')h+=_rlArticles();
-if(libSec==='exams')h+=_rlExams();
-h+=`<div style="text-align:center;margin-top:12px;font-size:9px;color:rgb(var(--fg3))">
-<a href="https://ima-contentfiles.s3.amazonaws.com/P005-2026.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">P005-2026 Syllabus ↗</a></div>`;
-h+=`<div style="text-align:center;margin-top:8px;padding:8px;font-size:9px;color:rgb(var(--fg3));line-height:1.5">
-صدقة جارية الى من نحب<br>Ceaseless Charity — To the People That We Love</div>`;
-return h;
-}
+// renderLibrary + _rl* helpers: MOVED to src/ui/library-view.js
+// window.renderLibrary is set by that external script
 
 
 
@@ -4107,7 +3886,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.46';
+const APP_VERSION='9.47';
 const CHANGELOG={
 '9.44':[
 '🗑️ OSCE — removed all dead code (variables, exitO function, comments)',

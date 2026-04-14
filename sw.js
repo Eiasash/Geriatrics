@@ -1,5 +1,5 @@
-const CACHE='shlav-a-v9.46';
-const HTML_URLS=['shlav-a-mega.html','manifest.json','shared/fsrs.js','src/bridge.js'];
+const CACHE='shlav-a-v9.47';
+const HTML_URLS=['shlav-a-mega.html','manifest.json','shared/fsrs.js','src/bridge.js','src/ui/library-view.js'];
 const JSON_DATA_URLS=['data/questions.json','data/topics.json','data/notes.json','data/drugs.json','data/flashcards.json','harrison_chapters.json','data/hazzard_chapters.json','data/tabs.json'];
 const ALL_URLS=[...HTML_URLS,...JSON_DATA_URLS];
 
