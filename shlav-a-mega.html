@@ -2226,33 +2226,14 @@ function addChapterQsToBank(jsonStr){
     alert('✅ '+qs.length+' questions added! Reload to see them in the AI-Ch filter.');
   }catch(e){alert('Failed: '+e.message);}
 }
-function renderLibrary(){
-let h=`<div class="sec-t">📖 Library</div>
-<div class="sec-s">Textbooks · Laws · Articles · Exam PDFs</div>`;
-// Sub-tabs
-const libTabs=[
-{id:'haz-pdf',l:'📕 Hazzard',c:'#dc2626'},
-{id:'harrison',l:'📗 Harrison',c:'#8b5cf6'},
-{id:'laws',l:'⚖️ Laws',c:'#f59e0b'},
-{id:'articles',l:'📄 Articles',c:'#3b82f6'},
-{id:'exams',l:'📝 Exams',c:'#06b6d4'}
-];
-h+=`<div style="display:flex;gap:4px;overflow-x:auto;padding:4px 0;margin-bottom:12px;-webkit-overflow-scrolling:touch">`;
-libTabs.forEach(t=>{
-h+=`<span class="pill ${libSec===t.id?'on':''}" style="white-space:nowrap;font-size:10px" onclick="libSec='${t.id}';render()">${t.l}</span>`;
-});
-h+=`</div>`;
-
-// ===== HAZZARD ALL PDFs =====
-if(libSec==='haz-pdf'){
-// ===== HAZZARD IN-APP READER =====
-if(hazChOpen!==null&&_hazData&&_hazData[String(hazChOpen)]){
+// ===== LIBRARY SUB-RENDERERS =====
+function _rlHazzardReader(){
 const ch=_hazData[String(hazChOpen)];
 const allHazChNums=Object.keys(_hazData).map(Number).sort((a,b)=>a-b);
 const curIdx=allHazChNums.indexOf(hazChOpen);
 const prevCh=curIdx>0?allHazChNums[curIdx-1]:null;
 const nextCh=curIdx<allHazChNums.length-1?allHazChNums[curIdx+1]:null;
-h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+let h=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
 <button onclick="hazChOpen=null;render()" style="background:rgb(var(--bg2));border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">\u2190 Back</button>
 <div style="font-size:12px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ch ${hazChOpen}: ${ch.title}</div>
 </div>
@@ -2266,7 +2247,6 @@ ${nextCh?`<button onclick="openHazzardChapter(${nextCh})" style="font-size:10px;
 </div>
 <div id="quiz-me-box"></div>
 <div class="card" style="padding:16px">`;
-// Show question stats for this Hazzard chapter
 const _hazRelTopics=Object.entries(TOPIC_REF).filter(([ti,ref])=>ref&&ref.s==='haz');
 const _hazChTopicIdx=_hazRelTopics.find(([ti,ref])=>String(ref.ch)===String(hazChOpen));
 if(_hazChTopicIdx){
@@ -2285,21 +2265,18 @@ if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:rgb(var(--red
 sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:rgb(var(--fg));margin:0 0 10px;text-align:justify">${p}</p>`;});
 });
 h+=`</div>`;
-}else if(_hazLoading){
-h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">\u23f3 Loading Hazzard's chapter...</div></div>`;
-}else{
-// Chapter list view
+return h;
+}
+function _rlHazzardList(){
 const _hazEntries=Object.entries(HAZ_CHAPTERS).map(([name,info])=>{
 const chNum=parseInt(info.ch);
 const partNum=chNum<=6?1:chNum<=13?2:chNum<=30?3:chNum<=48?4:chNum<=66?5:chNum<=72?6:chNum<=87?7:chNum<=96?8:9;
 const color=['','#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#6b7280'][partNum];
 return {name,ch:info.ch,p:info.p,color,chNum};
 }).sort((a,b)=>a.chNum-b.chNum);
-// Find topic index for each chapter
 const _hazTopicMap={};
 Object.entries(TOPIC_REF).forEach(([ti,ref])=>{if(ref&&ref.s==='haz')_hazTopicMap[String(ref.ch)]=+ti;});
-
-h+=`<div class="card" style="padding:14px">
+let h=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">\ud83d\udcd5 Hazzard's Geriatric Medicine 8e</div>
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${_hazEntries.length} chapters \u00b7 Tap to read in-app \u00b7 <span style="color:#dc2626">red</span> = Part I \u00b7 colors by part</div>`;
 _hazEntries.forEach(e=>{
@@ -2318,7 +2295,6 @@ h+=`<div onclick="openHazzardChapter(${e.chNum})" style="display:flex;align-item
 ${_ti!==undefined?`<button onclick="event.stopPropagation();tab='quiz';filt='topic';topicFilt=${_ti};buildPool();render()" style="font-size:9px;padding:3px 8px;background:rgb(var(--red-bg));color:#dc2626;border:none;border-radius:6px;cursor:pointer;flex-shrink:0">\u25b6</button>`:''}\n<span style="font-size:18px;color:rgb(var(--fg3))">\u203a</span></div>`;
 });
 h+=`</div>`;
-// Annotated PDFs section (collapsible)
 h+=`<div class="card" style="padding:14px;margin-top:8px">
 <div onclick="document.getElementById('haz-annotated').style.display=document.getElementById('haz-annotated').style.display==='none'?'block':'none'" style="display:flex;align-items:center;gap:8px;cursor:pointer">
 <div style="font-size:12px;font-weight:700">\ud83d\udcdd Annotated Part PDFs</div>
@@ -2335,19 +2311,15 @@ ${p.exam?`<span style="font-size:9px;color:#dc2626;font-weight:700">${p.exam.inc
 </div></a>`;
 });
 h+=`</div></div>`;
+return h;
 }
-}
-
-
-// ===== HARRISON IN-APP READER =====
-if(libSec==='harrison'){
-if(harChOpen!==null&&_harData&&_harData[String(harChOpen)]){
+function _rlHarrisonReader(){
 const ch=_harData[String(harChOpen)];
 const allSylChNums=[...SYL_HAR_ALL,...SYL_HAR_BASE].map(c=>c.ch).sort((a,b)=>a-b);
 const curIdx=allSylChNums.indexOf(harChOpen);
 const prevCh=curIdx>0?allSylChNums[curIdx-1]:null;
 const nextCh=curIdx<allSylChNums.length-1?allSylChNums[curIdx+1]:null;
-h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+let h=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
 <button onclick="harChOpen=null;render()" style="background:rgb(var(--bg2));border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">← Back</button>
 <div style="font-size:12px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ch ${harChOpen}: ${ch.title}</div>
 </div>
@@ -2360,7 +2332,6 @@ ${nextCh?`<button onclick="openHarrisonChapter(${nextCh})" style="font-size:10px
 </div>
 <div id="quiz-me-box"></div>
 <div class="card" style="padding:16px">`;
-// Feature 4: Show question stats for this topic in chapter reader
 const _relTopics=Object.entries(TOPIC_REF).filter(([ti,ref])=>ref.s==='haz').map(([ti])=>+ti);
 const _chTopicIdx=_relTopics.find(ti=>{const ref=TOPIC_REF[ti];return ref&&String(ref.ch)===String(harChOpen);});
 if(_chTopicIdx!==undefined){
@@ -2378,12 +2349,12 @@ if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:#7c3aed;margi
 sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:rgb(var(--fg));margin:0 0 10px;text-align:justify">${p}</p>`;});
 });
 h+=`</div>`;
-}else if(_harLoading){
-h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">⏳ Loading Harrison's chapter...</div></div>`;
-}else{
+return h;
+}
+function _rlHarrisonList(){
 const allSylChs=[...SYL_HAR_ALL,...SYL_HAR_BASE].sort((a,b)=>a.ch-b.ch);
 const allChNums=SYL_HAR_ALL.map(c=>c.ch);
-h+=`<div class="card" style="padding:14px">
+let h=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📗 Harrison's 22e — In-App Reader</div>
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:12px">${allSylChs.length} required chapters · <span style="color:#7c3aed">purple</span> = all examinees · <span style="color:#06b6d4">teal</span> = base track only</div>`;
 allSylChs.forEach(c=>{
@@ -2399,12 +2370,10 @@ h+=`<div onclick="openHarrisonChapter(${c.ch})" style="display:flex;align-items:
 <span style="font-size:18px;color:rgb(var(--fg3))">›</span></div>`;
 });
 h+=`</div>`;
+return h;
 }
-}
-
-// ===== LAWS =====
-if(libSec==='laws'){
-h+=`<div class="card" style="padding:14px">
+function _rlLaws(){
+let h=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">⚖️ חוקים, נהלים ופרסומים</div>
 <div class="heb" style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${SYL_LAWS.length} items</div>`;
 SYL_LAWS.forEach((l,i)=>{
@@ -2415,11 +2384,10 @@ h+=`<div class="heb" style="padding:8px 0;border-bottom:1px solid rgb(var(--brd)
 <div style="font-size:9px;color:rgb(var(--fg3));margin-top:2px">${l.s}</div></div>${l.f?`<a href="${l.f}" target="_blank" style="font-size:10px;padding:3px 7px;background:rgb(var(--yellow-bg));color:#d97706;border-radius:6px;text-decoration:none;flex-shrink:0;white-space:nowrap">📄</a>`:''}</div></div>`;
 });
 h+=`</div>`;
+return h;
 }
-
-// ===== ARTICLES =====
-if(libSec==='articles'){
-h+=`<div class="card" style="padding:14px">
+function _rlArticles(){
+let h=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📄 Required Articles</div>
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${SYL_ARTICLES.length} journal articles</div>`;
 const _artMap={"0":"article_beers_2023.pdf","1":"article_vascog2.pdf","2":"article_alzheimer_iwg.pdf","3":"article_alzheimer_aa.pdf","4":"article_dementia_prevention.pdf","5":"article_hearing_loss.pdf"};
@@ -2430,12 +2398,11 @@ h+=`<div style="padding:8px 0;border-bottom:1px solid rgb(var(--brd));display:fl
 <div style="font-size:9px;color:rgb(var(--sky));margin-top:2px">${a.j}</div></div>${_apdf?`<a href="${_apdf}" download style="font-size:10px;padding:3px 7px;background:rgb(var(--blue-bg));color:#3b82f6;border-radius:6px;text-decoration:none;flex-shrink:0">📄</a>`:''}</div>`;
 });
 h+=`</div>`;
+return h;
 }
-
-// ===== EXAMS =====
-if(libSec==='exams'){
+function _rlExams(){
 const examYears=[...new Set(QZ.map(q=>q.t))].sort();
-h+=`<div class="card" style="padding:14px">
+let h=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📝 Past Exams in Question Bank</div>
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${QZ.length} questions from ${examYears.length} exam sessions</div>`;
 examYears.forEach(yr=>{
@@ -2446,8 +2413,37 @@ h+=`<div onclick="tab='quiz';filt='${yr}';buildPool();render()" style="display:f
 <span style="font-size:14px;color:rgb(var(--fg3))">›</span></div>`;
 });
 h+=`</div>`;
+return h;
 }
-
+// ===== LIBRARY MAIN RENDERER (composed from sub-renderers) =====
+function renderLibrary(){
+let h=`<div class="sec-t">📖 Library</div>
+<div class="sec-s">Textbooks · Laws · Articles · Exam PDFs</div>`;
+const libTabs=[
+{id:'haz-pdf',l:'📕 Hazzard',c:'#dc2626'},
+{id:'harrison',l:'📗 Harrison',c:'#8b5cf6'},
+{id:'laws',l:'⚖️ Laws',c:'#f59e0b'},
+{id:'articles',l:'📄 Articles',c:'#3b82f6'},
+{id:'exams',l:'📝 Exams',c:'#06b6d4'}
+];
+h+=`<div style="display:flex;gap:4px;overflow-x:auto;padding:4px 0;margin-bottom:12px;-webkit-overflow-scrolling:touch">`;
+libTabs.forEach(t=>{
+h+=`<span class="pill ${libSec===t.id?'on':''}" style="white-space:nowrap;font-size:10px" onclick="libSec='${t.id}';render()">${t.l}</span>`;
+});
+h+=`</div>`;
+if(libSec==='haz-pdf'){
+if(hazChOpen!==null&&_hazData&&_hazData[String(hazChOpen)])h+=_rlHazzardReader();
+else if(_hazLoading)h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">\u23f3 Loading Hazzard's chapter...</div></div>`;
+else h+=_rlHazzardList();
+}
+if(libSec==='harrison'){
+if(harChOpen!==null&&_harData&&_harData[String(harChOpen)])h+=_rlHarrisonReader();
+else if(_harLoading)h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">⏳ Loading Harrison's chapter...</div></div>`;
+else h+=_rlHarrisonList();
+}
+if(libSec==='laws')h+=_rlLaws();
+if(libSec==='articles')h+=_rlArticles();
+if(libSec==='exams')h+=_rlExams();
 h+=`<div style="text-align:center;margin-top:12px;font-size:9px;color:rgb(var(--fg3))">
 <a href="https://ima-contentfiles.s3.amazonaws.com/P005-2026.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">P005-2026 Syllabus ↗</a></div>`;
 h+=`<div style="text-align:center;margin-top:8px;padding:8px;font-size:9px;color:rgb(var(--fg3));line-height:1.5">
