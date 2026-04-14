@@ -3333,15 +3333,9 @@ function renderStudyPlan(){
   return h;
 }
 
-function renderTrack(){
-const done=Object.values(S.ck).filter(Boolean).length;
-const tot=S.qOk+S.qNo;const pctN=tot?Math.round(S.qOk/tot*100):0;const pct=tot?pctN+'%':'—';
-const bkCount=Object.values(S.bk).filter(Boolean).length;
-const dueN=getDueQuestions().length;
-const readiness=calcEstScore();
-const streak=getStudyStreak();
-// Key metrics row
-let h=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+// ===== TRACK SUB-RENDERERS =====
+function _rtMetrics(readiness,streak,tot,pct,pctN){
+return `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
 <div class="card" style="padding:10px;text-align:center">
 <div style="font-size:22px;font-weight:800;color:${readiness===null?'#94a3b8':readiness>=70?'#059669':readiness>=50?'#d97706':'#dc2626'}">${readiness!==null?readiness+'%':'—'}</div>
 <div style="font-size:9px;color:rgb(var(--fg2))">Est. Score</div>
@@ -3359,9 +3353,10 @@ let h=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;marg
 <div style="font-size:9px;color:rgb(var(--fg2))">Accuracy</div>
 </div>
 </div>`;
-// SRS due alert
-if(dueN>0){
-h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:rgb(var(--red-bg));border:1px solid rgb(var(--red-brd))">
+}
+function _rtDueAlert(dueN){
+if(dueN<=0)return '';
+return `<div class="card" style="padding:12px;margin-bottom:8px;background:rgb(var(--red-bg));border:1px solid rgb(var(--red-brd))">
 <div style="display:flex;align-items:center;gap:8px">
 <span style="font-size:18px">🔔</span>
 <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#dc2626">${dueN} questions due for review</div>
@@ -3369,9 +3364,9 @@ h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:rgb(var(-
 <button onclick="filt='due';buildPool();tab='quiz';render()" class="btn" style="font-size:10px;padding:6px 12px;background:#dc2626;color:#fff;border:none;border-radius:8px">▶ Review</button>
 </div></div>`;
 }
-// Topic mastery heatmap
+function _rtTopicMap(){
 const _tStats=getTopicStats();
-h+=`<div class="card" style="padding:14px;margin-bottom:8px">
+let h=`<div class="card" style="padding:14px;margin-bottom:8px">
 <div style="font-size:12px;font-weight:700;margin-bottom:8px">🗺️ Topic Mastery Map</div>
 <div style="display:flex;flex-wrap:wrap;gap:3px">`;
 Object.entries(_tStats).forEach(([ti,s])=>{
@@ -3382,25 +3377,15 @@ const bg=_p===null?'#f8fafc':_p>=80?'#ecfdf5':_p>=60?'#f7fee7':_p>=40?'#fffbeb':
 h+=`<div onclick="tab='quiz';filt='topic';topicFilt=${ti};buildPool();render()" style="padding:4px 6px;border-radius:6px;font-size:7px;background:${bg};color:${color};font-weight:700;cursor:pointer;border:1px solid ${color}30;min-width:32px;text-align:center;line-height:1.3" title="${TOPICS[ti]}: ${_p!==null?_p+'%':'no data'} (${s.tot} Qs)"><div style="font-size:6px;opacity:0.8;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:40px">${TOPICS[ti].split(' ')[0].substring(0,6)}</div>${_p!==null?_p+'%':'·'}</div>`;
 });
 h+=`</div></div>`;
-h+=renderStudyPlan();
-// Feature 5: Exam date + daily plan
-if(!S.examDate&&!localStorage.getItem('shlav_exam_date')){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
-<div style="font-size:12px;font-weight:700;margin-bottom:6px">📅 When is your exam?</div>
-<button class="btn btn-p" onclick="setExamDate()" style="font-size:11px">Set Exam Date</button>
-</div>`;
-}else{
-h+=renderDailyPlan();
+return h;
 }
-h+=renderSessionCard();
-// Feature 9: Confidence accuracy matrix
+function _rtConfidenceMatrix(){
 const _confStats={sure_ok:0,sure_no:0,unsure_ok:0,unsure_no:0};
 Object.values(S.sr||{}).forEach(s=>{if(s.conf){Object.entries(s.conf).forEach(([k,v])=>{if(_confStats[k]!==undefined)_confStats[k]+=v;});}});
 const _confTotal=Object.values(_confStats).reduce((a,b)=>a+b,0);
-if(_confTotal>=10){
+if(_confTotal<10)return '';
 const _blindSpots=_confStats.sure_no;
-const _lucky=_confStats.unsure_ok;
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+return `<div class="card" style="padding:14px;margin-bottom:10px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">🎯 Confidence Matrix (${_confTotal} rated)</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;text-align:center">
 <div style="padding:8px;background:#dcfce7;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.sure_ok}</div>😎✅ Confident + Right</div>
@@ -3411,10 +3396,10 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px">
 ${_blindSpots>0?`<div style="margin-top:8px;font-size:10px;color:#dc2626;font-weight:600">⚠️ ${_blindSpots} blind spots — you were confident but wrong. These are your most dangerous gaps.</div>`:''}
 </div>`;
 }
-// Rescue Drill CTA
+function _rtRescueDrill(){
 const _weakTopics=getWeakTopics(3);
-if(_weakTopics.length&&_weakTopics[0].pct!==null&&_weakTopics[0].pct<65){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px;background:linear-gradient(135deg,#fef2f2,#fffbeb);border:1px solid rgb(var(--red-brd))">
+if(!_weakTopics.length||_weakTopics[0].pct===null||_weakTopics[0].pct>=65)return '';
+return `<div class="card" style="padding:14px;margin-bottom:10px;background:linear-gradient(135deg,#fef2f2,#fffbeb);border:1px solid rgb(var(--red-brd))">
 <div style="display:flex;align-items:center;gap:10px">
 <span style="font-size:24px">🚨</span>
 <div style="flex:1">
@@ -3424,9 +3409,8 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px;background:linear-g
 <button onclick="buildRescuePool();tab='quiz';render()" class="btn" style="font-size:11px;padding:8px 16px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-weight:700">GO</button>
 </div></div>`;
 }
-
-// Activity Calendar (30 days)
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+function _rtActivityCalendar(){
+let h=`<div class="card" style="padding:14px;margin-bottom:10px">
 <div style="font-size:12px;font-weight:700;margin-bottom:8px">📅 Activity (last 30 days)</div>
 <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px">`;
 for(let _i=29;_i>=0;_i--){
@@ -3439,12 +3423,13 @@ const _cols=[document.body.classList.contains('dark')||document.body.classList.c
 h+=`<div style="aspect-ratio:1;border-radius:3px;background:${_cols[_int]}" title="${_dk}: ${_qc} Qs"></div>`;
 }
 h+=`</div></div>`;
-
-// Spaced Reading Due (Feature 9)
+return h;
+}
+function _rtSpacedReading(){
 const _hazDue=getChaptersDueForReading('haz',30);
 const _harDue=getChaptersDueForReading('har',30);
-if(_hazDue.length||_harDue.length){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+if(!_hazDue.length&&!_harDue.length)return '';
+let h=`<div class="card" style="padding:14px;margin-bottom:10px">
 <div style="font-size:12px;font-weight:700;margin-bottom:8px">📖 Chapters Due for Re-Reading</div>`;
 if(_hazDue.length){
 h+=`<div style="font-size:10px;font-weight:600;color:#dc2626;margin-bottom:4px">Hazzard's:</div>`;
@@ -3463,39 +3448,11 @@ _harDue.slice(0,5).forEach(c=>{
 });
 }
 h+=`</div>`;
+return h;
 }
-
-// Feature 8: Leaderboard
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">
-<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-<span style="font-size:14px">🏆</span>
-<div style="font-size:12px;font-weight:700;flex:1">Leaderboard</div>
-<button onclick="showLeaderboard()" style="font-size:9px;padding:4px 10px;background:#f59e0b;color:#fff;border:none;border-radius:6px;cursor:pointer">Refresh</button>
-</div>
-<div id="leaderboard-box" style="font-size:10px;color:rgb(var(--fg3));text-align:center">Tap refresh to load</div>
-</div>`;
-
-// Feature 10: Cheat sheet export button
-h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
-<button class="btn btn-d" onclick="exportCheatSheet()" style="font-size:11px" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</button>
-<div style="font-size:9px;color:rgb(var(--fg3));margin-top:4px">Print-ready 2-page summary of your 15 weakest topics</div>
-</div>`;
-// Feature 5: Change exam date
-if(S.examDate||localStorage.getItem('shlav_exam_date')){
-h+=`<div style="text-align:center;margin-bottom:10px"><button onclick="setExamDate()" style="font-size:9px;color:rgb(var(--fg3));background:none;border:none;cursor:pointer;text-decoration:underline">📅 Change exam date</button></div>`;
-}
-h+=renderExamTrendCard();
-h+=`<div class="sec-t">Progress</div><div class="sec-s">Syllabus · Bookmarks · Spaced Repetition</div>`;
-if(S.streak>0)h+=`<div style="text-align:center;margin-bottom:12px"><span class="streak-badge">🔥 ${S.streak} day${S.streak>1?'s':''} streak</span></div>`;
-const estScore=calcEstScore();
-h+=`<div class="stats">
-<div class="stat"><div class="n" style="color:rgb(var(--em))">${done}/40</div><div class="l">Topics</div></div>
-<div class="stat"><div class="n" style="color:rgb(var(--sky))">${pct}</div><div class="l">Quiz</div></div>
-<div class="stat"><span class="tt-wrap"><div class="n" style="color:${estScore===null?'#94a3b8':estScore>=70?'#059669':estScore>=60?'#d97706':'#dc2626'}">${estScore!==null?estScore+'%':'—'}</div><div class="l">Est. Score <button class="tt-icon" tabindex="0">ⓘ</button></div><div class="tt-box" style="left:0;transform:none">Rolling exam score estimate: topic accuracy × exam frequency weight. Penalizes overdue SR cards. Needs 3+ answers per topic for accuracy. Pass = 60%.</div></span></div>
-<div class="stat"><span class="tt-wrap"><div class="n" style="color:rgb(var(--amb))">${dueN}</div><div class="l">Due (SR) <button class="tt-icon" tabindex="0">ⓘ</button></div><div class="tt-box" style="left:0;transform:none">Spaced repetition cards due for review. Based on your past performance.</div></span></div>
-</div>`;
-// Bookmarked questions with folder grouping
-if(bkCount>0){
+function _rtBookmarks(bkCount){
+if(bkCount<=0)return '';
+let h='';
 const _byTopic={};
 Object.entries(S.bk).filter(([,v])=>v).forEach(([k])=>{
 const q=QZ[k];if(!q)return;
@@ -3524,14 +3481,13 @@ const q=QZ[k];if(q)h+=`<div style="font-size:10px;padding:6px 0;border-bottom:1p
 });
 h+=`</div>`;
 }
+return h;
 }
-// Syllabus
-h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📋 Syllabus (${done}/40)</div>`;
-// Per-topic accuracy bars
+function _rtAccuracyBars(){
 const tSt=getTopicStats();
 const ranked=TOPICS.map((t,i)=>({name:t,i,s:tSt[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>0);
-if(ranked.length>0){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📊 Accuracy by Topic <span class="tt-wrap"><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">Shows your accuracy (% correct) for each topic you've attempted. Green ≥70%, amber ≥50%, red <50%.</div></span></div>`;
+if(!ranked.length)return '';
+let h=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📊 Accuracy by Topic <span class="tt-wrap"><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">Shows your accuracy (% correct) for each topic you've attempted. Green ≥70%, amber ≥50%, red <50%.</div></span></div>`;
 ranked.sort((a,b)=>{const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).forEach(p=>{
 const pct=p.s.tot?Math.round(p.s.ok/p.s.tot*100):0;
 const clr=pct>=70?'rgb(var(--em))':pct>=50?'rgb(var(--amb))':'rgb(var(--red))';
@@ -3543,8 +3499,10 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;pa
 <span style="color:rgb(var(--fg3));font-size:8px">${p.s.tot}</span>
 </div></div>`;
 });
-h+=`</div>`;}
-// Year × Topic heatmap
+h+=`</div>`;
+return h;
+}
+function _rtWeakSpotsMap(){
 const years=[...new Set(QZ.map(q=>q.t))].sort();
 const heatData=[];
 TOPICS.forEach((topic,ti)=>{
@@ -3558,8 +3516,8 @@ row.cells.push({yr,pct:answered.length?Math.round(correct.length/answered.length
 });
 if(row.cells.some(c=>c.n>0))heatData.push(row);
 });
-if(heatData.length>0){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">\U0001f5fa\ufe0f Weak Spots Map</div>`;
+if(!heatData.length)return '';
+let h=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">\U0001f5fa\ufe0f Weak Spots Map</div>`;
 h+=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:9px"><thead><tr><th style="text-align:right;padding:3px;font-size:8px">Topic</th>`;
 years.forEach(y=>{h+=`<th style="padding:3px;text-align:center;font-size:7px;white-space:nowrap">${y.length>4?y.slice(-2):y}</th>`;});
 h+=`</tr></thead><tbody>`;
@@ -3584,16 +3542,19 @@ h+=`<div style="display:flex;gap:8px;margin-top:6px;font-size:8px;color:rgb(var(
 <span style="display:flex;align-items:center;gap:2px"><span style="width:10px;height:10px;background:#fef9c3;border-radius:2px"></span>50-74%</span>
 <span style="display:flex;align-items:center;gap:2px"><span style="width:10px;height:10px;background:#dcfce7;border-radius:2px"></span>&ge;75%</span>
 </div>`;
-h+=`</div>`;}
-// ROI Matrix and Radar chart removed — accuracy bars above are sufficient
-h+=renderPriorityMatrix();
-
+h+=`</div>`;
+return h;
+}
+function _rtSyllabus(done){
+let h=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📋 Syllabus (${done}/40)</div>`;
 TOPICS.forEach((t,i)=>{h+=`<div class="topic${S.ck[i]?' done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()" style="display:${S._sylOpen?'flex':'none'}" role="checkbox" aria-checked="${S.ck[i]?'true':'false'}" tabindex="0" aria-label="${t}">
 <input type="checkbox" ${S.ck[i]?'checked':''} readonly style="width:13px;height:13px" tabindex="-1"><span>${t}</span></div>`;});
 h+=`<div onclick="S._sylOpen=!S._sylOpen;render()" style="text-align:center;padding:8px;cursor:pointer;font-size:10px;color:rgb(var(--sky));font-weight:600" role="button" tabindex="0" aria-expanded="${S._sylOpen}" aria-label="Toggle syllabus topics">${S._sylOpen?'▲ Collapse':'▼ Show '+TOPICS.length+' topics'}</div>`;
 h+=`</div>`;
-// IMA Links
-h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">📥 IMA Exam Archive</div><div style="font-size:10px">`;
+return h;
+}
+function _rtImaLinks(){
+let h=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">📥 IMA Exam Archive</div><div style="font-size:10px">`;
 [["2022","639899_34c9618e-ff88-4811-84d5-ba1fdd9d5f1c","639902_9a12e7aa-9876-40e1-bdea-0786dc417406"],
 ["2023","639904_14aa53eb-d114-4ab8-8bfe-938b32d02fc0","639907_33601987-d23e-4f5f-8180-53890b2cfcb4"],
 ["May 24","652285_f10c088f-c183-4f9c-8324-b37bedabe522","652288_5f94445c-1fe5-4207-bd42-e223be8064a0"],
@@ -3601,14 +3562,14 @@ h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size
 ["Jun 25","749665_d23a3de1-a2af-4467-b2b0-71f297f6b800","766892_d886488d-27d3-487c-8088-56f67ae43409"],
 ].forEach(([y,q,a])=>{h+=`<div style="display:flex;gap:8px;padding:3px 0"><b style="width:48px">${y}</b><a href="https://ima-files.s3.amazonaws.com/${q}.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">שאלון</a><a href="https://ima-files.s3.amazonaws.com/${a}.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">תשובות</a></div>`;});
 h+=`</div></div>`;
-// Reset
-// Share with friends
-h+=`<div class="card" style="padding:14px;text-align:center;margin-top:12px">
+return h;
+}
+function _rtDataManagement(){
+let h=`<div class="card" style="padding:14px;text-align:center;margin-top:12px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">🔗 Share with Friends</div>
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Share this app with fellow geriatric medicine residents</div>
 <button class="btn btn-p" onclick="shareApp()" style="margin-bottom:8px" aria-label="Share app link">📤 Share App Link</button>
 </div>`;
-// Data management
 h+=`<div class="card" style="padding:14px;margin-top:12px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Your progress is saved automatically in your browser. Export to backup or transfer between devices.</div>
@@ -3623,10 +3584,11 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 </div>
 <div style="font-size:9px;color:rgb(var(--fg3));text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
 </div></div>`;
-// Study Journal moved — wrong answer reporting now in Quiz tab post-answer UI
-// API key settings card
+return h;
+}
+function _rtApiKey(){
 var _storedKey=getApiKey();
-h+='<div class="card" style="padding:14px;margin-top:10px;border:2px solid '+(_storedKey?'#bbf7d0':'#fde68a')+'">';
+var h='<div class="card" style="padding:14px;margin-top:10px;border:2px solid '+(_storedKey?'#bbf7d0':'#fde68a')+'">';
 h+='<div class="sec-t" style="font-size:13px">🔑 Anthropic API Key</div>';
 h+='<div class="sec-s" style="margin-bottom:10px">לשימוש ב-AI Explain ו-Teach-Back · מאוחסן בדפדפן בלבד</div>';
 if(!_storedKey){h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;font-size:10px;color:rgb(var(--green-fg));margin-bottom:10px">✅ AI פועל דרך שרת proxy — לא צריך מפתח אישי. אפשר להוסיף כגיבוי. <a href="https://console.anthropic.com/keys" target="_blank" style="color:#d97706;font-weight:700">קבל מפתח ↗</a></div>';}
@@ -3642,8 +3604,10 @@ if(_storedKey){
   h+='</div>';
 }
 h+='<div style="font-size:9px;color:rgb(var(--fg3))">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
-// Version footer
-h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:rgb(var(--fg3));line-height:1.8">
+return h;
+}
+function _rtFooter(){
+return `<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:rgb(var(--fg3));line-height:1.8">
 <div>Shlav A Mega v${APP_VERSION} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · build ${BUILD_HASH}</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
@@ -3651,6 +3615,66 @@ h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;col
 <a href="https://eiasash.github.io/InternalMedicine/" target="_blank" style="font-size:10px;padding:5px 14px;background:#4f46e5;color:#fff;border:none;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">🏥 Internal Medicine App →</a>
 </div>
 <div style="margin-top:6px">صدقة جارية الى من نحب</div></div>`;
+}
+// ===== TRACK MAIN RENDERER (composed from sub-renderers) =====
+function renderTrack(){
+const done=Object.values(S.ck).filter(Boolean).length;
+const tot=S.qOk+S.qNo;const pctN=tot?Math.round(S.qOk/tot*100):0;const pct=tot?pctN+'%':'—';
+const bkCount=Object.values(S.bk).filter(Boolean).length;
+const dueN=getDueQuestions().length;
+const readiness=calcEstScore();
+const streak=getStudyStreak();
+let h=_rtMetrics(readiness,streak,tot,pct,pctN);
+h+=_rtDueAlert(dueN);
+h+=_rtTopicMap();
+h+=renderStudyPlan();
+if(!S.examDate&&!localStorage.getItem('shlav_exam_date')){
+h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
+<div style="font-size:12px;font-weight:700;margin-bottom:6px">📅 When is your exam?</div>
+<button class="btn btn-p" onclick="setExamDate()" style="font-size:11px">Set Exam Date</button>
+</div>`;
+}else{
+h+=renderDailyPlan();
+}
+h+=renderSessionCard();
+h+=_rtConfidenceMatrix();
+h+=_rtRescueDrill();
+h+=_rtActivityCalendar();
+h+=_rtSpacedReading();
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+<span style="font-size:14px">🏆</span>
+<div style="font-size:12px;font-weight:700;flex:1">Leaderboard</div>
+<button onclick="showLeaderboard()" style="font-size:9px;padding:4px 10px;background:#f59e0b;color:#fff;border:none;border-radius:6px;cursor:pointer">Refresh</button>
+</div>
+<div id="leaderboard-box" style="font-size:10px;color:rgb(var(--fg3));text-align:center">Tap refresh to load</div>
+</div>`;
+h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
+<button class="btn btn-d" onclick="exportCheatSheet()" style="font-size:11px" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</button>
+<div style="font-size:9px;color:rgb(var(--fg3));margin-top:4px">Print-ready 2-page summary of your 15 weakest topics</div>
+</div>`;
+if(S.examDate||localStorage.getItem('shlav_exam_date')){
+h+=`<div style="text-align:center;margin-bottom:10px"><button onclick="setExamDate()" style="font-size:9px;color:rgb(var(--fg3));background:none;border:none;cursor:pointer;text-decoration:underline">📅 Change exam date</button></div>`;
+}
+h+=renderExamTrendCard();
+h+=`<div class="sec-t">Progress</div><div class="sec-s">Syllabus · Bookmarks · Spaced Repetition</div>`;
+if(S.streak>0)h+=`<div style="text-align:center;margin-bottom:12px"><span class="streak-badge">🔥 ${S.streak} day${S.streak>1?'s':''} streak</span></div>`;
+const estScore=calcEstScore();
+h+=`<div class="stats">
+<div class="stat"><div class="n" style="color:rgb(var(--em))">${done}/40</div><div class="l">Topics</div></div>
+<div class="stat"><div class="n" style="color:rgb(var(--sky))">${pct}</div><div class="l">Quiz</div></div>
+<div class="stat"><span class="tt-wrap"><div class="n" style="color:${estScore===null?'#94a3b8':estScore>=70?'#059669':estScore>=60?'#d97706':'#dc2626'}">${estScore!==null?estScore+'%':'—'}</div><div class="l">Est. Score <button class="tt-icon" tabindex="0">ⓘ</button></div><div class="tt-box" style="left:0;transform:none">Rolling exam score estimate: topic accuracy × exam frequency weight. Penalizes overdue SR cards. Needs 3+ answers per topic for accuracy. Pass = 60%.</div></span></div>
+<div class="stat"><span class="tt-wrap"><div class="n" style="color:rgb(var(--amb))">${dueN}</div><div class="l">Due (SR) <button class="tt-icon" tabindex="0">ⓘ</button></div><div class="tt-box" style="left:0;transform:none">Spaced repetition cards due for review. Based on your past performance.</div></span></div>
+</div>`;
+h+=_rtBookmarks(bkCount);
+h+=_rtAccuracyBars();
+h+=_rtWeakSpotsMap();
+h+=renderPriorityMatrix();
+h+=_rtSyllabus(done);
+h+=_rtImaLinks();
+h+=_rtDataManagement();
+h+=_rtApiKey();
+h+=_rtFooter();
 return h;
 }
 
