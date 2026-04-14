@@ -316,6 +316,7 @@ upd();setInterval(upd,30000);
 <div class="tabs" id="tb" role="tablist" aria-label="Navigation tabs"></div>
 
 <script src="shared/fsrs.js"></script>
+<script src="src/bridge.js"></script>
 <script>
 let QZ=[];
 
@@ -329,6 +330,10 @@ TK.forEach((keys,ti)=>{let sc=0;keys.forEach(k=>{if(txt.includes(k.toLowerCase()
 q.ti=best>=0?best:8;
 });
 function getTopicStats(){
+if(typeof SM!=='undefined'&&QZ.length&&TOPICS.length){
+return SM.getTopicStats(QZ,S.sr,TOPICS);
+}
+// Fallback for pre-bridge boot
 const st={};
 Object.entries(S.sr).forEach(([idx,d])=>{
 const q=QZ[idx];if(!q)return;
@@ -701,8 +706,7 @@ save();
 }
 // isChronicFail() loaded from shared/fsrs.js
 function getDueQuestions(){
-const now=Date.now();
-return Object.entries(S.sr).filter(([k,v])=>v.next<=now).map(([k])=>parseInt(k)).slice(0,20);
+return SM.getDueQuestions(S.sr);
 }
 
 const HARRISON_PDF_MAP={"14":"harrison/Ch14_Pain_Pathophysiology_and_Management.pdf","15":"harrison/Ch15_Chest_Discomfort.pdf","16":"harrison/Ch16_Abdominal_Pain.pdf","17":"harrison/Ch17_Headache.pdf","18":"harrison/Ch18_Low_back_pain.pdf","20":"harrison/Ch20_Fever.pdf","22":"harrison/Ch22_Fever_of_Unknown_Origin.pdf","26":"harrison/Ch026_Neurologic_Causes_of_Weakness_and_Paralysis.pdf","30":"harrison/Ch30_Coma.pdf","39":"harrison/Ch39_Dyspnea.pdf","40":"harrison/Ch40_Cough.pdf","41":"harrison/Ch41_Hemoptysis.pdf","42":"harrison/Ch42_Hypoxia_and_Cyanosis.pdf","43":"harrison/Ch43_Edema.pdf","48":"harrison/Ch48_Nausea_Vomiting_and_Indigestion.pdf","49":"harrison/Ch49_Diarrhea_and_Constipation.pdf","50":"harrison/Ch50_Unintentional_Weight_Loss.pdf","51":"harrison/Ch51_Gastrointestinal_Bleeding.pdf","52":"harrison/Ch52_Jaundice.pdf","53":"harrison/Ch53_Abdominal_Swelling_and_Ascites.pdf","55":"harrison/Ch55_Azotemia_and_Urinary_Abnormalities.pdf","56":"harrison/Ch56_Fluid_and_Electrolyte_Disturbances.pdf","57":"harrison/Ch57_Hypercalcemia_and_Hypocalcemia.pdf","58":"harrison/Ch58_Acidosis_and_Alkalosis.pdf","66":"harrison/Ch66_Anemia_and_Polycythemia.pdf","67":"harrison/Ch67_Disorders_of_Granulocytes_and_Monocytes.pdf","69":"harrison/Ch69_Bleeding_and_Thrombosis.pdf","70":"harrison/Ch70_Enlargement_of_Lymph_Nodes_and_Spleen.pdf","79":"harrison/Ch79_Infections_in_Patients_with_Cancer.pdf","80":"harrison/Ch80_Oncologic_Emergencies.pdf","102":"harrison/Ch102_Iron_Deficiency_and_Other_Hypoproliferat.pdf","120":"harrison/Ch120_Disorders_of_Platelets_and_Vessel_Wall.pdf","121":"harrison/Ch121_Coagulation_Disorders.pdf","127":"harrison/Ch127_Approach_to_the_Acutely_Ill_Infected_Febrile_.pdf","133":"harrison/Ch133_Infective_Endocarditis.pdf","136":"harrison/Ch136_Osteomyelitis.pdf","142":"harrison/Ch142_Encephalitis.pdf","143":"harrison/Ch143_Acute_Meningitis.pdf","147":"harrison/Ch147_Infections_Acquired_in_Health_Care_Facilities.pdf","243":"harrison/Ch243_Approach_to_the_Patient_with_Possible_Cardiov.pdf","247":"harrison/Ch247_Electrocardiography.pdf","285":"harrison/Ch285_Non-ST-Segment_Elevation_Acute_Coronary_Syndr.pdf","286":"harrison/Ch286_ST-Segment_Elevation_Myocardial_Infarction.pdf","295":"harrison/Ch295_Approach_to_the_Patient_with_Disease_of_the_R.pdf","305":"harrison/Ch305_Disorders_of_the_Pleura.pdf","311":"harrison/Ch311_Approach_to_the_Patient_with_Critical_Illness.pdf","314":"harrison/Ch314_Approach_to_the_Patient_with_Shock.pdf","315":"harrison/Ch315_Sepsis_and_Septic_Shock.pdf","316":"harrison/Ch316_Cardiogenic_Shock_and_Pulmonary_Edema.pdf","317":"harrison/Ch317_Cardiovascular_Collapse,_Cardiac_Arrest,_and_.pdf","319":"harrison/Ch319_Approach_to_the_Patient_with_Renal_Disease_or.pdf","321":"harrison/Ch321_Acute_Kidney_Injury.pdf","322":"harrison/Ch322_Chronic_Kidney_Disease.pdf","332":"harrison/Ch332_Approach_to_the_Patient_with_Gastrointestinal.pdf","347":"harrison/Ch347_Approach_to_the_Patient_with_Liver_Disease.pdf","355":"harrison/Ch355_Cirrhosis_and_Its_Complications.pdf","375":"harrison/Ch375_The_Vasculitis_Syndromes.pdf","379":"harrison/Ch379_Sarcoidosis.pdf","382":"harrison/Ch382_Approach_to_Articular_and_Musculoskeletal_Dis.pdf","384":"harrison/Ch384_Gout_and_Other_Crystal-Associated_Arthropathi.pdf","387":"harrison/Ch387_Periarticular_Disorders_of_the_Extremities.pdf","388":"harrison/Ch388_Approach_to_the_Patient_with_Endocrine_Disord.pdf","433":"harrison/Ch433_Approach_to_the_Patient_with_Neurologic_Disea.pdf","436":"harrison/Ch436_Seizures_and_Epilepsy.pdf","437":"harrison/Ch437_Introduction_to_Cerebrovascular_Diseases.pdf","438":"harrison/Ch438_Ischemic_Stroke.pdf","439":"harrison/Ch439_Intracerebral_Hemorrhage.pdf","458":"harrison/Ch458_Guillain-Barr%23U00e9_Syndrome_and_Other_Immune.pdf","459":"harrison/Ch459_Myasthenia_Gravis_and_Other_Diseases_of_the_N.pdf"};
@@ -740,14 +744,9 @@ const _dataPromise = (async function loadDataArrays() {
       else if (varName === 'TABS') TABS = results[i];
       });
     _dataReady = true;
-    // Safe JSON parser with fallback
-    function safeJSONParse(key, fallback) {
-      try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
-      catch(e) { localStorage.removeItem(key); return fallback; }
-    }
     // Load user-generated/approved questions from localStorage
-    const _xp=safeJSONParse('samega_pending_qs',[]);
-    const _xc=safeJSONParse('samega_custom_qs',[]);
+    const _xp=SM.safeJSONParse(localStorage.getItem('samega_pending_qs'),[]);
+    const _xc=SM.safeJSONParse(localStorage.getItem('samega_custom_qs'),[]);
     const _xAll=[..._xp,..._xc].filter(q=>q&&typeof q.q==='string'&&Array.isArray(q.o)&&q.o.length===4&&Number.isInteger(q.c)&&q.c>=0&&q.c<=3&&typeof q.ti==='number');
     if(_xAll.length){QZ.push(..._xAll);console.log('Loaded '+_xAll.length+' user-generated questions');}
     console.log('Data loaded: ' + QZ.length + ' questions, ' + NOTES.length + ' notes');
@@ -793,68 +792,12 @@ let _confidence=null; // null,0(unsure),1(maybe),2(confident)
 let _pendingSR=null; // qIdx awaiting confidence rating after correct answer
 let _wrongReason=null; // null until classified after wrong answer
 let _diffRating=null; // null,'easy','med','hard'
-// Feature 3: Exam trap detection — questions where >40% pick same wrong distractor
+// Feature 3: Exam trap detection — delegated to bridge
 function isExamTrap(qIdx){
-const s=S.sr[qIdx];if(!s||!s.wc)return false;
-const totalAttempts=s.tot||0;if(totalAttempts<3)return false;
-const wrongValues=Object.values(s.wc);
-if(!wrongValues.length)return false;
-const maxWrong=Math.max(...wrongValues);
-return maxWrong/totalAttempts>=0.4;
+return SM.isExamTrap(S.sr,qIdx);
 }
 function buildPool(){
-if(filt==='traps'){
-pool=QZ.map((_,i)=>i).filter(i=>isExamTrap(i));
-for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-qi=0;sel=null;ans=false;return;
-}
-if(filt==='weak'){
-const ts=getTopicStats();
-const weakTopics=TOPICS.map((_,i)=>({i,s:ts[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>=3).sort((a,b)=>{const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).slice(0,10).map(p=>p.i);
-if(weakTopics.length===0){pool=QZ.map((_,i)=>i);}else{pool=QZ.map((_,i)=>i).filter(i=>weakTopics.includes(QZ[i].ti));}
-for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-qi=0;return;}
-if(filt==='due'){pool=getDueQuestions();qi=0;return;}
-if(filt==='hard'){
-// Any question you've interacted with that isn't at default EF (2.5 = never wrong)
-pool=QZ.map((_,i)=>i).filter(i=>{const s=S.sr[i];return s&&s.ef<2.5;});
-pool.sort((a,b)=>(S.sr[a]?.ef||2.5)-(S.sr[b]?.ef||2.5));
-if(!pool.length){
-// Fallback: any question with SR data at all
-pool=QZ.map((_,i)=>i).filter(i=>S.sr[i]);
-pool.sort((a,b)=>(S.sr[a]?.ef||2.5)-(S.sr[b]?.ef||2.5));
-}
-qi=0;sel=null;ans=false;return;}
-if(filt==='slow'){
-pool=QZ.map((_,i)=>i).filter(i=>{const s=S.sr[i];return s&&s.at&&s.at>60;});
-pool.sort((a,b)=>(S.sr[b]?.at||0)-(S.sr[a]?.at||0));
-qi=0;sel=null;ans=false;return;}
-
-pool=[];
-const due=getDueQuestions();
-let smartShuffled=false;
-if(filt==='due'){pool=due.length?due:[];}
-else if(filt==='topic'&&topicFilt>=0){QZ.forEach((q,i)=>{if(q.ti===topicFilt)pool.push(i)});}
-else{
-  QZ.forEach((q,i)=>{if(filt==='all'||q.t.includes(filt))pool.push(i)});
-  if(filt==='all'){
-    // Smart shuffle: prioritize struggling questions over pure random
-    const due=new Set(getDueQuestions());
-    const tier1=[],tier2=[],tier3=[],tier4=[];
-    pool.forEach(i=>{
-      const s=S.sr[i];
-      if(due.has(i))tier1.push(i);
-      // FSRS difficulty: D>7=hard struggle, D>4=imperfect (D=1 easy, D=10 hard)
-      else if(s&&(s.fsrsD>7||(s.fsrsD===undefined&&s.ef<1.8)))tier2.push(i);
-      else if(s&&(s.fsrsD>4||(s.fsrsD===undefined&&s.ef<2.2)))tier3.push(i);
-      else tier4.push(i);
-    });
-    const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-    pool=[...shuffle(tier1),...shuffle(tier2),...shuffle(tier3),...shuffle(tier4)];
-    smartShuffled=true;
-  }
-}
-if(!smartShuffled){for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}}
+pool=SM.buildPool({questions:QZ,sr:S.sr,topics:TOPICS,filter:filt,topicFilter:topicFilt});
 qi=0;sel=null;ans=false;
 }
 if(QZ.length)buildPool();
@@ -883,32 +826,14 @@ miniExamTopic=-1;render();
 function setFilt(f){filt=f;topicFilt=-1;buildPool();render()}
 function setTopicFilt(ti){filt='topic';topicFilt=ti;buildPool();render()}
 
-// ===== FEATURE 4: RESCUE DRILL =====
+// ===== FEATURE 4: RESCUE DRILL — delegated to bridge =====
 function getWeakTopics(n=3){
-const stats=getTopicStats();
-const scored=Object.entries(stats).map(([ti,s])=>({ti:Number(ti),pct:s.tot?Math.round(s.ok/s.tot*100):null,tot:s.tot,ok:s.ok}))
-  .filter(s=>s.tot>=3)
-  .sort((a,b)=>a.pct-b.pct);
-return scored.slice(0,n);
+return SM.getWeakTopics(QZ,S.sr,TOPICS,n);
 }
 function buildRescuePool(){
-const weak=getWeakTopics(3);
-if(!weak.length){alert('Not enough data yet — answer more questions first');return;}
-const rescueQs=[];
-weak.forEach(w=>{
-  const topicQs=QZ.map((q,i)=>({i,q})).filter(x=>x.q.ti===w.ti);
-  // Prioritize questions with worst personal accuracy
-  topicQs.sort((a,b)=>{
-    const sa=S.sr[a.i],sb=S.sr[b.i];
-    const pa=sa&&sa.tot?(sa.ok/sa.tot):0.5;
-    const pb=sb&&sb.tot?(sb.ok/sb.tot):0.5;
-    return pa-pb;
-  });
-  rescueQs.push(...topicQs.slice(0,7).map(x=>x.i));
-});
-// Shuffle
-for(let i=rescueQs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[rescueQs[i],rescueQs[j]]=[rescueQs[j],rescueQs[i]];}
-pool=rescueQs;qi=0;sel=null;ans=false;_pendingSR=null;
+const result=SM.buildRescuePool(QZ,S.sr,TOPICS);
+if(!result.length){alert('Not enough data yet — answer more questions first');return;}
+pool=result;qi=0;sel=null;ans=false;_pendingSR=null;
 filt='rescue';render();
 }
 
@@ -932,27 +857,13 @@ Object.entries(S.chReads).forEach(([key,ts])=>{
 return due.sort((a,b)=>b.daysSince-a.daysSince);
 }
 
-// ===== FEATURE 7: ANALYTICS ENGINE =====
+// ===== FEATURE 7: ANALYTICS ENGINE — delegated to bridge =====
 function trackDailyActivity(){
 if(!S.dailyAct)S.dailyAct={};
-const today=new Date().toISOString().slice(0,10);
-if(!S.dailyAct[today])S.dailyAct[today]={q:0,ok:0,time:0,sessions:0};
-S.dailyAct[today].q++;
-// Keep only last 90 days
-const keys=Object.keys(S.dailyAct).sort();
-while(keys.length>90){delete S.dailyAct[keys.shift()];}
+SM.trackDailyActivity(S.dailyAct);
 }
 function getStudyStreak(){
-if(!S.dailyAct)return 0;
-let streak=0;
-const d=new Date();
-for(let i=0;i<365;i++){
-  const key=d.toISOString().slice(0,10);
-  if(S.dailyAct[key]&&S.dailyAct[key].q>0)streak++;
-  else if(i>0)break; // allow today to be empty
-  d.setDate(d.getDate()-1);
-}
-return streak;
+return SM.getStudyStreak(S.dailyAct);
 }
 
 // ===== ON-CALL FLIP CARD MODE =====
@@ -4358,7 +4269,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.45';
+const APP_VERSION='9.46';
 const CHANGELOG={
 '9.44':[
 '🗑️ OSCE — removed all dead code (variables, exitO function, comments)',
