@@ -321,6 +321,7 @@ upd();setInterval(upd,30000);
 <script src="src/ui/calc-view.js"></script>
 <script src="src/ui/track-view.js"></script>
 <script src="src/ui/study-view.js"></script>
+<script src="src/ui/more-view.js"></script>
 <script>
 let QZ=[];
 
@@ -2430,46 +2431,7 @@ const STUDY_PLAN = [
 // ===== placeholder to mark track-view boundary =====
 /*TRACK_VIEW_MOVED*/
 // ===== SEARCH =====
-let srchQ='';
-function renderSearch(){
-let h=`<div class="sec-t">🔍 Search</div><div class="sec-s">Search across all ${QZ.length} questions + ${NOTES.length} study notes + ${DRUGS.length} drugs</div>`;
-h+=`<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
-<input class="search-box" style="margin-bottom:0;flex:1" placeholder="Type to search..." oninput="srchQ=this.value;render()" value="${srchQ}" id="srchi">
-<button class="voice-btn${voiceListening?' listening':''}" onclick="startVoiceParser()" aria-label="${voiceListening?'Stop voice input':'Start voice input'}">${voiceListening?'🔴 Listening...':'🎤 Voice'}</button>
-</div>`;
-if(voiceTranscript&&srchQ){h+=`<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:8px;padding:6px 10px;background:rgb(var(--bg2));border-radius:8px" dir="auto">🎤 "${voiceTranscript}"</div>`;}
-if(srchQ.length>=2){
-const q=srchQ.toLowerCase();
-// Search questions
-const qRes=[];QZ.forEach((item,i)=>{if(item.q.toLowerCase().includes(q)||item.o.some(o=>o.toLowerCase().includes(q)))qRes.push(i);});
-// Search notes
-const nRes=NOTES.filter(n=>n.topic.toLowerCase().includes(q)||n.notes.toLowerCase().includes(q));
-// Search drugs
-const dRes=DRUGS.filter(d=>d.name.toLowerCase().includes(q)||d.heb.includes(q)||d.risk.toLowerCase().includes(q));
-
-h+=`<div style="font-size:11px;color:rgb(var(--fg2));margin-bottom:10px">${qRes.length} questions · ${nRes.length} topics · ${dRes.length} drugs</div>`;
-
-if(nRes.length){
-h+=`<div style="font-weight:700;font-size:12px;margin-bottom:6px">📚 Study Notes</div>`;
-nRes.forEach(n=>{h+=`<div class="card" style="padding:10px"><div style="font-weight:700;font-size:11px">${n.topic}</div><div style="font-size:10px;color:rgb(var(--fg2));margin-top:4px;line-height:1.6">${n.notes.substring(0,200)}...</div></div>`;});
-}
-if(dRes.length){
-h+=`<div style="font-weight:700;font-size:12px;margin:8px 0 6px">💊 Drugs</div>`;
-dRes.forEach(d=>{h+=`<div class="card" style="padding:10px"><span style="font-weight:700;font-size:11px">${d.name}</span> ${d.beers?'<span class="badge badge-r">BEERS</span>':''}<div style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${d.risk}</div></div>`;});
-}
-if(qRes.length){
-h+=`<div style="font-weight:700;font-size:12px;margin:8px 0 6px">📝 Questions (${Math.min(qRes.length,15)} shown)</div>`;
-qRes.slice(0,15).forEach(i=>{h+=`<div class="card heb" dir="rtl" style="padding:10px;font-size:11px;line-height:1.5"><span class="badge" style="background:${QZ[i].t==='Hazzard'?'#faf5ff':'#eff6ff'};color:${QZ[i].t==='Hazzard'?'#7c3aed':'#1d4ed8'}">${QZ[i].t==='Hazzard'?'🤖 AI':'📝 '+QZ[i].t}</span> ${QZ[i].q.substring(0,120)}...</div>`;});
-}
-}
-return h;
-}
-
-// ===== WARD MODE RENDER =====
-
-// ===== MED BASKET RENDER =====
-// renderMedBasket, renderEOLTree, renderLabOverlay, renderAgingSheet: MOVED to src/ui/calc-view.js
-// window.renderMedBasket/renderEOLTree/renderLabOverlay/renderAgingSheet set by that external script
+// renderSearch: MOVED to src/ui/more-view.js
 
 // ===== RENDER =====
 let lastTab=null;
@@ -2488,148 +2450,8 @@ S.sr[_srk].n=0;S.sr[_srk].next=Date.now();
 save();render();
 }
 
-// ===== AI CHAT =====
-const CHAT_STARTERS=[
-'מה ההבדל בין דמנציה לדליריום?',
-'תסביר על תסמונת השברירות (frailty)',
-'מה כולל הערכה גריאטרית מקיפה?',
-'תרופות שיש להימנע מהן בקשישים (Beers)',
-'מה הגישה לנפילות בקשיש?',
-];
-const CHAT_SYSTEM="You are a senior geriatrician and mentor at Shaare Zedek Medical Center in Jerusalem. The user is a geriatrics fellow preparing for their shlav-aleph (board) exam (P005-2026). Answer in the same language as the question (Hebrew or English). Be concise, clinically precise. Focus on Hazzard's 8e, Harrison's 22e, Beers criteria, STOPP/START, CGA, FRAX, and exam-relevant guidelines.";
-let chatLoading=false;
-
-// ===== FEATURE: FEEDBACK SYSTEM =====
-function renderFeedback(){
-let h='<div class="sec-t">💡 Feedback & Feature Requests</div>';
-h+='<div class="sec-s">Help improve Shlav A Mega for everyone. AI reviews every submission.</div>';
-h+='<div class="card" style="padding:16px;margin-bottom:12px">';
-h+='<div style="font-size:12px;font-weight:700;margin-bottom:8px">Submit Feedback</div>';
-h+='<select id="fb-type" style="width:100%;padding:8px;border:1px solid rgb(var(--brd));border-radius:8px;font-size:12px;margin-bottom:8px;background:rgb(var(--bg2))">';
-h+='<option value="bug">🐛 Bug Report</option>';
-h+='<option value="feature">✨ Feature Request</option>';
-h+='<option value="content">📝 Content Fix (wrong answer/explanation)</option>';
-h+='<option value="ux">🎨 UX/Design Improvement</option>';
-h+='<option value="other">💬 Other</option>';
-h+='</select>';
-h+='<textarea id="fb-text" dir="auto" placeholder="Describe your feedback in detail..." style="width:100%;min-height:100px;padding:10px;border:1px solid rgb(var(--brd));border-radius:10px;font-size:12px;font-family:inherit;resize:vertical;margin-bottom:8px"></textarea>';
-h+='<button onclick="submitFeedback()" class="btn" style="width:100%;padding:10px;background:#7c3aed;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">📤 Submit Feedback</button>';
-h+='</div>';
-// Recent feedback
-let fb=[];try{fb=JSON.parse(localStorage.getItem('samega_fb_sent')||'[]');}catch(e){}
-if(fb.length){
-h+='<div class="card" style="padding:14px">';
-h+='<div style="font-size:12px;font-weight:700;margin-bottom:8px">📋 Your Submissions ('+fb.length+')</div>';
-fb.slice(-5).reverse().forEach(f=>{
-  h+='<div style="padding:6px 0;border-bottom:1px solid rgb(var(--brd));font-size:10px">';
-  h+='<span style="font-weight:600">'+({bug:'🐛',feature:'✨',content:'📝',ux:'🎨',other:'💬'}[f.type]||'💬')+' '+f.type+'</span>';
-  h+=' · <span style="color:rgb(var(--fg2))">'+new Date(f.ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'})+'</span>';
-  h+='<div style="color:rgb(var(--fg2));margin-top:2px;line-height:1.5">'+f.text.slice(0,120)+(f.text.length>120?'...':'')+'</div>';
-  if(f.aiResponse){h+='<div style="color:#7c3aed;margin-top:4px;padding:6px 8px;background:#f5f3ff;border-radius:6px;font-size:9px;line-height:1.5">🤖 '+f.aiResponse+'</div>';}
-  h+='</div>';
-});
-h+='</div>';
-}
-return h;
-}
-async function submitFeedback(){
-const type=document.getElementById('fb-type')?.value||'other';
-const text=document.getElementById('fb-text')?.value?.trim();
-if(!text){alert('Please describe your feedback');return;}
-const entry={type,text,ts:Date.now(),version:APP_VERSION,uid:localStorage.getItem('samega_uid')||'anon'};
-// Save locally
-let fb=[];try{fb=JSON.parse(localStorage.getItem('samega_fb_sent')||'[]');}catch(e){}
-fb.push(entry);
-localStorage.setItem('samega_fb_sent',JSON.stringify(fb));
-// Submit to Supabase
-try{
-  await fetch(SUPA_URL+'/rest/v1/shlav_feedback',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON},
-    body:JSON.stringify(entry)
-  });
-}catch(e){console.warn('Feedback submit failed',e);}
-// AI analysis of the feedback
-try{
-  const aiPrompt='A user submitted this feedback for a medical study app. Briefly acknowledge it and assess feasibility in 1-2 sentences. Type: '+type+'. Feedback: '+text;
-  const res=await fetch('https://toranot.netlify.app/api/claude',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({prompt:aiPrompt,secret:'shlav-a-mega-2026'})
-  });
-  const data=await res.json();
-  const aiText=data.content||data.text||data.response||'';
-  if(aiText){
-    fb[fb.length-1].aiResponse=aiText.slice(0,300);
-    localStorage.setItem('samega_fb_sent',JSON.stringify(fb));
-  }
-}catch(e){}
-render();
-}
-
-function renderChat(){
-let h='<div class="sec-t">💬 AI Chat</div><div class="sec-s">Claude-powered geriatrics Q&A — board prep focus</div>';
-h+='<div class="card" style="display:flex;flex-direction:column;height:calc(100vh - 200px);overflow:hidden">';
-h+='<div class="chat-disclaimer" style="margin:10px 10px 0">⚠️ AI mentor — not a substitute for clinical judgment. For board prep use only.</div>';
-if(S.chat.length>0){h+='<div style="padding:4px 10px;text-align:left"><button onclick="clearChat()" style="font-size:10px;color:rgb(var(--fg3));background:none;border:none;cursor:pointer" aria-label="Clear chat history">🗑 נקה שיחה</button></div>';}
-h+='<div class="chat-msgs" id="chat-msgs">';
-if(S.chat.length===0){
-h+='<div style="padding:8px 4px 12px"><div class="heb" style="font-size:11px;color:rgb(var(--fg2));margin-bottom:10px;text-align:right">התחל שיחה — בחר נושא או כתוב שאלה חופשית:</div>';
-CHAT_STARTERS.forEach(function(s){h+='<button class="chat-starter" onclick="sendChatStarter(this.getAttribute(\'data-t\'))" data-t="'+s.replace(/"/g,'&quot;')+'">' +sanitize(s)+'</button>';});
-h+='</div>';
-}else{
-S.chat.forEach(function(m){
-var cls=m.role==='user'?'chat-msg-user':m.role==='error'?'chat-msg-err':'chat-msg-ai';
-if(m.role==='user'){h+='<div class="'+cls+' heb" dir="rtl" style="text-align:right">'+sanitize(m.text)+'</div>';}
-else{h+='<div class="'+cls+'">'+sanitize(m.text)+'</div>';}
-});
-if(chatLoading){h+='<div class="chat-msg-ai" style="padding:6px 12px"><div class="typing-dots"><span></span><span></span><span></span></div></div>';}
-}
-h+='</div>';
-h+='<div class="chat-input-row">';
-h+='<textarea id="chat-input" placeholder="שאל שאלה גריאטרית..." rows="2" aria-label="Chat input" style="flex:1;border:1px solid rgb(var(--brd));border-radius:10px;padding:8px 10px;font-size:12px;resize:none;font-family:Heebo,sans-serif;direction:rtl;text-align:right;background:inherit;color:inherit" onkeydown="if(event.key===&apos;Enter&apos;&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>';
-h+='<button class="btn btn-p" onclick="sendChat()" '+(chatLoading?'disabled':'')+' style="align-self:flex-end;min-width:52px" aria-label="Send">שלח</button>';
-h+='</div>';
-h+='</div>';
-return h;
-}
-
-async function sendChat(){
-const input=document.getElementById('chat-input');
-const text=(input?input.value:'').trim();
-if(!text||chatLoading)return;
-const key=getApiKey();
-if(!key){const k=prompt('הכנס Anthropic API Key:','');if(!k)return;setApiKey(k);}
-S.chat.push({role:'user',text:text});
-chatLoading=true;save();render();
-setTimeout(function(){const el=document.getElementById('chat-msgs');if(el)el.scrollTop=el.scrollHeight;},50);
-let history=S.chat.slice(-10);
-if(history.length>0&&history[0].role!=='user')history=history.slice(1);
-const messages=history.filter(function(m){return m.role==='user'||m.role==='assistant';}).map(function(m){return{role:m.role,content:m.text};});
-try{
-const ctrl=new AbortController();
-const timeout=setTimeout(function(){ctrl.abort();},45000);
-const resp=await fetch(AI_PROXY,{
-method:'POST',
-headers:{'Content-Type':'application/json','x-api-secret':AI_SECRET},
-body:JSON.stringify({model:'sonnet',max_tokens:1024,system:CHAT_SYSTEM,messages:messages}),
-signal:ctrl.signal
-});
-clearTimeout(timeout);
-if(!resp.ok){const e=await resp.json().catch(function(){return{};});if(resp.status===401||resp.status===403){localStorage.removeItem('samega_apikey');throw new Error('API key invalid');}throw new Error(e.error&&e.error.message?e.error.message:'HTTP '+resp.status);}
-const data=await resp.json();
-S.chat.push({role:'assistant',text:data.content[0].text});
-}catch(e){
-const offline=!navigator.onLine||e.message.includes('Failed to fetch');
-const timedOut=e.name==='AbortError';
-S.chat.push({role:'error',text:offline?'📡 אין חיבור לאינטרנט':timedOut?'⏱️ תם הזמן':'⚠️ '+sanitize(e.message)});
-}
-chatLoading=false;save();render();
-setTimeout(function(){const el=document.getElementById('chat-msgs');if(el)el.scrollTop=el.scrollHeight;},50);
-}
-
-function sendChatStarter(text){const input=document.getElementById('chat-input');if(input)input.value=text;sendChat();}
-function clearChat(){S.chat=[];chatLoading=false;save();render();}
-
+// ===== FEEDBACK + CHAT =====
+// renderFeedback, submitFeedback, renderChat, sendChat, sendChatStarter, clearChat: MOVED to src/ui/more-view.js
 // ===== SUPABASE CLOUD SYNC =====
 const _SB_KEY=SUPA_ANON;
 function _sbDeviceId(){let id=localStorage.getItem('samega_devid');if(!id){id='dev_'+Math.random().toString(36).slice(2,12);localStorage.setItem('samega_devid',id);}return id;}
@@ -2787,7 +2609,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.51';
+const APP_VERSION='9.52';
 const CHANGELOG={
 '9.44':[
 '🗑️ OSCE — removed all dead code (variables, exitO function, comments)',
