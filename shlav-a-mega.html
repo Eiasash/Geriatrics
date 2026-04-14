@@ -741,22 +741,66 @@ document.getElementById('tb').innerHTML=TABS.map(t=>
 }
 function go(t){tab=t;renderTabs();render()}
 
-// ===== QUIZ ENGINE =====
-let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
-let onCallMode=false,flipRevealed=false;
-let timedMode=false,timedSec=90,timedInt=null,timedPaused=false;
-let _optShuffle=null; // {map:[shuffled indices], qIdx} — shuffle per question
-// Session tracking for end-of-session summary
-let _sessionOk=0,_sessionNo=0,_sessionBest={},_sessionWorse={},_sessionStart=Date.now();
-let _sessionSaved=false;
-// Mock exam pacing
-let _mockAnswered=0;
-let qStartTime=Date.now();
-// ===== FEATURES: Confidence, Wrong-Reason, Difficulty =====
-let _confidence=null; // null,0(unsure),1(maybe),2(confident)
-let _pendingSR=null; // qIdx awaiting confidence rating after correct answer
-let _wrongReason=null; // null until classified after wrong answer
-let _diffRating=null; // null,'easy','med','hard'
+// ===== QUIZ ENGINE — consolidated state =====
+// quizState: canonical store for all quiz mutable state.
+// Bare globals (pool, qi, sel, ans, etc.) are defined as aliases below
+// so that existing code, onclick strings, and external view files
+// continue to work. When renderQuiz is extracted, the external file
+// can read window.quizState instead of individual globals.
+const quizState={
+  // Navigation
+  pool:[],qi:0,filt:'all',topicFilt:-1,
+  // Answer
+  sel:null,ans:false,
+  // Exam/timer
+  examMode:false,examTimer:null,examSec:0,
+  onCallMode:false,flipRevealed:false,
+  timedMode:false,timedSec:90,timedInt:null,timedPaused:false,
+  // Option shuffle cache
+  _optShuffle:null,
+  // Session tracking
+  _sessionOk:0,_sessionNo:0,_sessionBest:{},_sessionWorse:{},_sessionStart:Date.now(),
+  _sessionSaved:false,_mockAnswered:0,
+  qStartTime:Date.now(),
+  // Confidence/wrong-reason/difficulty
+  _confidence:null,_pendingSR:null,_wrongReason:null,_diffRating:null,
+};
+// Bare global aliases — read/write through quizState
+// Navigation
+Object.defineProperty(window,'pool',{get(){return quizState.pool;},set(v){quizState.pool=v;}});
+Object.defineProperty(window,'qi',{get(){return quizState.qi;},set(v){quizState.qi=v;}});
+Object.defineProperty(window,'filt',{get(){return quizState.filt;},set(v){quizState.filt=v;}});
+Object.defineProperty(window,'topicFilt',{get(){return quizState.topicFilt;},set(v){quizState.topicFilt=v;}});
+// Answer
+Object.defineProperty(window,'sel',{get(){return quizState.sel;},set(v){quizState.sel=v;}});
+Object.defineProperty(window,'ans',{get(){return quizState.ans;},set(v){quizState.ans=v;}});
+// Exam/timer
+Object.defineProperty(window,'examMode',{get(){return quizState.examMode;},set(v){quizState.examMode=v;}});
+Object.defineProperty(window,'examTimer',{get(){return quizState.examTimer;},set(v){quizState.examTimer=v;}});
+Object.defineProperty(window,'examSec',{get(){return quizState.examSec;},set(v){quizState.examSec=v;}});
+Object.defineProperty(window,'onCallMode',{get(){return quizState.onCallMode;},set(v){quizState.onCallMode=v;}});
+Object.defineProperty(window,'flipRevealed',{get(){return quizState.flipRevealed;},set(v){quizState.flipRevealed=v;}});
+Object.defineProperty(window,'timedMode',{get(){return quizState.timedMode;},set(v){quizState.timedMode=v;}});
+Object.defineProperty(window,'timedSec',{get(){return quizState.timedSec;},set(v){quizState.timedSec=v;}});
+Object.defineProperty(window,'timedInt',{get(){return quizState.timedInt;},set(v){quizState.timedInt=v;}});
+Object.defineProperty(window,'timedPaused',{get(){return quizState.timedPaused;},set(v){quizState.timedPaused=v;}});
+// Option shuffle
+Object.defineProperty(window,'_optShuffle',{get(){return quizState._optShuffle;},set(v){quizState._optShuffle=v;}});
+// Session tracking
+Object.defineProperty(window,'_sessionOk',{get(){return quizState._sessionOk;},set(v){quizState._sessionOk=v;}});
+Object.defineProperty(window,'_sessionNo',{get(){return quizState._sessionNo;},set(v){quizState._sessionNo=v;}});
+Object.defineProperty(window,'_sessionBest',{get(){return quizState._sessionBest;},set(v){quizState._sessionBest=v;}});
+Object.defineProperty(window,'_sessionWorse',{get(){return quizState._sessionWorse;},set(v){quizState._sessionWorse=v;}});
+Object.defineProperty(window,'_sessionStart',{get(){return quizState._sessionStart;},set(v){quizState._sessionStart=v;}});
+Object.defineProperty(window,'_sessionSaved',{get(){return quizState._sessionSaved;},set(v){quizState._sessionSaved=v;}});
+Object.defineProperty(window,'_mockAnswered',{get(){return quizState._mockAnswered;},set(v){quizState._mockAnswered=v;}});
+Object.defineProperty(window,'qStartTime',{get(){return quizState.qStartTime;},set(v){quizState.qStartTime=v;}});
+// Confidence/wrong-reason/difficulty
+Object.defineProperty(window,'_confidence',{get(){return quizState._confidence;},set(v){quizState._confidence=v;}});
+Object.defineProperty(window,'_pendingSR',{get(){return quizState._pendingSR;},set(v){quizState._pendingSR=v;}});
+Object.defineProperty(window,'_wrongReason',{get(){return quizState._wrongReason;},set(v){quizState._wrongReason=v;}});
+Object.defineProperty(window,'_diffRating',{get(){return quizState._diffRating;},set(v){quizState._diffRating=v;}});
+window.quizState=quizState; // Expose for external view files
 // Feature 3: Exam trap detection — delegated to bridge
 function isExamTrap(qIdx){
 return SM.isExamTrap(S.sr,qIdx);
