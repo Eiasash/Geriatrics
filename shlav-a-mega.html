@@ -4218,7 +4218,6 @@ function sendChatStarter(text){const input=document.getElementById('chat-input')
 function clearChat(){S.chat=[];chatLoading=false;save();render();}
 
 // ===== SUPABASE CLOUD SYNC =====
-const _SB_URL='https://krmlzwwelqvlfslwltol.supabase.co';
 const _SB_KEY=SUPA_ANON;
 function _sbDeviceId(){let id=localStorage.getItem('samega_devid');if(!id){id='dev_'+Math.random().toString(36).slice(2,12);localStorage.setItem('samega_devid',id);}return id;}
 async function cloudBackup(){
@@ -4226,7 +4225,7 @@ async function cloudBackup(){
   if(btn){btn.disabled=true;btn.textContent='☁️ Saving...';}
   try{
     const payload={id:_sbDeviceId(),data:S,updated_at:new Date().toISOString()};
-    const res=await fetch(_SB_URL+'/rest/v1/samega_backups',{
+    const res=await fetch(SUPA_URL+'/rest/v1/samega_backups',{
       method:'POST',
       headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
       body:JSON.stringify(payload)
@@ -4234,7 +4233,7 @@ async function cloudBackup(){
     if(res.ok||res.status===409){
       // If 409, try upsert
       if(res.status===409){
-        const patchRes=await fetch(_SB_URL+'/rest/v1/samega_backups?id=eq.'+_sbDeviceId(),{
+        const patchRes=await fetch(SUPA_URL+'/rest/v1/samega_backups?id=eq.'+_sbDeviceId(),{
           method:'PATCH',
           headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'},
           body:JSON.stringify({data:S,updated_at:new Date().toISOString()})
@@ -4253,7 +4252,7 @@ async function cloudRestore(){
   const id=prompt('Enter device ID to restore from (leave blank for this device):',_sbDeviceId())||_sbDeviceId();
   if(!id)return;
   try{
-    const res=await fetch(_SB_URL+'/rest/v1/samega_backups?id=eq.'+encodeURIComponent(id)+'&select=data,updated_at',{
+    const res=await fetch(SUPA_URL+'/rest/v1/samega_backups?id=eq.'+encodeURIComponent(id)+'&select=data,updated_at',{
       headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY}
     });
     if(!res.ok){alert('❌ Restore failed: '+res.status);return;}
