@@ -80,5 +80,63 @@
     return h;
   }
 
+  // ===== FLASHCARDS =====
+  function renderFlash() {
+    var f = FLASH[S.fci % FLASH.length];
+    var fcsr = S.fcsr || {};
+    var fcKnown = 0, fcLearning = 0, fcNew = 0;
+    for (var i = 0; i < FLASH.length; i++) { var r = fcsr['fc_' + i]; if (!r) fcNew++; else if (r.n >= 2) fcKnown++; else fcLearning++; }
+    var h = '<div class="sec-t">\ud83c\udccf Flashcards</div><div class="sec-s">' + FLASH.length + ' high-yield cards \u00b7 Tap to flip</div>';
+    h += '<div style="display:flex;gap:6px;margin-bottom:12px">' +
+      '<span class="badge badge-g">\u2705 Known: ' + fcKnown + '</span>' +
+      '<span class="badge badge-y">\ud83d\udcd6 Learning: ' + fcLearning + '</span>' +
+      '<span class="badge" style="background:rgb(var(--bg2));color:rgb(var(--fg2))">\ud83c\udd95 New: ' + fcNew + '</span>' +
+      '</div>';
+    h += '<div class="fc" onclick="S.fcFlip=!S.fcFlip;save();render()" style="border-color:' + (S.fcFlip ? 'rgb(var(--em))' : 'rgb(var(--sky))') + '" role="button" tabindex="0" aria-label="' + (S.fcFlip ? 'Show question' : 'Show answer') + '">' +
+      '<p style="font-size:' + (S.fcFlip ? '12px' : '14px') + ';font-weight:' + (S.fcFlip ? '400' : '700') + ';line-height:1.7;color:' + (S.fcFlip ? '#334155' : '#1e293b') + '">' +
+      (S.fcFlip ? f.b : f.f) + '</p>' +
+      '<p style="font-size:9px;color:rgb(var(--fg3));margin-top:12px">' + (S.fcFlip ? 'Tap for question' : 'Tap to reveal answer') + ' \u00b7 ' + (S.fci % FLASH.length + 1) + '/' + FLASH.length + '</p>' +
+      '</div>';
+    h += '<div style="display:flex;gap:8px;justify-content:center;margin-top:12px">' +
+      '<button class="btn btn-o" onclick="S.fci=(S.fci-1+FLASH.length)%FLASH.length;S.fcFlip=false;save();render()" aria-label="Previous flashcard">\u2190 Prev</button>' +
+      '<button class="btn btn-p" onclick="S.fci++;S.fcFlip=false;save();render()" aria-label="Next flashcard">Next \u2192</button>' +
+      '</div>';
+    if (S.fcFlip) {
+      h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:8px">' +
+        '<button class="btn" style="background:rgb(var(--red-bg));color:#dc2626" onclick="fcRate(0)" aria-label="Rate: Again">\ud83d\udd04 \u05e9\u05d5\u05d1</button>' +
+        '<button class="btn" style="background:rgb(var(--yellow-bg));color:#d97706" onclick="fcRate(1)" aria-label="Rate: Hard">\ud83e\udd14 \u05e7\u05e9\u05d4</button>' +
+        '<button class="btn" style="background:#ecfdf5;color:#059669" onclick="fcRate(2)" aria-label="Rate: Easy">\u2705 \u05e7\u05dc</button>' +
+        '</div>';
+    }
+    h += '<div style="text-align:center;margin-top:8px"><button onclick="S.fci=Math.floor(Math.random()*FLASH.length);S.fcFlip=false;save();render()" style="font-size:10px;color:rgb(var(--sky));text-decoration:underline" aria-label="Random flashcard">\ud83d\udd00 Random</button></div>';
+    return h;
+  }
+
+  // ===== DRUG LOOKUP =====
+  window.drugSearch = '';
+
+  function renderDrugs() {
+    var h = '<div class="sec-t">\ud83d\udc8a Drug Lookup</div><div class="sec-s">Beers Criteria + ACB Score Checker</div>';
+    h += '<input class="search-box" placeholder="Search drug name..." oninput="drugSearch=this.value;render()" value="' + drugSearch + '" id="dsrch">';
+    var fv = drugSearch.toLowerCase();
+    var filtered = DRUGS.filter(function (d) { return !fv || d.name.toLowerCase().indexOf(fv) >= 0 || d.heb.indexOf(fv) >= 0 || (d.cat || '').toLowerCase().indexOf(fv) >= 0; });
+    h += '<div class="card">';
+    if (!filtered.length) h += '<div style="padding:16px;text-align:center;color:rgb(var(--fg3));font-size:12px">No drugs found</div>';
+    filtered.forEach(function (d) {
+      h += '<div class="drug-row"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
+        '<span style="font-weight:700;font-size:12px">' + d.name + ' ' + (d.heb ? '<span style="color:rgb(var(--fg3))">(' + d.heb + ')</span>' : '') + '</span>' +
+        '<div style="display:flex;gap:4px">' +
+        (d.beers ? '<span class="badge badge-r">BEERS</span>' : '') +
+        (d.acb >= 3 ? '<span class="badge badge-r">ACB ' + d.acb + '</span>' : d.acb >= 2 ? '<span class="badge badge-y">ACB ' + d.acb + '</span>' : d.acb >= 1 ? '<span class="badge badge-g">ACB ' + d.acb + '</span>' : '') +
+        '</div></div>' +
+        '<div style="font-size:10px;color:rgb(var(--fg2))">' + (d.cat || '') + '</div>' +
+        '<div style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">' + d.risk + '</div></div>';
+    });
+    h += '</div>';
+    return h;
+  }
+
   window.renderStudy = renderStudy;
+  window.renderFlash = renderFlash;
+  window.renderDrugs = renderDrugs;
 })();
