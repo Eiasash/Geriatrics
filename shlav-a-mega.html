@@ -320,6 +320,7 @@ upd();setInterval(upd,30000);
 <script src="src/ui/library-view.js"></script>
 <script src="src/ui/calc-view.js"></script>
 <script src="src/ui/track-view.js"></script>
+<script src="src/ui/study-view.js"></script>
 <script>
 let QZ=[];
 
@@ -1599,73 +1600,7 @@ return h;
 function sdCheck(){if(sel===null)return;ans=true;const q=QZ[sdPool[sdQi]];if(sel===q.c){sdStreak++;S.qOk++;srScore(sdPool[sdQi],true);save();render();}else{S.qNo++;srScore(sdPool[sdQi],false);save();render();setTimeout(()=>endSuddenDeath(),800);}}
 function sdNext(){sdQi++;if(sdQi>=sdPool.length)sdQi=0;sel=null;ans=false;autopsyDistractor=-1;render();}
 
-// ===== STUDY NOTES =====
-let openNote=null;
-function toggleNote(i){openNote=openNote===i?null:i;render();}
-function renderStudy(){
-let h=`<div class="sec-t">📚 Study Notes</div><div class="sec-s">40 IMA topics · Hazzard's 8e + Harrison's + Israeli Guidelines</div>`;
-h+=`<input class="search-box" placeholder="Search topics..." oninput="filterNotes(this.value)" id="nfilt">`;
-const fv=document.getElementById('nfilt')?.value?.toLowerCase()||'';
-NOTES.filter(n=>n.topic.toLowerCase().includes(fv)||n.notes.toLowerCase().includes(fv)).forEach(n=>{
-const i=n.id;
-h+=`<div class="card"><button class="acc-h" onclick="toggleNote(${i})">
-<div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:12px">${n.topic}</span>
-<span style="font-size:9px;color:rgb(var(--fg3))">${n.ch}</span></div>
-<span class="acc-ar${openNote===i?' op':''}">▼</span></button>`;
-if(openNote===i){
-const _fmtNote=function(txt){
-const parts=txt.split(/📖\s*HAZZARD'?S?\s*8e\s*BOARD\s*PEARLS:\s*/i);
-const clinicalNotes=parts[0]||'';
-const boardPearls=parts[1]||'';
-function fmtLine(line){
-// Section headers: ▸ HEADING — render as a styled block header
-if(/^▸\s+/.test(line)){
-const title=line.replace(/^▸\s+/,'');
-return '<div style="margin:14px 0 6px;padding:5px 10px;background:linear-gradient(90deg,#eff6ff,transparent);border-left:3px solid #3b82f6;border-radius:0 4px 4px 0;font-size:10px;font-weight:800;color:rgb(var(--blue-fg));text-transform:uppercase;letter-spacing:.6px">'+title+'</div>';
-}
-// Sub-headers: ALL-CAPS word followed by colon at line start (e.g. "Tai Chi:", "RACF setting:")
-line=line.replace(/^([A-Z][A-Z\s\/&\-()]{2,40}):/,'<strong style="color:#0f172a">$1:</strong>');
-// Any remaining "Label:" pattern
-line=line.replace(/^([^:\n]{2,50}):/,'<strong>$1:</strong>');
-// Numbers with units, thresholds
-line=line.replace(/(≥\d[\d.]*\s*(?:mmHg|m\/s|s\b|mg|IU|%)?|≤\d[\d.]*\s*(?:mmHg|m\/s|s\b|mg|IU|%)?|[<>]\d[\d.]*\s*(?:mmHg|m\/s|s\b|mg|IU|%)?|\d+–\d+%|\d+%)/g,'<b style="color:#0f172a">$1</b>');
-// SOE badges
-line=line.replace(/\(SOE=[A-C]\)/g,'<span style="background:#ecfdf5;color:#059669;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;vertical-align:middle">$&</span>');
-// INCREASES / AVOID / WARNING keywords
-line=line.replace(/\b(INCREASES|AVOID|DO NOT|WARNING|CRITICAL|CONTRAINDICATED)\b/g,'<span style="color:#dc2626;font-weight:700">$1</span>');
-// Positive keywords
-line=line.replace(/\b(SOE=A)\b/g,'<span style="color:#059669;font-weight:700">$1</span>');
-return line;
-}
-function fmtBlock(t){
-const paras=t.split(/\n{2,}/);
-return paras.map(function(para){
-const lines=para.split('\n');
-// Check if first line is a section header
-if(lines.length===1&&/^▸\s+/.test(lines[0])){
-return fmtLine(lines[0]);
-}
-const fmt=lines.map(fmtLine).join('<br>');
-return '<p style="font-size:11.5px;line-height:1.9;margin:0 0 10px;color:rgb(var(--fg))">'+fmt+'</p>';
-}).join('');
-}
-let h='<div style="font-size:10px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📝 Clinical Notes</div>';
-h+=fmtBlock(clinicalNotes.trim());
-if(boardPearls.trim()){
-h+='<div style="margin-top:16px;padding:10px 12px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:8px">';
-h+='<div style="font-size:10px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📖 Hazzard\'s 8e — Board Pearls</div>';
-h+='<p style="font-size:11px;line-height:1.85;margin:0;color:#14532d">'+boardPearls.trim().replace(/(≥\d[\d.]*|≤\d[\d.]*|[<>]\d[\d.]*|\d+%)/g,'<b>$1</b>').replace(/\(SOE=[A-C]\)/g,'<span style="background:#dcfce7;color:rgb(var(--green-fg));padding:1px 4px;border-radius:3px;font-size:9px;font-weight:700">$&</span>').replace(/\b(INCREASES|AVOID|DO NOT)\b/g,'<span style="color:#dc2626;font-weight:700">$1</span>')+'</p>';
-h+='</div>';
-}
-return h;
-};
-h+=`<div style="padding:10px 14px 14px;border-top:1px solid rgb(var(--brd))">${_fmtNote(n.notes)}</div>`;
-}
-h+=`</div>`;
-});
-return h;
-}
-function filterNotes(v){render();}
+// renderStudy, toggleNote, filterNotes, openNote: MOVED to src/ui/study-view.js
 
 // ===== SYLLABUS (P005-2026 Official IMA) =====
 let sylSec='harAll';
@@ -2902,7 +2837,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.49';
+const APP_VERSION='9.50';
 const CHANGELOG={
 '9.44':[
 '🗑️ OSCE — removed all dead code (variables, exitO function, comments)',
