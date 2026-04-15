@@ -87,17 +87,27 @@ describe("service worker version sync", () => {
 
   it("APP_VERSION in HTML aligns with sw.js CACHE", () => {
     const appVersionMatch = html.match(/APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
-    const cacheMatch = swContent.match(/CACHE\s*=\s*['"]([^'"]+)['"]/);
+    const cacheMatch = swContent.match(/CACHE\s*=\s*'shlav-a-v([^']+)'/);
 
     expect(appVersionMatch, "APP_VERSION found").not.toBeNull();
     expect(cacheMatch, "CACHE version found").not.toBeNull();
 
     const appVersion = appVersionMatch[1];
-    const cacheVersion = cacheMatch[1];
-    // Cache format: "shlav-a-v9.14", APP_VERSION: "9.14"
-    // Just verify the major.minor aligns
-    expect(cacheVersion, `CACHE "${cacheVersion}" contains APP_VERSION "${appVersion}"`).toContain(
-      appVersion.split(".").slice(0, 2).join(".")
+    const swVersion = cacheMatch[1];
+    // Exact match: APP_VERSION "9.50" must equal sw.js CACHE suffix "9.50"
+    expect(swVersion, `sw.js CACHE version "${swVersion}" must exactly match APP_VERSION "${appVersion}"`).toBe(
+      appVersion
+    );
+  });
+
+  it("package.json version matches APP_VERSION", () => {
+    const pkg = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf-8"));
+    const appVersionMatch = html.match(/APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
+    expect(appVersionMatch, "APP_VERSION found").not.toBeNull();
+    const appVersion = appVersionMatch[1];
+    // package.json uses semver "9.50.0", APP_VERSION is "9.50"
+    expect(pkg.version, `package.json "${pkg.version}" must start with APP_VERSION "${appVersion}"`).toMatch(
+      new RegExp("^" + appVersion.replace(/\./g, "\\."))
     );
   });
 });

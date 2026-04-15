@@ -111,7 +111,7 @@ the full decomposition ledger and safe-next-steps list.
 ├── tests/
 │   ├── dataIntegrity.test.js        # 25 tests: question schema, duplicates, topic coverage
 │   ├── expandedDataIntegrity.test.js # 50 tests: deeper data validation
-│   ├── appIntegrity.test.js         # 16 tests: HTML structure, SW sync, security
+│   ├── appIntegrity.test.js         # 17 tests: HTML structure, SW sync, version alignment, security
 │   ├── serviceWorker.test.js        # 25 tests: SW cache config, fetch strategy, version sync
 │   └── appLogic.test.js             # 91 tests: quiz engine, FSRS, sanitization, AI, study plan
 │
@@ -243,7 +243,7 @@ npm test             # Run all tests (vitest, 273 tests)
 |------|-------|-------------|
 | `tests/dataIntegrity.test.js` | 25 | Question schema/duplicates/topic coverage, notes, drugs, flashcards, OSCE, topics, cross-file referential integrity |
 | `tests/expandedDataIntegrity.test.js` | 50 | Deeper validation: answer integrity, option bounds, whitespace, year field, topic distribution balance, notes content length, drugs ACB/Beers cross-checks, flashcard length, OSCE null entries, tabs schema, image map integrity |
-| `tests/appIntegrity.test.js` | 16 | HTML structure (RTL, viewport, PWA), SW version sync, security checks (eval, innerHTML), manifest validation |
+| `tests/appIntegrity.test.js` | 17 | HTML structure (RTL, viewport, PWA), SW version sync, package.json version alignment, security checks (eval, innerHTML), manifest validation |
 | `tests/serviceWorker.test.js` | 25 | SW cache configuration, URL lists, version sync, fetch strategy routing, file existence checks |
 | `tests/appLogic.test.js` | 91 | Quiz engine, FSRS spaced repetition, sanitization, AI integration, study plan logic |
 
@@ -441,7 +441,7 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Study notes | 40 |
 | Hazzard chapters | 108 (in-app reader) |
 | Harrison chapters | 69 (in-app reader) |
-| Test suite | 408 tests across 9 files (vitest) |
+| Test suite | 409 tests across 9 files (vitest) |
 | CI workflows | 3 (ci.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=160, onchange=26, oninput=6 |
 | App version | v9.48 |

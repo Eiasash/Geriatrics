@@ -172,7 +172,8 @@ describe("sw.js — version alignment with app", () => {
 
     const swVersion = cacheMatch[1];
     const appVersion = appVersionMatch[1];
-    expect(swVersion).toContain(appVersion.split(".").slice(0, 2).join("."));
+    // Exact match — no loose .toContain()
+    expect(swVersion, `sw.js CACHE "${swVersion}" must exactly match APP_VERSION "${appVersion}"`).toBe(appVersion);
   });
 
   it("HTML cache cleanup exempts the exact sw.js CACHE key", () => {
