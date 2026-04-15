@@ -13,10 +13,10 @@ large render functions decomposed into prefixed helpers.
 | Function | Helpers | Orchestrator | Prefix |
 |----------|---------|-------------|--------|
 | `renderCalc` | 13 (_rcCrCl … _rcMorse) | 15 lines | `_rc*` |
-| `renderQuiz` | 2 (_rqSuddenDeath, _rqMain) | 5 lines | `_rq*` |
+| `renderQuiz` | 2 (_rqSuddenDeath, _rqMain) + 5 _rqm* | 5 lines | `_rq*`/`_rqm*` |
 | `renderTrack` | 4 (_rtTop, _rtMid, _rtProgress, _rtFooter) | 7 lines | `_rt*` |
 | `renderLibrary` | 7 (_rlHeader … _rlFooter) | 10 lines | `_rl*` |
-| **Total** | **26 helpers** | | |
+| **Total** | **31 helpers** | | |
 
 ## S.ts Bug — Fixed
 
@@ -27,7 +27,7 @@ prevent regression.
 
 | Function | Lines | Notes |
 |----------|-------|-------|
-| `_rqMain` | ~230 | Quiz main flow — could be split further into question/controls/explain |
+| `_rqMain` | ~75 | Quiz header/filters — question/controls/explain extracted to _rqm* |
 | `_rtTop` | ~140 | Track top half — metrics through calendar |
 | `_rlHazzard` | ~96 | Hazzard reader + chapter list + annotated PDFs |
 | `_rtProgress` | ~90 | Progress stats + bookmarks + syllabus + weak spots |

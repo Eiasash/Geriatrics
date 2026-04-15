@@ -115,3 +115,10 @@ describe("function count floor", () => {
     expect(fns.length).toBeGreaterThanOrEqual(170);
   });
 });
+
+// ─── _rqMain → _rqm* helpers ───
+describe("_rqMain → _rqm* helpers", () => {
+  const H = ["_rqmQuestion","_rqmControls","_rqmTeachBack","_rqmExplain","_rqmFooter"];
+  for (const n of H) { it(`${n} exists`, () => { expect(scriptContent).toMatch(new RegExp(`function\\s+${n}\\s*\\(`)); }); }
+  it("_rqMain calls all helpers", () => { const b = extractBody(scriptContent, "_rqMain"); for (const n of H) expect(b).toContain(n+"("); });
+});
