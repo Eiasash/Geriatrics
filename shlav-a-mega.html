@@ -318,6 +318,7 @@ upd();setInterval(upd,30000);
 <div class="tabs" id="tb" role="tablist" aria-label="Navigation tabs"></div>
 
 <script src="shared/fsrs.js"></script>
+<script src="src/storage.js"></script>
 <script src="src/sw-update.js"></script>
 <script>
 let QZ=[];
@@ -435,14 +436,9 @@ const _dataPromise = (async function loadDataArrays() {
       else if (varName === 'TABS') TABS = results[i];
       });
     _dataReady = true;
-    // Safe JSON parser with fallback
-    function safeJSONParse(key, fallback) {
-      try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
-      catch(e) { localStorage.removeItem(key); return fallback; }
-    }
     // Load user-generated/approved questions from localStorage
-    const _xp=safeJSONParse('samega_pending_qs',[]);
-    const _xc=safeJSONParse('samega_custom_qs',[]);
+    const _xp=lsGet('samega_pending_qs',[]);
+    const _xc=lsGet('samega_custom_qs',[]);
     const _xAll=[..._xp,..._xc].filter(q=>q&&typeof q.q==='string'&&Array.isArray(q.o)&&q.o.length===4&&Number.isInteger(q.c)&&q.c>=0&&q.c<=3&&typeof q.ti==='number');
     if(_xAll.length){QZ.push(..._xAll);console.log('Loaded '+_xAll.length+' user-generated questions');}
     console.log('Data loaded: ' + QZ.length + ' questions, ' + NOTES.length + ' notes');
@@ -551,7 +547,7 @@ d.textContent=fmtT(pomoBreakSec);},1000);
 
 // ===== SUDDEN DEATH MODE =====
 let sdMode=false,sdStreak=0,sdPool=[],sdQi=0;
-let sdLeaderboard=JSON.parse(localStorage.getItem('sd_lb')||'[]');
+let sdLeaderboard=lsGet('sd_lb',[]);
 function startSuddenDeath(){
 sdMode=true;sdStreak=0;sdPool=QZ.map((_,i)=>i);
 for(let i=sdPool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sdPool[i],sdPool[j]]=[sdPool[j],sdPool[i]];}
@@ -561,7 +557,7 @@ function endSuddenDeath(){
 sdLeaderboard.push({streak:sdStreak,date:new Date().toISOString().slice(0,10)});
 sdLeaderboard.sort((a,b)=>b.streak-a.streak);
 sdLeaderboard=sdLeaderboard.slice(0,10);
-localStorage.setItem('sd_lb',JSON.stringify(sdLeaderboard));
+lsSet('sd_lb',sdLeaderboard);
 sdMode=false;
 alert(`Sudden Death Over!\n\n💀 Streak: ${sdStreak} questions\n${sdStreak>=20?'Legendary!':sdStreak>=10?'Impressive!':'Keep practicing!'}`);
 render();
@@ -1082,7 +1078,7 @@ function setApiKey(k){if(k)localStorage.setItem('samega_apikey',k.trim());else l
 // ===== TEACH-BACK =====
 let teachBackState=null;
 // ===== AI EXPLAIN =====
-let _exCache={};try{_exCache=JSON.parse(localStorage.getItem('samega_ex')||'{}')}catch(e){}
+let _exCache=lsGet('samega_ex',{});
 function _updateWrongUI(){
   // Update just the why-wrong container without full re-render (preserves AI explanation)
   const el=document.getElementById('why-wrong-box');
@@ -1304,7 +1300,7 @@ function showMockExamResult(pct,correct,tot,elapsed,byTopic){
   <div style="font-size:14px;font-weight:700;margin-top:4px;color:${pass?'#059669':'#dc2626'}">${pass?'PASS ✓':'NEEDS WORK ✗'} (pass ≥60%)</div>
 </div>`;
 // Feature 2: Historical comparison + prediction
-let _prevHist=[];try{_prevHist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');}catch(e){}
+let _prevHist=lsGet('samega_mock_hist',[]);
 if(_prevHist.length>1){
 const _prev=_prevHist[_prevHist.length-2];
 const _diff=pct-_prev.score;
@@ -4265,7 +4261,7 @@ h+='<textarea id="fb-text" dir="auto" placeholder="Describe your feedback in det
 h+='<button onclick="submitFeedback()" class="btn" style="width:100%;padding:10px;background:#7c3aed;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">📤 Submit Feedback</button>';
 h+='</div>';
 // Recent feedback
-let fb=[];try{fb=JSON.parse(localStorage.getItem('samega_fb_sent')||'[]');}catch(e){}
+let fb=lsGet('samega_fb_sent',[]);
 if(fb.length){
 h+='<div class="card" style="padding:14px">';
 h+='<div style="font-size:12px;font-weight:700;margin-bottom:8px">📋 Your Submissions ('+fb.length+')</div>';
@@ -4664,7 +4660,7 @@ function takeWeeklySnapshot(){
   try{
     const now=new Date();
     const weekKey='w_'+now.getFullYear()+'_'+Math.floor((now-new Date(now.getFullYear(),0,0))/(7*864e5));
-    const snapshots=JSON.parse(localStorage.getItem('samega_weekly')||'{}');
+    const snapshots=lsGet('samega_weekly',{});
     if(snapshots[weekKey])return; // already taken this week
     const tSt=getTopicStats();
     const snap={};
@@ -4672,12 +4668,12 @@ function takeWeeklySnapshot(){
     snapshots[weekKey]={date:now.toISOString(),acc:snap};
     const keys=Object.keys(snapshots).sort();
     if(keys.length>52)delete snapshots[keys[0]];
-    localStorage.setItem('samega_weekly',JSON.stringify(snapshots));
+    lsSet('samega_weekly',snapshots);
   }catch(e){}
 }
 function getTopicTrend(ti){
   try{
-    const snapshots=JSON.parse(localStorage.getItem('samega_weekly')||'{}');
+    const snapshots=lsGet('samega_weekly',{});
     const keys=Object.keys(snapshots).sort();
     if(keys.length<2)return null;
     const prev=snapshots[keys[keys.length-2]].acc[ti];
