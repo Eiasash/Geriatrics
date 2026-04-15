@@ -307,7 +307,7 @@ upd();setInterval(upd,30000);
 <a href="#ct" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
 <h1>Shlav A Mega <span style="font-size:10px;font-weight:500;color:#0D7377;vertical-align:middle">Geriatrics</span> <span id="headerVer" style="font-size:9px;font-weight:400;color:rgb(var(--fg2));vertical-align:middle"></span></h1>
-<button class="dm-btn" onclick="toggleStudyMode()" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" onclick="toggleDark()" title="Dark Mode" aria-label="Toggle dark mode">🌓</button><button class="dm-btn" onclick="showHelp()" title="Help" aria-label="Help" style="right:82px;font-size:11px">❓</button>
+<button class="dm-btn" data-action="toggle-study" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" data-action="toggle-dark" title="Dark Mode" aria-label="Toggle dark mode">🌓</button><button class="dm-btn" data-action="show-help" title="Help" aria-label="Help" style="right:82px;font-size:11px">❓</button>
 <p id="hdr-sub">Loading...</p>
 </div>
 
@@ -3984,7 +3984,7 @@ h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;col
 <div>Shlav A Mega v${APP_VERSION} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · build ${BUILD_HASH}</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div style="margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-<button onclick="applyUpdate()" style="font-size:10px;padding:5px 14px;background:#0D7377;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600">🔄 Force Update</button>
+<button data-action="apply-update" style="font-size:10px;padding:5px 14px;background:#0D7377;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600">🔄 Force Update</button>
 <a href="https://eiasash.github.io/InternalMedicine/" target="_blank" style="font-size:10px;padding:5px 14px;background:#4f46e5;color:#fff;border:none;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">🏥 Internal Medicine App →</a>
 </div>
 <div style="margin-top:6px">صدقة جارية الى من نحب</div></div>`;
@@ -4808,7 +4808,7 @@ const sec=(title,icon,color,items)=>`<div style="margin-bottom:14px">
 ov.innerHTML=`<div style="max-width:420px;margin:0 auto;background:rgb(var(--card-bg));border-radius:16px;padding:20px;color:rgb(var(--fg));font-size:11px;line-height:1.7">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
 <div style="font-size:16px;font-weight:800">🩺 Shlav A Mega</div>
-<button onclick="this.closest('#help-overlay').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:rgb(var(--fg3))" aria-label="Close help">✕</button>
+<button data-action="close-overlay" style="background:none;border:none;font-size:20px;cursor:pointer;color:rgb(var(--fg3))" aria-label="Close help">✕</button>
 </div>
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:16px">Israeli Geriatrics Board Exam Prep (שלב א׳ גריאטריה) · P005-2026 · Hazzard's 8e + Harrison's 22e · Works Offline</div>
 <div style="padding:10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:10px;margin-bottom:14px">
@@ -4899,6 +4899,20 @@ Notification.requestPermission();
 }
 scheduleDailyNotification();
 }).catch(()=>{});
+
+// Delegated click handler for shell-level data-action buttons
+document.body.addEventListener('click',function(e){
+var btn=e.target.closest('[data-action]');
+if(!btn)return;
+switch(btn.dataset.action){
+case 'toggle-study':toggleStudyMode();break;
+case 'toggle-dark':toggleDark();break;
+case 'show-help':showHelp();break;
+case 'apply-update':applyUpdate();break;
+case 'dismiss-update':dismissUpdateBanner();break;
+case 'close-overlay':var ov=btn.closest('[id$="-overlay"]');if(ov)ov.remove();break;
+}
+});
 
 _dataPromise.then(()=>{renderTabs();render();}).catch((e)=>{console.error('Boot failed:',e);document.body.innerHTML='<div style="padding:2em;text-align:center;color:#ef4444"><h2>Failed to load app data</h2><p>'+String(e)+'</p><button onclick="location.reload()">Retry</button></div>';});
 </script>
