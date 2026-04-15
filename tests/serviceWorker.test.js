@@ -215,11 +215,13 @@ describe("sw.js — version alignment with app", () => {
     expect(cacheKeyMatch, "CACHE key found in sw.js").not.toBeNull();
     const swCacheKey = cacheKeyMatch[1];
 
-    // The HTML cleanup code filters old caches: k !== '<current-cache-key>'
+    // The cache cleanup code filters old caches: k !== '<current-cache-key>'
     // This must match the sw.js CACHE exactly or the current cache gets deleted
-    // Cache cleanup now uses dynamic reference: k!=='shlav-a-v'+APP_VERSION
-    const dynamicCleanup = html.includes("k!=='shlav-a-v'+APP_VERSION");
-    const staticCleanup = html.match(/ks\.filter\(k=>k\.startsWith\('shlav-a-'\)&&k!=='([^']+)'\)/);
+    // Cache cleanup may live in HTML or in src/sw-update.js (extracted module)
+    const swUpdatePath = resolve(ROOT, "src", "sw-update.js");
+    const appSource = html + (existsSync(swUpdatePath) ? readFileSync(swUpdatePath, "utf-8") : "");
+    const dynamicCleanup = appSource.includes("k!=='shlav-a-v'+appVersion") || appSource.includes("k!=='shlav-a-v'+APP_VERSION");
+    const staticCleanup = appSource.match(/ks\.filter\((?:function\(k\)\{return |k=>)k\.startsWith\('shlav-a-'\)&&k!=='([^']+)'\)/);
     
     if (dynamicCleanup) {
       // Dynamic reference — always matches APP_VERSION, which matches sw.js CACHE

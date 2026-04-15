@@ -318,6 +318,7 @@ upd();setInterval(upd,30000);
 <div class="tabs" id="tb" role="tablist" aria-label="Navigation tabs"></div>
 
 <script src="shared/fsrs.js"></script>
+<script src="src/sw-update.js"></script>
 <script>
 let QZ=[];
 
@@ -4859,14 +4860,8 @@ ${sec('Progress Tracking','📊','#f59e0b',
 document.body.appendChild(ov);
 }
 
-// PWA + Background Sync + Daily Notification
-if('serviceWorker' in navigator){
-// ===== UPDATE BANNER =====
 // ===== SYLLABUS CONFIG =====
 const SYLLABUS_VERSION='P005-2026';
-
-// ===== UPDATE DISMISSAL KEY =====
-const DISMISS_KEY='shlav_update_dismissed_'+APP_VERSION;
 
 // ===== WRONG ANSWER REPORTS → SUPABASE =====
 async function saveAnswerReport(qIdx, userReason, aiVerdict){
@@ -4880,45 +4875,9 @@ body:JSON.stringify({app:'geriatrics',question_idx:qIdx,question_text:(q.q||'').
 }catch(e){console.warn('Report save failed:',e.message);}
 }
 
-function showUpdateBanner(){
-if(localStorage.getItem(DISMISS_KEY))return;
-const existing=document.getElementById('update-banner');
-if(existing)return;
-const b=document.createElement('div');
-b.id='update-banner';
-b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#0D7377,#14919B);color:#fff;padding:12px 16px;font-size:12px;display:flex;align-items:center;gap:10px;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.3)';
-b.innerHTML=`<div><b>🆕 עדכון זמין!</b> גרסה חדשה מוכנה</div>
-<div style="display:flex;gap:6px;flex-shrink:0">
-<button onclick="applyUpdate()" style="background:rgb(var(--card-bg));color:#0D7377;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer">🔄 עדכן עכשיו</button>
-<button onclick="dismissUpdateBanner()" style="background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">✕</button>
-</div>`;
-document.body.prepend(b);
-}
-function dismissUpdateBanner(){localStorage.setItem(DISMISS_KEY,'1');var b=document.getElementById('update-banner');if(b)b.remove();}
-function applyUpdate(){
-localStorage.removeItem(DISMISS_KEY);
-if(navigator.serviceWorker&&navigator.serviceWorker.controller){
-navigator.serviceWorker.getRegistrations().then(regs=>{
-regs.forEach(r=>{if(r.waiting)r.waiting.postMessage({type:'SKIP_WAITING'});});
-});
-}
-caches.keys().then(ks=>{ks.forEach(k=>caches.delete(k));});
-setTimeout(()=>window.location.reload(true),500);
-}
-
-// Clear old caches
-caches.keys().then(ks=>{
-const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v'+APP_VERSION);
-old.forEach(k=>{caches.delete(k);console.log('Deleted old cache:',k);});
-});
-navigator.serviceWorker.register('sw.js').then(reg=>{
-reg.update();
-// Detect waiting worker = update available
-if(reg.waiting){showUpdateBanner();}
-reg.addEventListener('updatefound',()=>{
-const nw=reg.installing;
-if(nw){nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller){showUpdateBanner();}});}
-});
+// PWA + Background Sync + Daily Notification (update logic in src/sw-update.js)
+initSWUpdate(APP_VERSION).then(function(reg){
+if(!reg)return;
 // Schedule daily notification at 07:00
 function scheduleDailyNotification(){
 const now=new Date();
@@ -4940,8 +4899,6 @@ Notification.requestPermission();
 }
 scheduleDailyNotification();
 }).catch(()=>{});
-}
-// queueBackgroundSync removed — was dead code (never called)
 
 _dataPromise.then(()=>{renderTabs();render();}).catch((e)=>{console.error('Boot failed:',e);document.body.innerHTML='<div style="padding:2em;text-align:center;color:#ef4444"><h2>Failed to load app data</h2><p>'+String(e)+'</p><button onclick="location.reload()">Retry</button></div>';});
 </script>
