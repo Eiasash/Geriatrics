@@ -1516,6 +1516,7 @@ return '';
 // ===== QUIZ MAIN HELPERS (_rqm* prefix) =====
 function _rqmQuestion(){
 const q=QZ[pool[qi]];
+const bk=S.bk[pool[qi]];
 let h='';
 if(timedMode&&!ans){
   h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
@@ -1665,6 +1666,7 @@ h+=`</div>`;
 if(ans&&!examMode&&q.e){
 h+=`<div style="margin-top:8px;padding:10px 12px;background:rgb(var(--blue-bg));border:1px solid rgb(var(--blue-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--blue-fg));direction:rtl;text-align:right">`;
 h+=`<div style="font-weight:700;margin-bottom:4px;font-size:10px">📝 הסבר</div>`;
+const _shuf=getOptShuffle(pool[qi],q);
 h+=`<div>${sanitize(remapExplanationLetters(q.e,_shuf)).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
 h+=`</div>`;
 }
@@ -3750,6 +3752,10 @@ h+=`</div></div>`;
 return h;
 }
 function _rtMid(){
+const done=Object.values(S.ck).filter(Boolean).length;
+const tot=S.qOk+S.qNo;const pctN=tot?Math.round(S.qOk/tot*100):0;const pct=tot?pctN+'%':'—';
+const dueN=getDueQuestions().length;
+const streak=getStudyStreak();
 let h='';
 // Spaced Reading Due (Feature 9)
 const _hazDue=getChaptersDueForReading('haz',30);
@@ -3808,6 +3814,11 @@ h+=`<div class="stats">
 return h;
 }
 function _rtProgress(){
+const done=Object.values(S.ck).filter(Boolean).length;
+const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
+const bkCount=Object.values(S.bk).filter(Boolean).length;
+const dueN=getDueQuestions().length;
+const estScore=calcEstScore();
 let h='';
 // Bookmarked questions with folder grouping
 if(bkCount>0){
@@ -4512,8 +4523,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.48';
+const APP_VERSION='9.49';
 const CHANGELOG={
+'9.49': ['Fix variable scoping bugs in decomposed render helpers (_rtMid, _rtProgress, _rqmQuestion, _rqmExplain)', 'Add missing variable declarations for bk, done, pct, bkCount, dueN, _shuf in helper functions'],
     '9.48': [
       '17 תמונות נוספות קושרו באמצעות התאמת טקסט',
       'סה"כ 116 שאלות עם תמונות'
