@@ -335,7 +335,7 @@ const q=QZ[idx];if(!q)return;
 const ti=q.ti||0;
 if(!st[ti])st[ti]={ok:0,no:0,tot:0};
 st[ti].tot++;
-if(d.n>0)st[ti].ok++;else st[ti].no++;
+if(d.tot>0&&d.ok/d.tot>=0.5)st[ti].ok++;else st[ti].no++;
 });
 return st;
 }
@@ -788,6 +788,7 @@ let _sessionOk=0,_sessionNo=0,_sessionBest={},_sessionWorse={},_sessionStart=Dat
 let _sessionSaved=false;
 // Mock exam pacing
 let _mockAnswered=0;
+let _examStartOk=0,_examStartNo=0;
 let qStartTime=Date.now();
 // ===== FEATURES: Confidence, Wrong-Reason, Difficulty =====
 let _confidence=null; // null,0(unsure),1(maybe),2(confident)
@@ -868,7 +869,7 @@ pool=QZ.map((_,i)=>i).filter(i=>QZ[i].ti===ti);
 for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
 pool=pool.slice(0,20);
 qi=0;sel=null;ans=false;_sessionOk=0;_sessionNo=0;_sessionStart=Date.now();
-examMode=true;examSec=1800;filt='topic';topicFilt=ti;
+examMode=true;_examStartOk=S.qOk;_examStartNo=S.qNo;examSec=1800;filt='topic';topicFilt=ti;
 if(examTimer)clearInterval(examTimer);
 examTimer=setInterval(()=>{examSec--;if(examSec<=0){clearInterval(examTimer);endMiniExam();}
 const el=document.getElementById('etimer');if(el)el.textContent=fmtT(examSec);},1000);
@@ -1228,9 +1229,9 @@ function buildMockExamPool(){
 }
 let mockExamResults=null; // stores per-topic breakdown
 function startExam(){
-  // Classic 150q mode (unchanged) 
+  // Classic 150q mode (unchanged)
   examMode=true;filt='all';buildPool();pool=pool.slice(0,150);
-  S.qOk=0;S.qNo=0;examSec=10800;mockExamResults=null;save();
+  _examStartOk=S.qOk;_examStartNo=S.qNo;examSec=10800;mockExamResults=null;save();
   examTimer=setInterval(()=>{examSec--;if(examSec<=0)endExam();
   const el=document.getElementById('etimer');if(el)el.textContent=fmtT(examSec);},1000);
   render();
@@ -1243,7 +1244,7 @@ function startMockExam(){
   // per-topic tracking: {ok,no} per ti
   mockExamResults={byTopic:{},start:Date.now()};
   EXAM_FREQ.forEach((_,ti)=>{mockExamResults.byTopic[ti]={ok:0,no:0};});
-  S.qOk=0;S.qNo=0;examSec=10800;save();
+  _examStartOk=S.qOk;_examStartNo=S.qNo;examSec=10800;save();
   examTimer=setInterval(()=>{examSec--;if(examSec<=0)endMockExam();
   const el=document.getElementById('etimer');if(el)el.textContent=fmtT(examSec);},1000);
   render();
@@ -1261,24 +1262,24 @@ function checkMockIntercept(){
 }
 function endExam(){
   clearInterval(examTimer);examMode=false;
-  const tot=S.qOk+S.qNo,pct=tot?Math.round(S.qOk/tot*100):0;
-  alert(`Exam Complete!\n\n✅ ${S.qOk}/${tot} (${pct}%)\n${pct>=60?'PASS 🎉':'NEEDS WORK ❌'}\n\nTime: ${fmtT(10800-examSec)}`);
+  const eOk=S.qOk-_examStartOk,eNo=S.qNo-_examStartNo,tot=eOk+eNo,pct=tot?Math.round(eOk/tot*100):0;
+  alert(`Exam Complete!\n\n✅ ${eOk}/${tot} (${pct}%)\n${pct>=60?'PASS 🎉':'NEEDS WORK ❌'}\n\nTime: ${fmtT(10800-examSec)}`);
   render();
 }
 function endMockExam(){
   clearInterval(examTimer);examMode=false;
   if(!mockExamResults){render();return;}
-  // Build analytics
-  const tot=S.qOk+S.qNo,pct=tot?Math.round(S.qOk/tot*100):0;
+  // Build analytics — use deltas so lifetime counters aren't corrupted
+  const eOk=S.qOk-_examStartOk,eNo=S.qNo-_examStartNo,tot=eOk+eNo,pct=tot?Math.round(eOk/tot*100):0;
   const elapsed=Math.floor((Date.now()-mockExamResults.start)/1000);
   // Store in history
   try{const hist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');
-    hist.push({date:new Date().toISOString(),score:pct,correct:S.qOk,total:tot,elapsed,byTopic:mockExamResults.byTopic});
+    hist.push({date:new Date().toISOString(),score:pct,correct:eOk,total:tot,elapsed,byTopic:mockExamResults.byTopic});
     if(hist.length>20)hist.splice(0,hist.length-20);
     localStorage.setItem('samega_mock_hist',JSON.stringify(hist));
   }catch(e){}
   // Show in custom modal instead of alert
-  showMockExamResult(pct,S.qOk,tot,elapsed,mockExamResults.byTopic);
+  showMockExamResult(pct,eOk,tot,elapsed,mockExamResults.byTopic);
   mockExamResults=null;
   render();
 }
@@ -4356,7 +4357,7 @@ body:JSON.stringify({model:'sonnet',max_tokens:1024,system:CHAT_SYSTEM,messages:
 signal:ctrl.signal
 });
 clearTimeout(timeout);
-if(!resp.ok){const e=await resp.json().catch(function(){return{};});if(resp.status===401||resp.status===403){localStorage.removeItem('samega_apikey');throw new Error('API key invalid');}throw new Error(e.error&&e.error.message?e.error.message:'HTTP '+resp.status);}
+if(!resp.ok){const e=await resp.json().catch(function(){return{};});throw new Error(e.error&&e.error.message?e.error.message:'HTTP '+resp.status);}
 const data=await resp.json();
 S.chat.push({role:'assistant',text:data.content[0].text});
 }catch(e){
@@ -4641,7 +4642,7 @@ const CHANGELOG={
 {const hv=document.getElementById('headerVer');if(hv)hv.textContent='v'+APP_VERSION;}
 // Prevent accidental navigation during mock exam
 window.addEventListener('beforeunload',function(e){
-  if(examMode&&(S.qOk+S.qNo)>0){
+  if(examMode&&(S.qOk-_examStartOk+S.qNo-_examStartNo)>0){
     e.preventDefault();
     e.returnValue='Mock exam in progress — are you sure you want to leave?';
     return e.returnValue;
