@@ -356,7 +356,7 @@ if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;
 if(!S.sp)S.sp={};
 if(S.spOpen===undefined)S.spOpen=false;
 let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>{
-  localStorage.setItem(LS,JSON.stringify(S));
+  try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){console.error('Save failed:',e);}
   // Warn if localStorage approaching 5MB limit
   try{
     let total=0;
@@ -4340,8 +4340,6 @@ async function sendChat(){
 const input=document.getElementById('chat-input');
 const text=(input?input.value:'').trim();
 if(!text||chatLoading)return;
-const key=getApiKey();
-if(!key){const k=prompt('הכנס Anthropic API Key:','');if(!k)return;setApiKey(k);}
 S.chat.push({role:'user',text:text});
 chatLoading=true;save();render();
 setTimeout(function(){const el=document.getElementById('chat-msgs');if(el)el.scrollTop=el.scrollHeight;},50);
@@ -4416,7 +4414,7 @@ async function cloudRestore(){
     if(!rows||!rows.length){alert('No backup found for ID: '+id);return;}
     const row=rows[0];
     if(confirm('Restore backup from '+new Date(row.updated_at).toLocaleString()+'?\nThis will overwrite your current progress.')){
-      Object.assign(S,row.data);save();render();
+      const allowed=Object.keys(S);const validated={};for(const k of allowed){if(k in row.data)validated[k]=row.data[k];}Object.assign(S,validated);save();render();
       alert('✅ Progress restored!');
     }
   }catch(e){alert('❌ Restore failed: '+e.message);}
@@ -4512,7 +4510,7 @@ else if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>alert('
 function importProgress(){
 const input=document.createElement('input');input.type='file';input.accept='.json';
 input.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
-r.onload=ev=>{try{const d=JSON.parse(ev.target.result);Object.assign(S,d);save();render();
+r.onload=ev=>{try{const d=JSON.parse(ev.target.result);const allowed=Object.keys(S);const validated={};for(const k of allowed){if(k in d)validated[k]=d[k];}Object.assign(S,validated);save();render();
 alert('✅ Progress imported successfully!');}catch(err){alert('❌ Invalid file');}};r.readAsText(f);};
 input.click();}
 
@@ -4949,7 +4947,7 @@ scheduleDailyNotification();
 }
 // queueBackgroundSync removed — was dead code (never called)
 
-_dataPromise.then(()=>{renderTabs();render();}).catch(()=>{});
+_dataPromise.then(()=>{renderTabs();render();}).catch((e)=>{console.error('Boot failed:',e);document.body.innerHTML='<div style="padding:2em;text-align:center;color:#ef4444"><h2>Failed to load app data</h2><p>'+String(e)+'</p><button onclick="location.reload()">Retry</button></div>';});
 </script>
 </body>
 </html>
