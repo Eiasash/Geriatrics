@@ -255,6 +255,29 @@ jobs:
           print(f'Coverage: {total} questions, {with_expl} with explanations ({100*with_expl//total}%)')
           "
 
+      # ── Image Map Drift ──
+      - name: Check image_map.json matches disk files
+        run: |
+          python3 << 'PYEOF'
+          import json, os, sys
+          im = json.load(open('questions/image_map.json'))
+          map_fnames = set(e['fname'] for e in im)
+          img_dir = 'questions/images'
+          disk = set(f for f in os.listdir(img_dir) if f.lower().endswith(('.png','.jpg','.jpeg','.gif','.webp')))
+          untracked = sorted(disk - map_fnames)
+          phantom = sorted(map_fnames - disk)
+          errors = []
+          if untracked:
+              errors.append(f'Files on disk but NOT in image_map.json: {untracked}')
+          if phantom:
+              errors.append(f'Entries in image_map.json with NO file on disk: {phantom}')
+          if errors:
+              for e in errors:
+                  print(f'ERROR: {e}', file=sys.stderr)
+              sys.exit(1)
+          print(f'OK: image_map.json and disk are in sync ({len(im)} entries)')
+          PYEOF
+
       # ── HTML Syntax ──
       - name: Validate HTML syntax
         run: |

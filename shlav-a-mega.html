@@ -578,7 +578,7 @@ function speakQuestion(){
 if(!window.speechSynthesis)return;
 if(isSpeaking){window.speechSynthesis.cancel();isSpeaking=false;render();return;}
 const q=QZ[pool[qi]];if(!q)return;
-let text=q.q+(q.img?' [ראה תמונה מצורפת]':'')+'. ';q.o.forEach((o,i)=>{text+=String.fromCharCode(1488+i)+'. '+o+'. ';});
+let text=q.q+(q.img?' [השאלה כוללת תמונה]':'')+'. ';q.o.forEach((o,i)=>{text+=String.fromCharCode(1488+i)+'. '+o+'. ';});
 const u=new SpeechSynthesisUtterance(text);
 u.lang='he-IL';u.rate=0.9;
 u.onend=()=>{isSpeaking=false;render();};

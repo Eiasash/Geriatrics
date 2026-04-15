@@ -6,6 +6,13 @@ const ALL_URLS=[...HTML_URLS,...JSON_DATA_URLS];
 // Supabase question-images: cache-first (images are immutable once uploaded)
 const SUPA_IMG_PATTERN=/supabase\.co\/storage\/v1\/object\/public\/question-images\//;
 const IMG_CACHE='shlav-img-v1';
+const MAX_IMG_CACHE_ENTRIES=100;
+
+function trimCache(cacheName,max){
+  caches.open(cacheName).then(cache=>cache.keys().then(keys=>{
+    if(keys.length>max)cache.delete(keys[0]);
+  }));
+}
 
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ALL_URLS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!==IMG_CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
@@ -27,7 +34,7 @@ self.addEventListener('fetch',e=>{
         cache.match(e.request).then(r=>{
           if(r)return r;
           return fetch(e.request).then(res=>{
-            if(res.ok)cache.put(e.request,res.clone());
+            if(res.ok){cache.put(e.request,res.clone());trimCache(IMG_CACHE,MAX_IMG_CACHE_ENTRIES);}
             return res;
           });
         })
