@@ -99,19 +99,7 @@ jobs:
 
       # ── Version Sync ──
       - name: Check APP_VERSION matches SW cache
-        run: |
-          python3 << 'PYEOF'
-          import re, sys
-          html = open('shlav-a-mega.html').read()
-          sw = open('sw.js').read()
-          m_app = re.search(r"APP_VERSION='([^']+)'", html)
-          m_sw = re.search(r"CACHE='shlav-a-v([^']+)'", sw)
-          if not m_app or not m_sw:
-              print('ERROR: Version constants not found'); sys.exit(1)
-          if m_app.group(1) != m_sw.group(1):
-              print(f'MISMATCH: app={m_app.group(1)}, sw={m_sw.group(1)}'); sys.exit(1)
-          print(f'OK: Versions match (v{m_app.group(1)})')
-          PYEOF
+        run: python3 scripts/check-version-sync.py
 
       # ── Security ──
       - name: Check no eval() calls
@@ -141,35 +129,10 @@ jobs:
           "
 
       - name: Audit innerHTML sanitization
-        run: |
-          python3 << 'PYEOF'
-          import sys
-          html = open('shlav-a-mega.html').read()
-          lines = html.split('\n')
-          warnings = []
-          for i, line in enumerate(lines, 1):
-              if '.innerHTML=' in line or '.innerHTML =' in line:
-                  after_eq = line.split('innerHTML')[1]
-                  if ('+' in after_eq or '${' in after_eq) and 'sanitize(' not in after_eq:
-                      warnings.append(f'  Line {i}: {line.strip()[:100]}')
-          if warnings:
-              print(f'WARNING: {len(warnings)} unsanitized innerHTML:')
-              for w in warnings[:10]:
-                  print(w)
-          else:
-              print('OK: All dynamic innerHTML uses sanitize()')
-          PYEOF
+        run: python3 scripts/check-innerhtml.py
 
       - name: Check JS brace balance
-        run: |
-          python3 -c "
-          import sys
-          c = open('shlav-a-mega.html').read()
-          diff = c.count('{') - c.count('}')
-          if diff != 0:
-              print(f'ERROR: Brace imbalance (diff={diff})'); sys.exit(1)
-          print(f'OK: Braces balanced')
-          "
+        run: python3 scripts/check-brace-balance.py
 
       # ── JS Syntax Check ──
       - name: Check JS syntax with acorn
