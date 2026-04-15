@@ -2702,18 +2702,10 @@ return h;
 // ===== CALCULATORS =====
 let calcVals={};
 function calcUp(k,v){calcVals[k]=parseFloat(v)||0;render();}
-function renderCalc(){
-// Tool selector pills
-const _cv=[{id:'calc',l:'🧮 Calculators'},{id:'basket',l:'🧺 Med Basket'},{id:'eol',l:'🕊️ EOL Tree'},{id:'lab',l:'🔬 Lab Ref'},{id:'aging',l:'📋 Aging Sheet'}];
-let h=`<div style="display:flex;gap:4px;overflow-x:auto;padding:4px 0;margin-bottom:8px">`;
-_cv.forEach(v=>{h+=`<button onclick="calcView='${v.id}';render()" style="white-space:nowrap;padding:6px 12px;border:none;border-radius:20px;font-size:10px;font-weight:${calcView===v.id?'700':'400'};cursor:pointer;background:${calcView===v.id?'#0f172a':'#f1f5f9'};color:${calcView===v.id?'#fff':'#64748b'}">${v.l}</button>`;});
-h+=`</div>`;
-if(calcView==='basket')return h+renderMedBasket();
-if(calcView==='eol')return h+renderEOLTree();
-if(calcView==='lab')return h+renderLabOverlay();
-if(calcView==='aging')return h+renderAgingSheet();
-h+=`<div class="sec-s">CrCl · CHA₂DS₂-VASc · CURB-65 · GDS-15 · Braden · PADUA</div>`;
 
+// ===== CALCULATOR HELPERS (_rc* prefix) =====
+function _rcCrCl(){
+let h='';
 // CrCl
 const age=calcVals.age||75,wt=calcVals.wt||55,cr=calcVals.cr||1.0,fem=calcVals.fem===undefined?0.85:calcVals.fem;
 const crcl=Math.max(0,Math.round(((140-age)*wt*fem)/(72*cr)));
@@ -2729,7 +2721,10 @@ h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight
 <span style="font-size:22px;font-weight:700;color:${crcl<30?'#dc2626':crcl<60?'#d97706':'#059669'}">${crcl} ml/min</span>
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${crcl<30?'CKD 4-5: Avoid metformin, adjust all renally-cleared drugs':crcl<60?'CKD 3: Dose adjust many drugs':'CKD 1-2: Mild impairment'}</p>
 </div></div>`;
-
+return h;
+}
+function _rcChads(){
+let h='';
 // CHA2DS2-VASc
 const cha=Object.entries(calcVals).filter(([k])=>k.startsWith('cha_')).reduce((s,[k,v])=>s+v,0);
 h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">CHA₂DS₂-VASc</h3>`;
@@ -2746,8 +2741,10 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <span style="font-size:22px;font-weight:700;color:${cha>=2?'#dc2626':'#d97706'}">${cha}</span>
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${cha>=2?'Anticoagulate (DOAC preferred, Apixaban safest in CKD)':cha===1?'Consider anticoagulation':'Low risk — consider no therapy'}</p>
 </div></div>`;
-
-
+return h;
+}
+function _rcCurb(){
+let h='';
 // CURB-65
 const curb=Object.entries(calcVals).filter(([k])=>k.startsWith('curb_')).reduce((s,[k,v])=>s+v,0);
 h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">CURB-65</h3>`;
@@ -2764,7 +2761,10 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <span style="font-size:22px;font-weight:700;color:${curb>=3?'#dc2626':curb>=2?'#d97706':'#059669'}">${curb}</span>
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${curbRisk}</p>
 </div></div>`;
-
+return h;
+}
+function _rcGds(){
+let h='';
 // GDS-15 Quick Score
 const gds=Object.entries(calcVals).filter(([k])=>k.startsWith('gds_')).reduce((s,[k,v])=>s+v,0);
 h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">GDS-15 (Depression Screen)</h3>`;
@@ -2780,7 +2780,10 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${gds>=10?'Severe depression — refer':gds>=5?'Positive screen — evaluate further':'Normal'}</p>
 <button id="copy-gds" onclick="copyReport('gds')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy GDS report">📋 העתק דוח</button>
 </div></div>`;
-
+return h;
+}
+function _rcBraden(){
+let h='';
 // Braden Scale
 const bradenSubs=[
 ['brad_sens','Sensory Perception',['Completely Limited (1)','Very Limited (2)','Slightly Limited (3)','No Impairment (4)']],
@@ -2806,7 +2809,10 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${bradenRisk}${bradenScore<=18?' — Implement prevention protocol':''}</p>
 <button id="copy-braden" onclick="copyReport('braden')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Braden report">📋 העתק דוח</button>
 </div></div>`;
-
+return h;
+}
+function _rcPadua(){
+let h='';
 // PADUA VTE Score
 const paduaItems=[
 ['pad_cancer','Active cancer',3],['pad_vte','Previous VTE',3],['pad_immob','Reduced mobility (≥3 days)',3],
@@ -2827,8 +2833,10 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <span style="font-size:22px;font-weight:700;color:${paduaScore>=4?'#dc2626':'#059669'}">${paduaScore}</span>
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${paduaScore>=4?'High VTE risk (≥4) — Pharmacological prophylaxis recommended':'Low VTE risk (<4) — Mechanical prophylaxis or early mobilization'}</p>
 </div></div>`;
-
-
+return h;
+}
+function _rcKatz(){
+let h='';
 // Katz ADL Index
 const katzItems=['Bathing','Dressing','Toileting','Transferring','Continence','Feeding'];
 const katzScore=katzItems.reduce((s,_,i)=>s+(calcVals['katz_'+i]||0),0);
@@ -2841,7 +2849,10 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${katzScore===6?'Full independence':katzScore>=4?'Moderate dependence':katzScore>=2?'Severe dependence':'Total dependence'}</p>
 <button id="copy-katz" onclick="copyReport('katz')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Katz ADL report">📋 העתק דוח</button>
 </div></div>`;
-
+return h;
+}
+function _rcLawton(){
+let h='';
 // Lawton IADL Scale
 const lawtonItems=['Phone use','Shopping','Food prep','Housekeeping','Laundry','Transport','Medications','Finances'];
 const lawtonScore=lawtonItems.reduce((s,_,i)=>s+(calcVals['law_'+i]||0),0);
@@ -2853,7 +2864,10 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <span style="font-size:22px;font-weight:700;color:${lawtonScore>=6?'#059669':lawtonScore>=4?'#d97706':'#dc2626'}">${lawtonScore}/8</span>
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${lawtonScore===8?'Fully independent':lawtonScore>=5?'Partially dependent':'Significantly dependent'} in IADLs</p>
 </div></div>`;
-
+return h;
+}
+function _rc4at(){
+let h='';
 // 4AT Rapid Delirium Screen
 h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">4AT (Rapid Delirium Screen)</h3>`;
 const at4_1=[['Normal (0)','0'],['Mild sleepiness <10s (0)','0'],['Clearly abnormal (4)','4']];
@@ -2882,7 +2896,10 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${at4Score>=4?'Possible delirium ± cognitive impairment':at4Score>=1?'Possible cognitive impairment':'No delirium or cognitive impairment detected'}</p>
 <button id="copy-4at" onclick="copyReport('4at')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy 4AT delirium report">📋 העתק דוח</button>
 </div></div>`;
-
+return h;
+}
+function _rcMna(){
+let h='';
 // MNA-SF (Mini Nutritional Assessment - Short Form)
 h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">MNA-SF (Nutritional Screen)</h3>`;
 const mna_items=[
@@ -2904,7 +2921,10 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <span style="font-size:22px;font-weight:700;color:${mnaScore<=7?'#dc2626':mnaScore<=11?'#d97706':'#059669'}">${mnaScore}/14</span>
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${mnaScore>=12?'Normal nutritional status':mnaScore>=8?'At risk of malnutrition':'Malnourished'}</p>
 </div></div>`;
-
+return h;
+}
+function _rcCfs(){
+let h='';
 // Clinical Frailty Scale
 h+=`<div class="card" style="padding:14px"><h3 style="font-size:13px;font-weight:700;margin-bottom:10px">Clinical Frailty Scale (CFS)</h3>`;
 const cfsOpts=['1 — Very Fit (robust, active, energetic)','2 — Well (no active disease, less fit)','3 — Managing Well (medical problems well-controlled)','4 — Vulnerable (not dependent, but slowed)','5 — Mildly Frail (limited IADLs)','6 — Moderately Frail (needs help with ADLs+IADLs)','7 — Severely Frail (completely dependent, approaching EOL)','8 — Very Severely Frail (bed-bound, may not recover from minor illness)','9 — Terminally Ill (<6mo prognosis)'];
@@ -2917,7 +2937,10 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <span style="font-size:22px;font-weight:700;color:${cfsClr}">${cfsV}/9</span>
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${cfsV>=7?'Severely frail — high mortality, consider goals of care':cfsV>=5?'Frail — increased vulnerability to adverse outcomes':cfsV>=4?'Pre-frail / vulnerable':'Fit / not frail'}</p>
 </div></div>`;
-
+return h;
+}
+function _rcNorton(){
+let h='';
 // Norton Scale (Pressure Injury)
 const nortonSubs=[
 ['nrt_phys','Physical Condition',['Very Bad (1)','Poor (2)','Fair (3)','Good (4)']],
@@ -2940,7 +2963,10 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <p style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${nortonScore<=12?'High risk — implement prevention':'Norton ≤14 moderate risk, >14 lower risk'}${nortonScore<=14?' — Turn schedule + skin assessment':''}</p>
 <button id="copy-norton" onclick="copyReport('norton')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Norton report">📋 העתק דוח</button>
 </div></div>`;
-
+return h;
+}
+function _rcMorse(){
+let h='';
 // Morse Fall Scale
 const morseItems=[
 ['mor_hist','History of falling (last 3mo)',25],['mor_diag','Secondary diagnosis (≥2)',15],
@@ -2969,6 +2995,34 @@ h+=`<div style="margin-top:10px;padding:10px;background:rgb(var(--blue-bg));bord
 <button id="copy-morse" onclick="copyReport('morse')" class="btn btn-o" style="margin-top:8px;font-size:10px;padding:4px 10px" aria-label="Copy Morse Falls report">📋 העתק דוח</button>
 </div></div>`;
 
+return h;
+return h;
+}
+
+function renderCalc(){
+// Tool selector pills
+const _cv=[{id:'calc',l:'🧮 Calculators'},{id:'basket',l:'🧺 Med Basket'},{id:'eol',l:'🕊️ EOL Tree'},{id:'lab',l:'🔬 Lab Ref'},{id:'aging',l:'📋 Aging Sheet'}];
+let h=`<div style="display:flex;gap:4px;overflow-x:auto;padding:4px 0;margin-bottom:8px">`;
+_cv.forEach(v=>{h+=`<button onclick="calcView='${v.id}';render()" style="white-space:nowrap;padding:6px 12px;border:none;border-radius:20px;font-size:10px;font-weight:${calcView===v.id?'700':'400'};cursor:pointer;background:${calcView===v.id?'#0f172a':'#f1f5f9'};color:${calcView===v.id?'#fff':'#64748b'}">${v.l}</button>`;});
+h+=`</div>`;
+if(calcView==='basket')return h+renderMedBasket();
+if(calcView==='eol')return h+renderEOLTree();
+if(calcView==='lab')return h+renderLabOverlay();
+if(calcView==='aging')return h+renderAgingSheet();
+h+=`<div class="sec-s">CrCl · CHA₂DS₂-VASc · CURB-65 · GDS-15 · Braden · PADUA</div>`;
+h+=_rcCrCl();
+h+=_rcChads();
+h+=_rcCurb();
+h+=_rcGds();
+h+=_rcBraden();
+h+=_rcPadua();
+h+=_rcKatz();
+h+=_rcLawton();
+h+=_rc4at();
+h+=_rcMna();
+h+=_rcCfs();
+h+=_rcNorton();
+h+=_rcMorse();
 return h;
 }
 
