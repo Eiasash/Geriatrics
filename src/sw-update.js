@@ -13,8 +13,8 @@ b.id='update-banner';
 b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#0D7377,#14919B);color:#fff;padding:12px 16px;font-size:12px;display:flex;align-items:center;gap:10px;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.3)';
 b.innerHTML='<div><b>🆕 עדכון זמין!</b> גרסה חדשה מוכנה</div>'+
 '<div style="display:flex;gap:6px;flex-shrink:0">'+
-'<button onclick="applyUpdate()" style="background:rgb(var(--card-bg));color:#0D7377;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer">🔄 עדכן עכשיו</button>'+
-'<button onclick="dismissUpdateBanner()" style="background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">✕</button>'+
+'<button data-action="apply-update" style="background:rgb(var(--card-bg));color:#0D7377;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer">🔄 עדכן עכשיו</button>'+
+'<button data-action="dismiss-update" style="background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">✕</button>'+
 '</div>';
 document.body.prepend(b);
 }
