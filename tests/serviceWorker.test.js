@@ -180,6 +180,20 @@ describe("sw.js — Supabase image caching", () => {
   it("preserves IMG_CACHE during activate cleanup", () => {
     expect(swContent).toMatch(/k!==IMG_CACHE/);
   });
+
+  it("defines MAX_IMG_CACHE_ENTRIES constant", () => {
+    expect(swContent).toMatch(/MAX_IMG_CACHE_ENTRIES\s*=\s*\d+/);
+  });
+
+  it("has trimCache helper that evicts oldest entry", () => {
+    expect(swContent).toContain("trimCache");
+    expect(swContent).toMatch(/cache\.keys\(\)/);
+    expect(swContent).toMatch(/cache\.delete\(keys\[0\]\)/);
+  });
+
+  it("calls trimCache after caching a new image", () => {
+    expect(swContent).toMatch(/trimCache\(IMG_CACHE\s*,\s*MAX_IMG_CACHE_ENTRIES\)/);
+  });
 });
 
 describe("sw.js — version alignment with app", () => {

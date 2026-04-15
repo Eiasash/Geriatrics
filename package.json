@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "image:check": "node scripts/add-image-question.cjs --help"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.4",
