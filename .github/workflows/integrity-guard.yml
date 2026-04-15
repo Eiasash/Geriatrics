@@ -49,7 +49,12 @@ jobs:
         run: |
           python3 << 'PYEOF'
           import re, sys
+          import glob
           html = open('shlav-a-mega.html').read()
+          # Also search extracted JS modules (src/*.js, shared/*.js)
+          all_code = html
+          for js_file in sorted(glob.glob('src/*.js') + glob.glob('shared/*.js')):
+              all_code += '\n' + open(js_file).read()
           CRITICAL_FUNCTIONS = [
               # Boot path — without these the app is dead
               'loadDataArrays',
@@ -71,10 +76,10 @@ jobs:
               'renderTrack',
               'trackDailyActivity',
               'takeWeeklySnapshot',
-              # Version/update
+              # Version/update (in src/sw-update.js)
               'showUpdateBanner',
               'applyUpdate',
-              'queueBackgroundSync',
+              'initSWUpdate',
               # AI features
               'callAI',
               # Tab rendering (all 5 tabs + sub-tabs)
@@ -99,9 +104,9 @@ jobs:
           ]
           missing = []
           for fn in CRITICAL_FUNCTIONS:
-              # Match function declarations: function X(, async function X(, const X = 
+              # Match function declarations: function X(, async function X(, const X =
               pattern = rf'(?:(?:async\s+)?function\s+{fn}\s*\(|(?:const|let|var)\s+{fn}\s*=)'
-              if not re.search(pattern, html):
+              if not re.search(pattern, all_code):
                   missing.append(fn)
           if missing:
               print(f'FATAL: {len(missing)} critical functions are MISSING:', file=sys.stderr)
