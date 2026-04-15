@@ -3,19 +3,40 @@ const HTML_URLS=['shlav-a-mega.html','manifest.json','shared/fsrs.js'];
 const JSON_DATA_URLS=['data/questions.json','data/topics.json','data/notes.json','data/drugs.json','data/flashcards.json','harrison_chapters.json','data/hazzard_chapters.json','data/tabs.json'];
 const ALL_URLS=[...HTML_URLS,...JSON_DATA_URLS];
 
+// Supabase question-images: cache-first (images are immutable once uploaded)
+const SUPA_IMG_PATTERN=/supabase\.co\/storage\/v1\/object\/public\/question-images\//;
+const IMG_CACHE='shlav-img-v1';
+
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ALL_URLS)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!==IMG_CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 
 // Cache strategy dispatcher
 function shouldUseCacheFirst(url){
   return JSON_DATA_URLS.some(pattern=>url.endsWith(pattern));
 }
 
-// Fetch strategies: navigate→HTML fallback, data→network-first, assets→cache-first
+// Fetch strategies: navigate→HTML fallback, data→network-first, assets→cache-first, Supabase images→cache-first
 self.addEventListener('fetch',e=>{
   // Skip non-GET (Supabase POSTs, Claude proxy, etc)
   if(e.request.method!=='GET')return;
-  // Skip cross-origin requests
+
+  // Supabase question images: cache-first (cross-origin, immutable)
+  if(SUPA_IMG_PATTERN.test(e.request.url)){
+    e.respondWith(
+      caches.open(IMG_CACHE).then(cache=>
+        cache.match(e.request).then(r=>{
+          if(r)return r;
+          return fetch(e.request).then(res=>{
+            if(res.ok)cache.put(e.request,res.clone());
+            return res;
+          });
+        })
+      )
+    );
+    return;
+  }
+
+  // Skip other cross-origin requests
   if(!e.request.url.startsWith(self.location.origin))return;
 
   const url=new URL(e.request.url).pathname;

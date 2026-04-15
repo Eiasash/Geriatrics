@@ -117,6 +117,8 @@ body.dark .streak-badge{background:#451a03;border-color:rgb(var(--yellow-fg))}
 .share-btn{font-size:13px;padding:2px 6px;opacity:.5;cursor:pointer;border:none;background:none}
 .share-btn:hover{opacity:1}
 .empty{text-align:center;padding:32px 16px;color:rgb(var(--fg3));font-size:12px;line-height:1.7}
+.img-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.img-overlay img{max-width:95vw;max-height:90vh;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,.5);object-fit:contain}
 
 body.dark{background:#0f172a;color:#e2e8f0;
 --bg:15 23 42;--bg2:30 41 59;--bg3:30 41 59;--fg:226 232 240;--fg2:148 163 184;--fg3:100 116 139;
@@ -576,7 +578,7 @@ function speakQuestion(){
 if(!window.speechSynthesis)return;
 if(isSpeaking){window.speechSynthesis.cancel();isSpeaking=false;render();return;}
 const q=QZ[pool[qi]];if(!q)return;
-let text=q.q+(q.img?' [Image: '+q.img+']':'')+'. ';q.o.forEach((o,i)=>{text+=String.fromCharCode(1488+i)+'. '+o+'. ';});
+let text=q.q+(q.img?' [ראה תמונה מצורפת]':'')+'. ';q.o.forEach((o,i)=>{text+=String.fromCharCode(1488+i)+'. '+o+'. ';});
 const u=new SpeechSynthesisUtterance(text);
 u.lang='he-IL';u.rate=0.9;
 u.onend=()=>{isSpeaking=false;render();};

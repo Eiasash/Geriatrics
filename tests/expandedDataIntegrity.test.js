@@ -348,6 +348,116 @@ describe("questions/image_map.json — integrity", () => {
       }
     });
   });
+
+  it("every physical image file on disk is tracked in image_map.json", () => {
+    if (!imageMap) return;
+    const imgDir = resolve(ROOT, "questions/images");
+    if (!existsSync(imgDir)) return;
+    const { readdirSync } = require("fs");
+    const diskFiles = readdirSync(imgDir).filter(f => /\.(png|jpe?g|gif|webp)$/i.test(f));
+    const mapFiles = new Set(imageMap.map(e => e.fname));
+    const untracked = diskFiles.filter(f => !mapFiles.has(f));
+    expect(untracked, `Image files on disk but missing from image_map.json: ${JSON.stringify(untracked)}`).toEqual([]);
+  });
+});
+
+// ─── Question image (img field) validation ─────────────────────────────────
+
+describe("questions.json — image field (img) validation", () => {
+  const SUPA_IMG_PREFIX = "https://krmlzwwelqvlfslwltol.supabase.co/storage/v1/object/public/question-images/";
+
+  it("img field, when present, is a valid Supabase URL string", () => {
+    const invalid = [];
+    questions.forEach((q, i) => {
+      if (q.img === undefined || q.img === null) return;
+      if (typeof q.img !== "string" || !q.img.startsWith("https://")) {
+        invalid.push({ index: i, img: String(q.img).slice(0, 60) });
+      }
+    });
+    expect(invalid, `Questions with non-URL img field: ${JSON.stringify(invalid)}`).toEqual([]);
+  });
+
+  it("all img URLs use the expected Supabase bucket prefix", () => {
+    const wrong = [];
+    questions.forEach((q, i) => {
+      if (!q.img) return;
+      if (!q.img.startsWith(SUPA_IMG_PREFIX)) {
+        wrong.push({ index: i, img: q.img.slice(0, 80) });
+      }
+    });
+    expect(wrong, `Image URLs not matching Supabase bucket: ${JSON.stringify(wrong)}`).toEqual([]);
+  });
+
+  it("img URLs have a valid image file extension", () => {
+    const bad = [];
+    questions.forEach((q, i) => {
+      if (!q.img) return;
+      if (!/\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(q.img)) {
+        bad.push({ index: i, img: q.img.slice(-30) });
+      }
+    });
+    expect(bad, `Image URLs without valid extension: ${JSON.stringify(bad)}`).toEqual([]);
+  });
+
+  it("img URLs contain no whitespace or control characters", () => {
+    const bad = [];
+    questions.forEach((q, i) => {
+      if (!q.img) return;
+      if (/[\s\x00-\x1f]/.test(q.img)) {
+        bad.push({ index: i, img: q.img.slice(0, 60) });
+      }
+    });
+    expect(bad, `Image URLs with whitespace/control chars: ${JSON.stringify(bad)}`).toEqual([]);
+  });
+
+  it("no duplicate img URLs across different questions", () => {
+    const seen = new Map();
+    const dupes = [];
+    questions.forEach((q, i) => {
+      if (!q.img) return;
+      if (seen.has(q.img)) {
+        dupes.push({ indices: [seen.get(q.img), i], img: q.img.split("/").pop() });
+      } else {
+        seen.set(q.img, i);
+      }
+    });
+    // Some duplicates may be intentional (same image for variant questions), so warn at threshold
+    expect(dupes.length, `${dupes.length} duplicate img URLs found`).toBeLessThan(questions.length * 0.02);
+  });
+
+  it("oi field, when present, is an array matching options length", () => {
+    const bad = [];
+    questions.forEach((q, i) => {
+      if (!q.oi) return;
+      if (!Array.isArray(q.oi)) {
+        bad.push({ index: i, reason: "oi is not an array" });
+      } else if (q.oi.length !== q.o.length) {
+        bad.push({ index: i, oiLen: q.oi.length, oLen: q.o.length });
+      }
+    });
+    expect(bad, `Questions with malformed oi field: ${JSON.stringify(bad)}`).toEqual([]);
+  });
+});
+
+// ─── Image file size checks ────────────────────────────────────────────────
+
+describe("questions/images — file size limits", () => {
+  it("no image file exceeds 3 MB", () => {
+    const imgDir = resolve(ROOT, "questions/images");
+    if (!existsSync(imgDir)) return;
+    const { readdirSync, statSync } = require("fs");
+    const MAX_BYTES = 3 * 1024 * 1024;
+    const oversized = [];
+    readdirSync(imgDir)
+      .filter(f => /\.(png|jpe?g|gif|webp)$/i.test(f))
+      .forEach(f => {
+        const size = statSync(resolve(imgDir, f)).size;
+        if (size > MAX_BYTES) {
+          oversized.push({ file: f, sizeMB: (size / 1024 / 1024).toFixed(1) });
+        }
+      });
+    expect(oversized, `Images exceeding 3 MB: ${JSON.stringify(oversized)}`).toEqual([]);
+  });
 });
 
 // ─── OSCE — null entry validation ──────────────────────────────────────────
