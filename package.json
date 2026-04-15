@@ -6,6 +6,7 @@
   "scripts": {
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "verify": "node --check src/sw-update.js && python3 scripts/check-version-sync.py && python3 scripts/check-brace-balance.py && python3 scripts/check-innerhtml.py && vitest run",
     "image:check": "node scripts/add-image-question.cjs --help"
   },
   "devDependencies": {
