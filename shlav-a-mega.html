@@ -4863,18 +4863,8 @@ if('serviceWorker' in navigator){
 // ===== SYLLABUS CONFIG =====
 const SYLLABUS_VERSION='P005-2026';
 
-// ===== PROACTIVE VERSION CHECK =====
-(async function checkForUpdate(){
-try{
-const r=await fetch('sw.js',{cache:'no-store'});
-const txt=await r.text();
-const m=txt.match(/CACHE='shlav-a-v([^']+)'/);
-if(m&&m[1]!==APP_VERSION){
-console.log('Update available: sw='+m[1]+' app='+APP_VERSION);
-setTimeout(showUpdateBanner,1000);
-}
-}catch(e){}
-})();
+// ===== UPDATE DISMISSAL KEY =====
+const DISMISS_KEY='shlav_update_dismissed_'+APP_VERSION;
 
 // ===== WRONG ANSWER REPORTS → SUPABASE =====
 async function saveAnswerReport(qIdx, userReason, aiVerdict){
@@ -4889,6 +4879,7 @@ body:JSON.stringify({app:'geriatrics',question_idx:qIdx,question_text:(q.q||'').
 }
 
 function showUpdateBanner(){
+if(localStorage.getItem(DISMISS_KEY))return;
 const existing=document.getElementById('update-banner');
 if(existing)return;
 const b=document.createElement('div');
@@ -4897,11 +4888,12 @@ b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:li
 b.innerHTML=`<div><b>🆕 עדכון זמין!</b> גרסה חדשה מוכנה</div>
 <div style="display:flex;gap:6px;flex-shrink:0">
 <button onclick="applyUpdate()" style="background:rgb(var(--card-bg));color:#0D7377;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer">🔄 עדכן עכשיו</button>
-<button onclick="this.closest('#update-banner').remove()" style="background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">✕</button>
+<button onclick="localStorage.setItem(DISMISS_KEY,'1');this.closest('#update-banner').remove()" style="background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">✕</button>
 </div>`;
 document.body.prepend(b);
 }
 function applyUpdate(){
+localStorage.removeItem(DISMISS_KEY);
 if(navigator.serviceWorker&&navigator.serviceWorker.controller){
 navigator.serviceWorker.getRegistrations().then(regs=>{
 regs.forEach(r=>{if(r.waiting)r.waiting.postMessage({type:'SKIP_WAITING'});});
@@ -4911,15 +4903,13 @@ caches.keys().then(ks=>{ks.forEach(k=>caches.delete(k));});
 setTimeout(()=>window.location.reload(true),500);
 }
 
-// Force update — clears old cache-first SW
-navigator.serviceWorker.getRegistrations().then(regs=>{
-regs.forEach(r=>r.update());
-});
+// Clear old caches
 caches.keys().then(ks=>{
 const old=ks.filter(k=>k.startsWith('shlav-a-')&&k!=='shlav-a-v'+APP_VERSION);
 old.forEach(k=>{caches.delete(k);console.log('Deleted old cache:',k);});
 });
 navigator.serviceWorker.register('sw.js').then(reg=>{
+reg.update();
 // Detect waiting worker = update available
 if(reg.waiting){showUpdateBanner();}
 reg.addEventListener('updatefound',()=>{
