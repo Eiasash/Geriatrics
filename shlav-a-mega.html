@@ -1470,7 +1470,9 @@ function getOptShuffle(qIdx,q){
   _optShuffle={qIdx,map};
   return map;
 }
-function renderQuiz(){
+
+// ===== QUIZ HELPERS (_rq* prefix) =====
+function _rqSuddenDeath(){
 // ===== SUDDEN DEATH RENDERING =====
 if(sdMode){
 if(sdQi>=sdPool.length)sdQi=0;
@@ -1508,6 +1510,9 @@ sdLeaderboard.forEach((e,i)=>{h+=`<div class="leaderboard-row"><span>${i===0?'�
 h+=`</div>`;}
 return h;
 }
+return '';
+}
+function _rqMain(){
 
 if(!pool.length)buildPool();
 if(qi>=pool.length)qi=0;
@@ -1744,6 +1749,12 @@ h+=`<div style="display:flex;gap:16px;margin-top:10px;padding-top:8px;border-top
 <span>✅ ${S.qOk}</span><span>❌ ${S.qNo}</span><span>📊 ${pct}</span>${S.sr[pool[qi]]?.at?`<span style="color:rgb(var(--fg3))">⏱${S.sr[pool[qi]].at}s avg</span>`:""}</div>`;
 h+=`</div>`;
 return h;
+}
+
+function renderQuiz(){
+const _sd=_rqSuddenDeath();
+if(_sd)return _sd;
+return _rqMain();
 }
 // Sudden Death check/next
 function sdCheck(){if(sel===null)return;ans=true;const q=QZ[sdPool[sdQi]];if(sel===q.c){sdStreak++;S.qOk++;srScore(sdPool[sdQi],true);save();render();}else{S.qNo++;srScore(sdPool[sdQi],false);save();render();setTimeout(()=>endSuddenDeath(),800);}}
