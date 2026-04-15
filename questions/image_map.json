@@ -1,5 +1,69 @@
 [
   {
+    "exam": "2024_al",
+    "q_num": 4,
+    "fname": "2024_al_q4.png",
+    "fpath": "questions/images/2024_al_q4.png",
+    "w": 343,
+    "h": 379
+  },
+  {
+    "exam": "2024_al",
+    "q_num": 8,
+    "fname": "2024_al_q8.png",
+    "fpath": "questions/images/2024_al_q8.png",
+    "w": 893,
+    "h": 467
+  },
+  {
+    "exam": "2024_al",
+    "q_num": 35,
+    "fname": "2024_al_q35.png",
+    "fpath": "questions/images/2024_al_q35.png",
+    "w": 618,
+    "h": 598
+  },
+  {
+    "exam": "2024_al",
+    "q_num": 69,
+    "fname": "2024_al_q69.png",
+    "fpath": "questions/images/2024_al_q69.png",
+    "w": 879,
+    "h": 508
+  },
+  {
+    "exam": "2024_al2",
+    "q_num": 102,
+    "fname": "2024_al2_q102.png",
+    "fpath": "questions/images/2024_al2_q102.png",
+    "w": 783,
+    "h": 538
+  },
+  {
+    "exam": "2024_al2",
+    "q_num": 110,
+    "fname": "2024_al2_q110.png",
+    "fpath": "questions/images/2024_al2_q110.png",
+    "w": 1037,
+    "h": 574
+  },
+  {
+    "exam": "2024_al2",
+    "q_num": 115,
+    "fname": "2024_al2_q115.png",
+    "fpath": "questions/images/2024_al2_q115.png",
+    "w": 1010,
+    "h": 257
+  },
+  {
+    "exam": "2024_al2",
+    "q_num": 144,
+    "fname": "2024_al2_q144.png",
+    "fpath": "questions/images/2024_al2_q144.png",
+    "w": 1378,
+    "h": 720
+  },
+  {
     "exam": "jun2022",
     "q_num": 4,
     "fname": "jun2022_q4.png",
@@ -73,6 +137,22 @@
   },
   {
     "exam": "jun2025",
+    "q_num": 20,
+    "fname": "jun2025_q20.png",
+    "fpath": "questions/images/jun2025_q20.png",
+    "w": 873,
+    "h": 920
+  },
+  {
+    "exam": "jun2025",
+    "q_num": 45,
+    "fname": "jun2025_q45.png",
+    "fpath": "questions/images/jun2025_q45.png",
+    "w": 420,
+    "h": 430
+  },
+  {
+    "exam": "jun2025",
     "q_num": 47,
     "fname": "jun2025_q47.png",
     "fpath": "questions/images/jun2025_q47.png",
@@ -110,5 +190,45 @@
     "fpath": "questions/images/jun2025_q136.png",
     "w": 1500,
     "h": 1000
+  },
+  {
+    "exam": "sep2024",
+    "q_num": 8,
+    "fname": "sep2024_q8.png",
+    "fpath": "questions/images/sep2024_q8.png",
+    "w": 1000,
+    "h": 760
+  },
+  {
+    "exam": "sep2024",
+    "q_num": 31,
+    "fname": "sep2024_q31.png",
+    "fpath": "questions/images/sep2024_q31.png",
+    "w": 800,
+    "h": 532
+  },
+  {
+    "exam": "sep2024",
+    "q_num": 53,
+    "fname": "sep2024_q53.png",
+    "fpath": "questions/images/sep2024_q53.png",
+    "w": 305,
+    "h": 224
+  },
+  {
+    "exam": "sep2024",
+    "q_num": 69,
+    "fname": "sep2024_q69.png",
+    "fpath": "questions/images/sep2024_q69.png",
+    "w": 412,
+    "h": 574
+  },
+  {
+    "exam": "sep2024",
+    "q_num": 93,
+    "fname": "sep2024_q93.png",
+    "fpath": "questions/images/sep2024_q93.png",
+    "w": 568,
+    "h": 567
   }
 ]

@@ -27,11 +27,11 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 
 | Layer | Keys / Table | Purpose |
 |-------|-------------|---------|
-| `localStorage` | `samega`, `samega_ex`, `samega_apikey` | User preferences, exam state, API key |
+| `localStorage` | `samega`, `samega_ex`, `samega_apikey`, `shlav_q_images` | User preferences, exam state, API key, user-attached question images |
 | `IndexedDB` | (internal) | Study progress, spaced repetition state |
 | Supabase PostgreSQL | `progress_state` (RLS) | Optional cloud sync across devices |
 
-**Important**: localStorage keys `samega`, `samega_ex`, `samega_apikey` must not be renamed — they are stored in users' browsers.
+**Important**: localStorage keys `samega`, `samega_ex`, `samega_apikey`, `shlav_q_images` must not be renamed — they are stored in users' browsers.
 
 ---
 
@@ -402,7 +402,7 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 - The file is intentionally a single monolith — do not split it
 - CSS is at the top, JS is at the bottom before `</body>`
 - TOPICS array in JS must stay in sync with the 40-topic list (indices 0–39)
-- All localStorage operations must use the established keys (`samega`, `samega_ex`, `samega_apikey`)
+- All localStorage operations must use the established keys (`samega`, `samega_ex`, `samega_apikey`, `shlav_q_images`)
 - `explainWithAI()` must handle errors gracefully and cache results in localStorage
 - Data loads lazily from `data/*.json` — do not inline large data back into HTML
 - `data/` is the single source of truth for all JSON data — no root-level copies
