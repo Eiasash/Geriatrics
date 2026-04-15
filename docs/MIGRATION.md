@@ -1,6 +1,6 @@
 # Migration Ledger — Shlav A Mega
 
-> Last audited: 2026-04-15 (4,922 lines, 178 functions, 402 tests)
+> Last audited: 2026-04-15 (4,940 lines, 183 functions, 408 tests)
 
 ## Current Phase: Monolith-in-place, four render functions decomposed
 
@@ -37,7 +37,7 @@ prevent regression.
 
 ## Safe Next Steps
 
-1. Split `_rqMain` into question/controls/explain sections (~3 helpers)
+1. ~~Split `_rqMain`~~ — Done (5 _rqm* helpers)
 2. Split `_rtTop` into metrics/heatmap/plan/confidence/rescue/calendar (~6 helpers)
 3. Split `_rlHazzard` into reader/list sub-helpers
 

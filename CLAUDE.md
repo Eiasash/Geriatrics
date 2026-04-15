@@ -5,8 +5,8 @@
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (~301 KB, ~5,008 lines, self-contained HTML/CSS/JS)
-- **App version**: v9.30
+- **Main file**: `shlav-a-mega.html` (~298 KB, ~4,940 lines, 183 functions)
+- **App version**: v9.48
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -16,7 +16,7 @@
 
 ### Single-File PWA
 
-All application logic lives in `shlav-a-mega.html` (~5,008 lines) — no bundler, no framework, no build step. The file contains:
+All application logic lives in `shlav-a-mega.html` (~4,940 lines, 183 functions) — no bundler, no framework, no build step. The file contains:
 - All CSS (1,000+ lines, responsive, RTL-aware, dark/light/study modes)
 - All JavaScript (ES6+, vanilla)
 - HTML structure
@@ -35,11 +35,34 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 
 ---
 
+
+### Render Function Decomposition (v9.48)
+
+The four large render functions have been decomposed into 31 prefixed helper functions.
+Each helper returns an HTML string; the orchestrator concatenates them. No behavior change,
+no event handler migration — purely a readability refactor.
+
+| Orchestrator | Prefix | Count | Helpers |
+|---|---|---|---|
+| `renderCalc` | `_rc*` | 13 | CrCl, Chads, Curb, Gds, Braden, Padua, Katz, Lawton, 4at, Mna, Cfs, Norton, Morse |
+| `renderQuiz` | `_rq*` | 2 | SuddenDeath, Main |
+| `_rqMain` | `_rqm*` | 5 | Question, Controls, TeachBack, Explain, Footer |
+| `renderTrack` | `_rt*` | 4 | Top, Mid, Progress, Footer |
+| `renderLibrary` | `_rl*` | 7 | Header, Hazzard, Harrison, Laws, Articles, Exams, Footer |
+
+**Naming convention:** `_` prefix = private helper. Second+third letters = parent function
+(`rc` = renderCalc, `rq` = renderQuiz, `rt` = renderTrack, `rl` = renderLibrary, `rqm` = _rqMain).
+
+**Rules:** Never remove >5 functions per commit (integrity-guard GATE 4 blocks it).
+Always run `node --check` on extracted JS before pushing. See `docs/MIGRATION.md` for
+the full decomposition ledger and safe-next-steps list.
+
+
 ## File Map
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.30)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.48)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
@@ -101,7 +124,7 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 └── hazzard_part*.pdf         # Hazzard's Geriatric Medicine 8e (original PDFs)
 ```
 
-### Data Architecture (v9.30)
+### Data Architecture (v9.48)
 
 All runtime data lives in `data/`. The app and service worker load exclusively from `data/*.json`. Build scripts (`scripts/`) also read/write `data/questions.json` directly. There are no root-level JSON duplicates — `data/` is the single source of truth.
 
@@ -197,7 +220,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `9.29` (sw.js cache key: `shlav-a-v9.30`)
+- Currently both at version `9.48` (sw.js cache key: `shlav-a-v9.48`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
@@ -399,7 +422,7 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 **No manual deployment steps needed.**
 
 ### Commit Conventions
-- Version prefix: `v9.7`, `v9.6.1`, etc.
+- Version prefix: `v9.7`, `v9.48`, etc.
 - Imperative tense: `fix:`, `feat:`, `Add`, `Update`
 - Clear scope describing the feature or issue
 
@@ -408,24 +431,22 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 ## Codebase Metrics
 
 | Metric | Value |
-|--------|-------|
-| Main app LOC | ~4,977 |
-| Questions | 1,550 (all with explanations) |
+|---|---|
+| Main file | `shlav-a-mega.html` (~4,940 lines, ~298 KB) |
+| Named functions | 183 (152 core + 31 decomposed helpers) |
+| Questions | 3,421 (1,369 IMA exam + 2,052 AI-generated) |
 | Topics | 40 |
-| Notes | 40 |
-| Flashcards | 159 |
 | Drugs | 53 |
-| OSCE stations | 10 |
-| Question images | 30 |
-| Past exams | 9 sessions (2021–2025) |
-| Hazzard chapters | 9 parts (annotated) |
-| Harrison chapters | ~48 PDFs |
-| Articles | 6 |
-| Test files | 5 |
-| Tests | 207 |
-| CI pipeline | GitHub Actions + weekly audit |
+| Flashcards | 159 |
+| Study notes | 40 |
+| Hazzard chapters | 108 (in-app reader) |
+| Harrison chapters | 69 (in-app reader) |
+| Test suite | 408 tests across 9 files (vitest) |
+| CI workflows | 3 (ci.yml, integrity-guard.yml, weekly-audit.yml) |
+| Inline handlers | onclick=160, onchange=26, oninput=6 |
+| App version | v9.48 |
+| SW cache key | `shlav-a-v9.48` |
 
----
 
 ## Test Coverage Recommendations
 
