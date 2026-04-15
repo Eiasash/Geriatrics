@@ -162,6 +162,26 @@ describe("sw.js — push notifications", () => {
   });
 });
 
+describe("sw.js — Supabase image caching", () => {
+  it("defines SUPA_IMG_PATTERN for question images", () => {
+    expect(swContent).toMatch(/SUPA_IMG_PATTERN/);
+    expect(swContent).toContain("question-images");
+  });
+
+  it("defines a separate IMG_CACHE key", () => {
+    expect(swContent).toMatch(/IMG_CACHE\s*=\s*'shlav-img-v\d+'/);
+  });
+
+  it("uses cache-first strategy for Supabase image URLs", () => {
+    expect(swContent).toMatch(/SUPA_IMG_PATTERN\.test\(e\.request\.url\)/);
+    expect(swContent).toMatch(/caches\.open\(IMG_CACHE\)/);
+  });
+
+  it("preserves IMG_CACHE during activate cleanup", () => {
+    expect(swContent).toMatch(/k!==IMG_CACHE/);
+  });
+});
+
 describe("sw.js — version alignment with app", () => {
   it("sw.js CACHE version matches APP_VERSION in HTML", () => {
     const cacheMatch = swContent.match(/CACHE\s*=\s*'shlav-a-v([\d.]+)'/);
