@@ -349,6 +349,10 @@ describe("questions/image_map.json — integrity", () => {
     });
   });
 
+  it("image_map.json must exist", () => {
+    expect(imageMap, "questions/image_map.json is required").toBeDefined();
+  });
+
   it("every physical image file on disk is tracked in image_map.json", () => {
     if (!imageMap) return;
     const imgDir = resolve(ROOT, "questions/images");
@@ -358,6 +362,17 @@ describe("questions/image_map.json — integrity", () => {
     const mapFiles = new Set(imageMap.map(e => e.fname));
     const untracked = diskFiles.filter(f => !mapFiles.has(f));
     expect(untracked, `Image files on disk but missing from image_map.json: ${JSON.stringify(untracked)}`).toEqual([]);
+  });
+
+  it("no phantom entries in image_map.json (every entry has a file on disk)", () => {
+    if (!imageMap) return;
+    const phantom = [];
+    imageMap.forEach((entry, i) => {
+      if (!existsSync(resolve(ROOT, entry.fpath))) {
+        phantom.push({ index: i, fpath: entry.fpath });
+      }
+    });
+    expect(phantom, `image_map entries with no file on disk: ${JSON.stringify(phantom)}`).toEqual([]);
   });
 });
 
