@@ -2058,7 +2058,7 @@ function renderPriorityMatrix(){
   const TOPICS_L=TOPICS;
   const EF_FREQ=[0,34,30,28,36,43,178,39,63,36,20,27,19,22,50,40,22,94,70,78,18,80,43,21,46,27,29,52,10,11,7,0,6,9,26,19,23,9,17,0];
   const maxFreq=Math.max(...EF_FREQ);
-  const tSt=S.ts||{};
+  const tSt=getTopicStats();
   const rows=TOPICS_L.map((name,ti)=>{
     const s=tSt[ti]||{ok:0,no:0,tot:0};
     const acc=s.tot>0?s.ok/s.tot:null;
@@ -2390,7 +2390,9 @@ function addChapterQsToBank(jsonStr){
     alert('✅ '+qs.length+' questions added! Reload to see them in the AI-Ch filter.');
   }catch(e){alert('Failed: '+e.message);}
 }
-function renderLibrary(){
+
+// ===== LIBRARY HELPERS (_rl* prefix) =====
+function _rlHeader(){
 let h=`<div class="sec-t">📖 Library</div>
 <div class="sec-s">Textbooks · Laws · Articles · Exam PDFs</div>`;
 // Sub-tabs
@@ -2409,6 +2411,10 @@ h+=`</div>`;
 
 // ===== HAZZARD ALL PDFs =====
 if(libSec==='haz-pdf'){
+return h;
+}
+function _rlHazzard(){
+let h='';
 // ===== HAZZARD IN-APP READER =====
 if(hazChOpen!==null&&_hazData&&_hazData[String(hazChOpen)]){
 const ch=_hazData[String(hazChOpen)];
@@ -2503,6 +2509,10 @@ h+=`</div></div>`;
 }
 
 
+return h;
+}
+function _rlHarrison(){
+let h='';
 // ===== HARRISON IN-APP READER =====
 if(libSec==='harrison'){
 if(harChOpen!==null&&_harData&&_harData[String(harChOpen)]){
@@ -2566,6 +2576,10 @@ h+=`</div>`;
 }
 }
 
+return h;
+}
+function _rlLaws(){
+let h='';
 // ===== LAWS =====
 if(libSec==='laws'){
 h+=`<div class="card" style="padding:14px">
@@ -2581,6 +2595,10 @@ h+=`<div class="heb" style="padding:8px 0;border-bottom:1px solid rgb(var(--brd)
 h+=`</div>`;
 }
 
+return h;
+}
+function _rlArticles(){
+let h='';
 // ===== ARTICLES =====
 if(libSec==='articles'){
 h+=`<div class="card" style="padding:14px">
@@ -2596,6 +2614,10 @@ h+=`<div style="padding:8px 0;border-bottom:1px solid rgb(var(--brd));display:fl
 h+=`</div>`;
 }
 
+return h;
+}
+function _rlExams(){
+let h='';
 // ===== EXAMS =====
 if(libSec==='exams'){
 const examYears=[...new Set(QZ.map(q=>q.t))].sort();
@@ -2613,9 +2635,24 @@ h+=`</div>`;
 }
 
 h+=`<div style="text-align:center;margin-top:12px;font-size:9px;color:rgb(var(--fg3))">
+return h;
+}
+function _rlFooter(){
+let h='';
 <a href="https://ima-contentfiles.s3.amazonaws.com/P005-2026.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">P005-2026 Syllabus ↗</a></div>`;
 h+=`<div style="text-align:center;margin-top:8px;padding:8px;font-size:9px;color:rgb(var(--fg3));line-height:1.5">
 صدقة جارية الى من نحب<br>Ceaseless Charity — To the People That We Love</div>`;
+return h;
+}
+
+function renderLibrary(){
+let h=_rlHeader();
+h+=_rlHazzard();
+h+=_rlHarrison();
+h+=_rlLaws();
+h+=_rlArticles();
+h+=_rlExams();
+h+=_rlFooter();
 return h;
 }
 
@@ -3257,7 +3294,7 @@ function calcEstScore(){
   const now2=Date.now();
   // Frequency weights from historical exam distribution
   const totalFreq=EXAM_FREQ.reduce((a,b)=>a+b,0);
-  const tSt=S.ts||{};
+  const tSt=getTopicStats();
   const due=new Set(getDueQuestions());
   
   let weightedScore=0,totalWeight=0;
@@ -4581,7 +4618,7 @@ function takeWeeklySnapshot(){
     const weekKey='w_'+now.getFullYear()+'_'+Math.floor((now-new Date(now.getFullYear(),0,0))/(7*864e5));
     const snapshots=JSON.parse(localStorage.getItem('samega_weekly')||'{}');
     if(snapshots[weekKey])return; // already taken this week
-    const tSt=S&&S.ts?S.ts:{};
+    const tSt=getTopicStats();
     const snap={};
     for(let i=0;i<40;i++){const s=tSt[i]||{ok:0,no:0,tot:0};snap[i]=s.tot>0?Math.round(s.ok/s.tot*100):null;}
     snapshots[weekKey]={date:now.toISOString(),acc:snap};
