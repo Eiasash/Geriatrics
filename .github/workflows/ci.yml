@@ -21,12 +21,12 @@ jobs:
           done
 
       # ── Question Count ──
-      - name: Check question count (must be > 900)
+      - name: Check question count (must be > 1400)
         run: |
           COUNT=$(python3 -c "import json; print(len(json.load(open('data/questions.json'))))")
           echo "Question count: $COUNT"
-          if [ "$COUNT" -le 900 ]; then
-            echo "ERROR: Expected > 900 questions, got $COUNT"
+          if [ "$COUNT" -le 1400 ]; then
+            echo "ERROR: Expected > 1400 questions, got $COUNT"
             exit 1
           fi
           echo "OK: $COUNT questions"
