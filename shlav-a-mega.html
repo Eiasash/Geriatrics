@@ -1705,9 +1705,11 @@ h+=`</div>`;
 return h;
 }
 function _rqmFooter(){
+let h='';
 const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
 h+=`<div style="display:flex;gap:16px;margin-top:10px;padding-top:8px;border-top:1px solid rgb(var(--brd));font-size:10px;color:rgb(var(--fg3))">
 <span>✅ ${S.qOk}</span><span>❌ ${S.qNo}</span><span>📊 ${pct}</span>${S.sr[pool[qi]]?.at?`<span style="color:rgb(var(--fg3))">⏱${S.sr[pool[qi]].at}s avg</span>`:""}</div>`;
+return h;
 }
 
 function _rqMain(){
