@@ -3571,7 +3571,9 @@ function renderStudyPlan(){
   return h;
 }
 
-function renderTrack(){
+
+// ===== TRACK HELPERS (_rt* prefix) =====
+function _rtTop(){
 const done=Object.values(S.ck).filter(Boolean).length;
 const tot=S.qOk+S.qNo;const pctN=tot?Math.round(S.qOk/tot*100):0;const pct=tot?pctN+'%':'—';
 const bkCount=Object.values(S.bk).filter(Boolean).length;
@@ -3678,6 +3680,10 @@ h+=`<div style="aspect-ratio:1;border-radius:3px;background:${_cols[_int]}" titl
 }
 h+=`</div></div>`;
 
+return h;
+}
+function _rtMid(){
+let h='';
 // Spaced Reading Due (Feature 9)
 const _hazDue=getChaptersDueForReading('haz',30);
 const _harDue=getChaptersDueForReading('har',30);
@@ -3732,6 +3738,10 @@ h+=`<div class="stats">
 <div class="stat"><span class="tt-wrap"><div class="n" style="color:${estScore===null?'#94a3b8':estScore>=70?'#059669':estScore>=60?'#d97706':'#dc2626'}">${estScore!==null?estScore+'%':'—'}</div><div class="l">Est. Score <button class="tt-icon" tabindex="0">ⓘ</button></div><div class="tt-box" style="left:0;transform:none">Rolling exam score estimate: topic accuracy × exam frequency weight. Penalizes overdue SR cards. Needs 3+ answers per topic for accuracy. Pass = 60%.</div></span></div>
 <div class="stat"><span class="tt-wrap"><div class="n" style="color:rgb(var(--amb))">${dueN}</div><div class="l">Due (SR) <button class="tt-icon" tabindex="0">ⓘ</button></div><div class="tt-box" style="left:0;transform:none">Spaced repetition cards due for review. Based on your past performance.</div></span></div>
 </div>`;
+return h;
+}
+function _rtProgress(){
+let h='';
 // Bookmarked questions with folder grouping
 if(bkCount>0){
 const _byTopic={};
@@ -3830,6 +3840,10 @@ TOPICS.forEach((t,i)=>{h+=`<div class="topic${S.ck[i]?' done':''}" onclick="S.ck
 <input type="checkbox" ${S.ck[i]?'checked':''} readonly style="width:13px;height:13px" tabindex="-1"><span>${t}</span></div>`;});
 h+=`<div onclick="S._sylOpen=!S._sylOpen;render()" style="text-align:center;padding:8px;cursor:pointer;font-size:10px;color:rgb(var(--sky));font-weight:600" role="button" tabindex="0" aria-expanded="${S._sylOpen}" aria-label="Toggle syllabus topics">${S._sylOpen?'▲ Collapse':'▼ Show '+TOPICS.length+' topics'}</div>`;
 h+=`</div>`;
+return h;
+}
+function _rtFooter(){
+let h='';
 // IMA Links
 h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">📥 IMA Exam Archive</div><div style="font-size:10px">`;
 [["2022","639899_34c9618e-ff88-4811-84d5-ba1fdd9d5f1c","639902_9a12e7aa-9876-40e1-bdea-0786dc417406"],
@@ -3889,6 +3903,14 @@ h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;col
 <a href="https://eiasash.github.io/InternalMedicine/" target="_blank" style="font-size:10px;padding:5px 14px;background:#4f46e5;color:#fff;border:none;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">🏥 Internal Medicine App →</a>
 </div>
 <div style="margin-top:6px">صدقة جارية الى من نحب</div></div>`;
+return h;
+}
+
+function renderTrack(){
+let h=_rtTop();
+h+=_rtMid();
+h+=_rtProgress();
+h+=_rtFooter();
 return h;
 }
 
