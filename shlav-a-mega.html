@@ -1684,7 +1684,7 @@ if(ans&&!examMode){
 // Distractor Autopsy — AI-powered explanation of ALL wrong options
 if(ans&&!examMode){
 const wrongIdxs=q.o.map((_,i)=>i).filter(i=>i!==q.c);
-if(autopsyDistractor<0||autopsyDistractor===q.c)autopsyDistractor=wrongIdxs[Math.floor(Math.random()*wrongIdxs.length)];
+if(wrongIdxs.length>0&&(autopsyDistractor<0||autopsyDistractor===q.c))autopsyDistractor=wrongIdxs[Math.floor(Math.random()*wrongIdxs.length)];
 const _apKey='autopsy_'+pool[qi];
 h+=`<div style="padding:12px;margin-top:10px;border:1px solid rgb(var(--brd));border-radius:12px;background:rgb(var(--bg2))">
 <div style="font-weight:700;font-size:11px;margin-bottom:6px">🔬 Distractor Autopsy</div>`;
@@ -3287,7 +3287,7 @@ doc+='<p style="color:rgb(var(--fg2));font-size:10px">Generated '+new Date().toL
 weak15.forEach((p,idx)=>{
 const pct=p.s.tot?Math.round(p.s.ok/p.s.tot*100):0;
 const clr=pct>=70?'#10b981':pct>=50?'#f59e0b':'#ef4444';
-const note=NOTES.find(n=>n.id===p.i||NOTES.indexOf(n)===p.i);
+const note=NOTES.find(n=>n.id===p.i);
 const keyFacts=note?note.notes.split(/\n|\. /).filter(s=>s.length>15).slice(0,5):[];
 doc+='<div class="topic">';
 doc+='<h2>#'+(idx+1)+' '+p.name+' — '+pct+'% ('+p.s.ok+'/'+p.s.tot+')</h2>';
