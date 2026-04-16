@@ -4536,8 +4536,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.56';
+const APP_VERSION='9.57';
 const CHANGELOG={
+'9.57': ['🎯 16 שאלות-רפאים ב-יוני 25 תוקנו — שדה num היה שגוי ב-כולן; זוהה והוקצה מחדש דרך התאמת סט-אפשרויות מול ה-PDF', '5 מתוך 7 "פערים אמיתיים" (Q20, Q47, Q74, Q112, Q115) נסגרו בעזרת התיקון הזה', 'idx=1274 נבנה מחדש מגרסה נקיה ב-2025-א (OCR בלע אפשרות אחת והחליף סדר)', 'idx=643 (ספט 24): c תוקן מ-2 ל-3 (תשובה קלינית נכונה: Mirtazapine לדיכאון בחולה אונקולוגי)', 'פערים נותרים: Q131, Q143 — דורשים c+e ידני'],
 '9.56': ['🔧 23 שאלות Jun25 תוקנו — פערים של טקסט מושחת מ-OCR תוקנו באמצעות התאמה לטקסט הנקי ב-2025-א', 'תיקוני פורמט: רווחים חסרים בין מספרים/לטינית לעברית, סוגרים לא נכונים, מיקום סימני שאלה', 'תיקון שגיאות כתיב: Stifness → Stiffness, PVR מידע מלא שוחזר', 'שמירה על c/ti/e/num מהגרסה המקורית — אין שינוי במפתח תשובות'],
 '9.54': ['36 תמונות קושרו לשאלות קיימות מ-Supabase (Jun22, Jun23, May24, Sep24, Jun25, 2023-ב) — 3.4% → 4.4% צפיפות תמונות', 'תמונות כוללות: ECG, צילומי CT מוח, רדיולוגיה, פריחות עוריות, כלי הערכה'],
 '9.53': ['Tests: extend runtime scope tests to all 5 decomposed render families (renderLibrary, renderCalc, renderQuiz, _rqMain, renderTrack) — catches declared-but-not-top-level function bugs across the whole codebase, not just Library. 76 → 115 migrationWiring tests.'],
