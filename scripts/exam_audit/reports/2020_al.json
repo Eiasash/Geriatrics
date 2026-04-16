@@ -6,15 +6,25 @@
   "2020"
  ],
  "stats": {
-  "canonical_parsed": 99,
-  "canonical_with_4_opts": 98,
+  "canonical_parsed": 100,
+  "canonical_with_4_opts": 99,
   "answers_parsed": 100,
-  "questions_with_matches": 98,
+  "questions_with_matches": 99,
   "questions_without_matches": 1
  },
  "findings": {
   "c_mismatches": [],
-  "tag_mismatches": [],
+  "tag_mismatches": [
+   {
+    "q_num": 34,
+    "idx": 795,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   }
+  ],
   "no_match": [
    [
     47,

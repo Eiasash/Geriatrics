@@ -7,11 +7,11 @@
   "Jun22"
  ],
  "stats": {
-  "canonical_parsed": 137,
-  "canonical_with_4_opts": 118,
+  "canonical_parsed": 145,
+  "canonical_with_4_opts": 126,
   "answers_parsed": 150,
-  "questions_with_matches": 127,
-  "questions_without_matches": 10
+  "questions_with_matches": 136,
+  "questions_without_matches": 9
  },
  "findings": {
   "c_mismatches": [],
@@ -52,10 +52,6 @@
    [
     119,
     "מה השילוב הנכון בין סוג הזיהום העורי לבין חיידק הגורם לו בשכיחות גבוהה .אFollicu"
-   ],
-   [
-    137,
-    "מה מבין הבאים יגרום להארכתPT?"
    ]
   ],
   "low_confidence": [],
@@ -72,6 +68,12 @@
     "q_num": 65,
     "idx": 59,
     "ds_q_len": 39,
+    "tag": "2022"
+   },
+   {
+    "q_num": 137,
+    "idx": 3492,
+    "ds_q_len": 29,
     "tag": "2022"
    }
   ]

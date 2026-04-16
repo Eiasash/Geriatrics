@@ -7,15 +7,25 @@
    "2020"
   ],
   "stats": {
-   "canonical_parsed": 99,
-   "canonical_with_4_opts": 98,
+   "canonical_parsed": 100,
+   "canonical_with_4_opts": 99,
    "answers_parsed": 100,
-   "questions_with_matches": 98,
+   "questions_with_matches": 99,
    "questions_without_matches": 1
   },
   "findings": {
    "c_mismatches": [],
-   "tag_mismatches": [],
+   "tag_mismatches": [
+    {
+     "q_num": 34,
+     "idx": 795,
+     "current_tag": "2023-ב",
+     "expected_tags": [
+      "2020"
+     ],
+     "sim": 1.0
+    }
+   ],
    "no_match": [
     [
      47,
@@ -1277,26 +1287,14 @@
    "Jun22"
   ],
   "stats": {
-   "canonical_parsed": 94,
-   "canonical_with_4_opts": 80,
+   "canonical_parsed": 97,
+   "canonical_with_4_opts": 82,
    "answers_parsed": 100,
-   "questions_with_matches": 86,
+   "questions_with_matches": 89,
    "questions_without_matches": 8
   },
   "findings": {
-   "c_mismatches": [
-    {
-     "q_num": 79,
-     "idx": 73,
-     "tag": "2022",
-     "current_c": 2,
-     "accepted": [
-      0
-     ],
-     "recommended_c": 0,
-     "sim": 0.815
-    }
-   ],
+   "c_mismatches": [],
    "tag_mismatches": [],
    "no_match": [
     [
@@ -1373,11 +1371,11 @@
    "Jun22"
   ],
   "stats": {
-   "canonical_parsed": 137,
-   "canonical_with_4_opts": 118,
+   "canonical_parsed": 145,
+   "canonical_with_4_opts": 126,
    "answers_parsed": 150,
-   "questions_with_matches": 127,
-   "questions_without_matches": 10
+   "questions_with_matches": 136,
+   "questions_without_matches": 9
   },
   "findings": {
    "c_mismatches": [],
@@ -1418,10 +1416,6 @@
     [
      119,
      "מה השילוב הנכון בין סוג הזיהום העורי לבין חיידק הגורם לו בשכיחות גבוהה .אFollicu"
-    ],
-    [
-     137,
-     "מה מבין הבאים יגרום להארכתPT?"
     ]
    ],
    "low_confidence": [],
@@ -1439,6 +1433,12 @@
      "idx": 59,
      "ds_q_len": 39,
      "tag": "2022"
+    },
+    {
+     "q_num": 137,
+     "idx": 3492,
+     "ds_q_len": 29,
+     "tag": "2022"
     }
    ]
   }
@@ -1452,10 +1452,10 @@
    "Jun23"
   ],
   "stats": {
-   "canonical_parsed": 88,
-   "canonical_with_4_opts": 88,
+   "canonical_parsed": 94,
+   "canonical_with_4_opts": 94,
    "answers_parsed": 100,
-   "questions_with_matches": 88,
+   "questions_with_matches": 94,
    "questions_without_matches": 0
   },
   "findings": {
@@ -1808,6 +1808,21 @@
      ]
     },
     {
+     "q_num": 33,
+     "matches": [
+      [
+       1341,
+       "יוני 23",
+       1.0
+      ],
+      [
+       169,
+       "יוני 23",
+       0.9891696750902527
+      ]
+     ]
+    },
+    {
      "q_num": 34,
      "matches": [
       [
@@ -1913,6 +1928,21 @@
      ]
     },
     {
+     "q_num": 50,
+     "matches": [
+      [
+       1351,
+       "יוני 23",
+       1.0
+      ],
+      [
+       186,
+       "יוני 23",
+       0.9882352941176471
+      ]
+     ]
+    },
+    {
      "q_num": 52,
      "matches": [
       [
@@ -1928,17 +1958,47 @@
      ]
     },
     {
+     "q_num": 57,
+     "matches": [
+      [
+       192,
+       "יוני 23",
+       1.0
+      ],
+      [
+       1353,
+       "יוני 23",
+       1.0
+      ]
+     ]
+    },
+    {
      "q_num": 58,
      "matches": [
       [
        1354,
        "יוני 23",
-       0.918918918918919
+       0.9234567901234568
       ],
       [
        193,
        "יוני 23",
-       0.9185185185185185
+       0.9230769230769231
+      ]
+     ]
+    },
+    {
+     "q_num": 59,
+     "matches": [
+      [
+       194,
+       "יוני 23",
+       1.0
+      ],
+      [
+       1355,
+       "יוני 23",
+       0.9397163120567376
       ]
      ]
     },
@@ -1954,6 +2014,21 @@
        195,
        "יוני 23",
        0.9721627408993576
+      ]
+     ]
+    },
+    {
+     "q_num": 61,
+     "matches": [
+      [
+       196,
+       "יוני 23",
+       1.0
+      ],
+      [
+       1357,
+       "יוני 23",
+       1.0
       ]
      ]
     },
@@ -2083,12 +2158,27 @@
       [
        1367,
        "יוני 23",
-       0.9447415329768271
+       0.9481216457960644
       ],
       [
        207,
        "יוני 23",
-       0.9409660107334525
+       0.9443447037701975
+      ]
+     ]
+    },
+    {
+     "q_num": 75,
+     "matches": [
+      [
+       1368,
+       "יוני 23",
+       1.0
+      ],
+      [
+       208,
+       "יוני 23",
+       0.9847328244274809
       ]
      ]
     },
@@ -2361,6 +2451,12 @@
      "idx": 179,
      "ds_q_len": 39,
      "tag": "יוני 23"
+    },
+    {
+     "q_num": 50,
+     "idx": 1351,
+     "ds_q_len": 30,
+     "tag": "יוני 23"
     }
    ]
   }
@@ -2375,10 +2471,10 @@
    "2023-ב"
   ],
   "stats": {
-   "canonical_parsed": 133,
-   "canonical_with_4_opts": 132,
+   "canonical_parsed": 141,
+   "canonical_with_4_opts": 140,
    "answers_parsed": 150,
-   "questions_with_matches": 132,
+   "questions_with_matches": 140,
    "questions_without_matches": 1
   },
   "findings": {
@@ -2736,6 +2832,21 @@
      ]
     },
     {
+     "q_num": 33,
+     "matches": [
+      [
+       1341,
+       "יוני 23",
+       1.0
+      ],
+      [
+       169,
+       "יוני 23",
+       0.9891696750902527
+      ]
+     ]
+    },
+    {
      "q_num": 34,
      "matches": [
       [
@@ -2841,6 +2952,21 @@
      ]
     },
     {
+     "q_num": 50,
+     "matches": [
+      [
+       1351,
+       "יוני 23",
+       1.0
+      ],
+      [
+       186,
+       "יוני 23",
+       0.9882352941176471
+      ]
+     ]
+    },
+    {
      "q_num": 52,
      "matches": [
       [
@@ -2856,17 +2982,47 @@
      ]
     },
     {
+     "q_num": 57,
+     "matches": [
+      [
+       192,
+       "יוני 23",
+       1.0
+      ],
+      [
+       1353,
+       "יוני 23",
+       1.0
+      ]
+     ]
+    },
+    {
      "q_num": 58,
      "matches": [
       [
        1354,
        "יוני 23",
-       0.9193154034229829
+       0.918918918918919
       ],
       [
        193,
        "יוני 23",
-       0.914004914004914
+       0.9185185185185185
+      ]
+     ]
+    },
+    {
+     "q_num": 59,
+     "matches": [
+      [
+       194,
+       "יוני 23",
+       1.0
+      ],
+      [
+       1355,
+       "יוני 23",
+       0.9397163120567376
       ]
      ]
     },
@@ -2882,6 +3038,21 @@
        195,
        "יוני 23",
        0.9721627408993576
+      ]
+     ]
+    },
+    {
+     "q_num": 61,
+     "matches": [
+      [
+       196,
+       "יוני 23",
+       1.0
+      ],
+      [
+       1357,
+       "יוני 23",
+       1.0
       ]
      ]
     },
@@ -3011,12 +3182,27 @@
       [
        1367,
        "יוני 23",
-       0.9413854351687388
+       0.9447415329768271
       ],
       [
        207,
        "יוני 23",
-       0.9376114081996435
+       0.9409660107334525
+      ]
+     ]
+    },
+    {
+     "q_num": 75,
+     "matches": [
+      [
+       1368,
+       "יוני 23",
+       1.0
+      ],
+      [
+       208,
+       "יוני 23",
+       0.9847328244274809
       ]
      ]
     },
@@ -3381,6 +3567,21 @@
      ]
     },
     {
+     "q_num": 117,
+     "matches": [
+      [
+       1400,
+       "יוני 23",
+       0.9616724738675958
+      ],
+      [
+       246,
+       "יוני 23",
+       0.9615832363213038
+      ]
+     ]
+    },
+    {
      "q_num": 118,
      "matches": [
       [
@@ -3618,6 +3819,12 @@
      "q_num": 43,
      "idx": 179,
      "ds_q_len": 39,
+     "tag": "יוני 23"
+    },
+    {
+     "q_num": 50,
+     "idx": 1351,
+     "ds_q_len": 30,
      "tag": "יוני 23"
     },
     {
@@ -6843,37 +7050,24 @@
    "2025-א"
   ],
   "stats": {
-   "canonical_parsed": 99,
-   "canonical_with_4_opts": 99,
+   "canonical_parsed": 100,
+   "canonical_with_4_opts": 100,
    "answers_parsed": 100,
-   "questions_with_matches": 99,
+   "questions_with_matches": 100,
    "questions_without_matches": 0
   },
   "findings": {
    "c_mismatches": [
     {
-     "q_num": 17,
-     "idx": 632,
-     "tag": "יוני 25",
-     "current_c": 2,
+     "q_num": 25,
+     "idx": 640,
+     "tag": "ספט 24",
+     "current_c": 1,
      "accepted": [
-      1,
       3
      ],
-     "recommended_c": 1,
-     "sim": 1.0
-    },
-    {
-     "q_num": 57,
-     "idx": 672,
-     "tag": "יוני 25",
-     "current_c": 3,
-     "accepted": [
-      1,
-      2
-     ],
-     "recommended_c": 1,
-     "sim": 1.0
+     "recommended_c": 3,
+     "sim": 0.938
     }
    ],
    "tag_mismatches": [
@@ -6887,6 +7081,17 @@
       "2025-א"
      ],
      "sim": 1.0
+    },
+    {
+     "q_num": 25,
+     "idx": 640,
+     "current_tag": "ספט 24",
+     "expected_tags": [
+      "יוני 25",
+      "Jun25",
+      "2025-א"
+     ],
+     "sim": 0.938
     }
    ],
    "no_match": [],
@@ -8263,48 +8468,24 @@
    "2025-א"
   ],
   "stats": {
-   "canonical_parsed": 149,
-   "canonical_with_4_opts": 149,
+   "canonical_parsed": 150,
+   "canonical_with_4_opts": 150,
    "answers_parsed": 150,
-   "questions_with_matches": 149,
+   "questions_with_matches": 150,
    "questions_without_matches": 0
   },
   "findings": {
    "c_mismatches": [
     {
-     "q_num": 17,
-     "idx": 632,
-     "tag": "יוני 25",
-     "current_c": 2,
-     "accepted": [
-      1,
-      3
-     ],
-     "recommended_c": 1,
-     "sim": 1.0
-    },
-    {
-     "q_num": 57,
-     "idx": 672,
-     "tag": "יוני 25",
-     "current_c": 3,
-     "accepted": [
-      1,
-      2
-     ],
-     "recommended_c": 1,
-     "sim": 0.953
-    },
-    {
-     "q_num": 111,
-     "idx": 725,
-     "tag": "יוני 25",
-     "current_c": 2,
+     "q_num": 25,
+     "idx": 640,
+     "tag": "ספט 24",
+     "current_c": 1,
      "accepted": [
       3
      ],
      "recommended_c": 3,
-     "sim": 0.868
+     "sim": 0.928
     }
    ],
    "tag_mismatches": [
@@ -8318,6 +8499,17 @@
       "2025-א"
      ],
      "sim": 1.0
+    },
+    {
+     "q_num": 25,
+     "idx": 640,
+     "current_tag": "ספט 24",
+     "expected_tags": [
+      "יוני 25",
+      "Jun25",
+      "2025-א"
+     ],
+     "sim": 0.928
     },
     {
      "q_num": 118,

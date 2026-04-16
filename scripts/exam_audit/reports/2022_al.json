@@ -7,26 +7,14 @@
   "Jun22"
  ],
  "stats": {
-  "canonical_parsed": 94,
-  "canonical_with_4_opts": 80,
+  "canonical_parsed": 97,
+  "canonical_with_4_opts": 82,
   "answers_parsed": 100,
-  "questions_with_matches": 86,
+  "questions_with_matches": 89,
   "questions_without_matches": 8
  },
  "findings": {
-  "c_mismatches": [
-   {
-    "q_num": 79,
-    "idx": 73,
-    "tag": "2022",
-    "current_c": 2,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 0.815
-   }
-  ],
+  "c_mismatches": [],
   "tag_mismatches": [],
   "no_match": [
    [

@@ -28,12 +28,21 @@ def extract_full_text(pdf_path):
 def find_question_starts(text, max_n=200):
     """Find all candidate question-start markers.
     
-    Pattern: newline, number, newline, optional "?" (from preceding question
-    stem in RTL layout), optional ws, period, then NOT a digit/newline.
-    Excludes decimal numbers like "1.2" that would confuse a naive matcher.
+    Two layouts observed:
+      Layout A (newline-separated): "\n<num>\n\s*\.\s<text>" — period on own line
+      Layout B (inline):             "\n<num>\s*\.\s<text>"   — period follows number directly
+    
+    Both patterns are enforced at line boundaries to avoid matching
+    decimals like "1.2" or section references.
     """
     candidates = []
+    # Layout A: newline, num, newline, period, then non-digit
     for m in re.finditer(r'\n\s*(\d{1,3})\s*\n[\s?]*\.\s*(?=[^\d\s])', text):
+        n = int(m.group(1))
+        if 1 <= n <= max_n:
+            candidates.append((m.start(), m.end(), n))
+    # Layout B: newline, num, period (same line), then Hebrew/Latin/question mark
+    for m in re.finditer(r'\n\s*(\d{1,3})\s*\.\s*(?=[\u0590-\u05FFa-zA-Z?])', text):
         n = int(m.group(1))
         if 1 <= n <= max_n:
             candidates.append((m.start(), m.end(), n))
