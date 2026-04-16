@@ -103,9 +103,10 @@ def split_stem_options(q_text):
     Also truncates the last option at the next question marker to prevent
     bleed when the PDF extraction flows past question boundaries.
     """
-    # Unified pattern: match either "letter . space" or ". letter" (older).
-    # Letter captured in one of two groups.
-    pattern = re.compile(r'(?:([\u05d0-\u05d3])\s*\.\s|\.\s*([\u05d0-\u05d3])(?=[^.]))')
+    # Unified pattern: match either "letter . space" (modern) or ". letter {space|English cap|bracket}" (older).
+    # The older lookahead excludes mid-word Hebrew punctuation like "של .אפיסטקסיס" where
+    # .α is inside a Hebrew word (Pnimit Jun25 Q120 bug, Geri 2025_al Q7).
+    pattern = re.compile(r'(?:([\u05d0-\u05d3])\s*\.\s|\.\s*([\u05d0-\u05d3])(?=\s|[A-Z\[\(]))')
     marks = list(pattern.finditer(q_text))
     if len(marks) < 4:
         return q_text, []
