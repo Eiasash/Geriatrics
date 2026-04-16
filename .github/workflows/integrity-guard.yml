@@ -171,8 +171,7 @@ jobs:
           # Count functions in HTML + shared/*.js
           all_code = html
           for shared_file in sorted(glob.glob('shared/*.js')):
-              all_code += '
-' + open(shared_file).read()
+              all_code += '\n' + open(shared_file).read()
           current_count = len(re.findall(r'(?:async\s+)?function\s+\w+\s*\(', all_code))
 
           # Get previous commit's count
@@ -188,8 +187,7 @@ jobs:
                       for shared_file in sorted(glob.glob('shared/*.js')):
                           sr = subprocess.run(['git', 'show', f'HEAD~1:{shared_file}'], capture_output=True, text=True, timeout=10)
                           if sr.returncode == 0:
-                              prev_code += '
-' + sr.stdout
+                              prev_code += '\n' + sr.stdout
                   except Exception:
                       pass
                   prev_count = len(re.findall(r'(?:async\s+)?function\s+\w+\s*\(', prev_code))
