@@ -15,359 +15,7 @@
   },
   "findings": {
    "c_mismatches": [],
-   "tag_mismatches": [
-    {
-     "q_num": 1,
-     "idx": 762,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.978
-    },
-    {
-     "q_num": 5,
-     "idx": 766,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 7,
-     "idx": 768,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 8,
-     "idx": 769,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 10,
-     "idx": 771,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 11,
-     "idx": 772,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 13,
-     "idx": 774,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.972
-    },
-    {
-     "q_num": 14,
-     "idx": 775,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 18,
-     "idx": 779,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 22,
-     "idx": 783,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 24,
-     "idx": 785,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.952
-    },
-    {
-     "q_num": 25,
-     "idx": 786,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.993
-    },
-    {
-     "q_num": 27,
-     "idx": 788,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 29,
-     "idx": 790,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.978
-    },
-    {
-     "q_num": 30,
-     "idx": 791,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.988
-    },
-    {
-     "q_num": 36,
-     "idx": 797,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.98
-    },
-    {
-     "q_num": 42,
-     "idx": 802,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.975
-    },
-    {
-     "q_num": 44,
-     "idx": 804,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.993
-    },
-    {
-     "q_num": 50,
-     "idx": 809,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.98
-    },
-    {
-     "q_num": 51,
-     "idx": 810,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 52,
-     "idx": 811,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 54,
-     "idx": 813,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.998
-    },
-    {
-     "q_num": 56,
-     "idx": 815,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.968
-    },
-    {
-     "q_num": 61,
-     "idx": 820,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.97
-    },
-    {
-     "q_num": 63,
-     "idx": 822,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 64,
-     "idx": 823,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.972
-    },
-    {
-     "q_num": 66,
-     "idx": 825,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 70,
-     "idx": 829,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.994
-    },
-    {
-     "q_num": 75,
-     "idx": 833,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 77,
-     "idx": 835,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 87,
-     "idx": 845,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.974
-    },
-    {
-     "q_num": 88,
-     "idx": 846,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 89,
-     "idx": 847,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.955
-    },
-    {
-     "q_num": 91,
-     "idx": 849,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.963
-    },
-    {
-     "q_num": 92,
-     "idx": 850,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.877
-    },
-    {
-     "q_num": 96,
-     "idx": 854,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 97,
-     "idx": 855,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 98,
-     "idx": 856,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 0.963
-    },
-    {
-     "q_num": 100,
-     "idx": 858,
-     "current_tag": "2023-ב",
-     "expected_tags": [
-      "2020"
-     ],
-     "sim": 1.0
-    }
-   ],
+   "tag_mismatches": [],
    "no_match": [
     [
      47,
@@ -381,12 +29,12 @@
      "matches": [
       [
        822,
-       "2023-ב",
+       "2020",
        1.0
       ],
       [
        689,
-       "ספט 24",
+       "יוני 25",
        0.9436274509803921
       ],
       [
@@ -432,28 +80,36 @@
    "canonical_parsed": 100,
    "canonical_with_4_opts": 95,
    "answers_parsed": 100,
-   "questions_with_matches": 90,
-   "questions_without_matches": 10
+   "questions_with_matches": 97,
+   "questions_without_matches": 3
   },
   "findings": {
-   "c_mismatches": [
-    {
-     "q_num": 61,
-     "idx": 912,
-     "tag": "2023-ב",
-     "current_c": 1,
-     "accepted": [
-      3
-     ],
-     "recommended_c": 3,
-     "sim": 0.935
-    }
-   ],
+   "c_mismatches": [],
    "tag_mismatches": [
+    {
+     "q_num": 1,
+     "idx": 1020,
+     "current_tag": "יוני 21",
+     "expected_tags": [
+      "2021",
+      "Jun21"
+     ],
+     "sim": 1.0
+    },
+    {
+     "q_num": 2,
+     "idx": 860,
+     "current_tag": "יוני 21",
+     "expected_tags": [
+      "2021",
+      "Jun21"
+     ],
+     "sim": 1.0
+    },
     {
      "q_num": 3,
      "idx": 861,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -463,7 +119,7 @@
     {
      "q_num": 4,
      "idx": 862,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -483,7 +139,7 @@
     {
      "q_num": 6,
      "idx": 864,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -493,7 +149,7 @@
     {
      "q_num": 7,
      "idx": 865,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -513,7 +169,7 @@
     {
      "q_num": 9,
      "idx": 867,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -523,7 +179,17 @@
     {
      "q_num": 10,
      "idx": 868,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
+     "expected_tags": [
+      "2021",
+      "Jun21"
+     ],
+     "sim": 1.0
+    },
+    {
+     "q_num": 11,
+     "idx": 3475,
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -553,7 +219,7 @@
     {
      "q_num": 14,
      "idx": 871,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -591,9 +257,19 @@
      "sim": 0.934
     },
     {
+     "q_num": 18,
+     "idx": 3476,
+     "current_tag": "יוני 21",
+     "expected_tags": [
+      "2021",
+      "Jun21"
+     ],
+     "sim": 1.0
+    },
+    {
      "q_num": 19,
      "idx": 875,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -623,7 +299,7 @@
     {
      "q_num": 22,
      "idx": 878,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -643,7 +319,7 @@
     {
      "q_num": 24,
      "idx": 880,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -663,7 +339,7 @@
     {
      "q_num": 26,
      "idx": 882,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -691,6 +367,16 @@
      "sim": 0.924
     },
     {
+     "q_num": 29,
+     "idx": 3477,
+     "current_tag": "יוני 21",
+     "expected_tags": [
+      "2021",
+      "Jun21"
+     ],
+     "sim": 1.0
+    },
+    {
      "q_num": 30,
      "idx": 885,
      "current_tag": "יוני 21",
@@ -703,7 +389,7 @@
     {
      "q_num": 31,
      "idx": 886,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -723,7 +409,7 @@
     {
      "q_num": 33,
      "idx": 888,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -753,6 +439,16 @@
     {
      "q_num": 36,
      "idx": 3438,
+     "current_tag": "יוני 21",
+     "expected_tags": [
+      "2021",
+      "Jun21"
+     ],
+     "sim": 1.0
+    },
+    {
+     "q_num": 37,
+     "idx": 3478,
      "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
@@ -793,7 +489,7 @@
     {
      "q_num": 41,
      "idx": 894,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -853,7 +549,7 @@
     {
      "q_num": 49,
      "idx": 900,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -893,7 +589,7 @@
     {
      "q_num": 53,
      "idx": 904,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -903,7 +599,7 @@
     {
      "q_num": 54,
      "idx": 905,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -953,7 +649,7 @@
     {
      "q_num": 59,
      "idx": 910,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -973,7 +669,7 @@
     {
      "q_num": 61,
      "idx": 912,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -983,7 +679,7 @@
     {
      "q_num": 62,
      "idx": 913,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -1011,9 +707,19 @@
      "sim": 1.0
     },
     {
+     "q_num": 65,
+     "idx": 3479,
+     "current_tag": "יוני 21",
+     "expected_tags": [
+      "2021",
+      "Jun21"
+     ],
+     "sim": 1.0
+    },
+    {
      "q_num": 67,
      "idx": 916,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -1023,7 +729,7 @@
     {
      "q_num": 68,
      "idx": 917,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -1071,9 +777,19 @@
      "sim": 0.952
     },
     {
+     "q_num": 73,
+     "idx": 3480,
+     "current_tag": "יוני 21",
+     "expected_tags": [
+      "2021",
+      "Jun21"
+     ],
+     "sim": 1.0
+    },
+    {
      "q_num": 74,
      "idx": 922,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -1089,6 +805,16 @@
       "Jun21"
      ],
      "sim": 0.909
+    },
+    {
+     "q_num": 76,
+     "idx": 3481,
+     "current_tag": "יוני 21",
+     "expected_tags": [
+      "2021",
+      "Jun21"
+     ],
+     "sim": 1.0
     },
     {
      "q_num": 77,
@@ -1113,7 +839,7 @@
     {
      "q_num": 79,
      "idx": 926,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -1173,7 +899,7 @@
     {
      "q_num": 85,
      "idx": 932,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -1223,7 +949,7 @@
     {
      "q_num": 90,
      "idx": 937,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -1243,7 +969,7 @@
     {
      "q_num": 92,
      "idx": 939,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -1263,7 +989,7 @@
     {
      "q_num": 94,
      "idx": 941,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -1283,7 +1009,7 @@
     {
      "q_num": 96,
      "idx": 943,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -1293,7 +1019,7 @@
     {
      "q_num": 97,
      "idx": 944,
-     "current_tag": "2023-ב",
+     "current_tag": "יוני 21",
      "expected_tags": [
       "2021",
       "Jun21"
@@ -1333,22 +1059,6 @@
    ],
    "no_match": [
     [
-     11,
-     "בת80 הגיעה למרפאה ל מעקב של צפיפות העצם. מטופלת ב- ALENDRONATE 70 מ\"ג פעם בשבוע "
-    ],
-    [
-     18,
-     "מה הסיבה השכיחה ביותר לחום מסיבה ש( אינה ברורהFUO ? ) בגיל המבוגר"
-    ],
-    [
-     29,
-     "בן85 , גר לבד ו, תשוש בתפקודו ו מקבל עזרה ממטפלת6 .שעות לשבוע בעל השכלה .גבוהה. "
-    ],
-    [
-     37,
-     "חולה בן71 ,דייר הוסטל, הופנה ל חדר מיון עקב חולשה כללית , נפילות חוזרות , רעד . "
-    ],
-    [
      44,
      "בת89 , מאושפזת לשיקום לאחר שבר בRAMUS PUBIS . ברקע מחלת לב איסכמית, יתר לחץ דם ו"
     ],
@@ -1357,20 +1067,8 @@
      "בת71 .ללא מחלות רקע ,לא נוטלת תרופות קבועות, אינה מעשנת ולא שותה אלכוהול שמורה ק"
     ],
     [
-     65,
-     "בת75 , .סובלת בחודשיים האחרונים מכאבי גב תחתון. ללא היסטוריה של חבלה או נפילה .ל"
-    ],
-    [
      66,
      ".ישנן הגדרות שונות לסרקופניה הכוללות שילוב של מדדים שונים ?מהו שילוב הממצאים שמג"
-    ],
-    [
-     73,
-     "בן75 , סיעודי וסובל מדמנציה אושפז ,עקב התדרדרות במצב הכללי ירידה במצב ההכרה וחום"
-    ],
-    [
-     76,
-     "תופעות בשימוש ארוך טווח ב- PPI's :כוללות"
     ]
    ],
    "low_confidence": [],
@@ -1380,12 +1078,12 @@
      "matches": [
       [
        1020,
-       "2021",
+       "יוני 21",
        1.0
       ],
       [
        859,
-       "2023-ב",
+       "יוני 21",
        0.9966996699669967
       ]
      ]
@@ -1394,13 +1092,13 @@
      "q_num": 2,
      "matches": [
       [
-       1021,
-       "2021",
+       860,
+       "יוני 21",
        1.0
       ],
       [
-       860,
-       "2023-ב",
+       1021,
+       "יוני 21",
        1.0
       ]
      ]
@@ -1410,12 +1108,12 @@
      "matches": [
       [
        862,
-       "2023-ב",
+       "יוני 21",
        0.9411764705882353
       ],
       [
        1023,
-       "2021",
+       "יוני 21",
        0.8994082840236687
       ]
      ]
@@ -1425,12 +1123,12 @@
      "matches": [
       [
        865,
-       "2023-ב",
+       "יוני 21",
        1.0
       ],
       [
        1026,
-       "2021",
+       "יוני 21",
        0.9084745762711864
       ]
      ]
@@ -1445,7 +1143,7 @@
       ],
       [
        1027,
-       "2021",
+       "יוני 21",
        0.9173913043478261
       ]
      ]
@@ -1455,12 +1153,12 @@
      "matches": [
       [
        868,
-       "2023-ב",
+       "יוני 21",
        1.0
       ],
       [
        1029,
-       "2021",
+       "יוני 21",
        0.9153439153439153
       ]
      ]
@@ -1485,12 +1183,12 @@
      "matches": [
       [
        871,
-       "2023-ב",
+       "יוני 21",
        1.0
       ],
       [
        1033,
-       "2021",
+       "יוני 21",
        0.9019607843137255
       ]
      ]
@@ -1520,7 +1218,7 @@
       ],
       [
        1089,
-       "2021",
+       "יוני 21",
        0.9272727272727272
       ]
      ]
@@ -1530,7 +1228,7 @@
      "matches": [
       [
        926,
-       "2023-ב",
+       "יוני 21",
        1.0
       ],
       [
@@ -1545,9 +1243,9 @@
    "truncated_q": [
     {
      "q_num": 2,
-     "idx": 1021,
-     "ds_q_len": 38,
-     "tag": "2021"
+     "idx": 860,
+     "ds_q_len": 37,
+     "tag": "יוני 21"
     },
     {
      "q_num": 12,
@@ -1559,13 +1257,13 @@
      "q_num": 41,
      "idx": 894,
      "ds_q_len": 33,
-     "tag": "2023-ב"
+     "tag": "יוני 21"
     },
     {
      "q_num": 79,
      "idx": 926,
      "ds_q_len": 39,
-     "tag": "2023-ב"
+     "tag": "יוני 21"
     }
    ]
   }
@@ -1582,8 +1280,8 @@
    "canonical_parsed": 94,
    "canonical_with_4_opts": 80,
    "answers_parsed": 100,
-   "questions_with_matches": 85,
-   "questions_without_matches": 9
+   "questions_with_matches": 86,
+   "questions_without_matches": 8
   },
   "findings": {
    "c_mismatches": [
@@ -1601,10 +1299,6 @@
    ],
    "tag_mismatches": [],
    "no_match": [
-    [
-     10,
-     "מה נכון לגבי הטיפול ב- Idiopathic Pulmonary Fibrosis?"
-    ],
     [
      13,
      "בן86 , הגיע למרפאה עקב תלונות על גרד ואודם ברגליים, שידוע מזה זמן רב, אך .לאחרונ"
@@ -1682,8 +1376,8 @@
    "canonical_parsed": 137,
    "canonical_with_4_opts": 118,
    "answers_parsed": 150,
-   "questions_with_matches": 124,
-   "questions_without_matches": 13
+   "questions_with_matches": 128,
+   "questions_without_matches": 9
   },
   "findings": {
    "c_mismatches": [],
@@ -1722,24 +1416,8 @@
      "?מי מהחולים הבאים מתאים לאשפוז במחלקה לסיעוד מורכב .א בן88 , מרותק למיטה, ניזון "
     ],
     [
-     107,
-     "בן94 ., מתגורר בביתו עם מטפל צמוד, סיעודי בתפקוד עם דמנציה קלה ברקע: סוכרת, יתר "
-    ],
-    [
      119,
      "מה השילוב הנכון בין סוג הזיהום העורי לבין חיידק הגורם לו בשכיחות גבוהה .אFollicu"
-    ],
-    [
-     127,
-     "בת83 ., פנתה למחלקה לרפואה דחופה עקב קוצר נשימה וכאבים בכתף ימין צילום חזה - תמו"
-    ],
-    [
-     135,
-     "בן80, מאושפז במחלקה פנימית. בעברו: כיב בתריסריון לפני כ- 30 שנים ועבר ניתוח Antr"
-    ],
-    [
-     137,
-     "מה מבין הבאים יגרום להארכתPT?"
     ]
    ],
    "low_confidence": [
@@ -1764,6 +1442,12 @@
      "idx": 59,
      "ds_q_len": 39,
      "tag": "2022"
+    },
+    {
+     "q_num": 137,
+     "idx": 3486,
+     "ds_q_len": 29,
+     "tag": "2022"
     }
    ]
   }
@@ -1780,8 +1464,8 @@
    "canonical_parsed": 88,
    "canonical_with_4_opts": 88,
    "answers_parsed": 100,
-   "questions_with_matches": 83,
-   "questions_without_matches": 5
+   "questions_with_matches": 86,
+   "questions_without_matches": 2
   },
   "findings": {
    "c_mismatches": [],
@@ -1790,18 +1474,6 @@
     [
      11,
      "בת92, מאושפזת לאחר שבר בצווא ר הירך. יומיים לאחר הניתוח התחילה לצעוק באמצע .הליל"
-    ],
-    [
-     32,
-     "בתמונה 4 פצע לאחר שבועיים של טיפול מקומי להטריה אוטוליטית . ?לאור הממצא בשוליים,"
-    ],
-    [
-     53,
-     "בת84 ., מתגוררת בגפה, עצמאית בתפקודה, קיימת ירידה קוגניטיבית בשנה האחרונה לפני ש"
-    ],
-    [
-     55,
-     "למי מהמטופלים הבאים יש לבצע בדיקת תרבית שתן למרות שאין לו תלונות מכוונות"
     ],
     [
      58,
@@ -2625,8 +2297,8 @@
    "canonical_parsed": 133,
    "canonical_with_4_opts": 132,
    "answers_parsed": 150,
-   "questions_with_matches": 127,
-   "questions_without_matches": 6
+   "questions_with_matches": 130,
+   "questions_without_matches": 3
   },
   "findings": {
    "c_mismatches": [
@@ -2658,18 +2330,6 @@
     [
      11,
      "בת92, מאושפזת לאחר שבר בצווא ר הירך. יומיים לאחר הניתוח התחילה לצעוק באמצע .הליל"
-    ],
-    [
-     32,
-     "בתמונה 4 פצע לאחר שבועיים של טיפול מקומי להטריה אוטוליטית . ?לאור הממצא בשוליים,"
-    ],
-    [
-     53,
-     "בת84 ., מתגוררת בגפה, עצמאית בתפקודה, קיימת ירידה קוגניטיבית בשנה האחרונה לפני ש"
-    ],
-    [
-     55,
-     "למי מהמטופלים הבאים יש לבצע בדיקת תרבית שתן למרות שאין לו תלונות מכוונות"
     ],
     [
      58,
@@ -3838,152 +3498,12 @@
    "canonical_parsed": 100,
    "canonical_with_4_opts": 99,
    "answers_parsed": 100,
-   "questions_with_matches": 98,
-   "questions_without_matches": 2
+   "questions_with_matches": 99,
+   "questions_without_matches": 1
   },
   "findings": {
    "c_mismatches": [],
    "tag_mismatches": [
-    {
-     "q_num": 1,
-     "idx": 467,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 2,
-     "idx": 468,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 3,
-     "idx": 469,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 5,
-     "idx": 471,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.916
-    },
-    {
-     "q_num": 6,
-     "idx": 472,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 7,
-     "idx": 473,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.928
-    },
-    {
-     "q_num": 8,
-     "idx": 474,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 9,
-     "idx": 475,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 10,
-     "idx": 476,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 11,
-     "idx": 477,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.907
-    },
-    {
-     "q_num": 12,
-     "idx": 478,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.986
-    },
-    {
-     "q_num": 13,
-     "idx": 479,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 14,
-     "idx": 480,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.94
-    },
-    {
-     "q_num": 15,
-     "idx": 481,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
     {
      "q_num": 16,
      "idx": 482,
@@ -3993,296 +3513,6 @@
       "May24"
      ],
      "sim": 0.792
-    },
-    {
-     "q_num": 17,
-     "idx": 483,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.923
-    },
-    {
-     "q_num": 18,
-     "idx": 484,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 19,
-     "idx": 485,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 20,
-     "idx": 486,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.997
-    },
-    {
-     "q_num": 21,
-     "idx": 487,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.864
-    },
-    {
-     "q_num": 22,
-     "idx": 488,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 23,
-     "idx": 489,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 24,
-     "idx": 490,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 25,
-     "idx": 491,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.884
-    },
-    {
-     "q_num": 27,
-     "idx": 492,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.989
-    },
-    {
-     "q_num": 28,
-     "idx": 493,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 29,
-     "idx": 494,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.908
-    },
-    {
-     "q_num": 30,
-     "idx": 495,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 31,
-     "idx": 496,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 32,
-     "idx": 497,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.943
-    },
-    {
-     "q_num": 33,
-     "idx": 498,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 34,
-     "idx": 499,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 35,
-     "idx": 500,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.879
-    },
-    {
-     "q_num": 37,
-     "idx": 502,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 38,
-     "idx": 503,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 39,
-     "idx": 504,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 40,
-     "idx": 505,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.921
-    },
-    {
-     "q_num": 41,
-     "idx": 506,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 42,
-     "idx": 507,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.984
-    },
-    {
-     "q_num": 43,
-     "idx": 508,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 44,
-     "idx": 509,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.91
-    },
-    {
-     "q_num": 45,
-     "idx": 510,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 46,
-     "idx": 511,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 47,
-     "idx": 512,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
     },
     {
      "q_num": 48,
@@ -4295,436 +3525,6 @@
      "sim": 0.783
     },
     {
-     "q_num": 49,
-     "idx": 514,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.993
-    },
-    {
-     "q_num": 50,
-     "idx": 515,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 51,
-     "idx": 516,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.988
-    },
-    {
-     "q_num": 52,
-     "idx": 517,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.874
-    },
-    {
-     "q_num": 53,
-     "idx": 518,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 54,
-     "idx": 519,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 55,
-     "idx": 520,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 56,
-     "idx": 521,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.963
-    },
-    {
-     "q_num": 57,
-     "idx": 522,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 58,
-     "idx": 523,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 59,
-     "idx": 524,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 60,
-     "idx": 525,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.956
-    },
-    {
-     "q_num": 61,
-     "idx": 526,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 62,
-     "idx": 527,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 63,
-     "idx": 528,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 64,
-     "idx": 529,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.957
-    },
-    {
-     "q_num": 65,
-     "idx": 530,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 66,
-     "idx": 531,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 67,
-     "idx": 532,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 68,
-     "idx": 533,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.933
-    },
-    {
-     "q_num": 69,
-     "idx": 534,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 70,
-     "idx": 535,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 71,
-     "idx": 536,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.946
-    },
-    {
-     "q_num": 72,
-     "idx": 537,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 73,
-     "idx": 538,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 74,
-     "idx": 539,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.881
-    },
-    {
-     "q_num": 75,
-     "idx": 540,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 76,
-     "idx": 541,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 77,
-     "idx": 542,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.919
-    },
-    {
-     "q_num": 78,
-     "idx": 543,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 79,
-     "idx": 544,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 80,
-     "idx": 545,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 81,
-     "idx": 546,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.873
-    },
-    {
-     "q_num": 82,
-     "idx": 547,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 83,
-     "idx": 548,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 84,
-     "idx": 549,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 85,
-     "idx": 550,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.911
-    },
-    {
-     "q_num": 86,
-     "idx": 551,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 87,
-     "idx": 552,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 88,
-     "idx": 553,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.96
-    },
-    {
-     "q_num": 92,
-     "idx": 557,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 93,
-     "idx": 558,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 94,
-     "idx": 559,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
      "q_num": 95,
      "idx": 560,
      "current_tag": "ספט 24",
@@ -4733,63 +3533,9 @@
       "May24"
      ],
      "sim": 0.836
-    },
-    {
-     "q_num": 96,
-     "idx": 561,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 97,
-     "idx": 562,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 98,
-     "idx": 563,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 99,
-     "idx": 564,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 100,
-     "idx": 565,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
     }
    ],
    "no_match": [
-    [
-     4,
-     "בן79 פנה אחרי שקם בבוקר עם חוסר סימטריה בפנים. מצורפת תמונה ( ראה תמונה מספר1 .)"
-    ],
     [
      26,
      "איזה מהמטופלים הבאים עונה על הגדרתHEALTH CARE-ASSOCIATED PNEUMONIA ( HCAP ?) א. "
@@ -4803,25 +3549,25 @@
      "q_num": 14,
      "idx": 480,
      "ds_q_len": 37,
-     "tag": "ספט 24"
+     "tag": "מאי 24"
     },
     {
      "q_num": 50,
      "idx": 515,
      "ds_q_len": 39,
-     "tag": "ספט 24"
+     "tag": "מאי 24"
     },
     {
      "q_num": 57,
      "idx": 522,
      "ds_q_len": 34,
-     "tag": "ספט 24"
+     "tag": "מאי 24"
     },
     {
      "q_num": 79,
      "idx": 544,
      "ds_q_len": 34,
-     "tag": "ספט 24"
+     "tag": "מאי 24"
     }
    ]
   }
@@ -4838,152 +3584,12 @@
    "canonical_parsed": 150,
    "canonical_with_4_opts": 149,
    "answers_parsed": 150,
-   "questions_with_matches": 147,
-   "questions_without_matches": 3
+   "questions_with_matches": 148,
+   "questions_without_matches": 2
   },
   "findings": {
    "c_mismatches": [],
    "tag_mismatches": [
-    {
-     "q_num": 1,
-     "idx": 467,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 2,
-     "idx": 468,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 3,
-     "idx": 469,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 5,
-     "idx": 471,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.916
-    },
-    {
-     "q_num": 6,
-     "idx": 472,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 7,
-     "idx": 473,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.924
-    },
-    {
-     "q_num": 8,
-     "idx": 474,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 9,
-     "idx": 475,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 10,
-     "idx": 476,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 11,
-     "idx": 477,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.902
-    },
-    {
-     "q_num": 12,
-     "idx": 478,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.986
-    },
-    {
-     "q_num": 13,
-     "idx": 479,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 14,
-     "idx": 480,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.937
-    },
-    {
-     "q_num": 15,
-     "idx": 481,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
     {
      "q_num": 16,
      "idx": 482,
@@ -4993,296 +3599,6 @@
       "May24"
      ],
      "sim": 0.792
-    },
-    {
-     "q_num": 17,
-     "idx": 483,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.919
-    },
-    {
-     "q_num": 18,
-     "idx": 484,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 19,
-     "idx": 485,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 20,
-     "idx": 486,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.997
-    },
-    {
-     "q_num": 21,
-     "idx": 487,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.857
-    },
-    {
-     "q_num": 22,
-     "idx": 488,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 23,
-     "idx": 489,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 24,
-     "idx": 490,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 25,
-     "idx": 491,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.879
-    },
-    {
-     "q_num": 27,
-     "idx": 492,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.989
-    },
-    {
-     "q_num": 28,
-     "idx": 493,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 29,
-     "idx": 494,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.903
-    },
-    {
-     "q_num": 30,
-     "idx": 495,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 31,
-     "idx": 496,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 32,
-     "idx": 497,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.94
-    },
-    {
-     "q_num": 33,
-     "idx": 498,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 34,
-     "idx": 499,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 35,
-     "idx": 500,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.873
-    },
-    {
-     "q_num": 37,
-     "idx": 502,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 38,
-     "idx": 503,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 39,
-     "idx": 504,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 40,
-     "idx": 505,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.916
-    },
-    {
-     "q_num": 41,
-     "idx": 506,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 42,
-     "idx": 507,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.984
-    },
-    {
-     "q_num": 43,
-     "idx": 508,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 44,
-     "idx": 509,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.905
-    },
-    {
-     "q_num": 45,
-     "idx": 510,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 46,
-     "idx": 511,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 47,
-     "idx": 512,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
     },
     {
      "q_num": 48,
@@ -5295,436 +3611,6 @@
      "sim": 0.78
     },
     {
-     "q_num": 49,
-     "idx": 514,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.993
-    },
-    {
-     "q_num": 50,
-     "idx": 515,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 51,
-     "idx": 516,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.988
-    },
-    {
-     "q_num": 52,
-     "idx": 517,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.867
-    },
-    {
-     "q_num": 53,
-     "idx": 518,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 54,
-     "idx": 519,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 55,
-     "idx": 520,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 56,
-     "idx": 521,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.961
-    },
-    {
-     "q_num": 57,
-     "idx": 522,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 58,
-     "idx": 523,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 59,
-     "idx": 524,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 60,
-     "idx": 525,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.954
-    },
-    {
-     "q_num": 61,
-     "idx": 526,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 62,
-     "idx": 527,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 63,
-     "idx": 528,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 64,
-     "idx": 529,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.955
-    },
-    {
-     "q_num": 65,
-     "idx": 530,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 66,
-     "idx": 531,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 67,
-     "idx": 532,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 68,
-     "idx": 533,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.929
-    },
-    {
-     "q_num": 69,
-     "idx": 534,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 70,
-     "idx": 535,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 71,
-     "idx": 536,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.943
-    },
-    {
-     "q_num": 72,
-     "idx": 537,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 73,
-     "idx": 538,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 74,
-     "idx": 539,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.875
-    },
-    {
-     "q_num": 75,
-     "idx": 540,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 76,
-     "idx": 541,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 77,
-     "idx": 542,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.916
-    },
-    {
-     "q_num": 78,
-     "idx": 543,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 79,
-     "idx": 544,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 80,
-     "idx": 545,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 81,
-     "idx": 546,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.866
-    },
-    {
-     "q_num": 82,
-     "idx": 547,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 83,
-     "idx": 548,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 84,
-     "idx": 549,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 85,
-     "idx": 550,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.907
-    },
-    {
-     "q_num": 86,
-     "idx": 551,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 87,
-     "idx": 552,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 88,
-     "idx": 553,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.958
-    },
-    {
-     "q_num": 92,
-     "idx": 557,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 93,
-     "idx": 558,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 94,
-     "idx": 559,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
      "q_num": 95,
      "idx": 560,
      "current_tag": "ספט 24",
@@ -5733,266 +3619,6 @@
       "May24"
      ],
      "sim": 0.828
-    },
-    {
-     "q_num": 96,
-     "idx": 561,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 97,
-     "idx": 562,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 98,
-     "idx": 563,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 99,
-     "idx": 564,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.882
-    },
-    {
-     "q_num": 100,
-     "idx": 565,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 101,
-     "idx": 566,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 102,
-     "idx": 567,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.997
-    },
-    {
-     "q_num": 103,
-     "idx": 568,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 104,
-     "idx": 569,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.914
-    },
-    {
-     "q_num": 105,
-     "idx": 570,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 106,
-     "idx": 571,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 107,
-     "idx": 572,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.992
-    },
-    {
-     "q_num": 108,
-     "idx": 573,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.944
-    },
-    {
-     "q_num": 109,
-     "idx": 574,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 110,
-     "idx": 575,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 111,
-     "idx": 576,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 112,
-     "idx": 577,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.918
-    },
-    {
-     "q_num": 114,
-     "idx": 579,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 116,
-     "idx": 581,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.909
-    },
-    {
-     "q_num": 117,
-     "idx": 582,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.993
-    },
-    {
-     "q_num": 118,
-     "idx": 583,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 119,
-     "idx": 584,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.896
-    },
-    {
-     "q_num": 120,
-     "idx": 585,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.988
-    },
-    {
-     "q_num": 121,
-     "idx": 586,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 122,
-     "idx": 587,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 123,
-     "idx": 588,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.933
     },
     {
      "q_num": 124,
@@ -6005,56 +3631,6 @@
      "sim": 0.694
     },
     {
-     "q_num": 125,
-     "idx": 590,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 126,
-     "idx": 591,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.935
-    },
-    {
-     "q_num": 127,
-     "idx": 592,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 128,
-     "idx": 593,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 129,
-     "idx": 594,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.871
-    },
-    {
      "q_num": 130,
      "idx": 595,
      "current_tag": "ספט 24",
@@ -6065,96 +3641,6 @@
      "sim": 0.838
     },
     {
-     "q_num": 131,
-     "idx": 596,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 132,
-     "idx": 597,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 133,
-     "idx": 598,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.995
-    },
-    {
-     "q_num": 134,
-     "idx": 599,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.925
-    },
-    {
-     "q_num": 135,
-     "idx": 600,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.993
-    },
-    {
-     "q_num": 136,
-     "idx": 601,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 137,
-     "idx": 602,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.902
-    },
-    {
-     "q_num": 139,
-     "idx": 604,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 140,
-     "idx": 605,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
      "q_num": 141,
      "idx": 606,
      "current_tag": "ספט 24",
@@ -6163,103 +3649,9 @@
       "May24"
      ],
      "sim": 0.733
-    },
-    {
-     "q_num": 142,
-     "idx": 607,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.871
-    },
-    {
-     "q_num": 143,
-     "idx": 608,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 144,
-     "idx": 609,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.993
-    },
-    {
-     "q_num": 145,
-     "idx": 610,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 146,
-     "idx": 611,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 0.922
-    },
-    {
-     "q_num": 147,
-     "idx": 612,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 148,
-     "idx": 613,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 149,
-     "idx": 614,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 150,
-     "idx": 615,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "מאי 24",
-      "May24"
-     ],
-     "sim": 1.0
     }
    ],
    "no_match": [
-    [
-     4,
-     "בן79 פנה אחרי שקם בבוקר עם חוסר סימטריה בפנים. מצורפת תמונה ( ראה תמונה מספר1 .)"
-    ],
     [
      26,
      "איזה מהמטופלים הבאים עונה על הגדרתHEALTH CARE-ASSOCIATED PNEUMONIA ( HCAP ?) א. "
@@ -6290,31 +3682,31 @@
      "q_num": 14,
      "idx": 480,
      "ds_q_len": 37,
-     "tag": "ספט 24"
+     "tag": "מאי 24"
     },
     {
      "q_num": 50,
      "idx": 515,
      "ds_q_len": 39,
-     "tag": "ספט 24"
+     "tag": "מאי 24"
     },
     {
      "q_num": 57,
      "idx": 522,
      "ds_q_len": 34,
-     "tag": "ספט 24"
+     "tag": "מאי 24"
     },
     {
      "q_num": 79,
      "idx": 544,
      "ds_q_len": 34,
-     "tag": "ספט 24"
+     "tag": "מאי 24"
     },
     {
      "q_num": 101,
      "idx": 566,
      "ds_q_len": 34,
-     "tag": "ספט 24"
+     "tag": "מאי 24"
     }
    ]
   }
@@ -9252,367 +6644,44 @@
    "questions_without_matches": 0
   },
   "findings": {
-   "c_mismatches": [],
-   "tag_mismatches": [
+   "c_mismatches": [
     {
-     "q_num": 2,
-     "idx": 617,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
+     "q_num": 17,
+     "idx": 632,
+     "tag": "יוני 25",
+     "current_c": 2,
+     "accepted": [
+      1,
+      3
      ],
+     "recommended_c": 1,
      "sim": 1.0
     },
     {
-     "q_num": 3,
-     "idx": 618,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
+     "q_num": 57,
+     "idx": 672,
+     "tag": "יוני 25",
+     "current_c": 3,
+     "accepted": [
+      1,
+      2
      ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 6,
-     "idx": 621,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 9,
-     "idx": 624,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 10,
-     "idx": 625,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 13,
-     "idx": 628,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 14,
-     "idx": 629,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 16,
-     "idx": 631,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 19,
-     "idx": 634,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.963
-    },
-    {
-     "q_num": 30,
-     "idx": 645,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 40,
-     "idx": 655,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 43,
-     "idx": 658,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 52,
-     "idx": 667,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 54,
-     "idx": 669,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 55,
-     "idx": 670,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.926
-    },
-    {
-     "q_num": 56,
-     "idx": 671,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 58,
-     "idx": 673,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 61,
-     "idx": 676,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.998
-    },
-    {
-     "q_num": 62,
-     "idx": 677,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.997
-    },
-    {
-     "q_num": 65,
-     "idx": 680,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 71,
-     "idx": 686,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 72,
-     "idx": 687,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.956
-    },
-    {
-     "q_num": 75,
-     "idx": 690,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 78,
-     "idx": 693,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 81,
-     "idx": 695,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 83,
-     "idx": 697,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 85,
-     "idx": 699,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.952
-    },
-    {
-     "q_num": 87,
-     "idx": 701,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 88,
-     "idx": 702,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.992
-    },
-    {
-     "q_num": 89,
-     "idx": 703,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.938
-    },
-    {
-     "q_num": 93,
-     "idx": 707,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.956
-    },
-    {
-     "q_num": 100,
-     "idx": 714,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
+     "recommended_c": 1,
      "sim": 1.0
     }
    ],
+   "tag_mismatches": [],
    "no_match": [],
    "low_confidence": [],
    "duplicates": [
     {
      "q_num": 1,
      "matches": [
+      [
+       616,
+       "יוני 25",
+       1.0
+      ],
       [
        1225,
        "יוני 25",
@@ -9622,11 +6691,6 @@
        1137,
        "2025-א",
        1.0
-      ],
-      [
-       616,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -9635,7 +6699,7 @@
      "matches": [
       [
        617,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -9655,7 +6719,7 @@
      "matches": [
       [
        618,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -9674,13 +6738,13 @@
      "q_num": 4,
      "matches": [
       [
-       1140,
-       "2025-א",
+       619,
+       "יוני 25",
        0.9576427255985267
       ],
       [
-       619,
-       "ספט 24",
+       1140,
+       "2025-א",
        0.9576427255985267
       ]
      ]
@@ -9688,6 +6752,11 @@
     {
      "q_num": 5,
      "matches": [
+      [
+       620,
+       "יוני 25",
+       1.0
+      ],
       [
        1228,
        "יוני 25",
@@ -9697,11 +6766,6 @@
        1141,
        "2025-א",
        1.0
-      ],
-      [
-       620,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -9710,7 +6774,7 @@
      "matches": [
       [
        621,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -9724,13 +6788,13 @@
      "q_num": 7,
      "matches": [
       [
-       1313,
+       622,
        "יוני 25",
        1.0
       ],
       [
-       622,
-       "ספט 24",
+       1313,
+       "יוני 25",
        1.0
       ],
       [
@@ -9744,13 +6808,13 @@
      "q_num": 8,
      "matches": [
       [
-       1144,
-       "2025-א",
+       623,
+       "יוני 25",
        0.9480812641083521
       ],
       [
-       623,
-       "ספט 24",
+       1144,
+       "2025-א",
        0.9480812641083521
       ]
      ]
@@ -9760,7 +6824,7 @@
      "matches": [
       [
        625,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -9774,6 +6838,11 @@
      "q_num": 11,
      "matches": [
       [
+       626,
+       "יוני 25",
+       1.0
+      ],
+      [
        1229,
        "יוני 25",
        1.0
@@ -9782,11 +6851,6 @@
        1146,
        "2025-א",
        1.0
-      ],
-      [
-       626,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -9794,13 +6858,13 @@
      "q_num": 15,
      "matches": [
       [
-       1232,
+       630,
        "יוני 25",
        0.9800520381613183
       ],
       [
-       630,
-       "ספט 24",
+       1232,
+       "יוני 25",
        0.9800520381613183
       ]
      ]
@@ -9810,7 +6874,7 @@
      "matches": [
       [
        631,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -9824,6 +6888,11 @@
      "q_num": 17,
      "matches": [
       [
+       632,
+       "יוני 25",
+       1.0
+      ],
+      [
        1233,
        "יוני 25",
        1.0
@@ -9832,17 +6901,17 @@
        1151,
        "2025-א",
        1.0
-      ],
-      [
-       632,
-       "ספט 24",
-       1.0
       ]
      ]
     },
     {
      "q_num": 18,
      "matches": [
+      [
+       633,
+       "יוני 25",
+       1.0
+      ],
       [
        1234,
        "יוני 25",
@@ -9852,11 +6921,6 @@
        1152,
        "2025-א",
        1.0
-      ],
-      [
-       633,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -9865,7 +6929,7 @@
      "matches": [
       [
        634,
-       "ספט 24",
+       "יוני 25",
        0.9627228525121556
       ],
       [
@@ -9884,13 +6948,13 @@
      "q_num": 21,
      "matches": [
       [
-       1237,
+       636,
        "יוני 25",
        0.9501084598698482
       ],
       [
-       636,
-       "ספט 24",
+       1237,
+       "יוני 25",
        0.9501084598698482
       ]
      ]
@@ -9905,7 +6969,7 @@
       ],
       [
        637,
-       "ספט 24",
+       "יוני 25",
        0.8764940239043825
       ]
      ]
@@ -9914,13 +6978,13 @@
      "q_num": 23,
      "matches": [
       [
-       1239,
+       638,
        "יוני 25",
        1.0
       ],
       [
-       638,
-       "ספט 24",
+       1239,
+       "יוני 25",
        1.0
       ]
      ]
@@ -9928,6 +6992,11 @@
     {
      "q_num": 26,
      "matches": [
+      [
+       641,
+       "יוני 25",
+       1.0
+      ],
       [
        1241,
        "יוני 25",
@@ -9937,11 +7006,6 @@
        1159,
        "2025-א",
        1.0
-      ],
-      [
-       641,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -9949,13 +7013,13 @@
      "q_num": 27,
      "matches": [
       [
-       1160,
-       "2025-א",
+       642,
+       "יוני 25",
        1.0
       ],
       [
-       642,
-       "ספט 24",
+       1160,
+       "2025-א",
        1.0
       ]
      ]
@@ -9964,13 +7028,13 @@
      "q_num": 28,
      "matches": [
       [
-       1242,
+       643,
        "יוני 25",
        1.0
       ],
       [
-       643,
-       "ספט 24",
+       1242,
+       "יוני 25",
        1.0
       ]
      ]
@@ -9979,13 +7043,13 @@
      "q_num": 29,
      "matches": [
       [
-       1162,
-       "2025-א",
+       644,
+       "יוני 25",
        0.8878048780487805
       ],
       [
-       644,
-       "ספט 24",
+       1162,
+       "2025-א",
        0.8878048780487805
       ]
      ]
@@ -9995,7 +7059,7 @@
      "matches": [
       [
        645,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -10009,6 +7073,11 @@
      "q_num": 31,
      "matches": [
       [
+       646,
+       "יוני 25",
+       1.0
+      ],
+      [
        1243,
        "יוני 25",
        1.0
@@ -10017,11 +7086,6 @@
        1164,
        "2025-א",
        1.0
-      ],
-      [
-       646,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -10029,13 +7093,13 @@
      "q_num": 32,
      "matches": [
       [
-       1244,
+       647,
        "יוני 25",
        1.0
       ],
       [
-       647,
-       "ספט 24",
+       1244,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10044,13 +7108,13 @@
      "q_num": 33,
      "matches": [
       [
-       1166,
-       "2025-א",
+       648,
+       "יוני 25",
        0.9138576779026217
       ],
       [
-       648,
-       "ספט 24",
+       1166,
+       "2025-א",
        0.9138576779026217
       ]
      ]
@@ -10059,13 +7123,13 @@
      "q_num": 34,
      "matches": [
       [
-       1245,
+       649,
        "יוני 25",
        1.0
       ],
       [
-       649,
-       "ספט 24",
+       1245,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10074,13 +7138,13 @@
      "q_num": 35,
      "matches": [
       [
-       1246,
+       650,
        "יוני 25",
        1.0
       ],
       [
-       650,
-       "ספט 24",
+       1246,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10089,13 +7153,13 @@
      "q_num": 36,
      "matches": [
       [
-       1169,
-       "2025-א",
+       651,
+       "יוני 25",
        1.0
       ],
       [
-       651,
-       "ספט 24",
+       1169,
+       "2025-א",
        1.0
       ]
      ]
@@ -10103,6 +7167,11 @@
     {
      "q_num": 37,
      "matches": [
+      [
+       652,
+       "יוני 25",
+       0.9187279151943463
+      ],
       [
        1247,
        "יוני 25",
@@ -10112,11 +7181,6 @@
        1170,
        "2025-א",
        0.9187279151943463
-      ],
-      [
-       652,
-       "ספט 24",
-       0.9187279151943463
       ]
      ]
     },
@@ -10124,13 +7188,13 @@
      "q_num": 38,
      "matches": [
       [
-       1248,
+       653,
        "יוני 25",
        1.0
       ],
       [
-       653,
-       "ספט 24",
+       1248,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10138,6 +7202,11 @@
     {
      "q_num": 39,
      "matches": [
+      [
+       654,
+       "יוני 25",
+       1.0
+      ],
       [
        1249,
        "יוני 25",
@@ -10147,11 +7216,6 @@
        1172,
        "2025-א",
        1.0
-      ],
-      [
-       654,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -10159,13 +7223,13 @@
      "q_num": 41,
      "matches": [
       [
-       1250,
+       656,
        "יוני 25",
        1.0
       ],
       [
-       656,
-       "ספט 24",
+       1250,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10180,7 +7244,7 @@
       ],
       [
        657,
-       "ספט 24",
+       "יוני 25",
        0.9943181818181818
       ],
       [
@@ -10194,13 +7258,13 @@
      "q_num": 44,
      "matches": [
       [
-       1252,
+       659,
        "יוני 25",
        1.0
       ],
       [
-       659,
-       "ספט 24",
+       1252,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10215,7 +7279,7 @@
       ],
       [
        661,
-       "ספט 24",
+       "יוני 25",
        0.9930555555555556
       ],
       [
@@ -10229,13 +7293,13 @@
      "q_num": 48,
      "matches": [
       [
-       1180,
-       "2025-א",
+       663,
+       "יוני 25",
        1.0
       ],
       [
-       663,
-       "ספט 24",
+       1180,
+       "2025-א",
        1.0
       ]
      ]
@@ -10250,7 +7314,7 @@
       ],
       [
        664,
-       "ספט 24",
+       "יוני 25",
        0.9882352941176471
       ]
      ]
@@ -10259,13 +7323,13 @@
      "q_num": 50,
      "matches": [
       [
-       1257,
+       665,
        "יוני 25",
        1.0
       ],
       [
-       665,
-       "ספט 24",
+       1257,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10274,13 +7338,13 @@
      "q_num": 51,
      "matches": [
       [
-       1258,
+       666,
        "יוני 25",
        0.9466357308584686
       ],
       [
-       666,
-       "ספט 24",
+       1258,
+       "יוני 25",
        0.9466357308584686
       ],
       [
@@ -10300,7 +7364,7 @@
       ],
       [
        668,
-       "ספט 24",
+       "יוני 25",
        0.9950372208436724
       ]
      ]
@@ -10310,7 +7374,7 @@
      "matches": [
       [
        670,
-       "ספט 24",
+       "יוני 25",
        0.9255663430420712
       ],
       [
@@ -10329,13 +7393,13 @@
      "q_num": 57,
      "matches": [
       [
-       1314,
+       672,
        "יוני 25",
        1.0
       ],
       [
-       672,
-       "ספט 24",
+       1314,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10345,7 +7409,7 @@
      "matches": [
       [
        673,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -10359,13 +7423,13 @@
      "q_num": 59,
      "matches": [
       [
-       1191,
-       "2025-א",
+       674,
+       "יוני 25",
        0.9471264367816092
       ],
       [
-       674,
-       "ספט 24",
+       1191,
+       "2025-א",
        0.9471264367816092
       ]
      ]
@@ -10380,7 +7444,7 @@
       ],
       [
        675,
-       "ספט 24",
+       "יוני 25",
        0.9889705882352942
       ]
      ]
@@ -10390,7 +7454,7 @@
      "matches": [
       [
        677,
-       "ספט 24",
+       "יוני 25",
        0.9967845659163987
       ],
       [
@@ -10409,13 +7473,13 @@
      "q_num": 63,
      "matches": [
       [
-       1263,
+       678,
        "יוני 25",
        0.962843295638126
       ],
       [
-       678,
-       "ספט 24",
+       1263,
+       "יוני 25",
        0.962843295638126
       ]
      ]
@@ -10424,13 +7488,13 @@
      "q_num": 64,
      "matches": [
       [
-       1195,
-       "2025-א",
+       679,
+       "יוני 25",
        1.0
       ],
       [
-       679,
-       "ספט 24",
+       1195,
+       "2025-א",
        1.0
       ]
      ]
@@ -10438,6 +7502,11 @@
     {
      "q_num": 66,
      "matches": [
+      [
+       681,
+       "יוני 25",
+       1.0
+      ],
       [
        1264,
        "יוני 25",
@@ -10447,17 +7516,17 @@
        1197,
        "2025-א",
        1.0
-      ],
-      [
-       681,
-       "ספט 24",
-       1.0
       ]
      ]
     },
     {
      "q_num": 67,
      "matches": [
+      [
+       682,
+       "יוני 25",
+       1.0
+      ],
       [
        1265,
        "יוני 25",
@@ -10467,17 +7536,17 @@
        1315,
        "יוני 25",
        1.0
-      ],
-      [
-       682,
-       "ספט 24",
-       1.0
       ]
      ]
     },
     {
      "q_num": 68,
      "matches": [
+      [
+       683,
+       "יוני 25",
+       0.9198606271777003
+      ],
       [
        1266,
        "יוני 25",
@@ -10486,11 +7555,6 @@
       [
        1199,
        "2025-א",
-       0.9198606271777003
-      ],
-      [
-       683,
-       "ספט 24",
        0.9198606271777003
       ]
      ]
@@ -10505,7 +7569,7 @@
       ],
       [
        684,
-       "ספט 24",
+       "יוני 25",
        0.9910313901345291
       ]
      ]
@@ -10513,6 +7577,11 @@
     {
      "q_num": 70,
      "matches": [
+      [
+       685,
+       "יוני 25",
+       1.0
+      ],
       [
        1268,
        "יוני 25",
@@ -10522,11 +7591,6 @@
        1200,
        "2025-א",
        1.0
-      ],
-      [
-       685,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -10535,7 +7599,7 @@
      "matches": [
       [
        687,
-       "ספט 24",
+       "יוני 25",
        0.9561904761904761
       ],
       [
@@ -10549,6 +7613,11 @@
      "q_num": 73,
      "matches": [
       [
+       688,
+       "יוני 25",
+       1.0
+      ],
+      [
        1269,
        "יוני 25",
        1.0
@@ -10556,11 +7625,6 @@
       [
        1203,
        "2025-א",
-       1.0
-      ],
-      [
-       688,
-       "ספט 24",
        1.0
       ]
      ]
@@ -10575,12 +7639,12 @@
       ],
       [
        689,
-       "ספט 24",
+       "יוני 25",
        0.9950248756218906
       ],
       [
        822,
-       "2023-ב",
+       "2020",
        0.9411764705882353
       ]
      ]
@@ -10590,7 +7654,7 @@
      "matches": [
       [
        690,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -10604,13 +7668,13 @@
      "q_num": 76,
      "matches": [
       [
-       1206,
-       "2025-א",
+       691,
+       "יוני 25",
        0.9220338983050848
       ],
       [
-       691,
-       "ספט 24",
+       1206,
+       "2025-א",
        0.9220338983050848
       ]
      ]
@@ -10619,13 +7683,13 @@
      "q_num": 77,
      "matches": [
       [
-       1271,
+       692,
        "יוני 25",
        1.0
       ],
       [
-       692,
-       "ספט 24",
+       1271,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10634,13 +7698,13 @@
      "q_num": 79,
      "matches": [
       [
-       1140,
-       "2025-א",
+       619,
+       "יוני 25",
        0.9448529411764706
       ],
       [
-       619,
-       "ספט 24",
+       1140,
+       "2025-א",
        0.9448529411764706
       ]
      ]
@@ -10655,7 +7719,7 @@
       ],
       [
        694,
-       "ספט 24",
+       "יוני 25",
        0.996523754345307
       ]
      ]
@@ -10663,6 +7727,11 @@
     {
      "q_num": 82,
      "matches": [
+      [
+       696,
+       "יוני 25",
+       0.9144981412639405
+      ],
       [
        1273,
        "יוני 25",
@@ -10672,11 +7741,6 @@
        1211,
        "2025-א",
        0.9144981412639405
-      ],
-      [
-       696,
-       "ספט 24",
-       0.9144981412639405
       ]
      ]
     },
@@ -10684,13 +7748,13 @@
      "q_num": 84,
      "matches": [
       [
-       1275,
+       698,
        "יוני 25",
        1.0
       ],
       [
-       698,
-       "ספט 24",
+       1275,
+       "יוני 25",
        1.0
       ],
       [
@@ -10705,7 +7769,7 @@
      "matches": [
       [
        699,
-       "ספט 24",
+       "יוני 25",
        0.9523809523809523
       ],
       [
@@ -10719,13 +7783,13 @@
      "q_num": 86,
      "matches": [
       [
-       1276,
+       700,
        "יוני 25",
        1.0
       ],
       [
-       700,
-       "ספט 24",
+       1276,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10735,7 +7799,7 @@
      "matches": [
       [
        701,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -10750,7 +7814,7 @@
      "matches": [
       [
        702,
-       "ספט 24",
+       "יוני 25",
        0.9920424403183024
       ],
       [
@@ -10769,6 +7833,11 @@
      "q_num": 90,
      "matches": [
       [
+       704,
+       "יוני 25",
+       1.0
+      ],
+      [
        1278,
        "יוני 25",
        1.0
@@ -10776,11 +7845,6 @@
       [
        1316,
        "יוני 25",
-       1.0
-      ],
-      [
-       704,
-       "ספט 24",
        1.0
       ]
      ]
@@ -10795,7 +7859,7 @@
       ],
       [
        705,
-       "ספט 24",
+       "יוני 25",
        0.9629629629629629
       ],
       [
@@ -10815,7 +7879,7 @@
       ],
       [
        706,
-       "ספט 24",
+       "יוני 25",
        0.9966666666666667
       ]
      ]
@@ -10824,13 +7888,13 @@
      "q_num": 94,
      "matches": [
       [
-       1281,
+       708,
        "יוני 25",
        1.0
       ],
       [
-       708,
-       "ספט 24",
+       1281,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10839,6 +7903,11 @@
      "q_num": 95,
      "matches": [
       [
+       709,
+       "יוני 25",
+       1.0
+      ],
+      [
        1282,
        "יוני 25",
        1.0
@@ -10846,11 +7915,6 @@
       [
        1223,
        "2025-א",
-       1.0
-      ],
-      [
-       709,
-       "ספט 24",
        1.0
       ]
      ]
@@ -10865,7 +7929,7 @@
       ],
       [
        710,
-       "ספט 24",
+       "יוני 25",
        0.8723404255319149
       ]
      ]
@@ -10874,13 +7938,13 @@
      "q_num": 97,
      "matches": [
       [
-       1284,
+       711,
        "יוני 25",
        1.0
       ],
       [
-       711,
-       "ספט 24",
+       1284,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10889,13 +7953,13 @@
      "q_num": 98,
      "matches": [
       [
-       1285,
+       712,
        "יוני 25",
        1.0
       ],
       [
-       712,
-       "ספט 24",
+       1285,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10904,13 +7968,13 @@
      "q_num": 99,
      "matches": [
       [
-       1286,
+       713,
        "יוני 25",
        1.0
       ],
       [
-       713,
-       "ספט 24",
+       1286,
+       "יוני 25",
        1.0
       ]
      ]
@@ -10926,20 +7990,26 @@
     },
     {
      "q_num": 33,
-     "idx": 1166,
-     "ds_q_len": 38,
-     "tag": "2025-א"
+     "idx": 648,
+     "ds_q_len": 39,
+     "tag": "יוני 25"
     },
     {
      "q_num": 70,
-     "idx": 1268,
+     "idx": 685,
+     "ds_q_len": 37,
+     "tag": "יוני 25"
+    },
+    {
+     "q_num": 97,
+     "idx": 711,
      "ds_q_len": 39,
      "tag": "יוני 25"
     },
     {
      "q_num": 98,
-     "idx": 1285,
-     "ds_q_len": 39,
+     "idx": 712,
+     "ds_q_len": 38,
      "tag": "יוני 25"
     }
    ]
@@ -10962,404 +8032,44 @@
    "questions_without_matches": 0
   },
   "findings": {
-   "c_mismatches": [],
+   "c_mismatches": [
+    {
+     "q_num": 17,
+     "idx": 632,
+     "tag": "יוני 25",
+     "current_c": 2,
+     "accepted": [
+      1,
+      3
+     ],
+     "recommended_c": 1,
+     "sim": 1.0
+    },
+    {
+     "q_num": 57,
+     "idx": 672,
+     "tag": "יוני 25",
+     "current_c": 3,
+     "accepted": [
+      1,
+      2
+     ],
+     "recommended_c": 1,
+     "sim": 0.953
+    },
+    {
+     "q_num": 111,
+     "idx": 725,
+     "tag": "יוני 25",
+     "current_c": 2,
+     "accepted": [
+      3
+     ],
+     "recommended_c": 3,
+     "sim": 0.868
+    }
+   ],
    "tag_mismatches": [
-    {
-     "q_num": 2,
-     "idx": 617,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 3,
-     "idx": 618,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 6,
-     "idx": 621,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 9,
-     "idx": 624,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 10,
-     "idx": 625,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 13,
-     "idx": 628,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 14,
-     "idx": 629,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 16,
-     "idx": 631,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 19,
-     "idx": 634,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.957
-    },
-    {
-     "q_num": 30,
-     "idx": 645,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.941
-    },
-    {
-     "q_num": 40,
-     "idx": 655,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 43,
-     "idx": 658,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 52,
-     "idx": 667,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 54,
-     "idx": 669,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 55,
-     "idx": 670,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 56,
-     "idx": 671,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 58,
-     "idx": 673,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 61,
-     "idx": 676,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.968
-    },
-    {
-     "q_num": 62,
-     "idx": 677,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.997
-    },
-    {
-     "q_num": 65,
-     "idx": 680,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.96
-    },
-    {
-     "q_num": 71,
-     "idx": 686,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 72,
-     "idx": 687,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 75,
-     "idx": 690,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 78,
-     "idx": 693,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.935
-    },
-    {
-     "q_num": 81,
-     "idx": 695,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.97
-    },
-    {
-     "q_num": 83,
-     "idx": 697,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 85,
-     "idx": 699,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.993
-    },
-    {
-     "q_num": 87,
-     "idx": 701,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 88,
-     "idx": 702,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.992
-    },
-    {
-     "q_num": 89,
-     "idx": 703,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.928
-    },
-    {
-     "q_num": 93,
-     "idx": 707,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.948
-    },
-    {
-     "q_num": 100,
-     "idx": 714,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.942
-    },
-    {
-     "q_num": 104,
-     "idx": 718,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.993
-    },
-    {
-     "q_num": 108,
-     "idx": 722,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 110,
-     "idx": 724,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 116,
-     "idx": 729,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
     {
      "q_num": 118,
      "idx": 731,
@@ -11370,193 +8080,6 @@
       "2025-א"
      ],
      "sim": 0.842
-    },
-    {
-     "q_num": 119,
-     "idx": 732,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 120,
-     "idx": 733,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 122,
-     "idx": 735,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.942
-    },
-    {
-     "q_num": 123,
-     "idx": 736,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 124,
-     "idx": 737,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 125,
-     "idx": 738,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 126,
-     "idx": 739,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.907
-    },
-    {
-     "q_num": 129,
-     "idx": 741,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 130,
-     "idx": 742,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.912
-    },
-    {
-     "q_num": 134,
-     "idx": 746,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 135,
-     "idx": 747,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.921
-    },
-    {
-     "q_num": 136,
-     "idx": 748,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 137,
-     "idx": 749,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 138,
-     "idx": 750,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 140,
-     "idx": 752,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 1.0
-    },
-    {
-     "q_num": 141,
-     "idx": 753,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.994
-    },
-    {
-     "q_num": 142,
-     "idx": 754,
-     "current_tag": "ספט 24",
-     "expected_tags": [
-      "יוני 25",
-      "Jun25",
-      "2025-א"
-     ],
-     "sim": 0.905
     }
    ],
    "no_match": [],
@@ -11566,6 +8089,11 @@
      "q_num": 1,
      "matches": [
       [
+       616,
+       "יוני 25",
+       1.0
+      ],
+      [
        1225,
        "יוני 25",
        1.0
@@ -11573,11 +8101,6 @@
       [
        1137,
        "2025-א",
-       1.0
-      ],
-      [
-       616,
-       "ספט 24",
        1.0
       ]
      ]
@@ -11587,7 +8110,7 @@
      "matches": [
       [
        617,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -11607,7 +8130,7 @@
      "matches": [
       [
        618,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -11626,13 +8149,13 @@
      "q_num": 4,
      "matches": [
       [
-       1140,
-       "2025-א",
+       619,
+       "יוני 25",
        0.9506398537477148
       ],
       [
-       619,
-       "ספט 24",
+       1140,
+       "2025-א",
        0.9506398537477148
       ]
      ]
@@ -11640,6 +8163,11 @@
     {
      "q_num": 5,
      "matches": [
+      [
+       620,
+       "יוני 25",
+       1.0
+      ],
       [
        1228,
        "יוני 25",
@@ -11649,11 +8177,6 @@
        1141,
        "2025-א",
        1.0
-      ],
-      [
-       620,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -11662,7 +8185,7 @@
      "matches": [
       [
        621,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -11676,13 +8199,13 @@
      "q_num": 7,
      "matches": [
       [
-       1313,
+       622,
        "יוני 25",
        1.0
       ],
       [
-       622,
-       "ספט 24",
+       1313,
+       "יוני 25",
        1.0
       ],
       [
@@ -11696,13 +8219,13 @@
      "q_num": 8,
      "matches": [
       [
-       1144,
-       "2025-א",
+       623,
+       "יוני 25",
        0.9395973154362416
       ],
       [
-       623,
-       "ספט 24",
+       1144,
+       "2025-א",
        0.9395973154362416
       ]
      ]
@@ -11712,7 +8235,7 @@
      "matches": [
       [
        625,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -11726,6 +8249,11 @@
      "q_num": 11,
      "matches": [
       [
+       626,
+       "יוני 25",
+       1.0
+      ],
+      [
        1229,
        "יוני 25",
        1.0
@@ -11734,11 +8262,6 @@
        1146,
        "2025-א",
        1.0
-      ],
-      [
-       626,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -11746,13 +8269,13 @@
      "q_num": 15,
      "matches": [
       [
-       1232,
+       630,
        "יוני 25",
        0.9766637856525497
       ],
       [
-       630,
-       "ספט 24",
+       1232,
+       "יוני 25",
        0.9766637856525497
       ]
      ]
@@ -11762,7 +8285,7 @@
      "matches": [
       [
        631,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -11776,6 +8299,11 @@
      "q_num": 17,
      "matches": [
       [
+       632,
+       "יוני 25",
+       1.0
+      ],
+      [
        1233,
        "יוני 25",
        1.0
@@ -11784,17 +8312,17 @@
        1151,
        "2025-א",
        1.0
-      ],
-      [
-       632,
-       "ספט 24",
-       1.0
       ]
      ]
     },
     {
      "q_num": 18,
      "matches": [
+      [
+       633,
+       "יוני 25",
+       1.0
+      ],
       [
        1234,
        "יוני 25",
@@ -11804,11 +8332,6 @@
        1152,
        "2025-א",
        1.0
-      ],
-      [
-       633,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -11817,7 +8340,7 @@
      "matches": [
       [
        634,
-       "ספט 24",
+       "יוני 25",
        0.9565217391304348
       ],
       [
@@ -11836,13 +8359,13 @@
      "q_num": 21,
      "matches": [
       [
-       1237,
+       636,
        "יוני 25",
        0.9419354838709677
       ],
       [
-       636,
-       "ספט 24",
+       1237,
+       "יוני 25",
        0.9419354838709677
       ]
      ]
@@ -11857,7 +8380,7 @@
       ],
       [
        637,
-       "ספט 24",
+       "יוני 25",
        0.8764940239043825
       ]
      ]
@@ -11866,13 +8389,13 @@
      "q_num": 23,
      "matches": [
       [
-       1239,
+       638,
        "יוני 25",
        1.0
       ],
       [
-       638,
-       "ספט 24",
+       1239,
+       "יוני 25",
        1.0
       ]
      ]
@@ -11880,6 +8403,11 @@
     {
      "q_num": 26,
      "matches": [
+      [
+       641,
+       "יוני 25",
+       1.0
+      ],
       [
        1241,
        "יוני 25",
@@ -11889,11 +8417,6 @@
        1159,
        "2025-א",
        1.0
-      ],
-      [
-       641,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -11901,13 +8424,13 @@
      "q_num": 27,
      "matches": [
       [
-       1160,
-       "2025-א",
+       642,
+       "יוני 25",
        1.0
       ],
       [
-       642,
-       "ספט 24",
+       1160,
+       "2025-א",
        1.0
       ]
      ]
@@ -11916,13 +8439,13 @@
      "q_num": 28,
      "matches": [
       [
-       1242,
+       643,
        "יוני 25",
        1.0
       ],
       [
-       643,
-       "ספט 24",
+       1242,
+       "יוני 25",
        1.0
       ]
      ]
@@ -11931,13 +8454,13 @@
      "q_num": 29,
      "matches": [
       [
-       1162,
-       "2025-א",
+       644,
+       "יוני 25",
        1.0
       ],
       [
-       644,
-       "ספט 24",
+       1162,
+       "2025-א",
        1.0
       ]
      ]
@@ -11945,6 +8468,11 @@
     {
      "q_num": 31,
      "matches": [
+      [
+       646,
+       "יוני 25",
+       1.0
+      ],
       [
        1243,
        "יוני 25",
@@ -11954,11 +8482,6 @@
        1164,
        "2025-א",
        1.0
-      ],
-      [
-       646,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -11966,13 +8489,13 @@
      "q_num": 32,
      "matches": [
       [
-       1244,
+       647,
        "יוני 25",
        1.0
       ],
       [
-       647,
-       "ספט 24",
+       1244,
+       "יוני 25",
        1.0
       ]
      ]
@@ -11981,13 +8504,13 @@
      "q_num": 33,
      "matches": [
       [
-       1166,
-       "2025-א",
+       648,
+       "יוני 25",
        1.0
       ],
       [
-       648,
-       "ספט 24",
+       1166,
+       "2025-א",
        1.0
       ]
      ]
@@ -11996,13 +8519,13 @@
      "q_num": 34,
      "matches": [
       [
-       1245,
+       649,
        "יוני 25",
        0.9700332963374029
       ],
       [
-       649,
-       "ספט 24",
+       1245,
+       "יוני 25",
        0.9700332963374029
       ]
      ]
@@ -12011,13 +8534,13 @@
      "q_num": 35,
      "matches": [
       [
-       1246,
+       650,
        "יוני 25",
        1.0
       ],
       [
-       650,
-       "ספט 24",
+       1246,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12026,13 +8549,13 @@
      "q_num": 36,
      "matches": [
       [
-       1169,
-       "2025-א",
+       651,
+       "יוני 25",
        1.0
       ],
       [
-       651,
-       "ספט 24",
+       1169,
+       "2025-א",
        1.0
       ]
      ]
@@ -12040,6 +8563,11 @@
     {
      "q_num": 37,
      "matches": [
+      [
+       652,
+       "יוני 25",
+       1.0
+      ],
       [
        1247,
        "יוני 25",
@@ -12049,11 +8577,6 @@
        1170,
        "2025-א",
        1.0
-      ],
-      [
-       652,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -12061,13 +8584,13 @@
      "q_num": 38,
      "matches": [
       [
-       1248,
+       653,
        "יוני 25",
        1.0
       ],
       [
-       653,
-       "ספט 24",
+       1248,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12075,6 +8598,11 @@
     {
      "q_num": 39,
      "matches": [
+      [
+       654,
+       "יוני 25",
+       0.9479768786127167
+      ],
       [
        1249,
        "יוני 25",
@@ -12084,11 +8612,6 @@
        1172,
        "2025-א",
        0.9479768786127167
-      ],
-      [
-       654,
-       "ספט 24",
-       0.9479768786127167
       ]
      ]
     },
@@ -12096,13 +8619,13 @@
      "q_num": 41,
      "matches": [
       [
-       1250,
+       656,
        "יוני 25",
        1.0
       ],
       [
-       656,
-       "ספט 24",
+       1250,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12117,7 +8640,7 @@
       ],
       [
        657,
-       "ספט 24",
+       "יוני 25",
        0.9234828496042217
       ],
       [
@@ -12131,13 +8654,13 @@
      "q_num": 44,
      "matches": [
       [
-       1252,
+       659,
        "יוני 25",
        1.0
       ],
       [
-       659,
-       "ספט 24",
+       1252,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12152,7 +8675,7 @@
       ],
       [
        661,
-       "ספט 24",
+       "יוני 25",
        0.9930555555555556
       ],
       [
@@ -12181,13 +8704,13 @@
      "q_num": 48,
      "matches": [
       [
-       1180,
-       "2025-א",
+       663,
+       "יוני 25",
        1.0
       ],
       [
-       663,
-       "ספט 24",
+       1180,
+       "2025-א",
        1.0
       ]
      ]
@@ -12202,7 +8725,7 @@
       ],
       [
        664,
-       "ספט 24",
+       "יוני 25",
        0.9385474860335196
       ]
      ]
@@ -12211,13 +8734,13 @@
      "q_num": 50,
      "matches": [
       [
-       1257,
+       665,
        "יוני 25",
        1.0
       ],
       [
-       665,
-       "ספט 24",
+       1257,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12226,13 +8749,13 @@
      "q_num": 51,
      "matches": [
       [
-       1258,
+       666,
        "יוני 25",
        0.9950738916256158
       ],
       [
-       666,
-       "ספט 24",
+       1258,
+       "יוני 25",
        0.9950738916256158
       ],
       [
@@ -12252,7 +8775,7 @@
       ],
       [
        668,
-       "ספט 24",
+       "יוני 25",
        0.9627851140456183
       ]
      ]
@@ -12262,7 +8785,7 @@
      "matches": [
       [
        670,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -12281,13 +8804,13 @@
      "q_num": 57,
      "matches": [
       [
-       1314,
+       672,
        "יוני 25",
        0.9530434782608695
       ],
       [
-       672,
-       "ספט 24",
+       1314,
+       "יוני 25",
        0.9530434782608695
       ]
      ]
@@ -12297,7 +8820,7 @@
      "matches": [
       [
        673,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -12311,13 +8834,13 @@
      "q_num": 59,
      "matches": [
       [
-       1191,
-       "2025-א",
+       674,
+       "יוני 25",
        1.0
       ],
       [
-       674,
-       "ספט 24",
+       1191,
+       "2025-א",
        1.0
       ]
      ]
@@ -12332,7 +8855,7 @@
       ],
       [
        675,
-       "ספט 24",
+       "יוני 25",
        0.9889705882352942
       ]
      ]
@@ -12342,7 +8865,7 @@
      "matches": [
       [
        677,
-       "ספט 24",
+       "יוני 25",
        0.9967845659163987
       ],
       [
@@ -12361,13 +8884,13 @@
      "q_num": 63,
      "matches": [
       [
-       1263,
+       678,
        "יוני 25",
        1.0
       ],
       [
-       678,
-       "ספט 24",
+       1263,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12376,13 +8899,13 @@
      "q_num": 64,
      "matches": [
       [
-       1195,
-       "2025-א",
+       679,
+       "יוני 25",
        1.0
       ],
       [
-       679,
-       "ספט 24",
+       1195,
+       "2025-א",
        1.0
       ]
      ]
@@ -12390,6 +8913,11 @@
     {
      "q_num": 66,
      "matches": [
+      [
+       681,
+       "יוני 25",
+       1.0
+      ],
       [
        1264,
        "יוני 25",
@@ -12399,17 +8927,17 @@
        1197,
        "2025-א",
        1.0
-      ],
-      [
-       681,
-       "ספט 24",
-       1.0
       ]
      ]
     },
     {
      "q_num": 67,
      "matches": [
+      [
+       682,
+       "יוני 25",
+       1.0
+      ],
       [
        1265,
        "יוני 25",
@@ -12419,17 +8947,17 @@
        1315,
        "יוני 25",
        1.0
-      ],
-      [
-       682,
-       "ספט 24",
-       1.0
       ]
      ]
     },
     {
      "q_num": 68,
      "matches": [
+      [
+       683,
+       "יוני 25",
+       1.0
+      ],
       [
        1266,
        "יוני 25",
@@ -12438,11 +8966,6 @@
       [
        1199,
        "2025-א",
-       1.0
-      ],
-      [
-       683,
-       "ספט 24",
        1.0
       ]
      ]
@@ -12457,7 +8980,7 @@
       ],
       [
        684,
-       "ספט 24",
+       "יוני 25",
        0.9910313901345291
       ]
      ]
@@ -12465,6 +8988,11 @@
     {
      "q_num": 70,
      "matches": [
+      [
+       685,
+       "יוני 25",
+       0.9305912596401028
+      ],
       [
        1268,
        "יוני 25",
@@ -12474,11 +9002,6 @@
        1200,
        "2025-א",
        0.9305912596401028
-      ],
-      [
-       685,
-       "ספט 24",
-       0.9305912596401028
       ]
      ]
     },
@@ -12487,7 +9010,7 @@
      "matches": [
       [
        687,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -12501,6 +9024,11 @@
      "q_num": 73,
      "matches": [
       [
+       688,
+       "יוני 25",
+       1.0
+      ],
+      [
        1269,
        "יוני 25",
        1.0
@@ -12508,11 +9036,6 @@
       [
        1203,
        "2025-א",
-       1.0
-      ],
-      [
-       688,
-       "ספט 24",
        1.0
       ]
      ]
@@ -12527,12 +9050,12 @@
       ],
       [
        689,
-       "ספט 24",
+       "יוני 25",
        0.9626955475330926
       ],
       [
        822,
-       "2023-ב",
+       "2020",
        0.9110320284697508
       ]
      ]
@@ -12542,7 +9065,7 @@
      "matches": [
       [
        690,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -12556,13 +9079,13 @@
      "q_num": 76,
      "matches": [
       [
-       1206,
-       "2025-א",
+       691,
+       "יוני 25",
        1.0
       ],
       [
-       691,
-       "ספט 24",
+       1206,
+       "2025-א",
        1.0
       ]
      ]
@@ -12571,13 +9094,13 @@
      "q_num": 77,
      "matches": [
       [
-       1271,
+       692,
        "יוני 25",
        1.0
       ],
       [
-       692,
-       "ספט 24",
+       1271,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12586,13 +9109,13 @@
      "q_num": 79,
      "matches": [
       [
-       1140,
-       "2025-א",
+       619,
+       "יוני 25",
        0.9865642994241842
       ],
       [
-       619,
-       "ספט 24",
+       1140,
+       "2025-א",
        0.9865642994241842
       ]
      ]
@@ -12607,7 +9130,7 @@
       ],
       [
        694,
-       "ספט 24",
+       "יוני 25",
        0.996523754345307
       ]
      ]
@@ -12615,6 +9138,11 @@
     {
      "q_num": 82,
      "matches": [
+      [
+       696,
+       "יוני 25",
+       1.0
+      ],
       [
        1273,
        "יוני 25",
@@ -12624,11 +9152,6 @@
        1211,
        "2025-א",
        1.0
-      ],
-      [
-       696,
-       "ספט 24",
-       1.0
       ]
      ]
     },
@@ -12636,13 +9159,13 @@
      "q_num": 84,
      "matches": [
       [
-       1275,
+       698,
        "יוני 25",
        0.9646133682830931
       ],
       [
-       698,
-       "ספט 24",
+       1275,
+       "יוני 25",
        0.9646133682830931
       ],
       [
@@ -12657,7 +9180,7 @@
      "matches": [
       [
        699,
-       "ספט 24",
+       "יוני 25",
        0.9934354485776805
       ],
       [
@@ -12671,13 +9194,13 @@
      "q_num": 86,
      "matches": [
       [
-       1276,
+       700,
        "יוני 25",
        1.0
       ],
       [
-       700,
-       "ספט 24",
+       1276,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12687,7 +9210,7 @@
      "matches": [
       [
        701,
-       "ספט 24",
+       "יוני 25",
        1.0
       ],
       [
@@ -12702,7 +9225,7 @@
      "matches": [
       [
        702,
-       "ספט 24",
+       "יוני 25",
        0.9920424403183024
       ],
       [
@@ -12721,6 +9244,11 @@
      "q_num": 90,
      "matches": [
       [
+       704,
+       "יוני 25",
+       1.0
+      ],
+      [
        1278,
        "יוני 25",
        1.0
@@ -12728,11 +9256,6 @@
       [
        1316,
        "יוני 25",
-       1.0
-      ],
-      [
-       704,
-       "ספט 24",
        1.0
       ]
      ]
@@ -12747,7 +9270,7 @@
       ],
       [
        705,
-       "ספט 24",
+       "יוני 25",
        0.9568
       ],
       [
@@ -12767,7 +9290,7 @@
       ],
       [
        706,
-       "ספט 24",
+       "יוני 25",
        0.9966666666666667
       ]
      ]
@@ -12776,13 +9299,13 @@
      "q_num": 94,
      "matches": [
       [
-       1281,
+       708,
        "יוני 25",
        1.0
       ],
       [
-       708,
-       "ספט 24",
+       1281,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12791,6 +9314,11 @@
      "q_num": 95,
      "matches": [
       [
+       709,
+       "יוני 25",
+       1.0
+      ],
+      [
        1282,
        "יוני 25",
        1.0
@@ -12798,11 +9326,6 @@
       [
        1223,
        "2025-א",
-       1.0
-      ],
-      [
-       709,
-       "ספט 24",
        1.0
       ]
      ]
@@ -12817,7 +9340,7 @@
       ],
       [
        710,
-       "ספט 24",
+       "יוני 25",
        0.8631578947368421
       ]
      ]
@@ -12826,13 +9349,13 @@
      "q_num": 97,
      "matches": [
       [
-       1284,
+       711,
        "יוני 25",
        1.0
       ],
       [
-       711,
-       "ספט 24",
+       1284,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12841,13 +9364,13 @@
      "q_num": 98,
      "matches": [
       [
-       1285,
+       712,
        "יוני 25",
        1.0
       ],
       [
-       712,
-       "ספט 24",
+       1285,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12856,13 +9379,13 @@
      "q_num": 99,
      "matches": [
       [
-       1286,
+       713,
        "יוני 25",
        1.0
       ],
       [
-       713,
-       "ספט 24",
+       1286,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12871,13 +9394,13 @@
      "q_num": 101,
      "matches": [
       [
-       1287,
+       715,
        "יוני 25",
        1.0
       ],
       [
-       715,
-       "ספט 24",
+       1287,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12886,13 +9409,13 @@
      "q_num": 102,
      "matches": [
       [
-       1288,
+       716,
        "יוני 25",
        1.0
       ],
       [
-       716,
-       "ספט 24",
+       1288,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12901,13 +9424,13 @@
      "q_num": 105,
      "matches": [
       [
-       1290,
+       719,
        "יוני 25",
        1.0
       ],
       [
-       719,
-       "ספט 24",
+       1290,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12916,13 +9439,13 @@
      "q_num": 107,
      "matches": [
       [
-       1292,
+       721,
        "יוני 25",
        0.9416846652267818
       ],
       [
-       721,
-       "ספט 24",
+       1292,
+       "יוני 25",
        0.9416846652267818
       ]
      ]
@@ -12931,13 +9454,13 @@
      "q_num": 109,
      "matches": [
       [
-       1293,
+       723,
        "יוני 25",
        1.0
       ],
       [
-       723,
-       "ספט 24",
+       1293,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12946,13 +9469,13 @@
      "q_num": 111,
      "matches": [
       [
-       1294,
+       725,
        "יוני 25",
        0.8682926829268293
       ],
       [
-       725,
-       "ספט 24",
+       1294,
+       "יוני 25",
        0.8682926829268293
       ]
      ]
@@ -12961,13 +9484,13 @@
      "q_num": 113,
      "matches": [
       [
-       1296,
+       726,
        "יוני 25",
        1.0
       ],
       [
-       726,
-       "ספט 24",
+       1296,
+       "יוני 25",
        1.0
       ]
      ]
@@ -12976,13 +9499,13 @@
      "q_num": 114,
      "matches": [
       [
-       1297,
+       727,
        "יוני 25",
        0.9384965831435079
       ],
       [
-       727,
-       "ספט 24",
+       1297,
+       "יוני 25",
        0.9384965831435079
       ]
      ]
@@ -12997,7 +9520,7 @@
       ],
       [
        728,
-       "ספט 24",
+       "יוני 25",
        0.8509615384615384
       ]
      ]
@@ -13012,7 +9535,7 @@
       ],
       [
        730,
-       "ספט 24",
+       "יוני 25",
        0.9085457271364318
       ]
      ]
@@ -13021,13 +9544,13 @@
      "q_num": 121,
      "matches": [
       [
-       1300,
+       734,
        "יוני 25",
        1.0
       ],
       [
-       734,
-       "ספט 24",
+       1300,
+       "יוני 25",
        1.0
       ]
      ]
@@ -13036,13 +9559,13 @@
      "q_num": 128,
      "matches": [
       [
-       1302,
+       740,
        "יוני 25",
        1.0
       ],
       [
-       740,
-       "ספט 24",
+       1302,
+       "יוני 25",
        1.0
       ]
      ]
@@ -13051,13 +9574,13 @@
      "q_num": 132,
      "matches": [
       [
-       1303,
+       744,
        "יוני 25",
        0.9583975346687211
       ],
       [
-       744,
-       "ספט 24",
+       1303,
+       "יוני 25",
        0.9583975346687211
       ]
      ]
@@ -13066,13 +9589,13 @@
      "q_num": 144,
      "matches": [
       [
-       1306,
+       755,
        "יוני 25",
        0.9514388489208633
       ],
       [
-       755,
-       "ספט 24",
+       1306,
+       "יוני 25",
        0.9514388489208633
       ]
      ]
@@ -13081,13 +9604,13 @@
      "q_num": 145,
      "matches": [
       [
-       1307,
+       756,
        "יוני 25",
        1.0
       ],
       [
-       756,
-       "ספט 24",
+       1307,
+       "יוני 25",
        1.0
       ]
      ]
@@ -13096,13 +9619,13 @@
      "q_num": 146,
      "matches": [
       [
-       1308,
+       757,
        "יוני 25",
        1.0
       ],
       [
-       757,
-       "ספט 24",
+       1308,
+       "יוני 25",
        1.0
       ]
      ]
@@ -13111,13 +9634,13 @@
      "q_num": 147,
      "matches": [
       [
-       1309,
+       758,
        "יוני 25",
        1.0
       ],
       [
-       758,
-       "ספט 24",
+       1309,
+       "יוני 25",
        1.0
       ]
      ]
@@ -13126,13 +9649,13 @@
      "q_num": 148,
      "matches": [
       [
-       1310,
+       759,
        "יוני 25",
        0.9336609336609336
       ],
       [
-       759,
-       "ספט 24",
+       1310,
+       "יוני 25",
        0.9336609336609336
       ]
      ]
@@ -13147,7 +9670,7 @@
       ],
       [
        760,
-       "ספט 24",
+       "יוני 25",
        0.8879310344827587
       ]
      ]
@@ -13162,7 +9685,7 @@
       ],
       [
        761,
-       "ספט 24",
+       "יוני 25",
        0.9719626168224299
       ]
      ]
@@ -13178,20 +9701,26 @@
     },
     {
      "q_num": 33,
-     "idx": 1166,
-     "ds_q_len": 38,
-     "tag": "2025-א"
+     "idx": 648,
+     "ds_q_len": 39,
+     "tag": "יוני 25"
     },
     {
      "q_num": 70,
-     "idx": 1268,
+     "idx": 685,
+     "ds_q_len": 37,
+     "tag": "יוני 25"
+    },
+    {
+     "q_num": 97,
+     "idx": 711,
      "ds_q_len": 39,
      "tag": "יוני 25"
     },
     {
      "q_num": 98,
-     "idx": 1285,
-     "ds_q_len": 39,
+     "idx": 712,
+     "ds_q_len": 38,
      "tag": "יוני 25"
     }
    ]

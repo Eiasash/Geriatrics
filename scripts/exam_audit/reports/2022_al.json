@@ -10,8 +10,8 @@
   "canonical_parsed": 94,
   "canonical_with_4_opts": 80,
   "answers_parsed": 100,
-  "questions_with_matches": 85,
-  "questions_without_matches": 9
+  "questions_with_matches": 86,
+  "questions_without_matches": 8
  },
  "findings": {
   "c_mismatches": [
@@ -29,10 +29,6 @@
   ],
   "tag_mismatches": [],
   "no_match": [
-   [
-    10,
-    "מה נכון לגבי הטיפול ב- Idiopathic Pulmonary Fibrosis?"
-   ],
    [
     13,
     "בן86 , הגיע למרפאה עקב תלונות על גרד ואודם ברגליים, שידוע מזה זמן רב, אך .לאחרונ"
