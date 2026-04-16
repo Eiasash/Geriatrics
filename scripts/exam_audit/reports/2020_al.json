@@ -1,0 +1,1426 @@
+{
+ "exam_id": "2020_al",
+ "track": "al",
+ "date": "2020",
+ "tag_candidates": [
+  "2020"
+ ],
+ "stats": {
+  "canonical_parsed": 99,
+  "canonical_with_4_opts": 98,
+  "answers_parsed": 100,
+  "questions_with_matches": 87,
+  "questions_without_matches": 12
+ },
+ "findings": {
+  "c_mismatches": [
+   {
+    "q_num": 2,
+    "idx": 763,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 0.794
+   },
+   {
+    "q_num": 6,
+    "idx": 767,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 0.97
+   },
+   {
+    "q_num": 9,
+    "idx": 770,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     0
+    ],
+    "recommended_c": 0,
+    "sim": 0.957
+   },
+   {
+    "q_num": 12,
+    "idx": 773,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 1.0
+   },
+   {
+    "q_num": 15,
+    "idx": 776,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 1.0
+   },
+   {
+    "q_num": 16,
+    "idx": 777,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 0.966
+   },
+   {
+    "q_num": 17,
+    "idx": 778,
+    "tag": "2023-ב",
+    "current_c": 2,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 1.0
+   },
+   {
+    "q_num": 19,
+    "idx": 780,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 1.0
+   },
+   {
+    "q_num": 20,
+    "idx": 781,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     0
+    ],
+    "recommended_c": 0,
+    "sim": 0.98
+   },
+   {
+    "q_num": 21,
+    "idx": 782,
+    "tag": "2023-ב",
+    "current_c": 2,
+    "accepted": [
+     3
+    ],
+    "recommended_c": 3,
+    "sim": 1.0
+   },
+   {
+    "q_num": 23,
+    "idx": 784,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     3
+    ],
+    "recommended_c": 3,
+    "sim": 1.0
+   },
+   {
+    "q_num": 26,
+    "idx": 787,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     3
+    ],
+    "recommended_c": 3,
+    "sim": 0.95
+   },
+   {
+    "q_num": 28,
+    "idx": 789,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 1.0
+   },
+   {
+    "q_num": 31,
+    "idx": 792,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 0.974
+   },
+   {
+    "q_num": 32,
+    "idx": 793,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 0.968
+   },
+   {
+    "q_num": 33,
+    "idx": 794,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     0
+    ],
+    "recommended_c": 0,
+    "sim": 0.756
+   },
+   {
+    "q_num": 35,
+    "idx": 796,
+    "tag": "2023-ב",
+    "current_c": 2,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 0.997
+   },
+   {
+    "q_num": 37,
+    "idx": 798,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     0
+    ],
+    "recommended_c": 0,
+    "sim": 1.0
+   },
+   {
+    "q_num": 38,
+    "idx": 799,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 1.0
+   },
+   {
+    "q_num": 39,
+    "idx": 800,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 0.98
+   },
+   {
+    "q_num": 45,
+    "idx": 805,
+    "tag": "2023-ב",
+    "current_c": 2,
+    "accepted": [
+     0
+    ],
+    "recommended_c": 0,
+    "sim": 1.0
+   },
+   {
+    "q_num": 46,
+    "idx": 806,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 0.853
+   },
+   {
+    "q_num": 48,
+    "idx": 807,
+    "tag": "2023-ב",
+    "current_c": 2,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 0.973
+   },
+   {
+    "q_num": 49,
+    "idx": 808,
+    "tag": "2023-ב",
+    "current_c": 2,
+    "accepted": [
+     3
+    ],
+    "recommended_c": 3,
+    "sim": 0.758
+   },
+   {
+    "q_num": 53,
+    "idx": 812,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     0
+    ],
+    "recommended_c": 0,
+    "sim": 0.97
+   },
+   {
+    "q_num": 57,
+    "idx": 816,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 0.937
+   },
+   {
+    "q_num": 59,
+    "idx": 818,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     3
+    ],
+    "recommended_c": 3,
+    "sim": 0.939
+   },
+   {
+    "q_num": 60,
+    "idx": 819,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 1.0
+   },
+   {
+    "q_num": 62,
+    "idx": 821,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     0
+    ],
+    "recommended_c": 0,
+    "sim": 0.999
+   },
+   {
+    "q_num": 65,
+    "idx": 824,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 1.0
+   },
+   {
+    "q_num": 67,
+    "idx": 826,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 1.0
+   },
+   {
+    "q_num": 68,
+    "idx": 827,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 0.926
+   },
+   {
+    "q_num": 69,
+    "idx": 828,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 1.0
+   },
+   {
+    "q_num": 71,
+    "idx": 830,
+    "tag": "2023-ב",
+    "current_c": 2,
+    "accepted": [
+     0
+    ],
+    "recommended_c": 0,
+    "sim": 0.98
+   },
+   {
+    "q_num": 72,
+    "idx": 831,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 0.993
+   },
+   {
+    "q_num": 76,
+    "idx": 834,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     3
+    ],
+    "recommended_c": 3,
+    "sim": 0.967
+   },
+   {
+    "q_num": 79,
+    "idx": 837,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 1.0
+   },
+   {
+    "q_num": 80,
+    "idx": 838,
+    "tag": "2023-ב",
+    "current_c": 2,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 1.0
+   },
+   {
+    "q_num": 81,
+    "idx": 839,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 1.0
+   },
+   {
+    "q_num": 82,
+    "idx": 840,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 0.949
+   },
+   {
+    "q_num": 83,
+    "idx": 841,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 1.0
+   },
+   {
+    "q_num": 84,
+    "idx": 842,
+    "tag": "2023-ב",
+    "current_c": 2,
+    "accepted": [
+     0
+    ],
+    "recommended_c": 0,
+    "sim": 0.995
+   },
+   {
+    "q_num": 85,
+    "idx": 843,
+    "tag": "2023-ב",
+    "current_c": 0,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 0.967
+   },
+   {
+    "q_num": 86,
+    "idx": 844,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 1.0
+   },
+   {
+    "q_num": 93,
+    "idx": 851,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 1.0
+   },
+   {
+    "q_num": 94,
+    "idx": 852,
+    "tag": "2023-ב",
+    "current_c": 1,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 0.924
+   },
+   {
+    "q_num": 95,
+    "idx": 853,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     0
+    ],
+    "recommended_c": 0,
+    "sim": 0.822
+   },
+   {
+    "q_num": 99,
+    "idx": 857,
+    "tag": "2023-ב",
+    "current_c": 3,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 1.0
+   }
+  ],
+  "tag_mismatches": [
+   {
+    "q_num": 1,
+    "idx": 762,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.978
+   },
+   {
+    "q_num": 2,
+    "idx": 763,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.794
+   },
+   {
+    "q_num": 5,
+    "idx": 766,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 6,
+    "idx": 767,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.97
+   },
+   {
+    "q_num": 7,
+    "idx": 768,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 8,
+    "idx": 769,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 9,
+    "idx": 770,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.957
+   },
+   {
+    "q_num": 10,
+    "idx": 771,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 11,
+    "idx": 772,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 12,
+    "idx": 773,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 13,
+    "idx": 774,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.972
+   },
+   {
+    "q_num": 14,
+    "idx": 775,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 15,
+    "idx": 776,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 16,
+    "idx": 777,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.966
+   },
+   {
+    "q_num": 17,
+    "idx": 778,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 18,
+    "idx": 779,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 19,
+    "idx": 780,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 20,
+    "idx": 781,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.98
+   },
+   {
+    "q_num": 21,
+    "idx": 782,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 22,
+    "idx": 783,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 23,
+    "idx": 784,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 24,
+    "idx": 785,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.952
+   },
+   {
+    "q_num": 25,
+    "idx": 786,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.993
+   },
+   {
+    "q_num": 26,
+    "idx": 787,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.95
+   },
+   {
+    "q_num": 27,
+    "idx": 788,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 28,
+    "idx": 789,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 29,
+    "idx": 790,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.978
+   },
+   {
+    "q_num": 30,
+    "idx": 791,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.988
+   },
+   {
+    "q_num": 31,
+    "idx": 792,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.974
+   },
+   {
+    "q_num": 32,
+    "idx": 793,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.968
+   },
+   {
+    "q_num": 33,
+    "idx": 794,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.756
+   },
+   {
+    "q_num": 35,
+    "idx": 796,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.997
+   },
+   {
+    "q_num": 36,
+    "idx": 797,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.98
+   },
+   {
+    "q_num": 37,
+    "idx": 798,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 38,
+    "idx": 799,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 39,
+    "idx": 800,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.98
+   },
+   {
+    "q_num": 42,
+    "idx": 802,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.975
+   },
+   {
+    "q_num": 44,
+    "idx": 804,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.993
+   },
+   {
+    "q_num": 45,
+    "idx": 805,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 46,
+    "idx": 806,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.853
+   },
+   {
+    "q_num": 48,
+    "idx": 807,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.973
+   },
+   {
+    "q_num": 49,
+    "idx": 808,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.758
+   },
+   {
+    "q_num": 50,
+    "idx": 809,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.98
+   },
+   {
+    "q_num": 51,
+    "idx": 810,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 52,
+    "idx": 811,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 53,
+    "idx": 812,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.97
+   },
+   {
+    "q_num": 54,
+    "idx": 813,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.998
+   },
+   {
+    "q_num": 56,
+    "idx": 815,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.968
+   },
+   {
+    "q_num": 57,
+    "idx": 816,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.937
+   },
+   {
+    "q_num": 59,
+    "idx": 818,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.939
+   },
+   {
+    "q_num": 60,
+    "idx": 819,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 61,
+    "idx": 820,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.97
+   },
+   {
+    "q_num": 62,
+    "idx": 821,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.999
+   },
+   {
+    "q_num": 63,
+    "idx": 822,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 64,
+    "idx": 823,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.972
+   },
+   {
+    "q_num": 65,
+    "idx": 824,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 66,
+    "idx": 825,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 67,
+    "idx": 826,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 68,
+    "idx": 827,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.926
+   },
+   {
+    "q_num": 69,
+    "idx": 828,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 70,
+    "idx": 829,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.994
+   },
+   {
+    "q_num": 71,
+    "idx": 830,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.98
+   },
+   {
+    "q_num": 72,
+    "idx": 831,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.993
+   },
+   {
+    "q_num": 75,
+    "idx": 833,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 76,
+    "idx": 834,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.967
+   },
+   {
+    "q_num": 77,
+    "idx": 835,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 79,
+    "idx": 837,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 80,
+    "idx": 838,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 81,
+    "idx": 839,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 82,
+    "idx": 840,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.949
+   },
+   {
+    "q_num": 83,
+    "idx": 841,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 84,
+    "idx": 842,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.995
+   },
+   {
+    "q_num": 85,
+    "idx": 843,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.967
+   },
+   {
+    "q_num": 86,
+    "idx": 844,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 87,
+    "idx": 845,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.974
+   },
+   {
+    "q_num": 88,
+    "idx": 846,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 89,
+    "idx": 847,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.955
+   },
+   {
+    "q_num": 91,
+    "idx": 849,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.963
+   },
+   {
+    "q_num": 92,
+    "idx": 850,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.877
+   },
+   {
+    "q_num": 93,
+    "idx": 851,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 94,
+    "idx": 852,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.924
+   },
+   {
+    "q_num": 95,
+    "idx": 853,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.822
+   },
+   {
+    "q_num": 96,
+    "idx": 854,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 97,
+    "idx": 855,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 98,
+    "idx": 856,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 0.963
+   },
+   {
+    "q_num": 99,
+    "idx": 857,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 100,
+    "idx": 858,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2020"
+    ],
+    "sim": 1.0
+   }
+  ],
+  "no_match": [
+   [
+    3,
+    "כעבור6 חודשים נוספים, אושפזה פעם שלישית עם עליה נוספת בקריאטנין מ- 3 ל- 5.5 . בא"
+   ],
+   [
+    4,
+    "בן 78 ,הסובל מדמנציה מתקדמת מאושפז במחלקה לסיעוד מורכב עקב פצע לחץ דרגה 4 בטרוכנ"
+   ],
+   [
+    40,
+    "בת78 , אקדמאית בהשכלתה, עצמאית בכל התפקודים אובחנה לאחרונה כסובלת ממחלת אלצהיימר"
+   ],
+   [
+    41,
+    "בן92 הסובל מדמנציה מתקדמת, מאושפז מזה חודש במחלקת קורונה. בקבלתו המוגלובין 12.8 "
+   ],
+   [
+    43,
+    "בן86, בריא בדרך כלל, שמור קוגניטיבית. לא היה אצל רופאת המשפחה ב- 5 השנים האחרונו"
+   ],
+   [
+    47,
+    "ל מי מהמטופלים הבאים יש להמליץ על החלפת מסתם א אורטלי ( לכולם תפקוד חדר שמאל )תק"
+   ],
+   [
+    55,
+    "בת 81 ,הולכת עם מקל מאז ניתוח החלפת ברך .ברקע יתר ל\"ד .נוטלת LERCANIDIPINE ( VAS"
+   ],
+   [
+    58,
+    "בן 75 ,עצמאי ב- BADL . ברקע - סכרת ואי ספיקת לב ,מטופל ב- DAPAGLIFUZIN ( FORXIGA"
+   ],
+   [
+    73,
+    "הממשלה מעוניינת לבדוק כדאיות חיסון לקורונה בקרב אנשים בני פחות מ- 60 שגרים עם .ק"
+   ],
+   [
+    74,
+    "בת 82 ,מאושפזת מזה כשבועיים בטיפול נמרץ באבחנה של דלקת ריאות, כשהיא מונשמת ומטופ"
+   ],
+   [
+    78,
+    "בת78 , פנתה למרפאה עקב חולשה וירידה במשקל של5 ק\"ג בשנה האח רונה. בן זוגה מדווח ע"
+   ],
+   [
+    90,
+    "בן82 , מתגורר בביתו עם מטפל זר. ברקע - דמנציה מתקדמת , מרותק לכ י סא גלגלים, נזק"
+   ]
+  ],
+  "low_confidence": [],
+  "duplicates": [
+   {
+    "q_num": 63,
+    "matches": [
+     [
+      822,
+      "2023-ב",
+      1.0
+     ],
+     [
+      689,
+      "ספט 24",
+      0.9436274509803921
+     ],
+     [
+      1270,
+      "יוני 25",
+      0.9242053789731052
+     ]
+    ]
+   }
+  ],
+  "missing_ti": [],
+  "truncated_q": [
+   {
+    "q_num": 23,
+    "idx": 784,
+    "ds_q_len": 30,
+    "tag": "2023-ב"
+   },
+   {
+    "q_num": 26,
+    "idx": 787,
+    "ds_q_len": 34,
+    "tag": "2023-ב"
+   },
+   {
+    "q_num": 80,
+    "idx": 838,
+    "ds_q_len": 34,
+    "tag": "2023-ב"
+   }
+  ]
+ }
+}
