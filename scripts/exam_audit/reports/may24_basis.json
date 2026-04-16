@@ -1,0 +1,1618 @@
+{
+ "exam_id": "may24_basis",
+ "track": "basis",
+ "date": "2024-05",
+ "tag_candidates": [
+  "מאי 24",
+  "May24"
+ ],
+ "stats": {
+  "canonical_parsed": 150,
+  "canonical_with_4_opts": 149,
+  "answers_parsed": 150,
+  "questions_with_matches": 141,
+  "questions_without_matches": 9
+ },
+ "findings": {
+  "c_mismatches": [
+   {
+    "q_num": 5,
+    "idx": 471,
+    "tag": "ספט 24",
+    "current_c": 2,
+    "accepted": [
+     3
+    ],
+    "recommended_c": 3,
+    "sim": 0.916
+   },
+   {
+    "q_num": 27,
+    "idx": 492,
+    "tag": "ספט 24",
+    "current_c": 0,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 0.989
+   },
+   {
+    "q_num": 94,
+    "idx": 559,
+    "tag": "ספט 24",
+    "current_c": 2,
+    "accepted": [
+     3
+    ],
+    "recommended_c": 3,
+    "sim": 1.0
+   },
+   {
+    "q_num": 96,
+    "idx": 561,
+    "tag": "ספט 24",
+    "current_c": 1,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 1.0
+   },
+   {
+    "q_num": 112,
+    "idx": 577,
+    "tag": "ספט 24",
+    "current_c": 0,
+    "accepted": [
+     1,
+     3
+    ],
+    "recommended_c": 1,
+    "sim": 0.918
+   },
+   {
+    "q_num": 114,
+    "idx": 579,
+    "tag": "ספט 24",
+    "current_c": 1,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 1.0
+   },
+   {
+    "q_num": 125,
+    "idx": 590,
+    "tag": "ספט 24",
+    "current_c": 2,
+    "accepted": [
+     1
+    ],
+    "recommended_c": 1,
+    "sim": 1.0
+   },
+   {
+    "q_num": 133,
+    "idx": 598,
+    "tag": "ספט 24",
+    "current_c": 2,
+    "accepted": [
+     0
+    ],
+    "recommended_c": 0,
+    "sim": 0.995
+   },
+   {
+    "q_num": 141,
+    "idx": 606,
+    "tag": "ספט 24",
+    "current_c": 0,
+    "accepted": [
+     3
+    ],
+    "recommended_c": 3,
+    "sim": 0.733
+   }
+  ],
+  "tag_mismatches": [
+   {
+    "q_num": 1,
+    "idx": 467,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 2,
+    "idx": 468,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 3,
+    "idx": 469,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 5,
+    "idx": 471,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.916
+   },
+   {
+    "q_num": 6,
+    "idx": 472,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 7,
+    "idx": 473,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.924
+   },
+   {
+    "q_num": 8,
+    "idx": 474,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 9,
+    "idx": 475,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 10,
+    "idx": 476,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 11,
+    "idx": 477,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.902
+   },
+   {
+    "q_num": 12,
+    "idx": 478,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.986
+   },
+   {
+    "q_num": 13,
+    "idx": 479,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 14,
+    "idx": 480,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.937
+   },
+   {
+    "q_num": 15,
+    "idx": 481,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 16,
+    "idx": 482,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.792
+   },
+   {
+    "q_num": 17,
+    "idx": 483,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.919
+   },
+   {
+    "q_num": 18,
+    "idx": 484,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 19,
+    "idx": 485,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 20,
+    "idx": 486,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.997
+   },
+   {
+    "q_num": 21,
+    "idx": 487,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.857
+   },
+   {
+    "q_num": 22,
+    "idx": 488,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 23,
+    "idx": 489,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 24,
+    "idx": 490,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 25,
+    "idx": 491,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.879
+   },
+   {
+    "q_num": 27,
+    "idx": 492,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.989
+   },
+   {
+    "q_num": 28,
+    "idx": 493,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 29,
+    "idx": 494,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.903
+   },
+   {
+    "q_num": 30,
+    "idx": 495,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 31,
+    "idx": 496,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 32,
+    "idx": 497,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.94
+   },
+   {
+    "q_num": 33,
+    "idx": 498,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 34,
+    "idx": 499,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 35,
+    "idx": 500,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.873
+   },
+   {
+    "q_num": 37,
+    "idx": 502,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 38,
+    "idx": 503,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 39,
+    "idx": 504,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 40,
+    "idx": 505,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.916
+   },
+   {
+    "q_num": 41,
+    "idx": 506,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 42,
+    "idx": 507,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.984
+   },
+   {
+    "q_num": 43,
+    "idx": 508,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 44,
+    "idx": 509,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.905
+   },
+   {
+    "q_num": 45,
+    "idx": 510,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 46,
+    "idx": 511,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 47,
+    "idx": 512,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 48,
+    "idx": 513,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.78
+   },
+   {
+    "q_num": 49,
+    "idx": 514,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.993
+   },
+   {
+    "q_num": 50,
+    "idx": 515,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 51,
+    "idx": 516,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.988
+   },
+   {
+    "q_num": 52,
+    "idx": 517,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.867
+   },
+   {
+    "q_num": 53,
+    "idx": 518,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 54,
+    "idx": 519,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 55,
+    "idx": 520,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 56,
+    "idx": 521,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.961
+   },
+   {
+    "q_num": 57,
+    "idx": 522,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 58,
+    "idx": 523,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 59,
+    "idx": 524,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 60,
+    "idx": 525,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.954
+   },
+   {
+    "q_num": 61,
+    "idx": 526,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 62,
+    "idx": 527,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 63,
+    "idx": 528,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 64,
+    "idx": 529,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.955
+   },
+   {
+    "q_num": 65,
+    "idx": 530,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 66,
+    "idx": 531,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 67,
+    "idx": 532,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 68,
+    "idx": 533,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.929
+   },
+   {
+    "q_num": 69,
+    "idx": 534,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 70,
+    "idx": 535,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 71,
+    "idx": 536,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.943
+   },
+   {
+    "q_num": 72,
+    "idx": 537,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 73,
+    "idx": 538,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 74,
+    "idx": 539,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.875
+   },
+   {
+    "q_num": 75,
+    "idx": 540,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 76,
+    "idx": 541,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 77,
+    "idx": 542,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.916
+   },
+   {
+    "q_num": 78,
+    "idx": 543,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 79,
+    "idx": 544,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 80,
+    "idx": 545,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 81,
+    "idx": 546,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.866
+   },
+   {
+    "q_num": 82,
+    "idx": 547,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 83,
+    "idx": 548,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 84,
+    "idx": 549,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 85,
+    "idx": 550,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.907
+   },
+   {
+    "q_num": 86,
+    "idx": 551,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 87,
+    "idx": 552,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 88,
+    "idx": 553,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.958
+   },
+   {
+    "q_num": 92,
+    "idx": 557,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 93,
+    "idx": 558,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 94,
+    "idx": 559,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 95,
+    "idx": 560,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.828
+   },
+   {
+    "q_num": 96,
+    "idx": 561,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 97,
+    "idx": 562,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 98,
+    "idx": 563,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 99,
+    "idx": 564,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.882
+   },
+   {
+    "q_num": 100,
+    "idx": 565,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 101,
+    "idx": 566,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 102,
+    "idx": 567,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.997
+   },
+   {
+    "q_num": 103,
+    "idx": 568,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 104,
+    "idx": 569,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.914
+   },
+   {
+    "q_num": 105,
+    "idx": 570,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 106,
+    "idx": 571,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 107,
+    "idx": 572,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.992
+   },
+   {
+    "q_num": 108,
+    "idx": 573,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.944
+   },
+   {
+    "q_num": 109,
+    "idx": 574,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 110,
+    "idx": 575,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 111,
+    "idx": 576,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 112,
+    "idx": 577,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.918
+   },
+   {
+    "q_num": 114,
+    "idx": 579,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 116,
+    "idx": 581,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.909
+   },
+   {
+    "q_num": 117,
+    "idx": 582,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.993
+   },
+   {
+    "q_num": 118,
+    "idx": 583,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 119,
+    "idx": 584,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.896
+   },
+   {
+    "q_num": 120,
+    "idx": 585,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.988
+   },
+   {
+    "q_num": 121,
+    "idx": 586,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 122,
+    "idx": 587,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 123,
+    "idx": 588,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.933
+   },
+   {
+    "q_num": 124,
+    "idx": 589,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.694
+   },
+   {
+    "q_num": 125,
+    "idx": 590,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 126,
+    "idx": 591,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.935
+   },
+   {
+    "q_num": 127,
+    "idx": 592,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 128,
+    "idx": 593,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 129,
+    "idx": 594,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.871
+   },
+   {
+    "q_num": 130,
+    "idx": 595,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.838
+   },
+   {
+    "q_num": 131,
+    "idx": 596,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 132,
+    "idx": 597,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 133,
+    "idx": 598,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.995
+   },
+   {
+    "q_num": 134,
+    "idx": 599,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.925
+   },
+   {
+    "q_num": 135,
+    "idx": 600,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.993
+   },
+   {
+    "q_num": 136,
+    "idx": 601,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 137,
+    "idx": 602,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.902
+   },
+   {
+    "q_num": 139,
+    "idx": 604,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 140,
+    "idx": 605,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 141,
+    "idx": 606,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.733
+   },
+   {
+    "q_num": 142,
+    "idx": 607,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.871
+   },
+   {
+    "q_num": 143,
+    "idx": 608,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 144,
+    "idx": 609,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.993
+   },
+   {
+    "q_num": 145,
+    "idx": 610,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 146,
+    "idx": 611,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.922
+   },
+   {
+    "q_num": 147,
+    "idx": 612,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 148,
+    "idx": 613,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 149,
+    "idx": 614,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 150,
+    "idx": 615,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 1.0
+   }
+  ],
+  "no_match": [
+   [
+    4,
+    "בן79 פנה אחרי שקם בבוקר עם חוסר סימטריה בפנים. מצורפת תמונה ( ראה תמונה מספר1 .)"
+   ],
+   [
+    26,
+    "איזה מהמטופלים הבאים עונה על הגדרתHEALTH CARE-ASSOCIATED PNEUMONIA ( HCAP ?) א. "
+   ],
+   [
+    36,
+    "בת92 , ברקעAORTIC STENOSIS . מאושפזת מזה שבועיים בבית חולים בשל דלקת .ריאות. עקב"
+   ],
+   [
+    89,
+    "בת82 . ברקע עודף משקל עםBMI = 32 , יתר לחץ דם, אי ספיקת כליות כרונית דרגה IV , ע"
+   ],
+   [
+    90,
+    "בן75 , דייר מחלקה סיעודית. ברקע דמנציה וסקולרית. מזה כחודש פצע לחץ, כעת בדרגה3 ב"
+   ],
+   [
+    91,
+    "בן80 , שמור קוגניטיבית ,ועצמאי בתפקודBMI = 30 , ברקע מחלת לב איסכמית עם צנתור אח"
+   ],
+   [
+    113,
+    "בת75 , ברקע סוכרת, יתר לחץ דם, מחלת לב איסכמית. פונה בשל כאבים בחזה בעלי אופי לא"
+   ],
+   [
+    115,
+    "?איזו אוושה מתגברת בזמן וולסלבה"
+   ],
+   [
+    138,
+    "בת74. לפני כחודש, בשל כאבי גב עזים, נטלה טיפול ב- IBUPROFEN במשך שבועיים וקיבלה "
+   ]
+  ],
+  "low_confidence": [
+   {
+    "q_num": 124,
+    "idx": 589,
+    "sim": 0.694,
+    "tag": "ספט 24"
+   },
+   {
+    "q_num": 141,
+    "idx": 606,
+    "sim": 0.733,
+    "tag": "ספט 24"
+   }
+  ],
+  "duplicates": [],
+  "missing_ti": [],
+  "truncated_q": [
+   {
+    "q_num": 14,
+    "idx": 480,
+    "ds_q_len": 37,
+    "tag": "ספט 24"
+   },
+   {
+    "q_num": 50,
+    "idx": 515,
+    "ds_q_len": 39,
+    "tag": "ספט 24"
+   },
+   {
+    "q_num": 57,
+    "idx": 522,
+    "ds_q_len": 34,
+    "tag": "ספט 24"
+   },
+   {
+    "q_num": 79,
+    "idx": 544,
+    "ds_q_len": 34,
+    "tag": "ספט 24"
+   },
+   {
+    "q_num": 101,
+    "idx": 566,
+    "ds_q_len": 34,
+    "tag": "ספט 24"
+   }
+  ]
+ }
+}
