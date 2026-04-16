@@ -28,22 +28,25 @@ def extract_full_text(pdf_path):
 def find_question_starts(text, max_n=200):
     """Find all candidate question-start markers.
     
-    Two layouts observed:
-      Layout A (newline-separated): "\n<num>\n\s*\.\s<text>" — period on own line
-      Layout B (inline):             "\n<num>\s*\.\s<text>"   — period follows number directly
-    
-    Both patterns are enforced at line boundaries to avoid matching
-    decimals like "1.2" or section references.
+    Three layouts observed:
+      Layout A: "\n<num>\n\s*\.\s<text>" — period on own line
+      Layout B: "\n<num>\.<text>" — period follows number directly (inline)
+      Layout C: "\n<d>\n<d>\n\s*\.\s" — digits split across lines (older 2022 PDFs)
     """
     candidates = []
-    # Layout A: newline, num, newline, period, then non-digit
+    # Layout A: newline, num, newline, period, non-digit
     for m in re.finditer(r'\n\s*(\d{1,3})\s*\n[\s?]*\.\s*(?=[^\d\s])', text):
         n = int(m.group(1))
         if 1 <= n <= max_n:
             candidates.append((m.start(), m.end(), n))
-    # Layout B: newline, num, period (same line), then Hebrew/Latin/question mark
+    # Layout B: newline, num, period (same line), Hebrew/Latin
     for m in re.finditer(r'\n\s*(\d{1,3})\s*\.\s*(?=[\u0590-\u05FFa-zA-Z?])', text):
         n = int(m.group(1))
+        if 1 <= n <= max_n:
+            candidates.append((m.start(), m.end(), n))
+    # Layout C: two digits on separate lines, period on third line
+    for m in re.finditer(r'\n\s*(\d)\s*\n\s*(\d)\s*\n[\s?]*\.\s*(?=[^\d\s])', text):
+        n = int(m.group(1) + m.group(2))
         if 1 <= n <= max_n:
             candidates.append((m.start(), m.end(), n))
     return candidates
@@ -93,29 +96,25 @@ def extract_question_text(full_text, start_pos, end_pos):
 def split_stem_options(q_text):
     """Split a question block into stem + list of 4 options.
     
-    Handles two formats observed in IMA exams:
-      Modern: "א. text ב. text ג. text ד. text"  (letter, period)
-      Older:  ".א text .ב text .ג text .ד text"  (period, letter)
+    Handles two formats observed in IMA exams, possibly mixed within same Q:
+      Modern: "א. text"  (letter, period, optional space)
+      Older:  ".א text"  (period, letter — no space required before option text)
     
     Also truncates the last option at the next question marker to prevent
-    bleed when the PDF extraction flows past question boundaries (common
-    in 2022/2023 exams).
+    bleed when the PDF extraction flows past question boundaries.
     """
-    # Try modern format first
-    pattern_modern = re.compile(r'([\u05d0-\u05d3])\s*\.\s')
-    marks = list(pattern_modern.finditer(q_text))
-    if len([m for m in marks if m.group(1) in ('\u05d0','\u05d1','\u05d2','\u05d3')]) < 4:
-        # Try older format
-        pattern_older = re.compile(r'\.\s*([\u05d0-\u05d3])\s')
-        marks = list(pattern_older.finditer(q_text))
+    # Unified pattern: match either "letter . space" or ". letter" (older).
+    # Letter captured in one of two groups.
+    pattern = re.compile(r'(?:([\u05d0-\u05d3])\s*\.\s|\.\s*([\u05d0-\u05d3])(?=[^.]))')
+    marks = list(pattern.finditer(q_text))
     if len(marks) < 4:
         return q_text, []
-    letters = {'\u05d0':0, '\u05d1':1, '\u05d2':2, '\u05d3':3}
+    letters_map = {'\u05d0':0, '\u05d1':1, '\u05d2':2, '\u05d3':3}
     expected = 0
     selected = []
     for m in marks:
-        letter = m.group(1)
-        idx = letters.get(letter)
+        letter = m.group(1) or m.group(2)
+        idx = letters_map.get(letter)
         if idx == expected:
             selected.append(m)
             expected += 1
@@ -130,11 +129,8 @@ def split_stem_options(q_text):
         opt_start = selected[i].end()
         opt_end = selected[i+1].start() if i+1 < 4 else len(q_text)
         opt = q_text[opt_start:opt_end].strip()
-        # For the last option (ד), truncate at next question marker to
-        # prevent bleed into Q(n+1) content. Match patterns: "N .", "N. ", ".N "
+        # For the last option, truncate at next question marker to prevent bleed
         if i == 3:
-            # Find next Q marker: "<digit-1-3> ." at start or after space
-            # Conservative: require digit(s) followed by dot with space/letter
             trunc_match = re.search(r'\s\d{1,3}\s*\.\s*[\u0590-\u05FFa-zA-Z?]', opt)
             if trunc_match:
                 opt = opt[:trunc_match.start()].strip()
