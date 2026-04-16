@@ -48,7 +48,7 @@ def render_fix_script(exam_id, c_mismatches, track, date, answer_source='revised
         'import json, sys',
         'from pathlib import Path',
         '',
-        'REPO = Path(__file__).resolve().parent.parent',
+        'REPO = Path(__file__).resolve().parent.parent.parent.parent',
         "QJ = REPO / 'data' / 'questions.json'",
         '',
         '# Each entry: (q_num, idx, new_c, accepted_list, current_tag, similarity)',
