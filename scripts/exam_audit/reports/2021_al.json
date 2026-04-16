@@ -8,553 +8,23 @@
  ],
  "stats": {
   "canonical_parsed": 100,
-  "canonical_with_4_opts": 84,
+  "canonical_with_4_opts": 95,
   "answers_parsed": 100,
-  "questions_with_matches": 80,
-  "questions_without_matches": 20
+  "questions_with_matches": 90,
+  "questions_without_matches": 10
  },
  "findings": {
   "c_mismatches": [
    {
-    "q_num": 8,
-    "idx": 866,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 1.0
-   },
-   {
-    "q_num": 12,
-    "idx": 869,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 13,
-    "idx": 870,
-    "tag": "2023-ב",
-    "current_c": 1,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 0.93
-   },
-   {
-    "q_num": 15,
-    "idx": 872,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 16,
-    "idx": 873,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 1.0
-   },
-   {
-    "q_num": 17,
-    "idx": 874,
-    "tag": "2023-ב",
-    "current_c": 2,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 0.934
-   },
-   {
-    "q_num": 20,
-    "idx": 876,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 0.897
-   },
-   {
-    "q_num": 25,
-    "idx": 881,
-    "tag": "2023-ב",
-    "current_c": 1,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 28,
-    "idx": 884,
-    "tag": "2023-ב",
-    "current_c": 1,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 0.924
-   },
-   {
-    "q_num": 30,
-    "idx": 885,
-    "tag": "2023-ב",
-    "current_c": 1,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 32,
-    "idx": 887,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     0,
-     2
-    ],
-    "recommended_c": 0,
-    "sim": 1.0
-   },
-   {
-    "q_num": 34,
-    "idx": 889,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 0.95
-   },
-   {
-    "q_num": 38,
-    "idx": 892,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 0.655
-   },
-   {
-    "q_num": 39,
-    "idx": 893,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 1.0
-   },
-   {
-    "q_num": 42,
-    "idx": 895,
-    "tag": "2023-ב",
-    "current_c": 1,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 43,
-    "idx": 896,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 0.946
-   },
-   {
-    "q_num": 46,
-    "idx": 897,
-    "tag": "2023-ב",
-    "current_c": 2,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 1.0
-   },
-   {
-    "q_num": 47,
-    "idx": 898,
+    "q_num": 61,
+    "idx": 912,
     "tag": "2023-ב",
     "current_c": 1,
     "accepted": [
      3
     ],
     "recommended_c": 3,
-    "sim": 1.0
-   },
-   {
-    "q_num": 48,
-    "idx": 899,
-    "tag": "2023-ב",
-    "current_c": 2,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 0.913
-   },
-   {
-    "q_num": 50,
-    "idx": 901,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 1.0
-   },
-   {
-    "q_num": 51,
-    "idx": 902,
-    "tag": "2023-ב",
-    "current_c": 2,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 0.953
-   },
-   {
-    "q_num": 52,
-    "idx": 903,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 1.0
-   },
-   {
-    "q_num": 55,
-    "idx": 906,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     0,
-     2
-    ],
-    "recommended_c": 0,
-    "sim": 0.937
-   },
-   {
-    "q_num": 56,
-    "idx": 907,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 1.0
-   },
-   {
-    "q_num": 57,
-    "idx": 908,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 1.0
-   },
-   {
-    "q_num": 58,
-    "idx": 909,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 0.962
-   },
-   {
-    "q_num": 60,
-    "idx": 911,
-    "tag": "2023-ב",
-    "current_c": 1,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 1.0
-   },
-   {
-    "q_num": 63,
-    "idx": 914,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 0.88
-   },
-   {
-    "q_num": 64,
-    "idx": 915,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 69,
-    "idx": 918,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 1.0
-   },
-   {
-    "q_num": 70,
-    "idx": 919,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 71,
-    "idx": 920,
-    "tag": "2023-ב",
-    "current_c": 2,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 1.0
-   },
-   {
-    "q_num": 72,
-    "idx": 921,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 0.952
-   },
-   {
-    "q_num": 75,
-    "idx": 923,
-    "tag": "2023-ב",
-    "current_c": 1,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 0.909
-   },
-   {
-    "q_num": 77,
-    "idx": 924,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 1.0
-   },
-   {
-    "q_num": 78,
-    "idx": 925,
-    "tag": "2023-ב",
-    "current_c": 2,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 0.922
-   },
-   {
-    "q_num": 80,
-    "idx": 927,
-    "tag": "2023-ב",
-    "current_c": 2,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 0.996
-   },
-   {
-    "q_num": 81,
-    "idx": 928,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 0.903
-   },
-   {
-    "q_num": 82,
-    "idx": 929,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 0.993
-   },
-   {
-    "q_num": 84,
-    "idx": 931,
-    "tag": "2023-ב",
-    "current_c": 2,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 1.0
-   },
-   {
-    "q_num": 86,
-    "idx": 933,
-    "tag": "2023-ב",
-    "current_c": 1,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 0.902
-   },
-   {
-    "q_num": 88,
-    "idx": 935,
-    "tag": "2023-ב",
-    "current_c": 2,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 0.945
-   },
-   {
-    "q_num": 89,
-    "idx": 936,
-    "tag": "2023-ב",
-    "current_c": 0,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 91,
-    "idx": 938,
-    "tag": "2023-ב",
-    "current_c": 1,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 0.909
-   },
-   {
-    "q_num": 93,
-    "idx": 940,
-    "tag": "2023-ב",
-    "current_c": 1,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 1.0
-   },
-   {
-    "q_num": 95,
-    "idx": 942,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 98,
-    "idx": 945,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 99,
-    "idx": 946,
-    "tag": "2023-ב",
-    "current_c": 3,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 1.0
-   },
-   {
-    "q_num": 100,
-    "idx": 947,
-    "tag": "2023-ב",
-    "current_c": 2,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 1.0
+    "sim": 0.935
    }
   ],
   "tag_mismatches": [
@@ -579,6 +49,16 @@
     "sim": 0.941
    },
    {
+    "q_num": 5,
+    "idx": 3433,
+    "current_tag": "יוני 21",
+    "expected_tags": [
+     "2021",
+     "Jun21"
+    ],
+    "sim": 1.0
+   },
+   {
     "q_num": 6,
     "idx": 864,
     "current_tag": "2023-ב",
@@ -601,7 +81,7 @@
    {
     "q_num": 8,
     "idx": 866,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -631,7 +111,7 @@
    {
     "q_num": 12,
     "idx": 869,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -641,7 +121,7 @@
    {
     "q_num": 13,
     "idx": 870,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -661,7 +141,7 @@
    {
     "q_num": 15,
     "idx": 872,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -671,7 +151,7 @@
    {
     "q_num": 16,
     "idx": 873,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -681,7 +161,7 @@
    {
     "q_num": 17,
     "idx": 874,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -701,7 +181,7 @@
    {
     "q_num": 20,
     "idx": 876,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -709,9 +189,29 @@
     "sim": 0.897
    },
    {
+    "q_num": 21,
+    "idx": 3434,
+    "current_tag": "יוני 21",
+    "expected_tags": [
+     "2021",
+     "Jun21"
+    ],
+    "sim": 1.0
+   },
+   {
     "q_num": 22,
     "idx": 878,
     "current_tag": "2023-ב",
+    "expected_tags": [
+     "2021",
+     "Jun21"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 23,
+    "idx": 3435,
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -731,7 +231,7 @@
    {
     "q_num": 25,
     "idx": 881,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -749,9 +249,19 @@
     "sim": 0.967
    },
    {
+    "q_num": 27,
+    "idx": 3436,
+    "current_tag": "יוני 21",
+    "expected_tags": [
+     "2021",
+     "Jun21"
+    ],
+    "sim": 1.0
+   },
+   {
     "q_num": 28,
     "idx": 884,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -761,7 +271,7 @@
    {
     "q_num": 30,
     "idx": 885,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -781,7 +291,7 @@
    {
     "q_num": 32,
     "idx": 887,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -801,7 +311,7 @@
    {
     "q_num": 34,
     "idx": 889,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -809,19 +319,49 @@
     "sim": 0.95
    },
    {
-    "q_num": 38,
-    "idx": 892,
-    "current_tag": "2023-ב",
+    "q_num": 35,
+    "idx": 3437,
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
     ],
-    "sim": 0.655
+    "sim": 1.0
+   },
+   {
+    "q_num": 36,
+    "idx": 3438,
+    "current_tag": "יוני 21",
+    "expected_tags": [
+     "2021",
+     "Jun21"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 38,
+    "idx": 892,
+    "current_tag": "יוני 21",
+    "expected_tags": [
+     "2021",
+     "Jun21"
+    ],
+    "sim": 0.95
    },
    {
     "q_num": 39,
     "idx": 893,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
+    "expected_tags": [
+     "2021",
+     "Jun21"
+    ],
+    "sim": 1.0
+   },
+   {
+    "q_num": 40,
+    "idx": 3439,
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -841,7 +381,7 @@
    {
     "q_num": 42,
     "idx": 895,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -851,7 +391,7 @@
    {
     "q_num": 43,
     "idx": 896,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -861,7 +401,7 @@
    {
     "q_num": 46,
     "idx": 897,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -871,7 +411,7 @@
    {
     "q_num": 47,
     "idx": 898,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -881,7 +421,7 @@
    {
     "q_num": 48,
     "idx": 899,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -901,7 +441,7 @@
    {
     "q_num": 50,
     "idx": 901,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -911,7 +451,7 @@
    {
     "q_num": 51,
     "idx": 902,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -921,7 +461,7 @@
    {
     "q_num": 52,
     "idx": 903,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -951,7 +491,7 @@
    {
     "q_num": 55,
     "idx": 906,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -961,7 +501,7 @@
    {
     "q_num": 56,
     "idx": 907,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -971,7 +511,7 @@
    {
     "q_num": 57,
     "idx": 908,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -981,7 +521,7 @@
    {
     "q_num": 58,
     "idx": 909,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1001,12 +541,22 @@
    {
     "q_num": 60,
     "idx": 911,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
     ],
     "sim": 1.0
+   },
+   {
+    "q_num": 61,
+    "idx": 912,
+    "current_tag": "2023-ב",
+    "expected_tags": [
+     "2021",
+     "Jun21"
+    ],
+    "sim": 0.935
    },
    {
     "q_num": 62,
@@ -1021,7 +571,7 @@
    {
     "q_num": 63,
     "idx": 914,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1031,7 +581,7 @@
    {
     "q_num": 64,
     "idx": 915,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1056,12 +606,12 @@
      "2021",
      "Jun21"
     ],
-    "sim": 0.652
+    "sim": 0.962
    },
    {
     "q_num": 69,
     "idx": 918,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1071,7 +621,7 @@
    {
     "q_num": 70,
     "idx": 919,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1081,7 +631,7 @@
    {
     "q_num": 71,
     "idx": 920,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1091,7 +641,7 @@
    {
     "q_num": 72,
     "idx": 921,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1111,7 +661,7 @@
    {
     "q_num": 75,
     "idx": 923,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1121,7 +671,7 @@
    {
     "q_num": 77,
     "idx": 924,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1131,7 +681,7 @@
    {
     "q_num": 78,
     "idx": 925,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1151,7 +701,7 @@
    {
     "q_num": 80,
     "idx": 927,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1161,7 +711,7 @@
    {
     "q_num": 81,
     "idx": 928,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1171,7 +721,7 @@
    {
     "q_num": 82,
     "idx": 929,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1179,9 +729,19 @@
     "sim": 0.993
    },
    {
+    "q_num": 83,
+    "idx": 3440,
+    "current_tag": "יוני 21",
+    "expected_tags": [
+     "2021",
+     "Jun21"
+    ],
+    "sim": 1.0
+   },
+   {
     "q_num": 84,
     "idx": 931,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1201,7 +761,7 @@
    {
     "q_num": 86,
     "idx": 933,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1209,9 +769,19 @@
     "sim": 0.902
    },
    {
+    "q_num": 87,
+    "idx": 3441,
+    "current_tag": "יוני 21",
+    "expected_tags": [
+     "2021",
+     "Jun21"
+    ],
+    "sim": 1.0
+   },
+   {
     "q_num": 88,
     "idx": 935,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1221,7 +791,7 @@
    {
     "q_num": 89,
     "idx": 936,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1241,7 +811,7 @@
    {
     "q_num": 91,
     "idx": 938,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1261,7 +831,7 @@
    {
     "q_num": 93,
     "idx": 940,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1281,7 +851,7 @@
    {
     "q_num": 95,
     "idx": 942,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1296,7 +866,7 @@
      "2021",
      "Jun21"
     ],
-    "sim": 0.777
+    "sim": 1.0
    },
    {
     "q_num": 97,
@@ -1311,7 +881,7 @@
    {
     "q_num": 98,
     "idx": 945,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1321,7 +891,7 @@
    {
     "q_num": 99,
     "idx": 946,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1331,7 +901,7 @@
    {
     "q_num": 100,
     "idx": 947,
-    "current_tag": "2023-ב",
+    "current_tag": "יוני 21",
     "expected_tags": [
      "2021",
      "Jun21"
@@ -1341,48 +911,20 @@
   ],
   "no_match": [
    [
-    5,
-    "בת74 ,חמישה ימים לאחר שחרורה מבית חולים על רקע החמרה באי ספיקת לב, הגיעה למעקב ב"
-   ],
-   [
     11,
     "בת80 הגיעה למרפאה ל מעקב של צפיפות העצם. מטופלת ב- ALENDRONATE 70 מ\"ג פעם בשבוע "
    ],
    [
     18,
-    "מה הסיבה השכיחה ביותר לחום מסיבה ש( אינה ברורהFUO ? ) בגיל המבוגר .א לימפומה .ב "
-   ],
-   [
-    21,
-    "בן72 , ברקעsevere aortic stenosis פונה למיון עם שלשול ממושך מזה5 ימים מלווה בחול"
-   ],
-   [
-    23,
-    "בת70 פנתה לברור עקב .כאב גב בהדמיה נמצא שבר בחוליהT8 ו .נגעים ליטיים מרובים במרפ"
-   ],
-   [
-    27,
-    "בן82 ללא מחלות רקע ידועות וללא טיפול תרופתי קבוע .פיתח פרפור פרוזדורים לאחרונה. "
+    "מה הסיבה השכיחה ביותר לחום מסיבה ש( אינה ברורהFUO ? ) בגיל המבוגר"
    ],
    [
     29,
     "בן85 , גר לבד ו, תשוש בתפקודו ו מקבל עזרה ממטפלת6 .שעות לשבוע בעל השכלה .גבוהה. "
    ],
    [
-    35,
-    "בן84 , ,עצמאי ושמור קוגניטיבית .ברקע סכרת, יתר לחץ דם מתלונן על חולשה והרגשה כלל"
-   ],
-   [
-    36,
-    "בן83 .אמור לעבור בעוד חודש ניתוח אלקטיבי של תיקון הרניה מפשעתית מימין ,ברקע: מחל"
-   ],
-   [
     37,
     "חולה בן71 ,דייר הוסטל, הופנה ל חדר מיון עקב חולשה כללית , נפילות חוזרות , רעד . "
-   ],
-   [
-    40,
-    "בן88, סובל מפצע לחץ בטרוכנטר ימין. ראה תמונה2 . .הוא מטופל בביתו ע\"י משפחתו המעו"
    ],
    [
     44,
@@ -1391,10 +933,6 @@
    [
     45,
     "בת71 .ללא מחלות רקע ,לא נוטלת תרופות קבועות, אינה מעשנת ולא שותה אלכוהול שמורה ק"
-   ],
-   [
-    61,
-    "מטופלת בת73 , עם רקע של נפילות חוזרות. בבדיקה מתהלכת על בסיס רחב, מסתכלת למטה לכ"
    ],
    [
     65,
@@ -1410,31 +948,10 @@
    ],
    [
     76,
-    "תופעות בשימוש ארוך טווח ב- PPI's :כוללות .א עליה בסיכון לטרנספורמציה נאופלסטית ש"
-   ],
-   [
-    83,
-    "בת 82 ברקע דמנציה עם הפרעות התנהגות קשות. דיירת מחלקה לתשושי נפש. מטופלת בין השא"
-   ],
-   [
-    87,
-    "בת86, תשושה בתפקודה וסובלת מדמנציה עם הפרעות התנהגות. מתגוררת לבדה ונעזרת במטפלת"
+    "תופעות בשימוש ארוך טווח ב- PPI's :כוללות"
    ]
   ],
-  "low_confidence": [
-   {
-    "q_num": 38,
-    "idx": 892,
-    "sim": 0.655,
-    "tag": "2023-ב"
-   },
-   {
-    "q_num": 68,
-    "idx": 917,
-    "sim": 0.652,
-    "tag": "2023-ב"
-   }
-  ],
+  "low_confidence": [],
   "duplicates": [
    {
     "q_num": 1,
@@ -1501,7 +1018,7 @@
     "matches": [
      [
       866,
-      "2023-ב",
+      "יוני 21",
       1.0
      ],
      [
@@ -1531,7 +1048,7 @@
     "matches": [
      [
       869,
-      "2023-ב",
+      "יוני 21",
       1.0
      ],
      [
@@ -1561,7 +1078,7 @@
     "matches": [
      [
       874,
-      "2023-ב",
+      "יוני 21",
       0.9339019189765458
      ],
      [
@@ -1576,7 +1093,7 @@
     "matches": [
      [
       919,
-      "2023-ב",
+      "יוני 21",
       1.0
      ],
      [
@@ -1614,7 +1131,7 @@
     "q_num": 12,
     "idx": 869,
     "ds_q_len": 37,
-    "tag": "2023-ב"
+    "tag": "יוני 21"
    },
    {
     "q_num": 41,
