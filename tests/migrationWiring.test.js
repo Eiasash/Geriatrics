@@ -132,50 +132,155 @@ describe("_rqMain → _rqm* helpers", () => {
 //   2. A multi-line template literal swallows a function declaration (e.g.
 //      _rlFooter ended up inside an unterminated `…` string).
 // Both bugs shipped in v9.50 and broke the Library tab. The regex-based
-// "exists" checks above could not detect them. These tests execute the
-// library helper block in isolation and verify top-level scope.
+// "exists" checks above could not detect them. These tests slice each
+// orchestrator's helper block, evaluate it in isolation, and assert
+// typeof === "function" at global scope.
 
-describe("runtime scope — library helpers are top-level functions", () => {
-  const LIB_FNS = ["_rlHeader","_rlHazzard","_rlHarrison","_rlLaws","_rlArticles","_rlExams","_rlFooter","renderLibrary"];
-  let libCode;
-  beforeAll(() => {
-    const lines = scriptContent.split("\n");
-    let start = -1;
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i].includes("// ===== LIBRARY HELPERS")) { start = i; break; }
-    }
-    let inRender = false, depth = 0, end = -1;
-    for (let i = start; i < lines.length; i++) {
-      if (/^function renderLibrary\(\)/.test(lines[i])) { inRender = true; depth = 0; }
-      if (inRender) {
-        for (const c of lines[i]) {
-          if (c === "{") depth++;
-          else if (c === "}") { depth--; if (depth === 0) { end = i; break; } }
-        }
-        if (end !== -1) break;
+function sliceHelperBlock(scriptContent, startMarker, orchestratorName) {
+  const lines = scriptContent.split("\n");
+  let start = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes(startMarker)) { start = i; break; }
+  }
+  if (start < 0) return null;
+  const re = new RegExp(`^function\\s+${orchestratorName}\\s*\\(`);
+  let inOrch = false, depth = 0, end = -1;
+  for (let i = start; i < lines.length; i++) {
+    if (re.test(lines[i])) { inOrch = true; depth = 0; }
+    if (inOrch) {
+      for (const c of lines[i]) {
+        if (c === "{") depth++;
+        else if (c === "}") { depth--; if (depth === 0) { end = i; break; } }
       }
+      if (end !== -1) break;
     }
-    libCode = lines.slice(start, end + 1).join("\n");
-  });
+  }
+  if (end < 0) return null;
+  return lines.slice(start, end + 1).join("\n");
+}
 
-  for (const name of LIB_FNS) {
-    it(`${name} is a top-level function`, () => {
-      const harness = `
-        let libSec='haz-pdf', hazChOpen=null, _hazData=null, _hazLoading=false;
-        let harChOpen=null, _harData=null, _harLoading=false;
-        const TOPIC_REF={}, QZ=[], HAZ_CHAPTERS={}, HAZZARD_MARKED_PARTS=[];
-        const SYL_HAR_ALL=[], SYL_HAR_BASE=[];
-        const SYL_LAWS=[], SYL_ARTICLES=[], SYL_EXAMS=[];
-        function getTopicStats(){return{};}
-        ${libCode}
-        return typeof ${name};
-      `;
-      const t = new Function(harness)();
-      expect(t).toBe("function");
+// Permissive harness: any unknown global resolves to a chainable stub.
+// This lets us evaluate helper blocks without stubbing every app global
+// by hand. We only care about scope (typeof === "function"), not behavior.
+function buildScopeHarness(helperBlock, targetName) {
+  return `
+    const __stubHandler = {
+      get(target, prop) {
+        if (prop === Symbol.toPrimitive || prop === "toString" || prop === "valueOf") {
+          return () => "";
+        }
+        if (!(prop in target)) {
+          target[prop] = new Proxy(function(){ return new Proxy({}, __stubHandler); }, __stubHandler);
+        }
+        return target[prop];
+      },
+      set(target, prop, value) { target[prop] = value; return true; },
+      has() { return true; },
+      apply() { return new Proxy({}, __stubHandler); },
+    };
+    // Minimal concrete globals that helpers commonly destructure or iterate
+    let tab="quiz", qi=0, sel=null, ans=false, pool=[], filt="all", topicFilt=-1;
+    let examMode=false, examTimer=null, examSec=0;
+    let onCallMode=false, flipRevealed=false;
+    let timedMode=false, timedSec=90, timedInt=null, timedPaused=false;
+    let _optShuffle=null, _sessionSaved=false, _sessionOk=0, _sessionNo=0;
+    let learnSub="study", moreSub="calc", calcView="calc", libSec="haz-pdf";
+    let hazChOpen=null, _hazData=null, _hazLoading=false;
+    let harChOpen=null, _harData=null, _harLoading=false;
+    const S = new Proxy({sr:{}, dark:false, studyMode:false, streak:0}, __stubHandler);
+    const QZ = [];
+    const TOPIC_REF = {}, TOPICS = [], EXAM_FREQ = [], TABS = [];
+    const HAZ_CHAPTERS = {}, HAZZARD_MARKED_PARTS = [];
+    const SYL_HAR_ALL=[], SYL_HAR_BASE=[], SYL_LAWS=[], SYL_ARTICLES=[], SYL_EXAMS=[];
+    const NOTES = [], DRUGS = [], FLASHCARDS = [], CHANGELOG = {};
+    // All other globals auto-stub via Proxy:
+    const _globals = new Proxy({}, __stubHandler);
+    const getTopicStats = () => ({}), getDueQuestions = () => [], getStudyStreak = () => 0;
+    const getWeakTopics = () => [], calcEstScore = () => null;
+    const srScore = () => 0, isExamTrap = () => false, getOptShuffle = () => null;
+    const sanitize = (x) => String(x||""), fmtT = (x) => String(x||"");
+    const save = () => {}, trackDailyActivity = () => {}, trackChapterRead = () => {};
+    const buildPool = () => {}, buildMockExamPool = () => [], buildRescuePool = () => [];
+    const check = () => {}, next = () => {}, pick = () => {};
+    const render = () => {}, callAI = () => Promise.resolve("");
+    ${helperBlock}
+    return typeof ${targetName};
+  `;
+}
+
+function canEvalScope(helperBlock, targetName) {
+  try {
+    const harness = buildScopeHarness(helperBlock, targetName);
+    const result = new Function(harness)();
+    return { ok: true, type: result };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+}
+
+describe("runtime scope — all decomposed helpers are top-level functions", () => {
+  const FAMILIES = [
+    {
+      marker: "// ===== LIBRARY HELPERS",
+      orchestrator: "renderLibrary",
+      helpers: ["_rlHeader","_rlHazzard","_rlHarrison","_rlLaws","_rlArticles","_rlExams","_rlFooter"],
+    },
+    {
+      marker: "// ===== CALCULATOR HELPERS",
+      orchestrator: "renderCalc",
+      helpers: ["_rcCrCl","_rcChads","_rcCurb","_rcGds","_rcBraden","_rcPadua","_rcKatz","_rcLawton","_rcMna","_rcCfs","_rcNorton","_rcMorse"],
+    },
+    {
+      marker: "// ===== QUIZ HELPERS",
+      orchestrator: "renderQuiz",
+      helpers: ["_rqSuddenDeath","_rqMain"],
+    },
+    {
+      marker: "// ===== QUIZ MAIN HELPERS",
+      orchestrator: "_rqMain",
+      helpers: ["_rqmQuestion","_rqmControls","_rqmTeachBack","_rqmExplain","_rqmFooter"],
+    },
+    {
+      marker: "// ===== TRACK HELPERS",
+      orchestrator: "renderTrack",
+      helpers: ["_rtTop","_rtMid","_rtProgress","_rtFooter"],
+    },
+  ];
+
+  for (const family of FAMILIES) {
+    describe(`${family.orchestrator} family`, () => {
+      let block;
+      beforeAll(() => {
+        block = sliceHelperBlock(scriptContent, family.marker, family.orchestrator);
+        if (!block) throw new Error(`Could not slice block for marker "${family.marker}" + "${family.orchestrator}"`);
+      });
+
+      for (const helper of family.helpers) {
+        it(`${helper} is a top-level function (not nested / not swallowed by template)`, () => {
+          const r = canEvalScope(block, helper);
+          if (!r.ok) throw new Error(`Harness eval failed: ${r.error}`);
+          expect(r.type).toBe("function");
+        });
+      }
+
+      it(`${family.orchestrator} is a top-level function`, () => {
+        const r = canEvalScope(block, family.orchestrator);
+        if (!r.ok) throw new Error(`Harness eval failed: ${r.error}`);
+        expect(r.type).toBe("function");
+      });
     });
   }
+});
 
-  it("renderLibrary runs for every libSec value without throwing", () => {
+// Additional: actually exercise renderLibrary end-to-end (the only one
+// self-contained enough to run through with minimal stubs).
+describe("runtime exec — renderLibrary runs without throwing", () => {
+  let libCode;
+  beforeAll(() => {
+    libCode = sliceHelperBlock(scriptContent, "// ===== LIBRARY HELPERS", "renderLibrary");
+  });
+
+  it("runs for every libSec value, no 'undefined' in output", () => {
     for (const sec of ["haz-pdf","harrison","laws","articles","exams"]) {
       const harness = `
         let libSec='${sec}', hazChOpen=null, _hazData=null, _hazLoading=false;
