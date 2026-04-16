@@ -4536,8 +4536,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.53';
+const APP_VERSION='9.54';
 const CHANGELOG={
+'9.54': ['36 תמונות קושרו לשאלות קיימות מ-Supabase (Jun22, Jun23, May24, Sep24, Jun25, 2023-ב) — 3.4% → 4.4% צפיפות תמונות', 'תמונות כוללות: ECG, צילומי CT מוח, רדיולוגיה, פריחות עוריות, כלי הערכה'],
 '9.53': ['Tests: extend runtime scope tests to all 5 decomposed render families (renderLibrary, renderCalc, renderQuiz, _rqMain, renderTrack) — catches declared-but-not-top-level function bugs across the whole codebase, not just Library. 76 → 115 migrationWiring tests.'],
 '9.52': ['Fix Library tab — _rlHazzard was nested inside _rlHeader and _rlFooter was swallowed by an unclosed template literal (both from v9.50 decomposition), causing renderLibrary to throw ReferenceError and the tab to appear unresponsive', 'Add runtime scope tests — catches declared-but-not-top-level function bugs that regex-match tests miss'],
 '9.51': ['Leaderboard: show real accuracy (correct/answered) instead of readiness-as-accuracy', 'Leaderboard: guard submit — require ≥20 answered + valid est. score (stops thin-data users polluting board with 60% default)', 'Leaderboard: defensive coercion on all displayed fields, res.ok check on submit'],
