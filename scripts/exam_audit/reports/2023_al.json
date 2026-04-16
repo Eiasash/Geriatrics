@@ -10,8 +10,8 @@
   "canonical_parsed": 88,
   "canonical_with_4_opts": 88,
   "answers_parsed": 100,
-  "questions_with_matches": 81,
-  "questions_without_matches": 7
+  "questions_with_matches": 83,
+  "questions_without_matches": 5
  },
  "findings": {
   "c_mismatches": [],
@@ -36,14 +36,6 @@
    [
     58,
     "מטופל הסובל מדמנציה עם קושי ניכר בתפקוד השפתי . המטופל מסוגל להבין משפטים פשוטים"
-   ],
-   [
-    67,
-    "?מה מתאר בצורה נכונה את השינויים הפיזיולוגים בהזדקנות הריאה"
-   ],
-   [
-    70,
-    "בן75 , שמור קוגניטיבית ועצמאי בתפקוד ו ,סובל מ סוכרת מאז גיל50 . ברקע מחלת לב אי"
    ]
   ],
   "low_confidence": [

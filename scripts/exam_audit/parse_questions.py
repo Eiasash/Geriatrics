@@ -84,19 +84,22 @@ def extract_question_text(full_text, start_pos, end_pos):
 def split_stem_options(q_text):
     """Split a question block into stem + list of 4 options.
     
-    Options are marked by Hebrew letters א/ב/ג/ד followed by period.
+    Handles two formats observed in IMA exams:
+      Modern: "א. text ב. text ג. text ד. text"  (letter, period)
+      Older:  ".א text .ב text .ג text .ד text"  (period, letter)
     """
-    # Find option markers — Hebrew letter followed by .
-    # Patterns seen: 'א .', 'א.', 'א. '
-    pattern = re.compile(r'([\u05d0-\u05d3])\s*\.\s')
-    marks = list(pattern.finditer(q_text))
+    # Try modern format first
+    pattern_modern = re.compile(r'([\u05d0-\u05d3])\s*\.\s')
+    marks = list(pattern_modern.finditer(q_text))
+    format_tag = 'modern'
+    if len([m for m in marks if m.group(1) in ('\u05d0','\u05d1','\u05d2','\u05d3')]) < 4:
+        # Try older format
+        pattern_older = re.compile(r'\.\s*([\u05d0-\u05d3])\s')
+        marks = list(pattern_older.finditer(q_text))
+        format_tag = 'older'
     if len(marks) < 4:
         return q_text, []
-    # First 4 marks define boundaries — but we need to pick non-spurious ones.
-    # Expect marks sequence: א, ב, ג, ד (indices 0,1,2,3)
-    # Heuristic: find the first א followed by ב followed by ג followed by ד in order
     letters = {'\u05d0':0, '\u05d1':1, '\u05d2':2, '\u05d3':3}
-    # Walk through marks, find monotonic א→ב→ג→ד sequence
     expected = 0
     selected = []
     for m in marks:
@@ -109,7 +112,6 @@ def split_stem_options(q_text):
                 break
     if len(selected) < 4:
         return q_text, []
-    # Split: stem ends at first option mark; options are between consecutive marks (plus tail)
     stem = q_text[:selected[0].start()].strip()
     stem = re.sub(r'\s*\?\s*$', '?', stem)
     options = []

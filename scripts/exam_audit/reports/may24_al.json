@@ -10,56 +10,11 @@
   "canonical_parsed": 100,
   "canonical_with_4_opts": 99,
   "answers_parsed": 100,
-  "questions_with_matches": 94,
-  "questions_without_matches": 6
+  "questions_with_matches": 98,
+  "questions_without_matches": 2
  },
  "findings": {
-  "c_mismatches": [
-   {
-    "q_num": 5,
-    "idx": 471,
-    "tag": "ספט 24",
-    "current_c": 2,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 0.916
-   },
-   {
-    "q_num": 27,
-    "idx": 492,
-    "tag": "ספט 24",
-    "current_c": 0,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 0.989
-   },
-   {
-    "q_num": 94,
-    "idx": 559,
-    "tag": "ספט 24",
-    "current_c": 2,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 1.0
-   },
-   {
-    "q_num": 96,
-    "idx": 561,
-    "tag": "ספט 24",
-    "current_c": 1,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   }
-  ],
+  "c_mismatches": [],
   "tag_mismatches": [
    {
     "q_num": 1,
@@ -1010,22 +965,6 @@
    [
     26,
     "איזה מהמטופלים הבאים עונה על הגדרתHEALTH CARE-ASSOCIATED PNEUMONIA ( HCAP ?) א. "
-   ],
-   [
-    36,
-    "בת92 , ברקעAORTIC STENOSIS . מאושפזת מזה שבועיים בבית חולים בשל דלקת .ריאות. עקב"
-   ],
-   [
-    89,
-    "בת82 . ברקע עודף משקל עםBMI = 32 , יתר לחץ דם, אי ספיקת כליות כרונית דרגה IV , ע"
-   ],
-   [
-    90,
-    "בן75 , דייר מחלקה סיעודית. ברקע דמנציה וסקולרית. מזה כחודש פצע לחץ, כעת בדרגה3 ב"
-   ],
-   [
-    91,
-    "בן80 , שמור קוגניטיבית ,ועצמאי בתפקודBMI = 30 , ברקע מחלת לב איסכמית עם צנתור אח"
    ]
   ],
   "low_confidence": [],
