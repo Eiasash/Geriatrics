@@ -2340,7 +2340,7 @@ try{
 }
 async function fetchLeaderboard(){
 try{
-  const res=await fetch(SUPA_URL+'/rest/v1/shlav_leaderboard?select=uid,answered,correct,streak,readiness,ts&order=readiness.desc&limit=20',{
+  const res=await fetch(SUPA_URL+'/rest/v1/shlav_leaderboard?select=uid,answered,correct,streak,readiness,accuracy,ts&order=accuracy.desc.nullslast,answered.desc&limit=20',{
     headers:{'apikey':SUPA_ANON}
   });
   return await res.json();
@@ -2459,13 +2459,13 @@ h+=`<span class="pill ${libSec===t.id?'on':''}" style="white-space:nowrap;font-s
 });
 h+=`</div>`;
 
-// ===== HAZZARD ALL PDFs =====
-if(libSec==='haz-pdf'){
 return h;
 }
+
+// ===== HAZZARD IN-APP READER =====
 function _rlHazzard(){
 let h='';
-// ===== HAZZARD IN-APP READER =====
+if(libSec!=='haz-pdf')return h;
 if(hazChOpen!==null&&_hazData&&_hazData[String(hazChOpen)]){
 const ch=_hazData[String(hazChOpen)];
 const allHazChNums=Object.keys(_hazData).map(Number).sort((a,b)=>a-b);
@@ -2556,11 +2556,9 @@ ${p.exam?`<span style="font-size:9px;color:#dc2626;font-weight:700">${p.exam.inc
 });
 h+=`</div></div>`;
 }
-}
-
-
 return h;
 }
+
 function _rlHarrison(){
 let h='';
 // ===== HARRISON IN-APP READER =====
@@ -2684,12 +2682,11 @@ h+=`<div onclick="tab='quiz';filt='${yr}';buildPool();render()" style="display:f
 h+=`</div>`;
 }
 
-h+=`<div style="text-align:center;margin-top:12px;font-size:9px;color:rgb(var(--fg3))">
 return h;
 }
 function _rlFooter(){
 let h='';
-<a href="https://ima-contentfiles.s3.amazonaws.com/P005-2026.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">P005-2026 Syllabus ↗</a></div>`;
+h+=`<div style="text-align:center;margin-top:12px;font-size:9px;color:rgb(var(--fg3))"><a href="https://ima-contentfiles.s3.amazonaws.com/P005-2026.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">P005-2026 Syllabus ↗</a></div>`;
 h+=`<div style="text-align:center;margin-top:8px;padding:8px;font-size:9px;color:rgb(var(--fg3));line-height:1.5">
 صدقة جارية الى من نحب<br>Ceaseless Charity — To the People That We Love</div>`;
 return h;
@@ -4539,8 +4536,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.51';
+const APP_VERSION='9.52';
 const CHANGELOG={
+'9.52': ['Fix Library tab — _rlHazzard was nested inside _rlHeader and _rlFooter was swallowed by an unclosed template literal (both from v9.50 decomposition), causing renderLibrary to throw ReferenceError and the tab to appear unresponsive', 'Add runtime scope tests — catches declared-but-not-top-level function bugs that regex-match tests miss'],
 '9.51': ['Leaderboard: show real accuracy (correct/answered) instead of readiness-as-accuracy', 'Leaderboard: guard submit — require ≥20 answered + valid est. score (stops thin-data users polluting board with 60% default)', 'Leaderboard: defensive coercion on all displayed fields, res.ok check on submit'],
 '9.50': ['Fix data loading failure — move _dataPromise before migrateToIDB to resolve TDZ error', 'Questions now load reliably on all devices'],
 '9.49': ['Fix variable scoping bugs in decomposed render helpers (_rtMid, _rtProgress, _rqmQuestion, _rqmExplain)', 'Add missing variable declarations for bk, done, pct, bkCount, dueN, _shuf in helper functions'],

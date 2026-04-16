@@ -122,3 +122,75 @@ describe("_rqMain → _rqm* helpers", () => {
   for (const n of H) { it(`${n} exists`, () => { expect(scriptContent).toMatch(new RegExp(`function\\s+${n}\\s*\\(`)); }); }
   it("_rqMain calls all helpers", () => { const b = extractBody(scriptContent, "_rqMain"); for (const n of H) expect(b).toContain(n+"("); });
 });
+
+// ─── Runtime scope tests ─────────────────────────────────────────────
+// Catches bugs where a function is DECLARED inside the script (so a regex
+// match passes) but is not actually visible at top-level scope. This
+// happens when:
+//   1. A nested function declaration gets misplaced inside a parent (e.g.
+//      _rlHazzard ended up inside _rlHeader due to a wrong brace).
+//   2. A multi-line template literal swallows a function declaration (e.g.
+//      _rlFooter ended up inside an unterminated `…` string).
+// Both bugs shipped in v9.50 and broke the Library tab. The regex-based
+// "exists" checks above could not detect them. These tests execute the
+// library helper block in isolation and verify top-level scope.
+
+describe("runtime scope — library helpers are top-level functions", () => {
+  const LIB_FNS = ["_rlHeader","_rlHazzard","_rlHarrison","_rlLaws","_rlArticles","_rlExams","_rlFooter","renderLibrary"];
+  let libCode;
+  beforeAll(() => {
+    const lines = scriptContent.split("\n");
+    let start = -1;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes("// ===== LIBRARY HELPERS")) { start = i; break; }
+    }
+    let inRender = false, depth = 0, end = -1;
+    for (let i = start; i < lines.length; i++) {
+      if (/^function renderLibrary\(\)/.test(lines[i])) { inRender = true; depth = 0; }
+      if (inRender) {
+        for (const c of lines[i]) {
+          if (c === "{") depth++;
+          else if (c === "}") { depth--; if (depth === 0) { end = i; break; } }
+        }
+        if (end !== -1) break;
+      }
+    }
+    libCode = lines.slice(start, end + 1).join("\n");
+  });
+
+  for (const name of LIB_FNS) {
+    it(`${name} is a top-level function`, () => {
+      const harness = `
+        let libSec='haz-pdf', hazChOpen=null, _hazData=null, _hazLoading=false;
+        let harChOpen=null, _harData=null, _harLoading=false;
+        const TOPIC_REF={}, QZ=[], HAZ_CHAPTERS={}, HAZZARD_MARKED_PARTS=[];
+        const SYL_HAR_ALL=[], SYL_HAR_BASE=[];
+        const SYL_LAWS=[], SYL_ARTICLES=[], SYL_EXAMS=[];
+        function getTopicStats(){return{};}
+        ${libCode}
+        return typeof ${name};
+      `;
+      const t = new Function(harness)();
+      expect(t).toBe("function");
+    });
+  }
+
+  it("renderLibrary runs for every libSec value without throwing", () => {
+    for (const sec of ["haz-pdf","harrison","laws","articles","exams"]) {
+      const harness = `
+        let libSec='${sec}', hazChOpen=null, _hazData=null, _hazLoading=false;
+        let harChOpen=null, _harData=null, _harLoading=false;
+        const TOPIC_REF={}, QZ=[], HAZ_CHAPTERS={}, HAZZARD_MARKED_PARTS=[];
+        const SYL_HAR_ALL=[], SYL_HAR_BASE=[];
+        const SYL_LAWS=[], SYL_ARTICLES=[], SYL_EXAMS=[];
+        function getTopicStats(){return{};}
+        ${libCode}
+        const r = renderLibrary();
+        return { len: r.length, hasUndef: r.includes('undefined') };
+      `;
+      const r = new Function(harness)();
+      expect(r.len).toBeGreaterThan(100);
+      expect(r.hasUndef).toBe(false);
+    }
+  });
+});
