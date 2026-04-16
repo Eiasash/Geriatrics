@@ -117,6 +117,26 @@ def main():
     
     print(f"After dedup: {len(unique)} unique Qs")
     
+    # IDEMPOTENCY GUARD: reject any candidate that already exists in dataset.
+    # Prevents duplicate entries on repeated --apply runs.
+    existing_norms = set()
+    for q in qs:
+        ek = norm((q.get('q','') or '') + ' '.join(q.get('o',[]) or []))
+        if len(ek) >= 50:
+            existing_norms.add(ek[:500])
+    already_in_dataset = []
+    truly_new = []
+    for cand in unique:
+        exam_id, q_num, cq, tag, accepted = cand
+        cq_norm = norm(cq['q'] + ' '.join(cq['o']))[:500]
+        if cq_norm in existing_norms:
+            already_in_dataset.append(cand)
+            continue
+        truly_new.append(cand)
+    if already_in_dataset:
+        print(f"Skipping {len(already_in_dataset)} candidates already in dataset")
+    unique = truly_new
+    
     # Build new entries
     new_entries = []
     for exam_id, q_num, cq, tag, accepted in unique:
