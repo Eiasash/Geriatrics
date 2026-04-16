@@ -7,10 +7,10 @@
  ],
  "stats": {
   "canonical_parsed": 100,
-  "canonical_with_4_opts": 99,
+  "canonical_with_4_opts": 100,
   "answers_parsed": 100,
-  "questions_with_matches": 99,
-  "questions_without_matches": 1
+  "questions_with_matches": 100,
+  "questions_without_matches": 0
  },
  "findings": {
   "c_mismatches": [],
@@ -25,12 +25,7 @@
     "sim": 1.0
    }
   ],
-  "no_match": [
-   [
-    47,
-    "ל מי מהמטופלים הבאים יש להמליץ על החלפת מסתם א אורטלי ( לכולם תפקוד חדר שמאל )תק"
-   ]
-  ],
+  "no_match": [],
   "low_confidence": [],
   "duplicates": [
    {
