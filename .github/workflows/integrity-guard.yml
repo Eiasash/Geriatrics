@@ -238,11 +238,28 @@ jobs:
           for m in arrow_funcs:
               # Find the line number
               line_num = html[:m.start()].count('\n') + 1
-              # Check if the next function declaration is too close (< 3 lines)
+              # Walk forward with brace balance to find where the arrow body closes.
+              # If we find the matching "}" before any "function X(" declaration AND
+              # before >2 newlines, the one-liner is valid. Otherwise it's truncated.
+              depth = 1
+              i = m.end()
+              limit = min(len(html), m.end() + 2000)
+              closed_at = -1
+              while i < limit:
+                  ch = html[i]
+                  if ch == '{': depth += 1
+                  elif ch == '}':
+                      depth -= 1
+                      if depth == 0:
+                          closed_at = i
+                          break
+                  i += 1
               after = html[m.end():m.end()+500]
               fn_match = re.search(r'^function\s+\w+', after, re.MULTILINE)
+              # Only flag if body never closes OR closes AFTER the next function decl
               if fn_match and after[:fn_match.start()].count('\n') < 2:
-                  errors.append(f'Line ~{line_num}: Arrow function in .map/.filter appears truncated — next function starts immediately')
+                  if closed_at < 0 or closed_at > m.end() + fn_match.start():
+                      errors.append(f'Line ~{line_num}: Arrow function in .map/.filter appears truncated — next function starts immediately')
 
           if errors:
               print(f'FATAL: {len(errors)} truncated code patterns detected:', file=sys.stderr)
