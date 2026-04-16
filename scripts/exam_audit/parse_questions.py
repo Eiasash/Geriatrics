@@ -87,16 +87,18 @@ def split_stem_options(q_text):
     Handles two formats observed in IMA exams:
       Modern: "א. text ב. text ג. text ד. text"  (letter, period)
       Older:  ".א text .ב text .ג text .ד text"  (period, letter)
+    
+    Also truncates the last option at the next question marker to prevent
+    bleed when the PDF extraction flows past question boundaries (common
+    in 2022/2023 exams).
     """
     # Try modern format first
     pattern_modern = re.compile(r'([\u05d0-\u05d3])\s*\.\s')
     marks = list(pattern_modern.finditer(q_text))
-    format_tag = 'modern'
     if len([m for m in marks if m.group(1) in ('\u05d0','\u05d1','\u05d2','\u05d3')]) < 4:
         # Try older format
         pattern_older = re.compile(r'\.\s*([\u05d0-\u05d3])\s')
         marks = list(pattern_older.finditer(q_text))
-        format_tag = 'older'
     if len(marks) < 4:
         return q_text, []
     letters = {'\u05d0':0, '\u05d1':1, '\u05d2':2, '\u05d3':3}
@@ -119,6 +121,14 @@ def split_stem_options(q_text):
         opt_start = selected[i].end()
         opt_end = selected[i+1].start() if i+1 < 4 else len(q_text)
         opt = q_text[opt_start:opt_end].strip()
+        # For the last option (ד), truncate at next question marker to
+        # prevent bleed into Q(n+1) content. Match patterns: "N .", "N. ", ".N "
+        if i == 3:
+            # Find next Q marker: "<digit-1-3> ." at start or after space
+            # Conservative: require digit(s) followed by dot with space/letter
+            trunc_match = re.search(r'\s\d{1,3}\s*\.\s*[\u0590-\u05FFa-zA-Z?]', opt)
+            if trunc_match:
+                opt = opt[:trunc_match.start()].strip()
         opt = re.sub(r'\s*\?\s*$', '', opt)
         options.append(opt)
     return stem, options
