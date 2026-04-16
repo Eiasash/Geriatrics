@@ -2312,22 +2312,31 @@ alert('Question added! ('+QZ.length+' total). Note: pending server sync.');
 }
 
 // ===== FEATURE 8: LEADERBOARD =====
+// Guard: calcEstScore() returns a 60% neutral default for topics with <3 answers.
+// For users with thin data, readiness collapses to ~60, polluting the global board.
+// Require min answered + real calcEstScore result before submitting.
+const LB_MIN_ANSWERED=20;
 async function submitLeaderboardScore(){
 const totalAnswered=Object.values(S.sr||{}).reduce((a,s)=>a+(s.tot||0),0);
 const totalCorrect=Object.values(S.sr||{}).reduce((a,s)=>a+(s.ok||0),0);
+if(totalAnswered<LB_MIN_ANSWERED)return{skipped:'thin_data',answered:totalAnswered};
+const est=calcEstScore();
+if(est==null)return{skipped:'no_est',answered:totalAnswered};
 const streak=getStudyStreak();
-const readiness=calcEstScore()||0;
+const readiness=est;
 // Anonymous user hash
 let uid=localStorage.getItem('samega_uid');
 if(!uid){uid='u'+Math.random().toString(36).slice(2,10);localStorage.setItem('samega_uid',uid);}
 const payload={uid,answered:totalAnswered,correct:totalCorrect,streak,readiness,ts:new Date().toISOString()};
 try{
-  await fetch(SUPA_URL+'/rest/v1/shlav_leaderboard',{
+  const res=await fetch(SUPA_URL+'/rest/v1/shlav_leaderboard',{
     method:'POST',
     headers:{'Content-Type':'application/json','apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON,'Prefer':'resolution=merge-duplicates'},
     body:JSON.stringify(payload)
   });
-}catch(e){console.warn('Leaderboard submit failed',e);}
+  if(!res.ok){console.warn('Leaderboard submit non-ok',res.status);return{submitted:false,status:res.status};}
+  return{submitted:true};
+}catch(e){console.warn('Leaderboard submit failed',e);return{submitted:false,error:String(e)};}
 }
 async function fetchLeaderboard(){
 try{
@@ -2351,11 +2360,17 @@ if(!data.length){html='<div style="font-size:10px;color:rgb(var(--fg3));text-ali
 else{
 data.forEach((r,i)=>{
   const isMe=r.uid===myUid;
+  const ans=Math.max(0,Number(r.answered)||0);
+  const cor=Math.max(0,Number(r.correct)||0);
+  const rd=Math.max(0,Math.min(100,Number(r.readiness)||0));
+  const acc=ans>0?Math.round((cor/ans)*100):null;
+  const accStr=acc==null?'—':(acc+'%');
   html+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgb(var(--brd));${isMe?'background:rgb(var(--blue-bg));border-radius:8px;padding:6px 8px;margin:-2px -8px':''}">
   <span style="font-size:12px;font-weight:800;color:${i<3?['#f59e0b','#94a3b8','#d97706'][i]:'#64748b'};min-width:20px">${i+1}</span>
   <div style="flex:1;font-size:10px;font-weight:${isMe?'700':'400'}">${isMe?'You ⭐':'User '+sanitize(r.uid).slice(0,4)}</div>
-  <span style="font-size:10px;color:rgb(var(--fg2))">${sanitize(String(r.answered))} Qs</span>
-  <span style="font-size:10px;font-weight:700;color:${Number(r.readiness)>=60?'#059669':'#d97706'}">${sanitize(String(r.readiness))}%</span>
+  <span style="font-size:10px;color:rgb(var(--fg2))">${sanitize(String(ans))} Qs</span>
+  <span style="font-size:10px;font-weight:700;color:${acc!=null&&acc>=70?'#059669':acc!=null&&acc>=50?'#d97706':'#64748b'}" title="Accuracy">${accStr}</span>
+  <span style="font-size:10px;color:rgb(var(--fg3))" title="Readiness (est. exam score)">~${sanitize(String(rd))}</span>
   <span style="font-size:10px">🔥${sanitize(String(r.streak))}d</span>
   </div>`;
 });
@@ -4524,8 +4539,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.50';
+const APP_VERSION='9.51';
 const CHANGELOG={
+'9.51': ['Leaderboard: show real accuracy (correct/answered) instead of readiness-as-accuracy', 'Leaderboard: guard submit — require ≥20 answered + valid est. score (stops thin-data users polluting board with 60% default)', 'Leaderboard: defensive coercion on all displayed fields, res.ok check on submit'],
 '9.50': ['Fix data loading failure — move _dataPromise before migrateToIDB to resolve TDZ error', 'Questions now load reliably on all devices'],
 '9.49': ['Fix variable scoping bugs in decomposed render helpers (_rtMid, _rtProgress, _rqmQuestion, _rqmExplain)', 'Add missing variable declarations for bk, done, pct, bkCount, dueN, _shuf in helper functions'],
     '9.48': [
