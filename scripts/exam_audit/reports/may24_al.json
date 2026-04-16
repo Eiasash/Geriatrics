@@ -14,8 +14,30 @@
   "questions_without_matches": 1
  },
  "findings": {
-  "c_mismatches": [],
+  "c_mismatches": [
+   {
+    "q_num": 4,
+    "idx": 470,
+    "tag": "ספט 24",
+    "current_c": 0,
+    "accepted": [
+     2
+    ],
+    "recommended_c": 2,
+    "sim": 0.674
+   }
+  ],
   "tag_mismatches": [
+   {
+    "q_num": 4,
+    "idx": 470,
+    "current_tag": "ספט 24",
+    "expected_tags": [
+     "מאי 24",
+     "May24"
+    ],
+    "sim": 0.674
+   },
    {
     "q_num": 16,
     "idx": 482,
@@ -53,7 +75,14 @@
     "איזה מהמטופלים הבאים עונה על הגדרתHEALTH CARE-ASSOCIATED PNEUMONIA ( HCAP ?) א. "
    ]
   ],
-  "low_confidence": [],
+  "low_confidence": [
+   {
+    "q_num": 4,
+    "idx": 470,
+    "sim": 0.674,
+    "tag": "ספט 24"
+   }
+  ],
   "duplicates": [],
   "missing_ti": [],
   "truncated_q": [
