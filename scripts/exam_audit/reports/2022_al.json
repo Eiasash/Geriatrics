@@ -10,22 +10,11 @@
   "canonical_parsed": 94,
   "canonical_with_4_opts": 80,
   "answers_parsed": 100,
-  "questions_with_matches": 83,
-  "questions_without_matches": 11
+  "questions_with_matches": 85,
+  "questions_without_matches": 9
  },
  "findings": {
   "c_mismatches": [
-   {
-    "q_num": 68,
-    "idx": 62,
-    "tag": "2022",
-    "current_c": 0,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 0.807
-   },
    {
     "q_num": 79,
     "idx": 73,
@@ -59,14 +48,6 @@
    [
     24,
     "בת76 ., עצמאית וללא ירידה קוגניטיבית, ברקע סוכרת, יתר לחץ דם ואוסטאוארטריטיס תרו"
-   ],
-   [
-    31,
-    "בן85 התקבל למחלקה פנימית גריאטרית מאשפוז יום אונקולוגי עקב ירידה במצב ההכרה. ברק"
-   ],
-   [
-    59,
-    "בן82, עצמאי בתפק ודו שמור קוגניטיבית, במעקב במרפאה נפרולוגית עקב אי ספיקה .כליית"
    ],
    [
     61,

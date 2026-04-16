@@ -10,112 +10,11 @@
   "canonical_parsed": 150,
   "canonical_with_4_opts": 149,
   "answers_parsed": 150,
-  "questions_with_matches": 141,
-  "questions_without_matches": 9
+  "questions_with_matches": 147,
+  "questions_without_matches": 3
  },
  "findings": {
-  "c_mismatches": [
-   {
-    "q_num": 5,
-    "idx": 471,
-    "tag": "ספט 24",
-    "current_c": 2,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 0.916
-   },
-   {
-    "q_num": 27,
-    "idx": 492,
-    "tag": "ספט 24",
-    "current_c": 0,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 0.989
-   },
-   {
-    "q_num": 94,
-    "idx": 559,
-    "tag": "ספט 24",
-    "current_c": 2,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 1.0
-   },
-   {
-    "q_num": 96,
-    "idx": 561,
-    "tag": "ספט 24",
-    "current_c": 1,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 112,
-    "idx": 577,
-    "tag": "ספט 24",
-    "current_c": 0,
-    "accepted": [
-     1,
-     3
-    ],
-    "recommended_c": 1,
-    "sim": 0.918
-   },
-   {
-    "q_num": 114,
-    "idx": 579,
-    "tag": "ספט 24",
-    "current_c": 1,
-    "accepted": [
-     2
-    ],
-    "recommended_c": 2,
-    "sim": 1.0
-   },
-   {
-    "q_num": 125,
-    "idx": 590,
-    "tag": "ספט 24",
-    "current_c": 2,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 1.0
-   },
-   {
-    "q_num": 133,
-    "idx": 598,
-    "tag": "ספט 24",
-    "current_c": 2,
-    "accepted": [
-     0
-    ],
-    "recommended_c": 0,
-    "sim": 0.995
-   },
-   {
-    "q_num": 141,
-    "idx": 606,
-    "tag": "ספט 24",
-    "current_c": 0,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 0.733
-   }
-  ],
+  "c_mismatches": [],
   "tag_mismatches": [
    {
     "q_num": 1,
@@ -1538,32 +1437,8 @@
     "איזה מהמטופלים הבאים עונה על הגדרתHEALTH CARE-ASSOCIATED PNEUMONIA ( HCAP ?) א. "
    ],
    [
-    36,
-    "בת92 , ברקעAORTIC STENOSIS . מאושפזת מזה שבועיים בבית חולים בשל דלקת .ריאות. עקב"
-   ],
-   [
-    89,
-    "בת82 . ברקע עודף משקל עםBMI = 32 , יתר לחץ דם, אי ספיקת כליות כרונית דרגה IV , ע"
-   ],
-   [
-    90,
-    "בן75 , דייר מחלקה סיעודית. ברקע דמנציה וסקולרית. מזה כחודש פצע לחץ, כעת בדרגה3 ב"
-   ],
-   [
-    91,
-    "בן80 , שמור קוגניטיבית ,ועצמאי בתפקודBMI = 30 , ברקע מחלת לב איסכמית עם צנתור אח"
-   ],
-   [
-    113,
-    "בת75 , ברקע סוכרת, יתר לחץ דם, מחלת לב איסכמית. פונה בשל כאבים בחזה בעלי אופי לא"
-   ],
-   [
     115,
     "?איזו אוושה מתגברת בזמן וולסלבה"
-   ],
-   [
-    138,
-    "בת74. לפני כחודש, בשל כאבי גב עזים, נטלה טיפול ב- IBUPROFEN במשך שבועיים וקיבלה "
    ]
   ],
   "low_confidence": [

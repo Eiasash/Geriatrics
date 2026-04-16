@@ -10,45 +10,11 @@
   "canonical_parsed": 150,
   "canonical_with_4_opts": 150,
   "answers_parsed": 150,
-  "questions_with_matches": 144,
-  "questions_without_matches": 6
+  "questions_with_matches": 150,
+  "questions_without_matches": 0
  },
  "findings": {
-  "c_mismatches": [
-   {
-    "q_num": 88,
-    "idx": 459,
-    "tag": "ספט 24",
-    "current_c": 2,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 1.0
-   },
-   {
-    "q_num": 96,
-    "idx": 373,
-    "tag": "מאי 24",
-    "current_c": 2,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 1.0
-   },
-   {
-    "q_num": 128,
-    "idx": 405,
-    "tag": "מאי 24",
-    "current_c": 0,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 0.916
-   }
-  ],
+  "c_mismatches": [],
   "tag_mismatches": [
    {
     "q_num": 1,
@@ -1081,40 +1047,8 @@
     "sim": 0.966
    }
   ],
-  "no_match": [
-   [
-    23,
-    "בן70 מגיע בליווי אשתו למרפאה לבירור נפילות חוזרות מזה מספר חודשים. באנמנזה מספר "
-   ],
-   [
-    66,
-    "בן78 ,פונה למיון לבירור חולשה קיצונית, אילאוס, פוליאוריה, ואנורקסיה. ברקע סובל מ"
-   ],
-   [
-    107,
-    "בת74 :, בבדיקת גזים בדם בחדר המיון הממצאים הבאים מדד ויחידות מידה ערך לחולה ערכי"
-   ],
-   [
-    119,
-    "בת72 .מדווחת על נטיה מולדת לדמם בפעולות פולשניות ולידות. ללא דימומים ספונטנים :ב"
-   ],
-   [
-    139,
-    "בן71 , ברקעCardiac Cirrhosis , אי ספיקת כליות עם קריאטנין בסיס סביב2 mg/dL . מתא"
-   ],
-   [
-    143,
-    "בן64 בצום לצורך פעולה דחופה. מצורפות תוצאות בדיקות המעבדה שלו: מדד ויחידות מידה "
-   ]
-  ],
-  "low_confidence": [
-   {
-    "q_num": 31,
-    "idx": 437,
-    "sim": 0.72,
-    "tag": "ספט 24"
-   }
-  ],
+  "no_match": [],
+  "low_confidence": [],
   "duplicates": [
    {
     "q_num": 10,
@@ -1708,12 +1642,6 @@
     "q_num": 15,
     "idx": 430,
     "ds_q_len": 36,
-    "tag": "ספט 24"
-   },
-   {
-    "q_num": 31,
-    "idx": 437,
-    "ds_q_len": 32,
     "tag": "ספט 24"
    },
    {

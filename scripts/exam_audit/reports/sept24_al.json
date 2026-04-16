@@ -10,34 +10,11 @@
   "canonical_parsed": 100,
   "canonical_with_4_opts": 99,
   "answers_parsed": 100,
-  "questions_with_matches": 98,
-  "questions_without_matches": 2
+  "questions_with_matches": 100,
+  "questions_without_matches": 0
  },
  "findings": {
-  "c_mismatches": [
-   {
-    "q_num": 88,
-    "idx": 459,
-    "tag": "ספט 24",
-    "current_c": 2,
-    "accepted": [
-     3
-    ],
-    "recommended_c": 3,
-    "sim": 1.0
-   },
-   {
-    "q_num": 96,
-    "idx": 373,
-    "tag": "מאי 24",
-    "current_c": 2,
-    "accepted": [
-     1
-    ],
-    "recommended_c": 1,
-    "sim": 0.933
-   }
-  ],
+  "c_mismatches": [],
   "tag_mismatches": [
    {
     "q_num": 1,
@@ -610,24 +587,8 @@
     "sim": 0.979
    }
   ],
-  "no_match": [
-   [
-    23,
-    "ב ן70 מגיע בליווי אשתו למרפאה לבירור נפילות חוזרות מזה מספר חודשים. באנמנזה מספר"
-   ],
-   [
-    66,
-    "בן78 ,פונה למיון לבירור חולשה קיצונית, אילאוס, פוליאוריה, ואנורקסיה. ברקע סובל מ"
-   ]
-  ],
-  "low_confidence": [
-   {
-    "q_num": 31,
-    "idx": 437,
-    "sim": 0.72,
-    "tag": "ספט 24"
-   }
-  ],
+  "no_match": [],
+  "low_confidence": [],
   "duplicates": [
    {
     "q_num": 10,
@@ -1221,12 +1182,6 @@
     "q_num": 15,
     "idx": 430,
     "ds_q_len": 36,
-    "tag": "ספט 24"
-   },
-   {
-    "q_num": 31,
-    "idx": 437,
-    "ds_q_len": 32,
     "tag": "ספט 24"
    },
    {
