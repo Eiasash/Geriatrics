@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Belt-and-suspenders: catches the same failures ship-it catches, but for
+# commits made outside Claude (e.g., direct git commit in terminal).
+# Install: cp scripts/git-hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+#
+# Or globally: git config core.hooksPath scripts/git-hooks
+
+set -e
+
+# Only run checks on staged files (not entire working tree)
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$STAGED" ] && exit 0
+
+FAIL=0
+
+# 1. JSON validity on staged data/*.json
+for f in $(echo "$STAGED" | grep -E '^data/.*\.json$' || true); do
+  if ! node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" 2>/dev/null; then
+    echo "❌ pre-commit: $f is not valid JSON"
+    FAIL=1
+  fi
+done
+
+# 2. GRS leak
+if echo "$STAGED" | grep -qE '^data/'; then
+  if grep -lE '\bGRS\b|Geriatric Review Syllabus' $(echo "$STAGED" | grep -E '^data/.*\.json$') 2>/dev/null; then
+    echo "❌ pre-commit: GRS reference detected in staged data files"
+    FAIL=1
+  fi
+fi
+
+# 3. SW version pairing
+if echo "$STAGED" | grep -q '^shlav-a-mega\.html$'; then
+  if ! echo "$STAGED" | grep -q '^sw\.js$'; then
+    echo "⚠️  pre-commit: shlav-a-mega.html staged without sw.js — remember to bump SW cache version"
+    # Warning only; not failing
+  fi
+fi
+
+# 4. innerHTML template literals
+if echo "$STAGED" | grep -q '^shlav-a-mega\.html$'; then
+  STAGED_HTML=$(git show :shlav-a-mega.html)
+  if echo "$STAGED_HTML" | grep -qE '\.innerHTML[[:space:]]*=[[:space:]]*[^;]*\$\{'; then
+    echo "❌ pre-commit: unsafe innerHTML template literal in shlav-a-mega.html"
+    FAIL=1
+  fi
+fi
+
+[ "$FAIL" = "1" ] && { echo ""; echo "Use 'git commit --no-verify' to override (not recommended)."; exit 1; }
+exit 0
