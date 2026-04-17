@@ -21,6 +21,10 @@ fi
 
 # Rule 2: block GRS / excluded Hazzard chapters in data/*.json
 # Hazzard excluded (P005-2026): 2, 3, 4, 5, 6, 34, 62
+# Uses scripts/hooks/lib/hazzard-check.cjs — node-based range-aware checker.
+# (The previous POSIX-ERE pattern had no range expansion and produced false
+#  positives — e.g. "Ch 43" matched digit "4", "Ch 11-12" matched digit "2".)
+EDITED_JSON=""
 for f in $(echo "$FILES" | tr ' ' '\n' | grep -E '^data/.*\.json$'); do
   [ -r "$f" ] || continue
 
@@ -30,12 +34,18 @@ for f in $(echo "$FILES" | tr ' ' '\n' | grep -E '^data/.*\.json$'); do
     BLOCK=1
   fi
 
-  # Excluded Hazzard chapter warning
-  if grep -iE '"ch"[[:space:]]*:[[:space:]]*"[^"]*Hazzard[^"]*(Ch|Chapter)?[[:space:]]*(2|3|4|5|6|34|62)\b' "$f" >/dev/null 2>&1; then
-    echo "⚠️  $f: citation to a potentially excluded Hazzard chapter (2-6, 34, 62 are not on the 2026 syllabus)."
+  EDITED_JSON="$EDITED_JSON $f"
+done
+
+if [ -n "$EDITED_JSON" ] && command -v node >/dev/null 2>&1 && [ -r scripts/hooks/lib/hazzard-check.cjs ]; then
+  # shellcheck disable=SC2086
+  DRIFTS=$(node scripts/hooks/lib/hazzard-check.cjs $EDITED_JSON 2>/dev/null || true)
+  if [ -n "$DRIFTS" ]; then
+    echo "⚠️  Excluded Hazzard chapters cited (P005-2026 excludes Ch 2-6, 34, 62):"
+    echo "$DRIFTS" | awk -F'\t' '{printf "   %s @ %s → excluded %s\n", $1, $2, $4}'
     echo "   Verify the chapter is on the allowed list or recategorize."
   fi
-done
+fi
 
 # Rule 3: schema reminders for questions.json
 if echo "$FILES" | grep -q 'data/questions\.json'; then
