@@ -23,22 +23,6 @@ Drop-in automation for `Eiasash/Geriatrics`. Reconciled with the repo's **actual
 | MCP additions | `.mcp.json.additions` | MCP config | existing `supabase` MCP (manual merge) |
 | CLAUDE.md additions | `CLAUDE.md.additions` | Docs (manual append) | existing CLAUDE.md |
 
-## Known issues with the existing repo (NOT fixed by this branch)
-
-### `.github/workflows/ci.yml` validates stale root-level JSON
-
-The CI workflow currently reads `questions.json` / `notes.json` / `drugs.json` / `flashcards.json` from the **repo root**, but CLAUDE.md and the application itself declare `data/*.json` as the single source of truth. The root-level files are stale (last touched 2026-04-08; `data/` versions last touched 2026-04-16). CI is effectively validating frozen copies.
-
-**Recommended fix** (separate PR): update `.github/workflows/ci.yml` to read from `data/*.json` and delete the root-level duplicates once all consumers are migrated. This bundle's `scripts/hooks/*.sh` and `/ship-it` already point at `data/*.json` — matching CLAUDE.md's declared canon.
-
-### Question-count threshold discrepancy
-
-CLAUDE.md says `>1400` questions must be present; the current `ci.yml` threshold is `>900`. Not this bundle's problem, but worth reconciling.
-
-### Dirty working tree on local main
-
-The repo's local `main` has ~280 commits ahead of `origin/main` and ~140 uncommitted modifications. **This branch was created fresh off `origin/main`** and does not touch that state. Those changes are your problem to push separately.
-
 ## Coexistence with existing automation
 
 Current repo already contains `.claude/`:
