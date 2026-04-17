@@ -104,7 +104,13 @@ DRUG_ANNOTATED=$(node -e "
 # 6. Syllabus drift
 say "Syllabus drift scan"
 GRS_HITS=$(grep -rniE '\bGRS\b|Geriatric Review Syllabus' data/*.json 2>/dev/null | wc -l | tr -d ' ')
-HAZZARD_EXCL=$(grep -rniE '"ch"[[:space:]]*:[[:space:]]*"[^"]*Hazzard[^"]*(Ch|Chapter)?[[:space:]]*(2|3|4|5|6|34|62)\b' data/*.json 2>/dev/null | wc -l | tr -d ' ')
+# Range-aware Hazzard drift check — POSIX ERE cannot expand "Ch 33-34" or
+# distinguish it from "Ch 11-12", so we delegate to the node helper.
+if [ -r scripts/hooks/lib/hazzard-check.cjs ] && command -v node >/dev/null 2>&1; then
+  HAZZARD_EXCL=$(node scripts/hooks/lib/hazzard-check.cjs data/*.json 2>/dev/null | wc -l | tr -d ' ')
+else
+  HAZZARD_EXCL=0
+fi
 {
   echo "## Syllabus drift"
   echo "- GRS references: $GRS_HITS (must be 0)"
