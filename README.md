@@ -83,7 +83,7 @@ scripts/                     # Utility scripts (question generation, exam parsin
 tests/                       # Vitest test suite (408 tests, 9 files)
 docs/MIGRATION.md            # Decomposition ledger and architecture notes
 skill/                       # Claude Projects skill package
-.github/workflows/           # CI: ci.yml + integrity-guard.yml (6 gates) + weekly-audit.yml
+.github/workflows/           # CI: ci.yml + integrity-guard.yml (6 gates) + weekly-audit.yml + claude-code-review.yml
 ```
 
 ## Development
@@ -103,11 +103,12 @@ No build step. Edit `shlav-a-mega.html`, push to main \u2192 GitHub Pages auto-d
 
 ## CI Pipeline
 
-Three GitHub Actions workflows run on every push:
+Four GitHub Actions workflows run on every push:
 
 1. **ci.yml** \u2014 Data validation, schema checks, SW version sync, innerHTML audit, vitest
 2. **integrity-guard.yml** \u2014 6 gates: JS syntax, critical function existence (37 functions), data loader integrity, function count regression (>5 removed = FAIL), truncated code patterns, SW file integrity
 3. **weekly-audit.yml** \u2014 13 weekly health checks
+4. **claude-code-review.yml** \u2014 Claude posts a PR review on every open/sync/reopen
 
 ## Data Sources
 
