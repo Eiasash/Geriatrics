@@ -353,6 +353,23 @@ let FLASH=[];
 
 // ===== STATE =====
 const LS='samega';
+// One-time exam-year tag migration. Runs before state loads so any persisted
+// filter selections or tag-keyed fields get rewritten. Idempotent via
+// __tagMigrationV1 sentinel inside the state object.
+(function migrateExamYearTags(){
+  const MAP={'יוני 21':'2021-Jun','יוני 23':'2023-Jun','יוני 25':'2025-Jun','מאי 24':'2024-May','ספט 24':'2024-Sep','2023-ב':'2023-Sep','2025':'2025-Jun'};
+  // 2025-א cannot auto-migrate (split by classification) — drop from stored selections
+  const DROP=new Set(['2025-א']);
+  const rename=(v)=>{if(typeof v!=='string')return v;if(DROP.has(v))return null;return Object.prototype.hasOwnProperty.call(MAP,v)?MAP[v]:v;};
+  const walk=(obj)=>{
+    if(Array.isArray(obj)){for(let i=obj.length-1;i>=0;i--){const w=rename(obj[i]);if(w===null)obj.splice(i,1);else if(w!==obj[i])obj[i]=w;else if(obj[i]&&typeof obj[i]==='object')walk(obj[i]);}return;}
+    if(obj&&typeof obj==='object'){for(const k of Object.keys(obj)){const v=obj[k];const w=rename(v);if(w===null)delete obj[k];else if(w!==v)obj[k]=w;else if(v&&typeof v==='object')walk(v);}}
+  };
+  const KEYS=[LS,'samega_mock_hist','samega_sessions','samega_custom_qs','samega_pending_qs'];
+  for(const k of KEYS){
+    try{const raw=localStorage.getItem(k);if(!raw)continue;const s=JSON.parse(raw);if(!s||(typeof s==='object'&&s.__tagMigrationV1))continue;walk(s);if(typeof s==='object'&&!Array.isArray(s))s.__tagMigrationV1=true;localStorage.setItem(k,JSON.stringify(s));}catch(e){/* corrupt — skip */}
+  }
+})();
 let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,chat:[],studyMode:false,sp:{},spOpen:false};
 if(!S.chat)S.chat=[];
 if(S.studyMode===undefined)S.studyMode=false;
@@ -779,6 +796,24 @@ function go(t){tab=t;renderTabs();render()}
 
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
+// Canonical exam-session tags (ported from Pnimit's EXAM_YEARS). Bare 2020/2021/2022
+// month-unresolved — kept on whitelist so multi-select pills can still target them.
+const EXAM_YEARS=['2020','2021','2021-Jun','2022','2023-Jun','2023-Sep','2024-May','2024-Sep','2025-Jun'];
+// Multi-select exam-year filter. Persisted across sessions (unlike Pnimit's runtime-only G.years).
+let selectedExamYears=(function(){
+  try{const raw=localStorage.getItem('samega_exam_filter');if(!raw)return new Set();
+    const arr=JSON.parse(raw);return new Set(Array.isArray(arr)?arr.filter(y=>EXAM_YEARS.includes(y)):[]);
+  }catch(e){return new Set();}
+})();
+function saveExamYears(){try{localStorage.setItem('samega_exam_filter',JSON.stringify([...selectedExamYears]));}catch(e){}}
+function toggleExamYear(year){
+  if(!EXAM_YEARS.includes(year))return;
+  if(selectedExamYears.has(year))selectedExamYears.delete(year);else selectedExamYears.add(year);
+  topicFilt=-1;filt=selectedExamYears.size?'years':'all';
+  saveExamYears();buildPool();render();
+}
+function setAllExamYears(){selectedExamYears=new Set(EXAM_YEARS);filt='years';topicFilt=-1;saveExamYears();buildPool();render();}
+function clearExamYears(){selectedExamYears.clear();if(filt==='years')filt='all';saveExamYears();buildPool();render();}
 let onCallMode=false,flipRevealed=false;
 let timedMode=false,timedSec=90,timedInt=null,timedPaused=false;
 let _optShuffle=null; // {map:[shuffled indices], qIdx} — shuffle per question
@@ -836,6 +871,9 @@ const due=getDueQuestions();
 let smartShuffled=false;
 if(filt==='due'){pool=due.length?due:[];}
 else if(filt==='topic'&&topicFilt>=0){QZ.forEach((q,i)=>{if(q.ti===topicFilt)pool.push(i)});}
+else if(filt==='years'&&selectedExamYears.size){
+  QZ.forEach((q,i)=>{if(selectedExamYears.has(q.t))pool.push(i)});
+}
 else{
   QZ.forEach((q,i)=>{if(filt==='all'||q.t.includes(filt))pool.push(i)});
   if(filt==='all'){
@@ -881,8 +919,8 @@ const topicName=TOPICS[miniExamTopic]||'Topic';
 alert('🎯 Mini Exam: '+topicName+'\n\n'+pct+'% ('+_sessionOk+'/'+tot+')\n'+(pct>=70?'Great!':pct>=50?'Getting there':'Needs more work'));
 miniExamTopic=-1;render();
 }
-function setFilt(f){filt=f;topicFilt=-1;buildPool();render()}
-function setTopicFilt(ti){filt='topic';topicFilt=ti;buildPool();render()}
+function setFilt(f){filt=f;topicFilt=-1;if(f!=='years'){selectedExamYears.clear();saveExamYears();}buildPool();render()}
+function setTopicFilt(ti){filt='topic';topicFilt=ti;selectedExamYears.clear();saveExamYears();buildPool();render()}
 
 // ===== FEATURE 4: RESCUE DRILL =====
 function getWeakTopics(n=3){
@@ -1748,9 +1786,27 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 ${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:6px 12px;background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;border-radius:8px" aria-label="Pomodoro">⏱️</button>':''}
 </div>
 </div>`;
+// Exam-year multi-select row — pills are toggleable, "All" / "Clear" quick actions.
+// Chronologically sorted. Unresolved bare years (2020/2021/2022) display faded with tooltip.
+h+=`<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:8px;padding-bottom:4px;-webkit-overflow-scrolling:touch" role="group" aria-label="Exam-year multi-select">`;
+const _yearCounts={};QZ.forEach(q=>{if(EXAM_YEARS.includes(q.t))_yearCounts[q.t]=(_yearCounts[q.t]||0)+1;});
+const _yearsMode=filt==='years'&&selectedExamYears.size>0;
+h+=`<span class="pill ${filt==='all'&&!_yearsMode?'on':''}" onclick="setFilt('all')" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 14px">הכל (${QZ.length})</span>`;
+h+=`<span class="pill" onclick="setAllExamYears()" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 14px" title="בחר את כל שנות המבחן">📋 All years</span>`;
+if(selectedExamYears.size)h+=`<span class="pill" onclick="clearExamYears()" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 14px;background:#fef2f2;color:#991b1b" title="נקה בחירה">✕ Clear (${selectedExamYears.size})</span>`;
+EXAM_YEARS.forEach(yr=>{
+  const _n=_yearCounts[yr]||0;if(!_n)return;
+  const _on=selectedExamYears.has(yr);
+  const _unresolved=(yr==='2020'||yr==='2021'||yr==='2022');
+  const _style=`min-height:36px;min-width:44px;display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;font-size:11px;${_unresolved&&!_on?'opacity:0.6':''}`;
+  const _title=_unresolved?'שנה לא מזוהה — ראה TODO':'';
+  h+=`<span class="pill ${_on?'on':''}" onclick="toggleExamYear('${yr}')" style="${_style}" title="${_title}" aria-pressed="${_on}">${yr}${_on?' ✓':''} <span style="opacity:0.7;font-size:10px;margin-inline-start:3px">${_n}</span></span>`;
+});
+h+=`</div>`;
+// Non-year filters row (single-select)
 h+=`<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:10px;padding-bottom:4px;-webkit-overflow-scrolling:touch">`;
 const _trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
-const filts=[['all',`הכל (${QZ.length})`],['2021','21'],['2022','22'],['יוני 23','Jun23'],['2023-ב','23-ב'],['מאי 24','May24'],['ספט 24','Sep24'],['יוני 25','Jun25'],['2025-א','25-א'],['Hazzard',`🤖 AI (${QZ.filter(q=>q.t==='Hazzard').length})`],['hard','🔥 Hard'],['slow','⏱️ Slow'],['weak','🎯 Weak'],['due','🔄 Due'],['traps',`🪤 Traps (${_trapCount})`],['nbs','🎯 Next Best Step']];
+const filts=[['Hazzard',`🤖 AI (${QZ.filter(q=>q.t==='Hazzard').length})`],['Hazzard-suppl',`📖 Suppl (${QZ.filter(q=>q.t==='Hazzard-suppl').length})`],['Harrison',`📘 Harrison (${QZ.filter(q=>q.t==='Harrison').length})`],['hard','🔥 Hard'],['slow','⏱️ Slow'],['weak','🎯 Weak'],['due','🔄 Due'],['traps',`🪤 Traps (${_trapCount})`],['nbs','🎯 Next Best Step']];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{
 if(f==='nbs')h+=`<span class="pill ${filt==='nbs'?'on':''}" onclick="startNextBestStep()">${l}</span>`;
@@ -4536,8 +4592,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.60';
+const APP_VERSION='9.61';
 const CHANGELOG={
+'9.61': ['📝 85 הסברים חדשים נכתבו לשאלות עם שדה e ריק (Claude Sonnet 4.5, פורמט סטנדרטי: התשובה הנכונה / למה נכונה / למה אחרות שגויות / נקודת מפתח לקשיש)', 'סטנדרטיזציית תגיות מבחן לפורמט קנוני YYYY-Mon: יוני 21→2021-Jun, יוני 23→2023-Jun, יוני 25→2025-Jun, מאי 24→2024-May, ספט 24→2024-Sep, 2023-ב→2023-Sep', '2025-א (65 שאלות ייחודיות) סווג: 41 וינייטות→2025-Jun, 24 תיאוריה→Hazzard-suppl; 24 דופליקטים ישירים עם יוני 25 הוסרו', 'מיגרציית localStorage אוטומטית עם סנטינל __tagMigrationV1 — לא מאבדים נתוני משתמש קיימים', 'פילטר רב-בחירה לשנות מבחן (UI הופץ מ-Pnimit) — ניתן לסמן כמה שנים יחד, ספירה לכל שנה, שורה נפרדת ממקורות תוכן', 'בדיקות רגרסיה חדשות (regressionGuards.test.js, 42 בדיקות) — תופסות mojibake, duplicates, שבר שאלות, תגיות לא מזוהות, סנכרון גרסת SW', 'סה"כ שאלות: 3,406 (מ-3,430 — 24 דופליקטים הוסרו)'],
 '9.60': ['🚨 11 שאלות של יוני 23 (בסיס) תוקנו — c שגוי לפי מפתח התשובות הרשמי המעודכן של הר"י', 'שיעור שגיאות: 11/137 = 8% (טוב משמעותית מ-מאי 24 שהיה 61%) — מעיד שהייבוא של יוני 23 תקין ביסודו אבל עם שגיאות נקודתיות', 'תיקונים: Q12 הרפס זוסטר פנים "מעקב"→"ACYCLOVIR 800", Q24 DM+אלצהיימר A1C 11% "אינסולין קצר"→"אינסולין ארוך", Q36 BPH אי-שליטה "ציסטוסקופיה"→"UA+קולטורה", Q56 Lancet 2020 "חבלת ראש"→"ירידה בשמיעה", Q70 ADA 2022 "הפסקת סטטינים"→"APIDRA→SITAGLIPTIN"', 'עוד: Q81 MMSE discrepancy "שונות בין בודקים"→"LBD fluctuations", Q112 FUO "ביופסיית כבד"→"ביופסיית עורק טמפורלי", Q122 hypoxia "hypoventilation"→"V/Q mismatch", Q131 LFTs cholestatic "סרולוגיה hep"→"US כבד/מרה", Q145 metabolic alkalosis "כליה"→"FUROSEMIDE", Q147 Li+Na 155 "nDI"→"ירידה בשתיה"', '🔍 ממצא משני: idx 1393 מכיל Q105+Q106 מאוחדות (באג ייבוא) — לא תוקן, דורש פירוק ידני. Q106 חסרה מהריפו.', '10 מ-150 שאלות הבסיס חסרות (רובן תמונה-תלויות): Q5, Q67, Q101, Q109, Q125, Q139, Q148 ועוד'],
 '9.59': ['🚨 82 שאלות של מאי 24 (בסיס) תוקנו — c שגוי ב-132/150 שאלות שתויגו שגוי כ-"ספט 24"', 'מקור: PDF רשמי של מפתח התשובות המעודכן של הר"י (פרסום 138, מאי 2024) — 10 שינויים מהמפתח המקורי', 'אבחנה: 81 שאלות עם תשובה שלא תואמת לא את המפתח המקורי ולא המעודכן — באג נתונים אמיתי, לא drift של מפתח', 'דוגמאות: Q1 DPP "יעילות שווה"→"שינוי אורחות חיים עדיף", Q9 עצירות "BISACODYL"→"PEG", Q40 שפעת/RSV "OSELTAMIVIR"→"פחות אשפוזים ב-RSV"', 'כל תיקון תועד ב-e עם מעבר האותיות (למשל "א → ב") ומקור רשמי', 'שגיאות ברות זיהוי: Q100 outdated (מפתח עודכן מ-ג ל-ד), 81 אחרות פשוט שגויות במקור'],
 '9.58': ['🚨 53 שאלות של ספט24 Al תוקנו — תשובה שגויה במפתח התשובות המקורי (הרוב תחת תגית "מאי 24")', 'האבחנה: השוואה למפתח התשובות הרשמי המעודכן של הר"י חשפה שגיאות נרחבות בתשובות הנכונות', 'דוגמאות: Q1 מניעת נפילות "ויטמין D"→"התאמת הבית", Q8 נגע עור חדש בגיל 90 "סטרואיד"→"ביופסיה", Q11 בחילה רפרקטורית "Lactulose"→"Haloperidol"', 'הסברים שהגנו על התשובה השגויה קיבלו אזהרה (⚠️) עם התשובה הנכונה ומקור', 'שאלה חסרה Q43 (סרקופניה/חלבון, Hazzard ch49) נוספה', '+1 שאלה, סה"כ 3,422'],
