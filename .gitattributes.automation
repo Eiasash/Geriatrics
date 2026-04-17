@@ -1,0 +1,7 @@
+# Keep hook scripts LF-only so they work under WSL / bash on Windows.
+# Rename this file to ".gitattributes" if you don't already have one;
+# otherwise merge these entries into your existing .gitattributes.
+
+scripts/hooks/*.sh              text eol=lf
+scripts/git-hooks/pre-commit    text eol=lf
+.claude/skills/**/*.sh          text eol=lf

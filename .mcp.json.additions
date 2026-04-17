@@ -1,0 +1,32 @@
+{
+  "// HOW TO USE": "Merge the mcpServers entries below into your existing .mcp.json. Keep your existing 'supabase' entry — just add these alongside it.",
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "description": "Live documentation lookup for Vitest 4, FSRS-4.5, Supabase JS client, and any other lib you reference. Resolves training-cutoff staleness."
+    },
+    "pubmed": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@ncbi/pubmed-mcp"],
+      "description": "PubMed / NCBI search for clinical citation verification. Used by clinical-accuracy-reviewer subagent. Critical for a board prep app."
+    },
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "GitHub Issues + PRs + Actions. Useful for triaging integrity-guard failures, managing user-reported board-exam content issues, and scripting weekly-audit follow-ups. Set GITHUB_TOKEN in your env first."
+    }
+  },
+  "// NOTES": [
+    "1. PubMed package name is illustrative — when you install, confirm it exposes tool names 'search_articles', 'get_article_metadata', 'lookup_article_by_citation'. If not, update the tools: line in clinical-accuracy-reviewer.md accordingly.",
+    "2. GitHub MCP requires GITHUB_PERSONAL_ACCESS_TOKEN with repo + issues + workflow scopes. Do NOT commit the token — use shell env.",
+    "3. After adding, restart Claude and run: claude mcp list",
+    "4. Keep your existing supabase entry. This file is additions only."
+  ]
+}
