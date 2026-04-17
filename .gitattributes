@@ -19,3 +19,7 @@ hazzard_chapters.json binary
 *.md text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+
+# Shell scripts — must be LF for portability (Claude Code hooks + git hooks)
+*.sh text eol=lf
+scripts/git-hooks/pre-commit text eol=lf
