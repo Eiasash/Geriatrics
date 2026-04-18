@@ -1625,8 +1625,7 @@ if(_chRef&&_chRef.s==='haz'){
 h+=`<button class="btn" onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${sanitize(String(_chRef.ch))})" style="font-size:10px;padding:5px 12px;background:rgb(var(--blue-bg));color:rgb(var(--blue-fg));border:1px solid rgb(var(--blue-brd));margin-bottom:6px;width:100%">📖 Read: ${sanitize(_chRef.l)} — you're weak here</button>`;
 }
 }
-// Difficulty + Next on same row
-const _blocked=!examMode&&sel!==q.c&&!_wrongReason;
+// Difficulty + Next on same row — why-wrong picker is a nudge, not a gate
 h+=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">`;
 if(!examMode){
 h+=`<div style="display:flex;gap:3px;align-items:center">
@@ -1635,7 +1634,7 @@ h+=`<div style="display:flex;gap:3px;align-items:center">
 <button class="btn" style="font-size:9px;padding:3px 7px;${_diffRating==='hard'?'background:rgb(var(--red-bg));color:rgb(var(--red-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='hard';_storeDiff(pool[qi],'hard')">Hard</button>
 </div>`;
 }
-h+=`<button id="next-btn" class="btn btn-d" onclick="next()"${_blocked?' disabled':''} style="margin-left:auto;${_blocked?'opacity:0.5':''}" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
+h+=`<button id="next-btn" class="btn btn-d" onclick="next()" style="margin-left:auto" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
 if(!examMode&&ans){
 h+=`<button onclick="document.getElementById('report-wrong-expand').style.display=document.getElementById('report-wrong-expand').style.display==='none'?'block':'none'" style="font-size:8px;padding:2px 6px;background:none;color:rgb(var(--fg3));cursor:pointer;border:none" title="Report wrong answer key">⚠️</button>`;
 }
@@ -4594,8 +4593,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.62';
+const APP_VERSION='9.63';
 const CHANGELOG={
+'9.63': ['UX: "Why did I get it wrong?" (📚 👓 ⚖️ 🤦) כבר לא חוסם את כפתור "הבאה" — הפך לאופציונלי. בסוויט הקודם הפכנו את "How sure are you" לאופציונלי; עכשיו גם שורת ה-why-wrong שלמטה אופציונלית.', 'טסט חדש: topicRefCoverage — מוודא שכל entry ב-TOPIC_REF מצביע לפרק שקיים ב-data/hazzard_chapters.json, ושכל onclick שקורא ל-openHazzardChapter מגיע דרך libSec=haz-pdf (מונע את הבאג של 9.62 שהגיע ל-libSec=harrison).', 'Pre-push hook חדש: `scripts/git-hooks/pre-push` מריץ את שני בודקי innerHTML לפני כל push. התקנה ב-`npm run hooks:install`.'],
 '9.62': ['UX: "How sure are you?" (😬 🤔 😎) כבר לא חוסם את כפתור בדוק — הפך לאופציונלי. אפשר עדיין ללחוץ על אחת האמוג\'ים, אבל לא חייבים.', 'תיקון: כפתור "Read: Hazzard Ch X — you\'re weak here" מנווט עכשיו ישירות לפרק הספציפי (נפתח Hazzard chapter viewer עם התוכן) במקום לפתוח את הסקציה הלא-נכונה (Harrison) של מדף הספרייה'],
 '9.61': ['📝 85 הסברים חדשים נכתבו לשאלות עם שדה e ריק (Claude Sonnet 4.5, פורמט סטנדרטי: התשובה הנכונה / למה נכונה / למה אחרות שגויות / נקודת מפתח לקשיש)', 'סטנדרטיזציית תגיות מבחן לפורמט קנוני YYYY-Mon: יוני 21→2021-Jun, יוני 23→2023-Jun, יוני 25→2025-Jun, מאי 24→2024-May, ספט 24→2024-Sep, 2023-ב→2023-Sep', '2025-א (65 שאלות ייחודיות) סווג: 41 וינייטות→2025-Jun, 24 תיאוריה→Hazzard-suppl; 24 דופליקטים ישירים עם יוני 25 הוסרו', 'מיגרציית localStorage אוטומטית עם סנטינל __tagMigrationV1 — לא מאבדים נתוני משתמש קיימים', 'פילטר רב-בחירה לשנות מבחן (UI הופץ מ-Pnimit) — ניתן לסמן כמה שנים יחד, ספירה לכל שנה, שורה נפרדת ממקורות תוכן', 'בדיקות רגרסיה חדשות (regressionGuards.test.js, 42 בדיקות) — תופסות mojibake, duplicates, שבר שאלות, תגיות לא מזוהות, סנכרון גרסת SW', 'סה"כ שאלות: 3,406 (מ-3,430 — 24 דופליקטים הוסרו)'],
 '9.60': ['🚨 11 שאלות של יוני 23 (בסיס) תוקנו — c שגוי לפי מפתח התשובות הרשמי המעודכן של הר"י', 'שיעור שגיאות: 11/137 = 8% (טוב משמעותית מ-מאי 24 שהיה 61%) — מעיד שהייבוא של יוני 23 תקין ביסודו אבל עם שגיאות נקודתיות', 'תיקונים: Q12 הרפס זוסטר פנים "מעקב"→"ACYCLOVIR 800", Q24 DM+אלצהיימר A1C 11% "אינסולין קצר"→"אינסולין ארוך", Q36 BPH אי-שליטה "ציסטוסקופיה"→"UA+קולטורה", Q56 Lancet 2020 "חבלת ראש"→"ירידה בשמיעה", Q70 ADA 2022 "הפסקת סטטינים"→"APIDRA→SITAGLIPTIN"', 'עוד: Q81 MMSE discrepancy "שונות בין בודקים"→"LBD fluctuations", Q112 FUO "ביופסיית כבד"→"ביופסיית עורק טמפורלי", Q122 hypoxia "hypoventilation"→"V/Q mismatch", Q131 LFTs cholestatic "סרולוגיה hep"→"US כבד/מרה", Q145 metabolic alkalosis "כליה"→"FUROSEMIDE", Q147 Li+Na 155 "nDI"→"ירידה בשתיה"', '🔍 ממצא משני: idx 1393 מכיל Q105+Q106 מאוחדות (באג ייבוא) — לא תוקן, דורש פירוק ידני. Q106 חסרה מהריפו.', '10 מ-150 שאלות הבסיס חסרות (רובן תמונה-תלויות): Q5, Q67, Q101, Q109, Q125, Q139, Q148 ועוד'],
