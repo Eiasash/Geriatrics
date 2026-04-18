@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Pre-push hook: run both innerHTML safety checkers before allowing push.
+#
+# Install (one-time):
+#   cp scripts/git-hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+# Or globally:
+#   git config core.hooksPath scripts/git-hooks
+#
+# Runs:
+#   1. check-innerhtml.py          — catches unsafe `.innerHTML = ` template literals
+#   2. check-innerhtml-pieces.py   — catches partial-sanitize (e.g. `${sanitize(a)} ${b}`)
+#
+# These are the same checks `npm run verify` runs, but gated at the push
+# boundary so a rushed `git push` can't ship a regression.
+
+set -e
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+FAIL=0
+
+if ! python3 scripts/check-innerhtml.py; then
+  echo ""
+  echo "❌ pre-push: check-innerhtml.py found unsafe innerHTML assignment."
+  FAIL=1
+fi
+
+if ! python3 scripts/check-innerhtml-pieces.py; then
+  echo ""
+  echo "❌ pre-push: check-innerhtml-pieces.py found partial-sanitize gap."
+  FAIL=1
+fi
+
+if [ "$FAIL" = "1" ]; then
+  echo ""
+  echo "Fix the flagged site(s), or bypass with 'git push --no-verify' (not recommended)."
+  exit 1
+fi
+
+exit 0
