@@ -350,6 +350,8 @@ let DRUGS=[];
 
 let FLASH=[];
 
+let QCHAPS={};
+
 
 // ===== STATE =====
 const LS='samega';
@@ -433,6 +435,7 @@ const _dataPromise = (async function loadDataArrays() {
     DRUGS: 'drugs.json',
     FLASH: 'flashcards.json',
     TABS: 'tabs.json',
+    QCHAPS: 'question_chapters.json',
   };
   try {
     const entries = Object.entries(files);
@@ -451,6 +454,7 @@ const _dataPromise = (async function loadDataArrays() {
       else if (varName === 'DRUGS') DRUGS = results[i];
       else if (varName === 'FLASH') FLASH = results[i];
       else if (varName === 'TABS') TABS = results[i];
+      else if (varName === 'QCHAPS') QCHAPS = results[i] || {};
       });
     _dataReady = true;
     // Load user-generated/approved questions from localStorage
@@ -866,6 +870,15 @@ qi=0;sel=null;ans=false;return;}
 if(filt==='slow'){
 pool=QZ.map((_,i)=>i).filter(i=>{const s=S.sr[i];return s&&s.at&&s.at>60;});
 pool.sort((a,b)=>(S.sr[b]?.at||0)-(S.sr[a]?.at||0));
+qi=0;sel=null;ans=false;return;}
+// Chapter-specific drills: topicFilt holds the chapter number
+if(filt==='haz-ch'&&topicFilt!==undefined){
+pool=Object.keys(QCHAPS).filter(qi2=>QCHAPS[qi2]&&String(QCHAPS[qi2].haz)===String(topicFilt)).map(Number).filter(i=>i>=0&&i<QZ.length);
+for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+qi=0;sel=null;ans=false;return;}
+if(filt==='har-ch'&&topicFilt!==undefined){
+pool=Object.keys(QCHAPS).filter(qi2=>QCHAPS[qi2]&&String(QCHAPS[qi2].har)===String(topicFilt)).map(Number).filter(i=>i>=0&&i<QZ.length);
+for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
 qi=0;sel=null;ans=false;return;}
 
 pool=[];
@@ -1619,10 +1632,22 @@ h+=`<div id="why-wrong-box" style="display:inline-flex;align-items:center;gap:4p
 </div>`;
 }
 // Feature 4: Cross-link to chapter after wrong answer
+// Uses per-question QCHAPS mapping (both Hazzard + Harrison) with topic-level
+// TOPIC_REF as fallback for questions that aren't in QCHAPS yet.
 if(!examMode&&sel!==q.c&&q.ti>=0){
+const _qc=QCHAPS[String(pool[qi])]||{};
 const _chRef=TOPIC_REF[q.ti];
-if(_chRef&&_chRef.s==='haz'){
-h+=`<button class="btn" onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${sanitize(String(_chRef.ch))})" style="font-size:10px;padding:5px 12px;background:rgb(var(--blue-bg));color:rgb(var(--blue-fg));border:1px solid rgb(var(--blue-brd));margin-bottom:6px;width:100%">📖 Read: ${sanitize(_chRef.l)} — you're weak here</button>`;
+const _hazCh=_qc.haz!==undefined?_qc.haz:(_chRef&&_chRef.s==='haz'?_chRef.ch:null);
+const _harCh=_qc.har!==undefined?_qc.har:null;
+if(_hazCh!==null||_harCh!==null){
+h+=`<div style="display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap">`;
+if(_hazCh!==null){
+h+=`<button class="btn" onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${sanitize(String(_hazCh))})" style="flex:1;min-width:45%;font-size:10px;padding:5px 10px;background:rgb(var(--red-bg));color:rgb(var(--red-fg));border:1px solid rgb(var(--red-brd))">📕 Hazzard Ch ${sanitize(String(_hazCh))}</button>`;
+}
+if(_harCh!==null){
+h+=`<button class="btn" onclick="tab='lib';libSec='harrison';openHarrisonChapter(${sanitize(String(_harCh))})" style="flex:1;min-width:45%;font-size:10px;padding:5px 10px;background:rgb(var(--blue-bg));color:rgb(var(--blue-fg));border:1px solid rgb(var(--blue-brd))">📗 Harrison Ch ${sanitize(String(_harCh))}</button>`;
+}
+h+=`</div>`;
 }
 }
 // Difficulty + Next on same row — why-wrong picker is a nudge, not a gate
@@ -2543,7 +2568,22 @@ ${nextCh?`<button onclick="openHazzardChapter(${nextCh})" style="font-size:10px;
 </div>
 <div id="quiz-me-box"></div>
 <div class="card" style="padding:16px">`;
-// Show question stats for this Hazzard chapter
+// Show question stats for this Hazzard chapter — QCHAPS (per-question) takes
+// priority; falls back to topic-level TOPIC_REF for older data.
+const _hazQCidx=Object.keys(QCHAPS).filter(qi=>QCHAPS[qi]&&String(QCHAPS[qi].haz)===String(hazChOpen)).map(Number);
+if(_hazQCidx.length){
+const _htStats=getTopicStats();
+let _hok=0,_hno=0;
+_hazQCidx.forEach(qIdx=>{const ck=S.ck&&S.ck[qIdx];if(ck==='ok')_hok++;else if(ck==='no')_hno++;});
+const _htot=_hok+_hno;
+const _htpct=_htot?Math.round(_hok/_htot*100):null;
+h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;background:rgb(var(--red-bg));border-radius:10px;font-size:10px;align-items:center;flex-wrap:wrap">
+<span>\ud83d\udcdd ${_hazQCidx.length} questions mapped to this chapter</span>
+${_htpct!==null?`<span style="font-weight:700;color:${_htpct>=70?'#059669':_htpct>=50?'#d97706':'#dc2626'}">${_htpct}% accuracy (${_htot} attempted)</span>`:'<span style="color:rgb(var(--fg3))">Not attempted yet</span>'}
+<button onclick="filt='haz-ch';topicFilt=${hazChOpen};tab='quiz';buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer">\u25b6 Drill all ${_hazQCidx.length}</button>
+</div>`;
+}else{
+// Legacy fallback: topic-level TOPIC_REF
 const _hazRelTopics=Object.entries(TOPIC_REF).filter(([ti,ref])=>ref&&ref.s==='haz');
 const _hazChTopicIdx=_hazRelTopics.find(([ti,ref])=>String(ref.ch)===String(hazChOpen));
 if(_hazChTopicIdx){
@@ -2556,6 +2596,7 @@ h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;backgro
 ${_htpct!==null?`<span style="font-weight:700;color:${_htpct>=70?'#059669':_htpct>=50?'#d97706':'#dc2626'}">${_htpct}% accuracy</span>`:'<span style="color:rgb(var(--fg3))">Not attempted yet</span>'}
 <button onclick="tab='quiz';filt='topic';topicFilt=${_hti};buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer">\u25b6 Drill</button>
 </div>`;
+}
 }
 ch.sections.forEach(sec=>{
 if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:rgb(var(--red-fg));margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid rgb(var(--red-brd))">${sec.title}</div>`;}
@@ -2639,17 +2680,18 @@ ${nextCh?`<button onclick="openHarrisonChapter(${nextCh})" style="font-size:10px
 </div>
 <div id="quiz-me-box"></div>
 <div class="card" style="padding:16px">`;
-// Feature 4: Show question stats for this topic in chapter reader
-const _relTopics=Object.entries(TOPIC_REF).filter(([ti,ref])=>ref.s==='haz').map(([ti])=>+ti);
-const _chTopicIdx=_relTopics.find(ti=>{const ref=TOPIC_REF[ti];return ref&&String(ref.ch)===String(harChOpen);});
-if(_chTopicIdx!==undefined){
-const _ts=getTopicStats()[_chTopicIdx]||{ok:0,no:0,tot:0};
-const _tpct=_ts.tot?Math.round(_ts.ok/_ts.tot*100):null;
-const _tqCount=QZ.filter(q=>q.ti===_chTopicIdx).length;
-h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;background:#f5f3ff;border-radius:10px;font-size:10px;align-items:center">
-<span>📝 ${_tqCount} questions on this topic</span>
-${_tpct!==null?`<span style="font-weight:700;color:${_tpct>=70?'#059669':_tpct>=50?'#d97706':'#dc2626'}">${_tpct}% accuracy</span>`:'<span style="color:rgb(var(--fg3))">Not attempted yet</span>'}
-<button onclick="tab='quiz';filt='topic';topicFilt=${_chTopicIdx};buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer">▶ Drill</button>
+// Show question stats for this Harrison chapter — uses QCHAPS per-question
+// mapping. No legacy fallback here because TOPIC_REF only maps to Hazzard.
+const _harQCidx=Object.keys(QCHAPS).filter(qi=>QCHAPS[qi]&&String(QCHAPS[qi].har)===String(harChOpen)).map(Number);
+if(_harQCidx.length){
+let _rok=0,_rno=0;
+_harQCidx.forEach(qIdx=>{const ck=S.ck&&S.ck[qIdx];if(ck==='ok')_rok++;else if(ck==='no')_rno++;});
+const _rtot=_rok+_rno;
+const _rpct=_rtot?Math.round(_rok/_rtot*100):null;
+h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;background:#f5f3ff;border-radius:10px;font-size:10px;align-items:center;flex-wrap:wrap">
+<span>📝 ${_harQCidx.length} questions mapped to this chapter</span>
+${_rpct!==null?`<span style="font-weight:700;color:${_rpct>=70?'#059669':_rpct>=50?'#d97706':'#dc2626'}">${_rpct}% accuracy (${_rtot} attempted)</span>`:'<span style="color:rgb(var(--fg3))">Not attempted yet</span>'}
+<button onclick="filt='har-ch';topicFilt=${harChOpen};tab='quiz';buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer">▶ Drill all ${_harQCidx.length}</button>
 </div>`;
 }
 ch.sections.forEach(sec=>{
@@ -4593,8 +4635,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.63';
+const APP_VERSION='9.64';
 const CHANGELOG={
+'9.64': ['📚 קישור דו-כיווני Hazzard/Harrison ברמת השאלה (לא רק ברמת הנושא כמו עד כה). כל שאלה ב-data/questions.json ממופה עכשיו לפרק Hazzard + פרק Harrison הטובים ביותר דרך `data/question_chapters.json` (3,406 שאלות תויגו ע"י scripts/tag_chapters.cjs — 40 נושאים × מפה ידנית + 30 overrides ספציפיים למחלות).', 'UI: אחרי תשובה שגויה מוצגים עכשיו שני כפתורי פרק (Hazzard ו-Harrison) במקום אחד; קיימים גם בקוראי הפרקים עם "Drill all N" שממלא pool ישירות מ-QCHAPS.', 'פילטרים חדשים: filt="haz-ch" ו-filt="har-ch" עם topicFilt=chNum — תרגול כל השאלות הממופות לפרק ספציפי.'],
 '9.63': ['UX: "Why did I get it wrong?" (📚 👓 ⚖️ 🤦) כבר לא חוסם את כפתור "הבאה" — הפך לאופציונלי. בסוויט הקודם הפכנו את "How sure are you" לאופציונלי; עכשיו גם שורת ה-why-wrong שלמטה אופציונלית.', 'טסט חדש: topicRefCoverage — מוודא שכל entry ב-TOPIC_REF מצביע לפרק שקיים ב-data/hazzard_chapters.json, ושכל onclick שקורא ל-openHazzardChapter מגיע דרך libSec=haz-pdf (מונע את הבאג של 9.62 שהגיע ל-libSec=harrison).', 'Pre-push hook חדש: `scripts/git-hooks/pre-push` מריץ את שני בודקי innerHTML לפני כל push. התקנה ב-`npm run hooks:install`.'],
 '9.62': ['UX: "How sure are you?" (😬 🤔 😎) כבר לא חוסם את כפתור בדוק — הפך לאופציונלי. אפשר עדיין ללחוץ על אחת האמוג\'ים, אבל לא חייבים.', 'תיקון: כפתור "Read: Hazzard Ch X — you\'re weak here" מנווט עכשיו ישירות לפרק הספציפי (נפתח Hazzard chapter viewer עם התוכן) במקום לפתוח את הסקציה הלא-נכונה (Harrison) של מדף הספרייה'],
 '9.61': ['📝 85 הסברים חדשים נכתבו לשאלות עם שדה e ריק (Claude Sonnet 4.5, פורמט סטנדרטי: התשובה הנכונה / למה נכונה / למה אחרות שגויות / נקודת מפתח לקשיש)', 'סטנדרטיזציית תגיות מבחן לפורמט קנוני YYYY-Mon: יוני 21→2021-Jun, יוני 23→2023-Jun, יוני 25→2025-Jun, מאי 24→2024-May, ספט 24→2024-Sep, 2023-ב→2023-Sep', '2025-א (65 שאלות ייחודיות) סווג: 41 וינייטות→2025-Jun, 24 תיאוריה→Hazzard-suppl; 24 דופליקטים ישירים עם יוני 25 הוסרו', 'מיגרציית localStorage אוטומטית עם סנטינל __tagMigrationV1 — לא מאבדים נתוני משתמש קיימים', 'פילטר רב-בחירה לשנות מבחן (UI הופץ מ-Pnimit) — ניתן לסמן כמה שנים יחד, ספירה לכל שנה, שורה נפרדת ממקורות תוכן', 'בדיקות רגרסיה חדשות (regressionGuards.test.js, 42 בדיקות) — תופסות mojibake, duplicates, שבר שאלות, תגיות לא מזוהות, סנכרון גרסת SW', 'סה"כ שאלות: 3,406 (מ-3,430 — 24 דופליקטים הוסרו)'],
