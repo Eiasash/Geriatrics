@@ -778,6 +778,38 @@ function getDueQuestions(){
 const now=Date.now();
 return Object.entries(S.sr).filter(([k,v])=>v.next<=now).map(([k])=>parseInt(k)).slice(0,20);
 }
+// Time-to-answer signal helpers.
+// Median of S.sr[i].at across all questions in topic `ti` with recorded time.
+// Returns null if fewer than 3 samples — median isn't meaningful with less.
+function topicMedianTime(ti){
+  if(ti===undefined||ti===null||ti<0)return null;
+  const samples=[];
+  Object.entries(S.sr).forEach(([k,v])=>{
+    const q=QZ[k];if(!q||q.ti!==ti)return;
+    if(typeof v.at==='number'&&v.at>0)samples.push(v.at);
+  });
+  if(samples.length<3)return null;
+  samples.sort((a,b)=>a-b);
+  const mid=samples.length>>1;
+  return samples.length%2?samples[mid]:Math.round((samples[mid-1]+samples[mid])/2);
+}
+// Global median across all recorded answer times — used when topic median is unavailable.
+function globalMedianTime(){
+  const samples=[];
+  Object.entries(S.sr).forEach(([k,v])=>{
+    if(typeof v.at==='number'&&v.at>0)samples.push(v.at);
+  });
+  if(samples.length<3)return null;
+  samples.sort((a,b)=>a-b);
+  const mid=samples.length>>1;
+  return samples.length%2?samples[mid]:Math.round((samples[mid-1]+samples[mid])/2);
+}
+// Count of questions currently meeting the Slow filter criterion (avg >60s).
+function slowQuestionCount(){
+  let n=0;
+  Object.values(S.sr).forEach(v=>{if(typeof v.at==='number'&&v.at>60)n++;});
+  return n;
+}
 
 const HARRISON_PDF_MAP={"14":"harrison/Ch14_Pain_Pathophysiology_and_Management.pdf","15":"harrison/Ch15_Chest_Discomfort.pdf","16":"harrison/Ch16_Abdominal_Pain.pdf","17":"harrison/Ch17_Headache.pdf","18":"harrison/Ch18_Low_back_pain.pdf","20":"harrison/Ch20_Fever.pdf","22":"harrison/Ch22_Fever_of_Unknown_Origin.pdf","26":"harrison/Ch026_Neurologic_Causes_of_Weakness_and_Paralysis.pdf","30":"harrison/Ch30_Coma.pdf","39":"harrison/Ch39_Dyspnea.pdf","40":"harrison/Ch40_Cough.pdf","41":"harrison/Ch41_Hemoptysis.pdf","42":"harrison/Ch42_Hypoxia_and_Cyanosis.pdf","43":"harrison/Ch43_Edema.pdf","48":"harrison/Ch48_Nausea_Vomiting_and_Indigestion.pdf","49":"harrison/Ch49_Diarrhea_and_Constipation.pdf","50":"harrison/Ch50_Unintentional_Weight_Loss.pdf","51":"harrison/Ch51_Gastrointestinal_Bleeding.pdf","52":"harrison/Ch52_Jaundice.pdf","53":"harrison/Ch53_Abdominal_Swelling_and_Ascites.pdf","55":"harrison/Ch55_Azotemia_and_Urinary_Abnormalities.pdf","56":"harrison/Ch56_Fluid_and_Electrolyte_Disturbances.pdf","57":"harrison/Ch57_Hypercalcemia_and_Hypocalcemia.pdf","58":"harrison/Ch58_Acidosis_and_Alkalosis.pdf","66":"harrison/Ch66_Anemia_and_Polycythemia.pdf","67":"harrison/Ch67_Disorders_of_Granulocytes_and_Monocytes.pdf","69":"harrison/Ch69_Bleeding_and_Thrombosis.pdf","70":"harrison/Ch70_Enlargement_of_Lymph_Nodes_and_Spleen.pdf","79":"harrison/Ch79_Infections_in_Patients_with_Cancer.pdf","80":"harrison/Ch80_Oncologic_Emergencies.pdf","102":"harrison/Ch102_Iron_Deficiency_and_Other_Hypoproliferat.pdf","120":"harrison/Ch120_Disorders_of_Platelets_and_Vessel_Wall.pdf","121":"harrison/Ch121_Coagulation_Disorders.pdf","127":"harrison/Ch127_Approach_to_the_Acutely_Ill_Infected_Febrile_.pdf","133":"harrison/Ch133_Infective_Endocarditis.pdf","136":"harrison/Ch136_Osteomyelitis.pdf","142":"harrison/Ch142_Encephalitis.pdf","143":"harrison/Ch143_Acute_Meningitis.pdf","147":"harrison/Ch147_Infections_Acquired_in_Health_Care_Facilities.pdf","243":"harrison/Ch243_Approach_to_the_Patient_with_Possible_Cardiov.pdf","247":"harrison/Ch247_Electrocardiography.pdf","285":"harrison/Ch285_Non-ST-Segment_Elevation_Acute_Coronary_Syndr.pdf","286":"harrison/Ch286_ST-Segment_Elevation_Myocardial_Infarction.pdf","295":"harrison/Ch295_Approach_to_the_Patient_with_Disease_of_the_R.pdf","305":"harrison/Ch305_Disorders_of_the_Pleura.pdf","311":"harrison/Ch311_Approach_to_the_Patient_with_Critical_Illness.pdf","314":"harrison/Ch314_Approach_to_the_Patient_with_Shock.pdf","315":"harrison/Ch315_Sepsis_and_Septic_Shock.pdf","316":"harrison/Ch316_Cardiogenic_Shock_and_Pulmonary_Edema.pdf","317":"harrison/Ch317_Cardiovascular_Collapse,_Cardiac_Arrest,_and_.pdf","319":"harrison/Ch319_Approach_to_the_Patient_with_Renal_Disease_or.pdf","321":"harrison/Ch321_Acute_Kidney_Injury.pdf","322":"harrison/Ch322_Chronic_Kidney_Disease.pdf","332":"harrison/Ch332_Approach_to_the_Patient_with_Gastrointestinal.pdf","347":"harrison/Ch347_Approach_to_the_Patient_with_Liver_Disease.pdf","355":"harrison/Ch355_Cirrhosis_and_Its_Complications.pdf","375":"harrison/Ch375_The_Vasculitis_Syndromes.pdf","379":"harrison/Ch379_Sarcoidosis.pdf","382":"harrison/Ch382_Approach_to_Articular_and_Musculoskeletal_Dis.pdf","384":"harrison/Ch384_Gout_and_Other_Crystal-Associated_Arthropathi.pdf","387":"harrison/Ch387_Periarticular_Disorders_of_the_Extremities.pdf","388":"harrison/Ch388_Approach_to_the_Patient_with_Endocrine_Disord.pdf","433":"harrison/Ch433_Approach_to_the_Patient_with_Neurologic_Disea.pdf","436":"harrison/Ch436_Seizures_and_Epilepsy.pdf","437":"harrison/Ch437_Introduction_to_Cerebrovascular_Diseases.pdf","438":"harrison/Ch438_Ischemic_Stroke.pdf","439":"harrison/Ch439_Intracerebral_Hemorrhage.pdf","458":"harrison/Ch458_Guillain-Barr%23U00e9_Syndrome_and_Other_Immune.pdf","459":"harrison/Ch459_Myasthenia_Gravis_and_Other_Diseases_of_the_N.pdf"};
 // ===== TABS =====
@@ -830,6 +862,9 @@ let _sessionSaved=false;
 let _mockAnswered=0;
 let _examStartOk=0,_examStartNo=0;
 let qStartTime=Date.now();
+// Time-to-answer signal: seconds elapsed on the most recent `check()` call.
+// Captured in check() so it's stable for the reveal UI even after srScore resets qStartTime.
+let _lastElapsed=0;
 // ===== FEATURES: Confidence, Wrong-Reason, Difficulty =====
 let _confidence=null; // null,0(unsure),1(maybe),2(confident)
 let _pendingSR=null; // qIdx awaiting confidence rating after correct answer
@@ -1016,6 +1051,7 @@ function flipCard(){flipRevealed=true;render();}
 function onCallPick(correct){
   sel=correct?QZ[pool[qi]].c:((QZ[pool[qi]].c+1)%QZ[pool[qi]].o.length);
   checkMockIntercept();ans=true;
+  _lastElapsed=Math.max(0,Math.round((Date.now()-qStartTime)/1000));
   const q=QZ[pool[qi]];
   if(correct){S.qOk++;srScore(pool[qi],true);}
   else{S.qNo++;srScore(pool[qi],false);}
@@ -1087,6 +1123,9 @@ if(sel===null)return;
 checkMockIntercept();
 if(timedMode)clearInterval(timedInt);
 ans=true;
+// Capture elapsed BEFORE srScore runs (srScore resets qStartTime).
+// Used by the reveal UI to show "You took Xs" and topic-median comparison.
+_lastElapsed=Math.max(0,Math.round((Date.now()-qStartTime)/1000));
 const q=QZ[pool[qi]];
 // Feature 9: store confidence in SR data
 if(_confidence!==null){
@@ -1710,6 +1749,29 @@ return h;
 function _rqmExplain(){
 const q=QZ[pool[qi]];
 let h='';
+// Time-to-answer signal: show elapsed seconds + topic median comparison on reveal.
+// Only meaningful after an actual check() — skip on exam mode and flip-card paths (no explanation panel there).
+if(ans&&!examMode&&_lastElapsed>0){
+  const elapsed=_lastElapsed;
+  const tmed=q.ti>=0?topicMedianTime(q.ti):null;
+  const gmed=globalMedianTime();
+  const ref=tmed||gmed;
+  const refLabel=tmed?'topic median':(gmed?'your median':null);
+  const avgSelf=(S.sr[pool[qi]]&&S.sr[pool[qi]].at)||null;
+  // Color logic: green <= ref, yellow 1x-1.5x ref, red > 1.5x ref. Neutral if no ref.
+  let color='rgb(var(--fg2))',emoji='⏱',msg='';
+  if(ref){
+    if(elapsed<=ref){color='#16a34a';emoji='⚡';msg='faster than '+refLabel;}
+    else if(elapsed<=ref*1.5){color='#d97706';emoji='⏱';msg='about '+refLabel;}
+    else{color='#dc2626';emoji='🐢';msg='slower than '+refLabel;}
+  }
+  h+=`<div id="time-signal" class="time-signal" style="margin-top:10px;padding:8px 12px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:11px;color:rgb(var(--fg2))">`;
+  h+=`<span style="font-weight:700;color:${color}">${emoji} ${elapsed}s</span>`;
+  if(ref)h+=`<span style="color:rgb(var(--fg3))">· ${refLabel} ${ref}s</span>`;
+  if(msg)h+=`<span style="color:${color};font-size:10px">· ${msg}</span>`;
+  if(avgSelf&&avgSelf!==elapsed)h+=`<span style="color:rgb(var(--fg3));font-size:10px;margin-inline-start:auto">your avg ${avgSelf}s</span>`;
+  h+=`</div>`;
+}
 if(ans&&!examMode){
 const note=q.ti>=0&&NOTES[q.ti]?NOTES[q.ti]:null;
 if(note){
@@ -1832,7 +1894,8 @@ h+=`</div>`;
 // Non-year filters row (single-select)
 h+=`<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:10px;padding-bottom:4px;-webkit-overflow-scrolling:touch">`;
 const _trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
-const filts=[['Hazzard',`🤖 AI (${QZ.filter(q=>q.t==='Hazzard').length})`],['Hazzard-suppl',`📖 Suppl (${QZ.filter(q=>q.t==='Hazzard-suppl').length})`],['Harrison',`📘 Harrison (${QZ.filter(q=>q.t==='Harrison').length})`],['hard','🔥 Hard'],['slow','⏱️ Slow'],['weak','🎯 Weak'],['due','🔄 Due'],['traps',`🪤 Traps (${_trapCount})`],['nbs','🎯 Next Best Step']];
+const _slowCount=slowQuestionCount();
+const filts=[['Hazzard',`🤖 AI (${QZ.filter(q=>q.t==='Hazzard').length})`],['Hazzard-suppl',`📖 Suppl (${QZ.filter(q=>q.t==='Hazzard-suppl').length})`],['Harrison',`📘 Harrison (${QZ.filter(q=>q.t==='Harrison').length})`],['hard','🔥 Hard'],['slow',`⏱️ Slow${_slowCount>0?' ('+_slowCount+')':''}`],['weak','🎯 Weak'],['due','🔄 Due'],['traps',`🪤 Traps (${_trapCount})`],['nbs','🎯 Next Best Step']];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{
 if(f==='nbs')h+=`<span class="pill ${filt==='nbs'?'on':''}" onclick="startNextBestStep()">${l}</span>`;
@@ -4635,8 +4698,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.64';
+const APP_VERSION='9.65';
 const CHANGELOG={
+'9.65': ['⏱ Time-to-answer signal: לוח ההסבר מציג עכשיו כמה שניות לקחת לשאלה הזו בהשוואה לחציון של הנושא (או לחציון האישי שלך כשאין מספיק נתונים לנושא). ירוק = מהיר, כתום = בממוצע, אדום = איטי מ-1.5x החציון.', 'פילטר "⏱️ Slow" מראה עכשיו את מספר השאלות בהן הממוצע שלך גבוה מ-60 שניות (slowQuestionCount) — קל יותר לדעת אם יש לך על מה לעבוד.', 'עזרי API חדשים: topicMedianTime(ti), globalMedianTime(), slowQuestionCount() — חשופים לבדיקות ולשכבות UI עתידיות.'],
 '9.64': ['📚 קישור דו-כיווני Hazzard/Harrison ברמת השאלה (לא רק ברמת הנושא כמו עד כה). כל שאלה ב-data/questions.json ממופה עכשיו לפרק Hazzard + פרק Harrison הטובים ביותר דרך `data/question_chapters.json` (3,406 שאלות תויגו ע"י scripts/tag_chapters.cjs — 40 נושאים × מפה ידנית + 30 overrides ספציפיים למחלות).', 'UI: אחרי תשובה שגויה מוצגים עכשיו שני כפתורי פרק (Hazzard ו-Harrison) במקום אחד; קיימים גם בקוראי הפרקים עם "Drill all N" שממלא pool ישירות מ-QCHAPS.', 'פילטרים חדשים: filt="haz-ch" ו-filt="har-ch" עם topicFilt=chNum — תרגול כל השאלות הממופות לפרק ספציפי.'],
 '9.63': ['UX: "Why did I get it wrong?" (📚 👓 ⚖️ 🤦) כבר לא חוסם את כפתור "הבאה" — הפך לאופציונלי. בסוויט הקודם הפכנו את "How sure are you" לאופציונלי; עכשיו גם שורת ה-why-wrong שלמטה אופציונלית.', 'טסט חדש: topicRefCoverage — מוודא שכל entry ב-TOPIC_REF מצביע לפרק שקיים ב-data/hazzard_chapters.json, ושכל onclick שקורא ל-openHazzardChapter מגיע דרך libSec=haz-pdf (מונע את הבאג של 9.62 שהגיע ל-libSec=harrison).', 'Pre-push hook חדש: `scripts/git-hooks/pre-push` מריץ את שני בודקי innerHTML לפני כל push. התקנה ב-`npm run hooks:install`.'],
 '9.62': ['UX: "How sure are you?" (😬 🤔 😎) כבר לא חוסם את כפתור בדוק — הפך לאופציונלי. אפשר עדיין ללחוץ על אחת האמוג\'ים, אבל לא חייבים.', 'תיקון: כפתור "Read: Hazzard Ch X — you\'re weak here" מנווט עכשיו ישירות לפרק הספציפי (נפתח Hazzard chapter viewer עם התוכן) במקום לפתוח את הסקציה הלא-נכונה (Harrison) של מדף הספרייה'],
