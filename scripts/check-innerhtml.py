@@ -4,60 +4,109 @@
 Rules:
   * FAIL (exit 1) on any `.innerHTML = <expr>` where <expr> contains `+` or
     `${...}` interpolation AND does not call `sanitize(` anywhere in the
-    assignment expression (which may span multiple lines up to the next `;`).
-  * Allow explicit opt-out via `// safe-innerhtml: <reason>` on the opening
-    line of the assignment. The reason is required so every exemption is
+    assignment expression.
+  * Allow explicit opt-out via `// safe-innerhtml: <reason>` inside the
+    statement, as a trailing end-of-line comment, or on the line directly
+    preceding the assignment. The reason is required so every exemption is
     auditable by `grep`.
 
-Previously this emitted a WARNING and always exited 0, so real findings were
-invisible. Now a new violation blocks `npm run verify`.
+The statement-terminating `;` is found by a string-aware scanner so that
+semicolons inside CSS (`max-width:420px;`) and other literals don't
+prematurely close the expression. Previously a naive split-on-`;` was used
+and let real findings slip past the gate.
 """
 import re
 import sys
 
 SRC = 'shlav-a-mega.html'
-OPEN_RE = re.compile(r'\.innerHTML\s*=')
+OPEN_RE = re.compile(r'\.innerHTML\s*=(?!=)')
 SAFE_MARK = 'safe-innerhtml:'
 
 
-def scan(text: str):
-    lines = text.split('\n')
-    violations = []
-    i = 0
-    n = len(lines)
+def find_statement_end(text: str, start: int) -> int:
+    """Index of the `;` that ends the JS statement beginning at `start`.
+
+    Skips `;` inside strings/comments so the scan matches real statement
+    boundaries rather than CSS property separators.
+    """
+    i = start
+    n = len(text)
     while i < n:
-        line = lines[i]
-        m = OPEN_RE.search(line)
-        if not m:
-            i += 1
+        c = text[i]
+        c2 = text[i:i + 2]
+        if c2 == '//':
+            nl = text.find('\n', i)
+            if nl == -1:
+                return n
+            i = nl + 1
             continue
-        # Skip method calls like .innerHTML=='foo' (comparison) or function refs
-        # by requiring a bare `=` not immediately followed by `=`.
-        if line[m.end():m.end() + 1] == '=':
-            i += 1
+        if c2 == '/*':
+            end = text.find('*/', i + 2)
+            if end == -1:
+                return n
+            i = end + 2
             continue
-        start_line = i
-        # Collect the assignment expression until a terminating `;`.
-        # The naive approach: greedy read until we see a `;` at top level or
-        # end-of-statement. We don't attempt full JS parsing; we accept the
-        # expression as the concatenation of all lines until the first `;`
-        # that appears outside a string literal on the same or later lines.
-        buf = line[m.end():]
-        j = i
-        while ';' not in buf and j + 1 < n:
-            j += 1
-            buf += '\n' + lines[j]
-        # Trim at the first ; (close enough for this check)
-        expr = buf.split(';', 1)[0]
-        # Opt-out annotation on any line in the span OR on the line directly
-        # preceding the assignment (natural comment-above-statement placement).
-        lookback_start = max(0, start_line - 1)
-        annotated = any(SAFE_MARK in lines[k] for k in range(lookback_start, j + 1))
+        if c in ('"', "'"):
+            quote = c
+            i += 1
+            while i < n:
+                if text[i] == '\\':
+                    i += 2
+                    continue
+                if text[i] == quote:
+                    i += 1
+                    break
+                if text[i] == '\n':
+                    break
+                i += 1
+            continue
+        if c == '`':
+            i += 1
+            depth = 0
+            while i < n:
+                if text[i] == '\\':
+                    i += 2
+                    continue
+                if text[i:i + 2] == '${':
+                    depth += 1
+                    i += 2
+                    continue
+                if depth > 0 and text[i] == '}':
+                    depth -= 1
+                    i += 1
+                    continue
+                if depth == 0 and text[i] == '`':
+                    i += 1
+                    break
+                i += 1
+            continue
+        if c == ';':
+            return i
+        i += 1
+    return n
+
+
+def scan(text: str):
+    violations = []
+    for m in OPEN_RE.finditer(text):
+        rhs_start = m.end()
+        stmt_end = find_statement_end(text, rhs_start)
+        expr = text[rhs_start:stmt_end]
         has_interp = '+' in expr or '${' in expr
         has_sanitize = 'sanitize(' in expr
-        if has_interp and not has_sanitize and not annotated:
-            violations.append((start_line + 1, line.strip()[:100]))
-        i = j + 1
+        if not (has_interp and not has_sanitize):
+            continue
+        stmt_start_line = text.rfind('\n', 0, m.start()) + 1
+        prev_line_start = text.rfind('\n', 0, max(0, stmt_start_line - 1)) + 1
+        stmt_end_eol = text.find('\n', stmt_end)
+        if stmt_end_eol == -1:
+            stmt_end_eol = len(text)
+        annotation_span = text[prev_line_start:stmt_end_eol]
+        if SAFE_MARK in annotation_span:
+            continue
+        line_no = text.count('\n', 0, m.start()) + 1
+        preview = text[stmt_start_line:text.find('\n', stmt_start_line)].strip()[:100]
+        violations.append((line_no, preview))
     return violations
 
 
