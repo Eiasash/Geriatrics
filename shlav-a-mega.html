@@ -788,6 +788,7 @@ let libSec='haz-pdf';
 let harChOpen=null,_harData=null,_harLoading=false;
 let hazChOpen=null,_hazData=null,_hazLoading=false;
 function renderTabs(){
+// safe-innerhtml: TABS is a hardcoded array of tab definitions (id/label/icon); no user input
 document.getElementById('tb').innerHTML=TABS.map(t=>
 `<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" aria-label="${t.l}" style="transition:all .15s ease"><span class="ic">${t.ic}</span>${t.l}</button>`
 ).join('');
@@ -1122,7 +1123,7 @@ function _updateWrongUI(){
   const el=document.getElementById('why-wrong-box');
   if(el){
     const labels={'no_knowledge':'📚 Didn\'t know','misread':'👓 Misread','between_2':'⚖️ Between 2','silly':'🤦 Silly mistake'};
-    el.innerHTML='<div style="font-size:10px;color:#059669;font-weight:600">✅ '+labels[_wrongReason]+'</div>';
+    el.innerHTML='<div style="font-size:10px;color:#059669;font-weight:600">✅ '+labels[_wrongReason]+'</div>'; // safe-innerhtml: labels is a static dict of 4 hardcoded emoji strings
   }
   // Unblock the next button
   const nb=document.getElementById('next-btn');
@@ -4506,7 +4507,7 @@ case'learn':
   if(learnSub==='study')_body=renderStudy();
   else if(learnSub==='flash')_body=renderFlash();
   else if(learnSub==='drugs')_body=renderDrugs();
-  el.innerHTML=_subBar+_body;}break;
+  el.innerHTML=_subBar+_body;}break; // safe-innerhtml: _subBar is static HTML; _body from internal render*() functions (no user input)
 case'study':tab='learn';learnSub='study';el.innerHTML='';render();break;
 case'flash':tab='learn';learnSub='flash';el.innerHTML='';render();break;
 case'drugs':tab='learn';learnSub='drugs';el.innerHTML='';render();break;
@@ -4528,7 +4529,7 @@ case'more':
   else if(moreSub==='search')_mBody=renderSearch();
   else if(moreSub==='chat')_mBody=renderChat();
   else if(moreSub==='feedback')_mBody=renderFeedback();
-  el.innerHTML=_moreBar+_mBody;}break;
+  el.innerHTML=_moreBar+_mBody;}break; // safe-innerhtml: _moreBar is static HTML; _mBody from internal render*() functions (no user input)
 case'search':tab='more';moreSub='search';el.innerHTML='';render();break;
 case'chat':tab='more';moreSub='chat';el.innerHTML='';render();break;
 case'book':case'syl':tab='lib';el.innerHTML=renderLibrary();break;
@@ -4988,7 +4989,7 @@ case 'close-overlay':var ov=btn.closest('[id$="-overlay"]');if(ov)ov.remove();br
 }
 });
 
-_dataPromise.then(()=>{renderTabs();render();}).catch((e)=>{console.error('Boot failed:',e);document.body.innerHTML='<div style="padding:2em;text-align:center;color:#ef4444"><h2>Failed to load app data</h2><p>'+String(e)+'</p><button onclick="location.reload()">Retry</button></div>';});
+_dataPromise.then(()=>{renderTabs();render();}).catch((e)=>{console.error('Boot failed:',e);document.body.innerHTML='<div style="padding:2em;text-align:center;color:#ef4444"><h2>Failed to load app data</h2><p>'+sanitize(String(e&&e.message||e))+'</p><button onclick="location.reload()">Retry</button></div>';});
 </script>
 </body>
 </html>

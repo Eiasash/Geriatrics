@@ -82,10 +82,12 @@ describe('questions.json — formatting quality', () => {
   const PAST_EXAM_TAGS = ['2020', '2021', '2021-Jun', '2022', '2023-Jun', '2023-Sep', '2024-May', '2024-Sep', '2025-Jun'];
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
-  // Catches "בן58" → should be "בן 58". Geriatrics has a large legacy backlog
-  // of 580+ pre-existing cases — budget loosened to 600 so CI flags regressions
-  // without forcing a full cleanup pass.
-  test('Hebrew-digit missing-space count does not regress (<=600)', () => {
+  // Catches "בן58" → should be "בן 58". Geriatrics has a legacy backlog
+  // in past-exam PDFs — exact ratchet at current count so cleanup PRs are
+  // visible (test fails → bump the number → proof of progress). Previous
+  // `<=600` hid silent drift in either direction.
+  const HEBREW_DIGIT_BASELINE = 575;
+  test(`Hebrew-digit missing-space (past-exam): exact ${HEBREW_DIGIT_BASELINE}`, () => {
     const bad = [];
     questions.forEach((q, i) => {
       if (!PAST_EXAM_TAGS.includes(q.t)) return;
@@ -94,15 +96,19 @@ describe('questions.json — formatting quality', () => {
         bad.push({ i, tag: q.t });
       }
     });
-    if (bad.length > 600) {
-      console.error(`Hebrew+digit (no space) in ${bad.length} Qs (budget 600):`, bad.slice(0, 3));
+    const delta = bad.length - HEBREW_DIGIT_BASELINE;
+    if (delta !== 0) {
+      const dir = delta > 0 ? 'rose' : 'dropped';
+      console.error(`Hebrew+digit count ${dir} from ${HEBREW_DIGIT_BASELINE} to ${bad.length} (delta ${delta > 0 ? '+' : ''}${delta}). Update HEBREW_DIGIT_BASELINE.`);
     }
-    expect(bad.length).toBeLessThanOrEqual(600);
+    expect(bad.length).toBe(HEBREW_DIGIT_BASELINE);
   });
 
   // Catches `?גבוהה` (question mark on wrong side after RTL mangling).
-  // Loosened budget for Geriatrics legacy corpus.
-  test('wrong-side ?[Hebrew] count does not regress (<=150)', () => {
+  // Exact ratchet at current count. When cleanup happens, test fails,
+  // update the baseline number in the same PR.
+  const QMARK_HEBREW_BASELINE = 126;
+  test(`wrong-side ?[Hebrew] (past-exam): exact ${QMARK_HEBREW_BASELINE}`, () => {
     const bad = [];
     questions.forEach((q, i) => {
       if (!PAST_EXAM_TAGS.includes(q.t)) return;
@@ -111,10 +117,12 @@ describe('questions.json — formatting quality', () => {
         bad.push({ i, tag: q.t });
       }
     });
-    if (bad.length > 150) {
-      console.error(`?[Hebrew] in ${bad.length} Qs:`, bad.slice(0, 3));
+    const delta = bad.length - QMARK_HEBREW_BASELINE;
+    if (delta !== 0) {
+      const dir = delta > 0 ? 'rose' : 'dropped';
+      console.error(`?[Hebrew] count ${dir} from ${QMARK_HEBREW_BASELINE} to ${bad.length} (delta ${delta > 0 ? '+' : ''}${delta}). Update QMARK_HEBREW_BASELINE.`);
     }
-    expect(bad.length).toBeLessThanOrEqual(150);
+    expect(bad.length).toBe(QMARK_HEBREW_BASELINE);
   });
 
   // Catches content bleed: stem contains DIGIT-DOT followed by question-opener word.
