@@ -67,32 +67,33 @@ describe('questions.json — encoding integrity (strict)', () => {
   });
 });
 
-describe('questions.json — formatting quality (budgeted at current baseline)', () => {
-  // FIXME: this budget should drop toward 0 as RTL-extraction artifacts get
-  // cleaned up. Current violations are mostly `?מ` / `?איזו` at the start of
-  // Hebrew stems — punctuation on the wrong side after PDF text extraction.
-  const QMARK_HEBREW_BUDGET = 128;
+describe('questions.json — formatting quality (ratchet at current baseline)', () => {
+  // Exact ratchet: test fails on ANY change (up or down). Cleanup PRs must
+  // bump this number as part of the diff — silent drift in either direction
+  // is the failure mode we're trying to prevent.
+  const QMARK_HEBREW_BASELINE = 126;
 
-  it(`no more than ${QMARK_HEBREW_BUDGET} "?\u05d0-\u05ea" occurrences (wrong-side punct from RTL mangling)`, () => {
+  it(`"?\u05d0-\u05ea" occurrences: exact ${QMARK_HEBREW_BASELINE}`, () => {
     const bad = [];
     questions.forEach((q, i) => {
       const text = [q.q, ...(q.o || [])].join(' | ');
       if (/\?[\u0590-\u05FF]/.test(text)) bad.push({ i, tag: q.t, preview: (q.q || '').slice(0, 60) });
     });
-    if (bad.length > QMARK_HEBREW_BUDGET) {
-      console.error(`?[Hebrew] count rose from baseline ${QMARK_HEBREW_BUDGET} to ${bad.length}. First 3: ${JSON.stringify(bad.slice(0, 3))}`);
+    const delta = bad.length - QMARK_HEBREW_BASELINE;
+    if (delta !== 0) {
+      const dir = delta > 0 ? 'rose' : 'dropped';
+      console.error(`?[Hebrew] count ${dir} from ${QMARK_HEBREW_BASELINE} to ${bad.length} (delta ${delta > 0 ? '+' : ''}${delta}). Update QMARK_HEBREW_BASELINE. First 3: ${JSON.stringify(bad.slice(0, 3))}`);
     }
-    expect(bad.length).toBeLessThanOrEqual(QMARK_HEBREW_BUDGET);
+    expect(bad.length).toBe(QMARK_HEBREW_BASELINE);
   });
 });
 
-describe('questions.json — duplicates (budgeted at current baseline)', () => {
-  // FIXME: this budget should drop toward 0 as known duplicates get removed.
-  // Current dupes include Q124/3381, Q191/3385, Q3382/3388, etc. — likely
-  // from a past merge that didn't dedupe before appending.
-  const DUP_BUDGET = 8;
+describe('questions.json — duplicates (ratchet at current baseline)', () => {
+  // Exact ratchet. Current dupes include Q124/3381, Q191/3385, Q3382/3388.
+  // When a dedupe PR lands, test fails → update DUP_BASELINE to new count.
+  const DUP_BASELINE = 8;
 
-  it(`no more than ${DUP_BUDGET} duplicates by first 100 chars of stem`, () => {
+  it(`duplicates by first 100 chars of stem: exact ${DUP_BASELINE}`, () => {
     const seen = new Map();
     const dupes = [];
     questions.forEach((q, i) => {
@@ -101,10 +102,12 @@ describe('questions.json — duplicates (budgeted at current baseline)', () => {
       if (seen.has(key)) dupes.push({ first: seen.get(key), second: i, preview: key.slice(0, 50) });
       else seen.set(key, i);
     });
-    if (dupes.length > DUP_BUDGET) {
-      console.error(`Duplicate count rose from baseline ${DUP_BUDGET} to ${dupes.length}. First 3: ${JSON.stringify(dupes.slice(0, 3))}`);
+    const delta = dupes.length - DUP_BASELINE;
+    if (delta !== 0) {
+      const dir = delta > 0 ? 'rose' : 'dropped';
+      console.error(`Duplicate count ${dir} from ${DUP_BASELINE} to ${dupes.length} (delta ${delta > 0 ? '+' : ''}${delta}). Update DUP_BASELINE. First 3: ${JSON.stringify(dupes.slice(0, 3))}`);
     }
-    expect(dupes.length).toBeLessThanOrEqual(DUP_BUDGET);
+    expect(dupes.length).toBe(DUP_BASELINE);
   });
 });
 
