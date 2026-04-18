@@ -355,6 +355,12 @@ let FLASH=[];
 
 let QCHAPS={};
 
+// ===== REGULATORY DRILL INDEX =====
+// Array of qIdx values pointing to Israeli regulatory/ethics questions
+// (ייפוי כוח, capacity, guardianship, driving fitness, סיעוד מורכב, advance directives, etc.)
+// Populated from data/regulatory.json by the data loader below.
+let REG=[];
+
 
 // ===== STATE =====
 const LS='samega';
@@ -498,6 +504,7 @@ const _dataPromise = (async function loadDataArrays() {
     TABS: 'tabs.json',
     QCHAPS: 'question_chapters.json',
     DIS: 'distractors.json',
+    REG: 'regulatory.json',
   };
   try {
     const entries = Object.entries(files);
@@ -525,6 +532,7 @@ const _dataPromise = (async function loadDataArrays() {
       else if (varName === 'TABS') TABS = results[i];
       else if (varName === 'QCHAPS') QCHAPS = results[i] || {};
       else if (varName === 'DIS') DIS = results[i];
+      else if (varName === 'REG') REG = results[i];
       });
     _dataReady = true;
     // Load user-generated/approved questions from localStorage
@@ -963,6 +971,12 @@ if(weakTopics.length===0){pool=QZ.map((_,i)=>i);}else{pool=QZ.map((_,i)=>i).filt
 for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
 qi=0;return;}
 if(filt==='due'){pool=getDueQuestions();qi=0;return;}
+if(filt==='regulatory'){
+// Israeli regulatory/ethics drill: ייפוי כוח, capacity, guardianship, driving, סיעוד מורכב, advance directives
+pool=Array.isArray(REG)?REG.filter(i=>Number.isInteger(i)&&i>=0&&i<QZ.length):[];
+for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+qi=0;sel=null;ans=false;return;
+}
 if(filt==='hard'){
 // Any question you've interacted with that isn't at default EF (2.5 = never wrong)
 pool=QZ.map((_,i)=>i).filter(i=>{const s=S.sr[i];return s&&s.ef<2.5;});
@@ -1986,7 +2000,8 @@ h+=`</div>`;
 h+=`<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:10px;padding-bottom:4px;-webkit-overflow-scrolling:touch">`;
 const _trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
 const _slowCount=slowQuestionCount();
-const filts=[['Hazzard',`🤖 AI (${QZ.filter(q=>q.t==='Hazzard').length})`],['Hazzard-suppl',`📖 Suppl (${QZ.filter(q=>q.t==='Hazzard-suppl').length})`],['Harrison',`📘 Harrison (${QZ.filter(q=>q.t==='Harrison').length})`],['hard','🔥 Hard'],['slow',`⏱️ Slow${_slowCount>0?' ('+_slowCount+')':''}`],['weak','🎯 Weak'],['due','🔄 Due'],['traps',`🪤 Traps (${_trapCount})`],['nbs','🎯 Next Best Step']];
+const _regCount=Array.isArray(REG)?REG.length:0;
+const filts=[['Hazzard',`🤖 AI (${QZ.filter(q=>q.t==='Hazzard').length})`],['Hazzard-suppl',`📖 Suppl (${QZ.filter(q=>q.t==='Hazzard-suppl').length})`],['Harrison',`📘 Harrison (${QZ.filter(q=>q.t==='Harrison').length})`],['hard','🔥 Hard'],['slow',`⏱️ Slow${_slowCount>0?' ('+_slowCount+')':''}`],['weak','🎯 Weak'],['due','🔄 Due'],['traps',`🪤 Traps (${_trapCount})`],['nbs','🎯 Next Best Step'],['regulatory',`🏛️ תקנות (${_regCount})`]];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{
 if(f==='nbs')h+=`<span class="pill ${filt==='nbs'?'on':''}" onclick="startNextBestStep()">${l}</span>`;
@@ -4877,8 +4892,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.67';
+const APP_VERSION='9.68';
 const CHANGELOG={
+'9.68': ['🏛️ פילטר חדש "תקנות" (242 שאלות) — ייפוי כוח מתמשך, כשירות, אפוטרופוס, הנחיות רפואיות מקדימות, חוק החולה הנוטה למות, סיעוד מורכב, כושר נהיגה, חוזר מנכ"ל.', 'תיוג אוטומטי על בסיס regex חזק של מילות מפתח עבריות + אנגליות (scripts/tag_regulatory.cjs) — מייצר data/regulatory.json. בנק תקנות רשמי שסביב 7% מהשאלות.', 'שילוב מלא: pill חדש בשורת הפילטרים של לשונית Quiz, עם ספירה חיה.'],
 '9.67': ['🔬 Distractor Autopsy עכשיו תמיד-מופעל (לא Toggle). אחרי כל תשובה: כל 4 האפשרויות נצבעות (ירוק=נכונה, אדום=הבחירה השגויה שלך, אפור=שגויות אחרות) עם הסבר "למה שגוי כאן / מתי זה היה נכון".', '📦 data/distractors.json: מאגר מוכן מראש עם "autopsy" לכל שאלה — מחושב ברקע ע"י scripts/generate_distractors.cjs (קלוד Haiku דרך toranot proxy). Fallback ל-AI autopsy רק אם אין ב-cache.', '🧪 scripts/generate_distractors.cjs — bulk generator עם checkpoint כל 25, אטומי, resumable, --dry-run/--limit/--topic/--force. מהקופסה מחולל "Wrong because: X. Would be correct if: Y." לכל מסיח.', 'sw.js מטמין את data/distractors.json עם אסטרטגיית cache-first — UX offline מלא.'],
 '9.66': ['☁️ אינדיקטור סנכרון חדש בכותרת: 🟢 Synced / 🟡 Backup stale / 💾 Local only / 🔴 Offline / ☁️ Syncing… / ⚠️ Sync failed. לחיצה על ה-pill פותחת דיאלוג סטטוס עם device ID ותאריך הגיבוי האחרון.', '🔌 מאזיני online/offline מעדכנים את ה-pill אוטומטית כשהחיבור משתנה.', '🕒 S._lastCloudSync נשמר כל פעם שגיבוי לענן מצליח — כך ה-pill יודע להציג "stale" אחרי 24 שעות ללא גיבוי.', '📥 Export Progress משודרג: שם קובץ כולל תאריך (shlav-a-progress-YYYY-MM-DD.json) ומטא-דאטה משובצת (_meta עם גרסה, device ID, מונה שאלות, רצף) — importProgress נשאר תואם לאחור כי הוא מסנן ב-whitelist.'],
 '9.65': ['⏱ Time-to-answer signal: לוח ההסבר מציג עכשיו כמה שניות לקחת לשאלה הזו בהשוואה לחציון של הנושא (או לחציון האישי שלך כשאין מספיק נתונים לנושא). ירוק = מהיר, כתום = בממוצע, אדום = איטי מ-1.5x החציון.', 'פילטר "⏱️ Slow" מראה עכשיו את מספר השאלות בהן הממוצע שלך גבוה מ-60 שניות (slowQuestionCount) — קל יותר לדעת אם יש לך על מה לעבוד.', 'עזרי API חדשים: topicMedianTime(ti), globalMedianTime(), slowQuestionCount() — חשופים לבדיקות ולשכבות UI עתידיות.'],
