@@ -309,6 +309,7 @@ upd();setInterval(upd,30000);
 <h1>Shlav A Mega <span style="font-size:10px;font-weight:500;color:#0D7377;vertical-align:middle">Geriatrics</span> <span id="headerVer" style="font-size:9px;font-weight:400;color:rgb(var(--fg2));vertical-align:middle"></span></h1>
 <button class="dm-btn" data-action="toggle-study" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" data-action="toggle-dark" title="Dark Mode" aria-label="Toggle dark mode">🌓</button><button class="dm-btn" data-action="show-help" title="Help" aria-label="Help" style="right:82px;font-size:11px">❓</button>
 <p id="hdr-sub">Loading...</p>
+<div id="syncPill" class="sync-pill" role="status" aria-live="polite" style="position:absolute;top:4px;left:6px;font-size:9px;padding:2px 7px;border-radius:10px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));cursor:pointer;user-select:none;display:none" title="Sync status — click for details" onclick="showSyncStatus()"></div>
 </div>
 
 <div class="ct" id="ct" role="main"></div>
@@ -391,7 +392,65 @@ let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()
       localStorage.removeItem('samega_weekly');
     }
   }catch(e){}
+  updateSyncPill();
   },150)}
+
+// ===== SYNC INDICATOR =====
+// Tracks and displays cloud sync state in the header pill (#syncPill).
+// States: 'offline' | 'syncing' | 'synced' | 'stale' | 'never' | 'failed'
+// `stale` = last backup > 1 day old; `never` = user hasn't tapped Backup yet.
+let _syncState='init';
+function computeSyncState(){
+  if(typeof navigator!=='undefined'&&navigator.onLine===false)return 'offline';
+  if(_syncState==='syncing'||_syncState==='failed')return _syncState;
+  const last=S&&S._lastCloudSync?new Date(S._lastCloudSync).getTime():0;
+  if(!last)return 'never';
+  const ageDays=(Date.now()-last)/86400000;
+  if(ageDays>1)return 'stale';
+  return 'synced';
+}
+function syncPillMeta(state){
+  switch(state){
+    case 'offline':  return {label:'🔴 Offline',       bg:'#fef2f2', fg:'#b91c1c', brd:'#fca5a5'};
+    case 'syncing':  return {label:'☁️ Syncing…',      bg:'#eff6ff', fg:'#1d4ed8', brd:'#93c5fd'};
+    case 'synced':   return {label:'🟢 Synced',        bg:'#ecfdf5', fg:'#15803d', brd:'#86efac'};
+    case 'stale':    return {label:'🟡 Backup stale',  bg:'#fefce8', fg:'#a16207', brd:'#fde047'};
+    case 'never':    return {label:'💾 Local only',    bg:'#f5f3ff', fg:'#6d28d9', brd:'#c4b5fd'};
+    case 'failed':   return {label:'⚠️ Sync failed',   bg:'#fef2f2', fg:'#b91c1c', brd:'#fca5a5'};
+    default:         return {label:'💾 Local only',    bg:'#f5f3ff', fg:'#6d28d9', brd:'#c4b5fd'};
+  }
+}
+function updateSyncPill(){
+  // Transient states (syncing/failed) are sticky; otherwise recompute from S + navigator.onLine.
+  const st=(_syncState==='syncing'||_syncState==='failed')?_syncState:computeSyncState();
+  const el=typeof document!=='undefined'?document.getElementById('syncPill'):null;
+  if(!el)return;
+  const m=syncPillMeta(st);
+  el.textContent=m.label;
+  el.style.background=m.bg;el.style.color=m.fg;el.style.border='1px solid '+m.brd;
+  el.style.display='inline-block';
+}
+function showSyncStatus(){
+  const st=(_syncState==='syncing'||_syncState==='failed')?_syncState:computeSyncState();
+  const last=S&&S._lastCloudSync?new Date(S._lastCloudSync).toLocaleString():'never';
+  const did=(typeof localStorage!=='undefined'?localStorage.getItem('samega_devid'):null)||'(not set)';
+  const lines=[
+    'Sync status: '+st,
+    'Last cloud backup: '+last,
+    'Device ID: '+String(did).slice(0,18)+(String(did).length>18?'…':''),
+    '',
+    navigator.onLine===false
+      ? 'You are offline — changes are saved locally and will sync when you reconnect.'
+      : (st==='synced'
+        ? 'Everything is backed up. Open More → 💾 Data Management to back up manually.'
+        : 'To back up now, open More → 💾 Data Management → ☁️ Backup to Cloud.'),
+  ];
+  alert(lines.join('\n'));
+}
+if(typeof window!=='undefined'){
+  window.addEventListener('online', ()=>{if(_syncState!=='syncing')_syncState='init';updateSyncPill();});
+  window.addEventListener('offline',()=>{updateSyncPill();});
+}
 (function updateStreak(){
 const today=new Date().toISOString().slice(0,10);
 if(S.lastDay===today)return;
@@ -4553,6 +4612,8 @@ function _sbDeviceId(){let id=localStorage.getItem('samega_devid');if(!id){id='d
 async function cloudBackup(){
   const btn=document.getElementById('cloud-backup-btn');
   if(btn){btn.disabled=true;btn.textContent='☁️ Saving...';}
+  _syncState='syncing';updateSyncPill();
+  let ok=false;
   try{
     const payload={id:_sbDeviceId(),data:S,updated_at:new Date().toISOString()};
     const res=await fetch(SUPA_URL+'/rest/v1/samega_backups',{
@@ -4570,12 +4631,15 @@ async function cloudBackup(){
         });
         if(!patchRes.ok){const pe=await patchRes.text();alert('❌ Backup update failed: '+patchRes.status+'\n'+pe.slice(0,200));return;}
       }
+      ok=true;
+      S._lastCloudSync=new Date().toISOString();save();
       alert('✅ Progress backed up to cloud!\nDevice ID: '+_sbDeviceId().slice(0,12)+'...');
     } else {
       const err=await res.text();
       alert('❌ Backup failed: '+res.status+'\n'+err.slice(0,200));
     }
   }catch(e){alert('❌ Backup failed: '+e.message);}
+  _syncState=ok?'init':'failed';updateSyncPill();
   if(btn){btn.disabled=false;btn.textContent='☁️ Backup to Cloud';}
 }
 async function cloudRestore(){
@@ -4691,15 +4755,32 @@ alert('✅ Progress imported successfully!');}catch(err){alert('❌ Invalid file
 input.click();}
 
 function exportProgress(){
-const data=JSON.stringify(S,null,2);
+// Wrap state with metadata so future imports can detect stale/foreign-device exports.
+// The bare S object still roundtrips cleanly through importProgress() because that
+// routine whitelists allowed keys — extra _meta is simply ignored on import.
+const meta={
+  _meta:{
+    app:'shlav-a-mega',
+    appVersion:APP_VERSION,
+    exportedAt:new Date().toISOString(),
+    deviceId:(typeof localStorage!=='undefined'?localStorage.getItem('samega_devid'):null)||null,
+    questionCount:Array.isArray(QZ)?QZ.length:0,
+    srEntryCount:S&&S.sr?Object.keys(S.sr).length:0,
+    streak:S&&S.streak?S.streak:0,
+  },
+};
+const payload=Object.assign({},meta,S);
+const data=JSON.stringify(payload,null,2);
 const blob=new Blob([data],{type:'application/json'});
-const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='shlav-a-progress.json';a.click();
+const ts=new Date().toISOString().slice(0,10);
+const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='shlav-a-progress-'+ts+'.json';a.click();
 }
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.65';
+const APP_VERSION='9.66';
 const CHANGELOG={
+'9.66': ['☁️ אינדיקטור סנכרון חדש בכותרת: 🟢 Synced / 🟡 Backup stale / 💾 Local only / 🔴 Offline / ☁️ Syncing… / ⚠️ Sync failed. לחיצה על ה-pill פותחת דיאלוג סטטוס עם device ID ותאריך הגיבוי האחרון.', '🔌 מאזיני online/offline מעדכנים את ה-pill אוטומטית כשהחיבור משתנה.', '🕒 S._lastCloudSync נשמר כל פעם שגיבוי לענן מצליח — כך ה-pill יודע להציג "stale" אחרי 24 שעות ללא גיבוי.', '📥 Export Progress משודרג: שם קובץ כולל תאריך (shlav-a-progress-YYYY-MM-DD.json) ומטא-דאטה משובצת (_meta עם גרסה, device ID, מונה שאלות, רצף) — importProgress נשאר תואם לאחור כי הוא מסנן ב-whitelist.'],
 '9.65': ['⏱ Time-to-answer signal: לוח ההסבר מציג עכשיו כמה שניות לקחת לשאלה הזו בהשוואה לחציון של הנושא (או לחציון האישי שלך כשאין מספיק נתונים לנושא). ירוק = מהיר, כתום = בממוצע, אדום = איטי מ-1.5x החציון.', 'פילטר "⏱️ Slow" מראה עכשיו את מספר השאלות בהן הממוצע שלך גבוה מ-60 שניות (slowQuestionCount) — קל יותר לדעת אם יש לך על מה לעבוד.', 'עזרי API חדשים: topicMedianTime(ti), globalMedianTime(), slowQuestionCount() — חשופים לבדיקות ולשכבות UI עתידיות.'],
 '9.64': ['📚 קישור דו-כיווני Hazzard/Harrison ברמת השאלה (לא רק ברמת הנושא כמו עד כה). כל שאלה ב-data/questions.json ממופה עכשיו לפרק Hazzard + פרק Harrison הטובים ביותר דרך `data/question_chapters.json` (3,406 שאלות תויגו ע"י scripts/tag_chapters.cjs — 40 נושאים × מפה ידנית + 30 overrides ספציפיים למחלות).', 'UI: אחרי תשובה שגויה מוצגים עכשיו שני כפתורי פרק (Hazzard ו-Harrison) במקום אחד; קיימים גם בקוראי הפרקים עם "Drill all N" שממלא pool ישירות מ-QCHAPS.', 'פילטרים חדשים: filt="haz-ch" ו-filt="har-ch" עם topicFilt=chNum — תרגול כל השאלות הממופות לפרק ספציפי.'],
 '9.63': ['UX: "Why did I get it wrong?" (📚 👓 ⚖️ 🤦) כבר לא חוסם את כפתור "הבאה" — הפך לאופציונלי. בסוויט הקודם הפכנו את "How sure are you" לאופציונלי; עכשיו גם שורת ה-why-wrong שלמטה אופציונלית.', 'טסט חדש: topicRefCoverage — מוודא שכל entry ב-TOPIC_REF מצביע לפרק שקיים ב-data/hazzard_chapters.json, ושכל onclick שקורא ל-openHazzardChapter מגיע דרך libSec=haz-pdf (מונע את הבאג של 9.62 שהגיע ל-libSec=harrison).', 'Pre-push hook חדש: `scripts/git-hooks/pre-push` מריץ את שני בודקי innerHTML לפני כל push. התקנה ב-`npm run hooks:install`.'],
@@ -5099,7 +5180,7 @@ case 'close-overlay':var ov=btn.closest('[id$="-overlay"]');if(ov)ov.remove();br
 }
 });
 
-_dataPromise.then(()=>{renderTabs();render();}).catch((e)=>{console.error('Boot failed:',e);document.body.innerHTML='<div style="padding:2em;text-align:center;color:#ef4444"><h2>Failed to load app data</h2><p>'+sanitize(String(e&&e.message||e))+'</p><button onclick="location.reload()">Retry</button></div>';});
+_dataPromise.then(()=>{renderTabs();render();updateSyncPill();}).catch((e)=>{console.error('Boot failed:',e);document.body.innerHTML='<div style="padding:2em;text-align:center;color:#ef4444"><h2>Failed to load app data</h2><p>'+sanitize(String(e&&e.message||e))+'</p><button onclick="location.reload()">Retry</button></div>';});
 </script>
 </body>
 </html>
