@@ -631,37 +631,88 @@ el.style.display=el.dataset.drug.includes(lv)?'':'none';
 }
 function calcACBTotal(){return medBasket.reduce((sum,name)=>{const d=DRUGS.find(x=>x.name===name);return sum+(d?d.acb:0);},0);}
 function getSTOPPWarnings(){
-const warnings=[];const names=medBasket.map(n=>n.toLowerCase());
-const cats=medBasket.map(n=>{const d=DRUGS.find(x=>x.name===n);return d?d.cat:'';}).filter(Boolean);
-// Dual anticholinergic
-const acDrugs=medBasket.filter(n=>{const d=DRUGS.find(x=>x.name===n);return d&&d.acb>=2;});
-if(acDrugs.length>=2)warnings.push({level:'high',text:`Dual anticholinergic burden: ${acDrugs.join(' + ')} — cumulative cognitive/fall risk`});
-// Benzo + opioid
-const hasBenzo=cats.some(c=>c.toLowerCase().includes('benzo'));
-const hasOpioid=cats.some(c=>c.toLowerCase().includes('opioid'));
-if(hasBenzo&&hasOpioid)warnings.push({level:'high',text:'Benzodiazepine + Opioid — respiratory depression risk'});
-// Dual antiplatelet
-const antiPlat=medBasket.filter(n=>/aspirin|clopidogrel|prasugrel|ticagrelor/i.test(n));
-if(antiPlat.length>=2)warnings.push({level:'med',text:`Dual antiplatelet: ${antiPlat.join(' + ')} — bleeding risk, especially with anticoagulant`});
-// NSAID + anticoagulant
-const hasNSAID=cats.some(c=>c.toLowerCase().includes('nsaid'));
-const hasAnticoag=cats.some(c=>c.toLowerCase().includes('anticoag'));
-if(hasNSAID&&hasAnticoag)warnings.push({level:'high',text:'NSAID + Anticoagulant — major GI bleed risk'});
-// ACEi/ARB + K-sparing + NSAID (triple whammy)
-const hasACE=names.some(n=>/enalapril|ramipril|lisinopril|losartan|valsartan|candesartan/i.test(n));
-const hasKsparing=names.some(n=>/spironolactone|eplerenone|amiloride/i.test(n));
-if(hasACE&&hasKsparing)warnings.push({level:'med',text:'ACEi/ARB + K-sparing diuretic — hyperkalemia risk'});
+// Pure function of medBasket + DRUGS. Returns {level:'high'|'med'|'low', text}[].
+const warnings=[];
+const names=medBasket.map(n=>n.toLowerCase());
+const entries=medBasket.map(n=>({n,d:DRUGS.find(x=>x.name===n)})).filter(e=>e.d);
+const cats=entries.map(e=>(e.d.cat||'').toLowerCase());
+const has=(pat)=>names.some(n=>pat.test(n));
+const catHas=(pat)=>cats.some(c=>pat.test(c));
+const flagged=(k)=>entries.filter(e=>e.d[k]);
+// -------- Anticholinergic burden --------
+const acDrugs=entries.filter(e=>e.d.acb>=2).map(e=>e.n);
+if(acDrugs.length>=2)warnings.push({level:'high',text:`Dual anticholinergic burden: ${acDrugs.join(' + ')} — cumulative cognitive/fall risk (ACB ≥2 each)`});
+// -------- Respiratory depression: benzo + opioid --------
+const hasBenzo=catHas(/benzo/);
+const hasOpioid=catHas(/opioid/);
+if(hasBenzo&&hasOpioid)warnings.push({level:'high',text:'Benzodiazepine + Opioid — respiratory depression / overdose risk (Beers strong recommendation)'});
+// -------- Antiplatelet load --------
+const antiPlat=medBasket.filter(n=>/aspirin|clopidogrel|prasugrel|ticagrelor|ticlopidine/i.test(n));
+if(antiPlat.length>=2)warnings.push({level:'med',text:`Dual antiplatelet: ${antiPlat.join(' + ')} — bleeding risk; reconsider duration/indication`});
+// -------- Anticoagulant + antiplatelet / NSAID --------
+const hasAnticoag=catHas(/anticoag|doac/);
+const hasNSAID=catHas(/nsaid/);
+if(hasNSAID&&hasAnticoag)warnings.push({level:'high',text:'NSAID + Anticoagulant — major GI bleed risk. Use paracetamol first-line.'});
+if(hasAnticoag&&antiPlat.length>=1)warnings.push({level:'high',text:`Anticoagulant + Antiplatelet (${antiPlat.join(', ')}) — triple check indication, shortest duration possible, GI protection`});
+// -------- Triple whammy: ACEi/ARB + diuretic + NSAID --------
+const hasACE=has(/enalapril|ramipril|lisinopril|losartan|valsartan|candesartan|perindopril/i);
+const hasDiuretic=catHas(/diuretic|thiazide|loop/);
+const hasKsparing=has(/spironolactone|eplerenone|amiloride/i);
+if(hasACE&&hasDiuretic&&hasNSAID)warnings.push({level:'high',text:'⚠️ TRIPLE WHAMMY: ACEi/ARB + diuretic + NSAID — AKI risk up to 8-fold. Stop NSAID if possible.'});
+if(hasACE&&hasKsparing)warnings.push({level:'med',text:'ACEi/ARB + K-sparing diuretic — hyperkalemia risk. Check K, Cr weekly at initiation.'});
 if(hasACE&&hasNSAID)warnings.push({level:'med',text:'ACEi/ARB + NSAID — AKI risk, reduced BP efficacy'});
-// Anticholinergic opposing cholinesterase inhibitor
-const hasAntiChol=medBasket.some(n=>{const d=DRUGS.find(x=>x.name===n);return d&&d.acb>=2;});
-const hasChEI=names.some(n=>/donepezil|rivastigmine|galantamine/i.test(n));
-if(hasAntiChol&&hasChEI)warnings.push({level:'high',text:'Anticholinergic opposes cholinesterase inhibitor — pharmacological conflict'});
-// Metformin + CKD
-const hasMet=names.some(n=>/metformin/i.test(n));
-if(hasMet)warnings.push({level:'low',text:'Metformin — verify eGFR >30; contraindicated in severe CKD'});
-// PPI long-term
-const hasPPI=names.some(n=>/omeprazole|pantoprazole|esomeprazole|lansoprazole/i.test(n));
-if(hasPPI)warnings.push({level:'low',text:'PPI — long-term use: Mg/Ca malabsorption, C. difficile risk, consider step-down'});
+// -------- Anticholinergic opposing cholinesterase inhibitor --------
+const hasAntiChol=entries.some(e=>e.d.acb>=2);
+const hasChEI=has(/donepezil|rivastigmine|galantamine/i);
+if(hasAntiChol&&hasChEI)warnings.push({level:'high',text:'Anticholinergic opposes cholinesterase inhibitor — pharmacological conflict. One should stop.'});
+// -------- Fall risk: CNS depressant tally --------
+const fallDrugs=entries.filter(e=>e.d.falls||/benzo|sedat|opioid|antipsycho/i.test(e.d.cat||'')).map(e=>e.n);
+if(fallDrugs.length>=3)warnings.push({level:'high',text:`Falls/fractures risk: ${fallDrugs.length} CNS-active drugs (${fallDrugs.join(', ')}) — STOPP criterion E`});
+else if(fallDrugs.length===2)warnings.push({level:'med',text:`Dual fall-risk drugs: ${fallDrugs.join(' + ')} — consider consolidation/de-prescribe`});
+// -------- QT-prolonging combination --------
+const qtDrugs=entries.filter(e=>e.d.qt||/amiodarone|haloperidol|citalopram|escitalopram|methadone|moxifloxacin|azithromycin|ondansetron|quetiapine|trazodone/i.test(e.n)).map(e=>e.n);
+if(qtDrugs.length>=2)warnings.push({level:'high',text:`QT-prolongation stack: ${qtDrugs.join(' + ')} — obtain ECG, correct K/Mg. Torsades risk.`});
+// -------- Serotonin syndrome risk --------
+const sero=entries.filter(e=>e.d.serotonergic||/SSRI|SNRI|TCA|tramadol|linezolid|MAOI/i.test(e.d.cat||'')||/fluoxetine|sertraline|citalopram|escitalopram|paroxetine|venlafaxine|duloxetine|tramadol|amitriptyline|nortriptyline|desipramine/i.test(e.n)).map(e=>e.n);
+if(sero.length>=2)warnings.push({level:'high',text:`Serotonin-syndrome risk: ${sero.join(' + ')} — monitor for clonus/tremor/hyperthermia. Avoid adding tramadol/linezolid/methylene blue.`});
+// -------- Digoxin --------
+const hasDigoxin=has(/digoxin/i);
+if(hasDigoxin){
+  warnings.push({level:'med',text:'Digoxin — Beers: avoid >0.125 mg/day in elderly. Narrow therapeutic index. Monitor level + K.'});
+  if(catHas(/loop/))warnings.push({level:'high',text:'Digoxin + loop diuretic — hypokalemia → digoxin toxicity. Replace K, check level.'});
+  if(catHas(/thiazide/))warnings.push({level:'med',text:'Digoxin + thiazide — hypokalemia → digoxin toxicity. Monitor K.'});
+  if(has(/amiodarone/i))warnings.push({level:'high',text:'Digoxin + amiodarone — ↑digoxin levels 50-70%. Halve digoxin dose.'});
+}
+// -------- Warfarin interaction cluster --------
+const hasWarfarin=has(/warfarin/i);
+if(hasWarfarin){
+  if(hasNSAID)warnings.push({level:'high',text:'Warfarin + NSAID — major bleed risk. Switch to paracetamol.'});
+  if(antiPlat.length)warnings.push({level:'high',text:`Warfarin + ${antiPlat.join('/')} — tight indication review + shortest duration + PPI cover.`});
+  if(has(/amiodarone|metronidazole|sulfamethoxazole|fluconazole|ciprofloxacin/i))warnings.push({level:'high',text:'Warfarin + potent interaction drug — INR will spike. Empirically reduce warfarin 25-50% and recheck INR in 3-5 days.'});
+}
+// -------- Statin + CYP3A4 inhibitor --------
+const statins=entries.filter(e=>/statin/i.test(e.d.cat||'')||/simvastatin|atorvastatin|lovastatin/i.test(e.n)).map(e=>e.n);
+const cyp34Inh=entries.filter(e=>e.d.cyp3a4_inhibitor||/amiodarone|diltiazem|verapamil|clarithromycin|erythromycin|ketoconazole|itraconazole|fluconazole|ritonavir/i.test(e.n)).map(e=>e.n);
+if(statins.some(s=>/simvastatin|lovastatin/i.test(s))&&cyp34Inh.length)warnings.push({level:'high',text:`Simvastatin/lovastatin + CYP3A4 inhibitor (${cyp34Inh.join(', ')}) — myopathy/rhabdo risk. Switch to rosuvastatin or pravastatin.`});
+// -------- Clopidogrel + CYP2C19 PPI --------
+if(has(/clopidogrel/i)&&has(/omeprazole|esomeprazole/i))warnings.push({level:'med',text:'Clopidogrel + omeprazole/esomeprazole — ↓antiplatelet activation (CYP2C19). Switch to pantoprazole.'});
+// -------- Levothyroxine absorption --------
+if(has(/levothyroxine|eltroxin|synthroid/i)){
+  if(has(/ferrous|calcium|omeprazole|pantoprazole|esomeprazole|lansoprazole|sucralfate/i))warnings.push({level:'med',text:'Levothyroxine absorption ↓ by PPI / iron / calcium / sucralfate. Space by ≥4h and recheck TSH.'});
+}
+// -------- Metformin & other renal --------
+if(has(/metformin/i))warnings.push({level:'low',text:'Metformin — verify eGFR ≥30; hold 48h around contrast. Lactic acidosis rare.'});
+if(has(/nitrofurantoin/i))warnings.push({level:'med',text:'Nitrofurantoin — CI if CrCl<30 (pulmonary/hepatic/neuropathy risk in elderly).'});
+// -------- PPI chronic use --------
+const hasPPI=has(/omeprazole|pantoprazole|esomeprazole|lansoprazole/i);
+if(hasPPI)warnings.push({level:'low',text:'PPI chronic use — Mg/Ca malabsorption, fracture, C. difficile risk. Document ongoing indication; deprescribe if possible.'});
+// -------- Bradycardia-rate stack --------
+const hasBB=catHas(/beta-?blocker/);
+const hasNonDHP=has(/diltiazem|verapamil/i);
+if(hasBB&&hasNonDHP)warnings.push({level:'high',text:'Beta-blocker + non-DHP CCB (diltiazem/verapamil) — severe bradycardia / AV block. Usually contraindicated.'});
+// -------- Beers count summary (info) --------
+const beersList=entries.filter(e=>e.d.beers).map(e=>e.n);
+if(beersList.length)warnings.push({level:'med',text:`${beersList.length} Beers-listed drug${beersList.length>1?'s':''}: ${beersList.join(', ')} — review for alternatives.`});
 return warnings;
 }
 
@@ -4593,8 +4644,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.63';
+const APP_VERSION='9.66';
 const CHANGELOG={
+'9.66': ['💊 מנוע Polypharmacy הורחב — מילון תרופות עבר מ-53 ל-114 (נוספו 61 תרופות גריאטריות שכיחות: ACEi, ARB, סטטינים, DOACs, PPIs, SSRIs, גבפנטין, טרמדול, לבותירוקסין וכו\')', '🆕 9 כללי STOPP חדשים: Triple Whammy (ACEi + משתן + NSAID), Falls-risk tally (≥3 CNS depressants), QT stack, סינדרום סרוטונרגי, Digoxin × loop/amiodarone, Warfarin × amiodarone/NSAID, סימבסטטין × CYP3A4 inh, Clopidogrel × Omeprazole, Levothyroxine × PPI/ברזל/סידן, Beta-blocker × non-DHP CCB', 'הכללים הישנים שודרגו: anticoag + antiplatelet, K-sparing monitoring weekly, PPI chronic deprescribe hint — כל עם severity (high/med/low) ו-rationale', 'נוסף סיכום ספירת Beers-drugs בתוך האזהרות. ACB scoring נשאר כפי שהיה.'],
 '9.63': ['UX: "Why did I get it wrong?" (📚 👓 ⚖️ 🤦) כבר לא חוסם את כפתור "הבאה" — הפך לאופציונלי. בסוויט הקודם הפכנו את "How sure are you" לאופציונלי; עכשיו גם שורת ה-why-wrong שלמטה אופציונלית.', 'טסט חדש: topicRefCoverage — מוודא שכל entry ב-TOPIC_REF מצביע לפרק שקיים ב-data/hazzard_chapters.json, ושכל onclick שקורא ל-openHazzardChapter מגיע דרך libSec=haz-pdf (מונע את הבאג של 9.62 שהגיע ל-libSec=harrison).', 'Pre-push hook חדש: `scripts/git-hooks/pre-push` מריץ את שני בודקי innerHTML לפני כל push. התקנה ב-`npm run hooks:install`.'],
 '9.62': ['UX: "How sure are you?" (😬 🤔 😎) כבר לא חוסם את כפתור בדוק — הפך לאופציונלי. אפשר עדיין ללחוץ על אחת האמוג\'ים, אבל לא חייבים.', 'תיקון: כפתור "Read: Hazzard Ch X — you\'re weak here" מנווט עכשיו ישירות לפרק הספציפי (נפתח Hazzard chapter viewer עם התוכן) במקום לפתוח את הסקציה הלא-נכונה (Harrison) של מדף הספרייה'],
 '9.61': ['📝 85 הסברים חדשים נכתבו לשאלות עם שדה e ריק (Claude Sonnet 4.5, פורמט סטנדרטי: התשובה הנכונה / למה נכונה / למה אחרות שגויות / נקודת מפתח לקשיש)', 'סטנדרטיזציית תגיות מבחן לפורמט קנוני YYYY-Mon: יוני 21→2021-Jun, יוני 23→2023-Jun, יוני 25→2025-Jun, מאי 24→2024-May, ספט 24→2024-Sep, 2023-ב→2023-Sep', '2025-א (65 שאלות ייחודיות) סווג: 41 וינייטות→2025-Jun, 24 תיאוריה→Hazzard-suppl; 24 דופליקטים ישירים עם יוני 25 הוסרו', 'מיגרציית localStorage אוטומטית עם סנטינל __tagMigrationV1 — לא מאבדים נתוני משתמש קיימים', 'פילטר רב-בחירה לשנות מבחן (UI הופץ מ-Pnimit) — ניתן לסמן כמה שנים יחד, ספירה לכל שנה, שורה נפרדת ממקורות תוכן', 'בדיקות רגרסיה חדשות (regressionGuards.test.js, 42 בדיקות) — תופסות mojibake, duplicates, שבר שאלות, תגיות לא מזוהות, סנכרון גרסת SW', 'סה"כ שאלות: 3,406 (מ-3,430 — 24 דופליקטים הוסרו)'],
