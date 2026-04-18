@@ -1,6 +1,6 @@
-const CACHE='shlav-a-v9.64';
+const CACHE='shlav-a-v9.67';
 const HTML_URLS=['shlav-a-mega.html','manifest.json','shared/fsrs.js','src/storage.js','src/sw-update.js'];
-const JSON_DATA_URLS=['data/questions.json','data/topics.json','data/notes.json','data/drugs.json','data/flashcards.json','harrison_chapters.json','data/hazzard_chapters.json','data/tabs.json'];
+const JSON_DATA_URLS=['data/questions.json','data/topics.json','data/notes.json','data/drugs.json','data/flashcards.json','harrison_chapters.json','data/hazzard_chapters.json','data/tabs.json','data/question_chapters.json','data/distractors.json'];
 const ALL_URLS=[...HTML_URLS,...JSON_DATA_URLS];
 
 // Supabase question-images: cache-first (images are immutable once uploaded)
