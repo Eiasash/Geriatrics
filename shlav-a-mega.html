@@ -1149,7 +1149,7 @@ function renderExplainBox(qIdx){
   if(ex.err){container.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px 0">⚠️ '+sanitize(ex.err)+'</div>';return;}
   const _isFlagged=(S.flagged||{})[qIdx];
   container.innerHTML='<div class="explain-box" style="margin-top:8px;padding:10px 12px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--green-fg));direction:rtl;text-align:right"><div style="font-weight:700;margin-bottom:4px">🤖 הסבר AI</div><div>'+sanitize(ex.text)+'</div></div>'+
-    '<button onclick="toggleFlagExplain('+qIdx+')" style="font-size:9px;padding:2px 8px;margin-top:3px;background:rgb(var('+(_isFlagged?'--red-bg':'--bg2')+'));color:rgb(var('+(_isFlagged?'--red-fg':'--fg3')+'));border:1px solid rgb(var('+(_isFlagged?'--red-brd':'--brd')+'));border-radius:6px;cursor:pointer">'+(_isFlagged?'⚑ Flagged — verify':'⚐ Flag as unreliable')+'</button>';
+    '<button onclick="toggleFlagExplain('+sanitize(String(qIdx))+')" style="font-size:9px;padding:2px 8px;margin-top:3px;background:rgb(var('+(_isFlagged?'--red-bg':'--bg2')+'));color:rgb(var('+(_isFlagged?'--red-fg':'--fg3')+'));border:1px solid rgb(var('+(_isFlagged?'--red-brd':'--brd')+'));border-radius:6px;cursor:pointer">'+(_isFlagged?'⚑ Flagged — verify':'⚐ Flag as unreliable')+'</button>';
 }
 async function explainWithAI(qIdx){
   if(_exCache[qIdx]&&!_exCache[qIdx].err){setTimeout(function(){renderExplainBox(qIdx);},0);return;}
@@ -2292,7 +2292,7 @@ Format as clean bullet points. Be concise and high-yield.`;
   try{
     const txt=await callAI([{role:'user',content:prompt}],800,'sonnet');
     box.innerHTML=`<div style="margin-top:12px;padding:14px;background:rgb(var(--green-bg));border-radius:10px;border-left:4px solid #059669">
-<div style="font-weight:700;font-size:12px;color:rgb(var(--green-fg));margin-bottom:8px">📝 Board Summary — Ch ${chNum}: ${chTitle}</div>
+<div style="font-weight:700;font-size:12px;color:rgb(var(--green-fg));margin-bottom:8px">📝 Board Summary — Ch ${sanitize(String(chNum))}: ${sanitize(chTitle)}</div>
 <div style="font-size:11px;line-height:1.8;direction:rtl;text-align:right;white-space:pre-wrap">${sanitize(txt)}</div>
 </div>`;
   }catch(e){box.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px">⚠️ Failed: '+sanitize(e.message)+'</div>';}
@@ -2471,13 +2471,13 @@ c = 0-based index of correct answer. No markdown, no preamble.`;
     const qs=JSON.parse(clean);
     // Display the generated questions
     let h='<div style="margin-top:16px;border-top:2px solid #7c3aed;padding-top:12px">';
-    h+='<div style="font-weight:700;font-size:12px;color:#7c3aed;margin-bottom:10px">🧠 AI-Generated Questions — Ch '+chNum+': '+chTitle+'</div>';
+    h+='<div style="font-weight:700;font-size:12px;color:#7c3aed;margin-bottom:10px">🧠 AI-Generated Questions — Ch '+sanitize(String(chNum))+': '+sanitize(chTitle)+'</div>';
     qs.forEach((q,qi)=>{
       h+=`<div style="margin-bottom:14px;padding:12px;background:#faf5ff;border-radius:10px;border-left:3px solid #7c3aed">`;
-      h+=`<div style="font-size:12px;font-weight:600;margin-bottom:8px">${qi+1}. ${q.q}</div>`;
+      h+=`<div style="font-size:12px;font-weight:600;margin-bottom:8px">${qi+1}. ${sanitize(q.q)}</div>`;
       q.o.forEach((opt,oi)=>{
         const isCorrect=oi===q.c;
-        h+=`<div style="font-size:11px;padding:4px 8px;margin-bottom:3px;border-radius:6px;background:${isCorrect?'#dcfce7':'#f8fafc'};color:${isCorrect?'#166534':'#475569'};font-weight:${isCorrect?'700':'400'}">${opt}${isCorrect?' ✓':''}</div>`;
+        h+=`<div style="font-size:11px;padding:4px 8px;margin-bottom:3px;border-radius:6px;background:${isCorrect?'#dcfce7':'#f8fafc'};color:${isCorrect?'#166534':'#475569'};font-weight:${isCorrect?'700':'400'}">${sanitize(opt)}${isCorrect?' ✓':''}</div>`;
       });
       if(q.e)h+=`<div style="font-size:10px;color:#6d28d9;margin-top:8px;direction:rtl;text-align:right;line-height:1.6;border-top:1px solid #e9d5ff;padding-top:6px">💡 ${sanitize(q.e)}</div>`;
       h+='</div>';
