@@ -310,7 +310,7 @@ upd();setInterval(upd,30000);
 <a href="#ct" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
 <h1>Shlav A Mega <span style="font-size:10px;font-weight:500;color:#0D7377;vertical-align:middle">Geriatrics</span> <span id="headerVer" style="font-size:9px;font-weight:400;color:rgb(var(--fg2));vertical-align:middle"></span></h1>
-<button class="dm-btn" data-action="toggle-study" title="Night/Study Mode" aria-label="Toggle night mode" style="right:44px">🕯️</button><button class="dm-btn" data-action="toggle-dark" title="Dark Mode" aria-label="Toggle dark mode">🌓</button><button class="dm-btn" data-action="show-help" title="Help" aria-label="Help" style="right:82px;font-size:11px">❓</button>
+<button class="dm-btn" data-action="toggle-study" title="Sepia / Study Mode (warm light)" aria-label="Toggle sepia study mode" style="right:44px">☀</button><button class="dm-btn" data-action="toggle-dark" title="Dark Mode" aria-label="Toggle dark mode">🌙</button><button class="dm-btn" data-action="show-help" title="Help" aria-label="Help" style="right:82px;font-size:11px">?</button>
 <p id="hdr-sub">Loading...</p>
 <div id="syncPill" class="sync-pill" role="status" aria-live="polite" style="position:absolute;top:4px;left:6px;font-size:9px;padding:2px 7px;border-radius:10px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));cursor:pointer;user-select:none;display:none" title="Sync status — click for details" onclick="showSyncStatus()"></div>
 </div>
@@ -958,9 +958,17 @@ let libSec='haz-pdf';
 let harChOpen=null,_harData=null,_harLoading=false;
 let hazChOpen=null,_hazData=null,_hazLoading=false;
 function renderTabs(){
-// safe-innerhtml: TABS is a hardcoded array of tab definitions (id/label/icon); no user input
+// Inline SVG icons — consistent rendering across Android/iOS/Chrome (emoji drift was the issue).
+// Stroke-based, 22x22, currentColor. Mapped by tab id so data/tabs.json can keep its labels.
+const _svgIcons={
+  quiz:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+  learn:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  lib:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+  track:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="3" y1="20" x2="21" y2="20"/></svg>',
+  more:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+};
 document.getElementById('tb').innerHTML=TABS.map(t=>
-`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" aria-label="${t.l}" style="transition:all .15s ease"><span class="ic">${t.ic}</span>${t.l}</button>`
+`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" aria-label="${t.l}" style="transition:all .15s ease"><span class="ic">${_svgIcons[t.id]||t.ic}</span>${t.l}</button>`
 ).join('');
 }
 function go(t){tab=t;renderTabs();render()}
@@ -2080,12 +2088,12 @@ h+=examMode?(()=>{
 if(!examMode){
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
 <div class="sec-t">Quiz</div>
-<div style="display:flex;gap:4px;flex-wrap:wrap">
-<button onclick="showMockExamPicker()" class="btn" style="font-size:10px;padding:6px 14px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-weight:700" aria-label="Start mock exam">🎯 Mock Exam</button>
-<button onclick="startExam()" class="btn" style="font-size:10px;padding:6px 12px;background:#0f172a;color:#fff;border:none;border-radius:8px" aria-label="Start full exam">📋 Full (150q)</button>
-<button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:6px 12px;background:rgb(var(--red-bg));color:#dc2626;border:1px solid rgb(var(--red-brd));border-radius:8px" aria-label="Sudden death">💀</button>
-<button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:6px 12px;background:#0f172a;color:#7dd3fc;border:none;border-radius:8px" aria-label="On-call mode">🌙</button>
-${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:6px 12px;background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;border-radius:8px" aria-label="Pomodoro">⏱️</button>':''}
+<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+<button onclick="showMockExamPicker()" class="btn" style="font-size:11px;padding:7px 14px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-weight:700" aria-label="Start mock exam">🎯 Mock</button>
+<button onclick="startExam()" class="btn" style="font-size:11px;padding:7px 14px;background:#0f172a;color:#fff;border:none;border-radius:8px;font-weight:600" aria-label="Start full exam">📋 Full 150q</button>
+<button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:#dc2626;border:1px solid rgb(var(--red-brd));border-radius:8px" aria-label="Sudden death" title="Sudden Death — one wrong = game over">💀 SD</button>
+<button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px" aria-label="On-call flip cards" title="On-Call flip cards — rapid review">🏥 On-Call</button>
+${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:#059669;border:1px solid #a7f3d0;border-radius:8px" aria-label="Pomodoro timer" title="Pomodoro 25-min study timer">⏱ Pomo</button>':''}
 </div>
 </div>`;
 // Exam-year multi-select row — pills are toggleable, "All" / "Clear" quick actions.
@@ -4326,7 +4334,8 @@ if(row.cells.some(c=>c.n>0))heatData.push(row);
 if(heatData.length>0){
 h+=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🗺️ Weak Spots Map</div>`;
 h+=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:9px"><thead><tr><th style="text-align:right;padding:3px;font-size:8px">Topic</th>`;
-years.forEach(y=>{h+=`<th style="padding:3px;text-align:center;font-size:7px;white-space:nowrap">${y.length>4?y.slice(-2):y}</th>`;});
+const _yearAbbr={'2020':'20','2021':'21','2021-Jun':"21·6",'2022':'22','2023-Jun':"23·6",'2023-Sep':"23·9",'2024-May':"24·5",'2024-Sep':"24·9",'2025-Jun':"25·6",'Hazzard':'Haz','Harrison':'Har','Exam':'Ex','Hazzard-suppl':'Sup'};
+years.forEach(y=>{h+=`<th style="padding:3px;text-align:center;font-size:8px;white-space:nowrap;min-width:28px" title="${y}">${_yearAbbr[y]||y}</th>`;});
 h+=`</tr></thead><tbody>`;
 heatData.sort((a,b)=>{
 const avgA=a.cells.filter(c=>c.n>0).reduce((s,c)=>s+c.pct,0)/(a.cells.filter(c=>c.n>0).length||1);
@@ -4334,7 +4343,7 @@ const avgB=b.cells.filter(c=>c.n>0).reduce((s,c)=>s+c.pct,0)/(b.cells.filter(c=>
 return avgA-avgB;
 });
 heatData.forEach(row=>{
-h+=`<tr><td style="padding:3px;text-align:right;white-space:nowrap;max-width:100px;overflow:hidden;text-overflow:ellipsis">${row.topic}</td>`;
+h+=`<tr><td style="padding:3px;text-align:right;white-space:nowrap;font-size:10px;min-width:80px;padding-right:6px">${row.topic}</td>`;
 row.cells.forEach(c=>{
 if(c.n===0){h+=`<td style="padding:2px;text-align:center;background:rgb(var(--bg2));color:#cbd5e1">·</td>`;}
 else if(c.n===1){h+=`<td style="padding:2px;text-align:center;background:rgb(var(--bg2));color:rgb(var(--fg3));font-size:8px" title="Only 1 attempt — too few for a meaningful score">${c.pct}%<br><span style="font-size:7px">1q</span></td>`;}
@@ -5002,8 +5011,10 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.75';
+const APP_VERSION='9.76';
 const CHANGELOG={
+'9.76': ['🎨 ניקוי UI מקצועי — tabs (Quiz/Learn/Library/Track/More) עכשיו משתמשות באייקונים של SVG אחידים במקום emoji שנראו שונה בכל דפדפן/מכשיר. רינדור זהה באנדרואיד/iOS/Chrome.', '🗺 Weak Spots Map: headers לא מקוצצים יותר ל-"un"/"ep"/"ay" — עכשיו "21·6"/"24·9" וכו׳ (שנה·חודש). שמות נושאים לא נחתכים בצד.', '🎯 שורת מבחנים מסודרת עם היררכיה ברורה: Mock (primary), Full 150q (secondary), SD/On-Call/Pomo עם תוויות ברורות במקום רק emoji.', '🏷 אייקונים מחליפי מצב בכותרת הגיוניים יותר: ☀ Study Mode / 🌙 Dark / ? Help (היה 🕯️/🌓 מבלבלים).'],
+'9.75': ['🙈 מצב מבחן לא חושף תשובה עד הסוף — Mock ו-Full. רק הבחירה שלך מודגשת, ירוק/אדום/הסבר רק בסיום.', '📊 Exam Trend מתוקן — פילטר היה מחפש שמות עבריים שלא קיימים בנתונים, עכשיו משתמש בתגיות האמיתיות (2020-23 מול 2024-25).', '🗺 Weak Spots Map: emoji שבור תוקן, ו-n=1 מוצג באפור עם "1q" במקום אדום מטעה. לציון משמעותי נדרשות לפחות 2 תשובות.', '✍ Year filter pills קומפקטיים יותר (format "2020 · 99" במקום שני spans).', '📝 Changelog לגרסאות 9.69-9.75 נוסף (קודם חזר לתוכן של 9.68 תחת כותרת גרסה חדשה).'],
 '9.74': ['🎯 מבחן סימולציה לפי שנה — כפתור Mock פותח כעת בורר עם כל המבחנים הקודמים (2020, 2021, 2022, 2023-Jun, 2024-May, 2024-Sep, 2025-Jun) + אפשרות 100 שאלות אקראי.', '↩ כפתור "קודמת" חדש — ניתן לחזור לשאלה קודמת בלי לאבד את התשובה שסומנה. מצב המבחן נשמר בקאש לכל הסשן.', '🛠 תיקון: כפתור "סיים מבחן" עכשיו עובד. באג: newlines ב-onclick שברו את HTML parsing.', '🍎 תאימות iOS: viewport-fit=cover, apple-mobile-web-app-capable, ו-env(safe-area-inset-top) לכותרת. האפליקציה עובדת נכון באייפון עם notch.', '📊 Exam Trend מתוקן — הפילטר היה מחפש שמות תגיות בעברית שלא קיימים. עכשיו משתמש בשמות התגיות האמיתיים (2020-2023 מול 2024-2025).', '🗺 Weak Spots Map: אייקון השבור (U+1F5FA) תוקן, ועכשיו n=1 מוצג באפור עם סמן "1q" במקום אדום מטעה — נדרשות לפחות 2 תשובות לציון משמעותי.', '🙈 מצב מבחן לא חושף תשובות עד הסוף — בחירה מודגשת אבל ירוק/אדום/הסבר מוצגים רק בסיום ב-mock או ב-full.', '✍ דיאלוג סנכרון ענן מציין עכשיו "Track → Backup to Cloud".'],
 '9.73': ['🏷 תיוג 8 שאלות סווגו מחדש — שאלות על פיזיולוגיית ריאה בהזדקנות, ספירומטריה ב-COPD, והיפרתירואידיזם היו מסומנות תחת Ethics/Biology/Osteoporosis/Delirium. הועברו ל-Pulmonary/Thyroid/CGA המתאים. Filter לפי נושא עכשיו מחזיר תוצאות נכונות.'],
 '9.72': ['📝 31 שאלות חדשות — פצעי לחץ (+15) וזכויות החולה (+16), שני הנושאים המכוסים הכי פחות ביחס למשקלם במבחן. מקורות: NPUAP 2019, Hazzard 8e פרק 53, חוק זכויות החולה 1996, ייפוי כוח מתמשך, חוק החולה הנוטה למות 2005, חוק העונשין 368.', 'ti 10 (פצעי לחץ): 31→46. ti 33 (זכויות החולה): 28→44. Hazzard tag: 1758→1789. Total: 3283→3314.'],
