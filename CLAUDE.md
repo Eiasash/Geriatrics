@@ -5,8 +5,8 @@
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (~298 KB, ~4,940 lines, 183 functions)
-- **App version**: v9.48
+- **Main file**: `shlav-a-mega.html` (~336 KB, ~5,432 lines, 198 functions)
+- **App version**: v9.76
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -16,7 +16,7 @@
 
 ### Single-File PWA
 
-All application logic lives in `shlav-a-mega.html` (~4,940 lines, 183 functions) — no bundler, no framework, no build step. The file contains:
+All application logic lives in `shlav-a-mega.html` (~5,432 lines, 198 functions) — no bundler, no framework, no build step. The file contains:
 - All CSS (1,000+ lines, responsive, RTL-aware, dark/light/study modes)
 - All JavaScript (ES6+, vanilla)
 - HTML structure
@@ -36,7 +36,7 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 ---
 
 
-### Render Function Decomposition (v9.48)
+### Render Function Decomposition (v9.76)
 
 The four large render functions have been decomposed into 31 prefixed helper functions.
 Each helper returns an HTML string; the orchestrator concatenates them. No behavior change,
@@ -62,7 +62,7 @@ the full decomposition ledger and safe-next-steps list.
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.48)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.76)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
@@ -70,7 +70,7 @@ the full decomposition ledger and safe-next-steps list.
 ├── data/                    # Lazy-loaded JSON data — single source of truth
 │   ├── questions.json       # 1,685 MCQs (primary runtime source)
 │   ├── notes.json           # 40 study topic notes
-│   ├── drugs.json           # 53 Beers/ACB drugs database
+│   ├── drugs.json           # 114 Beers/ACB drugs database
 │   ├── flashcards.json      # 159 high-yield flashcards
 │   ├── osce.json            # OSCE station scenarios
 │   ├── tabs.json            # Tab definitions for app navigation
@@ -124,7 +124,7 @@ the full decomposition ledger and safe-next-steps list.
 └── hazzard_part*.pdf         # Hazzard's Geriatric Medicine 8e (original PDFs)
 ```
 
-### Data Architecture (v9.48)
+### Data Architecture (v9.76)
 
 All runtime data lives in `data/`. The app and service worker load exclusively from `data/*.json`. Build scripts (`scripts/`) also read/write `data/questions.json` directly. There are no root-level JSON duplicates — `data/` is the single source of truth.
 
@@ -220,15 +220,15 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `9.48` (sw.js cache key: `shlav-a-v9.48`)
+- Currently both at version `9.76` (sw.js cache key: `shlav-a-v9.76`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, 273 tests)
+npm test             # Run all tests (vitest, 678 tests)
 ```
 
-**273 tests across 5 files** — run `npm test` to see current count.
+**678 tests across 21 files** — run `npm test` to see current count.
 
 **Auto-expand rule:** Every feature, improvement, or bug fix MUST include new or updated tests:
 - New data file or field → schema validation test
@@ -237,15 +237,31 @@ npm test             # Run all tests (vitest, 273 tests)
 - Modified data processing → edge case + boundary tests
 - After adding tests, update the test count in this section
 
-**Test file inventory (5 files, 273 tests):**
+**Test file inventory (21 files, 678 tests):**
 
 | File | Tests | Description |
 |------|-------|-------------|
-| `tests/dataIntegrity.test.js` | 25 | Question schema/duplicates/topic coverage, notes, drugs, flashcards, OSCE, topics, cross-file referential integrity |
-| `tests/expandedDataIntegrity.test.js` | 50 | Deeper validation: answer integrity, option bounds, whitespace, year field, topic distribution balance, notes content length, drugs ACB/Beers cross-checks, flashcard length, OSCE null entries, tabs schema, image map integrity |
+| `tests/dataIntegrity.test.js` | 21 | Question schema/duplicates/topic coverage, notes, drugs, flashcards, OSCE, topics, cross-file referential integrity |
+| `tests/expandedDataIntegrity.test.js` | 54 | Deeper validation: answer integrity, option bounds, whitespace, year field, topic distribution balance, notes content length, drugs ACB/Beers cross-checks, flashcard length, OSCE null entries, tabs schema, image map integrity |
 | `tests/appIntegrity.test.js` | 17 | HTML structure (RTL, viewport, PWA), SW version sync, package.json version alignment, security checks (eval, innerHTML), manifest validation |
-| `tests/serviceWorker.test.js` | 25 | SW cache configuration, URL lists, version sync, fetch strategy routing, file existence checks |
+| `tests/serviceWorker.test.js` | 34 | SW cache configuration, URL lists, version sync, fetch strategy routing, file existence checks |
 | `tests/appLogic.test.js` | 91 | Quiz engine, FSRS spaced repetition, sanitization, AI integration, study plan logic |
+| `tests/appLogicExpanded.test.js` | 66 | Extended quiz/logic scenarios, edge cases, FSRS boundary conditions |
+| `tests/migrationWiring.test.js` | 115 | Data migration checks, field wiring, schema evolution guards |
+| `tests/regressionGuards.test.js` | 42 | Regression tests for previously-fixed bugs |
+| `tests/polypharmacyRules.test.js` | 27 | Polypharmacy rules engine, drug interaction checks |
+| `tests/auditPhases.test.js` | 41 | Audit phase logic, CI validation rules |
+| `tests/chapterLinking.test.js` | 20 | Hazzard/Harrison chapter cross-references and linking |
+| `tests/regulatoryTags.test.js` | 10 | Regulatory/legal tag validation |
+| `tests/syncIndicator.test.js` | 19 | Supabase sync indicator and status logic |
+| `tests/contentQuality.test.js` | 6 | Content quality checks (Hebrew, length, format) |
+| `tests/sharedFsrs.test.js` | 31 | Shared FSRS-4.5 spaced repetition engine |
+| `tests/flashcardFsrs.test.js` | 7 | Flashcard FSRS scheduling |
+| `tests/tagMigration.test.js` | 11 | Question tag migration and backward compatibility |
+| `tests/timeSignals.test.js` | 16 | Time-based signals, streak and schedule logic |
+| `tests/coverageGaps.test.js` | 33 | Coverage gap detection for undertested areas |
+| `tests/aiAutopsyXss.test.js` | 12 | AI autopsy XSS sanitization checks |
+| `tests/topicRefCoverage.test.js` | 5 | Topic reference coverage across question bank |
 
 **Test coverage by area:**
 
@@ -288,7 +304,7 @@ Runs on push to `main` and all PRs. Python-based data validation + Vitest test s
 | innerHTML sanitization | Audit for unsanitized innerHTML usage |
 | Topic coverage | >= 5 questions per topic (all 40 topics) |
 
-**Vitest tests** (273 tests, 5 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
+**Vitest tests** (678 tests, 21 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
 
 ---
 
@@ -422,7 +438,7 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 **No manual deployment steps needed.**
 
 ### Commit Conventions
-- Version prefix: `v9.7`, `v9.48`, etc.
+- Version prefix: `v9.7`, `v9.76`, etc.
 - Imperative tense: `fix:`, `feat:`, `Add`, `Update`
 - Clear scope describing the feature or issue
 
@@ -432,20 +448,20 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 
 | Metric | Value |
 |---|---|
-| Main file | `shlav-a-mega.html` (~4,940 lines, ~298 KB) |
-| Named functions | 183 (152 core + 31 decomposed helpers) |
-| Questions | 3,421 (1,369 IMA exam + 2,052 AI-generated) |
+| Main file | `shlav-a-mega.html` (~5,432 lines, ~336 KB) |
+| Named functions | 198 (167 core + 31 decomposed helpers) |
+| Questions | 3,314 (1,207 IMA exam + 2,107 AI-generated) |
 | Topics | 40 |
-| Drugs | 53 |
+| Drugs | 114 |
 | Flashcards | 159 |
 | Study notes | 40 |
 | Hazzard chapters | 108 (in-app reader) |
 | Harrison chapters | 69 (in-app reader) |
-| Test suite | 409 tests across 9 files (vitest) |
+| Test suite | 678 tests across 21 files (vitest) |
 | CI workflows | 3 (ci.yml, integrity-guard.yml, weekly-audit.yml) |
-| Inline handlers | onclick=160, onchange=26, oninput=6 |
-| App version | v9.48 |
-| SW cache key | `shlav-a-v9.48` |
+| Inline handlers | onclick=169, onchange=25, oninput=6 |
+| App version | v9.76 |
+| SW cache key | `shlav-a-v9.76` |
 
 
 ## Test Coverage Recommendations
@@ -486,7 +502,7 @@ Reach **300+ tests** with coverage of every data file, every engine function, an
 ## TODO / Improvement Roadmap
 
 ### High Priority
-- [ ] **Update package.json version** — Currently `9.14.0`, should match APP_VERSION `9.28`
+- [x] **package.json version** — Now `9.76.0`, matching APP_VERSION `9.76` ✓
 - [ ] **Add weekly-audit.yml** — Weekly CI audit for CLAUDE.md drift, dead code, JS syntax (acorn), GRS content checks (exists in InternalMedicine sibling, port to this repo)
 - [ ] **Expand test suite to 300+** — See Test Coverage Recommendations above
 - [ ] **Add test:coverage script** — `vitest run --coverage` with @vitest/coverage-v8 thresholds (50% lines, 40% branches)
