@@ -322,7 +322,7 @@ describe('questions.json — per-session counts locked', () => {
     '2025-Jun': 219,
     'Exam': 24,
     'Harrison': 294,
-    'Hazzard': 1758,
+    'Hazzard': 1789,
     'Hazzard-suppl': 24,
   };
 
@@ -331,8 +331,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3283', () => {
-    expect(questions.length).toBe(3283);
+  test('total question count is exactly 3314', () => {
+    expect(questions.length).toBe(3314);
   });
 });
 
