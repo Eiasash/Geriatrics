@@ -2748,6 +2748,10 @@ box.innerHTML=html;
 }
 
 async function quizMeOnChapter(chNum,chTitle){
+  // Validate chNum — reject non-positive or absurd values that would waste
+  // AI quota on invalid prompts (Hazzard 8e: 1–108, Harrison 22e: 1–500).
+  const n=Number(chNum);
+  if(!Number.isFinite(n)||n<1||n>500){console.warn('[quizMeOnChapter] invalid chapter number:',chNum);return;}
   // Show loading state in Library
   const el=document.getElementById('quiz-me-box');
   if(el){el.innerHTML='<div style="text-align:center;padding:20px;color:rgb(var(--fg2))">⏳ Generating questions from Ch '+sanitize(chNum)+'...</div>';}
