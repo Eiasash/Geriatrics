@@ -27,6 +27,15 @@ Snapshot from `/cowork:start`:
 - `data/flashcards.json` length at branch-off.
 - (optional) topic-coverage numbers at branch-off.
 
+### Claimed  (optional, for tandem sessions)
+Paths this branch is actively editing. Managed by `/cowork:claim` and surfaced by `/cowork:collisions`. Format:
+```
+### Claimed
+- data/questions.json   (2026-04-19T08:15Z)
+- shlav-a-mega.html     (2026-04-19T08:15Z)
+```
+A parallel cowork branch touching a claimed path is a hard warning (not an auto-fail — overlaps in `data/questions.json` are common and usually resolvable). Missing this section is fine for solo work.
+
 ### Done
 Concrete bullets with artifact + scope. Examples:
 - `data/questions.json` +12 (topic: frailty, ids: q0612–q0623).
@@ -48,6 +57,7 @@ Non-obvious only:
 - Skipped test + reason to re-enable.
 - A distractor left deliberately weak pending distractor-autopsy agent review.
 - Hebrew term waiting on glossary clarification.
+- Why a claim was released early (e.g. “sibling branch owns this path now”).
 
 ## Not allowed
 - Conversational summary — use commits.
