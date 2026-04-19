@@ -71,7 +71,7 @@ describe('questions.json — formatting quality (ratchet at current baseline)', 
   // Exact ratchet: test fails on ANY change (up or down). Cleanup PRs must
   // bump this number as part of the diff — silent drift in either direction
   // is the failure mode we're trying to prevent.
-  const QMARK_HEBREW_BASELINE = 119;
+  const QMARK_HEBREW_BASELINE = 86;
 
   it(`"?\u05d0-\u05ea" occurrences: exact ${QMARK_HEBREW_BASELINE}`, () => {
     const bad = [];

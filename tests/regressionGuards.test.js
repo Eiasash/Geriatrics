@@ -86,7 +86,7 @@ describe('questions.json — formatting quality', () => {
   // in past-exam PDFs — exact ratchet at current count so cleanup PRs are
   // visible (test fails → bump the number → proof of progress). Previous
   // `<=600` hid silent drift in either direction.
-  const HEBREW_DIGIT_BASELINE = 573;
+  const HEBREW_DIGIT_BASELINE = 525;
   test(`Hebrew-digit missing-space (past-exam): exact ${HEBREW_DIGIT_BASELINE}`, () => {
     const bad = [];
     questions.forEach((q, i) => {
@@ -107,7 +107,7 @@ describe('questions.json — formatting quality', () => {
   // Catches `?גבוהה` (question mark on wrong side after RTL mangling).
   // Exact ratchet at current count. When cleanup happens, test fails,
   // update the baseline number in the same PR.
-  const QMARK_HEBREW_BASELINE = 119;
+  const QMARK_HEBREW_BASELINE = 86;
   test(`wrong-side ?[Hebrew] (past-exam): exact ${QMARK_HEBREW_BASELINE}`, () => {
     const bad = [];
     questions.forEach((q, i) => {
@@ -158,36 +158,47 @@ describe('questions.json — duplicates', () => {
   let questions;
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
-  test('no duplicate questions by first 80 chars of stem (per tag)', () => {
-    const byTagKey = new Map();
+  // Normalizes a string for near-duplicate detection: strips whitespace, punctuation,
+  // digits, and Hebrew maqaf. Catches near-dupes that differ only by extra "44" on an
+  // option, whitespace drift, or punctuation variation.
+  const normStem = (s) => (s || '').replace(/[\s\d.,?!:;()\[\]"'\-\u05BE]+/g, '').toLowerCase();
+
+  test('no duplicate questions per tag (normalized stem)', () => {
+    const byKey = new Map();
     const dupes = [];
     questions.forEach((q, i) => {
-      const key = `${q.t}||${(q.q || '').slice(0, 80).trim()}`;
+      const key = `${q.t}||${normStem(q.q)}`;
       if (!key.endsWith('||')) {
-        if (byTagKey.has(key)) {
-          dupes.push({ first: byTagKey.get(key), second: i, tag: q.t, preview: (q.q || '').slice(0, 60) });
+        if (byKey.has(key)) {
+          dupes.push({ first: byKey.get(key), second: i, tag: q.t, preview: (q.q || '').slice(0, 60) });
         } else {
-          byTagKey.set(key, i);
+          byKey.set(key, i);
         }
       }
     });
-    if (dupes.length) console.error('Duplicates:', dupes.slice(0, 5));
+    if (dupes.length) console.error('Within-tag near-duplicates:', dupes.slice(0, 5));
     expect(dupes.length).toBe(0);
   });
 
-  test('no duplicate questions across all tags (by first 100 chars)', () => {
+  test('no 2024-May↔2024-Sep cross-tag duplicates (guards against ingestion mis-tag)', () => {
+    // Known bad pattern: Sep24 ingestion accidentally re-used May24 questions.
+    // Legitimate cross-tag dupes (e.g. Hazzard↔past-exam reuse) are NOT blocked here.
     const seen = new Map();
     const dupes = [];
     questions.forEach((q, i) => {
-      const key = (q.q || '').slice(0, 100).trim();
-      if (!key) return;
-      if (seen.has(key)) {
-        dupes.push({ first: seen.get(key), second: i });
+      const k = normStem(q.q);
+      if (!k || k.length < 20) return;
+      if (seen.has(k)) {
+        const firstIdx = seen.get(k);
+        const t1 = questions[firstIdx].t, t2 = q.t;
+        if ((t1 === '2024-May' && t2 === '2024-Sep') || (t1 === '2024-Sep' && t2 === '2024-May')) {
+          dupes.push({ first: firstIdx, second: i, tags: [t1, t2] });
+        }
       } else {
-        seen.set(key, i);
+        seen.set(k, i);
       }
     });
-    if (dupes.length > 0) console.error('Cross-tag duplicates:', dupes.slice(0, 3));
+    if (dupes.length > 0) console.error('2024 cross-tag dupes:', dupes.slice(0, 3));
     expect(dupes.length).toBe(0);
   });
 });
@@ -302,13 +313,13 @@ describe('questions.json — per-session counts locked', () => {
   const EXPECTED = {
     '2020': 99,
     '2021': 92,
-    '2021-Jun': 106,
-    '2022': 158,
-    '2023-Jun': 210,
+    '2021-Jun': 103,
+    '2022': 156,
+    '2023-Jun': 167,
     '2023-Sep': 24,
-    '2024-May': 293,
-    '2024-Sep': 72,
-    '2025-Jun': 244,
+    '2024-May': 294,
+    '2024-Sep': 29,
+    '2025-Jun': 219,
     'Exam': 24,
     'Harrison': 294,
     'Hazzard': 1758,
@@ -320,8 +331,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3398', () => {
-    expect(questions.length).toBe(3398);
+  test('total question count is exactly 3283', () => {
+    expect(questions.length).toBe(3283);
   });
 });
 
