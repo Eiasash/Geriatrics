@@ -95,6 +95,11 @@ const tx=db.transaction('state','readonly');
 const req=tx.objectStore('state').get('pending_sync');
 const data=await new Promise(r=>{req.onsuccess=()=>r(req.result);req.onerror=()=>r(null);});
 if(data&&data.url&&data.body){
+// Whitelist Supabase REST hosts — IDB is writable by any same-origin script,
+// so a compromised tab could otherwise redirect the queued POST (with the
+// apikey header attached) to an attacker-controlled URL.
+const _supaOk=/^https:\/\/[a-z0-9-]+\.supabase\.co\/rest\/v1\//i.test(data.url);
+if(!_supaOk){console.warn('Background sync: refusing non-Supabase url',data.url);return;}
 const res=await fetch(data.url,{method:'POST',headers:{'Content-Type':'application/json','apikey':data.apikey||''},body:JSON.stringify(data.body)});
 if(res.ok){
 // Clear pending sync
