@@ -543,7 +543,18 @@ const _dataPromise = (async function loadDataArrays() {
     const _xp=lsGet('samega_pending_qs',[]);
     const _xc=lsGet('samega_custom_qs',[]);
     const _xAll=[..._xp,..._xc].filter(q=>q&&typeof q.q==='string'&&Array.isArray(q.o)&&q.o.length===4&&Number.isInteger(q.c)&&q.c>=0&&q.c<=3&&typeof q.ti==='number');
-    if(_xAll.length){QZ.push(..._xAll);console.log('Loaded '+_xAll.length+' user-generated questions');}
+    // Dedup user-added questions by normalized question text — `_xp` and `_xc`
+    // can overlap (pending → custom), and without this an approved question
+    // appears twice in QZ and gets double-weighted in spaced repetition.
+    const _xSeen=new Set();
+    const _xUnique=[];
+    for(const _xq of _xAll){
+      const _key=_xq.q.trim().toLowerCase().slice(0,120);
+      if(_xSeen.has(_key))continue;
+      _xSeen.add(_key);
+      _xUnique.push(_xq);
+    }
+    if(_xUnique.length){QZ.push(..._xUnique);console.log('Loaded '+_xUnique.length+' user-generated questions'+(_xAll.length!==_xUnique.length?' ('+(_xAll.length-_xUnique.length)+' duplicates skipped)':''));}
     console.log('Data loaded: ' + QZ.length + ' questions, ' + NOTES.length + ' notes');
     takeWeeklySnapshot();
   } catch (error) {
@@ -2797,16 +2808,29 @@ c = 0-based index of correct answer. No markdown, no preamble.`;
       if(q.e)h+=`<div style="font-size:10px;color:#6d28d9;margin-top:8px;direction:rtl;text-align:right;line-height:1.6;border-top:1px solid #e9d5ff;padding-top:6px">💡 ${sanitize(q.e)}</div>`;
       h+='</div>';
     });
-    h+='<button onclick="addChapterQsToBank('+JSON.stringify(JSON.stringify(qs)).slice(1,-1)+')" style="font-size:10px;padding:6px 14px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-top:4px">➕ Add to my question bank</button>';
+    // Stash generated questions under a random id so the Add button can
+    // find them without embedding the full JSON payload in an onclick
+    // attribute (AI-produced quotes/brackets can break attribute escaping).
+    const _addId='aichq_'+Math.random().toString(36).slice(2,10);
+    (window._aiChapterQs=window._aiChapterQs||{})[_addId]=qs;
+    h+='<button onclick="addChapterQsToBank(\''+_addId+'\')" style="font-size:10px;padding:6px 14px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-top:4px">➕ Add to my question bank</button>';
     h+='</div>';
     if(el)el.innerHTML=h;
   }catch(e){
     if(el)el.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px">⚠️ Failed to generate: '+sanitize(e.message)+'</div>';
   }
 }
-function addChapterQsToBank(jsonStr){
+function addChapterQsToBank(idOrJson){
   try{
-    const qs=JSON.parse(jsonStr);
+    // Backwards compatible: previously accepted a JSON string directly.
+    // New call path passes an id that looks up the array stashed by quizMeOnChapter.
+    let qs;
+    if(window._aiChapterQs&&Object.prototype.hasOwnProperty.call(window._aiChapterQs,idOrJson)){
+      qs=window._aiChapterQs[idOrJson];
+      delete window._aiChapterQs[idOrJson];
+    }else{
+      qs=JSON.parse(idOrJson);
+    }
     const existing=JSON.parse(localStorage.getItem('samega_custom_qs')||'[]');
     qs.forEach(q=>{q.t='AI-Ch';q.ti=-1;existing.push(q);});
     localStorage.setItem('samega_custom_qs',JSON.stringify(existing));
@@ -5254,6 +5278,15 @@ async function callAI(messages,maxTokens=400,model='sonnet'){
   const signal=_aiAbortController.signal;
 // Model alias map for direct API fallback
 const modelMap={sonnet:'claude-sonnet-4-6',opus:'claude-opus-4-6',haiku:'claude-haiku-4-5-20251001'};
+// Translate a fetch Response or thrown error into a user-friendly message.
+// Keeps the short string format callers already rely on ("API NNN") while
+// prepending a specific hint so the UI can surface why a call failed.
+function _aiErrFromStatus(status){
+  if(status===401||status===403)return'API '+status+' — invalid API key';
+  if(status===429)return'API 429 — rate limited, try again in a moment';
+  if(status>=500&&status<600)return'API '+status+' — service unavailable';
+  return'API '+status;
+}
 try{
 const pr=await fetch(AI_PROXY,{
 method:'POST',
@@ -5263,18 +5296,27 @@ signal
 });
 if(pr.ok){const d=await pr.json();return d.content?.[0]?.text||'';}
 console.warn('Proxy status:',pr.status);
-}catch(e){console.warn('Proxy:',e.message);}
+}catch(e){
+if(e&&e.name==='AbortError')throw e;
+console.warn('Proxy:',e.message);
+}
 // Fallback to personal API key with correct model name
 const apiKey=getApiKey();
 if(!apiKey)throw new Error('no_key');
 const fullModel=modelMap[model]||model;
-const r=await fetch('https://api.anthropic.com/v1/messages',{
+let r;
+try{
+r=await fetch('https://api.anthropic.com/v1/messages',{
 method:'POST',
 headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
 body:JSON.stringify({model:fullModel,max_tokens:maxTokens,messages}),
 signal
 });
-if(!r.ok)throw new Error('API '+r.status);
+}catch(e){
+if(e&&e.name==='AbortError')throw e;
+throw new Error('Network error — check your connection');
+}
+if(!r.ok)throw new Error(_aiErrFromStatus(r.status));
 const d=await r.json();
 return d.content?.[0]?.text||'';
 }
