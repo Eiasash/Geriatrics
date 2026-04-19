@@ -2,7 +2,7 @@
 
 **Israeli Shlav A Geriatric Medicine Board Exam Preparation Tool**
 
-Standalone, offline-capable PWA with 3,421 questions (1,369 real IMA exam + 2,052 AI-generated textbook questions), study notes, clinical calculators, FSRS-4.5 spaced repetition, and AI-powered explanations — all in one HTML file.
+Standalone, offline-capable PWA with 3,314 questions (1,207 real IMA exam + 2,107 AI-generated textbook questions), study notes, clinical calculators, FSRS-4.5 spaced repetition, and AI-powered explanations — all in one HTML file.
 
 **Live:** https://eiasash.github.io/Geriatrics/
 
@@ -10,7 +10,7 @@ Standalone, offline-capable PWA with 3,421 questions (1,369 real IMA exam + 2,05
 
 | Feature | Details |
 |---|---|
-| **Quiz Engine** | 3,421 questions with answer keys, topic tagging, and image support |
+| **Quiz Engine** | 3,314 questions with answer keys, topic tagging, and image support |
 | **FSRS-4.5 Spaced Repetition** | Confidence-based rating (Again/Hard/Good/Easy) with optimized scheduling |
 | **Mock Exam** | 100q or 150q realistic topic distribution from exam frequency weights, timed 3h |
 | **Rescue Drill** | Auto-builds 21-question pool from 3 weakest topics |
@@ -22,7 +22,7 @@ Standalone, offline-capable PWA with 3,421 questions (1,369 real IMA exam + 2,05
 | **Pomodoro Timer** | 25min focus / 5min break |
 | **Study Notes** | 40 topics from Hazzard's 8e, Harrison's 22e |
 | **Flashcards** | 159 high-yield cards with SRS tracking |
-| **Drug Lookup** | 53 drugs — Beers 2023 + ACB score + STOPP/START + risk descriptions |
+| **Drug Lookup** | 114 drugs — Beers 2023 + ACB score + STOPP/START + risk descriptions |
 | **Med Basket** | Build a drug list, check interactions + ACB burden |
 | **Hazzard Reader** | 108 chapters, in-app structured text with AI question generation |
 | **Harrison Reader** | 69 chapters, in-app structured text with AI question generation |
@@ -47,7 +47,7 @@ Standalone, offline-capable PWA with 3,421 questions (1,369 real IMA exam + 2,05
 
 ## Architecture
 
-Single-file monolith (`shlav-a-mega.html`, ~4,940 lines, 183 functions). No bundler, no framework, no build step. The four large render functions have been decomposed into 31 prefixed helper functions for readability while keeping everything in one file.
+Single-file monolith (`shlav-a-mega.html`, ~5,432 lines, 198 functions). No bundler, no framework, no build step. The four large render functions have been decomposed into 31 prefixed helper functions for readability while keeping everything in one file.
 
 | Orchestrator | Helpers | Prefix | What it renders |
 |---|---|---|---|
@@ -59,15 +59,15 @@ Single-file monolith (`shlav-a-mega.html`, ~4,940 lines, 183 functions). No bund
 ## Project Structure
 
 ```
-shlav-a-mega.html           # Complete app (v9.48, single-file PWA, ~298KB)
+shlav-a-mega.html           # Complete app (v9.76, single-file PWA, ~336KB)
 index.html                  # GitHub Pages redirect
 manifest.json               # PWA manifest
-sw.js                       # Service worker (shlav-a-v9.48)
+sw.js                       # Service worker (shlav-a-v9.76)
 shared/fsrs.js              # FSRS-4.5 spaced repetition engine (shared with Pnimit Mega)
 data/
-  questions.json             # 3,421 exam + AI questions
+  questions.json             # 3,314 exam + AI questions
   notes.json                 # 40 study topics
-  drugs.json                 # 53 Beers/ACB drugs
+  drugs.json                 # 114 Beers/ACB drugs
   flashcards.json            # 159 high-yield flashcards
   topics.json                # 40 topic definitions
   tabs.json                  # App tab definitions
@@ -80,7 +80,7 @@ hazzard_marked/              # Hazzard's 8e annotated PDFs
 laws/                        # Israeli legal/regulatory documents (15 items)
 article_*.pdf                # 6 mandatory clinical reference articles
 scripts/                     # Utility scripts (question generation, exam parsing)
-tests/                       # Vitest test suite (408 tests, 9 files)
+tests/                       # Vitest test suite (678 tests, 21 files)
 docs/MIGRATION.md            # Decomposition ledger and architecture notes
 skill/                       # Claude Projects skill package
 .github/workflows/           # CI: ci.yml + integrity-guard.yml (6 gates) + weekly-audit.yml + claude-code-review.yml
@@ -93,7 +93,7 @@ skill/                       # Claude Projects skill package
 python -m http.server 3737
 
 # Run tests
-npm install && npm test   # 408 tests across 9 files
+npm install && npm test   # 678 tests across 21 files
 
 # Syntax check before push
 node --check <(sed -n '/<script>/,/<\/script>/p' shlav-a-mega.html | sed '1d;$d')
@@ -112,9 +112,9 @@ Four GitHub Actions workflows run on every push:
 
 ## Data Sources
 
-- **Questions:** 1,369 MCQs from official IMA Shlav A exams (2021\u20132025) + 2,052 AI-generated textbook questions
+- **Questions:** 1,207 MCQs from official IMA Shlav A exams (2020\u20132025) + 2,107 AI-generated textbook questions
 - **Textbooks:** Hazzard's Geriatric Medicine 8e (108 chapters), Harrison's Principles 22e (69 chapters)
-- **Drugs:** Beers Criteria 2023 + ACB Scale (53 drugs)
+- **Drugs:** Beers Criteria 2023 + ACB Scale (114 drugs)
 - **Regulations:** 15 Israeli laws/regulations (Patient Rights, Dying Patient Act, POA, driving fitness, siud murkav, etc.)
 - **Articles:** 6 mandatory geriatric clinical references + Brookdale 2024
 
