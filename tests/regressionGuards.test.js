@@ -86,7 +86,7 @@ describe('questions.json — formatting quality', () => {
   // in past-exam PDFs — exact ratchet at current count so cleanup PRs are
   // visible (test fails → bump the number → proof of progress). Previous
   // `<=600` hid silent drift in either direction.
-  const HEBREW_DIGIT_BASELINE = 575;
+  const HEBREW_DIGIT_BASELINE = 573;
   test(`Hebrew-digit missing-space (past-exam): exact ${HEBREW_DIGIT_BASELINE}`, () => {
     const bad = [];
     questions.forEach((q, i) => {
@@ -107,7 +107,7 @@ describe('questions.json — formatting quality', () => {
   // Catches `?גבוהה` (question mark on wrong side after RTL mangling).
   // Exact ratchet at current count. When cleanup happens, test fails,
   // update the baseline number in the same PR.
-  const QMARK_HEBREW_BASELINE = 126;
+  const QMARK_HEBREW_BASELINE = 119;
   test(`wrong-side ?[Hebrew] (past-exam): exact ${QMARK_HEBREW_BASELINE}`, () => {
     const bad = [];
     questions.forEach((q, i) => {
@@ -158,11 +158,6 @@ describe('questions.json — duplicates', () => {
   let questions;
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
-  // Legacy pre-existing duplicates in the Geriatrics corpus (not introduced by
-  // the tag-rename audit). Locked here so new regressions are still caught but
-  // the known-bad indices don't fail the test. Clean-up is tracked separately.
-  const LEGACY_DUP_SECONDS = new Set([3381, 3385, 3386, 3388, 3389, 3390, 3403, 3405]);
-
   test('no duplicate questions by first 80 chars of stem (per tag)', () => {
     const byTagKey = new Map();
     const dupes = [];
@@ -170,9 +165,7 @@ describe('questions.json — duplicates', () => {
       const key = `${q.t}||${(q.q || '').slice(0, 80).trim()}`;
       if (!key.endsWith('||')) {
         if (byTagKey.has(key)) {
-          if (!LEGACY_DUP_SECONDS.has(i)) {
-            dupes.push({ first: byTagKey.get(key), second: i, tag: q.t, preview: (q.q || '').slice(0, 60) });
-          }
+          dupes.push({ first: byTagKey.get(key), second: i, tag: q.t, preview: (q.q || '').slice(0, 60) });
         } else {
           byTagKey.set(key, i);
         }
@@ -189,9 +182,7 @@ describe('questions.json — duplicates', () => {
       const key = (q.q || '').slice(0, 100).trim();
       if (!key) return;
       if (seen.has(key)) {
-        if (!LEGACY_DUP_SECONDS.has(i)) {
-          dupes.push({ first: seen.get(key), second: i });
-        }
+        dupes.push({ first: seen.get(key), second: i });
       } else {
         seen.set(key, i);
       }
@@ -312,10 +303,10 @@ describe('questions.json — per-session counts locked', () => {
     '2020': 99,
     '2021': 92,
     '2021-Jun': 106,
-    '2022': 160,
-    '2023-Jun': 211,
+    '2022': 158,
+    '2023-Jun': 210,
     '2023-Sep': 24,
-    '2024-May': 298,
+    '2024-May': 293,
     '2024-Sep': 72,
     '2025-Jun': 244,
     'Exam': 24,
@@ -329,8 +320,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3406', () => {
-    expect(questions.length).toBe(3406);
+  test('total question count is exactly 3398', () => {
+    expect(questions.length).toBe(3398);
   });
 });
 

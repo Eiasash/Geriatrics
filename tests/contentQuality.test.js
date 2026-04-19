@@ -71,7 +71,7 @@ describe('questions.json — formatting quality (ratchet at current baseline)', 
   // Exact ratchet: test fails on ANY change (up or down). Cleanup PRs must
   // bump this number as part of the diff — silent drift in either direction
   // is the failure mode we're trying to prevent.
-  const QMARK_HEBREW_BASELINE = 126;
+  const QMARK_HEBREW_BASELINE = 119;
 
   it(`"?\u05d0-\u05ea" occurrences: exact ${QMARK_HEBREW_BASELINE}`, () => {
     const bad = [];
@@ -91,7 +91,7 @@ describe('questions.json — formatting quality (ratchet at current baseline)', 
 describe('questions.json — duplicates (ratchet at current baseline)', () => {
   // Exact ratchet. Current dupes include Q124/3381, Q191/3385, Q3382/3388.
   // When a dedupe PR lands, test fails → update DUP_BASELINE to new count.
-  const DUP_BASELINE = 8;
+  const DUP_BASELINE = 0;
 
   it(`duplicates by first 100 chars of stem: exact ${DUP_BASELINE}`, () => {
     const seen = new Map();
