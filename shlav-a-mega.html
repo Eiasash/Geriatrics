@@ -390,6 +390,7 @@ if(S.studyMode===undefined)S.studyMode=false;
 if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;
 if(!S.sp)S.sp={};
 if(S.spOpen===undefined)S.spOpen=false;
+if(S.notifOptIn===undefined)S.notifOptIn=false;
 let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>{
   try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){console.error('Save failed:',e);}
   // Warn if localStorage approaching 5MB limit
@@ -4690,6 +4691,47 @@ const CHAT_STARTERS=[
 const CHAT_SYSTEM="You are a senior geriatrician and mentor at Shaare Zedek Medical Center in Jerusalem. The user is a geriatrics fellow preparing for their shlav-aleph (board) exam (P005-2026). Answer in the same language as the question (Hebrew or English). Be concise, clinically precise. Focus on Hazzard's 8e, Harrison's 22e, Beers criteria, STOPP/START, CGA, FRAX, and exam-relevant guidelines.";
 let chatLoading=false;
 
+// ===== FEATURE: SETTINGS =====
+function renderSettings(){
+const notifSupported=typeof Notification!=='undefined';
+const browserPerm=notifSupported?Notification.permission:'unsupported';
+const canToggle=notifSupported&&browserPerm!=='denied';
+const optIn=!!S.notifOptIn;
+let permHint='';
+if(!notifSupported){
+permHint='<div style="font-size:10px;color:rgb(var(--fg3));margin-top:6px">הדפדפן לא תומך בהתראות.</div>';
+}else if(browserPerm==='denied'){
+permHint='<div style="font-size:10px;color:#dc2626;margin-top:6px">ההרשאה נחסמה בדפדפן. פתח הגדרות אתר כדי לאפשר מחדש.</div>';
+}else if(optIn&&browserPerm==='granted'){
+permHint='<div style="font-size:10px;color:#059669;margin-top:6px">✓ תזכורת תישלח בשעה 07:00 כשיש שאלות לחזרה.</div>';
+}else if(optIn&&browserPerm!=='granted'){
+permHint='<div style="font-size:10px;color:#b45309;margin-top:6px">ההרשאה טרם ניתנה — לחץ שוב כדי לבקש.</div>';
+}
+let h='<div class="sec-t">⚙️ Settings</div><div class="sec-s">העדפות אישיות — נשמרות מקומית במכשיר</div>';
+h+='<div class="card" style="padding:14px">';
+h+='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px">';
+h+='<div style="flex:1">';
+h+='<div style="font-weight:700;font-size:13px">🔔 תזכורות חזרה יומיות</div>';
+h+='<div style="font-size:11px;color:rgb(var(--fg2));margin-top:4px;line-height:1.5">התראה יומית ב-07:00 אם יש שאלות מוכנות לחזרה (FSRS).</div>';
+h+=permHint;
+h+='</div>';
+h+='<button onclick="toggleNotifOptIn()" '+(canToggle?'':'disabled ')+'aria-pressed="'+optIn+'" style="background:'+(optIn?'#059669':'#cbd5e1')+';color:#fff;border:none;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:700;cursor:'+(canToggle?'pointer':'not-allowed')+';opacity:'+(canToggle?'1':'.5')+'">'+(optIn?'פעיל':'כבוי')+'</button>';
+h+='</div></div>';
+return h;
+}
+async function toggleNotifOptIn(){
+if(typeof Notification==='undefined')return;
+if(S.notifOptIn){
+S.notifOptIn=false;save();render();return;
+}
+let perm=Notification.permission;
+if(perm==='default'){
+try{perm=await Notification.requestPermission();}catch(e){perm='denied';}
+}
+S.notifOptIn=perm==='granted';
+save();render();
+}
+
 // ===== FEATURE: FEEDBACK SYSTEM =====
 function renderFeedback(){
 let h='<div class="sec-t">💡 Feedback & Feature Requests</div>';
@@ -4903,7 +4945,7 @@ case'track':
   el.innerHTML=renderTrack();break;
 case'more':
   {const _moreBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+
-  [{id:'calc',ic:'🧮',l:'Calc'},{id:'search',ic:'🔍',l:'Search'},{id:'chat',ic:'💬',l:'Chat'},{id:'feedback',ic:'💡',l:'Feedback'}].map(s=>
+  [{id:'calc',ic:'🧮',l:'Calc'},{id:'search',ic:'🔍',l:'Search'},{id:'chat',ic:'💬',l:'Chat'},{id:'feedback',ic:'💡',l:'Feedback'},{id:'settings',ic:'⚙️',l:'Settings'}].map(s=>
     '<button onclick="moreSub=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(moreSub===s.id?'700':'400')+';cursor:pointer;background:'+(moreSub===s.id?'#fff':'transparent')+';color:'+(moreSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(moreSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>'
   ).join('')+'</div>';
   let _mBody='';
@@ -4911,6 +4953,7 @@ case'more':
   else if(moreSub==='search')_mBody=renderSearch();
   else if(moreSub==='chat')_mBody=renderChat();
   else if(moreSub==='feedback')_mBody=renderFeedback();
+  else if(moreSub==='settings')_mBody=renderSettings();
   el.innerHTML=_moreBar+_mBody;}break; // safe-innerhtml: _moreBar is static HTML; _mBody from internal render*() functions (no user input)
 case'search':tab='more';moreSub='search';el.innerHTML='';render();break;
 case'chat':tab='more';moreSub='chat';el.innerHTML='';render();break;
@@ -5389,9 +5432,11 @@ body:JSON.stringify({app:'geriatrics',question_idx:qIdx,question_text:(q.q||'').
 }
 
 // PWA + Background Sync + Daily Notification (update logic in src/sw-update.js)
+// Daily-review notification is opt-in via ⚙️ Settings in the More tab.
+// No permission is requested on load; the scheduler checks S.notifOptIn +
+// Notification.permission=granted before posting to the SW each day.
 initSWUpdate(APP_VERSION).then(function(reg){
 if(!reg)return;
-// Schedule daily notification at 07:00
 function scheduleDailyNotification(){
 const now=new Date();
 const target=new Date(now);
@@ -5399,16 +5444,14 @@ target.setHours(7,0,0,0);
 if(now>=target)target.setDate(target.getDate()+1);
 const delay=target-now;
 setTimeout(()=>{
+if(S.notifOptIn&&typeof Notification!=='undefined'&&Notification.permission==='granted'){
 const dueN=getDueQuestions().length;
 if(dueN>0&&reg.active){
 reg.active.postMessage({type:'schedule-notification',dueCount:dueN});
 }
+}
 scheduleDailyNotification();// Reschedule for next day
 },delay);
-}
-// Request notification permission
-if('Notification' in window&&Notification.permission==='default'){
-Notification.requestPermission();
 }
 scheduleDailyNotification();
 }).catch(()=>{});
