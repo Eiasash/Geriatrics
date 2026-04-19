@@ -2,7 +2,10 @@
 <html lang="he">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f172a">
@@ -24,7 +27,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:rgb(var(--bg));color:rg
 .heb{font-family:'Heebo',sans-serif;direction:rtl;text-align:right}
 button{cursor:pointer;border:none;background:none;font:inherit}
 input,textarea,select{font:inherit}
-.hdr{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:10px 16px;position:sticky;top:0;z-index:40}
+.hdr{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;position:sticky;top:0;z-index:40}
 .hdr h1{font-size:16px;font-weight:700;letter-spacing:-.5px}
 .hdr p{font-size:10px;color:rgb(var(--fg2));margin-top:1px}
 .tabs{position:fixed;bottom:0;left:0;right:0;background:rgb(var(--card-bg));border-top:1px solid #e2e8f0;display:flex;z-index:50;box-shadow:0 -2px 10px rgba(0,0,0,.06);padding-bottom:max(4px,env(safe-area-inset-bottom));overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
@@ -450,8 +453,8 @@ function showSyncStatus(){
     navigator.onLine===false
       ? 'You are offline — changes are saved locally and will sync when you reconnect.'
       : (st==='synced'
-        ? 'Everything is backed up. Open More → 💾 Data Management to back up manually.'
-        : 'To back up now, open More → 💾 Data Management → ☁️ Backup to Cloud.'),
+        ? 'Everything is backed up. Go to Track → ☁️ Backup to Cloud to back up manually.'
+        : 'To back up now, go to Track → ☁️ Backup to Cloud.'),
   ];
   alert(lines.join('\n'));
 }
@@ -1255,7 +1258,7 @@ async function runExplainOnCall(qIdx){
 function pick(i){if(ans)return;sel=i;render()}
 function _storeDiff(qIdx,d){if(!S.sr[qIdx])S.sr[qIdx]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};S.sr[qIdx].diff=d;save();}
 function check(){
-if(sel===null)return;
+if(sel===null||ans)return;
 checkMockIntercept();
 if(timedMode)clearInterval(timedInt);
 ans=true;
@@ -1293,9 +1296,32 @@ function next(){
 qStartTime=Date.now();
 if(examMode&&mockExamResults&&qi+1>=pool.length){endMockExam();return;}
 if(examMode&&!mockExamResults&&qi+1>=Math.min(pool.length,150)){endExam();return;}
+// Save current answer state so we can restore on back-navigation
+if(ans){_sessAnsw[pool[qi]]={sel,ans:true,conf:_confidence};}
 // Auto-commit pending SR as Good(3) if not rated
 if(_pendingSR!==null){srScore(_pendingSR,true,3);_pendingSR=null;save();}
-qi++;if(qi>=pool.length)qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;_optShuffle=null;_confidence=null;_wrongReason=null;_diffRating=null;
+qi++;if(qi>=pool.length)qi=0;
+// Restore state if already answered in this session
+const _st=_sessAnsw[pool[qi]];
+if(_st){sel=_st.sel;ans=_st.ans;_confidence=_st.conf;}
+else{sel=null;ans=false;_confidence=null;}
+autopsyDistractor=-1;teachBackState=null;_optShuffle=null;_wrongReason=null;_diffRating=null;
+if(timedMode){clearInterval(timedInt);timedSec=90;render();setTimeout(startTimedQ,100);}
+else render();
+}
+// Session-only answer cache for back-navigation (cleared on mode change / reload)
+let _sessAnsw={};
+function prev(){
+if(qi<=0)return;
+qStartTime=Date.now();
+// Save current state
+if(ans){_sessAnsw[pool[qi]]={sel,ans:true,conf:_confidence};}
+qi--;
+// Restore previous state
+const _st=_sessAnsw[pool[qi]];
+if(_st){sel=_st.sel;ans=_st.ans;_confidence=_st.conf;}
+else{sel=null;ans=false;_confidence=null;}
+autopsyDistractor=-1;teachBackState=null;_optShuffle=null;_wrongReason=null;_diffRating=null;
 if(timedMode){clearInterval(timedInt);timedSec=90;render();setTimeout(startTimedQ,100);}
 else render();
 }
@@ -1463,10 +1489,41 @@ function startExam(){
   const el=document.getElementById('etimer');if(el)el.textContent=fmtT(examSec);},1000);
   render();
 }
+function showMockExamPicker(){
+  const EXAM_TAGS=['2020','2021','2021-Jun','2022','2023-Jun','2023-Sep','2024-May','2024-Sep','2025-Jun'];
+  const counts={};
+  QZ.forEach(q=>{if(EXAM_TAGS.includes(q.t))counts[q.t]=(counts[q.t]||0)+1;});
+  const rows=EXAM_TAGS.filter(t=>counts[t]>=20).map(t=>`<button onclick="startMockExamByTag('${t}');document.getElementById('mockPicker').remove()" class="btn" style="display:block;width:100%;margin-bottom:6px;padding:10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;text-align:right;font-size:12px;cursor:pointer">${t} <span style="color:rgb(var(--fg3));font-size:10px">— ${counts[t]} שאלות</span></button>`).join('');
+  const html=`<div id="mockPicker" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;padding:16px;overflow-y:auto" onclick="if(event.target===this)this.remove()">
+  <div style="background:rgb(var(--card-bg));border-radius:16px;max-width:420px;margin:40px auto;padding:18px;direction:rtl">
+    <div style="font-weight:700;font-size:15px;margin-bottom:12px">🎯 מבחן סימולציה</div>
+    <button onclick="startMockExam();document.getElementById('mockPicker').remove()" class="btn btn-p" style="display:block;width:100%;margin-bottom:10px;padding:10px;font-size:12px;font-weight:700">🎲 100 שאלות — חלוקה מציאותית של כל הנושאים</button>
+    <div style="font-size:10px;color:rgb(var(--fg3));margin:10px 0 6px;font-weight:700">או תרגל מבחן שנתי ספציפי:</div>
+    ${rows}
+    <button onclick="document.getElementById('mockPicker').remove()" class="btn" style="display:block;width:100%;margin-top:10px;padding:8px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;font-size:11px">ביטול</button>
+  </div>
+</div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+function startMockExamByTag(tag){
+  examMode=true;
+  const ixs=[];QZ.forEach((q,i)=>{if(q.t===tag)ixs.push(i);});
+  for(let i=ixs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ixs[i],ixs[j]]=[ixs[j],ixs[i]];}
+  pool=ixs.slice(0,100);
+  _sessAnsw={};
+  qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;_optShuffle=null;_confidence=null;
+  mockExamResults={byTopic:{},start:Date.now(),tag};
+  EXAM_FREQ.forEach((_,ti)=>{mockExamResults.byTopic[ti]={ok:0,no:0};});
+  _examStartOk=S.qOk;_examStartNo=S.qNo;examSec=10800;save();
+  examTimer=setInterval(()=>{examSec--;if(examSec<=0)endMockExam();
+  const el=document.getElementById('etimer');if(el)el.textContent=fmtT(examSec);},1000);
+  render();
+}
 function startMockExam(){
   // v2: 100q, realistic distribution, per-topic tracking
   examMode=true;
   pool=buildMockExamPool();
+  _sessAnsw={};
   qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;
   // per-topic tracking: {ok,no} per ti
   mockExamResults={byTopic:{},start:Date.now()};
@@ -1834,6 +1891,7 @@ h+=`<div style="display:flex;gap:3px;align-items:center">
 <button class="btn" style="font-size:9px;padding:3px 7px;${_diffRating==='hard'?'background:rgb(var(--red-bg));color:rgb(var(--red-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='hard';_storeDiff(pool[qi],'hard')">Hard</button>
 </div>`;
 }
+h+=`<button id="prev-btn" class="btn" onclick="prev()" style="font-size:10px;padding:6px 10px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px;${qi<=0?'opacity:0.4;pointer-events:none;':''}" aria-label="Previous question">→ קודמת</button>`;
 h+=`<button id="next-btn" class="btn btn-d" onclick="next()" style="margin-left:auto" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
 if(!examMode&&ans){
 h+=`<button onclick="document.getElementById('report-wrong-expand').style.display=document.getElementById('report-wrong-expand').style.display==='none'?'block':'none'" style="font-size:8px;padding:2px 6px;background:none;color:rgb(var(--fg3));cursor:pointer;border:none" title="Report wrong answer key">⚠️</button>`;
@@ -2017,13 +2075,13 @@ h+=examMode?(()=>{
 <span style="font-weight:700;font-size:11px">${isMock?'🎯 Mock':'📋 Exam'}<br><span style="font-size:9px;font-weight:400">${paceStr}</span></span>
 <span id="etimer" class="timer" style="font-size:16px;font-weight:700">${fmtT(examSec)}</span>
 <span style="font-size:11px">${qi+1}/${isMock?pool.length:150}</span>
-<button onclick="if(confirm('סיים מבחן?\n\nהציון ייחשב על ${qi+1} שאלות שענית עד עכשיו.')){${isMock?'endMockExam()':'endExam()'}}" style="background:#dc2626;color:#fff;border:none;border-radius:10px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(220,38,38,.3)">⏹ סיים</button></div>`;
+<button onclick="if(confirm('סיים מבחן? הציון ייחשב על ${qi+1} שאלות שענית עד עכשיו.')){${isMock?'endMockExam()':'endExam()'}}" style="background:#dc2626;color:#fff;border:none;border-radius:10px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(220,38,38,.3)">⏹ סיים</button></div>`;
 })():'';
 if(!examMode){
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
 <div class="sec-t">Quiz</div>
 <div style="display:flex;gap:4px;flex-wrap:wrap">
-<button onclick="startMockExam()" class="btn" style="font-size:10px;padding:6px 14px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-weight:700" aria-label="Start mock exam">🎯 Mock Exam</button>
+<button onclick="showMockExamPicker()" class="btn" style="font-size:10px;padding:6px 14px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-weight:700" aria-label="Start mock exam">🎯 Mock Exam</button>
 <button onclick="startExam()" class="btn" style="font-size:10px;padding:6px 12px;background:#0f172a;color:#fff;border:none;border-radius:8px" aria-label="Start full exam">📋 Full (150q)</button>
 <button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:6px 12px;background:rgb(var(--red-bg));color:#dc2626;border:1px solid rgb(var(--red-brd));border-radius:8px" aria-label="Sudden death">💀</button>
 <button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:6px 12px;background:#0f172a;color:#7dd3fc;border:none;border-radius:8px" aria-label="On-call mode">🌙</button>
@@ -4943,7 +5001,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.73';
+const APP_VERSION='9.74';
 const CHANGELOG={
 '9.68': ['🏛️ פילטר חדש "תקנות" (242 שאלות) — ייפוי כוח מתמשך, כשירות, אפוטרופוס, הנחיות רפואיות מקדימות, חוק החולה הנוטה למות, סיעוד מורכב, כושר נהיגה, חוזר מנכ"ל.', 'תיוג אוטומטי על בסיס regex חזק של מילות מפתח עבריות + אנגליות (scripts/tag_regulatory.cjs) — מייצר data/regulatory.json. בנק תקנות רשמי שסביב 7% מהשאלות.', 'שילוב מלא: pill חדש בשורת הפילטרים של לשונית Quiz, עם ספירה חיה.'],
 '9.67': ['🔬 Distractor Autopsy עכשיו תמיד-מופעל (לא Toggle). אחרי כל תשובה: כל 4 האפשרויות נצבעות (ירוק=נכונה, אדום=הבחירה השגויה שלך, אפור=שגויות אחרות) עם הסבר "למה שגוי כאן / מתי זה היה נכון".', '📦 data/distractors.json: מאגר מוכן מראש עם "autopsy" לכל שאלה — מחושב ברקע ע"י scripts/generate_distractors.cjs (קלוד Haiku דרך toranot proxy). Fallback ל-AI autopsy רק אם אין ב-cache.', '🧪 scripts/generate_distractors.cjs — bulk generator עם checkpoint כל 25, אטומי, resumable, --dry-run/--limit/--topic/--force. מהקופסה מחולל "Wrong because: X. Would be correct if: Y." לכל מסיח.', 'sw.js מטמין את data/distractors.json עם אסטרטגיית cache-first — UX offline מלא.'],
