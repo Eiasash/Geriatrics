@@ -4943,7 +4943,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.69';
+const APP_VERSION='9.73';
 const CHANGELOG={
 '9.68': ['🏛️ פילטר חדש "תקנות" (242 שאלות) — ייפוי כוח מתמשך, כשירות, אפוטרופוס, הנחיות רפואיות מקדימות, חוק החולה הנוטה למות, סיעוד מורכב, כושר נהיגה, חוזר מנכ"ל.', 'תיוג אוטומטי על בסיס regex חזק של מילות מפתח עבריות + אנגליות (scripts/tag_regulatory.cjs) — מייצר data/regulatory.json. בנק תקנות רשמי שסביב 7% מהשאלות.', 'שילוב מלא: pill חדש בשורת הפילטרים של לשונית Quiz, עם ספירה חיה.'],
 '9.67': ['🔬 Distractor Autopsy עכשיו תמיד-מופעל (לא Toggle). אחרי כל תשובה: כל 4 האפשרויות נצבעות (ירוק=נכונה, אדום=הבחירה השגויה שלך, אפור=שגויות אחרות) עם הסבר "למה שגוי כאן / מתי זה היה נכון".', '📦 data/distractors.json: מאגר מוכן מראש עם "autopsy" לכל שאלה — מחושב ברקע ע"י scripts/generate_distractors.cjs (קלוד Haiku דרך toranot proxy). Fallback ל-AI autopsy רק אם אין ב-cache.', '🧪 scripts/generate_distractors.cjs — bulk generator עם checkpoint כל 25, אטומי, resumable, --dry-run/--limit/--topic/--force. מהקופסה מחולל "Wrong because: X. Would be correct if: Y." לכל מסיח.', 'sw.js מטמין את data/distractors.json עם אסטרטגיית cache-first — UX offline מלא.'],
@@ -5192,7 +5192,11 @@ const labels={bug:'🐛 Bug',wrong_answer:'❌ Wrong Answer',feature:'💡 Featu
 let qObj=null,context='';
 if(pool.length&&qi<pool.length){qObj=QZ[pool[qi]];}
 if(type==='wrong_answer'&&qObj){
-context=`Q#${pool[qi]}: ${qObj.q.substring(0,100)} | correct: ${qObj.o[qObj.c]}`;
+// Stable content hash survives dedup/reindex. First 40 hex of hash of normalized stem.
+const _hashStem=qObj.q.replace(/[\s\d.,?!:;()\[\]"'\-\u05BE]+/g,'').toLowerCase().slice(0,200);
+let _h=0;for(let i=0;i<_hashStem.length;i++){_h=((_h<<5)-_h+_hashStem.charCodeAt(i))|0;}
+const _qhash=(_h>>>0).toString(16).padStart(8,'0');
+context=`Q#${pool[qi]} [hash:${_qhash}]: ${qObj.q.substring(0,100)} | correct: ${qObj.o[qObj.c]}`;
 }
 const st=document.getElementById('fbStatus');
 if(st){st.textContent='⏳ שולח...';st.style.display='block';st.style.color='#64748b';}
