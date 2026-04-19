@@ -1,7 +1,7 @@
 {
   "name": "cowork",
-  "version": "0.1.0",
-  "description": "Cowork branch + session-handoff workflow for Geriatrics: questions.json, flashcards.json, notes.json, drugs.json. Formalizes the existing cowork/* branch convention (distractor-autopsy, flashcards-mode, tighten-hebrew-budgets, ...).",
+  "version": "0.2.0",
+  "description": "Cowork branch + session-handoff workflow for Geriatrics: questions.json, flashcards.json, notes.json, drugs.json. Tandem-session safety via /cowork:claim and /cowork:collisions. Formalizes the existing cowork/* branch convention (distractor-autopsy, flashcards-mode, tighten-hebrew-budgets, ...).",
   "author": { "name": "eiasash" },
-  "keywords": ["cowork", "handoff", "geriatrics", "hazzard", "question-bank", "hebrew"]
+  "keywords": ["cowork", "handoff", "tandem", "geriatrics", "hazzard", "question-bank", "hebrew"]
 }
