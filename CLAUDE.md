@@ -501,31 +501,31 @@ Reach **300+ tests** with coverage of every data file, every engine function, an
 
 ## TODO / Improvement Roadmap
 
-### High Priority
-- [x] **package.json version** — Now `9.76.0`, matching APP_VERSION `9.76` ✓
-- [ ] **Add weekly-audit.yml** — Weekly CI audit for CLAUDE.md drift, dead code, JS syntax (acorn), GRS content checks (exists in InternalMedicine sibling, port to this repo)
-- [ ] **Expand test suite to 300+** — See Test Coverage Recommendations above
-- [ ] **Add test:coverage script** — `vitest run --coverage` with @vitest/coverage-v8 thresholds (50% lines, 40% branches)
-
 ### Medium Priority
 - [ ] **Port features from InternalMedicine v9.33** — Changelog rendering fix, stats.map crash fix, IDB hoisting fix, Rescue Drill mode, Activity Tracking
 - [ ] **Add Hazzard chapter JSON tests** — Validate structure of `hazzard_chapters.json` and `data/hazzard_chapters.json`
 - [ ] **OSCE expansion** — Add more OSCE stations covering all 40 topics (currently 10 stations)
 - [ ] **Add flashcard spaced repetition** — FSRS already exists for questions; extend to flashcard review scheduling
-- [ ] **Harrison-generated questions** — Expand AI-generated question bank from Hazzard's chapters (like InternalMedicine's Harrison tag)
 
 ### Low Priority
 - [ ] **PWA install prompt** — Add beforeinstallprompt handler for mobile install
-- [ ] **Push notifications** — Daily review reminders (service worker already supports push)
+- [ ] **Wire push-notification UI** — SW already implements `push` / `notificationclick`; add user-facing opt-in + daily-review scheduler
 - [ ] **Supabase cloud sync UI** — Add user-facing sync status indicator and manual sync button
 - [ ] **Performance monitoring** — Add basic performance metrics (load time, data fetch time) to help optimize
-- [ ] **Content-Security-Policy meta tag** — Add CSP to `shlav-a-mega.html` to match InternalMedicine's CSP setup
 
 ### Content Roadmap
 - [ ] **2025-ב exam questions** — Parse and add questions from the next exam session when available
 - [ ] **Flashcard expansion** — Target 200+ flashcards covering all 40 topics (currently 159)
 - [ ] **Notes update** — Ensure all 40 notes reflect latest Hazzard's 8e + Harrison's 22e content
 - [ ] **Image coverage** — Add question images for newer exam sessions (currently 30 images)
+
+### Recently completed (kept here briefly for changelog context)
+- ~~Update package.json version~~ — synced to APP_VERSION (9.76)
+- ~~Weekly-audit CI~~ — `.github/workflows/weekly-audit.yml` runs Sun 06:00 UTC (acorn, GRS, CSP, version drift)
+- ~~Expand test suite to 300+~~ — 678 tests across 21 files
+- ~~test:coverage script~~ — `vitest run --coverage` already in package.json
+- ~~Hazzard-generated questions~~ — 1,789 AI-generated Hazzard questions in corpus
+- ~~CSP meta tag~~ — present in `shlav-a-mega.html`
 
 ---
 
