@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -133,7 +133,7 @@ body.study .badge-info    {background:#1e2a3d;color:#a0c8f0}
 --blue-bg:239 246 255;--blue-brd:191 219 254;--blue-fg:30 64 175;
 --yellow-bg:255 251 235;--yellow-brd:253 230 138;--yellow-fg:146 64 14;
 --red-bg:254 242 242;--red-brd:254 202 202;--red-fg:153 27 27}
-body{font-family:'Inter',system-ui,sans-serif;background:rgb(var(--bg));color:rgb(var(--fg));-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{font-family:'Heebo','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:rgb(var(--bg));color:rgb(var(--fg));-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .heb{font-family:'Heebo',sans-serif;direction:rtl;text-align:right}
 button{cursor:pointer;border:none;background:none;font:inherit}
 input,textarea,select{font:inherit}
@@ -461,6 +461,7 @@ return st;
 }
 
 let NOTES=[];
+let NOTES_BY_TI={};
 
 let DRUGS=[];
 
@@ -649,6 +650,20 @@ const _dataPromise = (async function loadDataArrays() {
       else if (varName === 'REG') REG = results[i];
       });
     _dataReady = true;
+    // Build NOTES_BY_TI map so NOTES lookup is by topic-name match, not
+    // positional. notes.json order does NOT necessarily match TOPICS[]
+    // positional order; 8 of 40 topics had mismatches.
+    try {
+      const _nNorm = s => String(s||'').split('—')[0].split('(')[0].trim().toLowerCase();
+      const _tKeys = TOPICS.map(_nNorm);
+      NOTES_BY_TI = {};
+      (NOTES||[]).forEach(n => {
+        const nk = _nNorm(n.topic);
+        let ti = _tKeys.indexOf(nk);
+        if (ti < 0) ti = _tKeys.findIndex(tk => tk && nk && (tk.includes(nk) || nk.includes(tk)));
+        if (ti >= 0 && NOTES_BY_TI[ti] === undefined) NOTES_BY_TI[ti] = n;
+      });
+    } catch(e) { console.warn('NOTES_BY_TI build failed', e); NOTES_BY_TI = {}; }
     // Load user-generated/approved questions from localStorage
     const _xp=lsGet('samega_pending_qs',[]);
     const _xc=lsGet('samega_custom_qs',[]);
@@ -1970,29 +1985,21 @@ return h;
 function _rqmControls(){
 const q=QZ[pool[qi]];
 let h='';
-h+=`<div style="display:flex;gap:6px;margin-top:14px">`;
+h+=`<div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">`;
 if(!ans){
-if(!examMode&&sel!==null&&_confidence===null){
-// Feature 9: Confidence before reveal
-h+=`<div style="margin-bottom:8px;font-size:10px;color:rgb(var(--fg2));font-weight:600">How sure are you?</div>
-<div style="display:flex;gap:6px;margin-bottom:10px">
-<button class="btn" style="flex:1;background:rgb(var(--red-bg));color:#dc2626;font-size:13px;padding:8px" onclick="_confidence=0;render()">😬</button>
-<button class="btn" style="flex:1;background:rgb(var(--yellow-bg));color:#d97706;font-size:13px;padding:8px" onclick="_confidence=1;render()">🤔</button>
-<button class="btn" style="flex:1;background:rgb(var(--green-bg));color:#059669;font-size:13px;padding:8px" onclick="_confidence=2;render()">😎</button>
-</div>`;
-}
-const _confLabel=_confidence===0?'😬':_confidence===1?'🤔':_confidence===2?'😎':'';
-h+=`<button class="btn btn-p" onclick="check()"${sel===null?' disabled':''} aria-label="Check answer">${_confLabel} בדוק</button>`;if(!examMode)h+=`<button class="btn" onclick="showAnswerHardFail()" style="background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg));font-size:11px;padding:6px 14px;margin-left:6px;border:1px solid rgb(var(--yellow-brd))" aria-label="Show answer">👁 לא יודע</button>`;}
+const _confLabel='';
+h+=`<div style="display:flex;gap:6px;align-items:center"><button class="btn btn-p" onclick="check()"${sel===null?' disabled':''} aria-label="Check answer" style="flex:1;min-height:44px">${_confLabel} בדוק</button>`;if(!examMode)h+=`<button class="btn" onclick="showAnswerHardFail()" style="background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg));font-size:11px;padding:6px 14px;min-height:44px;border:1px solid rgb(var(--yellow-brd))" aria-label="Show answer">👁 לא יודע</button>`;h+=`</div>`;}
 else{
-// Feature 1: Why-wrong classification (required after wrong, non-exam)
+// Why-wrong classification — optional nudge, not a gate
 if(!examMode&&sel!==q.c&&!_wrongReason){
-h+=`<div id="why-wrong-box" style="display:inline-flex;align-items:center;gap:4px;margin-bottom:0">
-<span style="font-size:9px;color:rgb(var(--red-fg));font-weight:700">Why?</span>
-<button class="btn" style="font-size:12px;padding:2px 6px;background:rgb(var(--bg2));border-radius:6px;min-height:28px" title="Didn't know" onclick="_wrongReason='no_knowledge';save();_updateWrongUI()">📚</button>
-<button class="btn" style="font-size:12px;padding:2px 6px;background:rgb(var(--bg2));border-radius:6px;min-height:28px" title="Misread" onclick="_wrongReason='misread';save();_updateWrongUI()">👓</button>
-<button class="btn" style="font-size:12px;padding:2px 6px;background:rgb(var(--bg2));border-radius:6px;min-height:28px" title="Between 2" onclick="_wrongReason='between_2';save();_updateWrongUI()">⚖️</button>
-<button class="btn" style="font-size:12px;padding:2px 6px;background:rgb(var(--bg2));border-radius:6px;min-height:28px" title="Silly mistake" onclick="_wrongReason='silly';save();_updateWrongUI()">🤦</button>
-</div>`;
+h+=`<div id="why-wrong-box" style="margin-bottom:4px">
+<div style="font-size:11px;font-weight:700;color:rgb(var(--red-fg));margin-bottom:6px">Why did you get it wrong?</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<button class="btn" style="font-size:11px;padding:8px 12px;min-height:40px;background:rgb(var(--bg2));border-radius:8px" title="Didn't know" onclick="_wrongReason='no_knowledge';save();_updateWrongUI()">📚 Didn't know</button>
+<button class="btn" style="font-size:11px;padding:8px 12px;min-height:40px;background:rgb(var(--bg2));border-radius:8px" title="Misread" onclick="_wrongReason='misread';save();_updateWrongUI()">👓 Misread</button>
+<button class="btn" style="font-size:11px;padding:8px 12px;min-height:40px;background:rgb(var(--bg2));border-radius:8px" title="Between 2" onclick="_wrongReason='between_2';save();_updateWrongUI()">⚖️ Between 2</button>
+<button class="btn" style="font-size:11px;padding:8px 12px;min-height:40px;background:rgb(var(--bg2));border-radius:8px" title="Silly mistake" onclick="_wrongReason='silly';save();_updateWrongUI()">🤦 Silly</button>
+</div></div>`;
 }
 // Feature 4: Cross-link to chapter after wrong answer
 // Uses per-question QCHAPS mapping (both Hazzard + Harrison) with topic-level
@@ -2005,10 +2012,10 @@ const _harCh=_qc.har!==undefined?_qc.har:null;
 if(_hazCh!==null||_harCh!==null){
 h+=`<div style="display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap">`;
 if(_hazCh!==null){
-h+=`<button class="btn" onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${sanitize(String(_hazCh))})" style="flex:1;min-width:45%;font-size:10px;padding:5px 10px;background:rgb(var(--red-bg));color:rgb(var(--red-fg));border:1px solid rgb(var(--red-brd))">📕 Hazzard Ch ${sanitize(String(_hazCh))}</button>`;
+h+=`<button class="btn" onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${sanitize(String(_hazCh))})" style="flex:1;min-width:45%;font-size:11px;padding:8px 10px;min-height:40px;white-space:nowrap;background:rgb(var(--red-bg));color:rgb(var(--red-fg));border:1px solid rgb(var(--red-brd))">📕 Hazzard Ch ${sanitize(String(_hazCh))}</button>`;
 }
 if(_harCh!==null){
-h+=`<button class="btn" onclick="tab='lib';libSec='harrison';openHarrisonChapter(${sanitize(String(_harCh))})" style="flex:1;min-width:45%;font-size:10px;padding:5px 10px;background:rgb(var(--blue-bg));color:rgb(var(--blue-fg));border:1px solid rgb(var(--blue-brd))">📗 Harrison Ch ${sanitize(String(_harCh))}</button>`;
+h+=`<button class="btn" onclick="tab='lib';libSec='harrison';openHarrisonChapter(${sanitize(String(_harCh))})" style="flex:1;min-width:45%;font-size:11px;padding:8px 10px;min-height:40px;white-space:nowrap;background:rgb(var(--blue-bg));color:rgb(var(--blue-fg));border:1px solid rgb(var(--blue-brd))">📗 Harrison Ch ${sanitize(String(_harCh))}</button>`;
 }
 h+=`</div>`;
 }
@@ -2016,14 +2023,14 @@ h+=`</div>`;
 // Difficulty + Next on same row — why-wrong picker is a nudge, not a gate
 h+=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">`;
 if(!examMode){
-h+=`<div style="display:flex;gap:3px;align-items:center">
-<button class="btn" style="font-size:9px;padding:3px 7px;${_diffRating==='easy'?'background:rgb(var(--green-bg));color:rgb(var(--green-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='easy';_storeDiff(pool[qi],'easy')">Easy</button>
-<button class="btn" style="font-size:9px;padding:3px 7px;${_diffRating==='med'?'background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='med';_storeDiff(pool[qi],'med')">Med</button>
-<button class="btn" style="font-size:9px;padding:3px 7px;${_diffRating==='hard'?'background:rgb(var(--red-bg));color:rgb(var(--red-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='hard';_storeDiff(pool[qi],'hard')">Hard</button>
+h+=`<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<button class="btn" style="font-size:11px;padding:6px 12px;min-height:36px;${_diffRating==='easy'?'background:rgb(var(--green-bg));color:rgb(var(--green-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='easy';_storeDiff(pool[qi],'easy')">Easy</button>
+<button class="btn" style="font-size:11px;padding:6px 12px;min-height:36px;${_diffRating==='med'?'background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='med';_storeDiff(pool[qi],'med')">Med</button>
+<button class="btn" style="font-size:11px;padding:6px 12px;min-height:36px;${_diffRating==='hard'?'background:rgb(var(--red-bg));color:rgb(var(--red-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='hard';_storeDiff(pool[qi],'hard')">Hard</button>
 </div>`;
 }
 h+=`<button id="prev-btn" class="btn" onclick="prev()" style="font-size:10px;padding:6px 10px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px;${qi<=0?'opacity:0.4;pointer-events:none;':''}" aria-label="Previous question">→ קודמת</button>`;
-h+=`<button id="next-btn" class="btn btn-d" onclick="next()" style="margin-left:auto" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
+h+=`<button id="next-btn" class="btn btn-d" onclick="next()" style="margin-left:auto;min-height:44px;padding:8px 18px;font-size:13px;font-weight:700" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'הבאה ←'}</button>`;
 if(!examMode&&ans){
 h+=`<button onclick="document.getElementById('report-wrong-expand').style.display=document.getElementById('report-wrong-expand').style.display==='none'?'block':'none'" style="font-size:8px;padding:2px 6px;background:none;color:rgb(var(--fg3));cursor:pointer;border:none" title="Report wrong answer key">⚠️</button>`;
 }
@@ -2098,7 +2105,7 @@ if(ans&&!examMode&&_lastElapsed>0){
   h+=`</div>`;
 }
 if(ans&&!examMode){
-const note=q.ti>=0&&NOTES[q.ti]?NOTES[q.ti]:null;
+const note=q.ti>=0?(NOTES_BY_TI&&NOTES_BY_TI[q.ti])||null:null;
 if(note){
 const correctText=q.o[q.c];
 const sentences=note.notes.split(/\.\s+/);
@@ -5193,8 +5200,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.77';
+const APP_VERSION='9.78';
 const CHANGELOG={
+'9.78':['🐛 תיקון קריטי: פריסת post-answer ב-flex-direction:column — כפתורי Why-wrong/Difficulty/Hazzard/Harrison לא נדחסים יותר לעמודה של תו אחד','🗺️ NOTES_BY_TI map: הסבר הנושא הנכון מוצג אחרי תשובה (היה לפעמים לא מתאים לנושא)','📏 כפתורי Why-wrong ו-Difficulty: 40px min-height, 11px font — ניתנים ללחיצה','🔤 גופן הגוף כעת Heebo-first (היה Inter) — רנדור עברי איכותי יותר ב-iOS/Android','🍎 iOS status bar: black-translucent (היה default) — קריא על הכותרת הכהה','🚫 הפרומפט "How sure are you" הוסר — לא חוסם יותר את זרימת המענה'],
 '9.77':['🎨 Design: new token layer — amber/violet skin via data-skin="geriatrics"','🔤 Self-hosted Heebo + Inter fonts (removed Google Fonts dependency, offline-ready)','🛡️ CSP tightened: style-src and font-src now self-only','♿ Respects prefers-reduced-motion globally'],
     '9.76': ['🎨 ניקוי UI מקצועי — tabs (Quiz/Learn/Library/Track/More) עכשיו משתמשות באייקונים של SVG אחידים במקום emoji שנראו שונה בכל דפדפן/מכשיר. רינדור זהה באנדרואיד/iOS/Chrome.', '🗺 Weak Spots Map: headers לא מקוצצים יותר ל-"un"/"ep"/"ay" — עכשיו "21·6"/"24·9" וכו׳ (שנה·חודש). שמות נושאים לא נחתכים בצד.', '🎯 שורת מבחנים מסודרת עם היררכיה ברורה: Mock (primary), Full 150q (secondary), SD/On-Call/Pomo עם תוויות ברורות במקום רק emoji.', '🏷 אייקונים מחליפי מצב בכותרת הגיוניים יותר: ☀ Study Mode / 🌙 Dark / ? Help (היה 🕯️/🌓 מבלבלים).'],
 '9.75': ['🙈 מצב מבחן לא חושף תשובה עד הסוף — Mock ו-Full. רק הבחירה שלך מודגשת, ירוק/אדום/הסבר רק בסיום.', '📊 Exam Trend מתוקן — פילטר היה מחפש שמות עבריים שלא קיימים בנתונים, עכשיו משתמש בתגיות האמיתיות (2020-23 מול 2024-25).', '🗺 Weak Spots Map: emoji שבור תוקן, ו-n=1 מוצג באפור עם "1q" במקום אדום מטעה. לציון משמעותי נדרשות לפחות 2 תשובות.', '✍ Year filter pills קומפקטיים יותר (format "2020 · 99" במקום שני spans).', '📝 Changelog לגרסאות 9.69-9.75 נוסף (קודם חזר לתוכן של 9.68 תחת כותרת גרסה חדשה).'],
