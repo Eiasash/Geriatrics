@@ -2146,10 +2146,12 @@ h+=`</div>`;
 }
 // Difficulty rating (tertiary, non-exam)
 if(!examMode){
+// Restore persisted rating for this question so button state is consistent
+const _persistedDiff=(S.sr[pool[qi]]&&S.sr[pool[qi]].diff)||_diffRating;
 h+=`<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-<button class="btn" style="font-size:11px;padding:6px 12px;min-height:36px;${_diffRating==='easy'?'background:rgb(var(--green-bg));color:rgb(var(--green-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='easy';_storeDiff(pool[qi],'easy')">Easy</button>
-<button class="btn" style="font-size:11px;padding:6px 12px;min-height:36px;${_diffRating==='med'?'background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='med';_storeDiff(pool[qi],'med')">Med</button>
-<button class="btn" style="font-size:11px;padding:6px 12px;min-height:36px;${_diffRating==='hard'?'background:rgb(var(--red-bg));color:rgb(var(--red-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='hard';_storeDiff(pool[qi],'hard')">Hard</button>
+<button class="btn" style="font-size:11px;padding:6px 12px;min-height:36px;${_persistedDiff==='easy'?'background:rgb(var(--green-bg));color:rgb(var(--green-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='easy';_storeDiff(pool[qi],'easy');render()">Easy</button>
+<button class="btn" style="font-size:11px;padding:6px 12px;min-height:36px;${_persistedDiff==='med'?'background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='med';_storeDiff(pool[qi],'med');render()">Med</button>
+<button class="btn" style="font-size:11px;padding:6px 12px;min-height:36px;${_persistedDiff==='hard'?'background:rgb(var(--red-bg));color:rgb(var(--red-fg))':'background:rgb(var(--bg2));color:rgb(var(--fg3))'}" onclick="_diffRating='hard';_storeDiff(pool[qi],'hard');render()">Hard</button>
 </div>`;
 }
 
@@ -5367,8 +5369,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.90';
+const APP_VERSION='9.91';
 const CHANGELOG={
+'9.91':['🎯 Easy/Med/Hard — לחיצה כעת מרעננת תצוגה מיידית + הדירוג נטען מהשמירה (היה נראה כאילו לא עובד כי ה-UI לא התעדכן אחרי לחיצה).'],
 '9.90':['↔️ תיקון BIDI סופי: heDir מיושם בכל מקום שמרנדר תוכן עברית/אנגלית מעורב — flashcards, אופציות, הסברים, הודעות chat, הערות, voice transcript, teach-back, תוצאות חיפוש. גם autopsy cards עם שמות אנגליים לא מתהפכים עוד.'],
 '9.89':['↔️ תיקון BIDI מקיף: כיוון טקסט מחושב לפי יחס עברית/אנגלית (heDir) במקום dir="auto" שהופך פסקאות עברית המתחילות ב-IgG4/MEN1/CT לצד שגוי. חל על שאלה, אופציות, autopsy, preview של שאלות AI-generated.','🔍 Q267 תוקן (דליות, לא BCC/SCC) + תג קרדיווסקולר במקום Polypharmacy.','⚠️ 10 שאלות תלויות-תמונה מסומנות כעת עם באדג\' אמבר: ההסבר עשוי להיות שגוי, אמת מול מקור.','⏱️ AI verify verdict נשאר על המסך (היה נעלם אחרי 8 שניות בגלל render()).'],
 '9.88':['⚡ FSRS כעת מודע לתאריך מבחן: לאחר הגדרת תאריך, אינטרוולים נחתכים לפי קשיי הכרטיס (חלש 30% / רגיל 60% / חזק 85% מהימים שנותרו) כך שכל כרטיס מקבל לפחות חזרה אחת לפני המבחן.','🔁 Replay wrong answers — מבחן הסימולציה שומר את ה-IDs של התשובות השגויות; כפתור חזרה עליהן במודאל התוצאה ובלוח היומי.','☁️ Cloud backup כולל כעת mock history ו-sessions — שחזור בין מכשירים שומר את מגמת המבחנים.'],
