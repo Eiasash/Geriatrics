@@ -577,7 +577,7 @@ function showSyncStatus(){
         ? 'Everything is backed up. Go to Track → ☁️ Backup to Cloud to back up manually.'
         : 'To back up now, go to Track → ☁️ Backup to Cloud.'),
   ];
-  alert(lines.join('\n'));
+  toast(lines.join('\n'),'info',5000);
 }
 if(typeof window!=='undefined'){
   window.addEventListener('online', ()=>{if(_syncState!=='syncing')_syncState='init';updateSyncPill();});
@@ -961,7 +961,7 @@ return warnings;
 // ===== VOICE-TO-TEXT CASE PARSER =====
 let voiceListening=false,voiceTranscript='';
 function startVoiceParser(){
-if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){alert('Speech Recognition not supported in this browser');return;}
+if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){toast('Speech Recognition not supported in this browser','info');return;}
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const rec=new SR();rec.lang='he-IL';rec.interimResults=false;rec.maxAlternatives=1;
 voiceListening=true;render();
@@ -1296,7 +1296,7 @@ return scored.slice(0,n);
 }
 function buildRescuePool(){
 const weak=getWeakTopics(3);
-if(!weak.length){alert('Not enough data yet — answer more questions first');return;}
+if(!weak.length){toast('Not enough data yet — answer more questions first','info');return;}
 const rescueQs=[];
 weak.forEach(w=>{
   const topicQs=QZ.map((q,i)=>({i,q})).filter(x=>x.q.ti===w.ti);
@@ -1501,6 +1501,8 @@ if(timedMode){clearInterval(timedInt);timedSec=90;render();setTimeout(startTimed
 else render();
 }
 
+function toast(msg,type='info',ms=3500){try{const c={info:'#0ea5e9',success:'#059669',error:'#dc2626',warn:'#d97706'}[type]||'#0ea5e9';const d=document.createElement('div');d.setAttribute('role','status');d.setAttribute('aria-live','polite');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(70px + env(safe-area-inset-bottom));background:'+c+';color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:600;font-family:Heebo,Inter,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:10000;max-width:90vw;text-align:center;direction:auto;white-space:pre-wrap;line-height:1.5';d.textContent=msg;document.body.appendChild(d);setTimeout(()=>{d.style.transition='opacity .3s';d.style.opacity='0';setTimeout(()=>d.remove(),300);},ms);}catch(e){console.warn('toast failed',e,msg);}}
+function confirmModal(msg){return new Promise(res=>{const h='<div id="cfrm" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:10001;padding:16px"><div style="background:rgb(var(--card-bg));color:rgb(var(--fg));border-radius:14px;max-width:360px;margin:20vh auto;padding:20px;font-family:Heebo,Inter,sans-serif;text-align:center"><div style="font-size:13px;line-height:1.6;margin-bottom:16px;white-space:pre-wrap">'+sanitize(msg)+'</div><div style="display:flex;gap:8px"><button id="cfrmY" style="flex:1;padding:10px;background:var(--app-primary);color:var(--app-on-primary);border:none;border-radius:10px;font-weight:700;cursor:pointer">OK</button><button id="cfrmN" style="flex:1;padding:10px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:none;border-radius:10px;font-weight:700;cursor:pointer">Cancel</button></div></div></div>';const d=document.createElement('div');d.innerHTML=h;document.body.appendChild(d.firstChild);const cl=v=>{const m=document.getElementById('cfrm');if(m)m.remove();res(v);};document.getElementById('cfrmY').onclick=()=>cl(true);document.getElementById('cfrmN').onclick=()=>cl(false);});}
 function sanitize(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function getApiKey(){return localStorage.getItem('samega_apikey')||'';}
 function setApiKey(k){if(k)localStorage.setItem('samega_apikey',k.trim());else localStorage.removeItem('samega_apikey');}
@@ -1592,14 +1594,14 @@ render();
 
 function startVoiceTeachBack(){
   const SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SpeechRec){alert('קול לא נתמך בדפדפן זה');return;}
+  if(!SpeechRec){toast('קול לא נתמך בדפדפן זה','info');return;}
   const rec=new SpeechRec();
   rec.lang='he-IL';
   rec.continuous=false;
   rec.interimResults=false;
   const btn=document.getElementById('tb-mic-btn');
   const inp=document.getElementById('tbInput');
-  if(!inp){alert('עדכן את הדף');return;}
+  if(!inp){toast('עדכן את הדף','info');return;}
   if(btn){btn.textContent='🔴';btn.disabled=true;}
   rec.onresult=function(e){
     const transcript=e.results[0][0].transcript;
@@ -2251,7 +2253,7 @@ h+=examMode?(()=>{
 <span style="font-weight:700;font-size:11px">${isMock?'🎯 Mock':'📋 Exam'}<br><span style="font-size:9px;font-weight:400">${paceStr}</span></span>
 <span id="etimer" class="timer" style="font-size:16px;font-weight:700">${fmtT(examSec)}</span>
 <span style="font-size:11px">${qi+1}/${isMock?pool.length:150}</span>
-<button onclick="if(confirm('סיים מבחן? הציון ייחשב על ${qi+1} שאלות שענית עד עכשיו.')){${isMock?'endMockExam()':'endExam()'}}" style="background:#dc2626;color:#fff;border:none;border-radius:10px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(220,38,38,.3)">⏹ סיים</button></div>`;
+<button onclick="confirmModal('סיים מבחן? הציון ייחשב על ${qi+1} שאלות שענית עד עכשיו.').then(ok=>{if(ok){${isMock?'endMockExam()':'endExam()'}}})" style="background:#dc2626;color:#fff;border:none;border-radius:10px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(220,38,38,.3)">⏹ סיים</button></div>`;
 })():'';
 if(!examMode){
 h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -2844,7 +2846,7 @@ QZ.push(newQ);
 let pending=[];try{pending=JSON.parse(localStorage.getItem('samega_pending_qs')||'[]');}catch(e){}
 pending.push(newQ);
 localStorage.setItem('samega_pending_qs',JSON.stringify(pending));
-alert('Question added! ('+QZ.length+' total). Note: pending server sync.');
+toast('Question added! ('+QZ.length+' total). Note: pending server sync.','info');
 }
 
 // ===== FEATURE 8: LEADERBOARD =====
@@ -2990,8 +2992,8 @@ function addChapterQsToBank(idOrJson){
     const existing=JSON.parse(localStorage.getItem('samega_custom_qs')||'[]');
     qs.forEach(q=>{q.t='AI-Ch';q.ti=-1;existing.push(q);});
     localStorage.setItem('samega_custom_qs',JSON.stringify(existing));
-    alert('✅ '+qs.length+' questions added! Reload to see them in the AI-Ch filter.');
-  }catch(e){alert('Failed: '+e.message);}
+    toast('✅ '+qs.length+' questions added! Reload to see them in the AI-Ch filter.','info');
+  }catch(e){toast('Failed: '+e.message,'info');}
 }
 
 // ===== LIBRARY HELPERS (_rl* prefix) =====
@@ -4579,7 +4581,7 @@ h+=`<div class="card" style="padding:14px;margin-top:12px">
 <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
 <button class="btn btn-p" onclick="exportProgress()" aria-label="Export progress">📥 Export Progress</button>
 <button class="btn btn-g" onclick="importProgress()" aria-label="Import progress">📤 Import Progress</button>
-<button class="btn btn-o" onclick="if(confirm('Reset ALL data? This cannot be undone.')){localStorage.removeItem('${LS}');location.reload()}" aria-label="Reset all data">🗑️ Reset</button>
+<button class="btn btn-o" onclick="confirmModal('Reset ALL data? This cannot be undone.').then(ok=>{if(ok){localStorage.removeItem('${LS}');location.reload()}})" aria-label="Reset all data">🗑️ Reset</button>
 </div>
 <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px">
 <button id="cloud-backup-btn" class="btn" style="background:#e0f2fe;color:#0284c7" onclick="cloudBackup()" aria-label="Backup to cloud">☁️ Backup to Cloud</button>
@@ -4952,7 +4954,7 @@ return h;
 async function submitFeedback(){
 const type=document.getElementById('fb-type')?.value||'other';
 const text=document.getElementById('fb-text')?.value?.trim();
-if(!text){alert('Please describe your feedback');return;}
+if(!text){toast('Please describe your feedback','info');return;}
 const entry={type,text,ts:Date.now(),version:APP_VERSION,uid:localStorage.getItem('samega_uid')||'anon'};
 // Save locally
 let fb=[];try{fb=JSON.parse(localStorage.getItem('samega_fb_sent')||'[]');}catch(e){}
@@ -5068,16 +5070,16 @@ async function cloudBackup(){
           headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'},
           body:JSON.stringify({data:S,updated_at:new Date().toISOString()})
         });
-        if(!patchRes.ok){const pe=await patchRes.text();alert('❌ Backup update failed: '+patchRes.status+'\n'+pe.slice(0,200));return;}
+        if(!patchRes.ok){const pe=await patchRes.text();toast('❌ Backup update failed: '+patchRes.status+'\n'+pe.slice(0,200,'info'));return;}
       }
       ok=true;
       S._lastCloudSync=new Date().toISOString();save();
-      alert('✅ Progress backed up to cloud!\nDevice ID: '+_sbDeviceId().slice(0,12)+'...');
+      toast('✅ Progress backed up to cloud!\nDevice ID: '+_sbDeviceId().slice(0,12)+'...','success');
     } else {
       const err=await res.text();
-      alert('❌ Backup failed: '+res.status+'\n'+err.slice(0,200));
+      toast('❌ Backup failed: '+res.status+'\n'+err.slice(0,200,'info'));
     }
-  }catch(e){alert('❌ Backup failed: '+e.message);}
+  }catch(e){toast('❌ Backup failed: '+e.message,'info');}
   _syncState=ok?'init':'failed';updateSyncPill();
   if(btn){btn.disabled=false;btn.textContent='☁️ Backup to Cloud';}
 }
@@ -5088,15 +5090,15 @@ async function cloudRestore(){
     const res=await fetch(SUPA_URL+'/rest/v1/samega_backups?id=eq.'+encodeURIComponent(id)+'&select=data,updated_at',{
       headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY}
     });
-    if(!res.ok){alert('❌ Restore failed: '+res.status);return;}
+    if(!res.ok){toast('❌ Restore failed: '+res.status,'info');return;}
     const rows=await res.json();
-    if(!rows||!rows.length){alert('No backup found for ID: '+id);return;}
+    if(!rows||!rows.length){toast('No backup found for ID: '+id,'info');return;}
     const row=rows[0];
-    if(confirm('Restore backup from '+new Date(row.updated_at).toLocaleString()+'?\nThis will overwrite your current progress.')){
+    if(await confirmModal('Restore backup from '+new Date(row.updated_at).toLocaleString()+'?\nThis will overwrite your current progress.')){
       const allowed=Object.keys(S);const validated={};for(const k of allowed){if(k in row.data)validated[k]=row.data[k];}Object.assign(S,validated);save();render();
-      alert('✅ Progress restored!');
+      toast('✅ Progress restored!','success');
     }
-  }catch(e){alert('❌ Restore failed: '+e.message);}
+  }catch(e){toast('❌ Restore failed: '+e.message,'info');}
 }
 
 function render(){
@@ -5202,7 +5204,7 @@ else if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>{const b
 function shareApp(){
 const url=location.href;
 if(navigator.share){navigator.share({title:'Shlav A Mega — Geriatrics Board Prep',text:'1,550 IMA questions + Hazzard\'s 8e + Harrison\'s 22e + Calculators + Spaced Repetition',url:url}).catch(()=>{});}
-else if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>alert('✅ Link copied!'));}
+else if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>toast('✅ Link copied!','success'));}
 }
 
 // ===== EXPORT PROGRESS =====
@@ -5211,7 +5213,7 @@ function importProgress(){
 const input=document.createElement('input');input.type='file';input.accept='.json';
 input.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
 r.onload=ev=>{try{const d=JSON.parse(ev.target.result);const allowed=Object.keys(S);const validated={};for(const k of allowed){if(k in d)validated[k]=d[k];}Object.assign(S,validated);save();render();
-alert('✅ Progress imported successfully!');}catch(err){alert('❌ Invalid file');}};r.readAsText(f);};
+toast('✅ Progress imported successfully!','success');}catch(err){toast('❌ Invalid file','error');}};r.readAsText(f);};
 input.click();}
 
 function exportProgress(){
@@ -5238,7 +5240,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.81';
+const APP_VERSION='9.82';
 const CHANGELOG={
 '9.78':['🐛 תיקון קריטי: פריסת post-answer ב-flex-direction:column — כפתורי Why-wrong/Difficulty/Hazzard/Harrison לא נדחסים יותר לעמודה של תו אחד','🗺️ NOTES_BY_TI map: הסבר הנושא הנכון מוצג אחרי תשובה (היה לפעמים לא מתאים לנושא)','📏 כפתורי Why-wrong ו-Difficulty: 40px min-height, 11px font — ניתנים ללחיצה','🔤 גופן הגוף כעת Heebo-first (היה Inter) — רנדור עברי איכותי יותר ב-iOS/Android','🍎 iOS status bar: black-translucent (היה default) — קריא על הכותרת הכהה','🚫 הפרומפט "How sure are you" הוסר — לא חוסם יותר את זרימת המענה'],
 '9.77':['🎨 Design: new token layer — amber/violet skin via data-skin="geriatrics"','🔤 Self-hosted Heebo + Inter fonts (removed Google Fonts dependency, offline-ready)','🛡️ CSP tightened: style-src and font-src now self-only','♿ Respects prefers-reduced-motion globally'],
