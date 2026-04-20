@@ -1,7 +1,8 @@
-const CACHE='shlav-a-v9.76';
+const CACHE='shlav-a-v9.77';
 const HTML_URLS=['shlav-a-mega.html','manifest.json','shared/fsrs.js','src/storage.js','src/sw-update.js'];
+const FONT_URLS=['fonts/heebo-hebrew-400-normal.woff2','fonts/heebo-hebrew-500-normal.woff2','fonts/heebo-hebrew-600-normal.woff2','fonts/heebo-hebrew-700-normal.woff2','fonts/heebo-latin-400-normal.woff2','fonts/heebo-latin-500-normal.woff2','fonts/heebo-latin-600-normal.woff2','fonts/heebo-latin-700-normal.woff2','fonts/inter-latin-400-normal.woff2','fonts/inter-latin-500-normal.woff2','fonts/inter-latin-600-normal.woff2','fonts/inter-latin-700-normal.woff2'];
 const JSON_DATA_URLS=['data/questions.json','data/topics.json','data/notes.json','data/drugs.json','data/flashcards.json','harrison_chapters.json','data/hazzard_chapters.json','data/tabs.json','data/question_chapters.json','data/distractors.json','data/regulatory.json'];
-const ALL_URLS=[...HTML_URLS,...JSON_DATA_URLS];
+const ALL_URLS=[...HTML_URLS,...JSON_DATA_URLS,...FONT_URLS];
 
 // Supabase question-images: cache-first (images are immutable once uploaded)
 const SUPA_IMG_PATTERN=/supabase\.co\/storage\/v1\/object\/public\/question-images\//;
