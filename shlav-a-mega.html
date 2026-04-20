@@ -1052,7 +1052,7 @@ s.fsrsS=Math.round(upd.s*1000)/1000;
 s.fsrsD=Math.round(upd.d*100)/100;
 s.lastReview=Date.now();
 // FSRS interval → next review
-const fsrsDays=fsrsInterval(s.fsrsS);
+const fsrsDays=fsrsIntervalWithDeadline(s.fsrsS,s.fsrsD,rPrev);
 s.next=Date.now()+fsrsDays*86400000;
 // Keep SM-2 ef/n as proxies for filter compatibility
 s.n=correct?s.n+1:0;
@@ -1771,7 +1771,7 @@ function checkMockIntercept(){
   const qIdx=pool[qi];const q=QZ[qIdx];const correct=sel===q.c;
   if(mockExamResults&&q.ti>=0){
     if(correct)mockExamResults.byTopic[q.ti].ok++;
-    else mockExamResults.byTopic[q.ti].no++;
+    else {mockExamResults.byTopic[q.ti].no++; (mockExamResults.wrongIdxs=mockExamResults.wrongIdxs||[]).push(qIdx);}
     _mockAnswered++;
   }
 }
@@ -1796,9 +1796,9 @@ function endMockExam(){
   // Build analytics — use deltas so lifetime counters aren't corrupted
   const eOk=S.qOk-_examStartOk,eNo=S.qNo-_examStartNo,tot=eOk+eNo,pct=tot?Math.round(eOk/tot*100):0;
   const elapsed=Math.floor((Date.now()-mockExamResults.start)/1000);
-  // Store in history
+  // Store in history (with wrong-answer IDs for replay)
   try{const hist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');
-    hist.push({date:new Date().toISOString(),score:pct,correct:eOk,total:tot,elapsed,byTopic:mockExamResults.byTopic});
+    hist.push({date:new Date().toISOString(),score:pct,correct:eOk,total:tot,elapsed,byTopic:mockExamResults.byTopic,wrongIdxs:mockExamResults.wrongIdxs||[],tag:mockExamResults.tag||null});
     if(hist.length>20)hist.splice(0,hist.length-20);
     localStorage.setItem('samega_mock_hist',JSON.stringify(hist));
   }catch(e){}
@@ -1850,9 +1850,27 @@ ${rows.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0
   </div>
   <div style="font-size:10px;font-weight:700;color:${r.acc>=70?'#059669':r.acc>=50?'#d97706':'#dc2626'};min-width:28px;text-align:right">${r.acc}%</div>
 </div>`).join('')}
-<button onclick="document.getElementById('mexModal').remove()" style="margin-top:16px;width:100%;padding:10px;background:#0f172a;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer" aria-label="Close exam results">Close</button>
+${(mockExamResults&&mockExamResults.wrongIdxs&&mockExamResults.wrongIdxs.length)?`<button onclick="replayMockWrong(${JSON.stringify(mockExamResults.wrongIdxs)})" style="margin-top:14px;width:100%;padding:10px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer" aria-label="Review wrong answers">🔁 Review ${mockExamResults.wrongIdxs.length} wrong answers</button>`:''}
+<button onclick="document.getElementById('mexModal').remove()" style="margin-top:10px;width:100%;padding:10px;background:#0f172a;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer" aria-label="Close exam results">Close</button>
 </div></div>`;
   document.body.insertAdjacentHTML('beforeend',html);
+}
+function replayMockWrong(ixs){
+  try{document.getElementById('mexModal')?.remove();}catch(e){}
+  if(!Array.isArray(ixs)||!ixs.length){toast('No wrong answers to replay','info');return;}
+  pool=ixs.slice();_sessAnsw={};
+  qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;_optShuffle=null;_confidence=null;
+  filt='custom';tab='quiz';examMode=false;mockExamResults=null;
+  save();render();
+  toast('Replaying '+ixs.length+' wrong answers','info',2500);
+}
+// Replay wrong answers from the most recent mock in history
+function replayLastMockWrong(){
+  try{const hist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');
+    const last=hist[hist.length-1];
+    if(!last||!last.wrongIdxs||!last.wrongIdxs.length){toast('No recent mock with wrong answers','warn');return;}
+    replayMockWrong(last.wrongIdxs);
+  }catch(e){toast('Could not load mock history','error');}
 }
 function fmtT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return(h?h+':':'')+String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0')}
 
@@ -3424,9 +3442,9 @@ if(S.fcFlip){
   const _r=fcsr['fc_'+activeIdx];
   const _nextHint=function(rating){
     const tmpS=_r?_r.fsrsS:null;
-    if(!tmpS)return fsrsInterval(fsrsInitNew(rating).s);
+    if(!tmpS){const init=fsrsInitNew(rating);return fsrsIntervalWithDeadline(init.s,init.d,1);}
     const upd=fsrsUpdate(tmpS,_r.fsrsD,1,rating);
-    return fsrsInterval(upd.s);
+    return fsrsIntervalWithDeadline(upd.s,upd.d,1);
   };
   h+=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px">
 <button class="btn" style="background:rgb(var(--red-bg));color:#dc2626;font-size:10px;padding:8px 4px" onclick="fcRate(1)" aria-label="Rate: Again">🔄 שוב<br><span style="font-size:8px;opacity:.7">10m</span></button>
@@ -3936,7 +3954,7 @@ const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).sl
 const trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
 let h=`<div class="card" style="padding:14px;margin-bottom:10px;border-left:4px solid #059669">
 <div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#059669">📋 Today's Study Plan</div>`;
-if(daysLeft!==null)h+=`<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${daysLeft} days to exam · ${new Date(examDate).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>`;
+if(daysLeft!==null)h+=`<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${daysLeft} days to exam · ${new Date(examDate).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}${(function(){try{let w=0;for(let i=0;i<QZ.length;i++){const sr=S.sr[i];if(sr&&sr.fsrsS&&sr.fsrsD){const base=fsrsInterval(sr.fsrsS);const wrp=fsrsIntervalWithDeadline(sr.fsrsS,sr.fsrsD,1);if(wrp<base)w++;}}return w>0?` · <span style="color:#d97706">⚡ ${w} cards compressed</span>`:'';}catch(e){return '';}})()}</div>`;
 h+=`<div style="font-size:11px;line-height:2">`;
 // Step 1: Due questions
 if(dueN>0)h+=`<div>1️⃣ <b>${dueN} due questions</b> (~${Math.round(dueN*1.5)} min) <button onclick="setFilt('due');tab='quiz';render()" style="font-size:9px;padding:2px 8px;background:rgb(var(--blue-bg));color:#3b82f6;border:none;border-radius:6px;cursor:pointer">▶ Start</button></div>`;
@@ -3951,6 +3969,8 @@ h+=`<div>3️⃣ Drill: <b>20q mini-exam on ${w.name}</b> <button onclick="start
 }
 // Step 3: Traps
 if(trapCount>0)h+=`<div>4️⃣ Review <b>${trapCount} trap questions</b> <button onclick="setFilt('traps');tab='quiz';render()" style="font-size:9px;padding:2px 8px;background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg));border:none;border-radius:6px;cursor:pointer">🪤 Start</button></div>`;
+// Step 4: Replay last mock wrong (if any)
+try{const _mh=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');const _last=_mh[_mh.length-1];const _wn=_last&&_last.wrongIdxs?_last.wrongIdxs.length:0;if(_wn>0){const _dt=new Date(_last.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'});h+=`<div>5️⃣ Replay <b>${_wn} wrong answers</b> from mock on ${_dt} <button onclick="replayLastMockWrong()" style="font-size:9px;padding:2px 8px;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;cursor:pointer">🔁 Start</button></div>`;}}catch(e){}
 h+=`</div></div>`;
 return h;
 }
@@ -5150,7 +5170,13 @@ async function cloudBackup(){
   _syncState='syncing';updateSyncPill();
   let ok=false;
   try{
-    const payload={id:_sbDeviceId(),data:S,updated_at:new Date().toISOString()};
+    // Bundle ancillary localStorage (mock_hist, sessions) so cross-device restore
+    // carries the full picture, not just S.
+    let _mockHist=[],_sessions=[];
+    try{_mockHist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');}catch(e){}
+    try{_sessions=JSON.parse(localStorage.getItem('samega_sessions')||'[]');}catch(e){}
+    const _bundled={...S,_mockHist,_sessions};
+    const payload={id:_sbDeviceId(),data:_bundled,updated_at:new Date().toISOString()};
     const res=await fetch(SUPA_URL+'/rest/v1/samega_backups',{
       method:'POST',
       headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
@@ -5162,7 +5188,7 @@ async function cloudBackup(){
         const patchRes=await fetch(SUPA_URL+'/rest/v1/samega_backups?id=eq.'+_sbDeviceId(),{
           method:'PATCH',
           headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'},
-          body:JSON.stringify({data:S,updated_at:new Date().toISOString()})
+          body:JSON.stringify({data:_bundled,updated_at:new Date().toISOString()})
         });
         if(!patchRes.ok){const pe=await patchRes.text();toast('❌ Backup update failed: '+patchRes.status+'\n'+pe.slice(0,200,'info'));return;}
       }
@@ -5189,6 +5215,9 @@ async function cloudRestore(){
     if(!rows||!rows.length){toast('No backup found for ID: '+id,'info');return;}
     const row=rows[0];
     if(await confirmModal('Restore backup from '+new Date(row.updated_at).toLocaleString()+'?\nThis will overwrite your current progress.')){
+      // Pull sibling localStorage bundles out of the payload before S whitelist
+      try{if(Array.isArray(row.data&&row.data._mockHist))localStorage.setItem('samega_mock_hist',JSON.stringify(row.data._mockHist.slice(-20)));}catch(e){}
+      try{if(Array.isArray(row.data&&row.data._sessions))localStorage.setItem('samega_sessions',JSON.stringify(row.data._sessions.slice(-30)));}catch(e){}
       const allowed=Object.keys(S);const validated={};for(const k of allowed){if(k in row.data)validated[k]=row.data[k];}Object.assign(S,validated);save();render();
       toast('✅ Progress restored!','success');
     }
@@ -5335,8 +5364,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.87';
+const APP_VERSION='9.88';
 const CHANGELOG={
+'9.88':['⚡ FSRS כעת מודע לתאריך מבחן: לאחר הגדרת תאריך, אינטרוולים נחתכים לפי קשיי הכרטיס (חלש 30% / רגיל 60% / חזק 85% מהימים שנותרו) כך שכל כרטיס מקבל לפחות חזרה אחת לפני המבחן.','🔁 Replay wrong answers — מבחן הסימולציה שומר את ה-IDs של התשובות השגויות; כפתור חזרה עליהן במודאל התוצאה ובלוח היומי.','☁️ Cloud backup כולל כעת mock history ו-sessions — שחזור בין מכשירים שומר את מגמת המבחנים.'],
 '9.87':['✎ אייקון הערה ו-★ אייקון סימניה ברורים יותר (עיגולים צבעוניים)'],
 '9.85':['📝 הערות אישיות — כפתור 📝 בכל שאלה פותח הערה פרטית','📓 פנקס כללי ב-More → Notes עם ייצוא לקובץ','🔖 רשימה של כל ההערות עם כפתור מעבר לשאלה'],
 '9.84':['🔘 אייקונים בכותרת גדולים יותר — ☀ 🌙 ? ברורים לזיהוי','📋 רשימת השינויים נכתבה מחדש לעברית תקינה'],

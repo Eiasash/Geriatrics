@@ -1,0 +1,4405 @@
+{
+  "source": "geri/data/questions.json",
+  "total_questions": 3314,
+  "already_with_img": 139,
+  "flagged_count": 223,
+  "by_priority": {
+    "1": 158,
+    "2": 65
+  },
+  "by_modality": {
+    "ECG": 55,
+    "CT/MRI": 34,
+    "Other imaging": 42,
+    "Smear/Histopath": 20,
+    "Derm": 2,
+    "CXR": 46,
+    "US": 33,
+    "Waveform": 3,
+    "EEG": 4
+  },
+  "by_topic": {
+    "Dementia": 5,
+    "Infections": 14,
+    "Frailty & Sarcopenia": 7,
+    "Hypertension": 2,
+    "Cardiovascular Disease": 43,
+    "Osteoporosis": 4,
+    "Pain Management": 2,
+    "Biology of Aging": 7,
+    "Urinary Incontinence": 4,
+    "Anemia": 10,
+    "Cancer & Oncology": 31,
+    "Advance Directives": 2,
+    "Geriatric Assessment (CGA)": 4,
+    "Community & Long-Term Care": 6,
+    "Geriatric Emergency Medicine": 13,
+    "Polypharmacy & Beers": 3,
+    "Perioperative Care": 5,
+    "Nutrition & Malnutrition": 5,
+    "Falls & Balance": 3,
+    "Osteoarthritis": 8,
+    "Rehabilitation": 1,
+    "Delirium": 2,
+    "Depression & Mood": 1,
+    "Palliative Care": 3,
+    "Heart Failure": 3,
+    "COPD & Pulmonary": 11,
+    "Chronic Kidney Disease": 11,
+    "Constipation": 2,
+    "Thyroid Disorders": 4,
+    "Diabetes Mellitus": 1,
+    "Stroke": 6
+  },
+  "flagged": [
+    {
+      "idx": 34,
+      "ti": 6,
+      "topic": "Dementia",
+      "tag": "2022",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "הולטר אק"
+        }
+      ],
+      "stem_preview": "בן88 סובל מ-ALZHEIMER DISEASE. בשנה האחרונה המטופל התעלף פעמיים במהלך היום. בוצע הולטר אק\\\"ג שהדגים נטייה לברדיקרדיה בלילה. מכל התרופות האפשריות לטיפול בדמנציה איזו תרופה איננה מומ"
+    },
+    {
+      "idx": 98,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "2022",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "דימות CT"
+        }
+      ],
+      "stem_preview": "בת82, מתגוררת בביתה. ברקע: מחלת לב איסכמית, יתר לחץ דם, תת פעילות של בלוטת התריס, אוסטיאופורוזיס ומצב לאחר שחזור וקיבוע מפרק הירך מימין לפני כשנתיים על רקע שבר אינטרטרוכנטרי. אושפז"
+    },
+    {
+      "idx": 156,
+      "ti": 3,
+      "topic": "Frailty & Sarcopenia",
+      "tag": "2023-Jun",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DXA"
+        }
+      ],
+      "stem_preview": "על מנת להגדיר סרקופניה דרוש שילוב של מספר קריטריונים. כל קריטריון נמדד בדרכים שונות. איזו מהבאות היא דרך נכונה למדידה של קריטריונים לסרקופניה?"
+    },
+    {
+      "idx": 464,
+      "ti": 19,
+      "topic": "Hypertension",
+      "tag": "2024-May",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "הולטר אק"
+        }
+      ],
+      "stem_preview": "בת78. ברקע יתר לחץ דם, פרפור עליות, החלפת ברך לפני כ- 3 שנים. פנתה למוקד בשל נפילה עם חבלה בברך. ללא ממצא בבדיקתה הגופנית למעט חבלות יבשות, ללא שברים. בתשאול על מנגנון הנפילה מתארת"
+    },
+    {
+      "idx": 547,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "2024-May",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "תרשים אק"
+        }
+      ],
+      "stem_preview": "בת71, פנתה למיון לאחר15 שעות מתחילת כאבים בחזה. בתרשים אק\\\"ג הודגמו עליות ST בקיר קידמי. בקבלתה ללא כאבים בחזה. הוחלט על טיפול שמרני. שבוע לאחר מכן במהלך אשפוז הופיעה חולשה בפלג גו"
+    },
+    {
+      "idx": 652,
+      "ti": 6,
+      "topic": "Dementia",
+      "tag": "2025-Jun",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "PET-CT"
+        }
+      ],
+      "stem_preview": "בת72 אושפזה לבירור ירידה במשקל. היא מדווחת על קושי בבליעה ובלעיסה ועקב זה הפסיקה לאכול בשר. בתשובה לשאלה מכוונה מדווחת על דיפלופיה. מה השלב הבא בבירור?"
+    },
+    {
+      "idx": 797,
+      "ti": 6,
+      "topic": "Dementia",
+      "tag": "2020",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "הולטר"
+        }
+      ],
+      "stem_preview": "בן 82 ,פנה לרופא המשפחה עקב אירועים חוזרים של התעלפות. ברקע - סובל מיתר ל\\\"ד, השמנת יתר, סוכרת ודמנציה. תרופות קבועות: RAMIPRIL (TRITACE) LERCANIDIPINE ( VASODIP) MEMANTIN ( MEMOX)"
+    },
+    {
+      "idx": 920,
+      "ti": 15,
+      "topic": "Osteoporosis",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA"
+        }
+      ],
+      "stem_preview": "A 76-year-old woman with T-score of -2.8 on DEXA scan and no prior fractures has FRAX calculated 10-year hip fracture risk of 2.8% and major osteoporotic fracture risk of 19%. Does"
+    },
+    {
+      "idx": 932,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT head shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old with atrial fibrillation and acute ischemic stroke arrives at 3.5 hours from symptom onset. NIHSS 14, CT head shows no hemorrhage. Which statement is MOST accurate?"
+    },
+    {
+      "idx": 970,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "EKG shows"
+        }
+      ],
+      "stem_preview": "An 82-year-old with no chest pain presents with dyspnea and acute mental status change. EKG shows ST-segment depressions. What is the likely diagnosis and should age be a barrier t"
+    },
+    {
+      "idx": 990,
+      "ti": 15,
+      "topic": "Osteoporosis",
+      "tag": "2021",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA"
+        }
+      ],
+      "stem_preview": "בת 70 עם Multiple Myeloma, שבר T8 ונגעים ליטיים. מטופלת ב-DEXA+BORTEZOMIB. מה למניעת סיבוכים גרמיים?"
+    },
+    {
+      "idx": 1032,
+      "ti": 14,
+      "topic": "Pain Management",
+      "tag": "2021",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "מיפוי עצמות"
+        }
+      ],
+      "stem_preview": "בת 75, כאבי גב חודשיים, נעליים חדשות. מיפוי עצמות תקין. MRI: ניוון דיסקים, בלט L3-L4, אוסטאופיט L4. מה לא סביר?"
+    },
+    {
+      "idx": 1135,
+      "ti": 0,
+      "topic": "Biology of Aging",
+      "tag": "2025-Jun",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "PET-CT"
+        }
+      ],
+      "stem_preview": "בת 72, קושי בבליעה ולעיסה, הפסיקה לאכול בשר, דיפלופיה. מה השלב הבא בבירור?"
+    },
+    {
+      "idx": 1482,
+      "ti": 3,
+      "topic": "Frailty & Sarcopenia",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA"
+        }
+      ],
+      "stem_preview": "A 78-year-old man comes to your office after screening positive on the SARC-F questionnaire during a routine visit. He scored 6 points, reporting difficulty with chair rising, stai"
+    },
+    {
+      "idx": 1483,
+      "ti": 3,
+      "topic": "Frailty & Sarcopenia",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA"
+        }
+      ],
+      "stem_preview": "A 75-year-old woman with suspected sarcopenia undergoes handgrip strength testing in your clinic. Her results show grip strength below the reference values for her gender and popul"
+    },
+    {
+      "idx": 1487,
+      "ti": 3,
+      "topic": "Frailty & Sarcopenia",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "biopsy reveals"
+        }
+      ],
+      "stem_preview": "An 80-year-old woman with sarcopenia participates in a research study examining cellular changes in aging muscle. Muscle biopsy reveals reduced size and number of myofibers with de"
+    },
+    {
+      "idx": 1490,
+      "ti": 3,
+      "topic": "Frailty & Sarcopenia",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA scan shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old man undergoes comprehensive geriatric assessment in your clinic. He scores 3 points on the SARC-F questionnaire and has a handgrip strength of 28 kg (normal for his a"
+    },
+    {
+      "idx": 1529,
+      "ti": 11,
+      "topic": "Urinary Incontinence",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "Biopsy reveals"
+        }
+      ],
+      "stem_preview": "An 82-year-old woman presents with vulvar burning and pruritus. Biopsy reveals HPV-independent VIN (differentiated VIN). She has a history of lichen sclerosus. Compared to HPV-asso"
+    },
+    {
+      "idx": 1559,
+      "ti": 25,
+      "topic": "Anemia",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "Peripheral blood smear shows"
+        }
+      ],
+      "stem_preview": "A 68-year-old man presents with progressive fatigue over 8 months. Laboratory evaluation reveals pancytopenia with hemoglobin 7.8 g/dL, white blood cell count 2.1×10³/μL, and plate"
+    },
+    {
+      "idx": 1593,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "biopsy shows"
+        }
+      ],
+      "stem_preview": "An 82-year-old man with a 15-year history of diabetes and coronary artery disease (ejection fraction 35%) presents with newly diagnosed prostate cancer. His PSA is 45 ng/mL, DRE re"
+    },
+    {
+      "idx": 1600,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "Biopsy reveals"
+        }
+      ],
+      "stem_preview": "An 85-year-old man with multiple comorbidities (heart failure, diabetes, chronic kidney disease) presents with elevated PSA (12 ng/mL) and abnormal DRE. Biopsy reveals Gleason 7 ad"
+    },
+    {
+      "idx": 1603,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "biopsy shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old man presents with a 2cm breast mass that on biopsy shows invasive ductal carcinoma that is estrogen receptor positive, progesterone receptor positive, and HER2 negat"
+    },
+    {
+      "idx": 1608,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "Biopsy shows"
+        }
+      ],
+      "stem_preview": "A 71-year-old woman presents with a 1.5cm breast mass. Biopsy shows invasive lobular carcinoma that is ER+/PR+/HER2-. She has a history of recurrent falls (3 in past year), mild co"
+    },
+    {
+      "idx": 1619,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT scan shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old man with stage III colon cancer completed adjuvant chemotherapy 6 months ago. He now presents with new onset confusion, weight loss, and abdominal pain. CT scan shows"
+    },
+    {
+      "idx": 1633,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "PET scan shows"
+        }
+      ],
+      "stem_preview": "A 72-year-old woman with stage I NSCLC (T1bN0M0) has multiple comorbidities including severe COPD (FEV1 30% predicted), coronary artery disease, and diabetes. She is not a surgical"
+    },
+    {
+      "idx": 1653,
+      "ti": 0,
+      "topic": "Biology of Aging",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Derm"
+      ],
+      "triggers": [
+        {
+          "group": "derm",
+          "modality": "Derm",
+          "priority": 1,
+          "match": "vesicular rash"
+        }
+      ],
+      "stem_preview": "An 68-year-old man with a history of organ transplant (kidney) 5 years ago presents with a painful vesicular rash on the right side of his chest following a T4-T6 dermatomal distri"
+    },
+    {
+      "idx": 1659,
+      "ti": 0,
+      "topic": "Biology of Aging",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Derm"
+      ],
+      "triggers": [
+        {
+          "group": "derm",
+          "modality": "Derm",
+          "priority": 1,
+          "match": "vesicular rash"
+        }
+      ],
+      "stem_preview": "A 71-year-old man with multiple myeloma on maintenance lenalidomide therapy has never had chickenpox but was recently exposed to his grandson who developed varicella. He asks about"
+    },
+    {
+      "idx": 1709,
+      "ti": 0,
+      "topic": "Biology of Aging",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI brain shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old woman is evaluated for progressive difficulty with IADLs over 6 months. Her daughter reports she stopped managing finances after multiple errors and needs help with "
+    },
+    {
+      "idx": 1714,
+      "ti": 0,
+      "topic": "Biology of Aging",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 73-year-old woman with diabetes and CKD stage 3a (eGFR 52) is admitted with COVID-19 pneumonia requiring 4L oxygen. CXR shows bilateral infiltrates. D-dimer elevated at 1,200. Sh"
+    },
+    {
+      "idx": 1716,
+      "ti": 0,
+      "topic": "Biology of Aging",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman with COPD on home oxygen presents to ED with increased dyspnea and purulent sputum. Current medications include tiotropium, budesonide/formoterol, albuterol PRN"
+    },
+    {
+      "idx": 1723,
+      "ti": 34,
+      "topic": "Advance Directives",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 88-year-old man with moderate dementia, CKD stage 4 (eGFR 22), and recurrent aspiration pneumonia is admitted to ICU with sepsis. His advance directive states 'full code.' His d"
+    },
+    {
+      "idx": 1731,
+      "ti": 34,
+      "topic": "Advance Directives",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman with moderate Alzheimer's and osteoporosis is admitted after witnessed aspiration during lunch at assisted living. CXR shows right lower lobe infiltrate. She ha"
+    },
+    {
+      "idx": 1737,
+      "ti": 2,
+      "topic": "Geriatric Assessment (CGA)",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old man with COPD, CKD stage 3a (eGFR 45), and osteoarthritis is evaluated in the emergency department after his wife found him confused this morning. She reports he was "
+    },
+    {
+      "idx": 1762,
+      "ti": 2,
+      "topic": "Geriatric Assessment (CGA)",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI brain to rule out posterior fossa lesion"
+        }
+      ],
+      "stem_preview": "An 80-year-old woman is evaluated for chronic dizziness and recurrent falls. She describes feeling 'off balance' constantly, worse with head movement. Medications: metformin 500mg "
+    },
+    {
+      "idx": 1764,
+      "ti": 2,
+      "topic": "Geriatric Assessment (CGA)",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old woman with moderate vascular dementia (MMSE 15/30) and CHF (EF 35%) is hospitalized with pneumonia. On day 2, she becomes agitated, pulling at lines and hitting staf"
+    },
+    {
+      "idx": 1787,
+      "ti": 0,
+      "topic": "Biology of Aging",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI shows mild hippocampal atrophy. What finding"
+        }
+      ],
+      "stem_preview": "A 75-year-old woman is brought to clinic by her daughter who is concerned about memory loss. The patient forgot to pay bills twice and got lost driving to church. MMSE 24/30, missi"
+    },
+    {
+      "idx": 1817,
+      "ti": 35,
+      "topic": "Community & Long-Term Care",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 88-year-old man is admitted from home after being found on the floor by his neighbor. He lives alone, last seen normal 18 hours ago. He's confused, unable to provide history. T "
+    },
+    {
+      "idx": 1821,
+      "ti": 35,
+      "topic": "Community & Long-Term Care",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old man with HFpEF, CAD, and diabetes presents to the ED with shortness of breath. BNP 890, Cr 1.9 (baseline 1.4). CXR shows pulmonary edema. Home medications include fu"
+    },
+    {
+      "idx": 1841,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT head shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman is brought to the ED by her son who reports she has been unable to manage her finances or medications for 2 weeks. She was independent in all IADLs one month ag"
+    },
+    {
+      "idx": 1842,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 88-year-old nursing home resident with advanced dementia, CHF (EF 25%), and CKD stage 3 (eGFR 42) arrives at the ED with dyspnea. He has a POLST form indicating DNR/DNI but full"
+    },
+    {
+      "idx": 1848,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old man with diabetes, CAD, and depression presents to the ED with dizziness and weakness. Medications include metformin, atorvastatin, metoprolol 100 mg BID, lisinopril,"
+    },
+    {
+      "idx": 1854,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old man presents to the ED with progressive dyspnea and leg edema over 2 weeks. He recently started seeing a new cardiologist who added spironolactone 25 mg daily to his"
+    },
+    {
+      "idx": 1862,
+      "ti": 35,
+      "topic": "Community & Long-Term Care",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old man in skilled nursing for stroke rehabilitation is evaluated for new bilateral leg edema. He has right hemiparesis, diabetes, and CKD stage 3a. He's progressing well"
+    },
+    {
+      "idx": 1875,
+      "ti": 35,
+      "topic": "Community & Long-Term Care",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Waveform"
+      ],
+      "triggers": [
+        {
+          "group": "waveform",
+          "modality": "Waveform",
+          "priority": 2,
+          "match": "Spirometry shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with advanced COPD on 3L continuous oxygen is discharged home after hospitalization for pneumonia. Home health intake reveals: lives in 2-story home, bedroom up"
+    },
+    {
+      "idx": 1894,
+      "ti": 35,
+      "topic": "Community & Long-Term Care",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old man with HFpEF, CKD stage 3a, and diabetes is seen in cardiology clinic. He reports inability to lie flat and waking gasping for air. Home BP readings average 165/95 "
+    },
+    {
+      "idx": 1895,
+      "ti": 35,
+      "topic": "Community & Long-Term Care",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 83-year-old woman with severe COPD on 3L home O2, mild dementia, and failure to thrive is brought to the ED by her daughter for increased confusion and falls over 2 days. Vitals"
+    },
+    {
+      "idx": 1921,
+      "ti": 8,
+      "topic": "Polypharmacy & Beers",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "echo shows"
+        }
+      ],
+      "stem_preview": "An 82-year-old nursing home resident with advanced dementia, CHF, and CKD is sent to the ED for decreased oral intake and lethargy. Temp 37.8°C, BP 105/65, HR 88. Labs: Cr 3.2 (bas"
+    },
+    {
+      "idx": 1939,
+      "ti": 8,
+      "topic": "Polypharmacy & Beers",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old nursing home resident with severe dementia is brought to the ED with fever and cough. CXR shows right lower lobe infiltrate. She doesn't recognize family, is bedboun"
+    },
+    {
+      "idx": 1958,
+      "ti": 2,
+      "topic": "Geriatric Assessment (CGA)",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman with advanced COPD (on 3L oxygen), osteoporosis, and anxiety presents to pulmonary clinic. She's fallen twice this month and fears leaving home. Medications inc"
+    },
+    {
+      "idx": 1981,
+      "ti": 38,
+      "topic": "Perioperative Care",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 86-year-old man with severe aortic stenosis (valve area 0.7 cm²), CKD stage 3b (eGFR 36), and HFpEF undergoes TAVR. Post-procedure day 1: new confusion, not following commands. "
+    },
+    {
+      "idx": 1988,
+      "ti": 38,
+      "topic": "Perioperative Care",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman undergoes robotic prostatectomy for adenocarcinoma. PMH: AFib (on rivaroxaban), diabetes, and hypertension. POD#2: develops acute SOB, SpO2 88% on 4L. BP 98/62,"
+    },
+    {
+      "idx": 1996,
+      "ti": 38,
+      "topic": "Perioperative Care",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG",
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        },
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo reveals"
+        }
+      ],
+      "stem_preview": "An 85-year-old man with severe AS (valve area 0.7 cm²), mild dementia, and CKD stage 3b undergoes TAVR under conscious sedation. Baseline Cr 1.9. Two hours post-procedure, he becom"
+    },
+    {
+      "idx": 1998,
+      "ti": 38,
+      "topic": "Perioperative Care",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 82-year-old man with HFpEF, CKD stage 4 (eGFR 18), and pre-frailty undergoes BiV-ICD placement. Post-op day 1, he's confused and oliguric. Labs: K 6.2, Cr 4.1, BUN 95. CXR shows"
+    },
+    {
+      "idx": 2004,
+      "ti": 38,
+      "topic": "Perioperative Care",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 80-year-old man with ischemic cardiomyopathy (EF 30%), diabetes, and sarcopenia (grip strength 18kg) undergoes CRT-D placement. BMI 19. Albumin 2.8. Post-procedure, he can't lif"
+    },
+    {
+      "idx": 2007,
+      "ti": 9,
+      "topic": "Nutrition & Malnutrition",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echocardiogram shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old man with COPD on home oxygen presents with 15-pound weight loss over 3 months. BMI 20.1 kg/m². He reports early satiety and dyspnea with eating. Current medications:"
+    },
+    {
+      "idx": 2022,
+      "ti": 9,
+      "topic": "Nutrition & Malnutrition",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "endoscopy shows"
+        }
+      ],
+      "stem_preview": "An 88-year-old man is evaluated in clinic for a 6-month history of difficulty swallowing solid foods. He reports food 'sticking' behind his sternum, requiring water to wash it down"
+    },
+    {
+      "idx": 2024,
+      "ti": 9,
+      "topic": "Nutrition & Malnutrition",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "Chest X-ray shows"
+        }
+      ],
+      "stem_preview": "An 82-year-old man in skilled nursing for stroke rehabilitation develops acute confusion and agitation during dinner. Staff report he was pocketing food in his cheeks and suddenly "
+    },
+    {
+      "idx": 2028,
+      "ti": 9,
+      "topic": "Nutrition & Malnutrition",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 73-year-old man with Parkinson's disease and diabetes presents to the ED with fever and cough. His wife reports increasing confusion over 3 days and difficulty swallowing medicat"
+    },
+    {
+      "idx": 2041,
+      "ti": 9,
+      "topic": "Nutrition & Malnutrition",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 86-year-old nursing home resident with severe Alzheimer's (FAST 7a) and dysphagia is brought to the ED with aspiration pneumonia. This is her third admission in 2 months. CXR sh"
+    },
+    {
+      "idx": 2070,
+      "ti": 11,
+      "topic": "Urinary Incontinence",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "microscopy shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old woman is admitted from home after her daughter found her lying in urine-soaked sheets, confused and unable to stand. She has moderate vascular dementia and lives alon"
+    },
+    {
+      "idx": 2085,
+      "ti": 11,
+      "topic": "Urinary Incontinence",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old man is admitted for elective hip replacement. Preoperative assessment reveals previously undiagnosed erectile dysfunction for 18 months and exertional chest tightness"
+    },
+    {
+      "idx": 2130,
+      "ti": 8,
+      "topic": "Polypharmacy & Beers",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 82-year-old man with mild Alzheimer's disease, treated with donepezil 10 mg daily, is brought by his wife for increased confusion and two falls this week. She mentions he's been"
+    },
+    {
+      "idx": 2154,
+      "ti": 3,
+      "topic": "Frailty & Sarcopenia",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA shows"
+        }
+      ],
+      "stem_preview": "A 75-year-old woman with pre-diabetes and hypertension enrolls in a frailty prevention study. Baseline assessment: BMI 24, grip strength 19kg, gait speed 0.9 m/s, reports fatigue b"
+    },
+    {
+      "idx": 2191,
+      "ti": 4,
+      "topic": "Falls & Balance",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI",
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        },
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI brain to rule out structural lesion"
+        }
+      ],
+      "stem_preview": "An 82-year-old man with mild Alzheimer's disease arrives at the ED via EMS after collapse at home. His daughter states he was reaching for something on a high shelf when he suddenl"
+    },
+    {
+      "idx": 2213,
+      "ti": 11,
+      "topic": "Urinary Incontinence",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "EKG shows"
+        }
+      ],
+      "stem_preview": "A 75-year-old woman with Type 2 diabetes, CKD stage 3b (eGFR 36), and overactive bladder is started on mirabegron after failing behavioral therapy. Two weeks later, she reports pal"
+    },
+    {
+      "idx": 2244,
+      "ti": 3,
+      "topic": "Frailty & Sarcopenia",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DXA shows"
+        }
+      ],
+      "stem_preview": "An 80-year-old man with osteosarcopenia (T-score -2.8, grip strength 20kg, SARC-F 5) starts a comprehensive exercise program. After 3 months, his grip strength improves to 25kg and"
+    },
+    {
+      "idx": 2255,
+      "ti": 4,
+      "topic": "Falls & Balance",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA"
+        }
+      ],
+      "stem_preview": "A 75-year-old woman with rheumatoid arthritis reports increasing falls over 3 months. She takes methotrexate 15 mg weekly, folic acid 1 mg daily, and prednisone 10 mg daily (on for"
+    },
+    {
+      "idx": 2266,
+      "ti": 16,
+      "topic": "Osteoarthritis",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "Gram stain shows"
+        }
+      ],
+      "stem_preview": "A 83-year-old man presents 6 weeks after left knee corticosteroid injection with worsening pain and new knee swelling. Temperature 37.8°C. The knee is warm, erythematous with large"
+    },
+    {
+      "idx": 2268,
+      "ti": 16,
+      "topic": "Osteoarthritis",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI brain shows"
+        }
+      ],
+      "stem_preview": "A 75-year-old woman is seen 4 months after bilateral knee replacements. She reports good pain relief but new difficulty remembering appointments and managing finances. Her daughter"
+    },
+    {
+      "idx": 2285,
+      "ti": 15,
+      "topic": "Osteoporosis",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman is seen in ED after mechanical fall at home. X-ray shows no fracture, but DEXA from last year showed T-score -2.8 at hip. She takes calcium carbonate 600 mg BID"
+    },
+    {
+      "idx": 2287,
+      "ti": 15,
+      "topic": "Osteoporosis",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA shows"
+        }
+      ],
+      "stem_preview": "A 75-year-old woman is evaluated in geriatrics clinic for osteoporosis management 1 year after hip fracture. She completed 5 years of alendronate before her fracture. DEXA shows T-"
+    },
+    {
+      "idx": 2308,
+      "ti": 36,
+      "topic": "Rehabilitation",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman in cardiac rehabilitation following NSTEMI develops progressive fatigue and dyspnea with minimal exertion. She lives independently but stopped cooking and relie"
+    },
+    {
+      "idx": 2363,
+      "ti": 5,
+      "topic": "Delirium",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old woman with moderate vascular dementia (MoCA 16/30) is brought to the ED from assisted living for acute agitation. Staff report she's been increasingly confused for 3"
+    },
+    {
+      "idx": 2382,
+      "ti": 6,
+      "topic": "Dementia",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 81-year-old woman with moderate Alzheimer's dementia (FAST stage 6a) and advanced Parkinson's disease is admitted with aspiration pneumonia. She's bedbound, requires feeding assi"
+    },
+    {
+      "idx": 2404,
+      "ti": 6,
+      "topic": "Dementia",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI brain shows bilateral frontal and anterior temporal atrophy. Family history "
+        }
+      ],
+      "stem_preview": "A 75-year-old woman is evaluated for cognitive decline and personality changes over 2 years. Her son reports she has become disinhibited, making inappropriate comments to strangers"
+    },
+    {
+      "idx": 2409,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT head shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old man with mild cognitive impairment (MMSE 23) is brought to the ED 6 hours after falling down stairs at home. CT head shows a 3mm subdural hematoma without midline shi"
+    },
+    {
+      "idx": 2411,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI shows cavum septum pellucidum, mild generalized atrophy. Which finding"
+        }
+      ],
+      "stem_preview": "A 79-year-old retired boxer with 'mild forgetfulness' is evaluated for personality changes. His wife reports increased irritability, poor judgment with finances, and getting lost d"
+    },
+    {
+      "idx": 2413,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT shows no acute finding"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with moderate AD (MMSE 18) falls at her assisted living facility, striking her occiput on concrete. Initial GCS 15, no focal deficits. CT shows no acute finding"
+    },
+    {
+      "idx": 2415,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT head negative. Labs: Na 128, glucose 92, Cr 1.4 (baseline 0.9). Which finding"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman presents to ED after being found on floor by neighbor, last seen normal 12 hours prior. She's confused, repeatedly asking 'where's my mother?' (deceased 20 year"
+    },
+    {
+      "idx": 2419,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "EEG"
+      ],
+      "triggers": [
+        {
+          "group": "eeg",
+          "modality": "EEG",
+          "priority": 1,
+          "match": "EEG shows left temporal sharp waves. MRI reveals"
+        }
+      ],
+      "stem_preview": "An 83-year-old man with CKD stage 3b (eGFR 42) and remote TBI (motorcycle accident age 25) presents with first-ever seizure. Wife reports increasing forgetfulness over 2 years. EEG"
+    },
+    {
+      "idx": 2426,
+      "ti": 7,
+      "topic": "Depression & Mood",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT head shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old man is admitted after a fall at home. His wife reports he's been seeing 'little children' in their apartment for 2 weeks and staying awake at night talking to them. H"
+    },
+    {
+      "idx": 2470,
+      "ti": 14,
+      "topic": "Pain Management",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman is admitted with T12 compression fracture after lifting groceries. DEXA shows T-score -3.2. Pain is 9/10 despite oxycodone 5mg q6h and she cannot participate in"
+    },
+    {
+      "idx": 2491,
+      "ti": 28,
+      "topic": "Palliative Care",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Waveform"
+      ],
+      "triggers": [
+        {
+          "group": "waveform",
+          "modality": "Waveform",
+          "priority": 2,
+          "match": "Spirometry shows"
+        }
+      ],
+      "stem_preview": "A 75-year-old woman with moderate COPD, depression, and chronic pain from spinal stenosis is seen for increasing dyspnea. She uses albuterol PRN, tiotropium daily, sertraline 100mg"
+    },
+    {
+      "idx": 2494,
+      "ti": 28,
+      "topic": "Palliative Care",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 80-year-old woman with breast cancer metastatic to bone presents with severe dyspnea developing over 2 days. She completed radiation to spine last month. Medications include let"
+    },
+    {
+      "idx": 2524,
+      "ti": 28,
+      "topic": "Palliative Care",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 86-year-old woman with advanced heart failure (EF 20%), CKD stage 4, and moderate dementia is brought to the ED with worsening dyspnea. Her daughter states, 'She has a DNR but w"
+    },
+    {
+      "idx": 2544,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old man with HTN, DM2, and CKD stage 3 (eGFR 42) presents with progressive exertional dyspnea over 3 months. He can no longer walk to his mailbox without stopping. BP 16"
+    },
+    {
+      "idx": 2547,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI brain shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with HTN and osteoarthritis is brought by family for confusion and falls. They report she's been taking diphenhydramine 50mg nightly for sleep for 'years.' MMSE"
+    },
+    {
+      "idx": 2551,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old woman with severe aortic stenosis (valve area 0.7 cm²), mild dementia, and frailty (Clinical Frailty Score 6) presents with syncope. Echo shows EF 60%, mean gradient"
+    },
+    {
+      "idx": 2562,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "angiography shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with paroxysmal atrial fibrillation, heart failure (EF 42%), and CKD stage 3a (eGFR 52) is admitted with NSTEMI. Coronary angiography shows 80% LAD stenosis req"
+    },
+    {
+      "idx": 2564,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman presents 2 hours after onset of substernal chest pressure. ECG shows ST depressions in V4-V6. Initial troponin 0.8 ng/mL (normal <0.04). She takes aspirin 81 mg"
+    },
+    {
+      "idx": 2565,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "An 82-year-old man is admitted with acute decompensated heart failure. Past medical history includes CAD s/p CABG 8 years ago, diabetes, and CKD. On admission, he's euvolemic after"
+    },
+    {
+      "idx": 2567,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "echo shows"
+        }
+      ],
+      "stem_preview": "An 80-year-old man with remote history of MI (12 years ago), chronic stable angina, and stage 3a CKD presents for medication review. He reports good functional status, walking 2 mi"
+    },
+    {
+      "idx": 2573,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging",
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        },
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "angiography shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman with longstanding hypertension and hyperlipidemia is hospitalized with her first MI. Troponin peaked at 8.2 ng/mL. Coronary angiography shows 90% mid-LAD lesion"
+    },
+    {
+      "idx": 2577,
+      "ti": 18,
+      "topic": "Heart Failure",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR",
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        },
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old man with HFpEF, paroxysmal AFib, and recent fall with hip fracture presents to ED with acute dyspnea. He's on diltiazem 180 mg daily, apixaban 5 mg BID, and hydrochlo"
+    },
+    {
+      "idx": 2582,
+      "ti": 18,
+      "topic": "Heart Failure",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 83-year-old nursing home resident with HFpEF (EF 62%), vascular dementia, and recurrent aspirations is brought to ED with fever and dyspnea. CXR shows right lower lobe infiltrat"
+    },
+    {
+      "idx": 2585,
+      "ti": 18,
+      "topic": "Heart Failure",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echocardiogram shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with HFpEF (EF 58%), T2DM, HTN, and recent diagnosis of transthyretin cardiac amyloidosis (biopsy-proven) presents for follow-up. She has NYHA class II symptoms"
+    },
+    {
+      "idx": 2590,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman residing in assisted living is found unresponsive by staff. She has heart failure (EF 25%), permanent AF on warfarin, and mild cognitive impairment. Staff repor"
+    },
+    {
+      "idx": 2591,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 88-year-old man with severe aortic stenosis (valve area 0.7 cm²), CKD stage 3a, and residing in memory care for Alzheimer's disease is brought to clinic by his daughter. She rep"
+    },
+    {
+      "idx": 2595,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG",
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        },
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo reveals"
+        }
+      ],
+      "stem_preview": "An 85-year-old man with CKD stage 3b (eGFR 36), permanent AF, and moderat frailty is seen in cardiology clinic. He's on metoprolol 50 mg BID and apixaban 5 mg BID. Resting HR is 95"
+    },
+    {
+      "idx": 2597,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old man presents to the ED with 2 hours of palpitations and lightheadedness. He has diabetes, CKD stage 3a, and BPH. Medications include metformin, tamsulosin, and amlodi"
+    },
+    {
+      "idx": 2598,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 82-year-old woman with heart failure (EF 35%), permanent AF, and T2DM is admitted with volume overload. She lives independently but her daughter notes recent problems managing m"
+    },
+    {
+      "idx": 2601,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 75-year-old man is brought to the ED by EMS after witnessed cardiac arrest at his gym. Bystander CPR was started immediately, initial rhythm was VF, and ROSC achieved after 2 sho"
+    },
+    {
+      "idx": 2602,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 83-year-old woman with moderate Alzheimer's dementia, CHF (EF 40%), and CKD stage 3b is brought by her son from assisted living with acute confusion and lethargy. She has fallen"
+    },
+    {
+      "idx": 2605,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "ultrasound shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman presents to ED with sudden severe abdominal pain radiating to her back. PMH: HTN, 50 pack-year smoking history (quit 5 years ago), osteoporosis. BP 88/54, HR 11"
+    },
+    {
+      "idx": 2617,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "echo shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old man with symptomatic 85% carotid stenosis, EF 30%, and NYHA Class III CHF is evaluated for intervention. Recent echo shows severe AS (valve area 0.8 cm²). CrCl 45 mL"
+    },
+    {
+      "idx": 2622,
+      "ti": 19,
+      "topic": "Hypertension",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "Head CT shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old woman is admitted with new-onset confusion and BP 198/92. Her daughter reports gradual cognitive decline over 6 months with recent worsening. The patient takes no me"
+    },
+    {
+      "idx": 2634,
+      "ti": 21,
+      "topic": "COPD & Pulmonary",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old man with severe COPD (FEV1 35% predicted) presents to the ED with acute dyspnea and confusion. His daughter reports he has been increasingly forgetful over 2 days and"
+    },
+    {
+      "idx": 2637,
+      "ti": 21,
+      "topic": "COPD & Pulmonary",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old nursing home resident with severe COPD, moderate vascular dementia (MMSE 18), and CKD stage 4 (eGFR 22) is brought to the ED with acute dyspnea. He appears uncomfort"
+    },
+    {
+      "idx": 2644,
+      "ti": 21,
+      "topic": "COPD & Pulmonary",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman with COPD (FEV1 42% predicted) and MCI presents after a fall with hip fracture. Post-operatively, she develops delirium and is treated with haloperidol. On hosp"
+    },
+    {
+      "idx": 2650,
+      "ti": 21,
+      "topic": "COPD & Pulmonary",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Waveform"
+      ],
+      "triggers": [
+        {
+          "group": "waveform",
+          "modality": "Waveform",
+          "priority": 2,
+          "match": "Spirometry shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman with COPD, diabetes, and mild cognitive impairment lives alone. During a routine visit, she mentions using her albuterol inhaler 'whenever I remember' and admit"
+    },
+    {
+      "idx": 2657,
+      "ti": 21,
+      "topic": "COPD & Pulmonary",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 82-year-old woman with COPD (FEV1 38%), depression, and recent hip fracture (3 weeks post-repair) is transferred from rehabilitation to ED with worsening dyspnea. She's been rec"
+    },
+    {
+      "idx": 2661,
+      "ti": 21,
+      "topic": "COPD & Pulmonary",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old man with severe COPD on 4L continuous oxygen presents with progressive dyspnea over 2 weeks despite optimal bronchodilators. He can no longer shower independently. H"
+    },
+    {
+      "idx": 2662,
+      "ti": 21,
+      "topic": "COPD & Pulmonary",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman with COPD, osteoporosis (recent vertebral fracture), and mild Alzheimer's disease is seen for follow-up. She's had 2 COPD exacerbations this year, each treated "
+    },
+    {
+      "idx": 2671,
+      "ti": 24,
+      "topic": "Chronic Kidney Disease",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 80-year-old man with CKD stage 4 (eGFR 26 mL/min/1.73m²) presents with 3 days of weakness and nausea. He recently started spironolactone for heart failure. Labs: potassium 6.8 m"
+    },
+    {
+      "idx": 2676,
+      "ti": 24,
+      "topic": "Chronic Kidney Disease",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "Colonoscopy shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old man with CKD stage 3B (eGFR 38 mL/min/1.73m²) presents with bright red blood per rectum. Colonoscopy shows severe diverticulosis with active bleeding requiring epinep"
+    },
+    {
+      "idx": 2708,
+      "ti": 12,
+      "topic": "Constipation",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "EKG shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with diabetes, hypothyroidism, and recent L2 compression fracture presents to the ED with severe constipation and new urinary incontinence. She was discharged f"
+    },
+    {
+      "idx": 2716,
+      "ti": 12,
+      "topic": "Constipation",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT shows mass"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman with diabetes, CKD stage 4 (eGFR 25), and recent L2 compression fracture on oxycodone presents to the ED with severe abdominal pain and distension. She reports "
+    },
+    {
+      "idx": 2729,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "Endoscopy shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with Stage IIIA non-small cell lung cancer completed concurrent chemoradiation 2 weeks ago. She presents with dysphagia and 5 kg weight loss. Endoscopy shows gr"
+    },
+    {
+      "idx": 2730,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DXA"
+        }
+      ],
+      "stem_preview": "An 82-year-old man with metastatic pancreatic cancer has lost 15% body weight over 2 months. ECOG performance status 2. His oncologist recommends FOLFIRINOX chemotherapy. Screening"
+    },
+    {
+      "idx": 2733,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "EKG shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman with metastatic ovarian cancer is admitted with nausea and confusion three days after carboplatin/paclitaxel. She takes metoclopramide 10 mg QID for nausea. Lab"
+    },
+    {
+      "idx": 2736,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "Colonoscopy shows"
+        }
+      ],
+      "stem_preview": "An 83-year-old man with metastatic bladder cancer on pembrolizumab develops severe diarrhea (8-10 stools/day) for 5 days. He appears volume depleted. Laboratory: K 3.1 mEq/L, Cr 2."
+    },
+    {
+      "idx": 2739,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "Chest X-ray shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old woman with metastatic breast cancer (ER+/PR+/HER2-) presents to clinic with progressive dyspnea and fatigue over 2 weeks. She has CHF (EF 35%), CKD stage 3a (eGFR 45"
+    },
+    {
+      "idx": 2743,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI brain shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old woman with stage IIIA breast cancer completed chemotherapy 2 months ago and now reports difficulty concentrating and forgetfulness affecting her ability to manage fin"
+    },
+    {
+      "idx": 2749,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with ER+/HER2- metastatic breast cancer on letrozole presents with worsening fatigue and bone pain. She fell twice last week. Medications include letrozole 2.5m"
+    },
+    {
+      "idx": 2755,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "PET shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old man 6 months post-radical prostatectomy for high-risk prostate cancer (Gleason 4+4) presents with PSA 0.8 and rising. He has mild cognitive impairment, lives alone, a"
+    },
+    {
+      "idx": 2758,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "biopsy shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old man on active surveillance for low-risk prostate cancer (Gleason 3+3) presents with new nocturia 4x/night and PSA rise from 4.2 to 8.1 over 6 months. He recently star"
+    },
+    {
+      "idx": 2759,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI brain shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old man with metastatic castration-resistant prostate cancer on enzalutamide develops confusion and word-finding difficulty over 2 weeks. Wife reports he forgot grandchi"
+    },
+    {
+      "idx": 2760,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "DEXA shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old man with high-risk localized prostate cancer completed EBRT with 2 years ADT, finishing 6 months ago. He presents with three falls in 2 months, 10-pound weight loss, "
+    },
+    {
+      "idx": 2771,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "PET shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old man with COPD (FEV1 45% predicted) has a 2.8 cm peripheral lung nodule suspicious for cancer. PET shows SUVmax 8.2, no nodal uptake. He uses a walker, requires help "
+    },
+    {
+      "idx": 2776,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI shows stable treated brain metastases without new lesion"
+        }
+      ],
+      "stem_preview": "A 76-year-old woman with EGFR-mutant stage IV NSCLC on osimertinib for 18 months presents with confusion and falls. Head MRI shows stable treated brain metastases without new lesio"
+    },
+    {
+      "idx": 2777,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "Colonoscopy shows"
+        }
+      ],
+      "stem_preview": "An 80-year-old man with stage IV NSCLC (PD-L1 85%) has been on pembrolizumab for 8 months with good response. He's admitted with new-onset watery diarrhea (8-10 episodes/day) for 5"
+    },
+    {
+      "idx": 2795,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "Colonoscopy reveals"
+        }
+      ],
+      "stem_preview": "An 85-year-old man presents with bright red blood per rectum and hemoglobin of 7.2 g/dL (baseline 11). Colonoscopy reveals a fungating mass in the rectosigmoid junction, biopsied a"
+    },
+    {
+      "idx": 2804,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Other imaging",
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "Biopsy reveals"
+        },
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "PET-CT shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman on chronic prednisone 15mg daily for polymyalgia rheumatica presents with an enlarging 3cm pink nodule on her right forearm that appeared 6 weeks ago. Biopsy re"
+    },
+    {
+      "idx": 2808,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "Biopsy reveals"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman with diabetes and peripheral neuropathy presents with a non-healing ulcer on her heel for 8 months. Biopsy reveals well-differentiated SCC arising in chronic wo"
+    },
+    {
+      "idx": 2809,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "endoscopy reveals"
+        }
+      ],
+      "stem_preview": "An 83-year-old man presents with new-onset seborrheic dermatitis and rapid development of hundreds of seborrheic keratoses over 3 months (Leser-Trélat sign). He reports 20-pound we"
+    },
+    {
+      "idx": 2810,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "Biopsy shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman with rheumatoid arthritis on methotrexate 15mg weekly presents with multiple hyperkeratotic lesions on sun-exposed areas. Biopsy shows 'keratoacanthoma-like' SC"
+    },
+    {
+      "idx": 2818,
+      "ti": 25,
+      "topic": "Anemia",
+      "tag": "Hazzard",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "Colonoscopy shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman with hypertension and osteoarthritis presents with fatigue and exertional dyspnea. She recently started meloxicam for knee pain. Labs: Hb 8.2 g/dL, MCV 78 fL, f"
+    },
+    {
+      "idx": 2820,
+      "ti": 25,
+      "topic": "Anemia",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "Bone marrow biopsy reveals"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with CKD stage 3a (eGFR 48) presents with fatigue and recurrent infections. CBC shows Hb 9.8 g/dL, MCV 88 fL, normal WBC differential, platelets 95,000. Bone ma"
+    },
+    {
+      "idx": 2826,
+      "ti": 25,
+      "topic": "Anemia",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI brain shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old man with polycythemia vera on hydroxyurea presents for follow-up. He reports new difficulty remembering appointments and managing finances. Wife confirms progressive "
+    },
+    {
+      "idx": 2827,
+      "ti": 25,
+      "topic": "Anemia",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "Peripheral smear shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old woman with mild dementia and osteoporosis is admitted after a fall with hip fracture. Preoperative labs: Hb 9.2 g/dL, MCV 102 fL, platelets 580,000, WBC 13,000. Peri"
+    },
+    {
+      "idx": 2835,
+      "ti": 25,
+      "topic": "Anemia",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "Chest X-ray shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old man with follicular lymphoma in remission, diabetes, and CKD stage 3b (eGFR 36) presents with 4 days of fever and productive cough. Chest X-ray shows right lower lobe"
+    },
+    {
+      "idx": 2839,
+      "ti": 25,
+      "topic": "Anemia",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 75-year-old man with CML on dasatinib for 3 years presents with progressive dyspnea over 2 months. He also reports 15-pound weight loss and difficulty walking to his mailbox (pre"
+    },
+    {
+      "idx": 2844,
+      "ti": 23,
+      "topic": "Thyroid Disorders",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old man is brought to the emergency department after being found confused in his unheated apartment during a winter storm. His neighbor reports he has been increasingly i"
+    },
+    {
+      "idx": 2846,
+      "ti": 23,
+      "topic": "Thyroid Disorders",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old man is admitted with severe hypothermia (core temperature 29°C) after being found unconscious outdoors. Past medical history includes schizophrenia treated with halop"
+    },
+    {
+      "idx": 2848,
+      "ti": 23,
+      "topic": "Thyroid Disorders",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old nursing home resident with moderate dementia is found minimally responsive during morning rounds. Core temperature is 31°C, BP 85/50, HR 45. Staff report she was last"
+    },
+    {
+      "idx": 2849,
+      "ti": 23,
+      "topic": "Thyroid Disorders",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old man with heart failure (EF 35%) and CKD stage 4 (eGFR 25) is brought by family with worsening confusion over 3 days. He was recently started on levothyroxine 50 mcg "
+    },
+    {
+      "idx": 2860,
+      "ti": 22,
+      "topic": "Diabetes Mellitus",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "Chest X-ray shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old man with heart failure (EF 35%) and recent hip fracture is admitted with acute confusion 3 days post-surgery. He's been receiving morphine PCA. Labs: Na 124 mEq/L, se"
+    },
+    {
+      "idx": 2874,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old man with diabetes, HTN, and mild cognitive impairment (MMSE 22) presents to the ED with 3 days of productive cough, fever, and confusion. His daughter reports he's b"
+    },
+    {
+      "idx": 2877,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old woman with COPD is admitted with influenza A confirmed by PCR 4 days ago. She's been on oseltamivir 75mg BID but remains febrile with worsening dyspnea. Past medical "
+    },
+    {
+      "idx": 2879,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old nursing home resident with moderate vascular dementia is evaluated for cough and fever. Staff report she's been refusing meals and more somnolent for 3 days. Her MOLS"
+    },
+    {
+      "idx": 2885,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Hazzard",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 80-year-old man is evaluated in the nursing home for new productive cough and confusion. He has severe COPD on home oxygen, CHF, and moderate dementia. Medications include furos"
+    },
+    {
+      "idx": 2904,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old man with HTN, DM2, and CKD stage 3a (eGFR 42) presents to the ED with 2 hours of substernal chest pressure radiating to his left arm. He takes metoprolol 50mg BID, l"
+    },
+    {
+      "idx": 2907,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG",
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        },
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman presents to clinic with 3 months of exertional chest tightness. She stopped attending her weekly bridge club due to fatigue walking to the community center. PMH"
+    },
+    {
+      "idx": 2908,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 86-year-old man with advanced Parkinson's disease (H&Y stage 4) is brought to ED by nursing home staff for altered mental status and fever. He has difficulty swallowing and rece"
+    },
+    {
+      "idx": 2910,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 83-year-old man is evaluated in the nursing home for new-onset chest discomfort with walking to the dining room. He has advanced dementia and depends on staff for all ADLs. Staf"
+    },
+    {
+      "idx": 2911,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "Chest CT shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old woman is admitted with NSTEMI. She undergoes PCI with placement of two drug-eluting stents. Post-procedure, she develops severe back pain between her shoulder blades."
+    },
+    {
+      "idx": 2913,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG",
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        },
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "V/Q scan"
+        }
+      ],
+      "stem_preview": "An 82-year-old man with severe COPD on home oxygen presents with acute chest tightness and dyspnea. He's DNR but wants 'everything else done.' ABG on 2L NC: pH 7.32, pCO2 58, pO2 5"
+    },
+    {
+      "idx": 2915,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT head shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old man with CHF, AFib, and mild dementia (MMSE 22) is brought to ED by assisted living staff for worsening confusion over 2 days. He takes warfarin with INR target 2-3,"
+    },
+    {
+      "idx": 2916,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "Other imaging",
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "echo shows"
+        },
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "Angiography reveals"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman with HTN and prediabetes presents to cardiology clinic for evaluation of exertional chest pressure. Stress echo shows reversible inferior wall ischemia. Angiogr"
+    },
+    {
+      "idx": 2917,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old nursing home resident with moderate vascular dementia and frequent falls is evaluated for new dyspnea. Echo shows severe AS (AVA 0.7cm², gradient 50mmHg) with preser"
+    },
+    {
+      "idx": 2931,
+      "ti": 5,
+      "topic": "Delirium",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 88-year-old nursing home resident with severe dementia (nonverbal, bedbound) is sent to ED for fever and decreased responsiveness. She's grimacing with any movement, withdraws f"
+    },
+    {
+      "idx": 2936,
+      "ti": 21,
+      "topic": "COPD & Pulmonary",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 75-year-old man with COPD, diabetes, and mild dementia presents from his assisted living facility with confusion and dyspnea. His aide reports he's been using his rescue inhaler "
+    },
+    {
+      "idx": 2942,
+      "ti": 21,
+      "topic": "COPD & Pulmonary",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old man with severe COPD (on 2L home oxygen) and frailty (Clinical Frailty Scale 6) presents with 2 weeks of worsening dyspnea. He's had 3 admissions in 6 months. He can"
+    },
+    {
+      "idx": 2943,
+      "ti": 21,
+      "topic": "COPD & Pulmonary",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old man with COPD, coronary disease (stent 2 years ago), and CKD stage 3 (eGFR 45) presents with dyspnea and chest pressure. ECG shows new T-wave inversions. Troponin is "
+    },
+    {
+      "idx": 2945,
+      "ti": 21,
+      "topic": "COPD & Pulmonary",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 83-year-old nursing home resident with severe COPD, moderate Alzheimer's disease, and recurrent aspirations is brought in with fever and hypoxia. CXR shows RLL consolidation. He"
+    },
+    {
+      "idx": 2951,
+      "ti": 24,
+      "topic": "Chronic Kidney Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old man with CKD stage 4 (eGFR 18) presents with weakness and nausea. He recently started trimethoprim-sulfamethoxazole for prostatitis. Other medications: lisinopril 10m"
+    },
+    {
+      "idx": 2962,
+      "ti": 24,
+      "topic": "Chronic Kidney Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with CKD stage 3b (CrCl 38 mL/min) and recurrent UTIs is prescribed nitrofurantoin 100mg BID for cystitis prophylaxis by her urologist. Two months later, she pr"
+    },
+    {
+      "idx": 2974,
+      "ti": 24,
+      "topic": "Chronic Kidney Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman with diabetes, CAD, and CKD stage 4 (eGFR 26) presents with progressive weakness and nausea. Labs reveal: pH 7.30, HCO3- 15, K+ 5.7, BUN 68, Cr 3.8 (baseline 3."
+    },
+    {
+      "idx": 2982,
+      "ti": 25,
+      "topic": "Anemia",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT head shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old man with CAD, AFib on warfarin, and mild dementia is brought to the ED by his wife after she found him confused this morning. She reports he fell yesterday but seemed"
+    },
+    {
+      "idx": 2984,
+      "ti": 25,
+      "topic": "Anemia",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old woman with HTN, hypothyroidism, and osteoporosis is admitted with new-onset AFib with RVR. Her CHA2DS2-VASc score is 4. She takes levothyroxine, alendronate, and hydr"
+    },
+    {
+      "idx": 2985,
+      "ti": 25,
+      "topic": "Anemia",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 88-year-old man with severe COPD on home oxygen, CHF (EF 25%), and mild dementia is brought to the ED by his son with worsening dyspnea over 2 days. He's DNR but wants 'everythi"
+    },
+    {
+      "idx": 2994,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG",
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        },
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echocardiogram reveals"
+        }
+      ],
+      "stem_preview": "An 81-year-old man with multiple myeloma on lenalidomide presents to clinic with progressive dyspnea over 2 weeks. He stopped playing weekly bridge due to fatigue (functional decli"
+    },
+    {
+      "idx": 2996,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI",
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "Chest CT shows"
+        },
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old man with Stage IIIB non-small cell lung cancer completed radiation therapy 2 months ago. His daughter brings him to the ED with chest pain and dyspnea. He recently s"
+    },
+    {
+      "idx": 2997,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "Chest X-ray shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman with CLL on ibrutinib for 6 months presents with fever and cough. She lives in assisted living due to recurrent falls. CrCl 35 mL/min. Chest X-ray shows RLL inf"
+    },
+    {
+      "idx": 3001,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG",
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        },
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with metastatic NSCLC on pembrolizumab presents with chest pain and dyspnea. She recently stopped driving due to weakness. Echo shows small pericardial effusion"
+    },
+    {
+      "idx": 3002,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT chest shows"
+        }
+      ],
+      "stem_preview": "An 82-year-old man with bladder cancer s/p cystectomy and ileal conduit 6 months ago presents with confusion and falls. His daughter notes he's been having trouble with his ostomy "
+    },
+    {
+      "idx": 3003,
+      "ti": 26,
+      "topic": "Cancer & Oncology",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT shows peripheral nodular lesion"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman with AML, day 12 of induction chemotherapy, develops fever to 38.9°C. She has been on posaconazole prophylaxis. Neutrophil count is 50. She lives with her daugh"
+    },
+    {
+      "idx": 3007,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echocardiogram shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old man with CKD stage 4 (eGFR 22 mL/min/1.73m²) and bioprosthetic aortic valve replacement 14 months ago presents with 3 weeks of fatigue, weight loss, and night sweats"
+    },
+    {
+      "idx": 3012,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI",
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "MRI spine shows L3-L4 discitis. Blood cultures grow viridans streptococci. Echo "
+        },
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with diabetes and hypertension presents with 4 days of fever and back pain. She takes metformin, lisinopril, and atorvastatin. BP 96/58, T 38.9°C. Cardiac exam "
+    },
+    {
+      "idx": 3018,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "Colonoscopy shows"
+        }
+      ],
+      "stem_preview": "A 73-year-old man with bioprosthetic mitral valve develops S. gallolyticus endocarditis. Colonoscopy shows 3cm ascending colon mass, biopsy confirms adenocarcinoma. He's completing"
+    },
+    {
+      "idx": 3024,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "Gram stain shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old woman with diabetes and hypertension presents with fever, headache, and confusion developing over 3 days. She recently ate unpasteurized cheese at a farmer's market. "
+    },
+    {
+      "idx": 3031,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 80-year-old man with hypertension and COPD presents with 2 days of fever, confusion, and productive cough. CXR shows right lower lobe infiltrate. He's admitted for pneumonia and"
+    },
+    {
+      "idx": 3033,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT head shows"
+        }
+      ],
+      "stem_preview": "An 83-year-old woman with moderate dementia, living in assisted living, is brought to the ED with acute confusion and combativeness. Staff report she was her usual self this mornin"
+    },
+    {
+      "idx": 3036,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old man with hypertension, diabetes, and mild cognitive impairment presents to the ED with 2 hours of substernal chest pressure at rest. He takes metformin, lisinopril, "
+    },
+    {
+      "idx": 3038,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old nursing home resident with moderate vascular dementia is found unresponsive. Staff report 3 days of decreased oral intake and lethargy. Temperature 35.8°C, BP 88/54,"
+    },
+    {
+      "idx": 3039,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "angiography shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old man with diabetes and Stage 3a CKD (eGFR 52) presents with unstable angina. Coronary angiography shows 90% RCA stenosis. He's scheduled for PCI. Current medications i"
+    },
+    {
+      "idx": 3040,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old woman with mild dementia (MMSE 22) presents with acute chest pain and dyspnea. She lives with her daughter who reports new confusion today - forgetting grandchildren"
+    },
+    {
+      "idx": 3041,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old man with HTN, DM, and recent hip fracture (3 weeks post-ORIF) presents with rest angina. He's on enoxaparin 40mg daily for DVT prophylaxis, metoprolol 25mg BID, and o"
+    },
+    {
+      "idx": 3042,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 83-year-old woman with diabetes, mild dementia, and recurrent UTIs presents with 3 hours of substernal pressure. She takes metformin, donepezil, and prophylactic nitrofurantoin."
+    },
+    {
+      "idx": 3044,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "Angiography shows"
+        }
+      ],
+      "stem_preview": "An 80-year-old man with CKD stage 3b (eGFR 36), orthostatic hypotension, and recent falls presents with unstable angina. Angiography shows 3-vessel disease. Cardiology recommends C"
+    },
+    {
+      "idx": 3049,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "Angiography shows"
+        }
+      ],
+      "stem_preview": "An 86-year-old woman with severe aortic stenosis, CHF (EF 30%), and moderate dementia presents with rest angina and troponin elevation. Angiography shows 90% LAD stenosis. She live"
+    },
+    {
+      "idx": 3051,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old man with CKD stage 4 (CrCl 22 mL/min by Cockroft-Gault), diabetes, and prior stroke presents to the ED 90 minutes after sudden severe chest pain. ECG shows 3mm ST el"
+    },
+    {
+      "idx": 3053,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old man with heart failure (EF 35%), CKD stage 3a, and diabetes presents 4 hours after chest pain onset. ECG shows anterior STEMI. He arrives at a non-PCI hospital; tran"
+    },
+    {
+      "idx": 3055,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old man with moderate dementia (MMSE 18) and hypertension is brought by family 3 hours after witnessing him clutch his chest and become diaphoretic. He cannot describe s"
+    },
+    {
+      "idx": 3056,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old woman presents 2 hours after anterior STEMI treated with primary PCI. Post-procedure, she develops cardiogenic shock with BP 82/58, HR 102, cool extremities. Echo sho"
+    },
+    {
+      "idx": 3057,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI",
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT head shows"
+        },
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "An 82-year-old man is day 3 post-anterior STEMI treated with PCI. He develops new confusion, word-finding difficulty, and right facial droop. CT head shows no hemorrhage. BP 168/92"
+    },
+    {
+      "idx": 3061,
+      "ti": 17,
+      "topic": "Cardiovascular Disease",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman is post-STEMI day 4, treated with PCI. She developed acute kidney injury (creatinine rose from 1.2 to 2.1 mg/dL) attributed to contrast nephropathy. She has new"
+    },
+    {
+      "idx": 3065,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old man with NYHA III heart failure (EF 30%), CKD stage 4 (eGFR 22), and moderate frailty (CFS 6) presents to the ED with confusion and hypotension. His daughter reports"
+    },
+    {
+      "idx": 3074,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old man with mild dementia (MoCA 19) and CKD stage 3b (eGFR 38) is admitted with obstructive shock from massive PE. He's on heparin infusion with PTT 68. BP 92/58 on nore"
+    },
+    {
+      "idx": 3075,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "EEG"
+      ],
+      "triggers": [
+        {
+          "group": "eeg",
+          "modality": "EEG",
+          "priority": 1,
+          "match": "EEG shows"
+        }
+      ],
+      "stem_preview": "An 86-year-old nursing home resident with advanced Parkinson's disease, dysphagia, and frequent falls is admitted with distributive shock from aspiration pneumonia. CrCl 42 mL/min."
+    },
+    {
+      "idx": 3078,
+      "ti": 39,
+      "topic": "Geriatric Emergency Medicine",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "EKG shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman with COPD, CKD stage 3a (eGFR 45), and depression on sertraline presents with distributive shock. Blood cultures grow E. coli sensitive to ciprofloxacin and cef"
+    },
+    {
+      "idx": 3082,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old woman with COPD, CKD stage 3a, and recent hip fracture is transferred from rehabilitation to the ED with fever and hypotension. BP 82/50, HR 110, RR 24, T 38.9°C. She"
+    },
+    {
+      "idx": 3085,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old man is evaluated in the hospital for failure to improve after 5 days of antibiotics for healthcare-associated pneumonia. He was admitted from skilled nursing with fe"
+    },
+    {
+      "idx": 3089,
+      "ti": 27,
+      "topic": "Infections",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 86-year-old man with diabetes, CAD, and Stage 3b CKD (eGFR 32) presents to the ED with 3 days of productive cough and fever. CXR shows left lower lobe infiltrate. BP 108/65, HR "
+    },
+    {
+      "idx": 3095,
+      "ti": 24,
+      "topic": "Chronic Kidney Disease",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old man with diabetes, CKD stage 3a (eGFR 48), and recent NSTEMI is seen in cardiology clinic. He reports new bilateral leg edema and 8-pound weight gain over 2 weeks. Cu"
+    },
+    {
+      "idx": 3098,
+      "ti": 24,
+      "topic": "Chronic Kidney Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old woman with advanced COPD on 2L home oxygen, CKD stage 3b (eGFR 36), and frailty (meets 4/5 Fried criteria) presents with 3 days of worsening dyspnea and cough. She l"
+    },
+    {
+      "idx": 3101,
+      "ti": 24,
+      "topic": "Chronic Kidney Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "microscopy shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old man with CKD stage 3a (eGFR 45) is hospitalized with pneumonia. On day 2, the nurse reports decreased urine output. Morning labs: SCr 2.1 (admission 1.3, baseline 1.3"
+    },
+    {
+      "idx": 3105,
+      "ti": 24,
+      "topic": "Chronic Kidney Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 79-year-old woman with hypertension and mild cognitive impairment is brought to the ED after being found on the floor at home. She last remembers eating breakfast yesterday. Init"
+    },
+    {
+      "idx": 3106,
+      "ti": 24,
+      "topic": "Chronic Kidney Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR",
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        },
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo reveals"
+        }
+      ],
+      "stem_preview": "An 81-year-old man with COPD, CKD stage 3a, and depression is admitted with acute dyspnea. CXR shows pulmonary edema. He's never had heart problems. Echo reveals EF 25% with global"
+    },
+    {
+      "idx": 3111,
+      "ti": 24,
+      "topic": "Chronic Kidney Disease",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "ECG"
+      ],
+      "triggers": [
+        {
+          "group": "ecg",
+          "modality": "ECG",
+          "priority": 1,
+          "match": "ECG shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old woman is brought to the ED by her son who reports she hasn't been herself for 2 days - sleeping more and confused about dates. She has CKD stage 4 (eGFR 24 mL/min/1.7"
+    },
+    {
+      "idx": 3138,
+      "ti": 16,
+      "topic": "Osteoarthritis",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old man with rheumatoid arthritis on methotrexate presents with 3 months of progressive weakness, 8 kg weight loss, and new-onset fever. He reports difficulty buttoning "
+    },
+    {
+      "idx": 3140,
+      "ti": 16,
+      "topic": "Osteoarthritis",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "biopsy shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old nursing home resident with moderate dementia (unable to dress independently) presents with purpuric rash on legs, abdominal pain, and hematuria. She was treated for "
+    },
+    {
+      "idx": 3141,
+      "ti": 16,
+      "topic": "Osteoarthritis",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "biopsy shows"
+        }
+      ],
+      "stem_preview": "A 77-year-old man with CKD stage 4 (eGFR 22) presents with palpable purpura, arthralgias, and acute kidney injury (Cr increased from 2.8 to 4.2). He has chronic hepatitis C. Cryogl"
+    },
+    {
+      "idx": 3142,
+      "ti": 16,
+      "topic": "Osteoarthritis",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CXR"
+      ],
+      "triggers": [
+        {
+          "group": "cxr",
+          "modality": "CXR",
+          "priority": 1,
+          "match": "CXR shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old woman is admitted with fever, confusion, and mononeuritis multiplex. She has lost 6kg and can no longer prepare meals independently (IADL decline). Labs: WBC 18k wit"
+    },
+    {
+      "idx": 3143,
+      "ti": 16,
+      "topic": "Osteoarthritis",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "Angiography shows"
+        }
+      ],
+      "stem_preview": "A 76-year-old man with mild cognitive impairment presents with 2 months of fever, weight loss, and severe leg pain with walking that improves with rest. Physical exam reveals absen"
+    },
+    {
+      "idx": 3151,
+      "ti": 16,
+      "topic": "Osteoarthritis",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "Smear/Histopath"
+      ],
+      "triggers": [
+        {
+          "group": "microscopy",
+          "modality": "Smear/Histopath",
+          "priority": 1,
+          "match": "biopsy shows"
+        }
+      ],
+      "stem_preview": "An 80-year-old man with CKD stage 4 (eGFR 24, Cr 2.9) and peripheral vascular disease presents with painful necrotic toes and livedo reticularis after cardiac catheterization 3 wee"
+    },
+    {
+      "idx": 3154,
+      "ti": 20,
+      "topic": "Stroke",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "EEG"
+      ],
+      "triggers": [
+        {
+          "group": "eeg",
+          "modality": "EEG",
+          "priority": 1,
+          "match": "EEG shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old woman is brought by family after 3 generalized seizures over 2 days. She has mild Alzheimer's (MMSE 22), HTN, and osteoporosis. Medications: donepezil 10mg, amlodipi"
+    },
+    {
+      "idx": 3156,
+      "ti": 20,
+      "topic": "Stroke",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI",
+        "EEG"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT head negative. EEG shows"
+        },
+        {
+          "group": "eeg",
+          "modality": "EEG",
+          "priority": 1,
+          "match": "EEG shows"
+        }
+      ],
+      "stem_preview": "An 81-year-old woman presents after first-lifetime seizure. Witness describes 2-minute generalized tonic-clonic event with post-ictal confusion. PMH: HTN, hyperlipidemia, CKD stage"
+    },
+    {
+      "idx": 3168,
+      "ti": 20,
+      "topic": "Stroke",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT shows no hemorrhage. CTA reveals"
+        }
+      ],
+      "stem_preview": "A 78-year-old man with mild cognitive impairment (MoCA 22) and CKD stage 3a (eGFR 45) presents to the ED 3 hours after sudden onset right hemiparesis and aphasia. NIHSS score is 12"
+    },
+    {
+      "idx": 3169,
+      "ti": 20,
+      "topic": "Stroke",
+      "tag": "Harrison",
+      "priority": 1,
+      "modalities": [
+        "CT/MRI"
+      ],
+      "triggers": [
+        {
+          "group": "ct_mri",
+          "modality": "CT/MRI",
+          "priority": 1,
+          "match": "CT shows no hemorrhage, CTA shows right M1 occlusion, and CT perfusion shows"
+        }
+      ],
+      "stem_preview": "An 84-year-old woman is found down at home by her daughter after last being seen normal 18 hours ago. She has left hemiplegia and neglect. Past medical history includes AF on apixa"
+    },
+    {
+      "idx": 3173,
+      "ti": 20,
+      "topic": "Stroke",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echo shows"
+        }
+      ],
+      "stem_preview": "An 85-year-old woman is admitted with new-onset AF and embolic stroke. She lives independently but has noticed difficulty balancing her checkbook lately. Echo shows no valvular dis"
+    },
+    {
+      "idx": 3178,
+      "ti": 20,
+      "topic": "Stroke",
+      "tag": "Harrison",
+      "priority": 2,
+      "modalities": [
+        "US"
+      ],
+      "triggers": [
+        {
+          "group": "ultrasound",
+          "modality": "US",
+          "priority": 2,
+          "match": "Echocardiogram shows"
+        }
+      ],
+      "stem_preview": "A 78-year-old man is evaluated 6 weeks after cerebellar stroke. He has residual gait ataxia and uses a cane. His wife reports new snoring and daytime somnolence. BMI is 31. Medicat"
+    },
+    {
+      "idx": 3264,
+      "ti": 4,
+      "topic": "Falls & Balance",
+      "tag": "2021-Jun",
+      "priority": 2,
+      "modalities": [
+        "Other imaging"
+      ],
+      "triggers": [
+        {
+          "group": "other_imaging",
+          "modality": "Other imaging",
+          "priority": 2,
+          "match": "מיפוי עצמות"
+        }
+      ],
+      "stem_preview": "בת75 , .סובלת בחודשיים האחרונים מכאבי גב תחתון. ללא היסטוריה של חבלה או נפילה .ללא היסטוריה של כאבי גב קודם לכן. יש לציין כי לפני חודשיים החלה ללכת עם נעליים חדשות :בברור מיפוי עצמ"
+    }
+  ]
+}
