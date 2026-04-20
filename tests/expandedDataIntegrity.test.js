@@ -381,21 +381,28 @@ describe("questions/image_map.json — integrity", () => {
 describe("questions.json — image field (img) validation", () => {
   const SUPA_IMG_PREFIX = "https://krmlzwwelqvlfslwltol.supabase.co/storage/v1/object/public/question-images/";
 
-  it("img field, when present, is a valid Supabase URL string", () => {
+  it("img field, when present, is a valid URL string (https or data:image/svg+xml)", () => {
     const invalid = [];
     questions.forEach((q, i) => {
       if (q.img === undefined || q.img === null) return;
-      if (typeof q.img !== "string" || !q.img.startsWith("https://")) {
+      if (typeof q.img !== "string") {
         invalid.push({ index: i, img: String(q.img).slice(0, 60) });
+        return;
+      }
+      const isHttps = q.img.startsWith("https://");
+      const isSvgData = q.img.startsWith("data:image/svg+xml");
+      if (!isHttps && !isSvgData) {
+        invalid.push({ index: i, img: q.img.slice(0, 60) });
       }
     });
     expect(invalid, `Questions with non-URL img field: ${JSON.stringify(invalid)}`).toEqual([]);
   });
 
-  it("all img URLs use the expected Supabase bucket prefix", () => {
+  it("all img URLs use the expected Supabase bucket prefix or are data:image/svg+xml", () => {
     const wrong = [];
     questions.forEach((q, i) => {
       if (!q.img) return;
+      if (q.img.startsWith("data:image/svg+xml")) return; // AI-generated schematics OK
       if (!q.img.startsWith(SUPA_IMG_PREFIX)) {
         wrong.push({ index: i, img: q.img.slice(0, 80) });
       }
@@ -403,10 +410,11 @@ describe("questions.json — image field (img) validation", () => {
     expect(wrong, `Image URLs not matching Supabase bucket: ${JSON.stringify(wrong)}`).toEqual([]);
   });
 
-  it("img URLs have a valid image file extension", () => {
+  it("img URLs have a valid image file extension (or are data:image/svg+xml)", () => {
     const bad = [];
     questions.forEach((q, i) => {
       if (!q.img) return;
+      if (q.img.startsWith("data:image/svg+xml")) return;
       if (!/\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(q.img)) {
         bad.push({ index: i, img: q.img.slice(-30) });
       }
