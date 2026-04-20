@@ -5692,7 +5692,8 @@ if(st){st.textContent='✅ '+labels[type]+' saved';st.style.color='#059669';}
 }
 if(input)input.value='';
 S._reportType=null;
-if(st)setTimeout(()=>{st.style.display='none';render();},type==='wrong_answer'?8000:3000);
+// Previously this called render() which wiped the AI verdict box. Keep the verdict visible; just fade the small status label.
+if(st)setTimeout(()=>{try{st.style.transition='opacity .4s';st.style.opacity='0.55';}catch(e){}},type==='wrong_answer'?12000:3000);
 }
 // reportIssue removed — replaced by submitReport()
 // submitFeedback removed — replaced by submitReport()
