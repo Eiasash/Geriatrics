@@ -1,0 +1,1042 @@
+{
+  "16": {
+    "name": "Osteoarthritis",
+    "subtopics": [
+      {
+        "key": "diagnosis_clinical",
+        "name": "Diagnosis and Clinical Features",
+        "desc": "Clinical presentation, physical exam findings, morning stiffness, crepitus, imaging and diagnostic criteria"
+      },
+      {
+        "key": "medical_management",
+        "name": "Medical Management",
+        "desc": "Pharmacologic treatment including NSAIDs safety in elderly, analgesics, intra-articular injections, and contraindications"
+      },
+      {
+        "key": "surgical_management",
+        "name": "Surgical Management",
+        "desc": "Indications for total joint arthroplasty, preoperative evaluation, and surgical candidacy assessment"
+      },
+      {
+        "key": "postop_complications",
+        "name": "Postoperative Complications",
+        "desc": "Post-arthroplasty complications including delirium, infection, persistent pain, functional decline, and rehabilitation issues"
+      }
+    ]
+  },
+  "34": {
+    "name": "Advance Directives",
+    "subtopics": [
+      {
+        "key": "legal_framework",
+        "name": "Legal Framework",
+        "desc": "Federal and state laws governing advance directives, including PSDA and institutional requirements"
+      },
+      {
+        "key": "types_documents",
+        "name": "Types of Documents",
+        "desc": "Living wills, durable power of attorney, healthcare proxy, and DNR orders"
+      },
+      {
+        "key": "capacity_surrogates",
+        "name": "Capacity and Surrogates",
+        "desc": "Assessment of decision-making capacity, surrogate designation, and proxy authority"
+      },
+      {
+        "key": "clinical_scenarios",
+        "name": "Clinical Application",
+        "desc": "Implementation of advance directives in acute care, dementia, and end-of-life situations"
+      }
+    ]
+  },
+  "19": {
+    "name": "Hypertension",
+    "subtopics": [
+      {
+        "key": "htn_management",
+        "name": "Hypertension Management",
+        "desc": "Pharmacologic treatment selection, medication adjustments, and target blood pressures in various populations"
+      },
+      {
+        "key": "htn_comorbidities",
+        "name": "HTN with Comorbidities",
+        "desc": "Hypertension management in patients with diabetes, heart failure, post-MI, chronic kidney disease, and atrial fibrillation"
+      },
+      {
+        "key": "htn_elderly_frail",
+        "name": "HTN in Elderly and Frail",
+        "desc": "Blood pressure targets, medication adherence challenges, and deprescribing considerations in older adults with cognitive impairment"
+      },
+      {
+        "key": "htn_complications",
+        "name": "Hypertensive Complications",
+        "desc": "Hypertensive emergencies, end-organ damage assessment, and acute decompensation in chronic hypertension"
+      }
+    ]
+  },
+  "21": {
+    "name": "COPD & Pulmonary",
+    "subtopics": [
+      {
+        "key": "copd_acute_mgmt",
+        "name": "COPD Exacerbations",
+        "desc": "Acute management, oxygen therapy, bronchodilators, and initial treatment of decompensation"
+      },
+      {
+        "key": "copd_chronic_care",
+        "name": "Chronic COPD Management",
+        "desc": "Long-term therapy including inhaled corticosteroids, home oxygen, and medication side effects"
+      },
+      {
+        "key": "pneumonia_pathogens",
+        "name": "Pneumonia in COPD",
+        "desc": "Pathogen patterns, aspiration risk, and pneumonia management in chronic lung disease"
+      },
+      {
+        "key": "ild_fibrosis",
+        "name": "Interstitial Lung Disease",
+        "desc": "IPF diagnosis, presentation with crackles, and disease-modifying therapies"
+      },
+      {
+        "key": "geriatric_pulmonary",
+        "name": "Geriatric Complications",
+        "desc": "Frailty, delirium, falls, polypharmacy, and goals of care in advanced lung disease"
+      }
+    ]
+  },
+  "18": {
+    "name": "Heart Failure",
+    "subtopics": [
+      {
+        "key": "hfref_management",
+        "name": "HFrEF Pharmacotherapy",
+        "desc": "Medical management of reduced ejection fraction heart failure including ACEi, ARBs, ARNI, beta-blockers, and SGLT2 inhibitors"
+      },
+      {
+        "key": "hfpef_acute_hf",
+        "name": "HFpEF and Acute Decompensation",
+        "desc": "Preserved ejection fraction heart failure features, diagnosis, and acute heart failure exacerbations management"
+      },
+      {
+        "key": "devices_advanced",
+        "name": "Devices and Advanced Therapies",
+        "desc": "Pacemakers, ICDs, CRT, LVAD indications and management in heart failure patients"
+      },
+      {
+        "key": "comorbidities",
+        "name": "Comorbidities and Complications",
+        "desc": "Management of heart failure with concurrent conditions including CKD, diabetes, electrolyte disturbances, and multimorbidity"
+      }
+    ]
+  },
+  "25": {
+    "name": "Anemia",
+    "subtopics": [
+      {
+        "key": "iron_deficiency",
+        "name": "Iron Deficiency Anemia",
+        "desc": "Microcytic anemia with low ferritin, high TIBC; workup for GI losses and malabsorption"
+      },
+      {
+        "key": "chronic_disease",
+        "name": "Anemia of Chronic Disease",
+        "desc": "Normocytic or microcytic anemia with high ferritin, low TIBC in inflammatory conditions"
+      },
+      {
+        "key": "macrocytic",
+        "name": "Macrocytic Anemia",
+        "desc": "B12/folate deficiency and MDS; evaluation with methylmalonic acid and bone marrow"
+      },
+      {
+        "key": "management",
+        "name": "Anemia Management",
+        "desc": "Transfusion thresholds, iron supplementation, and treatment in complex elderly patients"
+      }
+    ]
+  },
+  "22": {
+    "name": "Diabetes Mellitus",
+    "subtopics": [
+      {
+        "key": "dm_medications",
+        "name": "Diabetes Medications",
+        "desc": "Pharmacologic management including insulin, oral agents, efficacy, side effects, and drug-drug interactions"
+      },
+      {
+        "key": "glycemic_targets",
+        "name": "Glycemic Control Goals",
+        "desc": "HbA1c targets, individualized goals based on comorbidities, frailty, and life expectancy"
+      },
+      {
+        "key": "dm_complications",
+        "name": "Diabetic Complications",
+        "desc": "Nephropathy, neuropathy, cardiovascular disease, and management in advanced kidney disease"
+      },
+      {
+        "key": "dm_acute_issues",
+        "name": "Acute Diabetes Problems",
+        "desc": "Hypoglycemia, hyperglycemia, postprandial hypotension, and acute metabolic derangements in older adults"
+      }
+    ]
+  },
+  "38": {
+    "name": "Perioperative Care",
+    "subtopics": [
+      {
+        "key": "preop_assessment",
+        "name": "Preoperative Assessment",
+        "desc": "Risk stratification, medication management, capacity evaluation, and optimization before surgery"
+      },
+      {
+        "key": "postop_complications",
+        "name": "Postoperative Complications",
+        "desc": "Recognition and management of delirium, cardiopulmonary events, bleeding, and geriatric syndromes"
+      },
+      {
+        "key": "orthogeriatric_care",
+        "name": "Orthogeriatric Co-Management",
+        "desc": "Hip fracture protocols, interdisciplinary models, and orthopedic surgery optimization"
+      },
+      {
+        "key": "periop_medication",
+        "name": "Perioperative Medications",
+        "desc": "Management of anticoagulation, chronic medications, analgesics, and drug-drug interactions"
+      }
+    ]
+  },
+  "13": {
+    "name": "Sleep Disorders",
+    "subtopics": [
+      {
+        "key": "insomnia",
+        "name": "Insomnia",
+        "desc": "Sleep initiation and maintenance difficulties, early morning awakening, sleep hygiene"
+      },
+      {
+        "key": "rem_behavior",
+        "name": "REM Behavior Disorder",
+        "desc": "Dream enactment, violent movements during REM sleep, association with Parkinson's disease"
+      },
+      {
+        "key": "circadian_rhythm",
+        "name": "Circadian Rhythm Disorders",
+        "desc": "Sundowning, irregular sleep-wake patterns, advanced sleep phase in elderly"
+      },
+      {
+        "key": "sleep_meds",
+        "name": "Sleep Pharmacotherapy",
+        "desc": "Melatonin, sedative-hypnotics, safety considerations, drug-related sleep disturbances"
+      }
+    ]
+  },
+  "1": {
+    "name": "Demography & Epidemiology",
+    "subtopics": [
+      {
+        "key": "infectious_disease",
+        "name": "Infectious Disease Epidemiology",
+        "desc": "Epidemiology of infections in special populations including post-splenectomy and immunocompromised elderly"
+      },
+      {
+        "key": "chronic_disease_mgmt",
+        "name": "Chronic Disease Management",
+        "desc": "Treatment targets and management strategies for diabetes, heart failure, hypertension in older adults"
+      },
+      {
+        "key": "demographic_trends",
+        "name": "Population Demographics",
+        "desc": "Aging population trends, healthcare planning, and epidemiological patterns of geriatric conditions"
+      },
+      {
+        "key": "disease_epidemiology",
+        "name": "Geriatric Disease Patterns",
+        "desc": "Epidemiology of age-related conditions including Parkinson's, atypical parkinsonism, and valvular disease"
+      }
+    ]
+  },
+  "6": {
+    "name": "Dementia",
+    "subtopics": [
+      {
+        "key": "diagnosis_types",
+        "name": "Diagnosis and Types",
+        "desc": "Differential diagnosis, dementia subtypes (Alzheimer's, vascular, Lewy body, Parkinson's dementia), clinical presentations"
+      },
+      {
+        "key": "assessment_staging",
+        "name": "Assessment and Staging",
+        "desc": "MMSE scoring, cognitive testing, functional assessment, disease severity staging"
+      },
+      {
+        "key": "management_meds",
+        "name": "Management and Medications",
+        "desc": "Pharmacological treatment, medication management, drug interactions, symptomatic control"
+      },
+      {
+        "key": "complications_care",
+        "name": "Complications and Care",
+        "desc": "Falls, aspiration, weight loss, behavioral issues, nursing home placement, caregiver concerns, end-of-life decisions"
+      }
+    ]
+  },
+  "3": {
+    "name": "Frailty & Sarcopenia",
+    "subtopics": [
+      {
+        "key": "definition_screening",
+        "name": "Definition & Screening",
+        "desc": "Diagnostic criteria (Fried, SARC-F), assessment tools, and screening methods for frailty and sarcopenia"
+      },
+      {
+        "key": "pathophysiology",
+        "name": "Pathophysiology & Risk",
+        "desc": "Mechanisms of muscle loss, inflammatory markers, overlap syndromes, and risk factors for development"
+      },
+      {
+        "key": "clinical_assessment",
+        "name": "Clinical Assessment",
+        "desc": "Physical performance measures (grip strength, gait speed), body composition, and functional evaluation"
+      },
+      {
+        "key": "management",
+        "name": "Management & Prevention",
+        "desc": "Nutritional interventions, protein supplementation, exercise programs, and multimodal treatment strategies"
+      },
+      {
+        "key": "perioperative_care",
+        "name": "Perioperative & Prognosis",
+        "desc": "Preoperative frailty assessment (TAVI, surgery), complications prediction, and recovery outcomes"
+      }
+    ]
+  },
+  "12": {
+    "name": "Constipation",
+    "subtopics": [
+      {
+        "key": "etiology_meds",
+        "name": "Etiology and Medications",
+        "desc": "Drug-induced constipation, medical conditions causing constipation, and polypharmacy effects"
+      },
+      {
+        "key": "acute_management",
+        "name": "Acute Management",
+        "desc": "Treatment of severe constipation, fecal impaction, and overflow incontinence"
+      },
+      {
+        "key": "chronic_treatment",
+        "name": "Chronic Treatment",
+        "desc": "First-line and maintenance therapies, laxative selection, and medication optimization"
+      },
+      {
+        "key": "special_populations",
+        "name": "Special Populations",
+        "desc": "Management in cirrhosis, dementia, immobility, and nursing home residents"
+      }
+    ]
+  },
+  "7": {
+    "name": "Depression & Mood",
+    "subtopics": [
+      {
+        "key": "diagnosis_screening",
+        "name": "Diagnosis & Screening",
+        "desc": "Assessment tools (PHQ-9), diagnostic criteria, and screening approaches for depression in elderly"
+      },
+      {
+        "key": "special_populations",
+        "name": "Special Populations",
+        "desc": "Depression in context of stroke, Parkinson's, advanced illness, cancer, and end-of-life care"
+      },
+      {
+        "key": "pharmacotherapy",
+        "name": "Pharmacotherapy",
+        "desc": "Antidepressant selection, drug interactions, cardiac effects, and medication management in elderly"
+      },
+      {
+        "key": "complications_safety",
+        "name": "Complications & Safety",
+        "desc": "Fall risk, substance use, side effects, and safety considerations in depressed elderly patients"
+      }
+    ]
+  },
+  "11": {
+    "name": "Urinary Incontinence",
+    "subtopics": [
+      {
+        "key": "stress_incont",
+        "name": "Stress Incontinence",
+        "desc": "Leakage with increased abdominal pressure (cough, sneeze, exertion); pelvic floor weakness"
+      },
+      {
+        "key": "urge_incont",
+        "name": "Urgency Incontinence",
+        "desc": "Overactive bladder with sudden urge to void; detrusor overactivity"
+      },
+      {
+        "key": "overflow_incont",
+        "name": "Overflow Incontinence",
+        "desc": "Chronic retention with continuous dribbling; BPH, neurogenic bladder, obstruction"
+      },
+      {
+        "key": "functional_incont",
+        "name": "Functional Incontinence",
+        "desc": "Impaired mobility or cognition preventing timely toileting; dementia, frailty"
+      },
+      {
+        "key": "management",
+        "name": "Incontinence Management",
+        "desc": "Assessment, behavioral interventions, medications, catheters, and complications"
+      }
+    ]
+  },
+  "4": {
+    "name": "Falls & Balance",
+    "subtopics": [
+      {
+        "key": "fall_assessment",
+        "name": "Fall Assessment & Evaluation",
+        "desc": "History-taking, fall circumstances, multifactorial risk assessment, and diagnostic workup"
+      },
+      {
+        "key": "intrinsic_risk",
+        "name": "Intrinsic Risk Factors",
+        "desc": "Medical conditions, medications, sensory impairments, and physiologic changes contributing to falls"
+      },
+      {
+        "key": "extrinsic_environ",
+        "name": "Extrinsic & Environmental",
+        "desc": "Home hazards, assistive devices, footwear, and environmental modifications"
+      },
+      {
+        "key": "fall_consequences",
+        "name": "Fall Consequences",
+        "desc": "Post-fall syndrome, fear of falling, injury complications, and functional decline"
+      }
+    ]
+  },
+  "5": {
+    "name": "Delirium",
+    "subtopics": [
+      {
+        "key": "recognition_dx",
+        "name": "Recognition and Diagnosis",
+        "desc": "Clinical presentation, screening tools (4AT, CAM), differential diagnosis from dementia/depression/psychosis"
+      },
+      {
+        "key": "etiology_risk",
+        "name": "Etiology and Risk Factors",
+        "desc": "Precipitating causes, medication-related, postoperative, medical illness, predisposing factors"
+      },
+      {
+        "key": "subtypes_variants",
+        "name": "Clinical Subtypes",
+        "desc": "Hyperactive, hypoactive, and mixed presentations; recognition in special populations"
+      },
+      {
+        "key": "management",
+        "name": "Management and Prevention",
+        "desc": "Non-pharmacologic interventions, medication approach, prevention strategies, treating underlying causes"
+      }
+    ]
+  },
+  "0": {
+    "name": "Biology of Aging",
+    "subtopics": [
+      {
+        "key": "normal_aging",
+        "name": "Normal Aging Changes",
+        "desc": "Physiologic changes in cognition, function, and organ systems with normal aging"
+      },
+      {
+        "key": "geriatric_syndromes",
+        "name": "Geriatric Syndromes",
+        "desc": "Falls, polypharmacy, frailty, and functional decline in elderly patients"
+      },
+      {
+        "key": "immunosenescence",
+        "name": "Immunosenescence",
+        "desc": "Age-related immune dysfunction, vaccine responses, and infection susceptibility"
+      },
+      {
+        "key": "elderly_pharmacology",
+        "name": "Elderly Pharmacology",
+        "desc": "Drug metabolism, dosing adjustments, and medication management in renal/hepatic impairment"
+      }
+    ]
+  },
+  "15": {
+    "name": "Osteoporosis",
+    "subtopics": [
+      {
+        "key": "diagnosis_screening",
+        "name": "Diagnosis and Screening",
+        "desc": "DEXA interpretation, T-scores, fracture risk assessment, screening indications"
+      },
+      {
+        "key": "pharmacotherapy",
+        "name": "Pharmacotherapy",
+        "desc": "Bisphosphonates, denosumab, treatment duration, side effects, atypical fractures"
+      },
+      {
+        "key": "fracture_management",
+        "name": "Fracture Management",
+        "desc": "Hip fracture complications, post-fracture care, surgical outcomes, rehabilitation"
+      },
+      {
+        "key": "secondary_causes",
+        "name": "Secondary Causes",
+        "desc": "Evaluation for secondary osteoporosis, malignancy, infection, metabolic bone disease"
+      }
+    ]
+  },
+  "36": {
+    "name": "Rehabilitation",
+    "subtopics": [
+      {
+        "key": "cardiac_pulmonary",
+        "name": "Cardiac & Pulmonary Rehab",
+        "desc": "Post-MI, CHF, COPD rehabilitation programs, exercise tolerance, and cardiopulmonary complications during rehab"
+      },
+      {
+        "key": "functional_assessment",
+        "name": "Functional Assessment",
+        "desc": "ADL/IADL measurement, FIM scoring, outcome measures, and functional capacity evaluation"
+      },
+      {
+        "key": "post_acute_barriers",
+        "name": "Post-Acute Barriers",
+        "desc": "Medical complications during rehab (incontinence, deconditioning, medication effects) impeding progress"
+      },
+      {
+        "key": "cognitive_safety",
+        "name": "Cognitive & Safety Issues",
+        "desc": "Dementia patients in rehab, safety awareness, adherence challenges, and cognitive adaptations to therapy"
+      }
+    ]
+  },
+  "39": {
+    "name": "Geriatric Emergency Medicine",
+    "subtopics": [
+      {
+        "key": "acute_geriatric_syndr",
+        "name": "Acute Geriatric Syndromes",
+        "desc": "Falls, delirium, functional decline, and acute presentations unique to elderly patients"
+      },
+      {
+        "key": "critical_care_elder",
+        "name": "Critical Care in Elderly",
+        "desc": "Shock, sepsis, ACS, and time-sensitive emergencies in geriatric patients"
+      },
+      {
+        "key": "goals_of_care",
+        "name": "Goals of Care",
+        "desc": "Advanced dementia, frailty assessment, ADL dependency, and end-of-life decision-making"
+      },
+      {
+        "key": "geriatric_pharm",
+        "name": "Geriatric Pharmacotherapy",
+        "desc": "Medication dosing in renal/hepatic impairment, polypharmacy, and age-specific drug considerations"
+      },
+      {
+        "key": "preventive_elder",
+        "name": "Preventive Care",
+        "desc": "Vaccinations, fall prevention, assistive devices, and screening recommendations for elderly"
+      }
+    ]
+  },
+  "8": {
+    "name": "Polypharmacy & Beers",
+    "subtopics": [
+      {
+        "key": "beers_criteria",
+        "name": "Beers Criteria",
+        "desc": "Potentially inappropriate medications in older adults and safer alternatives"
+      },
+      {
+        "key": "drug_interactions",
+        "name": "Drug Interactions",
+        "desc": "Pharmacokinetic and pharmacodynamic interactions in multi-drug regimens"
+      },
+      {
+        "key": "renal_hepatic_dosing",
+        "name": "Renal & Hepatic Dosing",
+        "desc": "Medication adjustments for organ impairment and drug accumulation risks"
+      },
+      {
+        "key": "deprescribing",
+        "name": "Deprescribing Strategies",
+        "desc": "Systematic medication reduction and discontinuation in complex patients"
+      }
+    ]
+  },
+  "14": {
+    "name": "Pain Management",
+    "subtopics": [
+      {
+        "key": "pain_assessment",
+        "name": "Pain Assessment",
+        "desc": "Evaluation tools, pain characterization, and assessment in special populations including dementia"
+      },
+      {
+        "key": "pharmacologic_mgmt",
+        "name": "Pharmacologic Management",
+        "desc": "Analgesic selection, opioid and non-opioid medications, dose adjustments for organ dysfunction"
+      },
+      {
+        "key": "adverse_effects",
+        "name": "Medication Adverse Effects",
+        "desc": "Opioid-induced constipation, nausea, delirium, and management of side effects"
+      },
+      {
+        "key": "neuropathic_pain",
+        "name": "Neuropathic Pain",
+        "desc": "Post-herpetic neuralgia, diabetic neuropathy, and specific treatments for nerve pain"
+      },
+      {
+        "key": "musculoskeletal_pain",
+        "name": "Musculoskeletal Pain",
+        "desc": "Osteoarthritis, back pain, procedural interventions, and non-pharmacologic approaches"
+      }
+    ]
+  },
+  "37": {
+    "name": "Vision & Hearing",
+    "subtopics": [
+      {
+        "key": "vision_loss",
+        "name": "Vision Loss & Eye Diseases",
+        "desc": "AMD, glaucoma, diabetic retinopathy, retinal detachment, cataracts and other age-related vision impairments"
+      },
+      {
+        "key": "hearing_loss",
+        "name": "Hearing Loss & Presbycusis",
+        "desc": "Age-related hearing loss, audiometry interpretation, hearing aid use and communication strategies"
+      },
+      {
+        "key": "functional_impact",
+        "name": "Functional Impact & Falls",
+        "desc": "Vision/hearing impairment as fall risk factors, ADL limitations, safety concerns and functional assessment"
+      },
+      {
+        "key": "sensory_management",
+        "name": "Treatment & Management",
+        "desc": "Anti-VEGF therapy, medical/surgical interventions, assistive devices, medication adjustments in sensory impairment"
+      }
+    ]
+  },
+  "35": {
+    "name": "Community & Long-Term Care",
+    "subtopics": [
+      {
+        "key": "home_care_services",
+        "name": "Home Care Services",
+        "desc": "Home health, home care distinctions, visiting nurse services, and community-based support systems"
+      },
+      {
+        "key": "ltc_facilities",
+        "name": "Long-Term Care Facilities",
+        "desc": "Nursing homes, assisted living, skilled nursing facilities, and institutional care levels"
+      },
+      {
+        "key": "care_transitions",
+        "name": "Care Transitions",
+        "desc": "Hospital-to-home discharge, facility placement decisions, and coordination between care settings"
+      },
+      {
+        "key": "functional_decline",
+        "name": "Functional Decline Management",
+        "desc": "Failure to thrive, weight loss, medication management, and addressing declining independence in community settings"
+      }
+    ]
+  },
+  "20": {
+    "name": "Stroke",
+    "subtopics": [
+      {
+        "key": "acute_stroke_mgmt",
+        "name": "Acute Stroke Management",
+        "desc": "Emergency assessment, thrombolysis, thrombectomy, and immediate interventions for ischemic and hemorrhagic stroke"
+      },
+      {
+        "key": "vascular_territories",
+        "name": "Vascular Territories",
+        "desc": "Clinical presentation and deficits by arterial territory (MCA, ACA, PCA, vertebrobasilar)"
+      },
+      {
+        "key": "secondary_prevention",
+        "name": "Secondary Prevention",
+        "desc": "Carotid stenosis management, antiplatelet/anticoagulation therapy, and risk factor modification"
+      },
+      {
+        "key": "post_stroke_compl",
+        "name": "Post-Stroke Complications",
+        "desc": "Depression, seizures, medication interactions, and rehabilitation considerations in stroke survivors"
+      }
+    ]
+  },
+  "27": {
+    "name": "Infections",
+    "subtopics": [
+      {
+        "key": "gi_infections",
+        "name": "GI Infections",
+        "desc": "Diarrhea, colitis, C. difficile, and abdominal infections in elderly patients"
+      },
+      {
+        "key": "respiratory_inf",
+        "name": "Respiratory Infections",
+        "desc": "Pneumonia, bronchitis, and lower respiratory tract infections"
+      },
+      {
+        "key": "skin_soft_tissue",
+        "name": "Skin & Soft Tissue",
+        "desc": "Cellulitis, herpes zoster, common bacterial and viral skin infections"
+      },
+      {
+        "key": "bacteremia_endocard",
+        "name": "Bacteremia & Endocarditis",
+        "desc": "Bloodstream infections, prosthetic valve endocarditis, and sepsis management"
+      },
+      {
+        "key": "uti_urosepsis",
+        "name": "UTI & Urosepsis",
+        "desc": "Urinary tract infections, pyelonephritis, and urologic source sepsis"
+      }
+    ]
+  },
+  "31": {
+    "name": "Fitness to Drive",
+    "subtopics": [
+      {
+        "key": "medical_conditions",
+        "name": "Medical Conditions",
+        "desc": "Cognitive impairment, dementia, Parkinson's, epilepsy, and other conditions affecting driving ability"
+      },
+      {
+        "key": "medications",
+        "name": "Medications Impact",
+        "desc": "Effects of sedatives, hypnotics, and other drugs on driving safety and recommendations"
+      },
+      {
+        "key": "functional_assessment",
+        "name": "Functional Assessment",
+        "desc": "Visual acuity, visual fields, cognitive testing (MMSE), and clinical evaluation of driving fitness"
+      },
+      {
+        "key": "legal_reporting",
+        "name": "Legal and Reporting",
+        "desc": "Physician obligations, Ministry of Health directives (6/2023), waiting periods, and the 4Cs approach"
+      }
+    ]
+  },
+  "9": {
+    "name": "Nutrition & Malnutrition",
+    "subtopics": [
+      {
+        "key": "dysphagia_feeding",
+        "name": "Dysphagia & Feeding Issues",
+        "desc": "Swallowing disorders, feeding difficulties, aspiration risk, and management strategies in older adults"
+      },
+      {
+        "key": "weight_loss_assess",
+        "name": "Weight Loss Assessment",
+        "desc": "Evaluation of unintentional weight loss, quantification, and diagnostic approach in geriatric patients"
+      },
+      {
+        "key": "malnutrition_dx",
+        "name": "Malnutrition Diagnosis",
+        "desc": "Recognition, screening tools, diagnostic criteria, and classification of malnutrition syndromes"
+      },
+      {
+        "key": "nutrition_support",
+        "name": "Nutritional Support",
+        "desc": "Enteral and parenteral nutrition, PEG tubes, ethical considerations, and specialized nutritional interventions"
+      }
+    ]
+  },
+  "2": {
+    "name": "Geriatric Assessment (CGA)",
+    "subtopics": [
+      {
+        "key": "cga_components",
+        "name": "CGA Components & Process",
+        "desc": "Domains of assessment, multidisciplinary team roles, and systematic evaluation approach"
+      },
+      {
+        "key": "functional_assess",
+        "name": "Functional Assessment",
+        "desc": "ADLs, IADLs, mobility evaluation, and identifying functional decline patterns"
+      },
+      {
+        "key": "polypharmacy_med",
+        "name": "Medication Review",
+        "desc": "Polypharmacy assessment, deprescribing, medication-related adverse events"
+      },
+      {
+        "key": "falls_risk",
+        "name": "Falls & Risk Assessment",
+        "desc": "Fall risk evaluation, multifactorial causes, environmental hazards, prevention strategies"
+      },
+      {
+        "key": "cga_interventions",
+        "name": "CGA Outcomes & Implementation",
+        "desc": "Benefits of CGA, ACE units, care planning, and intervention strategies"
+      }
+    ]
+  },
+  "26": {
+    "name": "Cancer & Oncology",
+    "subtopics": [
+      {
+        "key": "treatment_decisions",
+        "name": "Treatment Decisions",
+        "desc": "Balancing cancer treatment goals with frailty, comorbidities, and functional status"
+      },
+      {
+        "key": "surgical_oncology",
+        "name": "Surgical Oncology",
+        "desc": "Perioperative risk assessment and management of older adults undergoing cancer surgery"
+      },
+      {
+        "key": "systemic_therapy",
+        "name": "Systemic Therapy",
+        "desc": "Chemotherapy, immunotherapy, and targeted therapy considerations including toxicity management"
+      },
+      {
+        "key": "complications",
+        "name": "Oncologic Complications",
+        "desc": "Recognition and management of cancer-related emergencies and treatment complications"
+      }
+    ]
+  },
+  "23": {
+    "name": "Thyroid Disorders",
+    "subtopics": [
+      {
+        "key": "age_related_changes",
+        "name": "Age-Related Thyroid Changes",
+        "desc": "Physiologic changes in thyroid function with aging, altered reference ranges, and age-specific presentations"
+      },
+      {
+        "key": "hypothyroidism",
+        "name": "Hypothyroidism in Elderly",
+        "desc": "Clinical presentation, subclinical hypothyroidism, myxedema coma, and management in older adults with comorbidities"
+      },
+      {
+        "key": "hyperthyroidism",
+        "name": "Hyperthyroidism in Elderly",
+        "desc": "Atypical presentations, apathetic thyrotoxicosis, thyroid storm, and age-specific considerations in treatment"
+      },
+      {
+        "key": "drug_induced",
+        "name": "Drug-Induced Thyroid Disorders",
+        "desc": "Amiodarone, lithium, and other medication-related thyroid dysfunction in geriatric patients"
+      }
+    ]
+  },
+  "24": {
+    "name": "Chronic Kidney Disease",
+    "subtopics": [
+      {
+        "key": "etiology_staging",
+        "name": "Etiology and Staging",
+        "desc": "Causes of CKD, nephrotic syndrome, glomerular disease, and CKD staging by eGFR"
+      },
+      {
+        "key": "complications",
+        "name": "CKD Complications",
+        "desc": "Anemia, mineral bone disease, electrolyte disturbances, uremic symptoms"
+      },
+      {
+        "key": "acute_on_chronic",
+        "name": "Acute on Chronic Kidney Injury",
+        "desc": "AKI in CKD patients from sepsis, contrast, medications, volume depletion"
+      },
+      {
+        "key": "ckd_management",
+        "name": "CKD Management",
+        "desc": "Medication adjustment, nephrotoxin avoidance, cardiovascular risk, drug dosing in renal impairment"
+      }
+    ]
+  },
+  "17": {
+    "name": "Cardiovascular Disease",
+    "subtopics": [
+      {
+        "key": "acs_mi",
+        "name": "Acute Coronary Syndromes",
+        "desc": "STEMI, NSTEMI, post-MI complications, and acute management"
+      },
+      {
+        "key": "chronic_ihd",
+        "name": "Chronic Ischemic Heart Disease",
+        "desc": "Stable angina, secondary prevention, statin therapy, antiplatelet management"
+      },
+      {
+        "key": "heart_failure",
+        "name": "Heart Failure",
+        "desc": "CHF management, volume overload, medication optimization"
+      },
+      {
+        "key": "arrhythmia_valvular",
+        "name": "Arrhythmias and Valvular Disease",
+        "desc": "Atrial fibrillation, anticoagulation, valvular stenosis/regurgitation, endocarditis prophylaxis"
+      }
+    ]
+  },
+  "10": {
+    "name": "Pressure Injuries",
+    "subtopics": [
+      {
+        "key": "staging_classification",
+        "name": "Staging and Classification",
+        "desc": "Grading systems, stage 1-4, deep tissue injury, unstageable wounds"
+      },
+      {
+        "key": "risk_assessment",
+        "name": "Risk Assessment and Prevention",
+        "desc": "Braden scale, risk factors, preventive strategies and positioning"
+      },
+      {
+        "key": "wound_management",
+        "name": "Wound Management",
+        "desc": "Debridement, dressing types (alginate, hydrocolloid), moisture control"
+      },
+      {
+        "key": "nutrition_healing",
+        "name": "Nutrition and Healing",
+        "desc": "Nutritional supplementation, protein needs, micronutrients for wound healing"
+      }
+    ]
+  },
+  "28": {
+    "name": "Palliative Care",
+    "subtopics": [
+      {
+        "key": "pain_management",
+        "name": "Pain Management",
+        "desc": "Opioid dosing, rotation, breakthrough pain, refractory pain, and pain assessment in palliative patients"
+      },
+      {
+        "key": "symptom_control",
+        "name": "Symptom Control",
+        "desc": "Management of dyspnea, nausea, death rattle, delirium, and other non-pain symptoms in advanced illness"
+      },
+      {
+        "key": "goals_of_care",
+        "name": "Goals of Care",
+        "desc": "Advance care planning, goals of care discussions, decision-making capacity, and end-of-life preferences"
+      },
+      {
+        "key": "prognostication",
+        "name": "Prognostication & Hospice",
+        "desc": "Life expectancy assessment, hospice eligibility, functional decline, and transitioning to comfort care"
+      }
+    ]
+  },
+  "30": {
+    "name": "Elder Abuse",
+    "subtopics": [
+      {
+        "key": "types_definitions",
+        "name": "Types and Definitions",
+        "desc": "Categories of elder abuse including physical, psychological, financial, neglect, and sexual abuse"
+      },
+      {
+        "key": "recognition_red_flags",
+        "name": "Recognition and Red Flags",
+        "desc": "Clinical presentations, physical findings, patterns of injury, and behavioral indicators suggestive of abuse"
+      },
+      {
+        "key": "assessment_tools",
+        "name": "Assessment and Screening",
+        "desc": "Evaluation approaches, documentation, safety assessment, and interviewing techniques"
+      },
+      {
+        "key": "reporting_management",
+        "name": "Reporting and Management",
+        "desc": "Mandatory reporting requirements, intervention strategies, protective services, and multidisciplinary response"
+      }
+    ]
+  },
+  "32": {
+    "name": "Guardianship",
+    "subtopics": [
+      {
+        "key": "legal_instruments",
+        "name": "Legal Instruments",
+        "desc": "Types of advance directives, power of attorney (POA), temporary vs permanent guardianship"
+      },
+      {
+        "key": "capacity_assessment",
+        "name": "Capacity Assessment",
+        "desc": "Evaluating decision-making capacity, determining need for surrogate decision-maker"
+      },
+      {
+        "key": "decision_hierarchy",
+        "name": "Decision Hierarchy",
+        "desc": "Who decides when patient lacks capacity: family, POA, guardian, temporary decision-maker"
+      },
+      {
+        "key": "disputes_revocation",
+        "name": "Disputes and Revocation",
+        "desc": "Family disagreements, patient resistance, POA revocation, ethical considerations in guardianship"
+      }
+    ]
+  },
+  "29": {
+    "name": "Ethics",
+    "subtopics": [
+      {
+        "key": "decision_capacity",
+        "name": "Decision-Making Capacity",
+        "desc": "Assessment of competence, informed consent, surrogate decision-making in cognitive impairment"
+      },
+      {
+        "key": "end_of_life",
+        "name": "End-of-Life Care",
+        "desc": "Withholding/withdrawing treatment, advance directives, palliative decisions in terminal illness"
+      },
+      {
+        "key": "ethical_principles",
+        "name": "Core Ethical Principles",
+        "desc": "Autonomy, beneficence, non-maleficence, justice, truth-telling, and their application"
+      },
+      {
+        "key": "artificial_nutrition",
+        "name": "Artificial Nutrition",
+        "desc": "Ethical considerations in initiating, continuing, or stopping feeding tubes and parenteral nutrition"
+      }
+    ]
+  },
+  "33": {
+    "name": "Patient Rights Law",
+    "subtopics": [
+      {
+        "key": "informed_consent",
+        "name": "Informed Consent",
+        "desc": "Capacity assessment, consent for competent and incompetent patients, substitute decision-making"
+      },
+      {
+        "key": "medical_records",
+        "name": "Medical Records Access",
+        "desc": "Patient rights to access records, confidentiality, information sharing restrictions"
+      },
+      {
+        "key": "mandatory_reporting",
+        "name": "Mandatory Reporting",
+        "desc": "Elder abuse reporting obligations, who must report, legal requirements"
+      },
+      {
+        "key": "end_of_life",
+        "name": "End-of-Life Rights",
+        "desc": "Dying patient law, ethics committees, advance directives, refusal of life-saving treatment"
+      },
+      {
+        "key": "guardianship_support",
+        "name": "Guardianship & Supporters",
+        "desc": "Decision supporters vs guardians, qualifications, training requirements, legal authority"
+      }
+    ]
+  }
+}
