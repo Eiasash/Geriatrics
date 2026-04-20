@@ -5335,20 +5335,22 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.85';
+const APP_VERSION='9.86';
 const CHANGELOG={
-'9.83':['📋 מבחן מלא עם בורר — ניתן לבחור שנים ומקורות AI (Hazzard/Harrison) מרובים','⬆️ כפתור הבאה הוזז למעלה — מעל כפתורי Why-wrong, Difficulty ופרקים','📏 כפתור הבאה: 48px גובה, 14px גופן'],
-'9.82':['🔔 toast במקום alert בכל האפליקציה — התראות לא חוסמות יותר','✅ confirmModal במקום confirm — דיאלוג אישור מעוצב'],
-'9.81':['📱 סיום מבחן, Sudden Death ו-Mini Exam — מודאלים מעוצבים במקום alert()'],
-'9.80':['🔀 חצי Prev/Next תוקנו לכיוון RTL'],
-'9.79':['🌙 מצב כהה ומצב לימוד — תיקונים לכפתורים עם צבעים קשיחים'],
+'9.85':['📝 הערות אישיות — כפתור 📝 בכל שאלה פותח הערה פרטית','📓 פנקס כללי ב-More → Notes עם ייצוא לקובץ','🔖 רשימה של כל ההערות עם כפתור מעבר לשאלה'],
+'9.84':['🔘 אייקונים בכותרת גדולים יותר — ☀ 🌙 ? ברורים לזיהוי','📋 רשימת השינויים נכתבה מחדש לעברית תקינה'],
+'9.83':['📋 מבחן מלא עם בורר — בחירת שנים ומקורות מרובים','⬆️ כפתור "הבאה" הוזז למעלה','📏 כפתור "הבאה" גדול יותר — גובה 48'],
+'9.82':['🔔 התראות לא חוסמות — במקום חלוניות מערכת','✅ דיאלוג אישור מעוצב במקום חלונית דפדפן'],
+'9.81':['📱 סיום מבחן, Sudden Death ו-Mini Exam — מודאלים מעוצבים'],
+'9.80':['🔀 חצי הקודמת וההבאה תוקנו לכיוון עברי'],
+'9.79':['🌙 מצב כהה ומצב לימוד — תיקוני צבע לכפתורים'],
 '9.78':[
-  '🐛 פריסת UI אחרי מענה — כפתורי המשנה לא נדחסים יותר לעמודה צרה',
+  '🐛 פריסת UI אחרי מענה — הכפתורים לא נדחסים לעמודה צרה',
   '🗺️ הסבר הנושא הנכון מוצג אחרי תשובה',
-  '📏 כפתורי Why-wrong ו-Difficulty עכשיו ניתנים ללחיצה במובייל',
-  '🔤 גופן Heebo ראשי לרינדור עברי איכותי',
-  '🍎 iOS status bar מותאם לכותרת הכהה',
-  '🚫 הפרומפט "How sure are you" הוסר'
+  '📏 כפתורים גדולים יותר למגע במובייל',
+  '🔤 גופן Heebo לרינדור עברי איכותי',
+  '🍎 שורת סטטוס מותאמת לכותרת הכהה',
+  '🚫 הפרומפט לדרוג בטחון הוסר'
 ],
 '9.77':['🎨 Design: new token layer — amber/violet skin via data-skin="geriatrics"','🔤 Self-hosted Heebo + Inter fonts (removed Google Fonts dependency, offline-ready)','🛡️ CSP tightened: style-src and font-src now self-only','♿ Respects prefers-reduced-motion globally'],
     '9.76': ['🎨 ניקוי UI מקצועי — tabs (Quiz/Learn/Library/Track/More) עכשיו משתמשות באייקונים של SVG אחידים במקום emoji שנראו שונה בכל דפדפן/מכשיר. רינדור זהה באנדרואיד/iOS/Chrome.', '🗺 Weak Spots Map: headers לא מקוצצים יותר ל-"un"/"ep"/"ay" — עכשיו "21·6"/"24·9" וכו׳ (שנה·חודש). שמות נושאים לא נחתכים בצד.', '🎯 שורת מבחנים מסודרת עם היררכיה ברורה: Mock (primary), Full 150q (secondary), SD/On-Call/Pomo עם תוויות ברורות במקום רק emoji.', '🏷 אייקונים מחליפי מצב בכותרת הגיוניים יותר: ☀ Study Mode / 🌙 Dark / ? Help (היה 🕯️/🌓 מבלבלים).'],
@@ -5686,40 +5688,41 @@ ov.innerHTML=`<div style="max-width:420px;margin:0 auto;background:rgb(var(--car
 ${(CHANGELOG[APP_VERSION]||CHANGELOG[Object.keys(CHANGELOG).sort().pop()]||['No changelog available']).map(c=>'<b>'+c.split(' — ')[0]+'</b>'+(c.includes(' — ')?' — '+c.split(' — ').slice(1).join(' — '):'')).join('<br>')}
 </div></div>
 ${sec('Quiz Filters','📝','#059669',
-'<b>הכל</b> — All 1,550 questions, shuffled<br>'+
-'<b>2022–2025</b> — Filter by exam year<br>'+
-'<b>🔥 Hard</b> — Questions you got wrong, worst-first<br>'+
-'<b>⏱️ Slow</b> — Questions that took you &gt;60s<br>'+
-'<b>🎯 Weak</b> — Your weakest topics<br>'+
-'<b>🔄 Due</b> — Spaced repetition review (SM-2)<br>'+
-'<b>📋 Exam</b> — 150q timed mock (3 hours)<br>'+
-'<b>💀 Sudden Death</b> — One wrong = game over'
+'<b>הכל</b> — כל '+QZ.length.toLocaleString()+' השאלות, מעורבב<br>'+
+'<b>2020–2025</b> — סינון לפי שנת מבחן<br>'+
+'<b>🔥 Hard</b> — שאלות שטעית בהן, הגרועות קודם<br>'+
+'<b>⏱️ Slow</b> — שאלות שלקחו לך יותר מ־60 שניות<br>'+
+'<b>🎯 Weak</b> — הנושאים החלשים שלך<br>'+
+'<b>🔄 Due</b> — חזרה מרווחת (SM-2)<br>'+
+'<b>📋 Exam</b> — מבחן מדומה 150 שאלות עם טיימר (3 שעות)<br>'+
+'<b>💀 Sudden Death</b> — טעות אחת = סוף המשחק'
 )}
 ${sec('AI Study Tools','🤖','#8b5cf6',
-'All AI features work without an API key — powered by shared proxy.<br><br>'+
-'<b>🤖 AI Explain</b> — Hebrew explanation of the correct answer<br>'+
-'<b>🔬 Distractor Autopsy</b> — AI explains why EACH wrong option is wrong and when it would be correct<br>'+
-'<b>🎓 Teach-Back</b> — Type your own explanation, AI grades it<br>'+
-'<b>❌ Wrong Answer</b> — Report errors, AI verifies the answer key'
+'כל יכולות ה-AI עובדות בלי מפתח API — דרך פרוקסי משותף.<br><br>'+
+'<b>🤖 AI Explain</b> — הסבר בעברית לתשובה הנכונה<br>'+
+'<b>🔬 Distractor Autopsy</b> — AI מסביר למה כל הסחות דעת שגויה ומתי הייתה נכונה<br>'+
+'<b>🎓 Teach-Back</b> — הקלד הסבר משלך, ה-AI נותן ציון<br>'+
+'<b>❌ Wrong Answer</b> — דווח שגיאות, ה-AI מוודא את מפתח התשובות'
 )}
 ${sec('Study Modes','📚','#dc2626',
-'<b>🙈 Cover Options</b> — Hides choices, forces free recall<br>'+
-'<b>⏱️ Pomodoro</b> — 25min focus / 5min break timer<br>'+
-'<b>📖 Library</b> — Read Hazzard chapters in-app (no PDF needed)<br>'+
-'<b>🃏 Flashcards</b> — 159 cards with spaced repetition<br>'+
-'<b>💊 Drugs</b> — Beers/ACB/STOPP lookup for 53 drugs<br>'+
-'<b>🧮 Calculators</b> — CrCl, CHA₂DS₂-VASc, GDS-15, Braden, etc.'
+'<b>🙈 Cover Options</b> — מסתיר תשובות, מכריח היזכרות חופשית<br>'+
+'<b>⏱️ Pomodoro</b> — טיימר 25 דקות פוקוס / 5 דקות הפסקה<br>'+
+'<b>📖 Library</b> — פרקי Hazzard + Harrison נקראים באפליקציה<br>'+
+'<b>📝 Notes</b> — הערות אישיות כלליות + לכל שאלה<br>'+
+'<b>🃏 Flashcards</b> — '+FLASH.length+' כרטיסים עם חזרה מרווחת<br>'+
+'<b>💊 Drugs</b> — לוקאפ Beers/ACB/STOPP ל־'+DRUGS.length+' תרופות<br>'+
+'<b>🧮 Calculators</b> — CrCl, CHA₂DS₂-VASc, GDS-15, Braden, ועוד'
 )}
 ${sec('Progress Tracking','📊','#f59e0b',
-'<b>⏱️ Answer Timer</b> — Silently tracks time per question<br>'+
-'<b>🗺️ Weak Spots Map</b> — Topic × Year heatmap (Track tab)<br>'+
-'<b>📊 Accuracy Bars</b> — Per-topic accuracy sorted worst-first<br>'+
-'<b>☁️ Cloud Sync</b> — Backup/restore progress across devices<br>'+
-'<b>🔥 Streak</b> — Daily study streak'
+'<b>⏱️ Answer Timer</b> — מעקב שקט אחרי זמן לכל שאלה<br>'+
+'<b>🗺️ Weak Spots Map</b> — מפת חום נושא × שנה (לשונית Track)<br>'+
+'<b>📊 Accuracy Bars</b> — דיוק לכל נושא, הגרועים קודם<br>'+
+'<b>☁️ Cloud Sync</b> — גיבוי ושחזור בין מכשירים<br>'+
+'<b>🔥 Streak</b> — רצף לימוד יומי'
 )}
 <div style="padding:10px;background:rgb(var(--green-bg));border-radius:10px;margin-bottom:12px">
 <div style="font-weight:700;font-size:11px;margin-bottom:4px">🚀 Quick Start</div>
-<div style="font-size:10px;line-height:1.7">1. Tap <b>Quiz</b> → answer questions<br>2. Check <b>🔬 Distractor Autopsy</b> for AI analysis<br>3. Review <b>Track</b> tab for weak spots<br>4. Use <b>🔥 Hard</b> filter to drill mistakes<br>5. Read <b>Library → Hazzard</b> for chapter content</div>
+<div style="font-size:10px;line-height:1.7">1. לחץ <b>Quiz</b> ← ענה על שאלות<br>2. עיין ב-<b>🔬 Distractor Autopsy</b> לניתוח AI<br>3. בלשונית <b>Track</b> ראה נקודות תורפה<br>4. סנן לפי <b>🔥 Hard</b> כדי לתרגל טעויות<br>5. קרא <b>Library → Hazzard</b> לתוכן הפרק</div>
 </div>
 <div style="text-align:center;font-size:9px;color:rgb(var(--fg3));line-height:1.5">
 صدقة جارية الى من نحب<br>Ceaseless Charity — To the People That We Love<br><br>
