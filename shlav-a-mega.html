@@ -124,6 +124,15 @@ body.study .badge-info    {background:#1e2a3d;color:#a0c8f0}
 /* ── Reduced motion (respect OS setting globally) ── */
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;}}
 
+
+/* Dark/study fixes for hardcoded-light inline styles */
+body.dark [style*="background:#fef2f2"][style*="color:#991b1b"]{background:#450a0a!important;color:#fca5a5!important}
+body.dark [style*="background:#f5f3ff"]{background:#2e1065!important;color:#c4b5fd!important}
+body.dark [style*="background:#ede9fe"]{background:#2e1065!important;color:#c4b5fd!important}
+body.study [style*="background:#fef2f2"]{background:#3d2a12!important;color:#c48a3a!important}
+body.study [style*="background:#f5f3ff"]{background:#2a1e0d!important;color:#e8d5b0!important}
+body.study [style*="background:#ede9fe"]{background:#2a1e0d!important;color:#e8d5b0!important}
+
 /* ──── end Clinical Kit ──── */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--sky:59 130 246;--em:16 185 129;--sl8:30 41 59;--red:239 68 68;--amb:245 158 11;
@@ -5200,7 +5209,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.78';
+const APP_VERSION='9.79';
 const CHANGELOG={
 '9.78':['🐛 תיקון קריטי: פריסת post-answer ב-flex-direction:column — כפתורי Why-wrong/Difficulty/Hazzard/Harrison לא נדחסים יותר לעמודה של תו אחד','🗺️ NOTES_BY_TI map: הסבר הנושא הנכון מוצג אחרי תשובה (היה לפעמים לא מתאים לנושא)','📏 כפתורי Why-wrong ו-Difficulty: 40px min-height, 11px font — ניתנים ללחיצה','🔤 גופן הגוף כעת Heebo-first (היה Inter) — רנדור עברי איכותי יותר ב-iOS/Android','🍎 iOS status bar: black-translucent (היה default) — קריא על הכותרת הכהה','🚫 הפרומפט "How sure are you" הוסר — לא חוסם יותר את זרימת המענה'],
 '9.77':['🎨 Design: new token layer — amber/violet skin via data-skin="geriatrics"','🔤 Self-hosted Heebo + Inter fonts (removed Google Fonts dependency, offline-ready)','🛡️ CSP tightened: style-src and font-src now self-only','♿ Respects prefers-reduced-motion globally'],
