@@ -1396,18 +1396,18 @@ function renderOnCall(){
   if(topic)h+=`<div style="font-size:10px;background:rgb(var(--green-bg));color:rgb(var(--green-fg));padding:3px 10px;border-radius:20px;display:inline-block;align-self:flex-start;font-weight:600">${topic}</div>`;
   // Question card - large text
   h+=`<div style="background:rgb(var(--card-bg));border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);flex:1;cursor:${flipRevealed?'default':'pointer'}" ${flipRevealed?'':'onclick="flipCard()" role="button" tabindex="0" aria-label="Flip card to reveal answer"'}>
-    <div style="font-size:16px;line-height:1.6;font-weight:500;direction:rtl;text-align:right;margin-bottom:${flipRevealed?'16px':'0'}">${q.q}</div>`;
+    <div style="font-size:16px;line-height:1.6;font-weight:500;text-align:right;margin-bottom:${flipRevealed?'16px':'0'}" dir="${heDir(q.q)}">${q.q}</div>`;
   if(!flipRevealed){
     h+=`<div style="text-align:center;margin-top:20px;color:rgb(var(--fg3));font-size:13px">👆 tap to reveal answer</div>`;
   } else {
     // Show correct answer prominently
     h+=`<div style="background:#dcfce7;border-radius:12px;padding:14px;margin-bottom:12px">
       <div style="font-size:10px;color:rgb(var(--green-fg));font-weight:700;margin-bottom:6px">✓ CORRECT ANSWER</div>
-      <div style="font-size:14px;font-weight:600;direction:rtl;text-align:right">${correct}</div>
+      <div style="font-size:14px;font-weight:600;text-align:right" dir="${heDir(correct)}">${correct}</div>
     </div>`;
     // Explanation if available
     const ex=_exCache&&_exCache[qIdx];
-    if(ex){h+=`<div style="font-size:12px;color:rgb(var(--fg2));line-height:1.7;direction:rtl;text-align:right;border-top:1px solid #e2e8f0;padding-top:10px">${ex}</div>`;}
+    if(ex){h+=`<div style="font-size:12px;color:rgb(var(--fg2));line-height:1.7;text-align:right;border-top:1px solid #e2e8f0;padding-top:10px;unicode-bidi:plaintext" dir="${heDir(ex)}">${ex}</div>`;}
     else{h+=`<button onclick="runExplainOnCall(${qIdx})" id="oc-exp-${qIdx}" style="font-size:11px;padding:5px 12px;background:rgb(var(--blue-bg));color:#3b82f6;border:none;border-radius:8px;cursor:pointer;margin-bottom:8px">🤖 הסבר AI</button><div id="oc-exp-box-${qIdx}"></div>`;}
   }
   h+=`</div>`;
@@ -1430,7 +1430,7 @@ async function runExplainOnCall(qIdx){
   try{
     const txt=await callAI([{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה. עגן בתשובה הנכונה. שאלה: '+q.q+'\nתשובה נכונה: '+correct}],400,'sonnet');
     _exCache[qIdx]=txt;try{localStorage.setItem('samega_ex',JSON.stringify(_exCache));}catch(e){}
-    box.innerHTML='<div style="font-size:12px;color:rgb(var(--fg2));line-height:1.7;direction:rtl;text-align:right;margin-top:8px">'+sanitize(txt)+'</div>';
+    box.innerHTML='<div style="font-size:12px;color:rgb(var(--fg2));line-height:1.7;text-align:right;margin-top:8px;unicode-bidi:plaintext" dir="'+heDir(txt)+'">'+sanitize(txt)+'</div>';
     btn.remove();
   }catch(e){btn.textContent='🤖 הסבר AI';btn.disabled=false;}
 }
@@ -1546,7 +1546,7 @@ function renderExplainBox(qIdx){
   if(!ex)return;
   if(ex.err){container.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px 0">⚠️ '+sanitize(ex.err)+'</div>';return;}
   const _isFlagged=(S.flagged||{})[qIdx];
-  container.innerHTML='<div class="explain-box" style="margin-top:8px;padding:10px 12px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--green-fg));direction:rtl;text-align:right"><div style="font-weight:700;margin-bottom:4px">🤖 הסבר AI</div><div>'+sanitize(ex.text)+'</div></div>'+
+  container.innerHTML='<div class="explain-box" style="margin-top:8px;padding:10px 12px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--green-fg));text-align:right;unicode-bidi:plaintext" dir="'+heDir(ex.text)+'"><div style="font-weight:700;margin-bottom:4px">🤖 הסבר AI</div><div dir="'+heDir(ex.text)+'">'+sanitize(ex.text)+'</div></div>'+
     '<button onclick="toggleFlagExplain('+sanitize(String(qIdx))+')" style="font-size:9px;padding:2px 8px;margin-top:3px;background:rgb(var('+(_isFlagged?'--red-bg':'--bg2')+'));color:rgb(var('+(_isFlagged?'--red-fg':'--fg3')+'));border:1px solid rgb(var('+(_isFlagged?'--red-brd':'--brd')+'));border-radius:6px;cursor:pointer">'+(_isFlagged?'⚑ Flagged — verify':'⚐ Flag as unreliable')+'</button>';
 }
 async function explainWithAI(qIdx){
@@ -2038,7 +2038,7 @@ if(timedMode&&!ans){
 </div>`;
 }
 const _isFlagQ=(S.flagged||{})[pool[qi]];
-h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px">${_isFlagQ?'<span style="color:#dc2626;font-size:11px" title="Explanation flagged — verify">⚑ </span>':''  }${q.q}</p>`;
+h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="${heDir(q.q)}">${_isFlagQ?'<span style="color:#dc2626;font-size:11px" title="Explanation flagged — verify">⚑ </span>':''  }${q.q}</p>`;
 if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy"><button onclick="event.stopPropagation();removeQImage(${pool[qi]})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer">✕</button>${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:right;line-height:1.4" title="Stem relies entirely on the image — explanation was auto-generated without image context and may be incorrect">⚠️ שאלה תלוית-תמונה: ההסבר נוצר ללא ראיית התמונה ועלול להיות שגוי. אמת מול מקור.</div>':''}</div>`;}
 if(!q.img&&!examMode){h+=`<div style="margin-bottom:10px"><button onclick="uploadQImage(${pool[qi]})" style="font-size:10px;padding:4px 12px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">📷 Attach Image</button><span id="img-status-${pool[qi]}" style="font-size:10px;color:rgb(var(--fg3));margin-left:6px"></span></div>`;}
 q.o.forEach((o,i)=>{
@@ -2084,7 +2084,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <span style="color:rgb(var(--fg3));font-size:10px">${qi+1}/${pool.length}</span>
 </div></div>`;
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="${heDir(q.q)}">${q.q}</p>`;
-if(S.qnotes&&S.qnotes[pool[qi]]){h+=`<div style="margin:0 0 12px;padding:8px 10px;background:rgb(var(--yellow-bg));border-right:3px solid rgb(var(--yellow-fg));border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg));direction:rtl;text-align:right;cursor:pointer" onclick="toggleQNote()" title="Click to edit">📝 ${sanitize(S.qnotes[pool[qi]])}</div>`;}
+if(S.qnotes&&S.qnotes[pool[qi]]){h+=`<div style="margin:0 0 12px;padding:8px 10px;background:rgb(var(--yellow-bg));border-right:3px solid rgb(var(--yellow-fg));border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg));text-align:right;cursor:pointer" dir="${heDir(S.qnotes[pool[qi]])}" onclick="toggleQNote()" title="Click to edit">📝 ${sanitize(S.qnotes[pool[qi]])}</div>`;}
 if(q.img){h+=`<div style="margin-bottom:14px;text-align:center"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy">${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:right;line-height:1.4">⚠️ שאלה תלוית-תמונה: ההסבר עלול להיות שגוי.</div>':''}</div>`;}
 const _shuf=getOptShuffle(pool[qi],q);
 _shuf.forEach((origI,dispJ)=>{
@@ -2094,7 +2094,7 @@ if(ans){cls+=' lk';if(!examMode){if(origI===q.c)cls+=' ok';else if(origI===sel)c
 else if(origI===sel)cls+=' sel';
 const blurCls=blindRecall&&!ans&&origI!==sel?' qo-blur':'';
 const autopsyCls=(autopsyMode&&ans&&!examMode&&origI!==q.c&&origI===autopsyDistractor)?' distractor-highlight':'';
-h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${origI})" aria-label="Option ${origI+1}"><span>${sanitize(o)}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
+h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${origI})" aria-label="Option ${origI+1}" dir="${heDir(o)}"><span>${sanitize(o)}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
 });
 return h;
 }
@@ -2189,7 +2189,7 @@ if(teachBackState.feedback){
   const axes=[['mechanism','מנגנון'],['criteria','קריטריון'],['exception','חריג']];
   const axesDots=axes.map(([k,l])=>{const v=teachBackState[k];return v===undefined?'':`<span style="font-size:10px;padding:1px 6px;border-radius:10px;background:${v?'#dcfce7':'#fee2e2'};color:${v?'#166534':'#991b1b'}">${l} ${v?'✓':'✗'}</span>`;}).join(' ');
   if(axesDots)h+='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">'+axesDots+'</div>';
-  h+='<div style="font-size:11px;line-height:1.7;direction:rtl;text-align:right">'+sanitize(teachBackState.feedback)+'</div>';
+  h+='<div style="font-size:11px;line-height:1.7;text-align:right;unicode-bidi:plaintext" dir="'+heDir(teachBackState.feedback)+'">'+sanitize(teachBackState.feedback)+'</div>';
 }
 h+='</div>';
 }
@@ -2241,10 +2241,10 @@ h+=`</div>`;
 }
 // Built-in explanation (every question has one)
 if(ans&&!examMode&&q.e){
-h+=`<div style="margin-top:8px;padding:10px 12px;background:rgb(var(--blue-bg));border:1px solid rgb(var(--blue-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--blue-fg));direction:rtl;text-align:right">`;
+h+=`<div style="margin-top:8px;padding:10px 12px;background:rgb(var(--blue-bg));border:1px solid rgb(var(--blue-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--blue-fg));text-align:right" dir="${heDir(q.e)}">`;
 h+=`<div style="font-weight:700;margin-bottom:4px;font-size:10px">📝 הסבר</div>`;
 const _shuf=getOptShuffle(pool[qi],q);
-h+=`<div>${sanitize(remapExplanationLetters(q.e,_shuf)).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
+h+=`<div dir="${heDir(q.e)}" style="unicode-bidi:plaintext">${sanitize(remapExplanationLetters(q.e,_shuf)).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
 h+=`</div>`;
 }
 // AI Explain button
@@ -2290,7 +2290,7 @@ if(_dist){
   });
 }else if(_aiTxt){
   // Legacy on-demand AI autopsy cache (already sanitized+formatted by formatAutopsy)
-  h+=`<div style="font-size:11px;line-height:1.7;color:rgb(var(--fg));unicode-bidi:plaintext" dir="rtl">${_aiTxt}</div>`;
+  h+=`<div style="font-size:11px;line-height:1.7;color:rgb(var(--fg));unicode-bidi:plaintext" dir="${heDir(_aiTxt)}">${_aiTxt}</div>`;
 }else{
   h+=`<div style="font-size:11px;color:rgb(var(--fg3));padding:4px 0">⏳ טוען הסבר על מסיחים...</div>`;
   setTimeout(()=>{ if(!_exCache['autopsy_'+_qIdx])aiAutopsy(_qIdx); },100);
@@ -2851,7 +2851,7 @@ Format as clean bullet points. Be concise and high-yield.`;
     const txt=await callAI([{role:'user',content:prompt}],800,'sonnet');
     box.innerHTML=`<div style="margin-top:12px;padding:14px;background:rgb(var(--green-bg));border-radius:10px;border-left:4px solid #059669">
 <div style="font-weight:700;font-size:12px;color:rgb(var(--green-fg));margin-bottom:8px">📝 Board Summary — Ch ${sanitize(String(chNum))}: ${sanitize(chTitle)}</div>
-<div style="font-size:11px;line-height:1.8;direction:rtl;text-align:right;white-space:pre-wrap">${sanitize(txt)}</div>
+<div style="font-size:11px;line-height:1.8;text-align:right;white-space:pre-wrap;unicode-bidi:plaintext" dir="${heDir(txt)}">${sanitize(txt)}</div>
 </div>`;
   }catch(e){box.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px">⚠️ Failed: '+sanitize(e.message)+'</div>';}
 }
@@ -3036,12 +3036,12 @@ c = 0-based index of correct answer. No markdown, no preamble.`;
     h+='<div style="font-weight:700;font-size:12px;color:#7c3aed;margin-bottom:10px">🧠 AI-Generated Questions — Ch '+sanitize(String(chNum))+': '+sanitize(chTitle)+'</div>';
     qs.forEach((q,qi)=>{
       h+=`<div style="margin-bottom:14px;padding:12px;background:#faf5ff;border-radius:10px;border-left:3px solid #7c3aed">`;
-      h+=`<div style="font-size:12px;font-weight:600;margin-bottom:8px">${qi+1}. ${sanitize(q.q)}</div>`;
+      h+=`<div style="font-size:12px;font-weight:600;margin-bottom:8px" dir="${heDir(q.q)}">${qi+1}. ${sanitize(q.q)}</div>`;
       q.o.forEach((opt,oi)=>{
         const isCorrect=oi===q.c;
         h+=`<div style="font-size:11px;padding:4px 8px;margin-bottom:3px;border-radius:6px;background:${isCorrect?'#dcfce7':'#f8fafc'};color:${isCorrect?'#166534':'#475569'};font-weight:${isCorrect?'700':'400'}">${sanitize(opt)}${isCorrect?' ✓':''}</div>`;
       });
-      if(q.e)h+=`<div style="font-size:10px;color:#6d28d9;margin-top:8px;direction:rtl;text-align:right;line-height:1.6;border-top:1px solid #e9d5ff;padding-top:6px">💡 ${sanitize(q.e)}</div>`;
+      if(q.e)h+=`<div style="font-size:10px;color:#6d28d9;margin-top:8px;text-align:right;line-height:1.6;border-top:1px solid #e9d5ff;padding-top:6px;unicode-bidi:plaintext" dir="${heDir(q.e)}">💡 ${sanitize(q.e)}</div>`;
       h+='</div>';
     });
     // Stash generated questions under a random id so the Add button can
@@ -4553,14 +4553,14 @@ var qs=_byTopic[topic];
 h+='<div style="margin-bottom:6px">';
 h+='<div onclick="S[\''+fk+'\']=' + '!S[\''+fk+'\'];save();render()" style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgb(var(--bg2));border-radius:8px;cursor:pointer;font-size:11px;font-weight:600" role="button" tabindex="0" aria-expanded="'+(open?'true':'false')+'" aria-label="'+topic+'">';
 h+='<span>📁 '+topic+' ('+qs.length+')</span><span>'+(open?'▼':'▶')+'</span></div>';
-if(open){qs.forEach(function(e){h+='<div style="padding:6px 12px;font-size:10px;border-bottom:1px solid rgb(var(--brd))" class="heb" dir="rtl">'+e.q.q.substring(0,90)+'...</div>';});}
+if(open){qs.forEach(function(e){h+='<div style="padding:6px 12px;font-size:10px;border-bottom:1px solid rgb(var(--brd))" class="heb" dir="'+heDir(e.q.q)+'">'+e.q.q.substring(0,90)+'...</div>';});}
 h+='</div>';
 });
 h+='</div>';
 }else{
 h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🔖 Bookmarked (${bkCount})</div>`;
 Object.entries(S.bk).filter(([,v])=>v).slice(0,10).forEach(([k])=>{
-const q=QZ[k];if(q)h+=`<div style="font-size:10px;padding:6px 0;border-bottom:1px solid #f8fafc" class="heb" dir="rtl">${q.q.substring(0,80)}...</div>`;
+const q=QZ[k];if(q)h+=`<div style="font-size:10px;padding:6px 0;border-bottom:1px solid #f8fafc" class="heb" dir="${heDir(q.q)}">${q.q.substring(0,80)}...</div>`;
 });
 h+=`</div>`;
 }
@@ -4716,7 +4716,7 @@ h+=`<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
 <input class="search-box" style="margin-bottom:0;flex:1" placeholder="Type to search..." oninput="srchQ=this.value;render()" value="${srchQ}" id="srchi">
 <button class="voice-btn${voiceListening?' listening':''}" onclick="startVoiceParser()" aria-label="${voiceListening?'Stop voice input':'Start voice input'}">${voiceListening?'🔴 Listening...':'🎤 Voice'}</button>
 </div>`;
-if(voiceTranscript&&srchQ){h+=`<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:8px;padding:6px 10px;background:rgb(var(--bg2));border-radius:8px" dir="auto">🎤 "${voiceTranscript}"</div>`;}
+if(voiceTranscript&&srchQ){h+=`<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:8px;padding:6px 10px;background:rgb(var(--bg2));border-radius:8px" dir="${heDir(voiceTranscript)}">🎤 "${voiceTranscript}"</div>`;}
 if(srchQ.length>=2){
 const q=srchQ.toLowerCase();
 // Search questions
@@ -4738,7 +4738,7 @@ dRes.forEach(d=>{h+=`<div class="card" style="padding:10px"><span style="font-we
 }
 if(qRes.length){
 h+=`<div style="font-weight:700;font-size:12px;margin:8px 0 6px">📝 Questions (${Math.min(qRes.length,15)} shown)</div>`;
-qRes.slice(0,15).forEach(i=>{h+=`<div class="card heb" dir="rtl" style="padding:10px;font-size:11px;line-height:1.5"><span class="badge" style="background:${QZ[i].t==='Hazzard'?'#faf5ff':'#eff6ff'};color:${QZ[i].t==='Hazzard'?'#7c3aed':'#1d4ed8'}">${QZ[i].t==='Hazzard'?'🤖 AI':'📝 '+QZ[i].t}</span> ${QZ[i].q.substring(0,120)}...</div>`;});
+qRes.slice(0,15).forEach(i=>{h+=`<div class="card heb" dir="${heDir(QZ[i].q)}" style="padding:10px;font-size:11px;line-height:1.5"><span class="badge" style="background:${QZ[i].t==='Hazzard'?'#faf5ff':'#eff6ff'};color:${QZ[i].t==='Hazzard'?'#7c3aed':'#1d4ed8'}">${QZ[i].t==='Hazzard'?'🤖 AI':'📝 '+QZ[i].t}</span> ${QZ[i].q.substring(0,120)}...</div>`;});
 }
 }
 return h;
@@ -5022,8 +5022,8 @@ function renderNotes(){
       if(!q)return;
       const preview=(q.q||'').slice(0,80);
       h+=`<div style="padding:10px;background:rgb(var(--card-bg));border:1px solid rgb(var(--brd));border-radius:10px">
-        <div style="font-size:10px;color:rgb(var(--fg3));margin-bottom:4px;direction:rtl;text-align:right">${sanitize(preview)}${q.q.length>80?'…':''}</div>
-        <div style="font-size:11px;color:rgb(var(--fg));direction:rtl;text-align:right;line-height:1.6;margin-bottom:6px;white-space:pre-wrap">${sanitize(txt)}</div>
+        <div style="font-size:10px;color:rgb(var(--fg3));margin-bottom:4px;text-align:right" dir="${heDir(preview)}">${sanitize(preview)}${q.q.length>80?'…':''}</div>
+        <div style="font-size:11px;color:rgb(var(--fg));text-align:right;line-height:1.6;margin-bottom:6px;white-space:pre-wrap;unicode-bidi:plaintext" dir="${heDir(txt)}">${sanitize(txt)}</div>
         <div style="display:flex;gap:6px">
           <button class="btn" onclick="tab='quiz';qi=pool.indexOf(${idx});if(qi<0){filt='all';buildPool();qi=pool.indexOf(${idx});if(qi<0)qi=0;}sel=null;ans=false;render()" style="font-size:10px;padding:6px 10px;min-height:32px;background:var(--app-primary);color:var(--app-on-primary)">↵ עבור לשאלה</button>
           <button class="btn" onclick="delete S.qnotes['${idx}'];save();render()" style="font-size:10px;padding:6px 10px;min-height:32px;background:rgb(var(--red-bg));color:rgb(var(--red-fg))">🗑️ מחק</button>
@@ -5367,8 +5367,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.89';
+const APP_VERSION='9.90';
 const CHANGELOG={
+'9.90':['↔️ תיקון BIDI סופי: heDir מיושם בכל מקום שמרנדר תוכן עברית/אנגלית מעורב — flashcards, אופציות, הסברים, הודעות chat, הערות, voice transcript, teach-back, תוצאות חיפוש. גם autopsy cards עם שמות אנגליים לא מתהפכים עוד.'],
 '9.89':['↔️ תיקון BIDI מקיף: כיוון טקסט מחושב לפי יחס עברית/אנגלית (heDir) במקום dir="auto" שהופך פסקאות עברית המתחילות ב-IgG4/MEN1/CT לצד שגוי. חל על שאלה, אופציות, autopsy, preview של שאלות AI-generated.','🔍 Q267 תוקן (דליות, לא BCC/SCC) + תג קרדיווסקולר במקום Polypharmacy.','⚠️ 10 שאלות תלויות-תמונה מסומנות כעת עם באדג\' אמבר: ההסבר עשוי להיות שגוי, אמת מול מקור.','⏱️ AI verify verdict נשאר על המסך (היה נעלם אחרי 8 שניות בגלל render()).'],
 '9.88':['⚡ FSRS כעת מודע לתאריך מבחן: לאחר הגדרת תאריך, אינטרוולים נחתכים לפי קשיי הכרטיס (חלש 30% / רגיל 60% / חזק 85% מהימים שנותרו) כך שכל כרטיס מקבל לפחות חזרה אחת לפני המבחן.','🔁 Replay wrong answers — מבחן הסימולציה שומר את ה-IDs של התשובות השגויות; כפתור חזרה עליהן במודאל התוצאה ובלוח היומי.','☁️ Cloud backup כולל כעת mock history ו-sessions — שחזור בין מכשירים שומר את מגמת המבחנים.'],
 '9.87':['✎ אייקון הערה ו-★ אייקון סימניה ברורים יותר (עיגולים צבעוניים)'],
