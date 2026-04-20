@@ -5,6 +5,5 @@ config.json
 exp_batch_*.json
 node_modules/
 coverage/
--e 
 generated-*.json
 *.progress.json
