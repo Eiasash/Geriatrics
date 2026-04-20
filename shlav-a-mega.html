@@ -1508,6 +1508,9 @@ else render();
 function toast(msg,type='info',ms=3500){try{const c={info:'#0ea5e9',success:'#059669',error:'#dc2626',warn:'#d97706'}[type]||'#0ea5e9';const d=document.createElement('div');d.setAttribute('role','status');d.setAttribute('aria-live','polite');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(70px + env(safe-area-inset-bottom));background:'+c+';color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:600;font-family:Heebo,Inter,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:10000;max-width:90vw;text-align:center;direction:auto;white-space:pre-wrap;line-height:1.5';d.textContent=msg;document.body.appendChild(d);setTimeout(()=>{d.style.transition='opacity .3s';d.style.opacity='0';setTimeout(()=>d.remove(),300);},ms);}catch(e){console.warn('toast failed',e,msg);}}
 function confirmModal(msg){return new Promise(res=>{const h='<div id="cfrm" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:10001;padding:16px"><div style="background:rgb(var(--card-bg));color:rgb(var(--fg));border-radius:14px;max-width:360px;margin:20vh auto;padding:20px;font-family:Heebo,Inter,sans-serif;text-align:center"><div style="font-size:13px;line-height:1.6;margin-bottom:16px;white-space:pre-wrap">'+sanitize(msg)+'</div><div style="display:flex;gap:8px"><button id="cfrmY" style="flex:1;padding:10px;background:var(--app-primary);color:var(--app-on-primary);border:none;border-radius:10px;font-weight:700;cursor:pointer">OK</button><button id="cfrmN" style="flex:1;padding:10px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:none;border-radius:10px;font-weight:700;cursor:pointer">Cancel</button></div></div></div>';const d=document.createElement('div');d.innerHTML=h;document.body.appendChild(d.firstChild);const cl=v=>{const m=document.getElementById('cfrm');if(m)m.remove();res(v);};document.getElementById('cfrmY').onclick=()=>cl(true);document.getElementById('cfrmN').onclick=()=>cl(false);});}
 function sanitize(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+// heDir — pick direction by Hebrew ratio, not first-strong. dir="auto" flips the whole
+// paragraph to LTR when starting with IgG4-RD/MEN1/CT, making Hebrew-majority text render backwards.
+function heDir(s){s=String(s||'');if(!s)return'auto';let he=0,en=0;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);if(c>=0x0590&&c<=0x05FF)he++;else if((c>=0x41&&c<=0x5A)||(c>=0x61&&c<=0x7A))en++;}const t=he+en;if(!t)return'auto';return he/t>=0.25?'rtl':'ltr';}
 function getApiKey(){return localStorage.getItem('samega_apikey')||'';}
 function setApiKey(k){if(k)localStorage.setItem('samega_apikey',k.trim());else localStorage.removeItem('samega_apikey');}
 // ===== TEACH-BACK =====
@@ -2080,7 +2083,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <button onclick="shareQ()" id="shbtn" class="share-btn" title="Share" aria-label="Share question">📋</button><button onclick="toggleQNote()" style="font-size:14px;width:34px;height:34px;min-height:34px;background:${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-bg))':'rgb(var(--bg2))'};color:${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-fg))':'rgb(var(--fg2))'};border:1px solid ${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-fg))':'rgb(var(--brd))'};border-radius:50%;cursor:pointer;display:inline-flex;align-items:center;justify-content:center" title="Note for this question" aria-label="Note for this question">✎</button><button onclick="toggleBk()" style="font-size:14px;width:34px;height:34px;min-height:34px;background:${bk?'rgb(var(--yellow-bg))':'rgb(var(--bg2))'};color:${bk?'rgb(var(--yellow-fg))':'rgb(var(--fg2))'};border:1px solid ${bk?'rgb(var(--yellow-fg))':'rgb(var(--brd))'};border-radius:50%;cursor:pointer;display:inline-flex;align-items:center;justify-content:center" title="Bookmark" aria-label="${bk?'Remove bookmark':'Bookmark question'}">${bk?'★':'☆'}</button>
 <span style="color:rgb(var(--fg3));font-size:10px">${qi+1}/${pool.length}</span>
 </div></div>`;
-h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="auto">${q.q}</p>`;
+h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="${heDir(q.q)}">${q.q}</p>`;
 if(S.qnotes&&S.qnotes[pool[qi]]){h+=`<div style="margin:0 0 12px;padding:8px 10px;background:rgb(var(--yellow-bg));border-right:3px solid rgb(var(--yellow-fg));border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg));direction:rtl;text-align:right;cursor:pointer" onclick="toggleQNote()" title="Click to edit">📝 ${sanitize(S.qnotes[pool[qi]])}</div>`;}
 if(q.img){h+=`<div style="margin-bottom:14px;text-align:center"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy">${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:right;line-height:1.4">⚠️ שאלה תלוית-תמונה: ההסבר עלול להיות שגוי.</div>':''}</div>`;}
 const _shuf=getOptShuffle(pool[qi],q);
@@ -2272,8 +2275,8 @@ if(_dist){
     const _brd=_isCorrect?'#86efac':(_isUserPick?'#fca5a5':'rgb(var(--brd))');
     const _mark=_isCorrect?'<b style="color:#059669">✓</b>':'<b style="color:#dc2626">✗</b>';
     const _pickTag=(_isUserPick&&!_isCorrect)?' <span style="color:rgb(var(--fg3));font-size:9px">(הבחירה שלך)</span>':'';
-    h+=`<div style="margin-bottom:6px;padding:8px 10px;background:${_bg};border:1px solid ${_brd};border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg))" dir="auto">`;
-    h+=`<div style="font-weight:700;margin-bottom:3px">${_mark} ${sanitize(opt)}${_pickTag}</div>`;
+    h+=`<div style="margin-bottom:6px;padding:8px 10px;background:${_bg};border:1px solid ${_brd};border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg))" dir="${heDir((_rationale||'')+opt)}">`;
+    h+=`<div style="font-weight:700;margin-bottom:3px">${_mark} <bdi>${sanitize(opt)}</bdi>${_pickTag}</div>`;
     if(_rationale){
       // sanitize() output contains no HTML; "Wrong because:" / "Would be correct if:" are literals
       const _formatted=sanitize(_rationale)
@@ -2287,7 +2290,7 @@ if(_dist){
   });
 }else if(_aiTxt){
   // Legacy on-demand AI autopsy cache (already sanitized+formatted by formatAutopsy)
-  h+=`<div style="font-size:11px;line-height:1.7;color:rgb(var(--fg))" dir="auto">${_aiTxt}</div>`;
+  h+=`<div style="font-size:11px;line-height:1.7;color:rgb(var(--fg));unicode-bidi:plaintext" dir="rtl">${_aiTxt}</div>`;
 }else{
   h+=`<div style="font-size:11px;color:rgb(var(--fg3));padding:4px 0">⏳ טוען הסבר על מסיחים...</div>`;
   setTimeout(()=>{ if(!_exCache['autopsy_'+_qIdx])aiAutopsy(_qIdx); },100);
@@ -2893,11 +2896,11 @@ html+='<div style="font-size:13px;font-weight:700;margin-bottom:8px;color:#0ea5e
 html+='<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:12px">Review and approve questions to add to your bank.</div>';
 questions.forEach((gq,i)=>{
   html+='<div style="padding:10px;margin-bottom:8px;background:rgb(var(--bg2));border-radius:10px;border:1px solid rgb(var(--brd))">';
-  html+='<div style="font-size:11px;font-weight:600;margin-bottom:6px;line-height:1.5" dir="auto">'+(i+1)+'. '+sanitize(gq.q)+'</div>';
+  html+='<div style="font-size:11px;font-weight:600;margin-bottom:6px;line-height:1.5" dir="'+heDir(gq.q)+'">'+(i+1)+'. '+sanitize(gq.q)+'</div>';
   gq.o.forEach((opt,oi)=>{
-    html+='<div style="font-size:10px;padding:2px 0;color:'+(oi===gq.c?'#059669':'#64748b')+'" dir="auto">'+(oi===gq.c?'✅':'○')+' '+sanitize(opt)+'</div>';
+    html+='<div style="font-size:10px;padding:2px 0;color:'+(oi===gq.c?'#059669':'#64748b')+'" dir="'+heDir(opt)+'">'+(oi===gq.c?'✅':'○')+' '+sanitize(opt)+'</div>';
   });
-  html+='<div style="font-size:9px;color:rgb(var(--fg2));margin-top:4px;line-height:1.5" dir="auto">'+sanitize(gq.e)+'</div>';
+  html+='<div style="font-size:9px;color:rgb(var(--fg2));margin-top:4px;line-height:1.5;unicode-bidi:plaintext" dir="'+heDir(gq.e)+'">'+sanitize(gq.e)+'</div>';
   html+='<button onclick="approveGeneratedQ('+JSON.stringify(gq).replace(/"/g,'&quot;')+')" style="margin-top:6px;font-size:10px;padding:4px 12px;background:#059669;color:#fff;border:none;border-radius:6px;cursor:pointer">✅ Add to Bank</button>';
   html+='</div>';
 });
@@ -5364,8 +5367,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.88';
+const APP_VERSION='9.89';
 const CHANGELOG={
+'9.89':['↔️ תיקון BIDI מקיף: כיוון טקסט מחושב לפי יחס עברית/אנגלית (heDir) במקום dir="auto" שהופך פסקאות עברית המתחילות ב-IgG4/MEN1/CT לצד שגוי. חל על שאלה, אופציות, autopsy, preview של שאלות AI-generated.','🔍 Q267 תוקן (דליות, לא BCC/SCC) + תג קרדיווסקולר במקום Polypharmacy.','⚠️ 10 שאלות תלויות-תמונה מסומנות כעת עם באדג\' אמבר: ההסבר עשוי להיות שגוי, אמת מול מקור.','⏱️ AI verify verdict נשאר על המסך (היה נעלם אחרי 8 שניות בגלל render()).'],
 '9.88':['⚡ FSRS כעת מודע לתאריך מבחן: לאחר הגדרת תאריך, אינטרוולים נחתכים לפי קשיי הכרטיס (חלש 30% / רגיל 60% / חזק 85% מהימים שנותרו) כך שכל כרטיס מקבל לפחות חזרה אחת לפני המבחן.','🔁 Replay wrong answers — מבחן הסימולציה שומר את ה-IDs של התשובות השגויות; כפתור חזרה עליהן במודאל התוצאה ובלוח היומי.','☁️ Cloud backup כולל כעת mock history ו-sessions — שחזור בין מכשירים שומר את מגמת המבחנים.'],
 '9.87':['✎ אייקון הערה ו-★ אייקון סימניה ברורים יותר (עיגולים צבעוניים)'],
 '9.85':['📝 הערות אישיות — כפתור 📝 בכל שאלה פותח הערה פרטית','📓 פנקס כללי ב-More → Notes עם ייצוא לקובץ','🔖 רשימה של כל ההערות עם כפתור מעבר לשאלה'],
