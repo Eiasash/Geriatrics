@@ -506,7 +506,9 @@ const LS='samega';
     try{const raw=localStorage.getItem(k);if(!raw)continue;const s=JSON.parse(raw);if(!s||(typeof s==='object'&&s.__tagMigrationV1))continue;walk(s);if(typeof s==='object'&&!Array.isArray(s))s.__tagMigrationV1=true;localStorage.setItem(k,JSON.stringify(s));}catch(e){/* corrupt — skip */}
   }
 })();
-let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,chat:[],studyMode:false,sp:{},spOpen:false};
+let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,chat:[],studyMode:false,sp:{},spOpen:false,qnotes:{},gnotes:''};
+if(!S.qnotes)S.qnotes={};
+if(typeof S.gnotes!=='string')S.gnotes='';
 if(!S.chat)S.chat=[];
 if(S.studyMode===undefined)S.studyMode=false;
 if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;
@@ -1636,6 +1638,8 @@ teachBackState={score:null,feedback:'⚠️ '+(e.message==='no_key'?'AI unavaila
 render();
 }
 function toggleBk(){S.bk[pool[qi]]=!S.bk[pool[qi]];save();render();}
+function toggleQNote(){const box=document.getElementById('qnote-box');if(box){box.remove();return;}const idx=pool[qi];const cur=(S.qnotes&&S.qnotes[idx])||'';const h=`<div id="qnote-box" style="margin:8px 0;padding:10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:10px"><div style="font-size:10px;font-weight:700;color:rgb(var(--fg2));margin-bottom:6px">📝 הערה לשאלה זו</div><textarea id="qnote-ta" dir="auto" placeholder="כתוב הערה אישית..." style="width:100%;min-height:70px;resize:vertical;font-family:Heebo,Inter,sans-serif;border:1px solid rgb(var(--brd));border-radius:8px;padding:8px;font-size:12px;background:rgb(var(--card-bg));color:rgb(var(--fg))">${sanitize(cur)}</textarea><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;font-size:11px;min-height:36px" onclick="saveQNote()">שמור</button><button class="btn" style="font-size:11px;min-height:36px;background:rgb(var(--red-bg));color:rgb(var(--red-fg))" onclick="S.qnotes[pool[qi]]='';delete S.qnotes[pool[qi]];save();toggleQNote();render()">מחק</button><button class="btn" style="font-size:11px;min-height:36px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd))" onclick="toggleQNote()">ביטול</button></div></div>`;const tgt=document.querySelector('.ct .card')||document.querySelector('.ct');if(tgt)tgt.insertAdjacentHTML('beforeend',h);setTimeout(()=>{const t=document.getElementById('qnote-ta');if(t)t.focus();},50);}
+function saveQNote(){const t=document.getElementById('qnote-ta');if(!t)return;const v=t.value.trim();if(v)S.qnotes[pool[qi]]=v;else delete S.qnotes[pool[qi]];save();toast('הערה נשמרה','success');toggleQNote();render();}
 
 // ===== EXAM MODE =====
 // Historical topic frequency weights (from 9 real exams, recency-weighted 2× for last 2)
@@ -2055,10 +2059,11 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}${isExamTrap(pool[qi])?'<span title="Exam trap — many people pick the same wrong answer" style="font-size:12px;cursor:default">🪤</span>':''}<span class="tag-year" style="background:${q.t==='Hazzard'?'#faf5ff':'#eff6ff'};color:${q.t==='Hazzard'?'#7c3aed':'#1d4ed8'};font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t==='Hazzard'?'🤖 AI — Hazzard\'s':'📝 '+q.t}</span>${topicName?`<span class="tag-topic" style="background:rgb(var(--green-bg));color:rgb(var(--green-fg));font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libSec='haz-pdf';render();" style="background:#fef3c7;color:rgb(var(--yellow-fg));font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open Hazzard PDFs">📕 ${ref.l}</span>`;return '';})()}</div>
 <div style="display:flex;align-items:center;gap:8px">
 <button onclick="speakQuestion()" class="speech-btn${isSpeaking?' speaking':''}" title="Read aloud" aria-label="Read question aloud">🔊</button>
-<button onclick="shareQ()" id="shbtn" class="share-btn" title="Share" aria-label="Share question">📋 שתף</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px" title="Bookmark" aria-label="${bk?'Remove bookmark':'Bookmark question'}">${bk?'🔖':'🏷️'}</button>
+<button onclick="shareQ()" id="shbtn" class="share-btn" title="Share" aria-label="Share question">📋 שתף</button><button onclick="toggleQNote()" style="font-size:16px;opacity:${(S.qnotes&&S.qnotes[pool[qi]])?.9:.35};min-height:44px;background:none;border:none;cursor:pointer" title="Note for this question" aria-label="Note for this question">📝</button><button onclick="toggleBk()" style="font-size:16px;opacity:${bk?.7:.3};min-height:44px;background:none;border:none;cursor:pointer" title="Bookmark" aria-label="${bk?'Remove bookmark':'Bookmark question'}">${bk?'🔖':'🏷️'}</button>
 <span style="color:rgb(var(--fg3));font-size:10px">${qi+1}/${pool.length}</span>
 </div></div>`;
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="auto">${q.q}</p>`;
+if(S.qnotes&&S.qnotes[pool[qi]]){h+=`<div style="margin:0 0 12px;padding:8px 10px;background:rgb(var(--yellow-bg));border-right:3px solid rgb(var(--yellow-fg));border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg));direction:rtl;text-align:right;cursor:pointer" onclick="toggleQNote()" title="Click to edit">📝 ${sanitize(S.qnotes[pool[qi]])}</div>`;}
 if(q.img){h+=`<div style="margin-bottom:14px;text-align:center"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy"></div>`;}
 const _shuf=getOptShuffle(pool[qi],q);
 _shuf.forEach((origI,dispJ)=>{
@@ -4971,6 +4976,43 @@ save();render();
 }
 
 // ===== FEATURE: FEEDBACK SYSTEM =====
+function renderNotes(){
+  const qnoteEntries=Object.entries(S.qnotes||{}).filter(([k,v])=>v&&v.trim());
+  let h='<div class="sec-t">📝 Notes</div><div class="sec-s">כתוב הערות אישיות ומחשבות ללימוד — נשמר אוטומטית בדפדפן</div>';
+  h+=`<div style="padding:12px;background:rgb(var(--yellow-bg));border:1px solid rgb(var(--yellow-brd));border-radius:12px;margin-bottom:12px">
+    <div style="font-size:11px;font-weight:700;color:rgb(var(--yellow-fg));margin-bottom:8px">📓 פנקס כללי</div>
+    <textarea id="gnotes-ta" dir="auto" placeholder="כתוב הערות, רשמים, פרלים מרפואה... הכל נשמר בדפדפן שלך."
+      style="width:100%;min-height:180px;resize:vertical;font-family:Heebo,Inter,sans-serif;border:1px solid rgb(var(--brd));border-radius:10px;padding:10px;font-size:12px;line-height:1.7;background:rgb(var(--card-bg));color:rgb(var(--fg))">${sanitize(S.gnotes||'')}</textarea>
+    <div style="display:flex;gap:6px;margin-top:8px;align-items:center">
+      <button class="btn btn-p" onclick="saveGNotes()" style="flex:1;font-size:11px;min-height:40px">💾 שמור</button>
+      <button class="btn" onclick="exportGNotes()" style="font-size:11px;min-height:40px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd))">📤 ייצא</button>
+      <span id="gnotes-status" style="font-size:10px;color:rgb(var(--fg3));margin-right:auto"></span>
+    </div>
+  </div>`;
+  h+=`<div class="sec-t" style="font-size:13px">🔖 הערות על שאלות (${qnoteEntries.length})</div>`;
+  if(!qnoteEntries.length){
+    h+='<div class="empty">אין הערות על שאלות עדיין. בעת מענה, לחץ על 📝 כדי להוסיף הערה.</div>';
+  } else {
+    h+='<div style="display:flex;flex-direction:column;gap:8px">';
+    qnoteEntries.forEach(([idx,txt])=>{
+      const q=QZ[idx];
+      if(!q)return;
+      const preview=(q.q||'').slice(0,80);
+      h+=`<div style="padding:10px;background:rgb(var(--card-bg));border:1px solid rgb(var(--brd));border-radius:10px">
+        <div style="font-size:10px;color:rgb(var(--fg3));margin-bottom:4px;direction:rtl;text-align:right">${sanitize(preview)}${q.q.length>80?'…':''}</div>
+        <div style="font-size:11px;color:rgb(var(--fg));direction:rtl;text-align:right;line-height:1.6;margin-bottom:6px;white-space:pre-wrap">${sanitize(txt)}</div>
+        <div style="display:flex;gap:6px">
+          <button class="btn" onclick="tab='quiz';qi=pool.indexOf(${idx});if(qi<0){filt='all';buildPool();qi=pool.indexOf(${idx});if(qi<0)qi=0;}sel=null;ans=false;render()" style="font-size:10px;padding:6px 10px;min-height:32px;background:var(--app-primary);color:var(--app-on-primary)">↵ עבור לשאלה</button>
+          <button class="btn" onclick="delete S.qnotes['${idx}'];save();render()" style="font-size:10px;padding:6px 10px;min-height:32px;background:rgb(var(--red-bg));color:rgb(var(--red-fg))">🗑️ מחק</button>
+        </div>
+      </div>`;
+    });
+    h+='</div>';
+  }
+  return h;
+}
+function saveGNotes(){const t=document.getElementById('gnotes-ta');if(!t)return;S.gnotes=t.value;save();const st=document.getElementById('gnotes-status');if(st){st.textContent='✓ נשמר '+new Date().toLocaleTimeString('he-IL');setTimeout(()=>{if(st)st.textContent='';},2500);}}
+function exportGNotes(){const blob=new Blob([S.gnotes||''],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='shlav-a-notes-'+new Date().toISOString().slice(0,10)+'.txt';a.click();URL.revokeObjectURL(a.href);toast('הערות יוצאו','success');}
 function renderFeedback(){
 let h='<div class="sec-t">💡 Feedback & Feature Requests</div>';
 h+='<div class="sec-s">Help improve Shlav A Mega for everyone. AI reviews every submission.</div>';
@@ -5183,12 +5225,13 @@ case'track':
   el.innerHTML=renderTrack();break;
 case'more':
   {const _moreBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+
-  [{id:'calc',ic:'🧮',l:'Calc'},{id:'search',ic:'🔍',l:'Search'},{id:'chat',ic:'💬',l:'Chat'},{id:'feedback',ic:'💡',l:'Feedback'},{id:'settings',ic:'⚙️',l:'Settings'}].map(s=>
+  [{id:'calc',ic:'🧮',l:'Calc'},{id:'search',ic:'🔍',l:'Search'},{id:'notes',ic:'📝',l:'Notes'},{id:'chat',ic:'💬',l:'Chat'},{id:'feedback',ic:'💡',l:'Feedback'},{id:'settings',ic:'⚙️',l:'Settings'}].map(s=>
     '<button onclick="moreSub=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(moreSub===s.id?'700':'400')+';cursor:pointer;background:'+(moreSub===s.id?'#fff':'transparent')+';color:'+(moreSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(moreSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>'
   ).join('')+'</div>';
   let _mBody='';
   if(moreSub==='calc')_mBody=renderCalc();
   else if(moreSub==='search')_mBody=renderSearch();
+  else if(moreSub==='notes')_mBody=renderNotes();
   else if(moreSub==='chat')_mBody=renderChat();
   else if(moreSub==='feedback')_mBody=renderFeedback();
   else if(moreSub==='settings')_mBody=renderSettings();
@@ -5292,7 +5335,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.84';
+const APP_VERSION='9.85';
 const CHANGELOG={
 '9.83':['📋 מבחן מלא עם בורר — ניתן לבחור שנים ומקורות AI (Hazzard/Harrison) מרובים','⬆️ כפתור הבאה הוזז למעלה — מעל כפתורי Why-wrong, Difficulty ופרקים','📏 כפתור הבאה: 48px גובה, 14px גופן'],
 '9.82':['🔔 toast במקום alert בכל האפליקציה — התראות לא חוסמות יותר','✅ confirmModal במקום confirm — דיאלוג אישור מעוצב'],
