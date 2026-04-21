@@ -68,7 +68,7 @@ function runMigration(initialStore) {
 
 describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
   describe('MAP rewrites', () => {
-    it('rewrites Hebrew year labels to canonical YYYY-Mon', () => {
+    it('rewrites Hebrew year labels to canonical YYYY-Mon (2024 → -Basic default)', () => {
       const ls = runMigration({
         samega: JSON.stringify({
           selectedYears: ['יוני 21', 'יוני 23', 'יוני 25', 'מאי 24', 'ספט 24', '2023-ב', '2025'],
@@ -76,7 +76,7 @@ describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
       });
       const after = JSON.parse(ls.getItem('samega'));
       expect(after.selectedYears).toEqual([
-        '2021-Jun', '2023-Jun', '2025-Jun', '2024-May', '2024-Sep', '2023-Sep', '2025-Jun',
+        '2021-Jun', '2023-Jun', '2025-Jun', '2024-May-Basic', '2024-Sep-Basic', '2023-Sep', '2025-Jun',
       ]);
     });
 
@@ -97,7 +97,7 @@ describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
         }),
       });
       const after = JSON.parse(ls.getItem('samega'));
-      expect(after.filters.exam.pick).toBe('2024-May');
+      expect(after.filters.exam.pick).toBe('2024-May-Basic');
       expect(after.tags.q1).toBe('2025-Jun');
       expect(after.list[0]).toEqual(['2021-Jun']);
     });
@@ -160,9 +160,9 @@ describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
         samega_pending_qs: JSON.stringify({ tag: '2023-ב' }),
       });
       expect(JSON.parse(ls.getItem('samega')).a).toBe('2021-Jun');
-      expect(JSON.parse(ls.getItem('samega_mock_hist')).tag).toBe('2024-May');
+      expect(JSON.parse(ls.getItem('samega_mock_hist')).tag).toBe('2024-May-Basic');
       expect(JSON.parse(ls.getItem('samega_sessions')).tag).toBe('2025-Jun');
-      expect(JSON.parse(ls.getItem('samega_custom_qs')).tag).toBe('2024-Sep');
+      expect(JSON.parse(ls.getItem('samega_custom_qs')).tag).toBe('2024-Sep-Basic');
       expect(JSON.parse(ls.getItem('samega_pending_qs')).tag).toBe('2023-Sep');
     });
 
