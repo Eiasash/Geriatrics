@@ -79,7 +79,7 @@ describe('questions.json — formatting quality', () => {
   let questions;
   // Only past-exam sessions suffer PDF-extraction artifacts.
   // Hazzard/Harrison/Hazzard-suppl are AI-generated and immune.
-  const PAST_EXAM_TAGS = ['2020', '2021', '2021-Jun', '2022', '2023-Jun', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun'];
+  const PAST_EXAM_TAGS = ['2020', '2021', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun'];
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
   // Catches "בן58" → should be "בן 58". Geriatrics has a legacy backlog
@@ -268,7 +268,7 @@ describe('questions.json — structural invariants', () => {
       // Unresolved (TODO: determine month, currently kept as-is)
       '2020', '2021', '2022',
       // Canonical exam sessions
-      '2021-Jun', '2023-Jun', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun',
+      '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun',
       // Content sources
       'Hazzard', 'Harrison', 'Exam',
       // Split from 2025-א theory-type questions
@@ -316,8 +316,12 @@ describe('questions.json — per-session counts locked', () => {
     '2020': 99,
     '2021': 92,
     '2021-Jun': 103,
-    '2022': 156,
-    '2023-Jun': 167,
+    '2022-Jun-Subspec': 95,
+    '2022-Jun-Basic': 45,
+    '2022-Jun-orphan': 16,
+    '2023-Jun-Subspec': 100,
+    '2023-Jun-Basic': 45,
+    '2023-Jun-orphan': 22,
     '2023-Sep': 24,
     '2024-May-Subspec': 90,
     '2024-May-Basic': 44,
@@ -398,7 +402,7 @@ describe('multi-select exam-year filter — Task 3 contract', () => {
   let questions;
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
-  const EXAM_YEARS = ['2020', '2021', '2021-Jun', '2022', '2023-Jun', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun'];
+  const EXAM_YEARS = ['2020', '2021', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun'];
 
   // Reproduces the pool-building logic inline so test doesn't depend on
   // running the monolith's runtime.

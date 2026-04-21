@@ -76,7 +76,7 @@ describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
       });
       const after = JSON.parse(ls.getItem('samega'));
       expect(after.selectedYears).toEqual([
-        '2021-Jun', '2023-Jun', '2025-Jun', '2024-May-Basic', '2024-Sep-Basic', '2023-Sep', '2025-Jun',
+        '2021-Jun', '2023-Jun-Basic', '2025-Jun', '2024-May-Basic', '2024-Sep-Basic', '2023-Sep', '2025-Jun',
       ]);
     });
 
