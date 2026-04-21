@@ -32,7 +32,12 @@ navigator.serviceWorker.getRegistrations().then(function(regs){
 regs.forEach(function(r){if(r.waiting)r.waiting.postMessage({type:'SKIP_WAITING'});});
 });
 }
-caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k);});});
+// Wipe only the app-shell cache. Preserve shlav-img-* and shlav-pdf-* — those hold
+// user-downloaded textbook PDFs and exam images; nuking them would force re-download
+// over possibly-bad networks and defeat the offline-reading purpose.
+caches.keys().then(function(ks){
+  ks.filter(function(k){return k.startsWith('shlav-a-');}).forEach(function(k){caches.delete(k);});
+});
 setTimeout(function(){window.location.reload(true);},500);
 }
 
@@ -49,6 +54,16 @@ _swDismissKey='shlav_update_dismissed_'+appVersion;
 caches.keys().then(function(ks){
 var old=ks.filter(function(k){return k.startsWith('shlav-a-')&&k!=='shlav-a-v'+appVersion;});
 old.forEach(function(k){caches.delete(k);console.log('Deleted old cache:',k);});
+});
+
+// Hard-reload guard: if a newer SW activated while this page was running
+// (e.g. "stuck on v10.3" from the audit), the SW broadcasts SW_ACTIVATED.
+// We surface the update banner so the user can refresh — we do NOT auto-reload,
+// because that would lose unsaved state mid-session.
+navigator.serviceWorker.addEventListener('message',function(ev){
+if(ev.data&&ev.data.type==='SW_ACTIVATED'&&ev.data.cache&&ev.data.cache!=='shlav-a-v'+appVersion){
+showUpdateBanner();
+}
 });
 
 return navigator.serviceWorker.register('sw.js').then(function(reg){
