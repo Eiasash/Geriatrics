@@ -1,0 +1,602 @@
+{
+  "1": {
+    "book": "Hazzard",
+    "ch": 52,
+    "p": "785-787",
+    "ref": "Fig 52-4 + 52-5"
+  },
+  "2": {
+    "book": "Hazzard",
+    "ch": 73,
+    "p": "1121",
+    "ref": "Tab 73-2"
+  },
+  "3": {
+    "book": "Hazzard",
+    "ch": 82,
+    "p": "1268-1269",
+    "ref": null
+  },
+  "4": {
+    "book": "Hazzard",
+    "ch": 68,
+    "p": "1063-1065",
+    "ref": "Tab 68-8"
+  },
+  "5": {
+    "book": "Hazzard",
+    "ch": 88,
+    "p": "1385",
+    "ref": null
+  },
+  "6": {
+    "book": "Hazzard",
+    "ch": 98,
+    "p": "1552",
+    "ref": null
+  },
+  "7": {
+    "book": "Hazzard",
+    "ch": 60,
+    "p": "929",
+    "ref": "Tab 60-9"
+  },
+  "8": {
+    "book": "Hazzard",
+    "ch": 58,
+    "p": "886",
+    "ref": "Tab 58-4"
+  },
+  "9": {
+    "book": "Laket",
+    "ch": null,
+    "p": null,
+    "ref": null
+  },
+  "10": {
+    "book": "Hazzard",
+    "ch": 63,
+    "p": "993",
+    "ref": "Tab 63-5"
+  },
+  "11": {
+    "book": "Hazzard",
+    "ch": 61,
+    "p": "943+964",
+    "ref": null
+  },
+  "12": {
+    "book": "Hazzard",
+    "ch": 106,
+    "p": "1709-1711",
+    "ref": null
+  },
+  "13": {
+    "book": "Chozer_MNKL",
+    "ch": null,
+    "p": null,
+    "ref": null
+  },
+  "14": {
+    "book": "Hazzard",
+    "ch": 68,
+    "p": "1061",
+    "ref": null
+  },
+  "15": {
+    "book": "Article",
+    "ch": null,
+    "p": null,
+    "ref": null
+  },
+  "16": {
+    "book": "Hazzard",
+    "ch": 9,
+    "p": "147",
+    "ref": null
+  },
+  "17": {
+    "book": "Hazzard",
+    "ch": 43,
+    "p": "638+641",
+    "ref": null
+  },
+  "18": {
+    "book": "Hazzard",
+    "ch": 99,
+    "p": "1584",
+    "ref": null
+  },
+  "19": {
+    "book": "Hazzard",
+    "ch": 39,
+    "p": "581",
+    "ref": "Tab 39-1"
+  },
+  "20": {
+    "book": "Hazzard",
+    "ch": 87,
+    "p": "1359",
+    "ref": "Tab 87-5"
+  },
+  "21": {
+    "book": "Hazzard",
+    "ch": 46,
+    "p": "698",
+    "ref": null
+  },
+  "22": {
+    "book": "Hazzard",
+    "ch": 75,
+    "p": "1153",
+    "ref": "Tab 75-3"
+  },
+  "23": {
+    "book": "Hazzard",
+    "ch": 42,
+    "p": "622",
+    "ref": "Tab 42-3"
+  },
+  "24": {
+    "book": "Hazzard",
+    "ch": 103,
+    "p": "1640",
+    "ref": "Tab 103-4"
+  },
+  "25": {
+    "book": "Hazzard",
+    "ch": 55,
+    "p": "827-8",
+    "ref": null
+  },
+  "26": {
+    "book": "Hazzard",
+    "ch": 34,
+    "p": "495",
+    "ref": null
+  },
+  "27": {
+    "book": "Hazzard",
+    "ch": 102,
+    "p": "1632",
+    "ref": "Tab 102-3"
+  },
+  "28": {
+    "book": "Hazzard",
+    "ch": 88,
+    "p": "1392",
+    "ref": null
+  },
+  "29": {
+    "book": "Hazzard",
+    "ch": 93,
+    "p": "1464",
+    "ref": null
+  },
+  "30": {
+    "book": "Hazzard",
+    "ch": 47,
+    "p": "709",
+    "ref": "Tab 47-9"
+  },
+  "31": {
+    "book": "Hazzard",
+    "ch": 65,
+    "p": "1014",
+    "ref": null
+  },
+  "32": {
+    "book": "Hazzard",
+    "ch": 57,
+    "p": "874",
+    "ref": null
+  },
+  "33": {
+    "book": "Hazzard",
+    "ch": 58,
+    "p": "880",
+    "ref": null
+  },
+  "34": {
+    "book": "Hazzard",
+    "ch": 9,
+    "p": "141",
+    "ref": null
+  },
+  "35": {
+    "book": "Hazzard",
+    "ch": 44,
+    "p": "655",
+    "ref": null
+  },
+  "36": {
+    "book": "Hazzard",
+    "ch": 104,
+    "p": "1675",
+    "ref": null
+  },
+  "37": {
+    "book": "Law",
+    "ch": null,
+    "p": null,
+    "ref": null
+  },
+  "38": {
+    "book": "Hazzard",
+    "ch": 68,
+    "p": "1048",
+    "ref": null
+  },
+  "39": {
+    "book": "Hazzard",
+    "ch": 27,
+    "p": "375",
+    "ref": "Tab 27-3"
+  },
+  "40": {
+    "book": "Article",
+    "ch": 6,
+    "p": null,
+    "ref": null
+  },
+  "41": {
+    "book": "Harrison",
+    "ch": 447,
+    "p": "3504",
+    "ref": null
+  },
+  "42": {
+    "book": "Hazzard",
+    "ch": 43,
+    "p": "634-636",
+    "ref": null
+  },
+  "43": {
+    "book": "Hazzard",
+    "ch": 83,
+    "p": "1295",
+    "ref": null
+  },
+  "44": {
+    "book": "Hazzard",
+    "ch": 99,
+    "p": "1565-1566",
+    "ref": null
+  },
+  "45": {
+    "book": "Hazzard",
+    "ch": 87,
+    "p": "1362",
+    "ref": null
+  },
+  "46": {
+    "book": "Hazzard",
+    "ch": 39,
+    "p": "582",
+    "ref": null
+  },
+  "47": {
+    "book": "Hazzard",
+    "ch": 46,
+    "p": "693-694",
+    "ref": "Tab 46-2"
+  },
+  "48": {
+    "book": "Hazzard",
+    "ch": 75,
+    "p": "1161",
+    "ref": "Tab 75-15"
+  },
+  "49": {
+    "book": "Hazzard",
+    "ch": 42,
+    "p": "620",
+    "ref": "Tab 42-2"
+  },
+  "50": {
+    "book": "Hazzard",
+    "ch": 68,
+    "p": "1062",
+    "ref": null
+  },
+  "51": {
+    "book": "Hazzard",
+    "ch": 50,
+    "p": "743-744",
+    "ref": "Tab 50-2"
+  },
+  "52": {
+    "book": "Law",
+    "ch": null,
+    "p": null,
+    "ref": null
+  },
+  "53": {
+    "book": "Hazzard",
+    "ch": 79,
+    "p": "1223-5",
+    "ref": null
+  },
+  "54": {
+    "book": "Hazzard",
+    "ch": 47,
+    "p": "703",
+    "ref": "Tab 47-4"
+  },
+  "55": {
+    "book": "Hazzard",
+    "ch": 98,
+    "p": "1555",
+    "ref": null
+  },
+  "56": {
+    "book": "Hazzard",
+    "ch": "60+63",
+    "p": "924+984",
+    "ref": null
+  },
+  "57": {
+    "book": "Hazzard",
+    "ch": 65,
+    "p": "1011",
+    "ref": "Fig 65-2"
+  },
+  "58": {
+    "book": "Hazzard",
+    "ch": 104,
+    "p": "1675+1693-4",
+    "ref": null
+  },
+  "59": {
+    "book": "Law",
+    "ch": null,
+    "p": null,
+    "ref": null
+  },
+  "60": {
+    "book": "Hazzard",
+    "ch": 57,
+    "p": "869",
+    "ref": null
+  },
+  "61": {
+    "book": "Article",
+    "ch": 5,
+    "p": "73",
+    "ref": null
+  },
+  "62": {
+    "book": "Harrison",
+    "ch": 422,
+    "p": "3280",
+    "ref": null
+  },
+  "63": {
+    "book": "Hazzard",
+    "ch": 68,
+    "p": "1048",
+    "ref": null
+  },
+  "64": {
+    "book": "Hazzard",
+    "ch": 61,
+    "p": "940-941",
+    "ref": null
+  },
+  "65": {
+    "book": "Hazzard",
+    "ch": 57,
+    "p": "870",
+    "ref": null
+  },
+  "66": {
+    "book": "Hazzard",
+    "ch": 47,
+    "p": "700",
+    "ref": "Fig 47-1"
+  },
+  "67": {
+    "book": "Hazzard",
+    "ch": 89,
+    "p": "1404",
+    "ref": "Tab 89-4"
+  },
+  "68": {
+    "book": "Hazzard",
+    "ch": 97,
+    "p": "1530-1",
+    "ref": null
+  },
+  "69": {
+    "book": "Hazzard",
+    "ch": 65,
+    "p": "1014-1015",
+    "ref": null
+  },
+  "70": {
+    "book": "Hazzard",
+    "ch": 57,
+    "p": "876",
+    "ref": null
+  },
+  "71": {
+    "book": "Hazzard",
+    "ch": "31+105",
+    "p": "446+1690-1",
+    "ref": "Tab 31-5"
+  },
+  "72": {
+    "book": "Article",
+    "ch": "6-7-8-9",
+    "p": null,
+    "ref": null
+  },
+  "73": {
+    "book": "Hazzard",
+    "ch": 99,
+    "p": "1571",
+    "ref": "Tab 99-6"
+  },
+  "74": {
+    "book": "Hazzard",
+    "ch": 77,
+    "p": "1202-3",
+    "ref": "Tab 77-8"
+  },
+  "75": {
+    "book": "Hazzard",
+    "ch": 46,
+    "p": "692",
+    "ref": null
+  },
+  "76": {
+    "book": "Hazzard",
+    "ch": 42,
+    "p": "617-9",
+    "ref": null
+  },
+  "77": {
+    "book": "Hazzard",
+    "ch": 81,
+    "p": "1259",
+    "ref": null
+  },
+  "78": {
+    "book": "Harrison",
+    "ch": 448,
+    "p": "3510-1",
+    "ref": null
+  },
+  "79": {
+    "book": "Hazzard",
+    "ch": 68,
+    "p": "1063-1065",
+    "ref": "Tab 68-8"
+  },
+  "80": {
+    "book": "Law",
+    "ch": null,
+    "p": null,
+    "ref": null
+  },
+  "81": {
+    "book": "Hazzard",
+    "ch": 47,
+    "p": "705",
+    "ref": null
+  },
+  "82": {
+    "book": "Hazzard",
+    "ch": 61,
+    "p": "949",
+    "ref": null
+  },
+  "83": {
+    "book": "Hazzard",
+    "ch": 63,
+    "p": "984",
+    "ref": null
+  },
+  "84": {
+    "book": "Article",
+    "ch": 2,
+    "p": "2057",
+    "ref": "Tab 2"
+  },
+  "85": {
+    "book": "Hazzard",
+    "ch": 99,
+    "p": "1586",
+    "ref": "Tab 99-16"
+  },
+  "86": {
+    "book": "Hazzard",
+    "ch": 92,
+    "p": "1437",
+    "ref": null
+  },
+  "87": {
+    "book": "Hazzard",
+    "ch": "16+47",
+    "p": "232+715-6",
+    "ref": "Tab 16-6"
+  },
+  "88": {
+    "book": "Hazzard",
+    "ch": 47,
+    "p": "701+707",
+    "ref": null
+  },
+  "89": {
+    "book": "Hazzard",
+    "ch": 97,
+    "p": "1533-4",
+    "ref": null
+  },
+  "90": {
+    "book": "Hazzard",
+    "ch": 58,
+    "p": "890",
+    "ref": null
+  },
+  "91": {
+    "book": "Law",
+    "ch": null,
+    "p": null,
+    "ref": null
+  },
+  "92": {
+    "book": "Hazzard",
+    "ch": 76,
+    "p": "1184+1189",
+    "ref": null
+  },
+  "93": {
+    "book": "Hazzard",
+    "ch": 42,
+    "p": "620",
+    "ref": "Tab 42-2"
+  },
+  "94": {
+    "book": "Hazzard",
+    "ch": 55,
+    "p": "825",
+    "ref": null
+  },
+  "95": {
+    "book": "Hazzard",
+    "ch": 51,
+    "p": "768-769",
+    "ref": "Tab 51-3"
+  },
+  "96": {
+    "book": "Hazzard",
+    "ch": 63,
+    "p": "981+984",
+    "ref": null
+  },
+  "97": {
+    "book": "Hazzard",
+    "ch": 46,
+    "p": "692",
+    "ref": null
+  },
+  "98": {
+    "book": "Hazzard",
+    "ch": 47,
+    "p": "702",
+    "ref": "Tab 47-3"
+  },
+  "99": {
+    "book": "Hazzard",
+    "ch": 96,
+    "p": "1516",
+    "ref": null
+  },
+  "100": {
+    "book": "Harrison",
+    "ch": 425,
+    "p": "3311",
+    "ref": "Tab 425-5"
+  }
+}
