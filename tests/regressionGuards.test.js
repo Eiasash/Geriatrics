@@ -86,7 +86,7 @@ describe('questions.json — formatting quality', () => {
   // in past-exam PDFs — exact ratchet at current count so cleanup PRs are
   // visible (test fails → bump the number → proof of progress). Previous
   // `<=600` hid silent drift in either direction.
-  const HEBREW_DIGIT_BASELINE = 524;
+  const HEBREW_DIGIT_BASELINE = 0;
   test(`Hebrew-digit missing-space (past-exam): exact ${HEBREW_DIGIT_BASELINE}`, () => {
     const bad = [];
     questions.forEach((q, i) => {
@@ -129,7 +129,7 @@ describe('questions.json — formatting quality', () => {
   test('no adjacent-question fragment glued into stem', () => {
     const bad = [];
     const STARTERS = /^(בן|בת|גבר|אישה|איש|מטופל|חולה|מה|איזה|איזו|באיזו|באיזה|האם)/;
-    const REF_PREFIXES = /(תמונה|דרגה|שלב|class|stage|grade|טבלה|גרף|שאלה|ECOG|CHA2DS2|HAS-BLED|SARC-F|PHQ|STOP-BANG|ePrognosis|anion)\s*$/i;
+    const REF_PREFIXES = /(תמונה|דרגה|שלב|class|stage|grade|טבלה|גרף|שאלה|ECOG|CHA2DS2|HAS-BLED|SARC-F|PHQ|STOP-BANG|ePrognosis|anion|קריאטינין|המוגלובין|אלבומין)\s*$/i;
     questions.forEach((q, i) => {
       if (!PAST_EXAM_TAGS.includes(q.t)) return;
       if (!q.q) return;

@@ -1576,7 +1576,7 @@ function markEIssueVerified(qIdx){
   toast('✓ ההסבר סומן כמאומת','success',2000);
 }
 function getApiKey(){return localStorage.getItem('samega_apikey')||'';}
-function setApiKey(k){if(k)localStorage.setItem('samega_apikey',k.trim());else localStorage.removeItem('samega_apikey');}
+function setApiKey(k){try{if(k)localStorage.setItem('samega_apikey',k.trim());else localStorage.removeItem('samega_apikey');}catch(e){}}
 // ===== TEACH-BACK =====
 let teachBackState=null;
 // ===== AI EXPLAIN =====
@@ -1974,9 +1974,9 @@ input.click();
 }
 function removeQImage(qIdx){
 QZ[qIdx].img=null;
-const imgMap=JSON.parse(localStorage.getItem('shlav_q_images')||'{}');
+try{const imgMap=JSON.parse(localStorage.getItem('shlav_q_images')||'{}');
 delete imgMap[qIdx];
-localStorage.setItem('shlav_q_images',JSON.stringify(imgMap));
+localStorage.setItem('shlav_q_images',JSON.stringify(imgMap));}catch(e){}
 render();
 }
 // Load saved images on startup
@@ -2993,7 +2993,7 @@ QZ.push(newQ);
 // Store in localStorage as pending additions
 let pending=[];try{pending=JSON.parse(localStorage.getItem('samega_pending_qs')||'[]');}catch(e){}
 pending.push(newQ);
-localStorage.setItem('samega_pending_qs',JSON.stringify(pending));
+try{localStorage.setItem('samega_pending_qs',JSON.stringify(pending));}catch(e){}
 toast('Question added! ('+QZ.length+' total). Note: pending server sync.','info');
 }
 
@@ -3012,7 +3012,7 @@ const streak=getStudyStreak();
 const readiness=est;
 // Anonymous user hash
 let uid=localStorage.getItem('samega_uid');
-if(!uid){uid='u'+Math.random().toString(36).slice(2,10);localStorage.setItem('samega_uid',uid);}
+if(!uid){uid='u'+Math.random().toString(36).slice(2,10);try{localStorage.setItem('samega_uid',uid);}catch(e){}}
 const payload={uid,answered:totalAnswered,correct:totalCorrect,streak,readiness,ts:new Date().toISOString()};
 try{
   const res=await fetch(SUPA_URL+'/rest/v1/shlav_leaderboard',{
@@ -4049,7 +4049,7 @@ return h;
 }
 function setExamDate(){
 const d=prompt('Enter exam date (YYYY-MM-DD):',S.examDate||'');
-if(d&&/^\d{4}-\d{2}-\d{2}$/.test(d)){S.examDate=d;localStorage.setItem('shlav_exam_date',d);save();render();}
+if(d&&/^\d{4}-\d{2}-\d{2}$/.test(d)){S.examDate=d;try{localStorage.setItem('shlav_exam_date',d);}catch(e){}save();render();}
 }
 // ===== FEATURE 10: Cheat Sheet Export =====
 function exportCheatSheet(){
@@ -5165,7 +5165,7 @@ const entry={type,text,ts:Date.now(),version:APP_VERSION,uid:localStorage.getIte
 // Save locally
 let fb=[];try{fb=JSON.parse(localStorage.getItem('samega_fb_sent')||'[]');}catch(e){}
 fb.push(entry);
-localStorage.setItem('samega_fb_sent',JSON.stringify(fb));
+try{localStorage.setItem('samega_fb_sent',JSON.stringify(fb));}catch(e){}
 // Submit to Supabase
 try{
   await fetch(SUPA_URL+'/rest/v1/shlav_feedback',{
@@ -5255,7 +5255,7 @@ function clearChat(){S.chat=[];chatLoading=false;save();render();}
 
 // ===== SUPABASE CLOUD SYNC =====
 const _SB_KEY=SUPA_ANON;
-function _sbDeviceId(){let id=localStorage.getItem('samega_devid');if(!id){id='dev_'+Math.random().toString(36).slice(2,12);localStorage.setItem('samega_devid',id);}return id;}
+function _sbDeviceId(){let id=localStorage.getItem('samega_devid');if(!id){id='dev_'+Math.random().toString(36).slice(2,12);try{localStorage.setItem('samega_devid',id);}catch(e){}}return id;}
 async function cloudBackup(){
   const btn=document.getElementById('cloud-backup-btn');
   if(btn){btn.disabled=true;btn.textContent='☁️ Saving...';}
