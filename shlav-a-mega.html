@@ -1494,10 +1494,10 @@ const q=QZ[pool[qi]];
 if(_confidence!==null){
 if(!S.sr[pool[qi]])S.sr[pool[qi]]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};
 if(!S.sr[pool[qi]].conf)S.sr[pool[qi]].conf={sure_ok:0,sure_no:0,unsure_ok:0,unsure_no:0};
-const _ck=(_confidence>=2?'sure':'unsure')+'_'+(sel===q.c?'ok':'no');
+const _ck=(_confidence>=2?'sure':'unsure')+'_'+(isOk(q,sel)?'ok':'no');
 S.sr[pool[qi]].conf[_ck]++;
 }
-if(sel===q.c){S.qOk++;_pendingSR=pool[qi];}
+if(isOk(q,sel)){S.qOk++;_pendingSR=pool[qi];}
 else{S.qNo++;
   // Store which distractor was chosen for future mistake-pattern analysis
   if(!S.sr[pool[qi]])S.sr[pool[qi]]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};
@@ -1553,6 +1553,9 @@ else render();
 function toast(msg,type='info',ms=3500){try{const c={info:'#0ea5e9',success:'#059669',error:'#dc2626',warn:'#d97706'}[type]||'#0ea5e9';const d=document.createElement('div');d.setAttribute('role','status');d.setAttribute('aria-live','polite');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(70px + env(safe-area-inset-bottom));background:'+c+';color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:600;font-family:Heebo,Inter,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:10000;max-width:90vw;text-align:center;direction:auto;white-space:pre-wrap;line-height:1.5';d.textContent=msg;document.body.appendChild(d);setTimeout(()=>{d.style.transition='opacity .3s';d.style.opacity='0';setTimeout(()=>d.remove(),300);},ms);}catch(e){console.warn('toast failed',e,msg);}}
 function confirmModal(msg){return new Promise(res=>{const h='<div id="cfrm" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:10001;padding:16px"><div style="background:rgb(var(--card-bg));color:rgb(var(--fg));border-radius:14px;max-width:360px;margin:20vh auto;padding:20px;font-family:Heebo,Inter,sans-serif;text-align:center"><div style="font-size:13px;line-height:1.6;margin-bottom:16px;white-space:pre-wrap">'+sanitize(msg)+'</div><div style="display:flex;gap:8px"><button id="cfrmY" style="flex:1;padding:10px;background:var(--app-primary);color:var(--app-on-primary);border:none;border-radius:10px;font-weight:700;cursor:pointer">OK</button><button id="cfrmN" style="flex:1;padding:10px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:none;border-radius:10px;font-weight:700;cursor:pointer">Cancel</button></div></div></div>';const d=document.createElement('div');d.innerHTML=h;document.body.appendChild(d.firstChild);const cl=v=>{const m=document.getElementById('cfrm');if(m)m.remove();res(v);};document.getElementById('cfrmY').onclick=()=>cl(true);document.getElementById('cfrmN').onclick=()=>cl(false);});}
 function sanitize(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+// Grading helper: honors q.c_accept (array of accepted answer indices) if present;
+// falls back to primary q.c. q.c stays the display/primary answer.
+function isOk(q,i){if(!q)return false;if(Array.isArray(q.c_accept)&&q.c_accept.length)return q.c_accept.includes(i);return i===q.c;}
 // heDir — pick direction by Hebrew ratio, not first-strong. dir="auto" flips the whole
 // paragraph to LTR when starting with IgG4-RD/MEN1/CT, making Hebrew-majority text render backwards.
 function heDir(s){s=String(s||'');if(!s)return'auto';let he=0,en=0;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);if(c>=0x0590&&c<=0x05FF)he++;else if((c>=0x41&&c<=0x5A)||(c>=0x61&&c<=0x7A))en++;}const t=he+en;if(!t)return'auto';return he/t>=0.25?'rtl':'ltr';}
@@ -1636,7 +1639,7 @@ const _apKey='autopsy_'+qIdx;
 _exCache[_apKey]='<div style="color:rgb(var(--fg2))">⏳ AI analyzing each option...</div>';
 render();
 try{
-const wrongOpts=q.o.filter((_,i)=>i!==q.c);
+const wrongOpts=q.o.filter((_,i)=>!isOk(q,i));
 const txt=await callAI([{role:'user',content:`Geriatric board exam question. For EACH wrong option, explain in 1-2 sentences why it's wrong HERE and when it WOULD be correct.
 
 Question: ${q.q}
@@ -1833,7 +1836,7 @@ function startMockExam(){
 const _origCheck=window.check;
 function checkMockIntercept(){
   if(ans||sel===null)return;
-  const qIdx=pool[qi];const q=QZ[qIdx];const correct=sel===q.c;
+  const qIdx=pool[qi];const q=QZ[qIdx];const correct=isOk(q,sel);
   if(mockExamResults&&q.ti>=0){
     if(correct)mockExamResults.byTopic[q.ti].ok++;
     else {mockExamResults.byTopic[q.ti].no++; (mockExamResults.wrongIdxs=mockExamResults.wrongIdxs||[]).push(qIdx);}
@@ -2107,7 +2110,7 @@ if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative
 if(!q.img&&!examMode){h+=`<div style="margin-bottom:10px"><button onclick="uploadQImage(${pool[qi]})" style="font-size:10px;padding:4px 12px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">📷 Attach Image</button><span id="img-status-${pool[qi]}" style="font-size:10px;color:rgb(var(--fg3));margin-left:6px"></span></div>`;}
 q.o.forEach((o,i)=>{
 let cls='qo';
-if(ans){cls+=' lk';if(i===q.c)cls+=' ok';else if(i===sel)cls+=' no';else cls+=' dim';}
+if(ans){cls+=' lk';if(isOk(q,i))cls+=' ok';else if(i===sel)cls+=' no';else cls+=' dim';}
 else if(i===sel)cls+=' sel';
 h+=`<button class="${cls}" onclick="pick(${i})" aria-label="Option ${i+1}: ${o}">${o}</button>`;
 });
@@ -2154,10 +2157,10 @@ const _shuf=getOptShuffle(pool[qi],q);
 _shuf.forEach((origI,dispJ)=>{
 const o=q.o[origI];
 let cls='qo';
-if(ans){cls+=' lk';if(!examMode){if(origI===q.c)cls+=' ok';else if(origI===sel)cls+=' no';else cls+=' dim';}else if(origI===sel)cls+=' sel';}
+if(ans){cls+=' lk';if(!examMode){if(isOk(q,origI))cls+=' ok';else if(origI===sel)cls+=' no';else cls+=' dim';}else if(origI===sel)cls+=' sel';}
 else if(origI===sel)cls+=' sel';
 const blurCls=blindRecall&&!ans&&origI!==sel?' qo-blur':'';
-const autopsyCls=(autopsyMode&&ans&&!examMode&&origI!==q.c&&origI===autopsyDistractor)?' distractor-highlight':'';
+const autopsyCls=(autopsyMode&&ans&&!examMode&&!isOk(q,origI)&&origI===autopsyDistractor)?' distractor-highlight':'';
 h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${origI})" aria-label="Option ${origI+1}" dir="${heDir(o)}"><span>${sanitize(o)}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
 });
 return h;
@@ -2181,7 +2184,7 @@ h+=`<button onclick="document.getElementById('report-wrong-expand').style.displa
 h+=`</div>`;
 
 // Secondary row: Why-wrong (after wrong answer only)
-if(!examMode&&sel!==q.c&&!_wrongReason){
+if(!examMode&&!isOk(q,sel)&&!_wrongReason){
 h+=`<div id="why-wrong-box" style="margin-bottom:4px">
 <div style="font-size:11px;font-weight:700;color:rgb(var(--red-fg));margin-bottom:6px">Why did you get it wrong?</div>
 <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -2192,7 +2195,7 @@ h+=`<div id="why-wrong-box" style="margin-bottom:4px">
 </div></div>`;
 }
 // Chapter cross-links (after wrong answer only)
-if(!examMode&&sel!==q.c&&q.ti>=0){
+if(!examMode&&!isOk(q,sel)&&q.ti>=0){
 const _qc=QCHAPS[String(pool[qi])]||{};
 const _chRef=TOPIC_REF[q.ti];
 const _hazCh=_qc.haz!==undefined?_qc.haz:(_chRef&&_chRef.s==='haz'?_chRef.ch:null);
@@ -2235,7 +2238,7 @@ function _rqmTeachBack(){
 const q=QZ[pool[qi]];
 let h='';
 // Teach-Back box
-if(ans&&!examMode&&sel===q.c){
+if(ans&&!examMode&&isOk(q,sel)){
 if(!teachBackState){
 h+='<div style="margin-top:12px;background:rgb(var(--green-bg));border:1px solid #a7f3d0;border-radius:12px;padding:12px">';
 h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:12px;font-weight:700;color:rgb(var(--green-fg));direction:rtl">🎓 Teach-Back: הסבר מדוע זו התשובה הנכונה</span><button onclick="startVoiceTeachBack()" id="tb-mic-btn" style="font-size:16px;padding:4px 8px;background:#ecfdf5;border:none;border-radius:8px;cursor:pointer" title="הקלט קולי" aria-label="Record voice teach-back">🎙️</button></div>';
@@ -2334,7 +2337,7 @@ h+=`<div style="padding:12px;margin-top:10px;border:1px solid rgb(var(--brd));bo
 <div style="font-weight:700;font-size:11px;margin-bottom:8px">🔬 Distractor Autopsy — למה כל תשובה שגויה</div>`;
 if(_dist){
   q.o.forEach((opt,i)=>{
-    const _isCorrect=(i===q.c);
+    const _isCorrect=isOk(q,i);
     const _isUserPick=(i===sel);
     const _rationale=_dist[i];
     const _bg=_isCorrect?'#dcfce7':(_isUserPick?'#fef2f2':'rgb(var(--bg3))');
@@ -2474,7 +2477,7 @@ if(_sd)return _sd;
 return _rqMain();
 }
 // Sudden Death check/next
-function sdCheck(){if(sel===null)return;ans=true;const q=QZ[sdPool[sdQi]];if(sel===q.c){sdStreak++;S.qOk++;srScore(sdPool[sdQi],true);save();render();}else{S.qNo++;srScore(sdPool[sdQi],false);save();render();setTimeout(()=>endSuddenDeath(),800);}}
+function sdCheck(){if(sel===null)return;ans=true;const q=QZ[sdPool[sdQi]];if(isOk(q,sel)){sdStreak++;S.qOk++;srScore(sdPool[sdQi],true);save();render();}else{S.qNo++;srScore(sdPool[sdQi],false);save();render();setTimeout(()=>endSuddenDeath(),800);}}
 function sdNext(){sdQi++;if(sdQi>=sdPool.length)sdQi=0;sel=null;ans=false;autopsyDistractor=-1;render();}
 
 // ===== STUDY NOTES =====
@@ -3105,7 +3108,7 @@ c = 0-based index of correct answer. No markdown, no preamble.`;
       h+=`<div style="margin-bottom:14px;padding:12px;background:#faf5ff;border-radius:10px;border-left:3px solid #7c3aed">`;
       h+=`<div style="font-size:12px;font-weight:600;margin-bottom:8px" dir="${heDir(q.q)}">${qi+1}. ${sanitize(q.q)}</div>`;
       q.o.forEach((opt,oi)=>{
-        const isCorrect=oi===q.c;
+        const isCorrect=isOk(q,oi);
         h+=`<div style="font-size:11px;padding:4px 8px;margin-bottom:3px;border-radius:6px;background:${isCorrect?'#dcfce7':'#f8fafc'};color:${isCorrect?'#166534':'#475569'};font-weight:${isCorrect?'700':'400'}">${sanitize(opt)}${isCorrect?' ✓':''}</div>`;
       });
       if(q.e)h+=`<div style="font-size:10px;color:#6d28d9;margin-top:8px;text-align:right;line-height:1.6;border-top:1px solid #e9d5ff;padding-top:6px;unicode-bidi:plaintext" dir="${heDir(q.e)}">💡 ${sanitize(q.e)}</div>`;
@@ -5410,7 +5413,7 @@ S.fcFlip=false;save();render();
 function shareQ(){
 const q=QZ[pool[qi]];
 let txt=q.q+'\n';
-q.o.forEach((o,i)=>{txt+=(i===q.c?'✅ ':'❌ ')+o+'\n';});
+q.o.forEach((o,i)=>{txt+=(isOk(q,i)?'✅ ':'❌ ')+o+'\n';});
 if(navigator.share){navigator.share({title:'Shlav A — Question',text:txt}).catch(()=>{});}
 else if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>{const b=document.getElementById('shbtn');if(b){b.textContent='✅ הועתק';setTimeout(()=>b.textContent='📋 שתף',1500)}});
 }
@@ -5453,8 +5456,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.99';
+const APP_VERSION='10.0';
 const CHANGELOG={
+'10.0':['✅ תמיכה ב-c_accept[] (multi-accept answers): 7 שאלות 2020 מדורגות נכון כעת. עד כה 5/7 Qs היו מסמנים את רוב הסטודנטים כטועים אף שהם בחרו תשובה שהוועדה קיבלה רשמית (Q52 75% false-wrong, Q97 75%, Q98 75%, Q100 75%, Q30 50%). Engine: isOk(q,i) helper ב-HTML (~14 grading sites מעודכנים).','🧪 Tests: 690 pass.','📝 Memory drift fix: v9.94→10.0, 3,315→3,326 Qs, 686→690 tests, tags כוללים 2021-Dec / 2023-Sep / Hazzard-suppl / 2022-Jun-orphan.'],
 '9.99':['🔧 תיקון 2020: שאלה 3 (GFR drops, ATN creat 0.8→1.5→3→5.5) שוחזרה - הייתה מפוצלת לשני fragments: stem-ב-2023-Sep + tail-ב-2020. Retag + dedupe. 2020: 99→100 (תואם canonical), 2023-Sep: 24→22.','🖼️ 10 תמונות 2020: Q14 (pressure ulcer stage), Q25 (hip fracture XR), Q32 (DEXA), Q40 (MOCA), Q43 (CLL blood smear), Q49 (CAP CXR), Q57 (intertrochanteric), Q60 (NPH MRI), Q87 (donepezil bradycardia ECG), Q95 (RA hand deformities). Supabase geri_2020_q{N}.png.','🧹 6 תמונות שגויות ב-2020 עם URL של geri_Jun23_basis הוסרו (cross-contamination).','✅ Audit: 0 mismatches ב-single-answer vs official key (100 Qs), 4 multi-accept (Q52/97/98/100) - live c בתוך accept set. 7 multi-accept כולל 24/29/30.','✅ 690 tests pass, version 9.98 → 9.99'],
 '9.98':['🧹 ניקיון: 51 תמונות placeholder פגומות (data:image/svg+xml עם viewBox ריק) הוסרו משדה img. משתמשים ראו תמונות שבורות עד עכשיו.','📊 Audit כולל של תמונות: 143 שאלות עם img אמיתי (4.3%). Gap של 7 שאלות עם reference תמונה בטקסט אך ללא img wired: 2021-Jun (3), 2022-Jun-Basic (1), 2022-Jun-Subspec (2), 2024-May-Basic (1). מקור תמונות עבור Jun22 לא מקומי, יעודכן ב-sessions עתידיים.','✅ Tests: 690 pass, version 9.97 → 9.98'],
 '9.97':['🖼️ תמונות Dec 2021 הועלו ל-Supabase ומחוברות לשאלות: geri_Dec21_q34.png (CXR עם UIP/honeycombing לאבחנת IPF), geri_Dec21_q40.png (פצע לחץ דרגה 4 בטרוכנטר), geri_Dec21_q77.png (Torsades de Pointes במוניטור)','🔧 Q69 תוקן: תשובה הנכונה שונתה מ-ג (גיל מעל 70) ל-ד (מעורבות intercostal nerve). שאלת "פרט ל" — גיל מעל 70 אכן גורם סיכון ל-PHN; intercostal nerve הוא המיקום השכיח ביותר של HZ אך לא גורם סיכון עצמאי. הסבר נכתב מחדש.','📊 קליניקל analysis של 3 ה-mismatches שנותרו מ-v9.96: Q41 (מנגנון תרופות לעצירות) — ambiguous, נשמר; Q73 (SCAP severity) — גרסת live (pH<7.3) defensible קלינית לפי ATS/IDSA 2007; Q69 תוקן.','📂 Dec 2021 Q34/40/77 images rendered from exam PDF (pymupdf) ועברו audit visual.'],
