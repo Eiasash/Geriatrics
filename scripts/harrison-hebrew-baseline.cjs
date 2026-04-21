@@ -28,7 +28,7 @@ const OUT_PATH = path.join(ROOT, 'docs', 'harrison-hebrew-baseline.csv');
 
 // Mirrors Geriatrics regressionGuards.test.js PAST_EXAM_TAGS.
 const PAST_EXAM_TAGS = new Set([
-  '2020', '2021', '2021-Jun', '2022', '2023-Jun', '2023-Sep',
+  '2020', '2021-Dec', '2021-Jun', '2022', '2023-Jun', '2023-Sep',
   '2024-May', '2024-Sep', '2025-Jun',
 ]);
 
