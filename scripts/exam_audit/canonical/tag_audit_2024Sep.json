@@ -1,0 +1,849 @@
+{
+  "session": "2024-Sep",
+  "total_exam_qs": 100,
+  "extracted_stems": 81,
+  "matched_idxs": {
+    "1": {
+      "idx": 279,
+      "tag": "2024-May",
+      "score": 0.8
+    },
+    "2": {
+      "idx": 280,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "3": {
+      "idx": 281,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "4": {
+      "idx": 282,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "5": {
+      "idx": 272,
+      "tag": "2023-Jun",
+      "score": 0.75
+    },
+    "6": {
+      "idx": 284,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "7": {
+      "idx": 285,
+      "tag": "2024-May",
+      "score": 0.92
+    },
+    "8": {
+      "idx": 286,
+      "tag": "2024-May",
+      "score": 0.62
+    },
+    "9": {
+      "idx": 287,
+      "tag": "2024-May",
+      "score": 0.92
+    },
+    "10": {
+      "idx": 288,
+      "tag": "2024-May",
+      "score": 0.77
+    },
+    "11": {
+      "idx": 289,
+      "tag": "2024-May",
+      "score": 0.75
+    },
+    "12": {
+      "idx": 290,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "13": {
+      "idx": 291,
+      "tag": "2024-May",
+      "score": 0.53
+    },
+    "14": {
+      "idx": 292,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "15": {
+      "idx": 293,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "16": {
+      "idx": 294,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "19": {
+      "idx": 297,
+      "tag": "2024-May",
+      "score": 0.92
+    },
+    "20": {
+      "idx": 298,
+      "tag": "2024-May",
+      "score": 0.75
+    },
+    "21": {
+      "idx": 299,
+      "tag": "2024-May",
+      "score": 0.85
+    },
+    "22": {
+      "idx": 25,
+      "tag": "2022",
+      "score": 0.85
+    },
+    "27": {
+      "idx": 305,
+      "tag": "2024-May",
+      "score": 0.92
+    },
+    "24": {
+      "idx": 302,
+      "tag": "2024-May",
+      "score": 0.79
+    },
+    "25": {
+      "idx": 303,
+      "tag": "2024-May",
+      "score": 0.75
+    },
+    "26": {
+      "idx": 304,
+      "tag": "2024-May",
+      "score": 0.93
+    },
+    "29": {
+      "idx": 307,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "30": {
+      "idx": 308,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "31": {
+      "idx": 427,
+      "tag": "2024-Sep",
+      "score": 0.94
+    },
+    "32": {
+      "idx": 310,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "33": {
+      "idx": 311,
+      "tag": "2024-May",
+      "score": 0.62
+    },
+    "34": {
+      "idx": 312,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "35": {
+      "idx": 313,
+      "tag": "2024-May",
+      "score": 0.83
+    },
+    "36": {
+      "idx": 314,
+      "tag": "2024-May",
+      "score": 0.69
+    },
+    "37": {
+      "idx": 315,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "38": {
+      "idx": 316,
+      "tag": "2024-May",
+      "score": 0.8
+    },
+    "40": {
+      "idx": 318,
+      "tag": "2024-May",
+      "score": 0.92
+    },
+    "41": {
+      "idx": 319,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "42": {
+      "idx": 320,
+      "tag": "2024-May",
+      "score": 0.93
+    },
+    "43": {
+      "idx": 3207,
+      "tag": "2024-Sep",
+      "score": 1.0
+    },
+    "44": {
+      "idx": 321,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "45": {
+      "idx": 322,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "46": {
+      "idx": 323,
+      "tag": "2024-May",
+      "score": 0.65
+    },
+    "47": {
+      "idx": 324,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "48": {
+      "idx": 325,
+      "tag": "2024-May",
+      "score": 0.79
+    },
+    "49": {
+      "idx": 326,
+      "tag": "2024-May",
+      "score": 0.79
+    },
+    "50": {
+      "idx": 327,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "52": {
+      "idx": 329,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "54": {
+      "idx": 331,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "55": {
+      "idx": 332,
+      "tag": "2024-May",
+      "score": 0.78
+    },
+    "56": {
+      "idx": 333,
+      "tag": "2024-May",
+      "score": 0.86
+    },
+    "57": {
+      "idx": 334,
+      "tag": "2024-May",
+      "score": 0.91
+    },
+    "58": {
+      "idx": 335,
+      "tag": "2024-May",
+      "score": 0.93
+    },
+    "59": {
+      "idx": 336,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "60": {
+      "idx": 337,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "61": {
+      "idx": 338,
+      "tag": "2024-May",
+      "score": 0.85
+    },
+    "64": {
+      "idx": 341,
+      "tag": "2024-May",
+      "score": 0.86
+    },
+    "65": {
+      "idx": 342,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "66": {
+      "idx": 3252,
+      "tag": "2024-Sep",
+      "score": 0.92
+    },
+    "68": {
+      "idx": 345,
+      "tag": "2024-May",
+      "score": 0.92
+    },
+    "69": {
+      "idx": 346,
+      "tag": "2024-May",
+      "score": 0.79
+    },
+    "70": {
+      "idx": 347,
+      "tag": "2024-May",
+      "score": 0.69
+    },
+    "72": {
+      "idx": 349,
+      "tag": "2024-May",
+      "score": 0.82
+    },
+    "75": {
+      "idx": 352,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "76": {
+      "idx": 353,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "77": {
+      "idx": 354,
+      "tag": "2024-May",
+      "score": 0.83
+    },
+    "78": {
+      "idx": 355,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "80": {
+      "idx": 357,
+      "tag": "2024-May",
+      "score": 0.71
+    },
+    "82": {
+      "idx": 359,
+      "tag": "2024-May",
+      "score": 0.93
+    },
+    "85": {
+      "idx": 362,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "86": {
+      "idx": 363,
+      "tag": "2024-May",
+      "score": 0.88
+    },
+    "87": {
+      "idx": 364,
+      "tag": "2024-May",
+      "score": 0.64
+    },
+    "88": {
+      "idx": 365,
+      "tag": "2024-May",
+      "score": 0.92
+    },
+    "89": {
+      "idx": 366,
+      "tag": "2024-May",
+      "score": 0.88
+    },
+    "90": {
+      "idx": 367,
+      "tag": "2024-May",
+      "score": 0.87
+    },
+    "91": {
+      "idx": 368,
+      "tag": "2024-May",
+      "score": 0.79
+    },
+    "95": {
+      "idx": 372,
+      "tag": "2024-May",
+      "score": 0.93
+    },
+    "96": {
+      "idx": 373,
+      "tag": "2024-May",
+      "score": 1.0
+    },
+    "99": {
+      "idx": 376,
+      "tag": "2024-May",
+      "score": 0.78
+    },
+    "100": {
+      "idx": 377,
+      "tag": "2024-May",
+      "score": 1.0
+    }
+  },
+  "tag_mismatches": [
+    {
+      "q_num": 1,
+      "idx": 279,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 2,
+      "idx": 280,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 3,
+      "idx": 281,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 4,
+      "idx": 282,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 5,
+      "idx": 272,
+      "current_tag": "2023-Jun",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 6,
+      "idx": 284,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 7,
+      "idx": 285,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 8,
+      "idx": 286,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 9,
+      "idx": 287,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 10,
+      "idx": 288,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 11,
+      "idx": 289,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 12,
+      "idx": 290,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 13,
+      "idx": 291,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 14,
+      "idx": 292,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 15,
+      "idx": 293,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 16,
+      "idx": 294,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 19,
+      "idx": 297,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 20,
+      "idx": 298,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 21,
+      "idx": 299,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 22,
+      "idx": 25,
+      "current_tag": "2022",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 27,
+      "idx": 305,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 24,
+      "idx": 302,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 25,
+      "idx": 303,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 26,
+      "idx": 304,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 29,
+      "idx": 307,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 30,
+      "idx": 308,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 32,
+      "idx": 310,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 33,
+      "idx": 311,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 34,
+      "idx": 312,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 35,
+      "idx": 313,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 36,
+      "idx": 314,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 37,
+      "idx": 315,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 38,
+      "idx": 316,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 40,
+      "idx": 318,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 41,
+      "idx": 319,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 42,
+      "idx": 320,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 44,
+      "idx": 321,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 45,
+      "idx": 322,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 46,
+      "idx": 323,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 47,
+      "idx": 324,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 48,
+      "idx": 325,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 49,
+      "idx": 326,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 50,
+      "idx": 327,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 52,
+      "idx": 329,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 54,
+      "idx": 331,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 55,
+      "idx": 332,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 56,
+      "idx": 333,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 57,
+      "idx": 334,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 58,
+      "idx": 335,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 59,
+      "idx": 336,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 60,
+      "idx": 337,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 61,
+      "idx": 338,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 64,
+      "idx": 341,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 65,
+      "idx": 342,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 68,
+      "idx": 345,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 69,
+      "idx": 346,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 70,
+      "idx": 347,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 72,
+      "idx": 349,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 75,
+      "idx": 352,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 76,
+      "idx": 353,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 77,
+      "idx": 354,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 78,
+      "idx": 355,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 80,
+      "idx": 357,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 82,
+      "idx": 359,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 85,
+      "idx": 362,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 86,
+      "idx": 363,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 87,
+      "idx": 364,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 88,
+      "idx": 365,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 89,
+      "idx": 366,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 90,
+      "idx": 367,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 91,
+      "idx": 368,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 95,
+      "idx": 372,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 96,
+      "idx": 373,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 99,
+      "idx": 376,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    },
+    {
+      "q_num": 100,
+      "idx": 377,
+      "current_tag": "2024-May",
+      "should_be": "2024-Sep"
+    }
+  ]
+}
