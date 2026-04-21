@@ -5445,8 +5445,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.2';
+const APP_VERSION='10.3';
 const CHANGELOG={
+'10.3':['🖼️ תיקון 5 תמונות שאלות: idx 3194/3196/3200/3204/3205 מחוברות ל-Supabase URLs (geri_2024_al_q69, geri_sep2024_q69, geri_2024_al_q35, geri_jun2025_q136, geri_sep2024_q31). imgMissing/imgDep flags הוסרו.'],
 '10.2':['↩ הוחזרו כתובות Supabase לסכמת public (geriatrics schema לא היה חשוף ב-PostgREST, כתיבות החזירו 406 ונתוני משתמשים נעלמו). 12 שורות שעברו היסטורית ב-geriatrics.* אוחו חזרה ל-public.* בטרנזקציה בטוחה.','🔒 תיקון auth של proxy ל-Toranot — 2 call sites ישנים (question gen + feedback AI) שעקפו את callAI() והשתמשו בפורמט body.secret הישן תוקנו. כעת כולם דרך callAI עם header x-api-secret. כל פיצ׳רי ה-AI פעילים שוב.'],
 '10.0':['✅ תמיכה ב-c_accept[] (multi-accept answers): 7 שאלות 2020 מדורגות נכון כעת. עד כה 5/7 Qs היו מסמנים את רוב הסטודנטים כטועים אף שהם בחרו תשובה שהוועדה קיבלה רשמית (Q52 75% false-wrong, Q97 75%, Q98 75%, Q100 75%, Q30 50%). Engine: isOk(q,i) helper ב-HTML (~14 grading sites מעודכנים).','🧪 Tests: 690 pass.','📝 Memory drift fix: v9.94→10.0, 3,315→3,326 Qs, 686→690 tests, tags כוללים 2021-Dec / 2023-Sep / Hazzard-suppl / 2022-Jun-orphan.'],
 '9.99':['🔧 תיקון 2020: שאלה 3 (GFR drops, ATN creat 0.8→1.5→3→5.5) שוחזרה - הייתה מפוצלת לשני fragments: stem-ב-2023-Sep + tail-ב-2020. Retag + dedupe. 2020: 99→100 (תואם canonical), 2023-Sep: 24→22.','🖼️ 10 תמונות 2020: Q14 (pressure ulcer stage), Q25 (hip fracture XR), Q32 (DEXA), Q40 (MOCA), Q43 (CLL blood smear), Q49 (CAP CXR), Q57 (intertrochanteric), Q60 (NPH MRI), Q87 (donepezil bradycardia ECG), Q95 (RA hand deformities). Supabase geri_2020_q{N}.png.','🧹 6 תמונות שגויות ב-2020 עם URL של geri_Jun23_basis הוסרו (cross-contamination).','✅ Audit: 0 mismatches ב-single-answer vs official key (100 Qs), 4 multi-accept (Q52/97/98/100) - live c בתוך accept set. 7 multi-accept כולל 24/29/30.','✅ 690 tests pass, version 9.98 → 9.99'],
