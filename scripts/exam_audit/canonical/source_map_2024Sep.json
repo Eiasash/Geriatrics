@@ -1,0 +1,602 @@
+{
+  "1": {
+    "book": "Hazzard",
+    "ch": 43,
+    "p": "639",
+    "ref": null
+  },
+  "2": {
+    "book": "Hazzard",
+    "ch": 77,
+    "p": "1201",
+    "ref": null
+  },
+  "3": {
+    "book": "Hazzard",
+    "ch": 42,
+    "p": "620",
+    "ref": "Tab 42-2"
+  },
+  "4": {
+    "book": "Hazzard",
+    "ch": 60,
+    "p": "922-923",
+    "ref": null
+  },
+  "5": {
+    "book": "Hazzard",
+    "ch": 60,
+    "p": "929",
+    "ref": "Tab 60-9"
+  },
+  "6": {
+    "book": "Hazzard",
+    "ch": 58,
+    "p": "880",
+    "ref": null
+  },
+  "7": {
+    "book": "Hazzard",
+    "ch": 77,
+    "p": "1201",
+    "ref": "Tab 77-6"
+  },
+  "8": {
+    "book": "Hazzard",
+    "ch": 93,
+    "p": "1455-1463",
+    "ref": "Image 1"
+  },
+  "9": {
+    "book": "Hazzard",
+    "ch": 45,
+    "p": "675",
+    "ref": null
+  },
+  "10": {
+    "book": "Hazzard",
+    "ch": 59,
+    "p": "896",
+    "ref": null
+  },
+  "11": {
+    "book": "Hazzard",
+    "ch": 88,
+    "p": "1391",
+    "ref": "1263"
+  },
+  "12": {
+    "book": "Hazzard",
+    "ch": 47,
+    "p": "709",
+    "ref": "Tab 47-9"
+  },
+  "13": {
+    "book": "Hazzard",
+    "ch": 68,
+    "p": "1063-1064",
+    "ref": "Tab 68-3"
+  },
+  "14": {
+    "book": "Hazzard",
+    "ch": 27,
+    "p": "380",
+    "ref": null
+  },
+  "15": {
+    "book": "Hazzard",
+    "ch": 59,
+    "p": "908",
+    "ref": "Tab 59-5"
+  },
+  "16": {
+    "book": "Hazzard",
+    "ch": 87,
+    "p": "1359",
+    "ref": "Tab 87-5"
+  },
+  "17": {
+    "book": "Hazzard",
+    "ch": 68,
+    "p": "1064-1065",
+    "ref": null
+  },
+  "18": {
+    "book": "Hazzard",
+    "ch": 15,
+    "p": "210",
+    "ref": "p15-2"
+  },
+  "19": {
+    "book": "Hazzard",
+    "ch": 43,
+    "p": "637",
+    "ref": "Tab 43-2"
+  },
+  "20": {
+    "book": "Hazzard",
+    "ch": 74,
+    "p": "1151",
+    "ref": null
+  },
+  "21": {
+    "book": "Hazzard",
+    "ch": 42,
+    "p": "621",
+    "ref": "Tab 42-3"
+  },
+  "22": {
+    "book": "Hazzard",
+    "ch": 47,
+    "p": "712-713",
+    "ref": "Tab 47-12"
+  },
+  "23": {
+    "book": "Hazzard",
+    "ch": 63,
+    "p": "985",
+    "ref": null
+  },
+  "24": {
+    "book": "Hazzard",
+    "ch": 61,
+    "p": "940",
+    "ref": null
+  },
+  "25": {
+    "book": "Hazzard",
+    "ch": 58,
+    "p": "884",
+    "ref": "Tab 58-3"
+  },
+  "26": {
+    "book": "Hazzard",
+    "ch": 52,
+    "p": "781-782",
+    "ref": null
+  },
+  "27": {
+    "book": "Hazzard",
+    "ch": 77,
+    "p": "1202",
+    "ref": "Tab 77-7"
+  },
+  "28": {
+    "book": "Hazzard",
+    "ch": "49+50",
+    "p": "735+743-744",
+    "ref": "Tab 50-2"
+  },
+  "29": {
+    "book": "Hazzard",
+    "ch": 99,
+    "p": "1568",
+    "ref": null
+  },
+  "30": {
+    "book": "Hazzard",
+    "ch": 34,
+    "p": null,
+    "ref": null
+  },
+  "31": {
+    "book": "Hazzard",
+    "ch": 46,
+    "p": "696",
+    "ref": "Image 2"
+  },
+  "32": {
+    "book": "Hazzard",
+    "ch": 102,
+    "p": "1634",
+    "ref": "Tab 102-5"
+  },
+  "33": {
+    "book": "Hazzard",
+    "ch": 81,
+    "p": "1256",
+    "ref": "Tab 81-11"
+  },
+  "34": {
+    "book": "Hazzard",
+    "ch": 44,
+    "p": "653-654",
+    "ref": null
+  },
+  "35": {
+    "book": "Laket",
+    "ch": 39,
+    "p": null,
+    "ref": "Info graphic data"
+  },
+  "36": {
+    "book": "Article",
+    "ch": 15,
+    "p": null,
+    "ref": "Stroke Rehabilitation"
+  },
+  "37": {
+    "book": "Harrison",
+    "ch": 422,
+    "p": "3280",
+    "ref": null
+  },
+  "38": {
+    "book": "Law",
+    "ch": null,
+    "p": null,
+    "ref": "Durable POA + terminal patient law"
+  },
+  "39": {
+    "book": "Hazzard",
+    "ch": 80,
+    "p": "1231",
+    "ref": null
+  },
+  "40": {
+    "book": "Hazzard",
+    "ch": 58,
+    "p": "886",
+    "ref": "Tab 58-4"
+  },
+  "41": {
+    "book": "Hazzard",
+    "ch": 89,
+    "p": "1396",
+    "ref": null
+  },
+  "42": {
+    "book": "Hazzard",
+    "ch": 63,
+    "p": "985",
+    "ref": null
+  },
+  "43": {
+    "book": "Hazzard",
+    "ch": 49,
+    "p": "737",
+    "ref": null
+  },
+  "44": {
+    "book": "Hazzard",
+    "ch": 82,
+    "p": "1267-1269",
+    "ref": null
+  },
+  "45": {
+    "book": "Hazzard",
+    "ch": 99,
+    "p": "1563-1564",
+    "ref": null
+  },
+  "46": {
+    "book": "Hazzard",
+    "ch": 46,
+    "p": "683-684",
+    "ref": null
+  },
+  "47": {
+    "book": "Law",
+    "ch": null,
+    "p": null,
+    "ref": "Status definition law"
+  },
+  "48": {
+    "book": "Article",
+    "ch": 11,
+    "p": null,
+    "ref": "Stroke Rehabilitation"
+  },
+  "49": {
+    "book": "Hazzard",
+    "ch": 76,
+    "p": "1171-2",
+    "ref": "Tab 76-3"
+  },
+  "50": {
+    "book": "Hazzard",
+    "ch": 47,
+    "p": "712",
+    "ref": null
+  },
+  "51": {
+    "book": "Hazzard",
+    "ch": 98,
+    "p": "1546",
+    "ref": null
+  },
+  "52": {
+    "book": "Hazzard",
+    "ch": 87,
+    "p": "1356",
+    "ref": "Tab 87-4"
+  },
+  "53": {
+    "book": "Hazzard",
+    "ch": 46,
+    "p": "693-694",
+    "ref": "Tab 46-2 + Image 3"
+  },
+  "54": {
+    "book": "Hazzard",
+    "ch": 101,
+    "p": "1608",
+    "ref": "Tab 101-1"
+  },
+  "55": {
+    "book": "Hazzard",
+    "ch": 81,
+    "p": "1249",
+    "ref": "Tab 81-10"
+  },
+  "56": {
+    "book": "Hazzard",
+    "ch": 44,
+    "p": "655",
+    "ref": null
+  },
+  "57": {
+    "book": "Article",
+    "ch": null,
+    "p": null,
+    "ref": "Advanced Dementia"
+  },
+  "58": {
+    "book": "Law",
+    "ch": null,
+    "p": null,
+    "ref": "Status definition law"
+  },
+  "59": {
+    "book": "Hazzard",
+    "ch": 61,
+    "p": "936",
+    "ref": null
+  },
+  "60": {
+    "book": "Hazzard",
+    "ch": 76,
+    "p": "1181",
+    "ref": null
+  },
+  "61": {
+    "book": "Hazzard",
+    "ch": 59,
+    "p": "912-914",
+    "ref": "Tab 59-7"
+  },
+  "62": {
+    "book": "Hazzard",
+    "ch": 58,
+    "p": "887",
+    "ref": null
+  },
+  "63": {
+    "book": "Hazzard",
+    "ch": 52,
+    "p": "788",
+    "ref": null
+  },
+  "64": {
+    "book": "Hazzard",
+    "ch": 27,
+    "p": "375",
+    "ref": "Fig 27-3"
+  },
+  "65": {
+    "book": "Hazzard",
+    "ch": 49,
+    "p": "734",
+    "ref": "Tab 49-3"
+  },
+  "66": {
+    "book": "Hazzard",
+    "ch": 82,
+    "p": "1270",
+    "ref": null
+  },
+  "67": {
+    "book": "Hazzard",
+    "ch": 46,
+    "p": "696",
+    "ref": null
+  },
+  "68": {
+    "book": "Hazzard",
+    "ch": 81,
+    "p": "1260",
+    "ref": "Tab 81-13"
+  },
+  "69": {
+    "book": "Harrison",
+    "ch": 59,
+    "p": "402-403",
+    "ref": "Image 4"
+  },
+  "70": {
+    "book": "Hazzard",
+    "ch": 74,
+    "p": "1151",
+    "ref": null
+  },
+  "71": {
+    "book": "Hazzard",
+    "ch": 99,
+    "p": "1566-1567",
+    "ref": null
+  },
+  "72": {
+    "book": "Hazzard",
+    "ch": 101,
+    "p": "1608",
+    "ref": null
+  },
+  "73": {
+    "book": "Hazzard",
+    "ch": 49,
+    "p": "737",
+    "ref": null
+  },
+  "74": {
+    "book": "Hazzard",
+    "ch": 61,
+    "p": "938+941",
+    "ref": null
+  },
+  "75": {
+    "book": "Hazzard",
+    "ch": 60,
+    "p": "927",
+    "ref": "Tab 60-7"
+  },
+  "76": {
+    "book": "Hazzard",
+    "ch": 61,
+    "p": "944",
+    "ref": null
+  },
+  "77": {
+    "book": "Hazzard",
+    "ch": 10,
+    "p": "151",
+    "ref": "Capacity & Guardianship law"
+  },
+  "78": {
+    "book": "Laket",
+    "ch": null,
+    "p": null,
+    "ref": "Info graphic data"
+  },
+  "79": {
+    "book": "Hazzard",
+    "ch": 87,
+    "p": "1356",
+    "ref": null
+  },
+  "80": {
+    "book": "Hazzard",
+    "ch": 46,
+    "p": "695",
+    "ref": null
+  },
+  "81": {
+    "book": "Hazzard",
+    "ch": 61,
+    "p": "947",
+    "ref": null
+  },
+  "82": {
+    "book": "Hazzard",
+    "ch": 88,
+    "p": "1392",
+    "ref": null
+  },
+  "83": {
+    "book": "Hazzard",
+    "ch": 55,
+    "p": "827",
+    "ref": null
+  },
+  "84": {
+    "book": "Hazzard",
+    "ch": 105,
+    "p": "1686-1687",
+    "ref": "Tab 105-4"
+  },
+  "85": {
+    "book": "Hazzard",
+    "ch": 76,
+    "p": "1180",
+    "ref": null
+  },
+  "86": {
+    "book": "Hazzard",
+    "ch": 61,
+    "p": "946",
+    "ref": null
+  },
+  "87": {
+    "book": "Hazzard",
+    "ch": 101,
+    "p": "1619",
+    "ref": null
+  },
+  "88": {
+    "book": "Law",
+    "ch": null,
+    "p": null,
+    "ref": "Rehab care criteria"
+  },
+  "89": {
+    "book": "Hazzard",
+    "ch": 58,
+    "p": "884",
+    "ref": "Tab 58-3"
+  },
+  "90": {
+    "book": "Hazzard",
+    "ch": 108,
+    "p": "1736",
+    "ref": null
+  },
+  "91": {
+    "book": "Hazzard",
+    "ch": 30,
+    "p": "424",
+    "ref": null
+  },
+  "92": {
+    "book": "Hazzard",
+    "ch": "8,11,99",
+    "p": "119+161+1561",
+    "ref": null
+  },
+  "93": {
+    "book": "Hazzard",
+    "ch": 87,
+    "p": "1361-1362",
+    "ref": "Image 5"
+  },
+  "94": {
+    "book": "Hazzard",
+    "ch": 60,
+    "p": "929",
+    "ref": "Tab 60-9 Beer's Criteria"
+  },
+  "95": {
+    "book": "Harrison",
+    "ch": 448,
+    "p": "3511",
+    "ref": null
+  },
+  "96": {
+    "book": "Harrison",
+    "ch": 370,
+    "p": null,
+    "ref": null
+  },
+  "97": {
+    "book": "Harrison",
+    "ch": 370,
+    "p": "2847",
+    "ref": "Tab 370-2"
+  },
+  "98": {
+    "book": "Hazzard",
+    "ch": 102,
+    "p": "1636",
+    "ref": "Tab 102-7"
+  },
+  "99": {
+    "book": "Hazzard",
+    "ch": 97,
+    "p": "1539",
+    "ref": "Tab 97-10"
+  },
+  "100": {
+    "book": "Hazzard",
+    "ch": 69,
+    "p": "1074",
+    "ref": null
+  }
+}
