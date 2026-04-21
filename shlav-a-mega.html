@@ -1319,6 +1319,50 @@ pool=rescueQs;qi=0;sel=null;ans=false;_pendingSR=null;
 filt='rescue';render();
 }
 
+// ===== FINAL STRETCH: crunch-time quiz mode =====
+// Builds a 40-q pool weighted by EXAM_FREQ, prioritizing unseen + previously-wrong questions.
+// Different from Mock (exam simulation) and Rescue (3 weakest topics).
+// Purpose: in the last weeks before exam, cover high-yield ground you haven't seen yet.
+function buildFinalStretchPool(size=40){
+const total=EXAM_FREQ.reduce((a,b)=>a+b,0);
+if(!total){toast('EXAM_FREQ not loaded','error');return;}
+// Group by topic
+const byTopic={};
+QZ.forEach((q,i)=>{const ti=q.ti>=0?q.ti:39;if(!byTopic[ti])byTopic[ti]=[];byTopic[ti].push(i);});
+// Score each question: high if never-seen, medium if answered-wrong, low if answered-right
+// Add topic-level weighting by EXAM_FREQ
+function qScore(i,ti){
+  const sr=S.sr[i];
+  const tot=sr?.tot||0;
+  const ok=sr?.ok||0;
+  const topicWeight=(EXAM_FREQ[ti]||0)/total;  // 0..~0.15
+  let urgency;
+  if(tot===0)urgency=1.0;                       // never seen — highest priority
+  else if(ok===0)urgency=0.9;                   // always wrong
+  else if(ok/tot<0.5)urgency=0.7;               // mostly wrong
+  else if(ok/tot<0.8)urgency=0.4;               // half-right
+  else urgency=0.15;                            // mastered
+  return urgency * (0.4 + topicWeight * 6);     // blend urgency w/ exam weight
+}
+// Compute target per topic by EXAM_FREQ
+const scored=[];
+EXAM_FREQ.forEach((freq,ti)=>{
+  if(!freq||!byTopic[ti]||!byTopic[ti].length)return;
+  byTopic[ti].forEach(i=>scored.push({i,ti,s:qScore(i,ti)}));
+});
+// Sort by score desc, pick top (size * 2), then shuffle & slice
+scored.sort((a,b)=>b.s-a.s);
+const top=scored.slice(0,size*2);
+for(let i=top.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[top[i],top[j]]=[top[j],top[i]];}
+pool=top.slice(0,size).map(x=>x.i);
+_sessAnsw={};
+qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;_optShuffle=null;_confidence=null;_pendingSR=null;
+filt='finalStretch';render();
+// Toast the plan
+const daysLeft=(S.examDate||localStorage.getItem('shlav_exam_date'))?Math.max(0,Math.ceil((new Date(S.examDate||localStorage.getItem('shlav_exam_date'))-Date.now())/864e5)):null;
+toast(`🎯 Final Stretch: ${size} high-yield questions${daysLeft!==null?` · ${daysLeft} days to exam`:''}`,'success',2500);
+}
+
 // ===== FEATURE 9: SPACED READING =====
 function trackChapterRead(source,ch){
 if(!S.chReads)S.chReads={};
@@ -4471,6 +4515,25 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px;background:linear-g
 </div></div>`;
 }
 
+// Final Stretch CTA (shows always; pushes unseen + high-yield)
+(function(){
+const _exDate=S.examDate||localStorage.getItem('shlav_exam_date')||'';
+const _daysLeft=_exDate?Math.max(0,Math.ceil((new Date(_exDate)-Date.now())/864e5)):null;
+const _label=_daysLeft===null?'Final Stretch':(_daysLeft<=30?`Final Stretch · ${_daysLeft}d left`:`Final Stretch · ${_daysLeft}d`);
+const _urgent=_daysLeft!==null&&_daysLeft<=30;
+const _bg=_urgent?'linear-gradient(135deg,#fef3c7,#fde68a)':'linear-gradient(135deg,#eff6ff,#dbeafe)';
+const _brd=_urgent?'#f59e0b':'#3b82f6';
+h+=`<div class="card" style="padding:14px;margin-bottom:10px;background:${_bg};border:1px solid ${_brd}40">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="font-size:24px">🎯</span>
+<div style="flex:1">
+<div style="font-weight:700;font-size:12px;color:${_urgent?'#b45309':'#1e40af'}">${_label}</div>
+<div style="font-size:10px;color:rgb(var(--fg2))">40 high-yield Qs · prioritises never-seen + your weak spots</div>
+</div>
+<button onclick="buildFinalStretchPool(40);tab='quiz';render()" class="btn" style="font-size:11px;padding:8px 16px;background:${_urgent?'#f59e0b':'#3b82f6'};color:#fff;border:none;border-radius:10px;font-weight:700">GO</button>
+</div></div>`;
+})();
+
 // Activity Calendar (30 days)
 h+=`<div class="card" style="padding:14px;margin-bottom:10px">
 <div style="font-size:12px;font-weight:700;margin-bottom:8px">📅 Activity (last 30 days)</div>
@@ -5390,8 +5453,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='9.91';
+const APP_VERSION='9.92';
 const CHANGELOG={
+'9.92':['🎯 Final Stretch — מצב חדש לתקופת דחק לפני בחינה. בונה מאגר של 40 שאלות ברמת high-yield (לפי EXAM_FREQ) ובעדיפות לשאלות שלא נראו עדיין + נקודות חלשות. CTA חדש בטאב Track — צהוב/כתום כש≤30 ימים לבחינה.','🖼️ תמונה נוספה לשאלה Q47 של יוני 2025 (פצע לחץ דרגה 4). צפיפות תמונות: 190→191.','📚 source map רשמי של IMA עבור מועד 2025-Jun על — 100 שאלות ממופות לפרק Hazzard + עמוד ספציפי. נשמר ב-scripts/exam_audit/canonical/ לצורך ולידציה עתידית של תגי פרקים.'],
 '9.91':['🎯 Easy/Med/Hard — לחיצה כעת מרעננת תצוגה מיידית + הדירוג נטען מהשמירה (היה נראה כאילו לא עובד כי ה-UI לא התעדכן אחרי לחיצה).'],
 '9.91':['🔬 AI scan של 3,314 שאלות — 626 סומנו ב-eFlag (ההסבר אולי לא מתאים לתשובה). באדג׳ אדום מופיע אחרי גילוי התשובה עם כפתור "✓ אמת" לניקוי. לבדיקה ידנית.','✓ כפתור "מאומת" נוסף לבאדג׳ imgDep (ניקוי בלחיצה).'],
 '9.91':['🔍 AI audit על 3,314 הסברים: 626 סומנו עם eFlag (תיאור לא תואם לתשובה הנכונה). באדג\' אדום מוצג לאחר חשיפת התשובה + כפתור "✓ אמת" לניקוי.','✓ כפתור "מאומת" נוסף לבאדג\' imgDep — לחיצה אחת לניקוי הסימון לאחר תיקון.'],
