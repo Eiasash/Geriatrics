@@ -1,4 +1,4 @@
-const CACHE='shlav-a-v10.3';
+const CACHE='shlav-a-v10.4';
 const HTML_URLS=['shlav-a-mega.html','manifest.json','shared/fsrs.js','src/storage.js','src/sw-update.js','icons/icon-192.png','icons/icon-512.png'];
 const FONT_URLS=['fonts/heebo-hebrew-400-normal.woff2','fonts/heebo-hebrew-500-normal.woff2','fonts/heebo-hebrew-600-normal.woff2','fonts/heebo-hebrew-700-normal.woff2','fonts/heebo-latin-400-normal.woff2','fonts/heebo-latin-500-normal.woff2','fonts/heebo-latin-600-normal.woff2','fonts/heebo-latin-700-normal.woff2','fonts/inter-latin-400-normal.woff2','fonts/inter-latin-500-normal.woff2','fonts/inter-latin-600-normal.woff2','fonts/inter-latin-700-normal.woff2'];
 const JSON_DATA_URLS=['data/questions.json','data/topics.json','data/notes.json','data/drugs.json','data/flashcards.json','harrison_chapters.json','data/hazzard_chapters.json','data/tabs.json','data/question_chapters.json','data/distractors.json','data/regulatory.json'];
@@ -9,6 +9,13 @@ const SUPA_IMG_PATTERN=/supabase\.co\/storage\/v1\/object\/public\/question-imag
 const IMG_CACHE='shlav-img-v1';
 const MAX_IMG_CACHE_ENTRIES=100;
 
+// Textbook PDFs (Hazzard/Harrison/articles) and exam PDFs: cache-first on-demand.
+// Not in ALL_URLS — pre-caching 170MB of PDFs would blow storage quotas.
+// First open fetches from network + caches; subsequent reads are offline-ready.
+const PDF_CACHE='shlav-pdf-v1';
+const MAX_PDF_CACHE_ENTRIES=40; // LRU-lite cap to protect storage quota
+const PDF_PATTERN=/\.pdf(\?|$)/i;
+
 function trimCache(cacheName,max){
   caches.open(cacheName).then(cache=>cache.keys().then(keys=>{
     if(keys.length>max)cache.delete(keys[0]);
@@ -16,7 +23,16 @@ function trimCache(cacheName,max){
 }
 
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ALL_URLS)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!==IMG_CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('activate',e=>e.waitUntil(
+  caches.keys().then(ks=>Promise.all(
+    // Preserve IMG_CACHE + PDF_CACHE across version bumps (on-demand LRU caches,
+    // not tied to app version — trashing them forces users to re-download books).
+    ks.filter(k=>k!==CACHE&&k!==IMG_CACHE&&k!==PDF_CACHE).map(k=>caches.delete(k))
+  ))
+  .then(()=>self.clients.claim())
+  // Tell live clients the SW has a newer version so they can reload if stuck
+  .then(()=>self.clients.matchAll({type:'window'}).then(cls=>cls.forEach(c=>c.postMessage({type:'SW_ACTIVATED',cache:CACHE}))))
+));
 
 // Cache strategy dispatcher
 function shouldUseCacheFirst(url){
@@ -48,6 +64,23 @@ self.addEventListener('fetch',e=>{
   if(!e.request.url.startsWith(self.location.origin))return;
 
   const url=new URL(e.request.url).pathname;
+
+  // Textbook / article / exam PDFs: cache-first on-demand (Hazzard, Harrison, articles, exams/).
+  // First read fetches + caches; later reads work offline even with poor network.
+  if(PDF_PATTERN.test(url)){
+    e.respondWith(
+      caches.open(PDF_CACHE).then(cache=>
+        cache.match(e.request).then(r=>{
+          if(r)return r;
+          return fetch(e.request).then(res=>{
+            if(res.ok){cache.put(e.request,res.clone());trimCache(PDF_CACHE,MAX_PDF_CACHE_ENTRIES);}
+            return res;
+          }).catch(()=>cache.match(e.request)); // second match covers race where cache.put finished elsewhere
+        })
+      )
+    );
+    return;
+  }
 
   if(e.request.mode==='navigate'){
     // Navigation: network-first, fallback to cached HTML shell

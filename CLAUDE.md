@@ -5,8 +5,8 @@
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (~336 KB, ~5,432 lines, 198 functions)
-- **App version**: v9.76
+- **Main file**: `shlav-a-mega.html` (~403 KB, ~5,920 lines, 219 functions)
+- **App version**: v10.4
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -16,7 +16,7 @@
 
 ### Single-File PWA
 
-All application logic lives in `shlav-a-mega.html` (~5,432 lines, 198 functions) — no bundler, no framework, no build step. The file contains:
+All application logic lives in `shlav-a-mega.html` (~5,920 lines, 219 functions) — no bundler, no framework, no build step. The file contains:
 - All CSS (1,000+ lines, responsive, RTL-aware, dark/light/study modes)
 - All JavaScript (ES6+, vanilla)
 - HTML structure
@@ -62,13 +62,13 @@ the full decomposition ledger and safe-next-steps list.
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v9.76)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.4)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
 │
 ├── data/                    # Lazy-loaded JSON data — single source of truth
-│   ├── questions.json       # 1,685 MCQs (primary runtime source)
+│   ├── questions.json       # 3,326 MCQs (primary runtime source)
 │   ├── notes.json           # 40 study topic notes
 │   ├── drugs.json           # 114 Beers/ACB drugs database
 │   ├── flashcards.json      # 159 high-yield flashcards
@@ -220,7 +220,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `9.76` (sw.js cache key: `shlav-a-v9.76`)
+- Currently both at version `10.4` (sw.js cache key: `shlav-a-v10.4`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
@@ -448,9 +448,9 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 
 | Metric | Value |
 |---|---|
-| Main file | `shlav-a-mega.html` (~5,432 lines, ~336 KB) |
-| Named functions | 198 (167 core + 31 decomposed helpers) |
-| Questions | 3,314 (1,207 IMA exam + 2,107 AI-generated) |
+| Main file | `shlav-a-mega.html` (~5,920 lines, ~403 KB) |
+| Named functions | 219 (188 core + 31 decomposed helpers) |
+| Questions | 3,326 (1,207 IMA exam + 2,119 AI-generated) |
 | Topics | 40 |
 | Drugs | 114 |
 | Flashcards | 159 |
@@ -460,8 +460,8 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Test suite | 678 tests across 21 files (vitest) |
 | CI workflows | 3 (ci.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=169, onchange=25, oninput=6 |
-| App version | v9.76 |
-| SW cache key | `shlav-a-v9.76` |
+| App version | v10.4 |
+| SW cache key | `shlav-a-v10.4` |
 
 
 ## Test Coverage Recommendations
