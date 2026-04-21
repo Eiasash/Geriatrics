@@ -107,7 +107,7 @@ describe('questions.json — formatting quality', () => {
   // Catches `?גבוהה` (question mark on wrong side after RTL mangling).
   // Exact ratchet at current count. When cleanup happens, test fails,
   // update the baseline number in the same PR.
-  const QMARK_HEBREW_BASELINE = 85;
+  const QMARK_HEBREW_BASELINE = 0;
   test(`wrong-side ?[Hebrew] (past-exam): exact ${QMARK_HEBREW_BASELINE}`, () => {
     const bad = [];
     questions.forEach((q, i) => {
