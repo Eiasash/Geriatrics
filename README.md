@@ -2,7 +2,7 @@
 
 **Israeli Shlav A Geriatric Medicine Board Exam Preparation Tool**
 
-Standalone, offline-capable PWA with 3,314 questions (1,207 real IMA exam + 2,107 AI-generated textbook questions), study notes, clinical calculators, FSRS-4.5 spaced repetition, and AI-powered explanations — all in one HTML file.
+Standalone, offline-capable PWA with 3,326 questions (1,207 real IMA exam + 2,119 AI-generated textbook questions), study notes, clinical calculators, FSRS-4.5 spaced repetition, and AI-powered explanations — all in one HTML file.
 
 **Live:** https://eiasash.github.io/Geriatrics/
 
@@ -10,7 +10,7 @@ Standalone, offline-capable PWA with 3,314 questions (1,207 real IMA exam + 2,10
 
 | Feature | Details |
 |---|---|
-| **Quiz Engine** | 3,314 questions with answer keys, topic tagging, and image support |
+| **Quiz Engine** | 3,326 questions with answer keys, topic tagging, and image support |
 | **FSRS-4.5 Spaced Repetition** | Confidence-based rating (Again/Hard/Good/Easy) with optimized scheduling |
 | **Mock Exam** | 100q or 150q realistic topic distribution from exam frequency weights, timed 3h |
 | **Rescue Drill** | Auto-builds 21-question pool from 3 weakest topics |
@@ -59,13 +59,13 @@ Single-file monolith (`shlav-a-mega.html`, ~5,432 lines, 198 functions). No bund
 ## Project Structure
 
 ```
-shlav-a-mega.html           # Complete app (v9.76, single-file PWA, ~336KB)
+shlav-a-mega.html           # Complete app (v10.4, single-file PWA, ~403KB)
 index.html                  # GitHub Pages redirect
 manifest.json               # PWA manifest
-sw.js                       # Service worker (shlav-a-v9.76)
+sw.js                       # Service worker (shlav-a-v10.4)
 shared/fsrs.js              # FSRS-4.5 spaced repetition engine (shared with Pnimit Mega)
 data/
-  questions.json             # 3,314 exam + AI questions
+  questions.json             # 3,326 exam + AI questions
   notes.json                 # 40 study topics
   drugs.json                 # 114 Beers/ACB drugs
   flashcards.json            # 159 high-yield flashcards
@@ -112,7 +112,7 @@ Four GitHub Actions workflows run on every push:
 
 ## Data Sources
 
-- **Questions:** 1,207 MCQs from official IMA Shlav A exams (2020\u20132025) + 2,107 AI-generated textbook questions
+- **Questions:** 1,207 MCQs from official IMA Shlav A exams (2020\u20132025) + 2,119 AI-generated textbook questions
 - **Textbooks:** Hazzard's Geriatric Medicine 8e (108 chapters), Harrison's Principles 22e (69 chapters)
 - **Drugs:** Beers Criteria 2023 + ACB Scale (114 drugs)
 - **Regulations:** 15 Israeli laws/regulations (Patient Rights, Dying Patient Act, POA, driving fitness, siud murkav, etc.)
