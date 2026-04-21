@@ -2949,13 +2949,7 @@ Return ONLY valid JSON array, no markdown. Each question must have:
 
 Format: [{"q":"...","o":["A","B","C","D"],"c":0,"e":"..."},...]`;
 try{
-const key=getApiKey();
-const proxyUrl='https://toranot.netlify.app/api/claude';
-const body={prompt,secret:'shlav-a-mega-2026'};
-if(key)body.apiKey=key;
-const res=await fetch(proxyUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-const data=await res.json();
-const text=data.content||data.text||data.response||JSON.stringify(data);
+const text=await callAI([{role:'user',content:prompt}],3000,'sonnet');
 // Parse JSON from response
 const jsonMatch=text.match(/\[\s*\{[\s\S]*\}\s*\]/);
 if(!jsonMatch)throw new Error('No JSON array found in response');
@@ -5177,12 +5171,7 @@ try{
 // AI analysis of the feedback
 try{
   const aiPrompt='A user submitted this feedback for a medical study app. Briefly acknowledge it and assess feasibility in 1-2 sentences. Type: '+type+'. Feedback: '+text;
-  const res=await fetch('https://toranot.netlify.app/api/claude',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({prompt:aiPrompt,secret:'shlav-a-mega-2026'})
-  });
-  const data=await res.json();
-  const aiText=data.content||data.text||data.response||'';
+  const aiText=await callAI([{role:'user',content:aiPrompt}],200,'sonnet');
   if(aiText){
     fb[fb.length-1].aiResponse=aiText.slice(0,300);
     localStorage.setItem('samega_fb_sent',JSON.stringify(fb));
@@ -5456,8 +5445,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.0';
+const APP_VERSION='10.1';
 const CHANGELOG={
+'10.1':['🔒 תיקון auth של proxy ל-Toranot — 2 call sites ישנים (question gen + feedback AI) שעקפו את callAI() והשתמשו בפורמט body.secret הישן תוקנו. כעת כולם דרך callAI עם header x-api-secret. כל פיצ׳רי ה-AI פעילים שוב.'],
 '10.0':['✅ תמיכה ב-c_accept[] (multi-accept answers): 7 שאלות 2020 מדורגות נכון כעת. עד כה 5/7 Qs היו מסמנים את רוב הסטודנטים כטועים אף שהם בחרו תשובה שהוועדה קיבלה רשמית (Q52 75% false-wrong, Q97 75%, Q98 75%, Q100 75%, Q30 50%). Engine: isOk(q,i) helper ב-HTML (~14 grading sites מעודכנים).','🧪 Tests: 690 pass.','📝 Memory drift fix: v9.94→10.0, 3,315→3,326 Qs, 686→690 tests, tags כוללים 2021-Dec / 2023-Sep / Hazzard-suppl / 2022-Jun-orphan.'],
 '9.99':['🔧 תיקון 2020: שאלה 3 (GFR drops, ATN creat 0.8→1.5→3→5.5) שוחזרה - הייתה מפוצלת לשני fragments: stem-ב-2023-Sep + tail-ב-2020. Retag + dedupe. 2020: 99→100 (תואם canonical), 2023-Sep: 24→22.','🖼️ 10 תמונות 2020: Q14 (pressure ulcer stage), Q25 (hip fracture XR), Q32 (DEXA), Q40 (MOCA), Q43 (CLL blood smear), Q49 (CAP CXR), Q57 (intertrochanteric), Q60 (NPH MRI), Q87 (donepezil bradycardia ECG), Q95 (RA hand deformities). Supabase geri_2020_q{N}.png.','🧹 6 תמונות שגויות ב-2020 עם URL של geri_Jun23_basis הוסרו (cross-contamination).','✅ Audit: 0 mismatches ב-single-answer vs official key (100 Qs), 4 multi-accept (Q52/97/98/100) - live c בתוך accept set. 7 multi-accept כולל 24/29/30.','✅ 690 tests pass, version 9.98 → 9.99'],
 '9.98':['🧹 ניקיון: 51 תמונות placeholder פגומות (data:image/svg+xml עם viewBox ריק) הוסרו משדה img. משתמשים ראו תמונות שבורות עד עכשיו.','📊 Audit כולל של תמונות: 143 שאלות עם img אמיתי (4.3%). Gap של 7 שאלות עם reference תמונה בטקסט אך ללא img wired: 2021-Jun (3), 2022-Jun-Basic (1), 2022-Jun-Subspec (2), 2024-May-Basic (1). מקור תמונות עבור Jun22 לא מקומי, יעודכן ב-sessions עתידיים.','✅ Tests: 690 pass, version 9.97 → 9.98'],
