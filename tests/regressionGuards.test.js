@@ -79,7 +79,7 @@ describe('questions.json — formatting quality', () => {
   let questions;
   // Only past-exam sessions suffer PDF-extraction artifacts.
   // Hazzard/Harrison/Hazzard-suppl are AI-generated and immune.
-  const PAST_EXAM_TAGS = ['2020', '2021', '2021-Jun', '2022', '2023-Jun', '2023-Sep', '2024-May', '2024-Sep', '2025-Jun'];
+  const PAST_EXAM_TAGS = ['2020', '2021', '2021-Jun', '2022', '2023-Jun', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun'];
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
   // Catches "בן58" → should be "בן 58". Geriatrics has a legacy backlog
@@ -180,18 +180,20 @@ describe('questions.json — duplicates', () => {
     expect(dupes.length).toBe(0);
   });
 
-  test('no 2024-May↔2024-Sep cross-tag duplicates (guards against ingestion mis-tag)', () => {
-    // Known bad pattern: Sep24 ingestion accidentally re-used May24 questions.
-    // Legitimate cross-tag dupes (e.g. Hazzard↔past-exam reuse) are NOT blocked here.
+  test('no cross-tag duplicates across the 4 decomposed 2024 tags', () => {
+    // Post v9.94: 2024-May/Sep decomposed into May-Subspec/May-Basic/Sep-Subspec/Sep-Basic + orphan.
+    // A single normalized stem appearing in more than one of these is an ingestion mis-tag.
+    const S2024 = ['2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic'];
     const seen = new Map();
     const dupes = [];
     questions.forEach((q, i) => {
+      if (!S2024.includes(q.t)) return;
       const k = normStem(q.q);
       if (!k || k.length < 20) return;
       if (seen.has(k)) {
         const firstIdx = seen.get(k);
         const t1 = questions[firstIdx].t, t2 = q.t;
-        if ((t1 === '2024-May' && t2 === '2024-Sep') || (t1 === '2024-Sep' && t2 === '2024-May')) {
+        if (t1 !== t2) {
           dupes.push({ first: firstIdx, second: i, tags: [t1, t2] });
         }
       } else {
@@ -266,7 +268,7 @@ describe('questions.json — structural invariants', () => {
       // Unresolved (TODO: determine month, currently kept as-is)
       '2020', '2021', '2022',
       // Canonical exam sessions
-      '2021-Jun', '2023-Jun', '2023-Sep', '2024-May', '2024-Sep', '2025-Jun',
+      '2021-Jun', '2023-Jun', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun',
       // Content sources
       'Hazzard', 'Harrison', 'Exam',
       // Split from 2025-א theory-type questions
@@ -317,8 +319,11 @@ describe('questions.json — per-session counts locked', () => {
     '2022': 156,
     '2023-Jun': 167,
     '2023-Sep': 24,
-    '2024-May': 294,
-    '2024-Sep': 29,
+    '2024-May-Subspec': 90,
+    '2024-May-Basic': 44,
+    '2024-Sep-Subspec': 93,
+    '2024-Sep-Basic': 50,
+    '2024-orphan': 47,
     '2025-Jun': 219,
     'Exam': 24,
     'Harrison': 294,
@@ -331,8 +336,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3314', () => {
-    expect(questions.length).toBe(3314);
+  test('total question count is exactly 3315', () => {
+    expect(questions.length).toBe(3315);
   });
 });
 
@@ -393,7 +398,7 @@ describe('multi-select exam-year filter — Task 3 contract', () => {
   let questions;
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
-  const EXAM_YEARS = ['2020', '2021', '2021-Jun', '2022', '2023-Jun', '2023-Sep', '2024-May', '2024-Sep', '2025-Jun'];
+  const EXAM_YEARS = ['2020', '2021', '2021-Jun', '2022', '2023-Jun', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun'];
 
   // Reproduces the pool-building logic inline so test doesn't depend on
   // running the monolith's runtime.
