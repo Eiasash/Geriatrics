@@ -5459,7 +5459,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.4';
+const APP_VERSION='10.5';
 const CHANGELOG={
 '10.4':['🛡️ Atomic-save: flush localStorage סינכרונית ב-pagehide/visibility-hidden — סגירת tab בזמן ה-debounce של 150ms כבר לא תאבד את השמירה האחרונה.','📚 PDF caching on-demand: ספרי הלימוד (Hazzard/Harrison/מאמרים/בחינות) נשמרים אוטומטית לקריאה אופליין אחרי פתיחה ראשונה. עד 40 PDFs ב-LRU cache.','🔄 SW stuck-version guard: אם service worker חדש הופעל בזמן שהלקוח רץ, banner העדכון עולה אוטומטית.','🔒 applyUpdate שומר על cache של תמונות ו-PDF (רק shlav-a-* נמחק ב-reset) — מונע הורדה חוזרת של ספרים.','📐 תיקון RTL punctuation ב-303 שאלות (424 נקודות): רווח בין עברית לאותיות לטיניות, רווח אחרי פסיק/נקודה-פסיק בטקסט עברי. scripts/fix_rtl_punctuation.py idempotent.','📝 CLAUDE.md/README סנכרון (v10.4, 3,326 Qs).'],
 '10.3':['🖼️ תיקון 5 תמונות שאלות: idx 3194/3196/3200/3204/3205 מחוברות ל-Supabase URLs (geri_2024_al_q69, geri_sep2024_q69, geri_2024_al_q35, geri_jun2025_q136, geri_sep2024_q31). imgMissing/imgDep flags הוסרו.'],
