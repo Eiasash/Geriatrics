@@ -9,6 +9,10 @@
 //   <script type="module" src="src/auth/githubAuth.js"></script>
 //   Then call: window.signInWithGitHub()
 
+// ⚠️ DUPLICATION — these two constants are ALSO defined inline at
+// shlav-a-mega.html:1966-1967. If you rotate the Supabase key,
+// update BOTH places. Single-file PWA architecture prevents true
+// dedup; this comment is the drift-prevention contract.
 const SUPA_URL = 'https://krmlzwwelqvlfslwltol.supabase.co';
 const SUPA_ANON = 'sb_publishable_tUuqQQ8RKMvLDwTz5cKkOg_o_y-rHtw';
 
