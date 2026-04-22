@@ -5,8 +5,8 @@
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (~403 KB, ~5,920 lines, 219 functions)
-- **App version**: v10.4
+- **Main file**: `shlav-a-mega.html` (~408 KB, ~5,920 lines, 191 functions)
+- **App version**: v10.8 (as of 23/04/26) — BIDI hygiene pass, FSRS canonicalization, Nelson-parity session (sibling § C)
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -16,7 +16,7 @@
 
 ### Single-File PWA
 
-All application logic lives in `shlav-a-mega.html` (~5,920 lines, 219 functions) — no bundler, no framework, no build step. The file contains:
+All application logic lives in `shlav-a-mega.html` (~5,920 lines, 191 functions) — no bundler, no framework, no build step. The file contains:
 - All CSS (1,000+ lines, responsive, RTL-aware, dark/light/study modes)
 - All JavaScript (ES6+, vanilla)
 - HTML structure
@@ -62,7 +62,7 @@ the full decomposition ledger and safe-next-steps list.
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.4)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.8)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
@@ -220,15 +220,15 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `10.4` (sw.js cache key: `shlav-a-v10.4`)
+- Currently both at version `10.8` (sw.js cache key: `shlav-a-v10.8`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, 678 tests)
+npm test             # Run all tests (vitest, 693 tests)
 ```
 
-**678 tests across 21 files** — run `npm test` to see current count.
+**693 tests across 23 files (~23 tests per file avg)** — run `npm test` to see current count.
 
 **Auto-expand rule:** Every feature, improvement, or bug fix MUST include new or updated tests:
 - New data file or field → schema validation test
@@ -457,11 +457,12 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Study notes | 40 |
 | Hazzard chapters | 108 (in-app reader) |
 | Harrison chapters | 69 (in-app reader) |
-| Test suite | 678 tests across 21 files (vitest) |
+| Test suite | 693 tests across 23 files (vitest) |
+| Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — shared `fsrs.js` canonical md5 `cea66a0435…`, shared Supabase project `krmlzwwelqvlfslwltol` |
 | CI workflows | 3 (ci.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=169, onchange=25, oninput=6 |
-| App version | v10.4 |
-| SW cache key | `shlav-a-v10.4` |
+| App version | v10.8 |
+| SW cache key | `shlav-a-v10.8` |
 
 
 ## Test Coverage Recommendations
@@ -521,7 +522,7 @@ Reach **300+ tests** with coverage of every data file, every engine function, an
 ### Recently completed (kept here briefly for changelog context)
 - ~~Update package.json version~~ — synced to APP_VERSION (9.76)
 - ~~Weekly-audit CI~~ — `.github/workflows/weekly-audit.yml` runs Sun 06:00 UTC (acorn, GRS, CSP, version drift)
-- ~~Expand test suite to 300+~~ — 678 tests across 21 files
+- ~~Expand test suite to 300+~~ — 693 tests across 23 files (hit 2x the target)
 - ~~test:coverage script~~ — `vitest run --coverage` already in package.json
 - ~~Hazzard-generated questions~~ — 1,789 AI-generated Hazzard questions in corpus
 - ~~CSP meta tag~~ — present in `shlav-a-mega.html`
