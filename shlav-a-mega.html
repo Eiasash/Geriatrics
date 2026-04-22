@@ -1959,6 +1959,10 @@ function fmtT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;re
 
 
 // ===== QUESTION IMAGE UPLOAD =====
+// ⚠️ DUPLICATION — these two constants are ALSO defined in
+// src/auth/githubAuth.js lines 16-17. If you rotate the Supabase
+// key, update BOTH places. Single-file PWA can't import from ES
+// modules loaded as type=module; this comment is the drift contract.
 const SUPA_URL='https://krmlzwwelqvlfslwltol.supabase.co';
 const SUPA_ANON='sb_publishable_tUuqQQ8RKMvLDwTz5cKkOg_o_y-rHtw';
 async function uploadQImage(qIdx){
