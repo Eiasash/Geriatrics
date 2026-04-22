@@ -143,7 +143,7 @@ body.study [style*="background:#ede9fe"]{background:#2a1e0d!important;color:#e8d
 --yellow-bg:255 251 235;--yellow-brd:253 230 138;--yellow-fg:146 64 14;
 --red-bg:254 242 242;--red-brd:254 202 202;--red-fg:153 27 27}
 body{font-family:'Heebo','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:rgb(var(--bg));color:rgb(var(--fg));-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-.heb{font-family:'Heebo',sans-serif;direction:rtl;text-align:right}
+.heb{font-family:'Heebo',sans-serif;unicode-bidi:plaintext;text-align:start}
 button{cursor:pointer;border:none;background:none;font:inherit}
 input,textarea,select{font:inherit}
 .hdr{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;position:sticky;top:0;z-index:40}
@@ -1784,7 +1784,7 @@ function showFullExamPicker(){
   <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgb(var(--red-bg));border:1px solid rgb(var(--red-brd));border-radius:8px;margin-bottom:4px;cursor:pointer;font-size:12px"><input type="checkbox" class="fe-src" value="Hazzard" style="width:18px;height:18px;accent-color:var(--app-primary)"> 📕 Hazzard (AI-generated) <span style="color:rgb(var(--fg3));font-size:10px;margin-right:auto">${hazCount}q</span></label>
   <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgb(var(--blue-bg));border:1px solid rgb(var(--blue-brd));border-radius:8px;margin-bottom:4px;cursor:pointer;font-size:12px"><input type="checkbox" class="fe-src" value="Harrison" style="width:18px;height:18px;accent-color:var(--app-primary)"> 📗 Harrison (AI-generated) <span style="color:rgb(var(--fg3));font-size:10px;margin-right:auto">${harCount}q</span></label>`;
   const html=`<div id="feModal" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;padding:16px;overflow-y:auto" onclick="if(event.target===this)this.remove()">
-  <div style="background:rgb(var(--card-bg));color:rgb(var(--fg));border-radius:16px;max-width:440px;margin:20px auto;padding:18px;direction:rtl;font-family:Heebo,Inter,sans-serif">
+  <div style="background:rgb(var(--card-bg));color:rgb(var(--fg));border-radius:16px;max-width:440px;margin:20px auto;padding:18px;unicode-bidi:plaintext;font-family:Heebo,Inter,sans-serif" dir="auto">
     <div style="font-weight:700;font-size:16px;margin-bottom:4px">📋 מבחן מלא — 150 שאלות</div>
     <div style="font-size:11px;color:rgb(var(--fg3));margin-bottom:12px">3 שעות · בחר מקורות (אפשר לסמן כמה שרוצים)</div>
     <div style="display:flex;gap:6px;margin-bottom:12px">
@@ -1808,7 +1808,7 @@ function showMockExamPicker(){
   QZ.forEach(q=>{if(EXAM_TAGS.includes(q.t))counts[q.t]=(counts[q.t]||0)+1;});
   const rows=EXAM_TAGS.filter(t=>counts[t]>=20).map(t=>`<button onclick="startMockExamByTag('${t}');document.getElementById('mockPicker').remove()" class="btn" style="display:block;width:100%;margin-bottom:6px;padding:10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;text-align:right;font-size:12px;cursor:pointer">${t} <span style="color:rgb(var(--fg3));font-size:10px">— ${counts[t]} שאלות</span></button>`).join('');
   const html=`<div id="mockPicker" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;padding:16px;overflow-y:auto" onclick="if(event.target===this)this.remove()">
-  <div style="background:rgb(var(--card-bg));border-radius:16px;max-width:420px;margin:40px auto;padding:18px;direction:rtl">
+  <div style="background:rgb(var(--card-bg));border-radius:16px;max-width:420px;margin:40px auto;padding:18px;unicode-bidi:plaintext" dir="auto">
     <div style="font-weight:700;font-size:15px;margin-bottom:12px">🎯 מבחן סימולציה</div>
     <button onclick="startMockExam();document.getElementById('mockPicker').remove()" class="btn btn-p" style="display:block;width:100%;margin-bottom:10px;padding:10px;font-size:12px;font-weight:700">🎲 100 שאלות — חלוקה מציאותית של כל הנושאים</button>
     <div style="font-size:10px;color:rgb(var(--fg3));margin:10px 0 6px;font-weight:700">או תרגל מבחן שנתי ספציפי:</div>
@@ -2122,9 +2122,9 @@ if(timedMode&&!ans){
 }
 const _isFlagQ=(S.flagged||{})[pool[qi]];
 h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="${heDir(q.q)}">${_isFlagQ?'<span style="color:#dc2626;font-size:11px" title="Explanation flagged — verify">⚑ </span>':''  }${q.q}</p>`;
-if(q.eFlag&&ans){h+=`<div style="margin:6px 0;padding:6px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:10px;color:#991b1b;text-align:right;line-height:1.4" dir="rtl">⚠️ AI flagged: ההסבר עשוי לא להתאים לתשובה הנכונה (${sanitize(q.eFlag)}) <button onclick="event.stopPropagation();clearEFlag(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#991b1b;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-right:6px">✓ אמת</button></div>`;}
-if(q.eFlag&&ans){h+=`<div style="margin:6px 0;padding:6px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:10px;color:#991b1b;text-align:right;line-height:1.4;display:flex;align-items:center;gap:6px;justify-content:space-between" dir="rtl"><span style="flex:1">⚠️ AI flagged: ההסבר עשוי לא להתאים לתשובה הנכונה (${sanitize(q.eFlag)})</span><button onclick="event.stopPropagation();clearEFlag(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#991b1b;color:#fff;border:none;border-radius:6px;cursor:pointer;flex:0 0 auto">✓ אמת</button></div>`;}
-if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy"><button onclick="event.stopPropagation();removeQImage(${pool[qi]})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer">✕</button>${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:right;line-height:1.4" title="Stem relies entirely on the image — explanation was auto-generated without image context and may be incorrect">⚠️ שאלה תלוית-תמונה: ההסבר נוצר ללא ראיית התמונה ועלול להיות שגוי. אמת מול מקור. <button onclick="event.stopPropagation();markImgDepVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#d97706;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-right:6px">✓ מאומת</button></div>':''}</div>`;}
+if(q.eFlag&&ans){h+=`<div style="margin:6px 0;padding:6px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:10px;color:#991b1b;text-align:start;line-height:1.4;unicode-bidi:plaintext" dir="auto">⚠️ AI flagged: ההסבר עשוי לא להתאים לתשובה הנכונה (<bdi>${sanitize(q.eFlag)}</bdi>) <button onclick="event.stopPropagation();clearEFlag(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#991b1b;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-inline-start:6px">✓ אמת</button></div>`;}
+if(q.eFlag&&ans){h+=`<div style="margin:6px 0;padding:6px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:10px;color:#991b1b;text-align:start;line-height:1.4;display:flex;align-items:center;gap:6px;justify-content:space-between;unicode-bidi:plaintext" dir="auto"><span style="flex:1">⚠️ AI flagged: ההסבר עשוי לא להתאים לתשובה הנכונה (<bdi>${sanitize(q.eFlag)}</bdi>)</span><button onclick="event.stopPropagation();clearEFlag(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#991b1b;color:#fff;border:none;border-radius:6px;cursor:pointer;flex:0 0 auto">✓ אמת</button></div>`;}
+if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy"><button onclick="event.stopPropagation();removeQImage(${pool[qi]})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer">✕</button>${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:start;line-height:1.4;unicode-bidi:plaintext" dir="auto" title="Stem relies entirely on the image — explanation was auto-generated without image context and may be incorrect">⚠️ שאלה תלוית-תמונה: ההסבר נוצר ללא ראיית התמונה ועלול להיות שגוי. אמת מול מקור. <button onclick="event.stopPropagation();markImgDepVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#d97706;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-inline-start:6px">✓ מאומת</button></div>':''}</div>`;}
 if(!q.img&&!examMode){h+=`<div style="margin-bottom:10px"><button onclick="uploadQImage(${pool[qi]})" style="font-size:10px;padding:4px 12px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">📷 Attach Image</button><span id="img-status-${pool[qi]}" style="font-size:10px;color:rgb(var(--fg3));margin-left:6px"></span></div>`;}
 q.o.forEach((o,i)=>{
 let cls='qo';
@@ -2242,7 +2242,7 @@ h+=`<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
 
 if(!examMode&&ans){
 h+=`<div id="report-wrong-expand" style="display:none;margin-top:6px;padding:10px;background:rgb(var(--bg2));border-radius:10px;border:1px solid rgb(var(--brd))">
-<input id="reportInput" class="search-box" placeholder="מה לדעתך התשובה הנכונה ולמה?" style="font-size:11px;margin-bottom:6px;direction:rtl">
+<input id="reportInput" class="search-box" placeholder="מה לדעתך התשובה הנכונה ולמה?" style="font-size:11px;margin-bottom:6px;unicode-bidi:plaintext;text-align:start" dir="auto">
 <button class="btn" style="font-size:10px;width:100%;background:rgb(var(--yellow-fg));color:#fff" onclick="S._reportType='wrong_answer';submitReport()">שלח לבדיקת AI</button>
 <div id="fbStatus" style="font-size:10px;margin-top:4px;display:none"></div>
 <div id="aiVerifyResult" style="display:none;margin-top:8px;padding:10px;border-radius:8px;font-size:10px;line-height:1.6"></div>
@@ -2259,8 +2259,8 @@ let h='';
 if(ans&&!examMode&&isOk(q,sel)){
 if(!teachBackState){
 h+='<div style="margin-top:12px;background:rgb(var(--green-bg));border:1px solid #a7f3d0;border-radius:12px;padding:12px">';
-h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:12px;font-weight:700;color:rgb(var(--green-fg));direction:rtl">🎓 Teach-Back: הסבר מדוע זו התשובה הנכונה</span><button onclick="startVoiceTeachBack()" id="tb-mic-btn" style="font-size:16px;padding:4px 8px;background:#ecfdf5;border:none;border-radius:8px;cursor:pointer" title="הקלט קולי" aria-label="Record voice teach-back">🎙️</button></div>';
-h+='<textarea id="tbInput" dir="rtl" style="width:100%;min-height:60px;resize:vertical;font-family:Heebo,sans-serif;border:1px solid #a7f3d0;border-radius:8px;padding:8px;font-size:12px" placeholder="הקלד את ההסבר שלך..." aria-label="Teach-back explanation"></textarea>';
+h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:12px;font-weight:700;color:rgb(var(--green-fg));unicode-bidi:plaintext" dir="auto">🎓 Teach-Back: הסבר מדוע זו התשובה הנכונה</span><button onclick="startVoiceTeachBack()" id="tb-mic-btn" style="font-size:16px;padding:4px 8px;background:#ecfdf5;border:none;border-radius:8px;cursor:pointer" title="הקלט קולי" aria-label="Record voice teach-back">🎙️</button></div>';
+h+='<textarea id="tbInput" dir="auto" style="width:100%;min-height:60px;resize:vertical;font-family:Heebo,sans-serif;border:1px solid #a7f3d0;border-radius:8px;padding:8px;font-size:12px;unicode-bidi:plaintext;text-align:start" placeholder="הקלד את ההסבר שלך..." aria-label="Teach-back explanation"></textarea>';
 h+='<div style="display:flex;gap:8px;margin-top:8px">';
 h+='<button class="btn btn-g" style="flex:1;font-size:11px" onclick="var v=document.getElementById(\'tbInput\')?.value?.trim();if(v){gradeTeachBack(pool[qi],v);}else{teachBackState=\'skip\';render();}" aria-label="Grade teach-back with AI">🤖 Grade it</button>';
 h+='<button class="btn btn-o" style="font-size:11px" onclick="teachBackState=\'skip\';render()" aria-label="Skip teach-back">דלג</button>';
@@ -2858,7 +2858,7 @@ function renderWrongAnswerLog(){
   if(curQ){
     h+=`<div style="margin-bottom:12px;padding:10px;background:rgb(var(--yellow-bg));border-radius:10px;border:1px solid rgb(var(--yellow-brd))">
 <div style="font-size:11px;font-weight:700;color:rgb(var(--yellow-fg));margin-bottom:6px">❌ Report wrong answer key for current question</div>
-<input id="reportInput" class="search-box" placeholder="מה לדעתך התשובה הנכונה ולמה?" style="font-size:11px;margin-bottom:6px;direction:rtl">
+<input id="reportInput" class="search-box" placeholder="מה לדעתך התשובה הנכונה ולמה?" style="font-size:11px;margin-bottom:6px;unicode-bidi:plaintext;text-align:start" dir="auto">
 <button class="btn" style="font-size:10px;width:100%;background:#d97706;color:#fff" onclick="S._reportType='wrong_answer';submitReport()" aria-label="Submit report for AI review">שלח לבדיקת AI</button>
 <div id="fbStatus" style="font-size:10px;margin-top:4px;display:none"></div>
 <div id="aiVerifyResult" style="display:none;margin-top:8px;padding:10px;border-radius:8px;font-size:10px;line-height:1.6"></div>
@@ -5211,14 +5211,14 @@ h+='</div>';
 }else{
 S.chat.forEach(function(m){
 var cls=m.role==='user'?'chat-msg-user':m.role==='error'?'chat-msg-err':'chat-msg-ai';
-if(m.role==='user'){h+='<div class="'+cls+' heb" dir="rtl" style="text-align:right">'+sanitize(m.text)+'</div>';}
+if(m.role==='user'){h+='<div class="'+cls+' heb" dir="auto" style="text-align:start;unicode-bidi:plaintext">'+sanitize(m.text)+'</div>';}
 else{h+='<div class="'+cls+'">'+sanitize(m.text)+'</div>';}
 });
 if(chatLoading){h+='<div class="chat-msg-ai" style="padding:6px 12px"><div class="typing-dots"><span></span><span></span><span></span></div></div>';}
 }
 h+='</div>';
 h+='<div class="chat-input-row">';
-h+='<textarea id="chat-input" placeholder="שאל שאלה גריאטרית..." rows="2" aria-label="Chat input" style="flex:1;border:1px solid rgb(var(--brd));border-radius:10px;padding:8px 10px;font-size:12px;resize:none;font-family:Heebo,sans-serif;direction:rtl;text-align:right;background:inherit;color:inherit" onkeydown="if(event.key===&apos;Enter&apos;&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>';
+h+='<textarea id="chat-input" placeholder="שאל שאלה גריאטרית..." rows="2" aria-label="Chat input" dir="auto" style="flex:1;border:1px solid rgb(var(--brd));border-radius:10px;padding:8px 10px;font-size:12px;resize:none;font-family:Heebo,sans-serif;unicode-bidi:plaintext;text-align:start;background:inherit;color:inherit" onkeydown="if(event.key===&apos;Enter&apos;&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>';
 h+='<button class="btn btn-p" onclick="sendChat()" '+(chatLoading?'disabled':'')+' style="align-self:flex-end;min-width:52px" aria-label="Send">שלח</button>';
 h+='</div>';
 h+='</div>';
@@ -5463,8 +5463,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.7';
+const APP_VERSION='10.8';
 const CHANGELOG={
+'10.8':[
+'🔤 BIDI hygiene pass (matches § C FamilyMedicine v1.3.4 / § E Pnimit v9.79) — .heb class no longer force-sets direction:rtl; now uses unicode-bidi:plaintext + text-align:start. Each paragraph\'s base direction is computed from its own first strong character per the Unicode Bidi Algorithm. Hebrew stays right-aligned, English/AI-generated content no longer reflows RTL inside Hebrew-font containers.',
+'🔤 9 inline direction:rtl + 4 dir="rtl" sites cleaned: full-exam modal, mock-exam picker, eFlag banners × 2, imgDep banner, teach-back header+textarea, report input (two sites), chat user bubble, chat input textarea. All now use dir="auto" + unicode-bidi:plaintext. Interpolated eFlag text wrapped in <bdi>.',
+'🔤 margin-right:6px → margin-inline-start:6px on banner buttons (direction-aware spacing).',
+],
 '10.4':['🛡️ Atomic-save: flush localStorage סינכרונית ב-pagehide/visibility-hidden — סגירת tab בזמן ה-debounce של 150ms כבר לא תאבד את השמירה האחרונה.','📚 PDF caching on-demand: ספרי הלימוד (Hazzard/Harrison/מאמרים/בחינות) נשמרים אוטומטית לקריאה אופליין אחרי פתיחה ראשונה. עד 40 PDFs ב-LRU cache.','🔄 SW stuck-version guard: אם service worker חדש הופעל בזמן שהלקוח רץ, banner העדכון עולה אוטומטית.','🔒 applyUpdate שומר על cache של תמונות ו-PDF (רק shlav-a-* נמחק ב-reset) — מונע הורדה חוזרת של ספרים.','📐 תיקון RTL punctuation ב-303 שאלות (424 נקודות): רווח בין עברית לאותיות לטיניות, רווח אחרי פסיק/נקודה-פסיק בטקסט עברי. scripts/fix_rtl_punctuation.py idempotent.','📝 CLAUDE.md/README סנכרון (v10.4, 3,326 Qs).'],
 '10.3':['🖼️ תיקון 5 תמונות שאלות: idx 3194/3196/3200/3204/3205 מחוברות ל-Supabase URLs (geri_2024_al_q69, geri_sep2024_q69, geri_2024_al_q35, geri_jun2025_q136, geri_sep2024_q31). imgMissing/imgDep flags הוסרו.'],
 '10.2':['↩ הוחזרו כתובות Supabase לסכמת public (geriatrics schema לא היה חשוף ב-PostgREST, כתיבות החזירו 406 ונתוני משתמשים נעלמו). 12 שורות שעברו היסטורית ב-geriatrics.* אוחו חזרה ל-public.* בטרנזקציה בטוחה.','🔒 תיקון auth של proxy ל-Toranot — 2 call sites ישנים (question gen + feedback AI) שעקפו את callAI() והשתמשו בפורמט body.secret הישן תוקנו. כעת כולם דרך callAI עם header x-api-secret. כל פיצ׳רי ה-AI פעילים שוב.'],
