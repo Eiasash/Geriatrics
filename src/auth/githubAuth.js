@@ -10,7 +10,7 @@
 //   Then call: window.signInWithGitHub()
 
 const SUPA_URL = 'https://krmlzwwelqvlfslwltol.supabase.co';
-const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtybWx6d3dlbHF2bGZzbHdsdG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NjQxMDksImV4cCI6MjA4NzU0MDEwOX0.PFSuFgHA-WBnrgs4stmloxvOORSX0CiXDPsW2dinAAQ';
+const SUPA_ANON = 'sb_publishable_tUuqQQ8RKMvLDwTz5cKkOg_o_y-rHtw';
 
 let _supabase = null;
 
