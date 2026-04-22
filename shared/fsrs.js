@@ -80,7 +80,11 @@ function isChronicFail(srEntry){
 
 /**
  * Days remaining until the exam date (rounded up, min 0).
- * Reads from either (a) explicit param, (b) S.examDate, (c) localStorage['shlav_exam_date' | 'pnimit_exam_date'].
+ * Reads from either (a) explicit param, (b) S.examDate, (c) any of the three sibling
+ * localStorage keys: 'shlav_exam_date' (Geriatrics), 'mishpacha_exam_date' (FamilyMedicine),
+ * 'pnimit_exam_date' (InternalMedicine). Checking all three keeps this file canonical —
+ * identical byte-for-byte across the three repos — without per-app customization.
+ * Each app only writes its own key; the other two lookups return null for that user.
  * Returns null if no exam date is set.
  *
  * @param {string|null} [override] - ISO date string (YYYY-MM-DD) to use instead of stored value
@@ -94,6 +98,7 @@ function fsrsDaysToExam(override){
       d=S.examDate||
         (typeof localStorage!=='undefined'&&
           (localStorage.getItem('shlav_exam_date')||
+           localStorage.getItem('mishpacha_exam_date')||
            localStorage.getItem('pnimit_exam_date')))||
         null;
     }catch(e){d=null;}
