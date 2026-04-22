@@ -505,7 +505,6 @@ Reach **300+ tests** with coverage of every data file, every engine function, an
 - [ ] **Port features from InternalMedicine v9.33** — Changelog rendering fix, stats.map crash fix, IDB hoisting fix, Rescue Drill mode, Activity Tracking
 - [ ] **Add Hazzard chapter JSON tests** — Validate structure of `hazzard_chapters.json` and `data/hazzard_chapters.json`
 - [ ] **OSCE expansion** — Add more OSCE stations covering all 40 topics (currently 10 stations)
-- [ ] **Add flashcard spaced repetition** — FSRS already exists for questions; extend to flashcard review scheduling
 
 ### Low Priority
 - [ ] **PWA install prompt** — Add beforeinstallprompt handler for mobile install
@@ -526,6 +525,7 @@ Reach **300+ tests** with coverage of every data file, every engine function, an
 - ~~test:coverage script~~ — `vitest run --coverage` already in package.json
 - ~~Hazzard-generated questions~~ — 1,789 AI-generated Hazzard questions in corpus
 - ~~CSP meta tag~~ — present in `shlav-a-mega.html`
+- ~~Add flashcard spaced repetition~~ — FSRS-4.5 wired (`fcGetDueIndices`/`fcRebuildQueue`/`fcFsrsScore`/`fcRate`) with Due/Browse mode, next-interval hints, empty-state UI; 38 tests in `flashcardFsrs.test.js` + `sharedFsrs.test.js`
 
 ---
 
