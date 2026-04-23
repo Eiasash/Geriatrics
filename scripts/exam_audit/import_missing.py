@@ -73,17 +73,17 @@ def load_answers(exam_id):
 def main():
     apply = '--apply' in sys.argv
     
-    with open(QJ) as f: qs = json.load(f)
-    with open(TOPICS_J) as f: topics = json.load(f)
+    with open(QJ, encoding='utf-8') as f: qs = json.load(f)
+    with open(TOPICS_J, encoding='utf-8') as f: topics = json.load(f)
     
-    reports = json.load(open(REPORTS / '_all_reports.json'))
+    reports = json.load(open(REPORTS / '_all_reports.json', encoding='utf-8'))
     
     # Collect all missing canonical Q entries
     candidates = []  # list of (exam_id, q_num, canonical_q_dict, tag, accepted)
     for exam_id, report in reports.items():
         canon_file = CANONICAL / f'{exam_id}.json'
         if not canon_file.exists(): continue
-        canon = json.load(open(canon_file))
+        canon = json.load(open(canon_file, encoding='utf-8'))
         answers = load_answers(exam_id)
         tag = EXAM_TAG_MAP.get(exam_id)
         if not tag: continue
@@ -164,7 +164,7 @@ def main():
         # Append to dataset
         for _, _, entry, _ in new_entries:
             qs.append(entry)
-        with open(QJ, 'w') as f:
+        with open(QJ, 'w', encoding='utf-8') as f:
             json.dump(qs, f, ensure_ascii=False, indent=1)
         print(f"\nAppended {len(new_entries)} entries. New total: {len(qs)}")
     else:
