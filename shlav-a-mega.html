@@ -5480,8 +5480,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.11';
+const APP_VERSION='10.12';
 const CHANGELOG={
+'10.12':[
+'🖼 54 תמונות קליניות הועלו ל-Supabase bucket question-images עם סכמת שמות geri_<tag>_q<N>.png. פרסר אלבום תמונות חדש: חילוץ ע"י fitz.get_images() + מיפוי לפי "שאלה N" בטקסט העמוד + manual overrides לקונפליקטי Q# עם מספרי עמוד.',
+'📸 אינדוקס חדש: 2022 (17 תמונות), 2023 (12), 2024-May (10), 2024-Sep (9 - מ-2 אלבומים), 2025-Jun (7). סה"כ 52 קישורים תקפים ב-Q records (2 לא התאימו - Qs עם stems קצרים מאוד או שנפלו בפרסר).',
+'🔧 Supabase upload: שימוש ב-POST endpoint (לא PUT/upsert - אין UPDATE policy ל-anon role, רק INSERT על bucket question-images).',
+],
 '10.11':[
 '🔁 תיקון סיווג של v10.10: הסרת 946 שאלות Pnimit (רפואה פנימית). מסלול בסיסי של שלב א\' גריאטריה הוא מבחן גריאטרי ייעודי, לא Pnimit. בנוסף הוסרו 184 קטעים חלקיים ישנים שיוצגו כעת בגרסה מלאה.',
 '📚 אינג\'סט קנוני 5 מבחנים — 2022-Jun-Basic (124), 2023-Jun-Basic (139), 2024-May-Basic (148), 2024-Sep-Basic (97), 2025-Jun-Basic (149). סה"כ 657 שאלות חדשות מ-PDFs מקוריים של ועדת הבחינות.',
