@@ -193,10 +193,10 @@ FIXES = [
 
 def main():
     apply = '--apply' in sys.argv
-    with open(QJ) as f:
+    with open(QJ, encoding='utf-8') as f:
         qs = json.load(f)
     if apply and not BACKUP.exists():
-        with open(BACKUP, 'w') as f:
+        with open(BACKUP, 'w', encoding='utf-8') as f:
             json.dump(qs, f, ensure_ascii=False, indent=1)
         print(f"Backup saved: {BACKUP}")
 
@@ -236,7 +236,7 @@ def main():
     print(f"Total fixes planned: {len(FIXES)}")
     if apply:
         print(f"Applied: {changes_applied}")
-        with open(QJ, 'w') as f:
+        with open(QJ, 'w', encoding='utf-8') as f:
             json.dump(qs, f, ensure_ascii=False, indent=1)
         print(f"Wrote: {QJ}")
     else:

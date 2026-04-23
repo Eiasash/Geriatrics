@@ -116,7 +116,7 @@ Rules:
             sts = ", ".join(s.get("key", "?") for s in result.get("subtopics", []))
             print(f"  ti={ti:2d} {result['name'][:40]:40s} → {sts}")
 
-    with open(out, "w", encoding="utf-8") as fh:
+    with open(out, "w", encoding="utf-8", encoding='utf-8') as fh:
         json.dump(taxonomy, fh, ensure_ascii=False, indent=2)
     print(f"\nTaxonomy written to {out}")
     print("REVIEW THIS FILE, then run pass B with --pass=b --taxonomy=" + out)
@@ -200,7 +200,7 @@ Return STRICT JSON array of {{"n": <index>, "st": "<key>"}}. One entry per quest
             applied += 1
 
     out_path = qs_path + ".with_st.json"
-    with open(out_path, "w", encoding="utf-8") as fh:
+    with open(out_path, "w", encoding="utf-8", encoding='utf-8') as fh:
         json.dump(qs, fh, ensure_ascii=False, indent=2)
     print(f"\nApplied {applied}/{len(todo)} ({100*applied/max(1,len(todo)):.1f}%)")
     print(f"Wrote {out_path}")
