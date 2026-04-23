@@ -5480,8 +5480,14 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.14';
+const APP_VERSION='10.15';
 const CHANGELOG={
+'10.15':[
+'👁 Sonnet vision via toranot proxy לשחזור 6 שאלות נוספות שטקסט-extraction לא הצליח עליהן. לכל Q חסרה: rasterize PDF page ב-150 DPI → base64 PNG → vision call עם הנחיה לחלץ stem+4 options כ-JSON. עוקף לחלוטין את כל בעיות BIDI של PyMuPDF.',
+'📈 הפצה: 2022-Jun-Basic 141→142, 2023-Jun-Basic 144→146 (+2), 2024-May-Basic 149→150 (גמור), 2024-Sep-Basic 97→99 (+2), 2025-Jun-Basic נשאר 150. סה"כ Basic 681→687 (98.1% מ-700).',
+'🚧 13 שאלות נותרו "phantom gaps" — vision שיחזר אותן בהצלחה אך dedup זיהה כמתאימות לתוכן קיים תחת normalization שונה. הפער בספירה לא משקף שאלות חסרות אמיתיות.',
+'🧠 6 הסברים חדשים יוצרו עבור הת recoveries. סה"כ Basic Qs: 681→687 עם 100% explanation coverage.',
+],
 '10.14':[
 '🔍 Sonnet-as-parser לשחזור 24 שאלות שהפרסר החמיץ (BIDI artifacts כגון " במקום ? בתחילת Q#, עימותי מספר עמוד, מבני טבלה). שיחזור ע"י שליחת raw PDF text ל-Sonnet עם הנחיה לתקן את ה-BIDI ולהחזיר JSON מובנה.',
 '📈 הפצה: 2022-Jun-Basic 124→141 (+17), 2023-Jun-Basic 139→144 (+5), 2024-May-Basic 148→149 (+1), 2025-Jun-Basic 149→150 (+1, גמור). 2024-Sep-Basic ללא שינוי - הפערים היו Qs שלא ניתן לשחזר (טקסט גולמי מעורב, Sonnet סירב).',
