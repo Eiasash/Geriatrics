@@ -1,12 +1,12 @@
 {
   "name": "geriatrics",
-  "version": "10.9.0",
+  "version": "10.10.0",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "hooks:install": "git config core.hooksPath scripts/git-hooks && echo '✓ pre-commit + pre-push hooks active'",
+    "hooks:install": "git config core.hooksPath scripts/git-hooks && echo '\u2713 pre-commit + pre-push hooks active'",
     "verify": "node --check src/sw-update.js && python3 scripts/check-version-sync.py && python3 scripts/check-brace-balance.py && python3 scripts/check-innerhtml.py && python3 scripts/check-innerhtml-pieces.py && HARRISON_HEBREW_BASELINE=0 node scripts/harrison-hebrew-baseline.cjs --strict && vitest run",
     "image:check": "node scripts/add-image-question.cjs --help"
   },
