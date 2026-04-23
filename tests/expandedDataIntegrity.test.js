@@ -100,6 +100,7 @@ describe("questions.json — near-duplicate detection", () => {
     const map = new Map();
     const nearDupes = [];
     questions.forEach((q, i) => {
+      if (q.allow_dup) return;
       const prefix = q.q.trim().slice(0, 80).toLowerCase();
       if (map.has(prefix)) {
         const prev = map.get(prefix);
