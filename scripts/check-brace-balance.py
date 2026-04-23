@@ -2,7 +2,7 @@
 """Check JS brace balance in shlav-a-mega.html."""
 import sys
 
-c = open('shlav-a-mega.html').read()
+c = open('shlav-a-mega.html', encoding='utf-8').read()
 opens = c.count('{')
 closes = c.count('}')
 diff = opens - closes

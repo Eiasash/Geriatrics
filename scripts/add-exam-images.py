@@ -52,7 +52,7 @@ APPS = {
 
 def get_supa_key(html_path):
     """Extract Supabase anon key from app HTML."""
-    html = open(html_path).read()
+    html = open(html_path, encoding='utf-8').read()
     m = re.search(r'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+', html)
     return m.group(0) if m else None
 
@@ -129,7 +129,7 @@ def upload_to_supabase(images, supa_key):
 
 def get_current_version(html_path):
     """Read current APP_VERSION from HTML."""
-    html = open(html_path).read()
+    html = open(html_path, encoding='utf-8').read()
     m = re.search(r"APP_VERSION='(\d+\.\d+)'", html)
     return m.group(1) if m else None
 
@@ -147,16 +147,16 @@ def bump_version(app_cfg, repo_dir):
     new_ver = f"{parts[0]}.{int(parts[1]) + 1}"
 
     # Bump HTML
-    html = open(html_path).read()
+    html = open(html_path, encoding='utf-8').read()
     html = html.replace(f"APP_VERSION='{old_ver}'", f"APP_VERSION='{new_ver}'")
-    open(html_path, 'w').write(html)
+    open(html_path, 'w', encoding='utf-8').write(html)
 
     # Bump SW
-    sw = open(sw_path).read()
+    sw = open(sw_path, encoding='utf-8').read()
     old_cache = f"{app_cfg['cache_prefix']}{old_ver}"
     new_cache = f"{app_cfg['cache_prefix']}{new_ver}"
     sw = sw.replace(f"CACHE='{old_cache}'", f"CACHE='{new_cache}'")
-    open(sw_path, 'w').write(sw)
+    open(sw_path, 'w', encoding='utf-8').write(sw)
 
     print(f"  Version: {old_ver} → {new_ver}")
     print(f"  Cache: {old_cache} → {new_cache}")
@@ -183,12 +183,12 @@ def run_tests(repo_dir):
 
 def syntax_check(html_path):
     """Extract JS and run node --check."""
-    html = open(html_path).read()
+    html = open(html_path, encoding='utf-8').read()
     start = html.rfind('<script>') + len('<script>')
     end = html.rfind('</script>')
     js = html[start:end].replace('</script>', '')
     tmp = '/tmp/_syntax_check.js'
-    open(tmp, 'w').write(js)
+    open(tmp, 'w', encoding='utf-8').write(js)
     result = subprocess.run(['node', '--check', tmp], capture_output=True, text=True)
     os.remove(tmp)
     if result.returncode != 0:

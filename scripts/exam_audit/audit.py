@@ -100,7 +100,7 @@ def audit_exam(exam_meta, dataset):
         return {'error': f'No q_pdf cached for {exam_id}'}
     canonical_qs, stats = parse_exam(q_pdf)
     # Save canonical for reuse
-    with open(CANONICAL / f'{exam_id}.json', 'w') as f:
+    with open(CANONICAL / f'{exam_id}.json', 'w', encoding='utf-8') as f:
         json.dump({'questions': {str(k): v for k,v in canonical_qs.items()}, 'stats': stats}, f, ensure_ascii=False, indent=1)
     
     # Parse answers (prefer revised)
@@ -205,9 +205,9 @@ def audit_exam(exam_meta, dataset):
     return report
 
 def main():
-    with open(HERE / 'sources.json') as f:
+    with open(HERE / 'sources.json', encoding='utf-8') as f:
         src = json.load(f)
-    with open(QJ) as f:
+    with open(QJ, encoding='utf-8') as f:
         dataset = json.load(f)
     
     # Parse args
@@ -247,11 +247,11 @@ def main():
         
         all_reports[exam['id']] = report
         # Save detail
-        with open(REPORTS / f'{exam["id"]}.json', 'w') as f:
+        with open(REPORTS / f'{exam["id"]}.json', 'w', encoding='utf-8') as f:
             json.dump(report, f, ensure_ascii=False, indent=1)
     
     # Global aggregation
-    with open(REPORTS / '_all_reports.json', 'w') as f:
+    with open(REPORTS / '_all_reports.json', 'w', encoding='utf-8') as f:
         json.dump(all_reports, f, ensure_ascii=False, indent=1)
     
     # Summary

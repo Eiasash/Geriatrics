@@ -174,17 +174,17 @@ def main():
                     questions[i]['e'] = text
                     done += 1
                     if done % 10 == 0:
-                        with open(QUESTIONS_PATH, 'w', encoding='utf-8') as f:
+                        with open(QUESTIONS_PATH, 'w', encoding='utf-8', encoding='utf-8') as f:
                             json.dump(questions, f, ensure_ascii=False, indent=2)
                         print(f'  checkpoint: {done}/{len(todo)} done')
                 else:
                     failures.append({'i': i, 'err': err, 'q': questions[i].get('q','')[:120]})
                     print(f'  FAIL [{i}]: {err}')
 
-    with open(QUESTIONS_PATH, 'w', encoding='utf-8') as f:
+    with open(QUESTIONS_PATH, 'w', encoding='utf-8', encoding='utf-8') as f:
         json.dump(questions, f, ensure_ascii=False, indent=2)
 
-    with open(FAILURES_PATH, 'w', encoding='utf-8') as f:
+    with open(FAILURES_PATH, 'w', encoding='utf-8', encoding='utf-8') as f:
         json.dump(failures, f, ensure_ascii=False, indent=2)
 
     print(f'\nFinal: {done}/{len(todo)} succeeded, {len(failures)} failed')

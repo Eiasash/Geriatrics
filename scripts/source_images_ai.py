@@ -118,7 +118,7 @@ def main():
     
     fieldnames = list(rows[0].keys()) + ["description","search_terms","svg_feasible","svg","error"]
     fieldnames = list(dict.fromkeys(fieldnames))  # dedup preserve order
-    with open(args.out, "w", encoding="utf-8", newline="") as fh:
+    with open(args.out, "w", encoding="utf-8", newline="", encoding='utf-8') as fh:
         w = csv.DictWriter(fh, fieldnames=fieldnames, extrasaction="ignore")
         w.writeheader()
         w.writerows(out_rows)

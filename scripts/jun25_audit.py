@@ -156,9 +156,9 @@ def audit(pdf_path, apply=False):
             sa_qs[yi]['q'] = sa_qs[ci]['q']
             if sa_qs[ci].get('o'):
                 sa_qs[yi]['o'] = sa_qs[ci]['o']
-        with open(QJ, 'w', encoding='utf-8') as f:
+        with open(QJ, 'w', encoding='utf-8', encoding='utf-8') as f:
             json.dump(sa_qs, f, ensure_ascii=False, indent=2)
-        with open(BACKUP, 'w', encoding='utf-8') as f:
+        with open(BACKUP, 'w', encoding='utf-8', encoding='utf-8') as f:
             json.dump(backup, f, ensure_ascii=False, indent=2)
         print(f"Applied {len(safe_fixes)} fixes. Backup → {BACKUP}")
     elif safe_fixes:
