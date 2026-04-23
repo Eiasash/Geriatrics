@@ -1150,6 +1150,12 @@ function go(t){tab=t;renderTabs();render()}
 
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
+// v10.9: Topic-source scope — lets user filter the topic dropdown to exam-only, books-only, or all.
+// 'all' = all sources (default), 'exams' = past-exam Qs only (tag contains 20XX), 'books' = Hazzard/Harrison reconstructions only.
+let topicSrc=(function(){try{const v=localStorage.getItem('samega_topic_src');return ['all','exams','books'].includes(v)?v:'all';}catch(e){return 'all';}})();
+function _isExamTag(t){return !!t && /\b20\d\d\b/.test(t);}
+function _topicSrcMatch(q){if(topicSrc==='all')return true;const ex=_isExamTag(q&&q.t);return topicSrc==='exams'?ex:!ex;}
+function setTopicSrc(s){if(!['all','exams','books'].includes(s))return;topicSrc=s;try{localStorage.setItem('samega_topic_src',s);}catch(e){}if(filt==='topic'){buildPool();}render();}
 // Canonical exam-session tags (ported from Pnimit's EXAM_YEARS). Bare 2020/2021/2022
 // month-unresolved — kept on whitelist so multi-select pills can still target them.
 const EXAM_YEARS=['2020','2021','2021-Jun','2022','2023-Jun','2023-Sep','2024-May','2024-Sep','2025-Jun'];
@@ -1242,7 +1248,7 @@ pool=[];
 const due=getDueQuestions();
 let smartShuffled=false;
 if(filt==='due'){pool=due.length?due:[];}
-else if(filt==='topic'&&topicFilt>=0){QZ.forEach((q,i)=>{if(q.ti===topicFilt)pool.push(i)});}
+else if(filt==='topic'&&topicFilt>=0){QZ.forEach((q,i)=>{if(q.ti===topicFilt&&_topicSrcMatch(q))pool.push(i)});}
 else if(filt==='years'&&selectedExamYears.size){
   QZ.forEach((q,i)=>{if(selectedExamYears.has(q.t))pool.push(i)});
 }
@@ -1274,7 +1280,7 @@ if(QZ.length)buildPool();
 let miniExamTopic=-1,miniExamResults=null;
 function startTopicMiniExam(ti){
 miniExamTopic=ti;miniExamResults=null;
-pool=QZ.map((_,i)=>i).filter(i=>QZ[i].ti===ti);
+pool=QZ.map((_,i)=>i).filter(i=>QZ[i].ti===ti&&_topicSrcMatch(QZ[i]));
 for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
 pool=pool.slice(0,20);
 qi=0;sel=null;ans=false;_sessionOk=0;_sessionNo=0;_sessionStart=Date.now();
@@ -2466,18 +2472,29 @@ h+=`<div style="display:flex;gap:8px;margin-bottom:10px;font-size:10px;align-ite
 <span class="tt-wrap"><label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" ${timedMode?'checked':''} onchange="timedMode=this.checked;if(timedMode){clearInterval(timedInt);timedSec=90;render();setTimeout(startTimedQ,50);}else{stopTimedMode();}"> ⏱ Timed (90s)</label><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">90-second countdown per question. Auto-advances when time runs out — marks as wrong. Builds exam-condition reflexes.</div></span>
 <span style="color:rgb(var(--fg3));font-size:10px" title="After every reveal, you see why each wrong answer is wrong and when it would be correct.">🔬 Distractor Autopsy on</span>
 </div>`;
+// v10.9: topic-source scope pills (הכל / ממבחנים / ספרי לימוד) — control which sources the topic dropdown draws from
+const _tsAll=QZ.length,_tsEx=QZ.filter(q=>_isExamTag(q.t)).length,_tsBk=_tsAll-_tsEx;
+h+=`<div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;font-size:10px;flex-wrap:wrap" dir="rtl">
+<span style="color:rgb(var(--fg3));font-weight:600;margin-inline-end:2px">מקור נושאים:</span>
+<span class="pill ${topicSrc==='all'?'on':''}" onclick="setTopicSrc('all')" style="padding:4px 10px;font-size:10px;min-height:30px" title="כל השאלות (מבחנים + ספרי לימוד + AI)">הכל (${_tsAll})</span>
+<span class="pill ${topicSrc==='exams'?'on':''}" onclick="setTopicSrc('exams')" style="padding:4px 10px;font-size:10px;min-height:30px" title="שאלות ממבחני מועצה בלבד">ממבחנים בלבד (${_tsEx})</span>
+<span class="pill ${topicSrc==='books'?'on':''}" onclick="setTopicSrc('books')" style="padding:4px 10px;font-size:10px;min-height:30px" title="שחזורים מ-Hazzard/Harrison בלבד">ספרי לימוד (${_tsBk})</span>
+</div>`;
 h+=`<div style="display:flex;gap:6px;margin-bottom:10px"><select class="calc-in" style="font-size:11px;padding:6px 10px;flex:1" onchange="this.value===-1?setFilt('all'):setTopicFilt(parseInt(this.value))">
-<option value="-1"${filt!=='topic'?' selected':''}>📂 Filter by topic…</option>`;
-TOPICS.forEach((t,i)=>{h+=`<option value="${i}"${filt==='topic'&&topicFilt===i?' selected':''}>${t}</option>`;});
+<option value="-1"${filt!=='topic'?' selected':''}>📂 Filter by topic${topicSrc==='exams'?' (ממבחנים)':topicSrc==='books'?' (ספרי לימוד)':''}…</option>`;
+TOPICS.forEach((t,i)=>{const _tc=QZ.filter(q=>q.ti===i&&_topicSrcMatch(q)).length;h+=`<option value="${i}"${filt==='topic'&&topicFilt===i?' selected':''}${_tc===0?' disabled':''}>${t}${topicSrc!=='all'?' ('+_tc+')':''}</option>`;});
 h+=`</select>`;
-// Feature 2: Topic mini-exam button
+// Feature 2: Topic mini-exam button — respects topicSrc
 if(filt==='topic'&&topicFilt>=0){
-const _tqCount=QZ.filter(q=>q.ti===topicFilt).length;
-h+=`<button class="btn btn-d" style="font-size:10px;padding:6px 12px;white-space:nowrap" onclick="startTopicMiniExam(${topicFilt})" aria-label="Start topic mini-exam">🎯 Mini Exam (${Math.min(_tqCount,20)}q)</button>`;
+const _tqCount=QZ.filter(q=>q.ti===topicFilt&&_topicSrcMatch(q)).length;
+h+=`<button class="btn btn-d" style="font-size:10px;padding:6px 12px;white-space:nowrap" onclick="startTopicMiniExam(${topicFilt})" aria-label="Start topic mini-exam"${_tqCount===0?' disabled':''}>🎯 Mini Exam (${Math.min(_tqCount,20)}q)</button>`;
 }
 h+=`</div>`;
 }
-if(!pool.length){h+=`<div class="card" style="padding:24px;text-align:center"><p style="font-size:13px;color:rgb(var(--fg3))">${filt==='due'?'🎉 No questions due for review!':'No questions match this filter.'}</p></div>`;return h;}
+if(!pool.length){
+const _emptyDueToSrc=filt==='topic'&&topicFilt>=0&&topicSrc!=='all'&&QZ.some(q=>q.ti===topicFilt);
+const _srcLabel=topicSrc==='exams'?'ממבחנים בלבד':'ספרי לימוד בלבד';
+h+=`<div class="card" style="padding:24px;text-align:center"><p style="font-size:13px;color:rgb(var(--fg3));margin-bottom:${_emptyDueToSrc?'12px':'0'}">${filt==='due'?'🎉 No questions due for review!':_emptyDueToSrc?`אין שאלות בנושא זה במקור "${_srcLabel}".`:'No questions match this filter.'}</p>${_emptyDueToSrc?`<button class="btn btn-d" style="font-size:11px;padding:8px 14px" onclick="setTopicSrc('all')">🔄 הצג מכל המקורות</button>`:''}</div>`;return h;}
 h+=`<div class="progress-bar"><div class="fill" style="width:${Math.round((qi+1)/pool.length*100)}%"></div></div>`;
 h+=`<div class="card" style="padding:16px">`;
 h+=_rqmQuestion();
@@ -5463,8 +5480,14 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.8';
+const APP_VERSION='10.9';
 const CHANGELOG={
+'10.9':[
+'🎯 מיון נושאים לפי מקור — 3 pills חדשים מעל dropdown הנושאים: "הכל" (ברירת מחדל, 3326), "ממבחנים בלבד" (1195, מ-16 גרסאות תג שנה), "ספרי לימוד" (2131, Hazzard/Harrison/Exam-orphan). משפיע על שני מסלולים: (1) filt="topic" + topicFilt, (2) Mini Exam (20 שאלות). השמירה ב-localStorage["samega_topic_src"] — נשמר בין sessions.',
+'🔧 Dropdown הנושאים מציג count ליד כל נושא כשהסינון פעיל, ומנטרל נושאים ללא שאלות במקור הנבחר. Mini Exam button מנוטרל גם הוא אם הנושא ריק במקור.',
+'🪄 Empty state חכם — כשסינון "ממבחנים"/"ספרי לימוד" הוא הסיבה לפוד ריק, מוצג כפתור 🔄 "הצג מכל המקורות" שחוזר ל-all במקום רק להציג "no questions".',
+'📐 היוריסטיקה: תג הוא "מבחן" אם מכיל \\b20\\d\\d\\b (2020, 2021-Jun, 2024-May-Subspec וכו\'). Hazzard/Hazzard-suppl/Harrison/Exam → "ספרי לימוד". תואם 100% לחלוקה הקיימת ב-PAST_EXAM_TAGS של הרגרסיות.',
+],
 '10.8':[
 '🔤 BIDI hygiene pass (matches § C FamilyMedicine v1.3.4 / § E Pnimit v9.79) — .heb class no longer force-sets direction:rtl; now uses unicode-bidi:plaintext + text-align:start. Each paragraph\'s base direction is computed from its own first strong character per the Unicode Bidi Algorithm. Hebrew stays right-aligned, English/AI-generated content no longer reflows RTL inside Hebrew-font containers.',
 '🔤 9 inline direction:rtl + 4 dir="rtl" sites cleaned: full-exam modal, mock-exam picker, eFlag banners × 2, imgDep banner, teach-back header+textarea, report input (two sites), chat user bubble, chat input textarea. All now use dir="auto" + unicode-bidi:plaintext. Interpolated eFlag text wrapped in <bdi>.',
