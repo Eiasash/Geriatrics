@@ -5480,8 +5480,15 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.15';
+const APP_VERSION='10.16';
 const CHANGELOG={
+'10.16':[
+'🎯 BIDI multi-digit Q-marker breakthrough — PyMuPDF extract מחלק ספרות של מספרים דו-ספרתיים על שורות נפרדות ולפעמים מחליף סדר (Q36 → "6\\n3\\n.", Q134 → "4\\n3\\n1\\n."). פתרון: find_q_page עם split-digit patterns + reversed-digit patterns + adjacent-Q fallback (אם Q לא נמצא, נסה למצוא Q-1 או Q+1 ולהשתמש בעמוד שלהם).',
+'📈 הפצה: 2022-Jun-Basic 143→146 (+3), 2023-Jun-Basic 146→150 (+4, גמור ✓). 2024-May/2024-Sep/2025-Jun ללא שינוי. סה"כ Basic 688→695 (99.3% של 700).',
+'✅ 3 מבחנים כעת 100% מלאים: 2023-Jun, 2024-May, 2025-Jun. 2024-Sep ב-99/100. 2022-Jun ב-146/150.',
+'🧠 8 הסברים חדשים יוצרו אוטומטית. סה"כ Basic Qs עם הסברים: 695/695 (100%).',
+'🚧 5 Qs שנותרו אינם ניתנים לשחזור: 2022 Q11/Q21/Q134/Q138/Q143, 2024-Sep Q30 — עמוד PDF מציג טבלת מעבדה/טקסט כותרת/אין Q-marker מזוהה.',
+],
 '10.15':[
 '👁 Sonnet vision via toranot proxy לשחזור 6 שאלות נוספות שטקסט-extraction לא הצליח עליהן. לכל Q חסרה: rasterize PDF page ב-150 DPI → base64 PNG → vision call עם הנחיה לחלץ stem+4 options כ-JSON. עוקף לחלוטין את כל בעיות BIDI של PyMuPDF.',
 '📈 הפצה: 2022-Jun-Basic 141→142, 2023-Jun-Basic 144→146 (+2), 2024-May-Basic 149→150 (גמור), 2024-Sep-Basic 97→99 (+2), 2025-Jun-Basic נשאר 150. סה"כ Basic 681→687 (98.1% מ-700).',
