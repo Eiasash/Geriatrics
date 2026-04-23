@@ -97,12 +97,14 @@ describe('v10.9 — topic source scope', () => {
     });
 
     it('exam bucket is ≥ 1100 Qs (count-lock — bump if you add exams)', () => {
-      // Current exact count: 1195. Floor set to 1100 to absorb minor legitimate edits.
-      // If it falls below, either a new year bucket broke the year regex or an
-      // ingest regression. If it grows past 2000, the rule likely started catching
+      // v10.10: 2141 exam Qs (v10.9 was 1195; +946 Pnimit Basic-track imports).
+      // Floor 1100 preserved to absorb minor legitimate edits.
+      // Ceiling 2500 accommodates future Basic-track additions (e.g. 2021-Dec Basic).
+      // If it falls below floor, either a new year bucket broke the year regex or an
+      // ingest regression. If it grows past ceiling, the rule likely started catching
       // textbook tags — check _isExamTag.
       expect(examQs.length).toBeGreaterThanOrEqual(1100);
-      expect(examQs.length).toBeLessThanOrEqual(2000);
+      expect(examQs.length).toBeLessThanOrEqual(2500);
     });
 
     it('textbook bucket is ≥ 2000 Qs (Hazzard alone is 1789)', () => {
@@ -190,8 +192,14 @@ describe('v10.9 — topic source scope', () => {
   });
 
   describe('version sync', () => {
-    it('APP_VERSION bumped to 10.9', () => {
-      expect(html).toContain("const APP_VERSION='10.9';");
+    it('APP_VERSION is bumped past 10.9 (when this test was added)', () => {
+      // Version-agnostic so future bumps don't keep breaking this test.
+      // Also asserts monotonic progress from the v10.9 introduction of topic-source scope.
+      const m = html.match(/const APP_VERSION='(\d+)\.(\d+)';/);
+      expect(m, 'APP_VERSION declaration not found').toBeTruthy();
+      const [, maj, min] = m;
+      const num = parseInt(maj, 10) * 1000 + parseInt(min, 10);
+      expect(num).toBeGreaterThanOrEqual(10 * 1000 + 9);
     });
 
     it('CHANGELOG has 10.9 entry above 10.8', () => {

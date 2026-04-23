@@ -6,7 +6,7 @@
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~408 KB, ~5,920 lines, 191 functions)
-- **App version**: v10.9 (as of 23/04/26) — Topic source scope (exams-only / books-only / all) for topic filter + mini-exam
+- **App version**: v10.10 (as of 23/04/26) — Stage A Basic track: +946 Qs from Pnimit exams (2020-2025), 3,326→4,272 Qs
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -62,13 +62,13 @@ the full decomposition ledger and safe-next-steps list.
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.9)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.10)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
 │
 ├── data/                    # Lazy-loaded JSON data — single source of truth
-│   ├── questions.json       # 3,326 MCQs (primary runtime source)
+│   ├── questions.json       # 4,272 MCQs (primary runtime source)
 │   ├── notes.json           # 40 study topic notes
 │   ├── drugs.json           # 114 Beers/ACB drugs database
 │   ├── flashcards.json      # 159 high-yield flashcards
@@ -220,7 +220,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `10.9` (sw.js cache key: `shlav-a-v10.9`)
+- Currently both at version `10.10` (sw.js cache key: `shlav-a-v10.10`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
@@ -461,8 +461,8 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — shared `fsrs.js` canonical md5 `cea66a0435…`, shared Supabase project `krmlzwwelqvlfslwltol` |
 | CI workflows | 3 (ci.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=169, onchange=25, oninput=6 |
-| App version | v10.9 |
-| SW cache key | `shlav-a-v10.9` |
+| App version | v10.10 |
+| SW cache key | `shlav-a-v10.10` |
 
 
 ## Test Coverage Recommendations

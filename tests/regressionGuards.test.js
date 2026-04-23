@@ -79,7 +79,7 @@ describe('questions.json — formatting quality', () => {
   let questions;
   // Only past-exam sessions suffer PDF-extraction artifacts.
   // Hazzard/Harrison/Hazzard-suppl are AI-generated and immune.
-  const PAST_EXAM_TAGS = ['2020', '2021-Dec', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun'];
+  const PAST_EXAM_TAGS = ['2020', '2020-Basic', '2021-Dec', '2021-Jun', '2021-Jun-Basic', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun', '2025-Jun-Basic'];
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
   // Catches "בן58" → should be "בן 58". Geriatrics has a legacy backlog
@@ -269,6 +269,8 @@ describe('questions.json — structural invariants', () => {
       '2020', '2022',
       // Canonical exam sessions
       '2021-Dec', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun',
+      // v10.10: Basic-track (Pnimit-sourced) Stage A Geriatrics exams
+      '2020-Basic', '2021-Jun-Basic', '2025-Jun-Basic',
       // Content sources
       'Hazzard', 'Harrison', 'Exam',
       // Split from 2025-א theory-type questions
@@ -314,21 +316,24 @@ describe('questions.json — per-session counts locked', () => {
 
   const EXPECTED = {
     '2020': 100,
+    '2020-Basic': 150,
     '2021-Dec': 104,
     '2021-Jun': 103,
+    '2021-Jun-Basic': 148,
     '2022-Jun-Subspec': 95,
-    '2022-Jun-Basic': 45,
+    '2022-Jun-Basic': 193,
     '2022-Jun-orphan': 16,
     '2023-Jun-Subspec': 100,
-    '2023-Jun-Basic': 45,
+    '2023-Jun-Basic': 195,
     '2023-Jun-orphan': 22,
     '2023-Sep': 22,
     '2024-May-Subspec': 90,
-    '2024-May-Basic': 44,
+    '2024-May-Basic': 143,
     '2024-Sep-Subspec': 93,
-    '2024-Sep-Basic': 50,
+    '2024-Sep-Basic': 150,
     '2024-orphan': 47,
     '2025-Jun': 219,
+    '2025-Jun-Basic': 151,
     'Exam': 24,
     'Harrison': 294,
     'Hazzard': 1789,
@@ -340,8 +345,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3326', () => {
-    expect(questions.length).toBe(3326);
+  test('total question count is exactly 4272', () => {
+    expect(questions.length).toBe(4272);
   });
 });
 
@@ -402,7 +407,7 @@ describe('multi-select exam-year filter — Task 3 contract', () => {
   let questions;
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
-  const EXAM_YEARS = ['2020', '2021-Dec', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun'];
+  const EXAM_YEARS = ['2020', '2020-Basic', '2021-Dec', '2021-Jun', '2021-Jun-Basic', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun', '2025-Jun-Basic'];
 
   // Reproduces the pool-building logic inline so test doesn't depend on
   // running the monolith's runtime.
