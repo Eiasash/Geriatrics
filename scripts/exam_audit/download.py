@@ -7,7 +7,7 @@ HERE = Path(__file__).parent
 CACHE = HERE / 'cache'
 CACHE.mkdir(exist_ok=True)
 
-with open(HERE / 'sources.json') as f:
+with open(HERE / 'sources.json', encoding='utf-8') as f:
     src = json.load(f)
 
 s3 = src['_s3_prefix']

@@ -40,8 +40,8 @@ def main():
     app = sys.argv[1]
     mis_path = f"{app}_e_mismatches.json"
     qs_path = ("geri" if app=="geri" else "pnimit") + "/data/questions.json"
-    mis = json.load(open(mis_path))
-    qs = json.load(open(qs_path))
+    mis = json.load(open(mis_path, encoding='utf-8'))
+    qs = json.load(open(qs_path, encoding='utf-8'))
     tasks = [(f['idx'], qs[f['idx']], f['reason']) for f in mis['flagged']]
     print(f"{app}: re-checking {len(tasks)}")
     
@@ -74,7 +74,7 @@ def main():
         "errors": errors[:20],
     }
     out_path = f"{app}_decisions.json"
-    json.dump(out, open(out_path,'w'), ensure_ascii=False, indent=2)
+    json.dump(out, open(out_path,'w', encoding='utf-8'), ensure_ascii=False, indent=2)
     print(f"\n{app}: real={real} false_positive={fp} errors={len(errors)} → {out_path}")
 
 if __name__ == "__main__": main()

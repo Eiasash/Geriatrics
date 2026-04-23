@@ -51,7 +51,7 @@ def load_canonical_map(exam_id):
     """Return list of (q_num, norm_text) for an exam's canonical Qs."""
     f = CANONICAL / f'{exam_id}.json'
     if not f.exists(): return []
-    canon = json.load(open(f))
+    canon = json.load(open(f, encoding='utf-8'))
     result = []
     for q_num, cq in canon['questions'].items():
         text = (cq.get('q', '') or '') + ' ' + ' '.join(cq.get('o', []) or [])
@@ -83,7 +83,7 @@ def main():
     explicit_exams = sys.argv[2:] if len(sys.argv) > 2 else None
     target_exams = explicit_exams or TAG_CANONICALS.get(target_tag, [])
     
-    with open(QJ) as f:
+    with open(QJ, encoding='utf-8') as f:
         qs = json.load(f)
     
     entries = [(i, q) for i, q in enumerate(qs) if q.get('t') == target_tag]
@@ -139,7 +139,7 @@ def main():
     }
     safe_tag = re.sub(r'[^\w]', '_', target_tag)
     out = HERE / 'reports' / f'tag_audit_{safe_tag}.json'
-    with open(out, 'w') as f:
+    with open(out, 'w', encoding='utf-8') as f:
         json.dump(report, f, ensure_ascii=False, indent=1)
     print(f"\nFull report: {out}")
 

@@ -300,7 +300,7 @@ def main():
             "by_topic": dict(by_topic),
             "flagged": flagged,
         }
-        with open(args.out, "w", encoding="utf-8") as fh:
+        with open(args.out, "w", encoding="utf-8", encoding='utf-8') as fh:
             json.dump(report, fh, ensure_ascii=False, indent=2)
         print(f"\nReport written to {args.out}")
 

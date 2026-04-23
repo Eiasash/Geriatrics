@@ -85,12 +85,12 @@ def render_fix_script(exam_id, c_mismatches, track, date, answer_source='revised
     return '\n'.join(lines) + '\n'
 
 def main():
-    with open(HERE / 'sources.json') as f:
+    with open(HERE / 'sources.json', encoding='utf-8') as f:
         src = json.load(f)
     
     exam_map = {e['id']: e for e in src['exams']}
     
-    reports = json.load(open(REPORTS / '_all_reports.json'))
+    reports = json.load(open(REPORTS / '_all_reports.json', encoding='utf-8'))
     
     summary = []
     for exam_id, r in reports.items():
