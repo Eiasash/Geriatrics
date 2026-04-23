@@ -69,13 +69,19 @@ jobs:
           qs = json.load(open('data/questions.json'))
           seen = {}
           conflicts = []
+          allowed_conflicts = []
           dupes = []
           for i, q in enumerate(qs):
               key = q['q'].strip()[:80]
               if key in seen:
                   j = seen[key]
                   if qs[i]['o'] == qs[j]['o'] and qs[i]['c'] != qs[j]['c']:
-                      conflicts.append((j, i, key[:60]))
+                      # Legitimate recurrence: Basic↔Subspec exams can share a question
+                      # but land on different post-appeal keys. Both sides opt-in via allow_dup.
+                      if qs[i].get('allow_dup') and qs[j].get('allow_dup'):
+                          allowed_conflicts.append((j, i, key[:60]))
+                      else:
+                          conflicts.append((j, i, key[:60]))
                   elif qs[i]['o'] == qs[j]['o']:
                       dupes.append((j, i, key[:60]))
               else:
@@ -86,6 +92,11 @@ jobs:
               for j, i, k in conflicts:
                   print(f'  Q{j} (c={qs[j][\"c\"]}) vs Q{i} (c={qs[i][\"c\"]}): {k}...', file=sys.stderr)
               sys.exit(1)
+
+          if allowed_conflicts:
+              print(f'NOTE: {len(allowed_conflicts)} conflicting pairs allowed via allow_dup (legitimate Basic↔Subspec recurrence):')
+              for j, i, k in allowed_conflicts:
+                  print(f'  Q{j} (c={qs[j][\"c\"]}, t={qs[j][\"t\"]}) vs Q{i} (c={qs[i][\"c\"]}, t={qs[i][\"t\"]}): {k}...')
 
           if dupes:
               print(f'WARNING: {len(dupes)} exact duplicate pairs (same answer)')
