@@ -2,9 +2,9 @@
 """Check APP_VERSION, sw.js CACHE, and package.json version are aligned."""
 import json, re, sys
 
-html = open('shlav-a-mega.html').read()
-sw = open('sw.js').read()
-pkg = json.load(open('package.json'))
+html = open('shlav-a-mega.html', encoding='utf-8').read()
+sw = open('sw.js', encoding='utf-8').read()
+pkg = json.load(open('package.json', encoding='utf-8'))
 
 m_app = re.search(r"APP_VERSION\s*=\s*['\"]([^'\"]+)['\"]", html)
 m_sw = re.search(r"CACHE\s*=\s*['\"]shlav-a-v([^'\"]+)['\"]", sw)

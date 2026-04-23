@@ -134,9 +134,9 @@ def audit(pdf_path, answers_path, apply=False):
         backup = {str(e['sa_idx']): copy.deepcopy(sa_qs[e['sa_idx']]) for e in errors}
         for e in errors:
             sa_qs[e['sa_idx']]['c'] = e['new_c']
-        with open(QJ, 'w', encoding='utf-8') as f:
+        with open(QJ, 'w', encoding='utf-8', encoding='utf-8') as f:
             json.dump(sa_qs, f, ensure_ascii=False, indent=1)
-        with open(BACKUP, 'w', encoding='utf-8') as f:
+        with open(BACKUP, 'w', encoding='utf-8', encoding='utf-8') as f:
             json.dump(backup, f, ensure_ascii=False, indent=2)
         print(f"Applied {len(errors)} c-fixes. Backup → {BACKUP}")
     elif errors:
