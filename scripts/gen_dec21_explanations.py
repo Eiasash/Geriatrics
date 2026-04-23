@@ -47,7 +47,7 @@ def gen(q):
     return q['n'], msg.content[0].text.strip()
 
 def main():
-    qs = json.load(open('exams/2021_dec_al/missing_q_clean.json'))
+    qs = json.load(open('exams/2021_dec_al/missing_q_clean.json', encoding='utf-8'))
     results = {}
     with ThreadPoolExecutor(max_workers=10) as ex:
         futs = {ex.submit(gen, q): q['n'] for q in qs}
@@ -62,7 +62,7 @@ def main():
     for q in qs:
         if q['n'] in results:
             q['e'] = results[q['n']]
-    json.dump(qs, open('exams/2021_dec_al/missing_q_final.json','w'), ensure_ascii=False, indent=2)
+    json.dump(qs, open('exams/2021_dec_al/missing_q_final.json','w', encoding='utf-8'), ensure_ascii=False, indent=2)
     print(f'Generated {len(results)}/{len(qs)} explanations', file=sys.stderr)
 
 if __name__ == '__main__':

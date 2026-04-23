@@ -19,8 +19,8 @@ def main():
         print("Usage: apply_eflag_decisions.py <decisions.json> <questions.json>")
         sys.exit(1)
     dec_path, qs_path = sys.argv[1], sys.argv[2]
-    dec = json.load(open(dec_path))
-    qs = json.load(open(qs_path))
+    dec = json.load(open(dec_path, encoding='utf-8'))
+    qs = json.load(open(qs_path, encoding='utf-8'))
     dismissed, kept, skipped = 0, 0, 0
     for idx_str, verdict in dec['decisions'].items():
         idx = int(idx_str)
@@ -33,7 +33,7 @@ def main():
             kept += 1
         elif verdict == 'skip':
             skipped += 1
-    json.dump(qs, open(qs_path, 'w'), ensure_ascii=False, indent=2)
+    json.dump(qs, open(qs_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
     print(f"Applied: {dismissed} dismissed (eFlag removed), {kept} kept (flagged), {skipped} skipped")
     print(f"Written: {qs_path}")
 

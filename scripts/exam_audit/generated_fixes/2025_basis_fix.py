@@ -56,7 +56,7 @@ FIXES = [
 
 def main():
     apply = '--apply' in sys.argv
-    with open(QJ) as f: qs = json.load(f)
+    with open(QJ, encoding='utf-8') as f: qs = json.load(f)
     changed = 0
     for q_num, idx, new_c, accepted, cur_tag, sim in FIXES:
         q = qs[idx]
@@ -70,7 +70,7 @@ def main():
     print(f'\nTotal fixes in script: {len(FIXES)}')
     if apply:
         print(f'Applied: {changed}')
-        with open(QJ, 'w') as f: json.dump(qs, f, ensure_ascii=False, indent=1)
+        with open(QJ, 'w', encoding='utf-8') as f: json.dump(qs, f, ensure_ascii=False, indent=1)
     else:
         print('DRY RUN — use --apply to write changes')
 
