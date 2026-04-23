@@ -1158,7 +1158,7 @@ function _topicSrcMatch(q){if(topicSrc==='all')return true;const ex=_isExamTag(q
 function setTopicSrc(s){if(!['all','exams','books'].includes(s))return;topicSrc=s;try{localStorage.setItem('samega_topic_src',s);}catch(e){}if(filt==='topic'){buildPool();}render();}
 // Canonical exam-session tags (ported from Pnimit's EXAM_YEARS). Bare 2020/2021/2022
 // month-unresolved — kept on whitelist so multi-select pills can still target them.
-const EXAM_YEARS=['2020','2020-Basic','2021','2021-Jun','2021-Jun-Basic','2022','2023-Jun','2023-Sep','2024-May','2024-Sep','2025-Jun','2025-Jun-Basic'];
+const EXAM_YEARS=['2020','2021','2021-Jun','2022','2023-Jun','2023-Sep','2024-May','2024-Sep','2025-Jun','2025-Jun-Basic'];
 // Multi-select exam-year filter. Persisted across sessions (unlike Pnimit's runtime-only G.years).
 let selectedExamYears=(function(){
   try{const raw=localStorage.getItem('samega_exam_filter');if(!raw)return new Set();
@@ -5480,14 +5480,18 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.10';
+const APP_VERSION='10.11';
 const CHANGELOG={
+'10.11':[
+'🔁 תיקון סיווג של v10.10: הסרת 946 שאלות Pnimit (רפואה פנימית). מסלול בסיסי של שלב א\' גריאטריה הוא מבחן גריאטרי ייעודי, לא Pnimit. בנוסף הוסרו 184 קטעים חלקיים ישנים שיוצגו כעת בגרסה מלאה.',
+'📚 אינג\'סט קנוני 5 מבחנים — 2022-Jun-Basic (124), 2023-Jun-Basic (139), 2024-May-Basic (148), 2024-Sep-Basic (97), 2025-Jun-Basic (149). סה"כ 657 שאלות חדשות מ-PDFs מקוריים של ועדת הבחינות.',
+'🎯 מפתחות לאחר ערעור: 81 שאלות multi-accept כולל 17 "כל התשובות מתקבלות". מראה מקום: רוב השאלות עם haz→ti אוטומטי, השאר ע"י keyword matching + overrides לחוק/מאמר/לקט.',
+'🖼 47 שאלות עם הפניה לתמונה (Supabase URL מובנה: bucket question-images). תמונות עדיין לא הועלו — יוצגו 404 עד אינג\'סט תמונות בנפרד.',
+'📊 סה"כ שאלות: 4272→3799. Exam bucket: 2141→1672 (12 מועדים, 657 Basic+1015 Subspec/Other).',
+'⚠️ פערים ידועים: 2022 Q[54,106,134,138,143] ו-2023 Q[36,45,54,56,67,106,145] — Qs בעלי artifacts BIDI חמורים, נדרש parser מתקדם יותר. ל-v10.12.',
+],
 '10.10':[
-'🎓 מסלול בסיסי — 7 מבחני שלב א\' רפואה פנימית נוספו כמסלול הבסיסי של גריאטריה. 946 שאלות חדשות מעודכנות מ-Pnimit Mega. תגיות חדשות: 2020-Basic (150), 2021-Jun-Basic (148), 2022-Jun-Basic (+148 לקודמות 45 = 193), 2023-Jun-Basic (+150 ל-45 = 195), 2024-May-Basic (+99 ל-44 = 143), 2024-Sep-Basic (+100 ל-50 = 150), 2025-Jun-Basic (151).',
-'📐 Auto-topic מ-24 נושאי Pnimit ל-40 נושאי Geriatrics ע"י keyword matching נגד data/topics.json. 757 שאלות קיבלו ti תקף; 189 הוקצו ל-ti=-1 (נושאים ללא התאמה, יופיעו ב"ממבחנים בלבד" אך לא ב-topic filter).',
-'🔍 Dedup לפי q-text מנורמל (80 תווים, lowercase, ללא פיסוק). רק 1 duplicate נמצא — השאלות הקיימות והחדשות מייצגות תכנים שונים (ייתכן גרסאות ערעור או שאלות שפוצלו).',
-'🧪 עדכוני test locks: total 3326→4272, PAST_EXAM_TAGS ו-EXAM_YEARS כוללים את 4 התגיות החדשות (2020-Basic, 2021-Jun-Basic, 2025-Jun-Basic + התגיות הקיימות שקיבלו Qs). v10.9 topic-source ceiling 2000→2500 לאישור ingests עתידיים.',
-'💡 השימוש: Scope pill "ממבחנים בלבד" כעת כולל 2,141 שאלות מ-23 מועדי בחינה (16 Subspec + 7 Basic). פילטר שנה בפילי hero-row כולל את כל ה-Basic tags.',
+'⚠️ [REVERTED in v10.11] סיווג שגוי — Pnimit לא שייך למאגר גריאטריה.',
 ],
 '10.9':[
 '🎯 מיון נושאים לפי מקור — 3 pills חדשים מעל dropdown הנושאים: "הכל" (ברירת מחדל, 3326), "ממבחנים בלבד" (1195, מ-16 גרסאות תג שנה), "ספרי לימוד" (2131, Hazzard/Harrison/Exam-orphan). משפיע על שני מסלולים: (1) filt="topic" + topicFilt, (2) Mini Exam (20 שאלות). השמירה ב-localStorage["samega_topic_src"] — נשמר בין sessions.',

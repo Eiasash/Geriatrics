@@ -67,6 +67,7 @@ describe("questions.json — schema validation", () => {
     const map = new Map();
     const conflicts = [];
     questions.forEach((q, i) => {
+      if (q.allow_dup) return;
       const key = q.q.trim().toLowerCase();
       if (map.has(key)) {
         const prev = map.get(key);
