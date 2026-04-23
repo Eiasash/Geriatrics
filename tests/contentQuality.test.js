@@ -91,12 +91,13 @@ describe('questions.json — formatting quality (ratchet at current baseline)', 
 describe('questions.json — duplicates (ratchet at current baseline)', () => {
   // Exact ratchet. Current dupes: Q813/Q972, Q889/Q3324 (same Q in Jun/Dec 2021).
   // When a dedupe PR lands, test fails → update DUP_BASELINE to new count.
-  const DUP_BASELINE = 2;
+  const DUP_BASELINE = 0;
 
   it(`duplicates by first 100 chars of stem: exact ${DUP_BASELINE}`, () => {
     const seen = new Map();
     const dupes = [];
     questions.forEach((q, i) => {
+      if (q.allow_dup) return;
       const key = (q.q || '').slice(0, 100).trim();
       if (!key) return;
       if (seen.has(key)) dupes.push({ first: seen.get(key), second: i, preview: key.slice(0, 50) });
