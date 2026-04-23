@@ -324,7 +324,7 @@ describe('questions.json — per-session counts locked', () => {
     '2022-Jun-Subspec': 95,
     '2022-Jun-Basic': 146,
     '2022-Jun-orphan': 16,
-    '2023-Jun-Subspec': 98,
+    '2023-Jun-Subspec': 100,
     '2023-Jun-Basic': 150,
     '2023-Jun-orphan': 22,
     '2023-Sep': 22,
@@ -347,8 +347,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3952', () => {
-    expect(questions.length).toBe(3952);
+  test('total question count is exactly 3954', () => {
+    expect(questions.length).toBe(3954);
   });
 });
 
