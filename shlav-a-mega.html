@@ -5483,8 +5483,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.21';
+const APP_VERSION='10.22';
 const CHANGELOG={
+'10.22':[
+'🧹 e_issue triage — 514 שאלות שהיו מסומנות ב-e_issue=true (first-pass AI flag על אי-התאמה בין ההסבר לתשובה הנכונה) עברו verify שני דרך ה-proxy. תוצאה: 476/514 (92.6%) false positive — ההסבר למעשה תומך בתשובה המסומנת. הדגל הוסר. 32 שאלות הן באמת סתירות אמיתיות (ההסבר מצטט אופציה אחרת כנכונה) — נשמרו מסומנות לבדיקה ידנית. 6 שאלות עם שגיאות verifier נשמרו מסומנות בזהירות.',
+'📊 באדג׳ הצהוב האזהרה בפרונט יצטמצם דרמטית: מ-13% מהשאלות לפחות מ-1%. משתמשים פחות מוסחים באבהרות שווא.',
+'🗂 ארכיון החלטות: docs/eissue_triage_v10.22.json (תוצאות אמת של כל 514).',
+],
 '10.21':[
 '🗑 הוסרו 3 שאלות שבורות מהותית שהיו מסומנות ב-eFlag: (1) ti=17 2022-Jun-orphan — שאלת אנדוקרדיטיס עם קריטריון Duke שגוי (תרבית אחת במקום שתיים), (2) ti=23 Hazzard — הסבר של hyperthyroidism אבל התשובה ממליצה thyroxine (טיפול ל-hypothyroidism), (3) ti=38 Hazzard — אישה בגיל 78 עוברת prostatectomy (בלתי אפשרי אנטומית). ההסבר/תשובה/stem של השלוש לא ניתנים לתיקון — מחיקה עדיפה על השארה מאחורי באדג׳ אזהרה.',
 '📉 סה"כ Qs: 3984 → 3981. 2022-Jun-orphan: 16 → 15. Hazzard: 1819 → 1817. test locks עודכנו.',
