@@ -267,6 +267,44 @@ jobs:
           print('OK: No truncated code patterns detected')
           PYEOF
 
+      # ── GATE 7: e_issue Queue Threshold ──
+      # Prevents the queue creeping back up unnoticed after triage.
+      #
+      # CURRENT STATE (v10.21): 514 e_issue Qs not yet triaged.
+      # Initial thresholds intentionally permissive so this PR doesn't
+      # break CI. After running:
+      #     ANTHROPIC_API_KEY=... python3 scripts/e_issue_second_pass.py
+      #     python3 scripts/apply_e_issue_decisions.py data/e_issue_decisions.json data/questions.json
+      # the count should drop to the small "real" set (likely <50). At
+      # that point, RATCHET DOWN to warn=50, fail=200.
+      - name: "GATE 7: e_issue queue threshold"
+        run: |
+          python3 << 'PYEOF'
+          import json, sys, os
+          qs = json.load(open('data/questions.json', encoding='utf-8'))
+          total = len(qs)
+          e_issue_count = sum(1 for q in qs if q.get('e_issue'))
+
+          # Permissive initial thresholds — RATCHET DOWN after first triage
+          # (target: warn=50, fail=200)
+          warn = int(os.environ.get('E_ISSUE_WARN', '600'))
+          fail = int(os.environ.get('E_ISSUE_FAIL', '800'))
+
+          pct = 100.0 * e_issue_count / max(total, 1)
+          print(f'e_issue: {e_issue_count}/{total} ({pct:.1f}%)  [warn={warn}, fail={fail}]')
+
+          if e_issue_count >= fail:
+              print(f'FATAL: e_issue queue is {e_issue_count} (>= {fail}).', file=sys.stderr)
+              print('Run: ANTHROPIC_API_KEY=... python3 scripts/e_issue_second_pass.py', file=sys.stderr)
+              print('     python3 scripts/apply_e_issue_decisions.py data/e_issue_decisions.json data/questions.json', file=sys.stderr)
+              print('Do NOT route through the Toranot proxy (10s Netlify timeout).', file=sys.stderr)
+              sys.exit(1)
+          elif e_issue_count >= warn:
+              print(f'WARN: e_issue queue is {e_issue_count} (>= {warn}). Schedule a triage pass.')
+          else:
+              print(f'OK: e_issue queue under control ({e_issue_count}).')
+          PYEOF
+
       # ── GATE 6: SW File Integrity ──
       - name: "GATE 6: Service worker caches all required files"
         run: |
