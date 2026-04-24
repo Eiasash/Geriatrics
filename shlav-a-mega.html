@@ -3970,7 +3970,7 @@ if(btn){btn.textContent='✅ הועתק';setTimeout(()=>btn.textContent='📋 ה
 }
 
 // ===== TRACKER =====
-const TOPICS=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM"];
+const TOPICS=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM","Parkinson's","Arrhythmia","Dysphagia"];
 // topic index → {source:'haz'|'notes', label, action} for deep link
 const TOPIC_REF={
   0:{s:'haz',ch:3,l:'Hazzard Ch 3'},  // Biology of Aging
@@ -3980,6 +3980,9 @@ const TOPIC_REF={
   7:{s:'haz',ch:62,l:'Hazzard Ch 62'}, // Depression
   30:{s:'notes',l:'Ethics & Elder Abuse'}, // Elder Abuse
   31:{s:'haz',ch:6,l:'Hazzard Ch 6'},  // Driving → Sex/Gender (nearest)
+  40:{s:'haz',ch:61,l:'Hazzard Ch 61'}, // Parkinson Disease and Related Disorders
+  41:{s:'haz',ch:77,l:'Hazzard Ch 77'}, // Cardiac Arrhythmias
+  42:{s:'haz',ch:31,l:'Hazzard Ch 31'}, // Disorders of Swallowing (Dysphagia)
 };
 
 function renderExamTrendCard(){
@@ -5480,8 +5483,16 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.17';
+const APP_VERSION='10.18';
 const CHANGELOG={
+'10.18':[
+'🧠 3 דליים חדשים של נושאים — Parkinson (ti=40), Arrhythmia (ti=41), Dysphagia (ti=42). עד כה פרקינסון היה מפוזר בין dementia(45), sleep(13), falls(ti=4), constipat(13), הפרעת קצב בין cardio(29), thyroid(8), hypertension(7), דיספגיה בין nutrition(19), COPD(6), palliative(5) — ללא סל ייעודי לכל אחד. בחינות הגריאטריה שואלות 4-6 שאלות פרקינסון, 3-5 הפרעת קצב ו-2-3 דיספגיה בכל סשן — אלה מהוות ~10-15% מהבחינה בלי דלי מתאים.',
+'📦 376 שאלות הועברו לדליים החדשים (192 פרקינסון, 114 הפרעת קצב, 70 דיספגיה). classifier שמרני בלבד על stem השאלה (שדה q) עם regex ספציפי — לא מטריאצ\'י כשרק הרקע מזכיר את הנושא. false positives שהיו בסיבוב הראשון (אתיקה/שחתון אגבי של ICD בחולה הנוטה למות) סוננו.',
+'📝 data/notes.json קיבל 3 פרקי לימוד חדשים (id 40/41/42) ~6KB עברית כל אחד, מבוססים על Hazzard Ch 61/77/31 + AGS Choosing Wisely + MDS 2018 + ESC 2020 AF guidelines.',
+'🔗 TOPIC_REF נוסף עם 3 קישורים ל-Hazzard PDFs: ch 61 (Parkinson), ch 77 (Arrhythmias), ch 31 (Disorders of Swallowing).',
+'🧪 tests עודכנו: regressionGuards ti range [0,39] → [0,42], dataIntegrity+expandedDataIntegrity topics.length 40→43. hardcoded 40 ב-diag stats הוחלף ל-TOPICS.length.',
+'✅ 41-topic syllabus coverage audit: 3 topics שהיו ללא דלי ייעודי (Parkinson, Arrhythmia, Dysphagia) קיבלו דלי. 7 topics ששיערנו חוסר כיסוי (Andropause, Hypothermia, Sensory deprivation, Physical activity, Prevention, QoL, Team-work) התברר שיש להם 17-215 Qs כל אחד — כיסוי סביר גם ללא דלי ייעודי.',
+],
 '10.17':[
 '🩺 קלט קנוני של 5 בחינות Geri Subspec — רפליקציה של pipeline v10.11→v10.16 על מסלול Subspec. החלפת 378 פרסים חלקיים עם 493 Qs קנוניים מ-IMA PDFs.',
 '📈 הפצה: 2022-Jun-Subspec 95/100 (אין מפתח תשובות בזיפ — fallback ל-legacy data), 2023-Jun-Subspec 98/100, 2024-May-Subspec 100/100 ✓, 2024-Sep-Subspec 100/100 ✓, 2025-Jun-Subspec 100/100 ✓. סה"כ +115 Qs (3837→3952).',
@@ -5831,7 +5842,7 @@ return `Shlav A Mega v${APP_VERSION}\n`+
 `---\n`+
 `Questions: ${QZ.length} · Answered: ${tot} · Correct: ${S.qOk} (${tot?Math.round(S.qOk/tot*100):0}%)\n`+
 `SR: ${srEntries.length} tracked · ${srDue} due · ${srHard} hard (EF<2.0) · ${srMastered} mastered\n`+
-`Topics done: ${Object.values(S.ck).filter(Boolean).length}/40\n`+
+`Topics done: ${Object.values(S.ck).filter(Boolean).length}/${TOPICS.length}\n`+
 `Bookmarks: ${Object.values(S.bk).filter(Boolean).length}\n`+
 `Streak: ${S.streak||0} days\n`+
 `---\n`+

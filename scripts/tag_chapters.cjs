@@ -79,6 +79,9 @@ const TOPIC_CHAPTER_MAP = {
   37: { haz: 34, har: null },              // vision / hearing → Hazzard Hearing Loss (most questions)
   38: { haz: 27, har: null },              // perioperative
   39: { haz: 15, har: null },              // emergency / ED
+  40: { haz: 61, har: 433 },               // Parkinson → Hazzard Ch 61 (Parkinson Disease), Harrison Neuro approach
+  41: { haz: 77, har: 286 },               // Arrhythmia → Hazzard Ch 77 (Cardiac Arrhythmias), Harrison Cardiac
+  42: { haz: 31, har: 50 },                // Dysphagia → Hazzard Ch 31 (Disorders of Swallowing), Harrison Weight Loss
 };
 
 /**
