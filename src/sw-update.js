@@ -53,7 +53,7 @@ _swDismissKey='shlav_update_dismissed_'+appVersion;
 // Clear old caches
 caches.keys().then(function(ks){
 var old=ks.filter(function(k){return k.startsWith('shlav-a-')&&k!=='shlav-a-v'+appVersion;});
-old.forEach(function(k){caches.delete(k);console.log('Deleted old cache:',k);});
+old.forEach(function(k){caches.delete(k);});
 });
 
 // Hard-reload guard: if a newer SW activated while this page was running
