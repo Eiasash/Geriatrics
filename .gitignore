@@ -8,3 +8,7 @@ coverage/
 generated-*.json
 *.progress.json
 reference_books/
+
+# Python
+__pycache__/
+*.pyc
