@@ -47,8 +47,8 @@ jobs:
                   errors.append(f'Q{i}: missing or invalid options')
               if not isinstance(q.get('c'), int) or q['c'] < 0 or q['c'] >= len(q.get('o', [])):
                   errors.append(f'Q{i}: invalid correct answer index c={q.get(\"c\")}')
-              if q.get('ti') is not None and (not isinstance(q.get('ti'), int) or q['ti'] < 0 or q['ti'] > 39):
-                  errors.append(f'Q{i}: topic index ti={q.get(\"ti\")} out of range 0-39')
+              if q.get('ti') is not None and (not isinstance(q.get('ti'), int) or q['ti'] < 0 or q['ti'] > 42):
+                  errors.append(f'Q{i}: topic index ti={q.get(\"ti\")} out of range 0-42')
               if not q.get('t'):
                   errors.append(f'Q{i}: missing year field t')
               for opt in q.get('o', []):
