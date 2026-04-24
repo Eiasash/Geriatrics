@@ -40,7 +40,7 @@ jobs:
                   errors.append(f'Q{i}: needs >=4 options')
               if not isinstance(q.get('c'), int) or q['c'] < 0 or q['c'] >= len(q.get('o', [])):
                   errors.append(f'Q{i}: invalid correct answer index')
-              if q.get('ti') is None or not isinstance(q.get('ti'), int) or q['ti'] < 0 or q['ti'] > 39:
+              if q.get('ti') is None or not isinstance(q.get('ti'), int) or q['ti'] < 0 or q['ti'] > 42:
                   errors.append(f'Q{i}: invalid topic index')
               if not q.get('t'):
                   errors.append(f'Q{i}: missing year field')
