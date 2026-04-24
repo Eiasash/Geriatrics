@@ -323,7 +323,7 @@ describe('questions.json — per-session counts locked', () => {
     '2021-Jun': 103,
     '2022-Jun-Subspec': 95,
     '2022-Jun-Basic': 146,
-    '2022-Jun-orphan': 16,
+    '2022-Jun-orphan': 15,
     '2023-Jun-Subspec': 100,
     '2023-Jun-Basic': 150,
     '2023-Jun-orphan': 22,
@@ -338,7 +338,7 @@ describe('questions.json — per-session counts locked', () => {
     '2025-Jun-Subspec': 100,
     'Exam': 24,
     'Harrison': 294,
-    'Hazzard': 1819,
+    'Hazzard': 1817,
     'Hazzard-suppl': 24,
   };
 
@@ -347,8 +347,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3984', () => {
-    expect(questions.length).toBe(3984);
+  test('total question count is exactly 3981', () => {
+    expect(questions.length).toBe(3981);
   });
 });
 

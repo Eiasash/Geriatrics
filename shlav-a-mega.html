@@ -5483,8 +5483,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.20';
+const APP_VERSION='10.21';
 const CHANGELOG={
+'10.21':[
+'🗑 הוסרו 3 שאלות שבורות מהותית שהיו מסומנות ב-eFlag: (1) ti=17 2022-Jun-orphan — שאלת אנדוקרדיטיס עם קריטריון Duke שגוי (תרבית אחת במקום שתיים), (2) ti=23 Hazzard — הסבר של hyperthyroidism אבל התשובה ממליצה thyroxine (טיפול ל-hypothyroidism), (3) ti=38 Hazzard — אישה בגיל 78 עוברת prostatectomy (בלתי אפשרי אנטומית). ההסבר/תשובה/stem של השלוש לא ניתנים לתיקון — מחיקה עדיפה על השארה מאחורי באדג׳ אזהרה.',
+'📉 סה"כ Qs: 3984 → 3981. 2022-Jun-orphan: 16 → 15. Hazzard: 1819 → 1817. test locks עודכנו.',
+],
 '10.20':[
 '🔇 ניקוי רעשי console בפרודקשן — הוסר לוג של אימייל משתמש GitHub (PII) ב-githubAuth.js + לוג ניקוי cache ישן ב-sw-update.js. ללא שינוי התנהגות ללא רגרסיות.',
 '🔖 data/topics.json ti=11 הורחב — נוספו מילות מפתח לאי-נקיטת צואה (fecal, stool, sphincter, RAIR, overflow, צואה, אי-נקיטת צואה). הסילבוס IMA v3.0 מגדיר "Incontinence — urinary and fecal" כנושא מאוחד; עד כה ti=11 היה מסומן רק כ-urinary, אבל הכיל 34 שאלות fecal (כולל 15 שנוספו ב-v10.19). כעת topic picker וחיפוש מסלול נכון.',
