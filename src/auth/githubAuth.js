@@ -67,7 +67,7 @@ window.getGitHubUser = async function () {
     const supabase = await getSupabase();
     const { data } = await supabase.auth.getSession();
     if (data.session) {
-      console.log('[Auth] GitHub user:', data.session.user.email || data.session.user.user_metadata?.user_name);
+      // no console log — user email is PII
     }
   } catch (e) {
     // Silent — auth is optional
