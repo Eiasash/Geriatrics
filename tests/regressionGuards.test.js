@@ -246,10 +246,10 @@ describe('questions.json — structural invariants', () => {
     expect(bad.length).toBe(0);
   });
 
-  test('ti (topic index) is integer in [0, 39]', () => {
+  test('ti (topic index) is integer in [0, 42]', () => {
     const bad = [];
     questions.forEach((q, i) => {
-      if (!(typeof q.ti === 'number' && Number.isInteger(q.ti) && q.ti >= 0 && q.ti <= 39)) {
+      if (!(typeof q.ti === 'number' && Number.isInteger(q.ti) && q.ti >= 0 && q.ti <= 42)) {
         bad.push({ i, tag: q.t, ti: q.ti });
       }
     });

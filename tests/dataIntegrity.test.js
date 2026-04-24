@@ -44,7 +44,7 @@ describe("questions.json — schema validation", () => {
       expect(q.c, `Q[${i}].c within options range`).toBeLessThan(q.o.length);
       expect(Number.isInteger(q.ti), `Q[${i}].ti is integer`).toBe(true);
       expect(q.ti, `Q[${i}].ti >= 0`).toBeGreaterThanOrEqual(0);
-      expect(q.ti, `Q[${i}].ti <= 39`).toBeLessThanOrEqual(39);
+      expect(q.ti, `Q[${i}].ti <= 42`).toBeLessThanOrEqual(42);
     });
   });
 
@@ -83,12 +83,12 @@ describe("questions.json — schema validation", () => {
 });
 
 describe("questions.json — topic coverage", () => {
-  it("all 40 topics (0-39) have at least 5 questions", () => {
+  it("all 43 topics (0-42) have at least 5 questions", () => {
     const topicCounts = {};
     questions.forEach(q => {
       topicCounts[q.ti] = (topicCounts[q.ti] ?? 0) + 1;
     });
-    for (let ti = 0; ti <= 39; ti++) {
+    for (let ti = 0; ti <= 42; ti++) {
       expect(topicCounts[ti] ?? 0, `Topic ${ti} coverage`).toBeGreaterThanOrEqual(4);
     }
   });
@@ -97,8 +97,8 @@ describe("questions.json — topic coverage", () => {
 // ─── Notes ──────────────────────────────────────────────────────────
 
 describe("notes.json — schema validation", () => {
-  it("has exactly 40 notes (one per topic)", () => {
-    expect(notes.length).toBe(40);
+  it("has exactly 43 notes (one per topic)", () => {
+    expect(notes.length).toBe(43);
   });
 
   it("every note has required fields", () => {
@@ -199,8 +199,8 @@ describe("flashcards.json — schema validation", () => {
 // ─── Topics ─────────────────────────────────────────────────────────
 
 describe("topics.json — schema validation", () => {
-  it("has exactly 40 topics", () => {
-    expect(topics.length).toBe(40);
+  it("has exactly 43 topics", () => {
+    expect(topics.length).toBe(43);
   });
 
   it("every topic is an array of keyword strings", () => {
