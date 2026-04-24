@@ -51,8 +51,9 @@ window.signOutGitHub = async function () {
 /** Get the current session (null if not logged in). */
 window.getGitHubSession = async function () {
   const supabase = await getSupabase();
-  const { data } = await supabase.auth.getSession();
-  return data.session;
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw error;
+  return data?.session ?? null;
 };
 
 /** Get the current user (null if not logged in). */
