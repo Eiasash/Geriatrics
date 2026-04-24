@@ -84,10 +84,10 @@ describe("questions.json — answer integrity", () => {
     });
   });
 
-  it("topic index (ti) is an integer 0-39", () => {
+  it("topic index (ti) is an integer 0-42", () => {
     const invalid = [];
     questions.forEach((q, i) => {
-      if (!Number.isInteger(q.ti) || q.ti < 0 || q.ti > 39) {
+      if (!Number.isInteger(q.ti) || q.ti < 0 || q.ti > 42) {
         invalid.push({ index: i, ti: q.ti });
       }
     });
@@ -141,12 +141,12 @@ describe("questions.json — explanation quality", () => {
 // ─── Notes — deeper validation ──────────────────────────────────────────────
 
 describe("notes.json — content quality", () => {
-  it("every note has an id field (integer 0-39)", () => {
+  it("every note has an id field (integer 0-42)", () => {
     notes.forEach((n, i) => {
       expect(n.id, `Note[${i}].id should be defined`).toBeDefined();
       expect(Number.isInteger(n.id), `Note[${i}].id should be integer`).toBe(true);
-      expect(n.id, `Note[${i}].id should be in range 0-39`).toBeGreaterThanOrEqual(0);
-      expect(n.id, `Note[${i}].id should be in range 0-39`).toBeLessThanOrEqual(39);
+      expect(n.id, `Note[${i}].id should be in range 0-42`).toBeGreaterThanOrEqual(0);
+      expect(n.id, `Note[${i}].id should be in range 0-42`).toBeLessThanOrEqual(42);
     });
   });
 
@@ -488,14 +488,14 @@ describe("questions/images — file size limits", () => {
 
 
 
-// ─── Topics — all 40 have non-empty keyword arrays ─────────────────────────
+// ─── Topics — all 43 have non-empty keyword arrays ─────────────────────────
 
 describe("topics.json — keyword completeness", () => {
-  it("has exactly 40 topics", () => {
-    expect(topics.length).toBe(40);
+  it("has exactly 43 topics", () => {
+    expect(topics.length).toBe(43);
   });
 
-  it("all 40 topics have non-empty keyword arrays", () => {
+  it("all 43 topics have non-empty keyword arrays", () => {
     topics.forEach((t, i) => {
       expect(Array.isArray(t), `Topic[${i}] is array`).toBe(true);
       expect(t.length, `Topic[${i}] has at least one keyword`).toBeGreaterThan(0);
@@ -552,9 +552,9 @@ describe("cross-reference — question topics to topics.json", () => {
 // ─── Notes coverage: every topic has at least one note ─────────────────────
 
 describe("notes coverage — every topic has a note", () => {
-  it("every topic index 0-39 has a corresponding note entry", () => {
+  it("every topic index 0-42 has a corresponding note entry", () => {
     const noteIds = new Set(notes.map(n => n.id));
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 43; i++) {
       expect(noteIds.has(i), `Topic ${i} should have a note entry`).toBe(true);
     }
   });
