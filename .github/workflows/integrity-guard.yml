@@ -270,13 +270,10 @@ jobs:
       # ── GATE 7: e_issue Queue Threshold ──
       # Prevents the queue creeping back up unnoticed after triage.
       #
-      # CURRENT STATE (v10.21): 514 e_issue Qs not yet triaged.
-      # Initial thresholds intentionally permissive so this PR doesn't
-      # break CI. After running:
-      #     ANTHROPIC_API_KEY=... python3 scripts/e_issue_second_pass.py
-      #     python3 scripts/apply_e_issue_decisions.py data/e_issue_decisions.json data/questions.json
-      # the count should drop to the small "real" set (likely <50). At
-      # that point, RATCHET DOWN to warn=50, fail=200.
+      # CURRENT STATE (v10.23): triage complete (v10.22). 38 Qs flagged
+      # (32 real + 6 verifier-errors). Tight thresholds: warn at 50,
+      # fail at 200. To re-triage if the queue grows, use
+      # scripts/eissue_via_proxy.py (proven to work at 6 workers).
       - name: "GATE 7: e_issue queue threshold"
         run: |
           python3 << 'PYEOF'
@@ -287,8 +284,8 @@ jobs:
 
           # Permissive initial thresholds — RATCHET DOWN after first triage
           # (target: warn=50, fail=200)
-          warn = int(os.environ.get('E_ISSUE_WARN', '600'))
-          fail = int(os.environ.get('E_ISSUE_FAIL', '800'))
+          warn = int(os.environ.get('E_ISSUE_WARN', '50'))
+          fail = int(os.environ.get('E_ISSUE_FAIL', '200'))
 
           pct = 100.0 * e_issue_count / max(total, 1)
           print(f'e_issue: {e_issue_count}/{total} ({pct:.1f}%)  [warn={warn}, fail={fail}]')
