@@ -195,7 +195,8 @@ describe('v10.9 — topic source scope', () => {
     it('APP_VERSION is bumped past 10.9 (when this test was added)', () => {
       // Version-agnostic so future bumps don't keep breaking this test.
       // Also asserts monotonic progress from the v10.9 introduction of topic-source scope.
-      const m = html.match(/const APP_VERSION='(\d+)\.(\d+)';/);
+      // Accepts both two-part (10.36) and three-part patch (10.36.1) versions.
+      const m = html.match(/const APP_VERSION='(\d+)\.(\d+)(?:\.\d+)?';/);
       expect(m, 'APP_VERSION declaration not found').toBeTruthy();
       const [, maj, min] = m;
       const num = parseInt(maj, 10) * 1000 + parseInt(min, 10);

@@ -425,8 +425,11 @@ describe('monolith — shlav-a-mega.html invariants', () => {
   test('package.json version matches APP_VERSION', () => {
     const appVer = html.match(/const\s+APP_VERSION\s*=\s*['"]([^'"]+)['"]/)?.[1];
     const pkg = JSON.parse(readFile('package.json'));
-    // Geriatrics package.json version is `${APP_VERSION}.0`
-    expect(pkg.version).toBe(`${appVer}.0`);
+    // Geriatrics package.json version is `${APP_VERSION}.0` for 2-part
+    // versions (10.36) or exactly `${APP_VERSION}` for 3-part patch
+    // versions (10.36.1).
+    const expected = appVer.split('.').length >= 3 ? appVer : `${appVer}.0`;
+    expect(pkg.version).toBe(expected);
   });
 
   test('sw.js handles SKIP_WAITING', () => {
