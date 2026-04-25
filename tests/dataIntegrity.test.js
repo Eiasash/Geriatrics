@@ -44,7 +44,7 @@ describe("questions.json — schema validation", () => {
       expect(q.c, `Q[${i}].c within options range`).toBeLessThan(q.o.length);
       expect(Number.isInteger(q.ti), `Q[${i}].ti is integer`).toBe(true);
       expect(q.ti, `Q[${i}].ti >= 0`).toBeGreaterThanOrEqual(0);
-      expect(q.ti, `Q[${i}].ti <= 42`).toBeLessThanOrEqual(42);
+      expect(q.ti, `Q[${i}].ti <= 45`).toBeLessThanOrEqual(45);
     });
   });
 
@@ -83,7 +83,7 @@ describe("questions.json — schema validation", () => {
 });
 
 describe("questions.json — topic coverage", () => {
-  it("all 43 topics (0-42) have at least 5 questions", () => {
+  it("topics 0-42 have at least 5 questions; ti=43-45 are GRS8 grandfathered (v10.25)", () => {
     const topicCounts = {};
     questions.forEach(q => {
       topicCounts[q.ti] = (topicCounts[q.ti] ?? 0) + 1;
@@ -97,8 +97,8 @@ describe("questions.json — topic coverage", () => {
 // ─── Notes ──────────────────────────────────────────────────────────
 
 describe("notes.json — schema validation", () => {
-  it("has exactly 43 notes (one per topic)", () => {
-    expect(notes.length).toBe(43);
+  it("has exactly 46 notes (one per topic, including GRS8 buckets)", () => {
+    expect(notes.length).toBe(46);
   });
 
   it("every note has required fields", () => {
@@ -200,7 +200,7 @@ describe("flashcards.json — schema validation", () => {
 
 describe("topics.json — schema validation", () => {
   it("has exactly 43 topics", () => {
-    expect(topics.length).toBe(43);
+    expect(topics.length).toBe(46);
   });
 
   it("every topic is an array of keyword strings", () => {
