@@ -3399,9 +3399,9 @@ h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-
 <div style="font-size:12px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ch ${grsChOpen}: ${ch.title}${titleHe?' · '+titleHe:''}</div>
 </div>
 <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-${prevCh?`<button onclick="openGrs8Chapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">‹ Ch ${prevCh}</button>`:''}
+${prevCh?`<button onclick="openGrs8Chapter('${prevCh}')" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">‹ Ch ${prevCh}</button>`:''}
 <button onclick="window.open('${part}#page=${startPage}','_blank')" style="font-size:10px;padding:5px 10px;background:#0891b2;color:#fff;border:none;border-radius:8px;cursor:pointer">📄 Open PDF</button>
-${nextCh?`<button onclick="openGrs8Chapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">Ch ${nextCh} ›</button>`:''}
+${nextCh?`<button onclick="openGrs8Chapter('${nextCh}')" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">Ch ${nextCh} ›</button>`:''}
 </div>`;
 // Per-chapter question stats from QCHAPS
 const _grsQCidx=Object.keys(QCHAPS).filter(qi=>QCHAPS[qi]&&String(QCHAPS[qi].grs)===String(grsChOpen)).map(Number);
@@ -3428,7 +3428,11 @@ h+=`<div class="card" style="padding:8px">
 }else if(_grsLoading){
 h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">⏳ Loading GRS8 chapters...</div></div>`;
 }else{
-const entries=Object.entries(_grsData||{}).map(([id,info])=>({id:parseInt(id,10),...info})).sort((a,b)=>a.id-b.id);
+// Spread info FIRST, then override with the parsed numeric key — info.id is
+// the string "grs8-ch01" which would otherwise reach the inline onclick and
+// blow up as `openGrs8Chapter(grs8-ch01)` (JS reads the hyphen as subtraction
+// on undefined `grs8`). The map key is the canonical numeric chapter id.
+const entries=Object.entries(_grsData||{}).map(([id,info])=>({...info,id:parseInt(id,10)})).sort((a,b)=>a.id-b.id);
 h+=`<div class="card" style="padding:14px">
 <div style="font-size:13px;font-weight:700;margin-bottom:4px">📙 Geriatrics Review Syllabus 8e (AGS) — Book 3</div>
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${entries.length} topic chapters · 333 case-based MCQs · Tap to open at the right page · ISBN 9781886775251</div>`;
@@ -3441,7 +3445,7 @@ const _qCnt=_ti!==null?QZ.filter(q=>q.ti===_ti).length:0;
 const _stats=_ti!==null?(getTopicStats()[_ti]||{ok:0,no:0,tot:0}):null;
 const _pct=_stats&&_stats.tot?Math.round(_stats.ok/_stats.tot*100):null;
 const _qsInBook=Array.isArray(e.questions)?e.questions.length:0;
-h+=`<div onclick="openGrs8Chapter(${e.id})" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgb(var(--brd));cursor:pointer">
+h+=`<div onclick="openGrs8Chapter('${e.id}')" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgb(var(--brd));cursor:pointer">
 <span style="background:#0891b2;color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;min-width:46px;text-align:center">Ch ${e.id}</span>
 <div style="flex:1;min-width:0">
 <div style="font-size:11.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.title}${e.title_he?' · '+e.title_he:''}</div>
@@ -3577,7 +3581,12 @@ render();
 }
 
 async function openGrs8Chapter(ch){
-grsChOpen=ch;
+// Normalize to Number so the prev/next lookup (allChNums.indexOf) works —
+// allChNums is built via Object.keys(_grsData).map(Number) so callers that
+// pass either a string ("1") or a number (1) both land on the same canonical
+// numeric id.
+grsChOpen=Number(ch);
+if(!Number.isFinite(grsChOpen))grsChOpen=ch;
 if(typeof trackChapterRead==='function'){try{trackChapterRead('grs',ch);}catch(_){}}
 // Always render first — prevents the race where renderLibrary's auto-fetch
 // is in flight and our early-returns skipped re-rendering after grsChOpen
@@ -5590,8 +5599,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.36.1';
+const APP_VERSION='10.36.2';
 const CHANGELOG={
+'10.36.2':[
+'🐛 GRS8 row tap ReferenceError — root cause hotfix. הבאג ב-v10.36.1 לא נפתר: ה-DevTools של Eias חשפו "Uncaught ReferenceError: grs8 is not defined" בכל לחיצה על שורת פרק. הסיבה: בשורה שבונה את רשימת הפרקים, סדר ה-spread {id:parseInt(id,10),...info} נתן ל-info.id (string "grs8-ch01") לדרוס את ה-numeric key, ואז ה-template literal של ה-row handler יצר HTML literal של openGrs8Chapter(grs8-ch01) — הדפדפן פירש את המקף כחיסור JS על משתנה לא-מוגדר grs8 → ReferenceError → שום navigation.',
+'🛡️ Two-line fix + lock: (1) ה-spread הופך ל- {...info, id:parseInt(id,10)} כך שה-numeric key מנצח את ה-string id מתוך info. (2) כל 3 ה-inline-handler sites של openGrs8Chapter עוטפים את הארגומנט במרכאות בודדות (belt-and-suspenders — גם string id חוקי לא יישבר). (3) openGrs8Chapter מבצע Number(ch) coerce כדי ש-allChNums.indexOf prev/next ימשיך לעבוד גם כש-id מגיע כ-string. (4) tests/grs8RowBindingFormat.test.js נועל: regex סורק את כל הקריאות ל-openGrs8Chapter בתוך attribute values ודורש שהארגומנט יהיה quoted או literal numeric.',
+],
 '10.36.1':[
 '🐛 GRS8 reading tab: tap-to-open hotfix. (a) תוקנה race condition בין auto-fetch של renderLibrary לבין openGrs8Chapter — early-return בזמן ש-_grsLoading=true דילג על render() אחרי שהוגדר grsChOpen, ולכן תצוגת ה-detail מעולם לא נצבעה. עכשיו render() נקרא תמיד מיד אחרי grsChOpen=ch. (b) הוחלף <embed> של PDF (שמרנדר ריק ב-Chrome/Firefox מובייל) בכרטיס "📄 Open PDF at Page N" שפותח ב-tab חדש — flow אמין יותר על Android/iOS.',
 ],
