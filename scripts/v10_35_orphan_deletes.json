@@ -1,0 +1,107 @@
+[
+  {
+    "tag": "2023-Jun-Basic",
+    "bank_idx": 2675,
+    "q_preview": "9 13.2-17 גבר Plt 10e3/µL 187 150-450 CRP mg/L 84 <0.03-5 CT חזה ובטן ללא ממצא. פנל בדיקות ראומטי ללא ממצא. מנטו שלילי. ",
+    "best_canonical": "112",
+    "best_sim": 0.507
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "bank_idx": 2686,
+    "q_preview": "שעות. בבדיקתו במחלקה מדדים תקינים .המוגלובין תקין, וצילום חזה תקין מה תכנית הבירור המומלצת ומדוע?",
+    "best_canonical": "129",
+    "best_sim": 0.528
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "bank_idx": 3212,
+    "q_preview": "מה מאפיין את POLYMYALGIA RHEUMATICA?",
+    "best_canonical": "105",
+    "best_sim": 0.365
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "bank_idx": 3218,
+    "q_preview": "איזו פגיעה בראייה היא גורם הסיכון המשמעותי ביותר לנפילה?",
+    "best_canonical": "6",
+    "best_sim": 0.997
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "bank_idx": 3219,
+    "q_preview": "על פי המאמר Dementia prevention, intervention, and care: 2020 report of the Lancet Commission, איזה מהטיפולים הבאים הוכח",
+    "best_canonical": "55",
+    "best_sim": 0.304
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "bank_idx": 3220,
+    "q_preview": "על פי המאמר \"Dementia prevention, intervention, and care: 2020 report of the Lancet Commission\", איזה מגורמי הסיכון הבאי",
+    "best_canonical": "55",
+    "best_sim": 0.607
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "bank_idx": 3222,
+    "q_preview": "מה השלב הבא בבירור?",
+    "best_canonical": "104",
+    "best_sim": 0.244
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "bank_idx": 3228,
+    "q_preview": "בת 80, יממה לאחר החלפת מפרק ירך מימין. מהלך הניתוח תקין, ללא סיבוכים. ברקע סובלת מיתר לחץ דם, סוכרת, אי-ספיקת כליות כרונ",
+    "best_canonical": "143",
+    "best_sim": 0.221
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "bank_idx": 3229,
+    "q_preview": "מה מאפיין את ההסתמנות הקלינית של POLYMYALGIA RHEUMATICA?",
+    "best_canonical": "105",
+    "best_sim": 0.466
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "bank_idx": 3230,
+    "q_preview": "מצורפת בדיקת גזים בדם שנלקחה לחולה בטיפול נמרץ: מה קרוב לוודאי הבעיה העיקרית של החולה?",
+    "best_canonical": "88",
+    "best_sim": 0.317
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "bank_idx": 3234,
+    "q_preview": "בן 84, ברקע הגדלה שפירה של בלוטת הערמונית, ללא אנמנזה של סרטן ערמונית או התערבות אורולוגית בעבר. מדווח על אי-שליטה על סו",
+    "best_canonical": "1",
+    "best_sim": 0.233
+  },
+  {
+    "tag": "2024-May-Basic",
+    "bank_idx": 2807,
+    "q_preview": "בן 72, נשוי + 2 ., ארכיטקט שפרש לגמלאות לפני שנתיים .ללא רקע רפואי רלוונטי, אינו נוטל תרופות מגיע להערכה גריאטרית בשל יר",
+    "best_canonical": "102",
+    "best_sim": 0.174
+  },
+  {
+    "tag": "2024-May-Basic",
+    "bank_idx": 3224,
+    "q_preview": "בת 69, ברקע יתר לחץ דם, היצרות מיטרלית ראומטית בדרגה בינונית ואי ספיקת כליות כרונית. אושפזה בשל פרפור פרוזדורים חדש. GFR",
+    "best_canonical": "20",
+    "best_sim": 0.737
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "bank_idx": 2976,
+    "q_preview": "מה האבחנה המתאימה?",
+    "best_canonical": "23",
+    "best_sim": 0.347
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "bank_idx": 3037,
+    "q_preview": "דקות לאחר תחילת השינה .בנוסף, מתלונן על היעדר חוש ריח ועצירות מה הטיפול התרופתי המומלץ?",
+    "best_canonical": "56",
+    "best_sim": 0.795
+  }
+]
