@@ -1131,6 +1131,7 @@ let calcView='calc'; // sub-view within Calc: calc|basket|eol|lab|aging
 let libSec='haz-pdf';
 let harChOpen=null,_harData=null,_harLoading=false;
 let hazChOpen=null,_hazData=null,_hazLoading=false;
+let grsChOpen=null,_grsData=null,_grsLoading=false;
 function renderTabs(){
 // Inline SVG icons — consistent rendering across Android/iOS/Chrome (emoji drift was the issue).
 // Stroke-based, 22x22, currentColor. Mapped by tab id so data/tabs.json can keep its labels.
@@ -1241,6 +1242,10 @@ for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i
 qi=0;sel=null;ans=false;return;}
 if(filt==='har-ch'&&topicFilt!==undefined){
 pool=Object.keys(QCHAPS).filter(qi2=>QCHAPS[qi2]&&String(QCHAPS[qi2].har)===String(topicFilt)).map(Number).filter(i=>i>=0&&i<QZ.length);
+for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+qi=0;sel=null;ans=false;return;}
+if(filt==='grs-ch'&&topicFilt!==undefined){
+pool=Object.keys(QCHAPS).filter(qi2=>QCHAPS[qi2]&&String(QCHAPS[qi2].grs)===String(topicFilt)).map(Number).filter(i=>i>=0&&i<QZ.length);
 for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
 qi=0;sel=null;ans=false;return;}
 
@@ -3181,6 +3186,7 @@ let h=`<div class="sec-t">📖 Library</div>
 const libTabs=[
 {id:'haz-pdf',l:'📕 Hazzard',c:'#dc2626'},
 {id:'harrison',l:'📗 Harrison',c:'#8b5cf6'},
+{id:'grs8',l:'📙 GRS8',c:'#0891b2'},
 {id:'laws',l:'⚖️ Laws',c:'#f59e0b'},
 {id:'articles',l:'📄 Articles',c:'#3b82f6'},
 {id:'exams',l:'📝 Exams',c:'#06b6d4'}
@@ -3375,6 +3381,75 @@ h+=`</div>`;
 
 return h;
 }
+// ===== GRS8 IN-APP READER (PDF page-anchor view, mirrors Hazzard tab) =====
+function _rlGrs8(){
+let h='';
+if(libSec!=='grs8')return h;
+if(grsChOpen!==null&&_grsData&&_grsData[String(grsChOpen)]){
+const ch=_grsData[String(grsChOpen)];
+const allChNums=Object.keys(_grsData).map(Number).sort((a,b)=>a-b);
+const curIdx=allChNums.indexOf(grsChOpen);
+const prevCh=curIdx>0?allChNums[curIdx-1]:null;
+const nextCh=curIdx<allChNums.length-1?allChNums[curIdx+1]:null;
+const part=ch.part||'grs8_part01.pdf';
+const startPage=Array.isArray(ch.pages)&&ch.pages.length?ch.pages[0]:1;
+const titleHe=ch.title_he||'';
+h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+<button onclick="grsChOpen=null;render()" style="background:rgb(var(--bg2));border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">← Back</button>
+<div style="font-size:12px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ch ${grsChOpen}: ${ch.title}${titleHe?' · '+titleHe:''}</div>
+</div>
+<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+${prevCh?`<button onclick="openGrs8Chapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">‹ Ch ${prevCh}</button>`:''}
+<button onclick="window.open('${part}#page=${startPage}','_blank')" style="font-size:10px;padding:5px 10px;background:#0891b2;color:#fff;border:none;border-radius:8px;cursor:pointer">📄 Open PDF</button>
+${nextCh?`<button onclick="openGrs8Chapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">Ch ${nextCh} ›</button>`:''}
+</div>`;
+// Per-chapter question stats from QCHAPS
+const _grsQCidx=Object.keys(QCHAPS).filter(qi=>QCHAPS[qi]&&String(QCHAPS[qi].grs)===String(grsChOpen)).map(Number);
+if(_grsQCidx.length){
+let _gok=0,_gno=0;
+_grsQCidx.forEach(qIdx=>{const ck=S.ck&&S.ck[qIdx];if(ck==='ok')_gok++;else if(ck==='no')_gno++;});
+const _gtot=_gok+_gno;
+const _gpct=_gtot?Math.round(_gok/_gtot*100):null;
+h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;background:#ecfeff;border-radius:10px;font-size:10px;align-items:center;flex-wrap:wrap">
+<span>📝 ${_grsQCidx.length} bank Qs mapped to this chapter</span>
+${_gpct!==null?`<span style="font-weight:700;color:${_gpct>=70?'#059669':_gpct>=50?'#d97706':'#dc2626'}">${_gpct}% accuracy (${_gtot} attempted)</span>`:'<span style="color:rgb(var(--fg3))">Not attempted yet</span>'}
+<button onclick="filt='grs-ch';topicFilt=${grsChOpen};tab='quiz';buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#0891b2;color:#fff;border:none;border-radius:6px;cursor:pointer">▶ Drill all ${_grsQCidx.length}</button>
+</div>`;
+}
+h+=`<div class="card" style="padding:8px">
+<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:6px;padding:0 6px">${ch.syllabus_topic?'IMA syllabus topic: '+ch.syllabus_topic:''}${Array.isArray(ch.questions)&&ch.questions.length?' · GRS8 Book 3 Qs: '+ch.questions.join(', '):''}</div>
+<embed src="${part}#page=${startPage}" type="application/pdf" style="width:100%;height:70vh;min-height:480px;border:1px solid rgb(var(--brd));border-radius:8px"/>
+</div>`;
+}else if(_grsLoading){
+h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">⏳ Loading GRS8 chapters...</div></div>`;
+}else{
+const entries=Object.entries(_grsData||{}).map(([id,info])=>({id:parseInt(id,10),...info})).sort((a,b)=>a.id-b.id);
+h+=`<div class="card" style="padding:14px">
+<div style="font-size:13px;font-weight:700;margin-bottom:4px">📙 Geriatrics Review Syllabus 8e (AGS) — Book 3</div>
+<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${entries.length} topic chapters · 333 case-based MCQs · Tap to open at the right page · ISBN 9781886775251</div>`;
+if(!_grsData){
+h+=`<div onclick="openGrs8Chapter(1)" style="padding:14px;text-align:center;background:#ecfeff;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;color:#0891b2">Tap to load GRS8 chapter list</div>`;
+}else{
+entries.forEach(e=>{
+const _ti=Array.isArray(e.ti)&&e.ti.length?e.ti[0]:null;
+const _qCnt=_ti!==null?QZ.filter(q=>q.ti===_ti).length:0;
+const _stats=_ti!==null?(getTopicStats()[_ti]||{ok:0,no:0,tot:0}):null;
+const _pct=_stats&&_stats.tot?Math.round(_stats.ok/_stats.tot*100):null;
+const _qsInBook=Array.isArray(e.questions)?e.questions.length:0;
+h+=`<div onclick="openGrs8Chapter(${e.id})" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgb(var(--brd));cursor:pointer">
+<span style="background:#0891b2;color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;min-width:46px;text-align:center">Ch ${e.id}</span>
+<div style="flex:1;min-width:0">
+<div style="font-size:11.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.title}${e.title_he?' · '+e.title_he:''}</div>
+<div style="font-size:9px;color:rgb(var(--fg3));margin-top:2px">pp.${e.pages?e.pages[0]+'–'+e.pages[1]:'?'} · ${_qsInBook} GRS Qs${_qCnt?' · '+_qCnt+' bank Qs':''}${_pct!==null?' · <span style="font-weight:700;color:'+(_pct>=70?'#059669':_pct>=50?'#d97706':'#dc2626')+'">'+_pct+'%</span>':''}${e.syllabus_topic?' · IMA: '+e.syllabus_topic.slice(0,40):''}</div>
+</div>
+<span style="font-size:18px;color:rgb(var(--fg3))">›</span></div>`;
+});
+}
+h+=`</div>`;
+}
+return h;
+}
+
 function _rlLaws(){
 let h='';
 // ===== LAWS =====
@@ -3442,9 +3517,15 @@ return h;
 }
 
 function renderLibrary(){
+// Lazy-load GRS8 chapters list when user clicks into the GRS8 sub-tab
+if(libSec==='grs8'&&!_grsData&&!_grsLoading){
+_grsLoading=true;
+fetch('data/grs8_chapters.json').then(r=>r.json()).then(j=>{_grsData=j;_grsLoading=false;render();}).catch(e=>{console.error('Failed to load GRS8 chapters',e);_grsData={};_grsLoading=false;render();});
+}
 let h=_rlHeader();
 h+=_rlHazzard();
 h+=_rlHarrison();
+h+=_rlGrs8();
 h+=_rlLaws();
 h+=_rlArticles();
 h+=_rlExams();
@@ -3487,6 +3568,24 @@ console.error('Failed to load Hazzard chapters',e);
 _hazData={};
 }
 _hazLoading=false;
+render();
+}
+
+async function openGrs8Chapter(ch){
+grsChOpen=ch;
+if(typeof trackChapterRead==='function'){try{trackChapterRead('grs',ch);}catch(_){}}
+if(_grsData){render();return;}
+if(_grsLoading)return;
+_grsLoading=true;
+render();
+try{
+const r=await fetch('data/grs8_chapters.json');
+_grsData=await r.json();
+}catch(e){
+console.error('Failed to load GRS8 chapters',e);
+_grsData={};
+}
+_grsLoading=false;
 render();
 }
 
@@ -5483,8 +5582,15 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.35';
+const APP_VERSION='10.36';
 const CHANGELOG={
+'10.36':[
+'📙 שילוב מלא של GRS8 (Geriatrics Review Syllabus, AGS, 8th ed., ISBN 9781886775251). ה-PDF (כרך 3, 333 שאלות case-based MCQs, 292 עמודים) הועלה כ-grs8_part01.pdf בשורש הריפו וזמין כעת גם כתבסיס לציטוט וגם כספר קריאה בתוך האפליקציה — במקביל ל-Hazzard ול-Harrison.',
+'🗂️ data/grs8_chapters.json: 67 פרקי-נושא (62 מהאינדקס המקורי בעמ׳ 11 + 5 פרקי-עזר וירטואליים) עם schema זהה ל-Hazzard: id, title, title_he, part, pages [start, end], ti[], syllabus_topic, questions[]. כיסוי הסילבוס של ההסתדרות הרפואית ל-2024: 42/42 נושאי הבחינה ממופים לפחות פרק GRS אחד.',
+'🔗 scripts/tag_chapters.cjs מורחב לסור שלישי: לכל שאלה במאגר נוסף בנוסף ל-haz/har גם שדה grs ב-data/question_chapters.json. 3,662/3,756 שאלות (97.5%) חוברו לפרק GRS8 רלוונטי. 13 השאלות עם t=GRS8 מ-v10.25 קיבלו ref מלא בפורמט "Hazzard Ch X — TITLE · GRS8 Ch Y — TITLE · Q#NNN".',
+'📚 לשונית קריאה חדשה ב-Library: 📙 GRS8 (סרגל ל-jad של Hazzard ו-Harrison). תצוגת רשימת פרקים → לחיצה פותחת PDF embed עם anchor לעמוד הראשון של הנושא (#page=NNN), כפתור Drill all מסנן את כל שאלות-המאגר הקשורות לפרק. הקובץ grs8_part01.pdf נטען lazy (cache-on-demand), data/grs8_chapters.json הוא pre-cached ב-sw.js.',
+'🔒 tests/grs8ChapterCoverage.test.js: 6 בדיקות חדשות שננעלות על ההמשך — (a) כל 42 נושאי IMA מכוסים ע״י לפחות פרק GRS אחד, (b) כל פרק עם schema תקין (part תואם grs8_partNN.pdf, pages באורך 2 עם start≤end, ti≥1 ערך בטווח 0..46), (c) כל שאלת t=GRS8 עם ref לא-ריק שמכיל "GRS8", (d) כל קובץ part קיים על הדיסק.',
+],
 '10.35':[
 '🩹 Sprint שחזור Basic-track: 62 שאלות חדשות הוזרמו לבנק מ-canonical PDFs רשמיים אחרי v10.34. ספירות פר-תג: 2022-Jun-Basic 145→150 (+5 שאלות חסרות), 2023-Jun-Basic 150→141 (החלפה של 11 hallucinations של ה-parser ב-2 שאלות חסרות, מתואם ל-canonical), 2024-May-Basic 150→150 (החלפת 2 orphans ב-2 שאלות חסרות), 2024-Sep-Basic 99→150 (+53 שאלות חסרות). סך הכל בנק 3709→3756.',
 '🔑 מפתחות תשובות: parse של answer_key_basic.pdf (post-appeal, revised) עם השוואה ל-answer_key_basic_initial.pdf לכל 4 הבחינות. 11+12+11+10=44 שינויים מהמפתח המקורי (revised wins). שאלות "כל התשובות מתקבלות" מקודדות עם c+c_accept; multi-accept כמו [0,3] גם נשמרו לכבוד מנוע ה-isOk.',
