@@ -5483,8 +5483,15 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.34';
+const APP_VERSION='10.35';
 const CHANGELOG={
+'10.35':[
+'🩹 Sprint שחזור Basic-track: 62 שאלות חדשות הוזרמו לבנק מ-canonical PDFs רשמיים אחרי v10.34. ספירות פר-תג: 2022-Jun-Basic 145→150 (+5 שאלות חסרות), 2023-Jun-Basic 150→141 (החלפה של 11 hallucinations של ה-parser ב-2 שאלות חסרות, מתואם ל-canonical), 2024-May-Basic 150→150 (החלפת 2 orphans ב-2 שאלות חסרות), 2024-Sep-Basic 99→150 (+53 שאלות חסרות). סך הכל בנק 3709→3756.',
+'🔑 מפתחות תשובות: parse של answer_key_basic.pdf (post-appeal, revised) עם השוואה ל-answer_key_basic_initial.pdf לכל 4 הבחינות. 11+12+11+10=44 שינויים מהמפתח המקורי (revised wins). שאלות "כל התשובות מתקבלות" מקודדות עם c+c_accept; multi-accept כמו [0,3] גם נשמרו לכבוד מנוע ה-isOk.',
+'🤖 הסברים בעברית: 62/62 הסברים נוצרו דרך פרוקסי toranot/api/claude (6 workers, 1Q/call, model=sonnet, 141 שניות wall). validation: עברית≥40%, אורך 200-750, ללא markdown headings, ללא חיצים. סגנון תואם לבחינת 2025-Jun-Basic (bold + פסקת פתופיזיולוגיה + שורת מקור).',
+'🧹 ניקוי טקסט: 89 stems + 25 options ב-4 התגים נוקו מ-Hebrew-digit missing-space ("בן80"→"בן 80") ומ-RTL question-mark drift ("?איזה" בתחילת stem). canonical PDFs נוקו מ-footer cruft ("DD.MM.YY בחינת שלב א\' גריאטריה בסיס") לפני ההזרמה. parserBleedGuard whitelist עודכן: indices 2565/3265/2974/3552 → 2565/3250/2971/3537 (אחרי 15 orphan deletes).',
+'🗂️ exams/2022_jun_al/ filename rot: ניקוי 6 קבצים בעלי שמות שגויים (3 unique md5s) ושמירה תחת שמות נכונים (source_map_subspec.pdf, answer_key_subspec.pdf, images_album_subspec.pdf).',
+],
 '10.34':[
 '🔍 ביקורת רוחב היסטורית של Parser Bleed. v10.33 חשפה באג שבו ה-parser של PDF העברי IMA היה מאחה זוגות שאלות סמוכות (סטם של שאלה N+1 נדחס לתוך אופציה ד\' של שאלה N). סריקת רוחב על כל 7 התגים ההיסטוריים גילתה שהבעיה לא הייתה ייחודית ל-2025-Jun — היא קיימת מאז 2022 בכל בחינה.',
 '🧹 318 אופציות נוקו ב-5 מעברי הרצה: (1) חיתוך ה-stem הזולג של השאלה הבאה (\\d+ \\.+ Hebrew Q-stem starter), (2) הסרת footer cruft של page-header (תבנית "DD.MM.YY בחינת שלב א\' גריאטריה ..."), (3) טיפול בווריאציות עם רווחים בין ספרות (3 4 1 = Q134 הפוך), עם apostrophe (\'), עם quote (") או colon (:), (4) שמירה על 4 שאלות 4-מטופלים-להשוואה (bank[2565,3265,2974,3552]) שבהן הסטם הארוך הוא לגיטימי.',

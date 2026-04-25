@@ -1,0 +1,1146 @@
+[
+  {
+    "tag": "2022-Jun-Basic",
+    "qnum": "11",
+    "q": "מטופל בן80 , מועמד לניתוח החלפה אלקטיבית של פרק ברך עקב אוסטאוארטריטיס .מתקדם מקבל טיפול קבוע ב- CLOPIDIGREL עקב אוטם שריר הלב והכנסתSTENT .לפני שנתיים מה ההתייחסות לטיפול ב- CLPIDOGREL ?כהכנה לניתוח",
+    "o": [
+      "יש להפסיק טיפול ב CLOPIDOGREL 5-7 ימים לפני הניתוח למניעת דמם",
+      "יש להפסיק טיפול ב- CLOPIDOGREL שבוע לפני הניתוח ולתת טיפול חלופי ב- ENOXAPARIN )( קלקסן",
+      "אין צורך להפסיק את הטיפול. מדובר בניתוח שניתן לבצע תחת נוגדי טסיות",
+      "יש ל הפסיקCLOPIDOGREL רק אם הניתוח מבוצע בהרדמה ספינלית"
+    ],
+    "c": [
+      0,
+      2
+    ],
+    "t": "2022-Jun-Basic",
+    "ti": 38,
+    "e": "",
+    "ref": "Hazzard Ch 27 — PERIOPERATIVE CARE: EVALUATION AND MANAGEMENT",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2022-Jun-Basic",
+    "qnum": "15",
+    "q": "מהו \"דגל אדום\" לכאבי גב משניים למחלה סיסטמית",
+    "o": [
+      "רקע של סוכרת מטופלת באינסולין",
+      "רקע שלCOPD קשה תלוי בסטרואידים",
+      "משך סימנים מעל שבועיים",
+      "כאב מוקל בכפיפה קדימה '"
+    ],
+    "c": 1,
+    "t": "2022-Jun-Basic",
+    "ti": 14,
+    "e": "",
+    "ref": "Hazzard Ch 68 — PAIN MANAGEMENT · Harrison Ch 14 — Pain: Pathophysiology and Management",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2022-Jun-Basic",
+    "qnum": "21",
+    "q": "איזה טיפול תרופתי אינו מומלץ בקשישים על פי2019 AGS BEERS CRITERIA?",
+    "o": [
+      "Amiodarone כקו שני לטיפול בפרפור עליות",
+      "Proton-pump inhibitors בשימוש ליותר מ- 8 שבועות, פרט למטופלים בסיכון גבוה",
+      "Lactulose ( לבולק) לטיפול בעצירות בנשים בלבד",
+      "תרופות ממשפחת ה- Sulfonylureas רק בחולים עםCCT>30 '"
+    ],
+    "c": 1,
+    "t": "2022-Jun-Basic",
+    "ti": 12,
+    "e": "",
+    "ref": "Hazzard Ch 87 — CONSTIPATION · Harrison Ch 49 — Diarrhea and Constipation",
+    "_ti_hits": 3,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2022-Jun-Basic",
+    "qnum": "30",
+    "q": "בן67 הסובל מהגדלה שפירה של הערמונית חזר לביקורת חצי שנה לאחר ש החל לקבל ( טיפול תרופתי לדחיפות במתן שתןURGE INCONTINENCE ). הוא מדווח על הפרעה .חדשה בתפקוד המיני והופעת גניקומסטיה ?מה התרופה שגרמה לתופעות הלוואי המתוארות",
+    "o": [
+      "Tadafil )(סיאליס",
+      "Finasteride )(פרופסיה",
+      "Mirabegron )( בטמיגא",
+      "Oxybutinin ( )נוביטרופן"
+    ],
+    "c": 1,
+    "t": "2022-Jun-Basic",
+    "ti": 11,
+    "e": "",
+    "ref": "Hazzard Ch 47 — INCONTINENCE",
+    "_ti_hits": 3,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2022-Jun-Basic",
+    "qnum": "70",
+    "q": "מה מאפיין את השינויים במערכת השתן בגיל המבוגר",
+    "o": [
+      "רוב הקשישים עם אי שליטה על שתן סובלים מהתכווצויות לא רצוניות של השלפוחית ( involuntary bladder contractions )",
+      "( שאריות שתן לאחר ריקוןresidual urine volume ) יורדת עם הגיל",
+      "( קיבולת השלפוחיתfunctional bladder capacity ) עולה עם הגיל",
+      "בנשים בנות80 ומעלה יש עליה בסיכון לאי שליטה על שתן ככל שעברו יותר לידות"
+    ],
+    "c": 0,
+    "t": "2022-Jun-Basic",
+    "ti": 11,
+    "e": "",
+    "ref": "Hazzard Ch 47 — INCONTINENCE",
+    "_ti_hits": 5,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "qnum": "13",
+    "q": "בן65 , ברקע מחלת פרקינסון , מדווח על נפילות חוזרו ת בחודשיים ה אחרונים . על פי התיאור מדובר ב- FREEZE ונפילה לאחור .. ביעוץ נוירולוגי לא הומלץ על שינוי תרופתי מה אביזר העזר להליכה המתאים ביותר במצב המתואר?",
+    "o": [
+      "מקל4 נק )ודות (קוודריפוד",
+      "הליכון2 גלגלים",
+      "הליכון4 )גלגלים (רולטור",
+      ")הליכון רגיל (ללא גלגלים"
+    ],
+    "c": 1,
+    "t": "2023-Jun-Basic",
+    "ti": 4,
+    "e": "",
+    "ref": "Hazzard Ch 43 — FALLS · Harrison Ch 26 — Neurologic Causes of Weakness and Paralysis",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "qnum": "112",
+    "q": "בן84 , מאושפז לבירור חום38-38.5 מזה3 שבועות. מתלונן על חולשה, ללא כאבי .פרקים, ללא שיעול, ללא שינוי בהרגלי יציאה. שולל חשיפה למחלות זיהומיות אטיפיות .בדיקה גופנית ללא ממצא משמעותי :בדיקות הדם מדד ויחידות החולה ערכים תקינים Na mmol/L 138 135-146 K mmol/L 4.8 3.5-5.3 CREATININE mg/dL 1.1 0.7-1.3 BUN mg/dL 28 5-25 AST (GOT) U/L 42 <7-40 ALT (GPT) U/L 34 <7-35 ALK PHOS U/L 118 46-116 LDH U/L 352 208-378 ALBUMIN g/dL 3.9 3.5-5.0 WBC 10e3/µL 5.8 4.0-11.0 HgB g/dL 12.9 13.2-17 גבר Plt 10e3/µL 187 150-450 CRP mg/L 84 <0.03-5 CT חזה ובטן ללא ממצ",
+    "o": [
+      "פנל בדיקות ראומטי ללא ממצא. מנטו שלילי. תרביות דם ושתן .שליליות ?מה השלב הבא בבירור א. ביופסיית מח עצם",
+      "ביופסיית כבד",
+      "ביופסיית עורק טמפורלי",
+      "ביופסיית עור"
+    ],
+    "c": 2,
+    "t": "2023-Jun-Basic",
+    "ti": 11,
+    "e": "",
+    "ref": "Hazzard Ch 47 — INCONTINENCE",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-May-Basic",
+    "qnum": "5",
+    "q": "מילים, תפקודים ניהוליים וקשב לקויים מאוד מה מהבאים מהווהCORE FEATURE ?לאבחנה של מצבו",
+    "o": [
+      "דלוזיות פרנואידליות",
+      "נפילות חוזרות",
+      "דיכאון",
+      "פלוקטואציות במצב הקוגניטיבי"
+    ],
+    "c": 3,
+    "t": "2024-May-Basic",
+    "ti": 4,
+    "e": "",
+    "ref": "Hazzard Ch 43 — FALLS · Harrison Ch 26 — Neurologic Causes of Weakness and Paralysis",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-May-Basic",
+    "qnum": "29",
+    "q": "?איזה אביזר עזר מומלץ למטופל קטוע רגל לפני התאמת פרוטזה",
+    "o": [
+      "( רולטורROLLATOR )",
+      "הליכון ע ם4 גלגלים( 4 – WHEELED ROLLING WALKER )",
+      "הליכון עם2 גלגלים ( 2 – WHEELED ROLLING WALKER )",
+      "הליכון סטנדרטי ללא( גלגליםSTANDART ''PICK-UP'' WALKER ) שלב א' בגריאטריה28/5/2024 0 5 1 שאלות – מסלול בסיס"
+    ],
+    "c": 3,
+    "t": "2024-May-Basic",
+    "ti": 39,
+    "e": "",
+    "ref": "Hazzard Ch 15 — EMERGENCY DEPARTMENT CARE",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "27",
+    "q": "בת73 , ברקע סוכרת ויתר לחץ דם, סובלת לאחרונה מפרפור פרוזדורים. לפיCHA2-DS2-VASC SCORE ?מה הסיכון לשבץ למטופלת זו",
+    "o": [
+      "4 לשנה%",
+      "15 לשנה%",
+      "25 לשנה%",
+      "40 לשנה%"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 41,
+    "e": "",
+    "ref": "Hazzard Ch 77 — CARDIAC ARRHYTHMIAS · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 3,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "30",
+    "q": "?איזה מהבאים נכון בנוגע לירידת שמיעה תלוית גיל",
+    "o": [
+      "היא לא מושפעת ממחלות רקע כגון סוכרת ומחלות כלי דם",
+      "במעל50% מהמקרים יש מרכיב תורשתי רלוונטי",
+      "אין הבדל בין גברים לנשים בשכיחות האבחנה",
+      "ניתן לבסס את האבחנה על בדיקת סקירה במרפאה גריאטרית"
+    ],
+    "c": [
+      1,
+      3
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 22,
+    "e": "",
+    "ref": "Hazzard Ch 40 — APPLIED CLINICAL GEROSCIENCE · Harrison Ch 388 — Approach to the Patient with Endocrine Disorders",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "90",
+    "q": "בת72 , ברקע אסטמה. מגיעה למרפאה עם בתה עמה היא גרה. הבת אובחנה עכשיו עם שפעת .בעזרת מטוש. האם מסרבת לחיסונים בדרך כלל. כעת מסכימה לחיסון ?איזה טיפול נוסף לחיסון ניתן לתת לה בשלב זה",
+    "o": [
+      "Amantadine",
+      "Oseltamivir",
+      "Rimantadine",
+      "פרט לחיסון אין מקום לטיפול נוסף"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 44,
+    "e": "",
+    "ref": "USPSTF 2024",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "101",
+    "q": "בן85 , ברקע סוכרת ויתר לחץ דם. התקבל עקב כאבים בחזה. סימנים חיוניים- דופק86 לדקה, לחץ דם112 / 56 , סטורציה97% . באק\"ג– אוטם לטרלי. מתוכנן לצנתור ו- PCI . מהן תרופות נוגדות האגרגציה והקרישה ?המומלצות במצב זה",
+    "o": [
+      "Aspirin , Heparin , Ticagrelor ( Brilinta )",
+      "Aspirin , Enoxaparin , Clopidogrel ( Plavix )",
+      "Aspirin , Heparin , Prasugrel ( Effient )",
+      "Aspirin , Enoxaparin , Fondaparinux ( Arixtra )"
+    ],
+    "c": [
+      0,
+      1
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 14,
+    "e": "",
+    "ref": "Hazzard Ch 68 — PAIN MANAGEMENT · Harrison Ch 14 — Pain: Pathophysiology and Management",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "102",
+    "q": "בת70 , מאושפזת במחלקה פנימית בשל חולשה כללית, עייפות וירידה תפקודית. בבדיקות מעבדה אנמיה. בוצע משטח דם. תמונת משטח הדם מופיעה בתמונה מספר6 . מה האבחנה המתאימה ?לפי המשטח",
+    "o": [
+      "משטח תקין",
+      "אנמיה מחוסר ברזל",
+      "תלסמיה מינור",
+      "אנמיה מחוסר ויטמיןB12"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 25,
+    "e": "",
+    "ref": "Hazzard Ch 94 — AGING OF THE HEMATOPOIETIC SYSTEM AND ANEMIA · Harrison Ch 66 — Anemia and Polycythemia",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "103",
+    "q": "בת70 :עברה ניקור פלאורלי עם הממצאים הבאים יחס חלבון תפליט/דם – 0.7 יחסLDH תפליט/דם - 0.65 גלוקוז40 מ\"ג/ד\"ל ?מהי האבחנה המתאימה",
+    "o": [
+      "אי ספיקת לב",
+      "תסמונת נפרוטית",
+      "תסחיף ריאתי",
+      "ראומטואיד ארטריטיס"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "104",
+    "q": "בת77 התחילה טיפול כימותרפי עקבAcute Myelocytic Leukemia . ?איזו הפרעה מטבולית יכולה להופיע לאחר התחלת הטיפול",
+    "o": [
+      "היפרגליקמיה",
+      "היפרפוספטמיה",
+      "היפרקלצמיה",
+      "היפרתנרמיה"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 17,
+    "e": "",
+    "ref": "Hazzard Ch 74 — CORONARY HEART DISEASE AND DYSLIPIDEMIA · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "105",
+    "q": "בת78 , מאושפזת במחלקה פנימית, מתלוננת על כאבים באזור פי הטבעת ושלשולים מימיים מזה יומיים. סימנים חיוניים תקינים. בבדיקת הבטן– בטן רכה, לא רגישה. בבדיקות המעבדה ללא עליית מדדי .דלקת, עליה קלה בתפקודי כליה. בדיקות צואה שליליות לפרזיטים וקלוסטרידיום ?מה השלב הבא בבירור",
+    "o": [
+      "בדיקה רקטלית",
+      "קולונוסקופיה",
+      "בדיקתCT בטן",
+      "תרבית צואה חוזרת"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 11,
+    "e": "",
+    "ref": "Hazzard Ch 47 — INCONTINENCE",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "106",
+    "q": "בת74 אושפזה לבירור עלית חום עד38.5 מזה שבוע. בתרבית דם אחת התקבלה צמיחה של Srep. VIRIDANS . בהאזנה ללב– אוושה חדשה שלא ( היתה בעבר",
+    "o": [
+      "קו לבTTE ) לא הדגים פתולוגיה .משמעותית איזה מידע נוסף יאפשר לאבחן על פיDUKE CRITERIA ?שמדובר באנדוקרדיטיס א . ממצא פתולוגי אופייני ב- TEE",
+      "הנתונים הקיימים מספיקים לאבחנה של אנדוקרדיטיס",
+      "פתולוגיה ב - TEE ממצאים ווסקולרים+",
+      "RHEUMATIOD FACTOR + חיוביRoth’s spots"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 36,
+    "e": "",
+    "ref": "Hazzard Ch 55 — REHABILITATION",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "107",
+    "q": "בת74 :, בבדיקת גזים בדם בחדר המיון הממצאים הבאים מדד ויחידות מידה ערך לחולה ערכי הנורמה PH 7.26 7.37-7.44 PCO2 mmHg 32 40-51 PO2 mmHg 88 65-105 HCO3 mmol/L 18 22-26 Na mEq/L 140 135-145 Cl mEq/L 112 96-106 K mM/L 5.8 3.5-5 ?מהי האבחנה המתאימה",
+    "o": [
+      "שלשול",
+      "Renal Tubular Acydosis Type I",
+      "Hypoaldosteronism",
+      "הרעלת סליצילטים"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 39,
+    "e": "",
+    "ref": "Hazzard Ch 15 — EMERGENCY DEPARTMENT CARE",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "108",
+    "q": "בת70 , מועמדת לביצוע קולונוסקופיה לבירור אנמיה ודם סמוי חיובי. ברקע מחלת לב איסכמית, אי ספיקת לב, היצרות קשה של מסתם אאורטלי לאחרTAVI ., ידוע על רגישות לפניצילין ?מהי הגישה למניעת אנדוקרדיטיס במטופלת זו",
+    "o": [
+      "Clindamycin PO",
+      "Azytromycin PO",
+      "Ceftriaxone IV",
+      "אין התוויה לטיפול מניעתי"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 3,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "109",
+    "q": "מה מהממצאים הבאים אופייני לתסמונתTakotsubo?",
+    "o": [
+      "ירידה במוטיליות הקיר הקדמי של הלב באקו לב",
+      "הרמותST באק\"ג",
+      "רמות תקינות של טרופונין בדם",
+      "חסימה של כלי דם בצנתור"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "110",
+    "q": "לבת75 בוצעה בדיקת אק\"ג המופיעה בתמונה מספר7 ?מה מהמצבים הבאים יכול לגרום לכך",
+    "o": [
+      "Hypercalcemia",
+      "טיפול ב- Citalopram",
+      "טיפול ב- Digoxin",
+      "Thyrotoxicosis"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 17,
+    "e": "",
+    "ref": "Hazzard Ch 74 — CORONARY HEART DISEASE AND DYSLIPIDEMIA · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "111",
+    "q": "באיזה מהמצבים הבאים נמצאPULSUS PARADOXUS?",
+    "o": [
+      "אוטם קדמי נרחב",
+      "תת תזונה",
+      "COPD קשה",
+      "אי ספיקת לב"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 9,
+    "e": "",
+    "ref": "Hazzard Ch 30 — NUTRITION DISORDERS, OBESITY , AND ENTERAL/PARENTERAL ALIMENTATION · Harrison Ch 50 — Unintentional Weight Loss",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "112",
+    "q": "בן76 , פנה למיון עקב שלשול דמי, מלווה בכאבי בטן וחום38 . מאנמנזה ידוע על ארוחה משפחתית .לפני יומיים מה ?הגורם לשלשול",
+    "o": [
+      "Staph Aureus",
+      "Rotavirus",
+      "E.Coli",
+      "Clostridium Perfringens"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 14,
+    "e": "",
+    "ref": "Hazzard Ch 68 — PAIN MANAGEMENT · Harrison Ch 14 — Pain: Pathophysiology and Management",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "113",
+    "q": "בן89 ,אושפז עקב אי ספיקה כלייתית חדה עם עליית קראטינין מ - 0.8 ל- 2.5 . בבדיקת משקע שתן נמצאוGRANULAR CASTS . ?מהי האבחנה המתאימה",
+    "o": [
+      "חסימה על רקע הגדלה שפירה של הערמונית",
+      "טרומבוזיס של ה - Renal Artery",
+      "Malignant Hypertension",
+      "Acute Tubular Necrosis"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 3,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "114",
+    "q": "מה מהבאים מהווה את ה סיבוך ה מאוחר ב יותר ?של אוטם שריר הלב",
+    "o": [
+      "Left Ventricular Aneurysm",
+      "Ventricular Tachycardia",
+      "Papillary Muscle Rupture",
+      "Pericarditis"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "115",
+    "q": "בן75 , מאושפז במחלקת שיקום אחרי אוטם שריר הלב וירידה תפקודית. במהלך טיפול פיזיותרפי",
+    "o": [
+      "יבד הכרה בבדיקה – .מחוסר הכרה, לא נושם, דופק לא נמוש. הותחל בהחייאה בדפיברילטור ממצאי התרשים המופיע בתמונה מספר8 . .קיבל פעמיים טיפול שוק חשמלי (דפיברילציה) ללא הטבה מה הטיפול התרופתי המומלץ בנוסף ל- Adrenaline ? א . Atropine",
+      "Magnesium",
+      "Amiodarone ( Procor)",
+      "Adenosine"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 36,
+    "e": "",
+    "ref": "Hazzard Ch 55 — REHABILITATION",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "116",
+    "q": "?איזה מהבאים מתאר נכון קשר בין תרופה לטיפול בסרטן לבין תופעת לוואי שכיחה שלה",
+    "o": [
+      "Doxorubicin ( Adriamycin ) – פגיעה לבבית",
+      "Cisplatin - היפרקלצמיה",
+      "5 Fluoro-Uracyl - נוירופתיה פריפרית",
+      "Rituximab - טרומבוציטופניה"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 26,
+    "e": "",
+    "ref": "Hazzard Ch 88 — CANCER AND AGING: GENERAL PRINCIPLES · Harrison Ch 79 — Infections in Patients with Cancer",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "117",
+    "q": "בן70 , הופנה למיון לבירור עצירות וכאבי בטן דיפוזיים מזה מספר ימים. בבירור כעת עדות קלינית ?ומעבדתית לחסימת מעי דק. מה מהבאים הינו הגורם השכיח ביותר לאבחנה זו",
+    "o": [
+      "הידבקויות",
+      "ממאירות",
+      "מחלת קרוהן",
+      "טיפול קרינתי לבטן בעברו"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 12,
+    "e": "",
+    "ref": "Hazzard Ch 87 — CONSTIPATION · Harrison Ch 49 — Diarrhea and Constipation",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "118",
+    "q": "באיזו מהמחלות הזיהומיות הבאות מומלץ להתחיל טיפול אמפירי ב - Ceftriaxone + Vancomycin?",
+    "o": [
+      "Bacterial Meningitis",
+      "Septic Shock",
+      "Hospital Acquired Pneumonia",
+      "Necrotizing Fasciitis"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 36,
+    "e": "",
+    "ref": "Hazzard Ch 55 — REHABILITATION",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "119",
+    "q": "בת72 .מדווחת על נטיה מולדת לדמם בפעולות פולשניות ולידות. ללא דימומים ספונטנים :בבדיקות המעבדה מדד יחידות+ ערך נורמלי ערך למטופלת PLT 3 450 X 10 - 150 239 PT 9.4-12.5 שניות 17 INR 0.9-1.1 1.9 PTT 25-37 שניות 31 שניות ?מה האבחנה הסבירה ביותר",
+    "o": [
+      "חסר פקטורVII",
+      "לופוס אנטי קואגולנט",
+      "חסר פקטורVIII",
+      "גלנצמן טרומבסטניה"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 36,
+    "e": "",
+    "ref": "Hazzard Ch 55 — REHABILITATION",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "120",
+    "q": "בן75 , ברקע ידוע על יתר לחץ דם, אי ספיקת ,לב, אלכוהוליזם",
+    "o": [
+      "ושפז לבירור ירידה בתיאבון .ירידה במשקל והופעה של מיימת חדשה. כחלק מהבירור בוצע ניקור מיימת ?מה נכון לומר לגבי המדדים מנוזל המיימת א . במידה ומדובר בטרנסודט, קרוב לוודאי מדובר במיימת על רקע אי ספיקת לב",
+      "במידה ו - SAAG ( Serum Ascites-to-Albumin Gradient ) מעל1.1 g/dL , קרוב לוודאי מדובר ביתר לחץ דם פורטלי",
+      "( מיימת על רקע אי ספיקת לבCardiac Ascites ) מאופיינת על ידי רמת חלבון מתחת ל2.5 g/dL בנוזל המיימת",
+      "רמת החלבון בנוזל המיימת מעל1.5 g/dL מעלה סיכון לפתח SBP ( Spontaneous Bacterial Peritonitis )"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 9,
+    "e": "",
+    "ref": "Hazzard Ch 30 — NUTRITION DISORDERS, OBESITY , AND ENTERAL/PARENTERAL ALIMENTATION · Harrison Ch 50 — Unintentional Weight Loss",
+    "_ti_hits": 3,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "121",
+    "q": "מה מהבאים אופייני למעורבות הפריקרד בחולים אונקולוגי י ?ם",
+    "o": [
+      "מתייצג לעיתים קרובות כטמפונדה",
+      "ברוב החולים האונקולוגיים עם פריקרדיטיס נמצא תאים ממאירים בניקור הנוזל",
+      "מדידת מרקרים בנוזל לא מסייעת באבחון הנוזל כממאיר",
+      "מגיב טוב לטיפול בסטרואידים"
+    ],
+    "c": [
+      1,
+      2
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 2,
+    "e": "",
+    "ref": "Hazzard Ch 8 — PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "_ti_hits": 0,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "122",
+    "q": "בן67 , ללא עבר של עישון ופעיל גופנית , מגיע למרפאה עם תלונה על שיעול יבש קוצר נשימה מזה שישה חודשים. בבדיקה יש קרפיטציות אינספירטוריות בבסיסי שתי הריאות ו - Clubbing .באצבעות בבדיקת תפקודי ריאה יש ירידה ב- TLC, FEV1 ו- FVC ביחס לנורמה וירידה( בדיפוזיהDLCO .) ?אילו ממצאים נוספים צפויים להיות",
+    "o": [
+      "בבדיקתHigh resolution CT \"נראה תמונה של \"חלת דבש",
+      "בבדיקת אקו לב נראה ירידה בתפקוד הסיסטולי",
+      "בצילום חזה נראה סימנים של לימפאדנופתיה בשערי הריאה",
+      "בבדיקתCT נראה אמפיזמה משמעותית"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 21,
+    "e": "",
+    "ref": "Hazzard Ch 81 — CHRONIC OBSTRUCTIVE PULMONARY DISEASE · Harrison Ch 295 — Approach to the Patient with Disease of the Respiratory System",
+    "_ti_hits": 5,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "123",
+    "q": "בן74 הגיע למרפאה עקב בצקות מפושטות. המטופל ללא מחלות רקע ידועות ולא עשה בדיקות דם .בשנים האחרונות ?איזה ממצא בבדיקה גופנית מכוון לגורם אפשרי לבצקות",
+    "o": [
+      "עליה ב- JVP מכוונת לשחמת",
+      "ממצא של קריפיטציות בריאות מכוון לאי ספיקת כליות",
+      "בצקות פריאורביטליות מכוונות להיפואלבומינמיה",
+      "PULSE PRESSURE גבוה מכוון לאי ספיקת לב"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "124",
+    "q": "בת72 , פליטה מאוקראינה, ללא היסטוריה רפואית ידועה, לדבריה בריאה בדרך כלל, לא שותה הרבה אלכוהול, וללא טיפול תרופתי קבוע. הופנתה בשל הרגשה כללית רעה מזה2-3 ימים. בבדיקות הדם הפרעה משולבת באנזימי כבד. אילו מהממצאים הבאים מכוונים לכך שמדובר בהפרעה ממושכת, ולא ?אקוטית",
+    "o": [
+      "רמתALT גבוהה יותר מאשרAST",
+      ". הפרעה בתפקודי קרישה",
+      "רמה תקינה של אמוניה",
+      "רמת אלבומין מתחת ל3 gr/dL"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 21,
+    "e": "",
+    "ref": "Hazzard Ch 81 — CHRONIC OBSTRUCTIVE PULMONARY DISEASE · Harrison Ch 295 — Approach to the Patient with Disease of the Respiratory System",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "125",
+    "q": "בן82, לא ידוע על ירידה קוגניטיבית, ברקע ידוע על שחמת מזה כ - 20 .שנים, על רקע כבד שומני אושפז בשל מספר הקאות דמיות כשעתיים טרם קבלתו, מלווה בדליריום. לציין3-4 אירועים דומים בשנים האחרונות, אירוע אחרון לפני שנה וחצי, אז עבר קשירת דליות. בקבלתו יציב המודינמית ונשימתית, חום סיסטמי תקין. בבדיקות דם ללא חריגות משמעו תיות ביחס לבדיקות קודמות, למעט רמתHB 10 , כאשר הבסיס סביב11 ?, מה נכון לומר לגבי הבירור והטיפול במצבו",
+    "o": [
+      "המטופל מתאים לחוק החולה הנוטה למות, יש לבדוק אם קיימות הנחיות מקדימות, ולשקול להימנע מטיפולים פולשניים בהתאם",
+      "מתן מנת דם, ובמידה וההמוגלובין יישאר יציב עד הבוקר למחרת ויהיה שיפור במצבו הקוגניטיבי, תבוצע גסטרוסקופיה אבחנתית",
+      "לנוכח סיכון של20-30% לתמותה סביב כל אירוע של דימום מדליות, חשוב ליידע את אישתו של המטופל על מצבו, ולהקפיד על מעקב קליני ומעבדתי קפדני",
+      "בהיעדר מדדי דלקת מוגברים, ולנוכח חשד נמוך ל- SBP ( Spontaneous Bacterial Peritonitis ), אין מקום למתן טיפול אנטיביוטי"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 34,
+    "e": "",
+    "ref": "Hazzard Ch 7 — DECISION MAKING AND ADVANCE CARE PLANNING: WHAT MATTERS MOST",
+    "_ti_hits": 4,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "126",
+    "q": "?מה אופייני לאפידמיולוגיה הזיהומית במטופלים לאחר כריתת טחול",
+    "o": [
+      "סיכון מוגבר לזיהומים ויראלים",
+      "הסיכון לזיהומים גבוה יותר בשלוש השנים הראשונות לאחר הניתוח",
+      "סיכון מוגבר לזיהומים בחיידקים גרהם שליליים",
+      "כ- 3-5% מהמטופלים יפתחו זיהום מסכן חיים במהלך חייהם"
+    ],
+    "c": [
+      1,
+      2
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 27,
+    "e": "",
+    "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION · Harrison Ch 315 — Sepsis and Septic Shock",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "127",
+    "q": "בת80 , פנתה לבירור בשל חולשה גוברת. במעבדהHb = 8.1 , רמת ויטמין B12 = 100 . מה מהבאים מתאים לאבחנה של חסר ויטמיןB12?",
+    "o": [
+      "Reticulocyte index = 1.1",
+      "MCV=90",
+      "LDH מוגבר",
+      "תאי מטרה במשטח דם"
+    ],
+    "c": [
+      0,
+      2
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 25,
+    "e": "",
+    "ref": "Hazzard Ch 94 — AGING OF THE HEMATOPOIETIC SYSTEM AND ANEMIA · Harrison Ch 66 — Anemia and Polycythemia",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "128",
+    "q": "?מה מהבאים נכון לגבי פגיעה כלייתית מאמינוגליקוזידים",
+    "o": [
+      "מאופיינת בהיפרמגנזמיה בבדיקות הדם",
+      "יכולה להופיע גם שבוע לאחר סיום הטיפול",
+      "תלויה ברמת התרופה בדם",
+      "נגרמת כתוצאה מנזק לגלומרולים"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "129",
+    "q": "מה ניתן למצוא בהאזנה במטופל עם איוושה סיסטולית שבאקו לב ממצאים המתאימים ל- Hypertrophic Obstructive Cardiomyopathy?",
+    "o": [
+      "האיוושה תשמע מקסימלית במרווח בין צלעי שני מימין",
+      "האיוושה תתגבר בעת הרמת רגלי המטופל",
+      "האיוושה תהיה מיד- סיסטולית",
+      "( תשמע איוושה דיאסטולית אפיקלית נילוותAustin Flint Murmur )"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 17,
+    "e": "",
+    "ref": "Hazzard Ch 74 — CORONARY HEART DISEASE AND DYSLIPIDEMIA · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "130",
+    "q": "בן75 עובר בדיקה במעבדת שינה בשל תלונות על נחירות, הפסקות נשימה ליליות ועייפות ונמנום .במשך היום בבדיקה נמצאAHI of ≥30 events/h . ? מה נכון לגבי הטיפול",
+    "o": [
+      "טיפול ב- CPAP אינו מוכח כיעיל בטיפול במצבו",
+      "שיעור ההיענות לשימוש בסדים מנדיבולריים נמוך יותר ביחס ל- CPAP",
+      "גודש באף היא תופעת לוואי של טיפול ב- CPAP",
+      "טיפול ניתוחי בדרכי האויר העליונות יעיל יותר מ- CPAP בטיפול במצבו"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 13,
+    "e": "",
+    "ref": "Hazzard Ch 44 — SLEEP DISORDERS",
+    "_ti_hits": 3,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "131",
+    "q": "מה ההבדל בסיבוכים בין החלפת מסתם אאורטלי בניתוח לביןTAVI?",
+    "o": [
+      "שיעור התפתחות פרפור עליות גבוה יותר לאחר TAVI לעומת ניתוח",
+      "שיעור היארעות שבץ מוחי גבוה יותר אחריTAVI לעומת ניתוח",
+      "צורך בהשתלת קוצב לב באחוז יותר גבוה לאחר TAVI לעומת ניתוח",
+      "( דלף סביב המסתםPARAVALVULAR LEAK) בשכיחות נמוכה יותר לאחר TAVI לעומת ניתוח"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 41,
+    "e": "",
+    "ref": "Hazzard Ch 77 — CARDIAC ARRHYTHMIAS · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 4,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "132",
+    "q": "בת80, אושפזה לבירור אנמיה מחסר ברזל. ברקע דיסליפידמיה ויתר לחץ דם, מטופלת ב - ASPIRIN למניעה ראשונית. בגסטרוסקופיה הודגם כיב בתוכו כלי דם מדמם, בוצעה צריבה והונחו קליפסים. ביופסיה חזרה חיובית להימצאות שלHelicobacter Pylori . הותחל טיפול במעכבי משאבת ( פרוטוניםPPI – Proton Pump Inhibitors .), והומלץ על השלמת קורס אנטיביוטי מה ההמלצות ?למטופלת זו",
+    "o": [
+      "לא י רדיקציה מלאה שלHelicobacter Pylori יש ליטול טיפול אנטיביוטי רציף במשך4 שבועות",
+      "מומלץ לחדש את הטיפול באספירין תוך שבוע",
+      "( טיפול במעכבי משאבות פרוטוניםPPI ) לשארית חייה",
+      "לאחר האנדוסקופיה, יכולה לשתות נוזלים בלבד למשך48 שעות"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 44,
+    "e": "",
+    "ref": "USPSTF 2024",
+    "_ti_hits": 4,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "133",
+    "q": "בן70 , ברקע סוכרת, אי ספיקת לב וממאירות ריאה גרורתית מסוגSmall Cell Carcinoma . מתאשפז לבירור השתנה מרובה. כמות שתן ביממה3.5 ליטר",
+    "o": [
+      "וסמולריות השתן200mosml/L . ?מה הסיבה המתאימה לממצאים אלו א . Resolving Acute Tubular Necrosis",
+      "Uncontrolled Diabetes Mellitus",
+      "Hypercalcemia",
+      "High dose Furosemide (Fusid)"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 3,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "134",
+    "q": "באיזה מהמקרים הבאים צפויFeNa < 1%?",
+    "o": [
+      "Rhabdomyolysis",
+      "Sepsis",
+      "Contrast Nephropathy",
+      "Pre-Renal Azotemia"
+    ],
+    "c": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "135",
+    "q": "בת70 , ללא טיפול תרופתי קבוע, במהלך בירור לגרד, אובחנה עם הפרעה באנזימי כבד משולבת מזה כחודש. כחלק מהבירור בוצעUS בטן, הודגם כבד קטן במראה שחמתי. המטופלת הוזמנה לצורך ?השלמת בירור לאתיולוגיה של שחמת. מה ההסבר הנכון לבדיקות שבוצעו לבירור",
+    "o": [
+      "סרולוגיה להפטיטיסC, מכיוון ש - 80% מנשאי הפטיטיסC יפתחו שחמת תוך20-30 שנים",
+      "פאנל אוטואימוני, כולל נוגדנים אנטי- מיטוכונדריאלייםAntimitochondrial antibodies (AMA) , אשר חיוביים בכ - 20-40% מחוליPrimary Billiary Cholangitis",
+      "ביצוע כולנגיוגרפיה על ידיMRCP שהוא אבחנתי ל - Primary Sclerosing Cholangitis",
+      "ביצוע אקו לב לאבחנה שלCardiac Cirrhosis"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 0,
+    "e": "",
+    "ref": "Hazzard Ch 1 — BIOLOGY OF AGING AND LONGEVITY",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "136",
+    "q": "מה נכון לגבי המאפיינים הקליניים שלGout?",
+    "o": [
+      "מרבית הנשים עם Gout הן פרמנופאוזליות",
+      "מפרק ה- MTP של הבוהן הראשונה מעורב בכמעט שליש מהמקרים",
+      "אצבעות הידיים, שורש כף היד והמרפק מעורבים יותר בזקנים",
+      "ההתקפים מתחילים בשכיחות שווה לאורך שעות היממה"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 16,
+    "e": "",
+    "ref": "Hazzard Ch 52 — OSTEOARTHRITIS · Harrison Ch 382 — Approach to Articular and Musculoskeletal Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "137",
+    "q": "מי מהבאים מהווה את הסיבה לנטייה לטרומבואמבוליזם בחולי אי ספיקת כליות כרונית מתקדמת ?ופרוטאינוריה משמעותית",
+    "o": [
+      "ירידה בפעילות פקטורIII",
+      "אובדן פקטורים אנטי - קואגולנטים דרך הכליה",
+      "אגרגציה אבנורמלית של טסיות",
+      "צריכת פרוטרמבין לקויה"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "138",
+    "q": "בן67 , מעשן20 שנות קופס",
+    "o": [
+      "פונה למלר\"ד בשל שיעול דמי מזה כיומיים עם החמרה בשעתיים האחרונות, מדד בערך כמות של כוס דם",
+      "בדיקתו: סטורציה87% באוויר חדר, מתוקנת עם2 ליטר חמצן ל - 98% . לחץ דם90/60 , דופק110 .לדקה, סדיר ?לאחר וידוא נתיב אוויר מוגן מה יהיה השלב הבא א . אמבוליזציה של המערכת הברונכיאלית ב . ברונכוסקופיה קשיחה בחדר ניתוח",
+      "ניתוח לכריתת הממצא המדמם",
+      "השכבה ב - Prone Poisition"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 19,
+    "e": "",
+    "ref": "Hazzard Ch 79 — HYPERTENSION · Harrison Ch 243 — Approach to the Patient with Possible Cardiovascular Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "139",
+    "q": "בן71 , ברקעCardiac Cirrhosis , אי ספיקת כליות עם קריאטנין בסיס סביב2 mg/dL . מתאשפז בשל דה - .קומפנסציה כבדית ומיימת קשה :במעבדה מדד ויחידות מידה ערך לחולה ערכי הנורמה PH 7.36 7.37-7.44 PCO2 mmHg 37 40-51 HCO3 mEq/L 20 22-26 Creatinine mg/dL 2.9 0.67-1.17 Urea mg/dL 270 17-43 Albumin gr/dL 2.1 3.5-5.2 Na mEq/L 135 135-145 Cl mEq/L 105 96-106 ?מהי הפרעת החומצה בסיס ממנה סובל המטופל",
+    "o": [
+      "Normal Anion Gap Metabolic Acidosis משולב עםRespiratory Alkalosis",
+      "Normal Anion Gap Metabolic Acidosis",
+      "High Anion Gap Metabolic Acidosis",
+      "High Anion Gap Metabolic Acidosis משולב עםMetabolic Alkalosis"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 3,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "140",
+    "q": "בן82 הסובל ממחלת לב איסכמית ידועה, מאושפז במחלקה גריאטרית לאחר נפילה. המטופל .מתלונן על כאבים עזים בחזה מה מהווה קונטראינדיקציה לטיפול ב- NITROGLYCERIN ?במצב זה",
+    "o": [
+      "עליית לחץ דם מעל150 סיסטולי",
+      "DEGREE AV BLOCK st 1 באק\"ג",
+      "ממצא באק\"ג של אוטם ימני",
+      "שימוש ב- SILDENAFIL VIAGRA) ) לפני שבוע"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 4,
+    "e": "",
+    "ref": "Hazzard Ch 43 — FALLS · Harrison Ch 26 — Neurologic Causes of Weakness and Paralysis",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "141",
+    "q": "בן68 , דייר רחוב, ידוע על כבד שומני על רקע שתיית אלכוהול, אושפז בשל הפטיטיס משנית לשתייה של2 בקבוקי ויסקי ערב טרם קבלתו. בבדיקות הדם הפרעה קשה בתפקודי כבד, אושפז באבחנה .של הפטיטיס אלכוהולי ?מה הגישה המתאימה לגבי הטיפול בסטרואידים במטופל זה",
+    "o": [
+      "במידה וה - Discriminant Function מתחת ל- 30 , יש להתחיל טיפול בסטרואידים סיסטמיים בהקדם",
+      "במידה ותהיה תגובה טובה לטיפול בסטרואידים, יש להמשיכו למשך28 ימים",
+      "בהיעדר תגובה מספקת לטיפול בסטרואידים, יש להציג את המטופל להשתלת כבד",
+      "בהיעדר תגובה לטיפול בסטרואידים סיסטמיים, מומלץ להשלים בירור על ידי ביופסיית כבד, לשלילת אתיולוגיות חלופיות"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 17,
+    "e": "",
+    "ref": "Hazzard Ch 74 — CORONARY HEART DISEASE AND DYSLIPIDEMIA · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "142",
+    "q": "?מהו השילוב הנכון בין סוג סרטן לסיבוך הזיהומי השכיח",
+    "o": [
+      "ACUTE MYELOID LEUKEMIA – PNEUMOCYSTIS CARINII PNEUMONIA",
+      "CARCINOMA OF COLON – STREP. BOVIS BACTEREMIA",
+      "HODGKIN’S DISEASE – STREPTOCOCUS PNEUMONIA",
+      "MULTIPLE MYELOMA- GRAHM NEGATIVE UROSEPSIS"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 27,
+    "e": "",
+    "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION · Harrison Ch 315 — Sepsis and Septic Shock",
+    "_ti_hits": 3,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "143",
+    "q": "בן64 בצום לצורך פעולה דחופה. מצורפות תוצאות בדיקות המעבדה שלו: מדד ויחידות מידה ערך לחולה ערכי הנורמה Creatinine mg/dL 2.1 0.67-1.17 Glucose mg/dL 120 72-100 Na mEq/L 146 135-145 K mM/L 2.9 3.5-5 Ca mg/dL 9.1 8.5-10.5 Albumin gr/dL 4 3.5-5.2 מאיזו תמיסה במתן תוך ורידי מומלץ להימנע במקרה זה?",
+    "o": [
+      "Ringer`s lactate",
+      "Saline 0.9% + KCl 40 mEq",
+      "Saline 0.45% +KCl 20 mEq+ Dextrose 5%",
+      "Saline 0.45% +KCl 40 mEq"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 0,
+    "e": "",
+    "ref": "Hazzard Ch 1 — BIOLOGY OF AGING AND LONGEVITY",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "144",
+    "q": "בן70 , מובא למלר\"ד ע\"י אשתו. היא מדווחת כי ביומיים האחרונים הוא מבולבל, מתנהג בצורה .מוזרה, נראה בדכאון ועם קושי להתרכז. כמו כן הוא מתלונן על כאבים ברום הבטן, ובחילות בבדיקת א.ק.ג נצפה הא.ק.ג המופיע בתמונה מספר9",
+    "o": [
+      "יזו הפרעה ?אלקטרוליטרית צפוייה להימצא את המטופל א . היפרנתרמיה",
+      "היפרקלצמיה",
+      "היפרקלמיה",
+      "היפרפוספטמיה בשאלות הבאות יש לסמן את התשובה הלא נכונה"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 14,
+    "e": "",
+    "ref": "Hazzard Ch 68 — PAIN MANAGEMENT · Harrison Ch 14 — Pain: Pathophysiology and Management",
+    "_ti_hits": 2,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "145",
+    "q": "מה לא ?מהווה חלק מפרוטוקול הטיפול האקוטי בהיפרקלמיה",
+    "o": [
+      "IV NaHCO3 50 ml over 5 minutes",
+      "IV Furosemide 40 mg – push",
+      "IV Insulin 10 U - push",
+      "IV Calcium gluconate 10% 10 ml over 2-3 minutes"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 0,
+    "e": "",
+    "ref": "Hazzard Ch 1 — BIOLOGY OF AGING AND LONGEVITY",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "146",
+    "q": "איזה מהמאפיינים הבאים אינו מתאים ל- Viral Encephalitis?",
+    "o": [
+      "רמות גלוקוז תקינות ב- CSF",
+      "אמפליטודות גבוהות וגלים איטיים ב - EEG",
+      "שינויים פרונטו- טמפורליים ב - MRI",
+      "לימפוציטוזיס ב - CSF"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 2,
+    "e": "",
+    "ref": "Hazzard Ch 8 — PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "_ti_hits": 0,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "147",
+    "q": "כל הרפלקסים הבאים קשורים לפגיעה בגזע המוח בחולה ב- Coma .פרט לאחד איזה רפלקס לא ?קשור לפגיעה בגזע המוח",
+    "o": [
+      "PUPILARY LIGHT REACTION",
+      "OCULOVESTIBULAR REFLEX",
+      "CORNEAL REFLEX",
+      "DEEP TENDON REFLEX"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "148",
+    "q": "איזה מהפרמטרים הבאים לא נכלל באומדןSOFA ( related Organ Failure - Sepsis Assessment :)",
+    "o": [
+      "Platelets",
+      "Bilirubin",
+      "Creatinine",
+      "Respiratory rate"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 21,
+    "e": "",
+    "ref": "Hazzard Ch 81 — CHRONIC OBSTRUCTIVE PULMONARY DISEASE · Harrison Ch 295 — Approach to the Patient with Disease of the Respiratory System",
+    "_ti_hits": 1,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "149",
+    "q": "איזה מהבאים אינו נכלל בבירור ראשוני ל - FUO?",
+    "o": [
+      "US בטן",
+      "PEP",
+      "ANA",
+      "אקו"
+    ],
+    "c": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 2,
+    "e": "",
+    "ref": "Hazzard Ch 8 — PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "_ti_hits": 0,
+    "_source": "canonical_missing"
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "150",
+    "q": "כל התרופות הבאות גורמות לנויטרופניה פרט ל -",
+    "o": [
+      "Clozapine",
+      "Carbamazepine",
+      "Lithium",
+      "Chloramphenicol בהצלחה"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 2,
+    "e": "",
+    "ref": "Hazzard Ch 8 — PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "_ti_hits": 0,
+    "_source": "canonical_missing"
+  }
+]

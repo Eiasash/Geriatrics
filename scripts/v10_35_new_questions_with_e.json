@@ -1,0 +1,1270 @@
+[
+  {
+    "tag": "2022-Jun-Basic",
+    "qnum": "11",
+    "q": "מטופל בן80 , מועמד לניתוח החלפה אלקטיבית של פרק ברך עקב אוסטאוארטריטיס .מתקדם מקבל טיפול קבוע ב- CLOPIDIGREL עקב אוטם שריר הלב והכנסתSTENT .לפני שנתיים מה ההתייחסות לטיפול ב- CLPIDOGREL ?כהכנה לניתוח",
+    "o": [
+      "יש להפסיק טיפול ב CLOPIDOGREL 5-7 ימים לפני הניתוח למניעת דמם",
+      "יש להפסיק טיפול ב- CLOPIDOGREL שבוע לפני הניתוח ולתת טיפול חלופי ב- ENOXAPARIN )( קלקסן",
+      "אין צורך להפסיק את הטיפול. מדובר בניתוח שניתן לבצע תחת נוגדי טסיות",
+      "יש ל הפסיקCLOPIDOGREL רק אם הניתוח מבוצע בהרדמה ספינלית"
+    ],
+    "c": [
+      0,
+      2
+    ],
+    "t": "2022-Jun-Basic",
+    "ti": 38,
+    "e": "**התשובה הנכונה: א ו-ג — הפסקת קלופידוגרל 5-7 ימים לפני ניתוח אלקטיבי, אך ישנם מצבים בהם ניתן להמשיך**\n\nבחולה עם סטנט ואוטם לב לפני יותר משנה, הסיכון לתרומבוזיס בסטנט פוחת משמעותית, ולכן ניתן לשקול הפסקת קלופידוגרל 5-7 ימים לפני ניתוח אלקטיבי גדול כהחלפת ברך למניעת דמם תוך-ניתוחי ופוסט-ניתוחי. עם זאת, בניתוחים מסוימים בסיכון דימומי נמוך-בינוני, ניתן לשקול המשך טיפול. אין מקום ל-bridging עם אנוקספרין כי LMWH אינו מחליף תרופות נוגדות טסיות.\n\nמקור: ACC/AHA Guidelines on Perioperative Antiplatelet Therapy; Hazzard's Geriatric Medicine, פרק ניהול פריאופרטיבי בקשיש.",
+    "ref": "Hazzard Ch 27 — PERIOPERATIVE CARE: EVALUATION AND MANAGEMENT",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2022-Jun-Basic",
+    "qnum": "15",
+    "q": "מהו \"דגל אדום\" לכאבי גב משניים למחלה סיסטמית",
+    "o": [
+      "רקע של סוכרת מטופלת באינסולין",
+      "רקע שלCOPD קשה תלוי בסטרואידים",
+      "משך סימנים מעל שבועיים",
+      "כאב מוקל בכפיפה קדימה '"
+    ],
+    "c": 1,
+    "t": "2022-Jun-Basic",
+    "ti": 14,
+    "e": "**התשובה הנכונה: ב — COPD קשה תלוי בסטרואידים כדגל אדום לכאב גב משני**\n\nשימוש כרוני בקורטיקוסטרואידים מהווה גורם סיכון מובהק לאוסטאופורוזיס ושברי חוליות פתולוגיים, ולכן מחייב חשיבה על מחלה סיסטמית כמקור הכאב. שאר האופציות (סוכרת, משך מעל שבועיים, הקלה בכפיפה) אינן עונות על הגדרת \"דגל אדום\" קלאסי.\n\nמקור: Hazzard's Geriatric Medicine, פרק Back Pain; UpToDate – \"Evaluation of low back pain in adults\"",
+    "ref": "Hazzard Ch 68 — PAIN MANAGEMENT · Harrison Ch 14 — Pain: Pathophysiology and Management",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2022-Jun-Basic",
+    "qnum": "21",
+    "q": "איזה טיפול תרופתי אינו מומלץ בקשישים על פי2019 AGS BEERS CRITERIA?",
+    "o": [
+      "Amiodarone כקו שני לטיפול בפרפור עליות",
+      "Proton-pump inhibitors בשימוש ליותר מ- 8 שבועות, פרט למטופלים בסיכון גבוה",
+      "Lactulose ( לבולק) לטיפול בעצירות בנשים בלבד",
+      "תרופות ממשפחת ה- Sulfonylureas רק בחולים עםCCT>30 '"
+    ],
+    "c": 1,
+    "t": "2022-Jun-Basic",
+    "ti": 12,
+    "e": "**התשובה הנכונה: ב — שימוש ממושך ב-PPI מעל 8 שבועות ללא אינדיקציה מוגדרת אינו מומלץ בקשישים.**\n\nקריטריוני Beers 2019 של ה-AGS כוללים שימוש כרוני ב-PPI כתרופה הנמנעת בקשישים, עקב סיכון מוגבר לזיהום Clostridioides difficile, היפומגנזמיה, ירידה בספיגת סידן וסיכון לשברים. ה-PPI מותר עד 8 שבועות לאינדיקציות מוגדרות (ריפוי כיב, טיפול ב-GERD), אך שימוש ממושך ללא הצדקה קלינית ברורה נחשב לשגוי בגיל המבוגר.\n\nמקור: AGS Beers Criteria 2019, Journal of the American Geriatrics Society.",
+    "ref": "Hazzard Ch 87 — CONSTIPATION · Harrison Ch 49 — Diarrhea and Constipation",
+    "_ti_hits": 3,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2022-Jun-Basic",
+    "qnum": "30",
+    "q": "בן67 הסובל מהגדלה שפירה של הערמונית חזר לביקורת חצי שנה לאחר ש החל לקבל ( טיפול תרופתי לדחיפות במתן שתןURGE INCONTINENCE ). הוא מדווח על הפרעה .חדשה בתפקוד המיני והופעת גניקומסטיה ?מה התרופה שגרמה לתופעות הלוואי המתוארות",
+    "o": [
+      "Tadafil )(סיאליס",
+      "Finasteride )(פרופסיה",
+      "Mirabegron )( בטמיגא",
+      "Oxybutinin ( )נוביטרופן"
+    ],
+    "c": 1,
+    "t": "2022-Jun-Basic",
+    "ti": 11,
+    "e": "**התשובה הנכונה: ב — Finasteride גורם לתפקוד מיני לקוי וגניקומסטיה**\n\nFinasteride מעכב את האנזים 5-alpha reductase, ובכך מפחית המרת טסטוסטרון לדיהידרוטסטוסטרון (DHT); שינוי זה גורם לירידה בחשק המיני, לאימפוטנציה ולגניקומסטיה בשיעור של עד 3-5% מהמטופלים. חשוב לציין כי Finasteride משמש בעיקר לטיפול ב-BPH ולא לדחיפות במתן שתן (urge incontinence), ולכן ייתכן שניתן בו-זמנית עם תרופה אחרת.\n\nמקור: Hazzard's Geriatric Medicine, פרק BPH ו-5-alpha reductase inhibitors; UpToDate: \"Finasteride: Drug information\".",
+    "ref": "Hazzard Ch 47 — INCONTINENCE",
+    "_ti_hits": 3,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2022-Jun-Basic",
+    "qnum": "70",
+    "q": "מה מאפיין את השינויים במערכת השתן בגיל המבוגר",
+    "o": [
+      "רוב הקשישים עם אי שליטה על שתן סובלים מהתכווצויות לא רצוניות של השלפוחית ( involuntary bladder contractions )",
+      "( שאריות שתן לאחר ריקוןresidual urine volume ) יורדת עם הגיל",
+      "( קיבולת השלפוחיתfunctional bladder capacity ) עולה עם הגיל",
+      "בנשים בנות80 ומעלה יש עליה בסיכון לאי שליטה על שתן ככל שעברו יותר לידות"
+    ],
+    "c": 0,
+    "t": "2022-Jun-Basic",
+    "ti": 11,
+    "e": "**התשובה הנכונה: א — התכווצויות לא רצוניות של השלפוחית הן הגורם השכיח ביותר לאי שליטה בקשישים.**\n\nעם הגיל חלה עלייה בפעילות יתר של שריר הדטרוזור (detrusor overactivity), המתבטאת בהתכווצויות לא רצוניות שגורמות לדחיפות ולדליפת שתן. בנוסף, קיבולת השלפוחית יורדת (לא עולה), ושאריות השתן לאחר ריקון עולות עם הגיל. אי השליטה בנשים מבוגרות קשורה פחות למספר הלידות ויותר לשינויים ניווניים בשריר ובעצבוב.\n\nמקור: Hazzard's Geriatric Medicine, פרק Lower Urinary Tract Disorders.",
+    "ref": "Hazzard Ch 47 — INCONTINENCE",
+    "_ti_hits": 5,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "qnum": "13",
+    "q": "בן65 , ברקע מחלת פרקינסון , מדווח על נפילות חוזרו ת בחודשיים ה אחרונים . על פי התיאור מדובר ב- FREEZE ונפילה לאחור .. ביעוץ נוירולוגי לא הומלץ על שינוי תרופתי מה אביזר העזר להליכה המתאים ביותר במצב המתואר?",
+    "o": [
+      "מקל4 נק )ודות (קוודריפוד",
+      "הליכון2 גלגלים",
+      "הליכון4 )גלגלים (רולטור",
+      ")הליכון רגיל (ללא גלגלים"
+    ],
+    "c": 1,
+    "t": "2023-Jun-Basic",
+    "ti": 4,
+    "e": "**התשובה הנכונה: ב — הליכון 2 גלגלים**\n\nבפרקינסון עם Freezing of Gait ונפילות לאחור, הליכון 2 גלגלים (גלגלים קדמיים בלבד) מספק עצירה מיידית בלחיצה קלה ומשמש כגירוי חזותי/פרופריוספטיבי שמסייע לפרוץ את ה-Freeze. הרולטור (4 גלגלים) מסוכן כי נוטה להחליק קדימה ומגביר סיכון לנפילה לאחור, ואילו הליכון ללא גלגלים דורש הרמה תכופה המחמירה את ה-Freezing. מקל קוודריפוד אינו מספיק יציב לפרוץ אפיזודות Freeze.\n\nמקור: Hazzard's Geriatric Medicine, פרק Parkinson's Disease; UpToDate – \"Falls prevention in Parkinson disease\"",
+    "ref": "Hazzard Ch 43 — FALLS · Harrison Ch 26 — Neurologic Causes of Weakness and Paralysis",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2023-Jun-Basic",
+    "qnum": "112",
+    "q": "בן84 , מאושפז לבירור חום38-38.5 מזה3 שבועות. מתלונן על חולשה, ללא כאבי .פרקים, ללא שיעול, ללא שינוי בהרגלי יציאה. שולל חשיפה למחלות זיהומיות אטיפיות .בדיקה גופנית ללא ממצא משמעותי :בדיקות הדם מדד ויחידות החולה ערכים תקינים Na mmol/L 138 135-146 K mmol/L 4.8 3.5-5.3 CREATININE mg/dL 1.1 0.7-1.3 BUN mg/dL 28 5-25 AST (GOT) U/L 42 <7-40 ALT (GPT) U/L 34 <7-35 ALK PHOS U/L 118 46-116 LDH U/L 352 208-378 ALBUMIN g/dL 3.9 3.5-5.0 WBC 10e3/µL 5.8 4.0-11.0 HgB g/dL 12.9 13.2-17 גבר Plt 10e3/µL 187 150-450 CRP mg/L 84 <0.03-5 CT חזה ובטן ללא ממצ",
+    "o": [
+      "פנל בדיקות ראומטי ללא ממצא. מנטו שלילי. תרביות דם ושתן .שליליות ?מה השלב הבא בבירור א. ביופסיית מח עצם",
+      "ביופסיית כבד",
+      "ביופסיית עורק טמפורלי",
+      "ביופסיית עור"
+    ],
+    "c": 2,
+    "t": "2023-Jun-Basic",
+    "ti": 11,
+    "e": "**התשובה הנכונה: ג — ביופסיית עורק טמפורלי**\n\nבן 84 עם חום ממושך (FUO), CRP מוגבר משמעותית, אנמיה קלה, ועלייה קלה ב-ALP ו-AST — ללא ממצא ב-CT וללא זיהום מוכח — מעלה חשד גבוה ל-Giant Cell Arteritis (GCA), הגורם השכיח ביותר ל-FUO בגיל מבוגר. ביופסיית עורק טמפורלי היא הבדיקה האבחנתית הסטנדרטית ובעלת הסגוליות הגבוהה ביותר במצב זה, גם בהיעדר כאב ראש קלאסי. בגיל מתקדם GCA עשוי להתבטא אטיפית עם חום ועייפות בלבד.\n\nמקור: Hazzard's Geriatric Medicine, פרק Inflammatory Diseases; UpToDate — \"Diagnosis of giant cell arteritis\"",
+    "ref": "Hazzard Ch 47 — INCONTINENCE",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-May-Basic",
+    "qnum": "5",
+    "q": "מילים, תפקודים ניהוליים וקשב לקויים מאוד מה מהבאים מהווהCORE FEATURE ?לאבחנה של מצבו",
+    "o": [
+      "דלוזיות פרנואידליות",
+      "נפילות חוזרות",
+      "דיכאון",
+      "פלוקטואציות במצב הקוגניטיבי"
+    ],
+    "c": 3,
+    "t": "2024-May-Basic",
+    "ti": 4,
+    "e": "**התשובה הנכונה: ד — פלוקטואציות במצב הקוגניטיבי הן סימן מרכזי לדמנציה עם גופיפי לוי (DLB).**\n\nבדמנציה עם גופיפי לוי (Dementia with Lewy Bodies), הפגיעה הבולטת בתפקודים ניהוליים, קשב ושפה — בשילוב עם פלוקטואציות קוגניטיביות ספונטניות — מהווה אחד מארבעת ה-Core Features לפי קריטריוני McKeith 2017. הפלוקטואציות מתבטאות בשינויים חדים ברמת הערנות והיכולת הקוגניטיבית במהלך היום, ומבדילות DLB מאלצהיימר.\n\nמקור: McKeith et al., Neurology 2017; Hazzard's Geriatric Medicine, Ch. 67.",
+    "ref": "Hazzard Ch 43 — FALLS · Harrison Ch 26 — Neurologic Causes of Weakness and Paralysis",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-May-Basic",
+    "qnum": "29",
+    "q": "?איזה אביזר עזר מומלץ למטופל קטוע רגל לפני התאמת פרוטזה",
+    "o": [
+      "( רולטורROLLATOR )",
+      "הליכון ע ם4 גלגלים( 4 – WHEELED ROLLING WALKER )",
+      "הליכון עם2 גלגלים ( 2 – WHEELED ROLLING WALKER )",
+      "הליכון סטנדרטי ללא( גלגליםSTANDART ''PICK-UP'' WALKER ) שלב א' בגריאטריה28/5/2024 0 5 1 שאלות – מסלול בסיס"
+    ],
+    "c": 3,
+    "t": "2024-May-Basic",
+    "ti": 39,
+    "e": "**התשובה הנכונה: ד — הליכון סטנדרטי ללא גלגלים (Standard Pick-Up Walker)**\n\nבשלב שלפני התאמת פרוטזה, קטוע הרגל זקוק לתמיכה יציבה מרבית ולמניעת נפילות. הליכון סטנדרטי ללא גלגלים מספק את הבסיס היציב ביותר כיוון שאינו נע בטעות תוך כדי העברת משקל על הגדם. הליכון עם גלגלים או רולטור עלולים לגלוש ולסכן מטופל שאינו מאוזן עם פרוטזה.\n\nמקור: Hazzard's Geriatric Medicine, פרק Rehabilitation, עקרונות Preprosthetic Training.",
+    "ref": "Hazzard Ch 15 — EMERGENCY DEPARTMENT CARE",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "27",
+    "q": "בת73 , ברקע סוכרת ויתר לחץ דם, סובלת לאחרונה מפרפור פרוזדורים. לפיCHA2-DS2-VASC SCORE ?מה הסיכון לשבץ למטופלת זו",
+    "o": [
+      "4 לשנה%",
+      "15 לשנה%",
+      "25 לשנה%",
+      "40 לשנה%"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 41,
+    "e": "**התשובה הנכונה: א — סיכון של כ-4% לשנה**\n\nלפי ציון CHA₂DS₂-VASc, המטופלת צוברת: גיל 65–74 (נקודה אחת), מין נקבה (נקודה אחת), סוכרת (נקודה אחת), יתר לחץ דם (נקודה אחת) — סה\"כ 4 נקודות, המקביל לסיכון שנתי לשבץ של כ-4%. ציונים גבוהים יותר (6–9) מקבילים לסיכונים של 10–15% ומעלה, ואינם רלוונטיים לפרופיל זה.\n\nמקור: UpToDate, \"Atrial fibrillation: Risk of embolization\", 2024.",
+    "ref": "Hazzard Ch 77 — CARDIAC ARRHYTHMIAS · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 3,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "30",
+    "q": "?איזה מהבאים נכון בנוגע לירידת שמיעה תלוית גיל",
+    "o": [
+      "היא לא מושפעת ממחלות רקע כגון סוכרת ומחלות כלי דם",
+      "במעל50% מהמקרים יש מרכיב תורשתי רלוונטי",
+      "אין הבדל בין גברים לנשים בשכיחות האבחנה",
+      "ניתן לבסס את האבחנה על בדיקת סקירה במרפאה גריאטרית"
+    ],
+    "c": [
+      1,
+      3
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 22,
+    "e": "**התשובה הנכונה: ב, ד — מרכיב תורשתי משמעותי ואבחנה קלינית אפשרית**\n\nפרסביאקוזיס (Presbycusis) מושפעת ממגוון גורמים, ובמעל 50% מהמקרים מזוהה רכיב גנטי תורשתי. בנוסף, ניתן לבסס את האבחנה הראשונית באמצעות כלי סקירה מאומתים כגון שאלון HHIE-S או בדיקת לחישה במרפאה גריאטרית, ללא צורך מיידי באודיומטריה. לעומת זאת, מחלות כלי דם וסוכרת ידועות כמחמירות את האבדן, וגברים סובלים משכיחות גבוהה יותר בהשוואה לנשים.\n\nמקור: Hazzard's Geriatric Medicine, פרק Hearing Impairment; UpToDate – \"Age-related hearing loss\"",
+    "ref": "Hazzard Ch 40 — APPLIED CLINICAL GEROSCIENCE · Harrison Ch 388 — Approach to the Patient with Endocrine Disorders",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "90",
+    "q": "בת72 , ברקע אסטמה. מגיעה למרפאה עם בתה עמה היא גרה. הבת אובחנה עכשיו עם שפעת .בעזרת מטוש. האם מסרבת לחיסונים בדרך כלל. כעת מסכימה לחיסון ?איזה טיפול נוסף לחיסון ניתן לתת לה בשלב זה",
+    "o": [
+      "Amantadine",
+      "Oseltamivir",
+      "Rimantadine",
+      "פרט לחיסון אין מקום לטיפול נוסף"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 44,
+    "e": "**התשובה הנכונה: ב — Oseltamivir כפרופילקסיס לאחר חשיפה לשפעת**\n\nבת 72 עם חשיפה ישירה לשפעת מאומתת (בתה) היא מועמדת לפרופילקסיס פוסט-חשיפה עם Oseltamivir למשך 10 ימים, במקביל למתן החיסון. החיסון לבדו אינו מספיק בשלב זה כיוון שנדרשות כ-2 שבועות לבניית הגנה הומורלית; Amantadine ו-Rimantadine אינם פעילים כנגד שפעת A עונתית עקב עמידות נרכשת נרחבת.\n\n**מקור:** UpToDate — \"Seasonal influenza in adults: Role of antiviral prophylaxis\"",
+    "ref": "USPSTF 2024",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "101",
+    "q": "בן85 , ברקע סוכרת ויתר לחץ דם. התקבל עקב כאבים בחזה. סימנים חיוניים- דופק86 לדקה, לחץ דם112 / 56 , סטורציה97% . באק\"ג– אוטם לטרלי. מתוכנן לצנתור ו- PCI . מהן תרופות נוגדות האגרגציה והקרישה ?המומלצות במצב זה",
+    "o": [
+      "Aspirin , Heparin , Ticagrelor ( Brilinta )",
+      "Aspirin , Enoxaparin , Clopidogrel ( Plavix )",
+      "Aspirin , Heparin , Prasugrel ( Effient )",
+      "Aspirin , Enoxaparin , Fondaparinux ( Arixtra )"
+    ],
+    "c": [
+      0,
+      1
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 14,
+    "e": "**התשובה הנכונה: א ו-ב — טיפול נוגד טסיות וקרישה ב-STEMI/NSTEMI מועמד ל-PCI**\n\nבאוטם לטרלי המיועד לצנתור, ההנחיות תומכות בשילוב אספירין עם מעכב P2Y12 חזק (Ticagrelor עדיף על Clopidogrel לפי ACC/AHA 2023) ואנטיקואגולציה. Heparin בלתי מפוצל הוא סטנדרט ה-PCI (UFH), בעוד Enoxaparin מקובל גם כן; Prasugrel נמנע בגיל מעל 75 עקב סיכון דימום מוגבר. Fondaparinux בלבד אינו מספיק ל-PCI ללא הגנת הצנתר.\n\nמקור: ACC/AHA STEMI Guidelines 2022; UpToDate \"Antiplatelet and anticoagulant therapy in STEMI\"",
+    "ref": "Hazzard Ch 68 — PAIN MANAGEMENT · Harrison Ch 14 — Pain: Pathophysiology and Management",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "102",
+    "q": "בת70 , מאושפזת במחלקה פנימית בשל חולשה כללית, עייפות וירידה תפקודית. בבדיקות מעבדה אנמיה. בוצע משטח דם. תמונת משטח הדם מופיעה בתמונה מספר6 . מה האבחנה המתאימה ?לפי המשטח",
+    "o": [
+      "משטח תקין",
+      "אנמיה מחוסר ברזל",
+      "תלסמיה מינור",
+      "אנמיה מחוסר ויטמיןB12"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 25,
+    "e": "**התשובה הנכונה: ב — אנמיה מחוסר ברזל**\n\nבמשטח דם האופייני לאנמיה מחוסר ברזל נראים כדוריות דם אדומות מיקרוציטיות והיפוכרומיות, עם אזור חיוור מרכזי מוגדל (central pallor) העולה על שליש מקוטר התא. בגיל המבוגר, חוסר ברזל נגרם לרוב מדימום כרוני סמוי (במערכת העיכול) או תת-תזונה, ומתבטא בחולשה וירידה תפקודית כפי שתואר. תלסמיה מינור גם כן מיקרוציטית אך מציגה תאי מטרה (target cells) ורמת פריטין תקינה.\n\nמקור: Hazzard's Geriatric Medicine, פרק אנמיה בגיל המבוגר; UpToDate – \"Diagnosis of iron deficiency anemia\"",
+    "ref": "Hazzard Ch 94 — AGING OF THE HEMATOPOIETIC SYSTEM AND ANEMIA · Harrison Ch 66 — Anemia and Polycythemia",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "103",
+    "q": "בת70 :עברה ניקור פלאורלי עם הממצאים הבאים יחס חלבון תפליט/דם – 0.7 יחסLDH תפליט/דם - 0.65 גלוקוז40 מ\"ג/ד\"ל ?מהי האבחנה המתאימה",
+    "o": [
+      "אי ספיקת לב",
+      "תסמונת נפרוטית",
+      "תסחיף ריאתי",
+      "ראומטואיד ארטריטיס"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "**התשובה הנכונה: ד — ראומטואיד ארטריטיס**\n\nהממצאים עונים על קריטריוני Light לאקסודאט (יחס חלבון >0.5, יחס LDH >0.6), וגלוקוז נמוך במיוחד (<40 מ\"ג/ד\"ל) הוא סימן אופייני לתפליט פלאורלי ראומטואידי, הנובע מפגיעה מטבולית של הממברנה הפלאורלית המעכבת כניסת גלוקוז. אי ספיקת לב ותסמונת נפרוטית גורמות לטרנסודאט, ואילו תסחיף ריאתי אינו מוריד גלוקוז באופן אופייני.\n\nמקור: Light RW, Hazzard's Geriatric Medicine, פרק מחלות ריאה; UpToDate – \"Pleural fluid analysis in adults with a pleural effusion\"",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "104",
+    "q": "בת77 התחילה טיפול כימותרפי עקבAcute Myelocytic Leukemia . ?איזו הפרעה מטבולית יכולה להופיע לאחר התחלת הטיפול",
+    "o": [
+      "היפרגליקמיה",
+      "היפרפוספטמיה",
+      "היפרקלצמיה",
+      "היפרתנרמיה"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 17,
+    "e": "**התשובה הנכונה: ב — היפרפוספטמיה במסגרת תסמונת פירוק גידול (Tumor Lysis Syndrome)**\n\nבתחילת כימותרפיה ב-AML מתרחש פירוק מסיבי של תאי לוקמיה, המשחרר לדם כמויות גדולות של פוספט תוך-תאי, חומצת שתן ואשלגן. היפרפוספטמיה היא מרכיב מרכזי ב-Tumor Lysis Syndrome, ועלולה לגרום לאי-ספיקת כליות חריפה ולהיפוקלצמיה משנית. בחולות מבוגרות עם תפקוד כלייתי ירוד, הסיכון לסיבוך זה גבוה במיוחד.\n\nמקור: Hazzard's Geriatric Medicine, פרק אונקולוגיה גריאטרית; UpToDate — \"Tumor lysis syndrome: Definition, pathogenesis, clinical manifestations, etiology and risk factors\"",
+    "ref": "Hazzard Ch 74 — CORONARY HEART DISEASE AND DYSLIPIDEMIA · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "105",
+    "q": "בת78 , מאושפזת במחלקה פנימית, מתלוננת על כאבים באזור פי הטבעת ושלשולים מימיים מזה יומיים. סימנים חיוניים תקינים. בבדיקת הבטן– בטן רכה, לא רגישה. בבדיקות המעבדה ללא עליית מדדי .דלקת, עליה קלה בתפקודי כליה. בדיקות צואה שליליות לפרזיטים וקלוסטרידיום ?מה השלב הבא בבירור",
+    "o": [
+      "בדיקה רקטלית",
+      "קולונוסקופיה",
+      "בדיקתCT בטן",
+      "תרבית צואה חוזרת"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 11,
+    "e": "**התשובה הנכונה: א — בדיקה רקטלית**\n\nבחולה קשישה עם שלשולים מימיים וכאבים פריאנליים ללא עליית מדדי דלקת, יש לשלול צואה מאוחה (fecal impaction) הגורמת לשלשול פרדוקסלי — נוזל עובר מסביב לגוש הצואה. הבדיקה הרקטלית היא מהירה, זמינה וחיונית כצעד ראשון לפני כל בירור פולשני או הדמייתי.\n\nמקור: Hazzard's Geriatric Medicine, פרק Constipation and Fecal Impaction in Older Adults.",
+    "ref": "Hazzard Ch 47 — INCONTINENCE",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "106",
+    "q": "בת74 אושפזה לבירור עלית חום עד38.5 מזה שבוע. בתרבית דם אחת התקבלה צמיחה של Srep. VIRIDANS . בהאזנה ללב– אוושה חדשה שלא ( היתה בעבר",
+    "o": [
+      "קו לבTTE ) לא הדגים פתולוגיה .משמעותית איזה מידע נוסף יאפשר לאבחן על פיDUKE CRITERIA ?שמדובר באנדוקרדיטיס א . ממצא פתולוגי אופייני ב- TEE",
+      "הנתונים הקיימים מספיקים לאבחנה של אנדוקרדיטיס",
+      "פתולוגיה ב - TEE ממצאים ווסקולרים+",
+      "RHEUMATIOD FACTOR + חיוביRoth’s spots"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 36,
+    "e": "**התשובה הנכונה (ג) — TEE פתולוגי + ממצאים וסקולריים משלימים לאבחנת אנדוקרדיטיס לפי קריטריוני DUKE.**\n\nבמקרה זה קיים קריטריון מינורי אחד (חום ≥38°C) וקריטריון מינורי חלקי (תרבית חיובית אחת בלבד מ-Strep. viridans, שאינה עומדת בפני עצמה כקריטריון מז'ורי). TTE תקין אינו שולל אנדוקרדיטיס — TEE רגיש הרבה יותר לצמחיות קטנות; אם יוכח ממצא פתולוגי ב-TEE (קריטריון מז'ורי) בתוספת ממצא וסקולרי כגון אמבוליה (קריטריון מינורי), מתקיימים שני מז'וריים או מז'ורי ועם ≥3 מינוריים לאבחנה ודאית.\n\nמקור: Li JS et al., Duke Criteria Revised — Clin Infect Dis 2000; UpToDate: \"Diagnostic criteria for infective endocarditis.\"",
+    "ref": "Hazzard Ch 55 — REHABILITATION",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "107",
+    "q": "בת74 :, בבדיקת גזים בדם בחדר המיון הממצאים הבאים מדד ויחידות מידה ערך לחולה ערכי הנורמה PH 7.26 7.37-7.44 PCO2 mmHg 32 40-51 PO2 mmHg 88 65-105 HCO3 mmol/L 18 22-26 Na mEq/L 140 135-145 Cl mEq/L 112 96-106 K mM/L 5.8 3.5-5 ?מהי האבחנה המתאימה",
+    "o": [
+      "שלשול",
+      "Renal Tubular Acydosis Type I",
+      "Hypoaldosteronism",
+      "הרעלת סליצילטים"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 39,
+    "e": "**התשובה הנכונה: ג — Hypoaldosteronism**\n\nהחולה מציגה חמצת מטבולית עם אניון גאפ תקין (AG=140-112-18=10), היפרקלמיה, ו-pH נמוך עם ביקרבונט מופחת. היפואלדוסטרוניזם (לרוב מסוג IV RTA) גורם לאצירת H⁺ ו-K⁺ באבובית הדיסטלית, מה שמסביר את השילוב הייחודי של חמצת היפרכלורמית עם היפרקלמיה. שלשול היה גורם להיפוקלמיה, ו-RTA Type I לאלקלוזה שתנית עם היפוקלמיה.\n\nמקור: Hazzard's Geriatric Medicine, פרק disorders of fluid and electrolytes; UpToDate — Hyperkalemic distal RTA (Type IV).",
+    "ref": "Hazzard Ch 15 — EMERGENCY DEPARTMENT CARE",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "108",
+    "q": "בת70 , מועמדת לביצוע קולונוסקופיה לבירור אנמיה ודם סמוי חיובי. ברקע מחלת לב איסכמית, אי ספיקת לב, היצרות קשה של מסתם אאורטלי לאחרTAVI ., ידוע על רגישות לפניצילין ?מהי הגישה למניעת אנדוקרדיטיס במטופלת זו",
+    "o": [
+      "Clindamycin PO",
+      "Azytromycin PO",
+      "Ceftriaxone IV",
+      "אין התוויה לטיפול מניעתי"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "**התשובה הנכונה: ד — אין התוויה לטיפול מניעתי לאנדוקרדיטיס לפני קולונוסקופיה**\n\nעל פי הנחיות AHA (2007) ועדכוני ACC/AHA, פרופילקסיס לאנדוקרדיטיס אינטרפרוצדורלי מומלץ אך ורק לפני פרוצדורות דנטליות הכרוכות במניפולציה ברקמות חניכיים — ולא לפני קולונוסקופיה. גם בנוכחות מסתם מלאכותי לאחר TAVI, ההנחיה הנוכחית אינה ממליצה על פרופילקסיס לפני פרוצדורות במערכת העיכול, ללא קשר לרגישות לאנטיביוטיקה.\n\nמקור: AHA/ACC Endocarditis Prevention Guidelines 2007; UpToDate: \"Prevention of endocarditis\"",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 3,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "109",
+    "q": "מה מהממצאים הבאים אופייני לתסמונתTakotsubo?",
+    "o": [
+      "ירידה במוטיליות הקיר הקדמי של הלב באקו לב",
+      "הרמותST באק\"ג",
+      "רמות תקינות של טרופונין בדם",
+      "חסימה של כלי דם בצנתור"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "**התשובה הנכונה: ב — הרמות ST באק\"ג**\n\nתסמונת Takotsubo (קרדיומיופתיה מתח) מתאפיינת בהרמות ST באק\"ג הדומות לאוטם חריף, אך ללא חסימה של כלי דם בצנתור — זהו המאפיין המבדיל החשוב ביותר. בדרך כלל מופיעה עלייה בטרופונין (אך מתונה), ובאקו לב נראית בלוּניוּת אפיקלית עם הפרעת מוטיליות אפיקלית ולא קדמית. הגורם השכיח הוא סטרס רגשי או גופני, בעיקר בנשים לאחר גיל המעבר.\n\nמקור: Hazzard's Geriatric Medicine, פרק Cardiovascular Disease; UpToDate \"Takotsubo (stress) cardiomyopathy\"",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "110",
+    "q": "לבת75 בוצעה בדיקת אק\"ג המופיעה בתמונה מספר7 ?מה מהמצבים הבאים יכול לגרום לכך",
+    "o": [
+      "Hypercalcemia",
+      "טיפול ב- Citalopram",
+      "טיפול ב- Digoxin",
+      "Thyrotoxicosis"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 17,
+    "e": "**התשובה הנכונה: ב — טיפול ב-Citalopram גורם להארכת QT**\n\nCitalopram (ממשפחת SSRI) ידוע כגורם להארכת מרווח QT באופן תלוי-מינון, ומהווה סיכון מיוחד בגיל המבוגר בשל שינויים פרמקוקינטיים. לעומת זאת, Hypercalcemia מקצרת את QT, Digoxin גורם לשינויי ST אך לא הארכת QT משמעותית, ו-Thyrotoxicosis מאיצה את הדופק ללא הארכת QT. ה-FDA הנחה להגביל מינון Citalopram ל-20 מ\"ג ביום מעל גיל 60.\n\nמקור: UpToDate — *Drug-induced long QT syndrome*; FDA Drug Safety Communication, Citalopram 2012.",
+    "ref": "Hazzard Ch 74 — CORONARY HEART DISEASE AND DYSLIPIDEMIA · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "111",
+    "q": "באיזה מהמצבים הבאים נמצאPULSUS PARADOXUS?",
+    "o": [
+      "אוטם קדמי נרחב",
+      "תת תזונה",
+      "COPD קשה",
+      "אי ספיקת לב"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 9,
+    "e": "**התשובה הנכונה: ג — COPD קשה**\n\nב־COPD קשה נוצרות תנודות לחץ תוך-חזי גדולות במהלך הנשימה, הגורמות לירידה של יותר מ־10 מ\"מ כספית בלחץ הדם הסיסטולי בשאיפה — זהו פולסוס פרדוקסוס. מנגנון זה נובע מאוורור יתר, לכידת אוויר (air trapping) ולחץ תוך-ריאתי מוגבר המשפיע על מילוי חדר שמאל. מצבים נוספים הגורמים לכך הם טמפונדה לבבית ואסתמה חריפה קשה.\n\n*מקור: UpToDate — \"Pulsus paradoxus\", Hazzard's Geriatric Medicine, Ch. Cardiovascular Physiology.*",
+    "ref": "Hazzard Ch 30 — NUTRITION DISORDERS, OBESITY , AND ENTERAL/PARENTERAL ALIMENTATION · Harrison Ch 50 — Unintentional Weight Loss",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "112",
+    "q": "בן76 , פנה למיון עקב שלשול דמי, מלווה בכאבי בטן וחום38 . מאנמנזה ידוע על ארוחה משפחתית .לפני יומיים מה ?הגורם לשלשול",
+    "o": [
+      "Staph Aureus",
+      "Rotavirus",
+      "E.Coli",
+      "Clostridium Perfringens"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 14,
+    "e": "**התשובה הנכונה: ג — E. Coli (EHEC/ETEC) כגורם לשלשול דמי עם חום לאחר ארוחה משפחתית**\n\nE. Coli המייצרת טוקסינים (בעיקר EHEC) גורמת לשלשול דמי עם חום וכאבי בטן, עם זמן דגירה של 1–3 ימים — תואם את הציר הזמני. בניגוד ל-Staph Aureus (העלול לגרום הקאות תוך שעות ללא חום) או Clostridium Perfringens (שלשול ללא דם וללא חום), E. Coli מתאימה לתמונה הקלינית המלאה עם דם, חום וכאבים. בגיל מבוגר קיים סיכון מוגבר לסיבוכים כגון HUS.\n\nמקור: Hazzard's Geriatric Medicine, פרק זיהומי מעיים; UpToDate — \"Approach to the adult with acute diarrhea in resource-rich settings\"",
+    "ref": "Hazzard Ch 68 — PAIN MANAGEMENT · Harrison Ch 14 — Pain: Pathophysiology and Management",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "113",
+    "q": "בן89 ,אושפז עקב אי ספיקה כלייתית חדה עם עליית קראטינין מ - 0.8 ל- 2.5 . בבדיקת משקע שתן נמצאוGRANULAR CASTS . ?מהי האבחנה המתאימה",
+    "o": [
+      "חסימה על רקע הגדלה שפירה של הערמונית",
+      "טרומבוזיס של ה - Renal Artery",
+      "Malignant Hypertension",
+      "Acute Tubular Necrosis"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "**התשובה הנכונה: ד — Acute Tubular Necrosis**\n\nגרגירי (Granular Casts) בבדיקת משקע שתן הם סמן פתוגנומוני ל-ATN, הנוצרים מפירוק תאי אפיתל טובולריים נמקיים. בקשיש, ATN שכיח במיוחד עקב רגישות מוגברת לאיסכמיה ולנפרוטוקסינים. חסימה על רקע BPH היתה מצפה לשתן תקין במשקע, וטרומבוזיס של העורק הכלייתי לא מייצר Cast כלל.\n\nמקור: Hazzard's Geriatric Medicine, פרק Acute Kidney Injury in Older Adults.",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 3,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "114",
+    "q": "מה מהבאים מהווה את ה סיבוך ה מאוחר ב יותר ?של אוטם שריר הלב",
+    "o": [
+      "Left Ventricular Aneurysm",
+      "Ventricular Tachycardia",
+      "Papillary Muscle Rupture",
+      "Pericarditis"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "**התשובה הנכונה: א — Left Ventricular Aneurysm הוא הסיבוך המאוחר ביותר לאחר אוטם שריר הלב.**\n\nאנואריזמה של החדר השמאלי מתפתחת שבועות עד חודשים לאחר האוטם, כאשר רקמת צלקת לא-מתכווצת מתרחבת ויוצרת בליטה פרדוקסלית. בשונה מקרע שריר הפפילארי (ימים 2–7) ופריקרדיטיס (ימים 1–4), תהליך ה-remodeling האנאורסימלי מצריך החלפה מלאה של מיוקרד בקולגן. סיבוכיה כוללים תרומבוס תוך-חדרי, אי-ספיקת לב ממושכת והפרעות קצב כרוניות.\n\nמקור: Hazzard's Principles of Geriatric Medicine, פרק Cardiovascular Disease; UpToDate – \"Complications of acute myocardial infarction.\"",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "115",
+    "q": "בן75 , מאושפז במחלקת שיקום אחרי אוטם שריר הלב וירידה תפקודית. במהלך טיפול פיזיותרפי",
+    "o": [
+      "יבד הכרה בבדיקה – .מחוסר הכרה, לא נושם, דופק לא נמוש. הותחל בהחייאה בדפיברילטור ממצאי התרשים המופיע בתמונה מספר8 . .קיבל פעמיים טיפול שוק חשמלי (דפיברילציה) ללא הטבה מה הטיפול התרופתי המומלץ בנוסף ל- Adrenaline ? א . Atropine",
+      "Magnesium",
+      "Amiodarone ( Procor)",
+      "Adenosine"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 36,
+    "e": "**התשובה הנכונה: ג — Amiodarone הוא התרופה המועדפת בדום לב עקשן**\n\nלאחר שתי דפיברילציות כושלות ב-VF/VT חסר דופק, יש לתת Amiodarone 300 מ\"ג IV בולוס, המייצב את הממברנה ומאריך את משך פוטנציאל הפעולה. Atropine אינה יעילה בדום לב, Adenosine מיועדת לטכיקרדיות על-חדריות, ו-Magnesium שמור ל-Torsades de Pointes בלבד.\n\nמקור: AHA ACLS Guidelines 2020; Hazzard's Geriatric Medicine, Ch. 50",
+    "ref": "Hazzard Ch 55 — REHABILITATION",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "116",
+    "q": "?איזה מהבאים מתאר נכון קשר בין תרופה לטיפול בסרטן לבין תופעת לוואי שכיחה שלה",
+    "o": [
+      "Doxorubicin ( Adriamycin ) – פגיעה לבבית",
+      "Cisplatin - היפרקלצמיה",
+      "5 Fluoro-Uracyl - נוירופתיה פריפרית",
+      "Rituximab - טרומבוציטופניה"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 26,
+    "e": "**התשובה הנכונה: א — Doxorubicin גורם לקרדיוטוקסיות**\n\nDoxorubicin הוא אנתרציקלין הגורם לנזק לשריר הלב דרך יצירת רדיקלים חופשיים ופגיעה במיטוכונדריות קרדיומיוציטים, ועלול להוביל לקרדיומיופתיה מורחבת ואי-ספיקת לב. הסיכון תלוי-מינון מצטבר ועולה משמעותית מעל מינון כולל של 400-550 מ\"ג/מ\"ר. Cisplatin קשור לנפרוטוקסיות ונוירופתיה; 5-FU לרעילות ריריות ועוריות; Rituximab לדיכוי חיסוני ולא לטרומבוציטופניה ישירה.\n\nמקור: Hazzard's Geriatric Medicine, פרק אונקולוגיה גריאטרית; UpToDate: \"Cardiotoxicity of anthracycline-containing chemotherapy regimens\"",
+    "ref": "Hazzard Ch 88 — CANCER AND AGING: GENERAL PRINCIPLES · Harrison Ch 79 — Infections in Patients with Cancer",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "117",
+    "q": "בן70 , הופנה למיון לבירור עצירות וכאבי בטן דיפוזיים מזה מספר ימים. בבירור כעת עדות קלינית ?ומעבדתית לחסימת מעי דק. מה מהבאים הינו הגורם השכיח ביותר לאבחנה זו",
+    "o": [
+      "הידבקויות",
+      "ממאירות",
+      "מחלת קרוהן",
+      "טיפול קרינתי לבטן בעברו"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 12,
+    "e": "**התשובה הנכונה: א — הידבקויות (Adhesions) הן הגורם השכיח ביותר לחסימת מעי דק**\n\nהידבקויות לאחר ניתוחים בטניים קודמים מהוות כ-60–70% מכלל מקרי חסימת המעי הדק במבוגרים ובקשישים. הרקמה הצלקתית גורמת ללחץ חיצוני על לולאות המעי, ומשבשת את המעבר התקין של תוכן מעי. ממאירות, בקע והפרעות אחרות נחשבות גורמים פחות שכיחים.\n\n**מקור:** Hazzard's Geriatric Medicine, פרק Gastrointestinal Disorders; UpToDate – \"Small bowel obstruction in adults\"",
+    "ref": "Hazzard Ch 87 — CONSTIPATION · Harrison Ch 49 — Diarrhea and Constipation",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "118",
+    "q": "באיזו מהמחלות הזיהומיות הבאות מומלץ להתחיל טיפול אמפירי ב - Ceftriaxone + Vancomycin?",
+    "o": [
+      "Bacterial Meningitis",
+      "Septic Shock",
+      "Hospital Acquired Pneumonia",
+      "Necrotizing Fasciitis"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 36,
+    "e": "**התשובה הנכונה: א — דלקת קרום המוח החיידקית (Bacterial Meningitis)**\n\nבדלקת קרום המוח החיידקית, השילוב של Ceftriaxone ו-Vancomycin מכסה את החיידקים השכיחים ביותר: *Streptococcus pneumoniae* (כולל זנים עמידים לפניצילין) ו-*Neisseria meningitidis*. בגריאטריה מוסיפים לעיתים Ampicillin לכיסוי *Listeria monocytogenes*. הטיפול האמפירי צריך להינתן מיידית, לפני תוצאות תרבית, כדי להפחית תמותה ותחלואה נוירולוגית.\n\nמקור: Mandell, Douglas & Bennett's Principles of Infectious Diseases; UpToDate — \"Initial therapy and prognosis of bacterial meningitis in adults\"",
+    "ref": "Hazzard Ch 55 — REHABILITATION",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "119",
+    "q": "בת72 .מדווחת על נטיה מולדת לדמם בפעולות פולשניות ולידות. ללא דימומים ספונטנים :בבדיקות המעבדה מדד יחידות+ ערך נורמלי ערך למטופלת PLT 3 450 X 10 - 150 239 PT 9.4-12.5 שניות 17 INR 0.9-1.1 1.9 PTT 25-37 שניות 31 שניות ?מה האבחנה הסבירה ביותר",
+    "o": [
+      "חסר פקטורVII",
+      "לופוס אנטי קואגולנט",
+      "חסר פקטורVIII",
+      "גלנצמן טרומבסטניה"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 36,
+    "e": "**התשובה הנכונה: א — חסר פקטור VII**\n\nחסר פקטור VII הוא הפרעת קרישה תורשתית נדירה הפוגעת אך ורק במסלול החיצוני, ולכן מאריך PT/INR בלבד תוך שמירה על PTT תקין. המצב גורם לדימומים הקשורים לחבלה או פעולות פולשניות ולא לדימומים ספונטניים, בהתאם לתמונה הקלינית המתוארת. הממצאים המעבדתיים (PT מוארך, INR 1.9, PTT תקין, טסיות תקינות) אופייניים לאבחנה זו.\n\nמקור: Hazzard's Geriatric Medicine, פרק קרישה והמוסטזיס; UpToDate — \"Factor VII deficiency\"",
+    "ref": "Hazzard Ch 55 — REHABILITATION",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "120",
+    "q": "בן75 , ברקע ידוע על יתר לחץ דם, אי ספיקת ,לב, אלכוהוליזם",
+    "o": [
+      "ושפז לבירור ירידה בתיאבון .ירידה במשקל והופעה של מיימת חדשה. כחלק מהבירור בוצע ניקור מיימת ?מה נכון לומר לגבי המדדים מנוזל המיימת א . במידה ומדובר בטרנסודט, קרוב לוודאי מדובר במיימת על רקע אי ספיקת לב",
+      "במידה ו - SAAG ( Serum Ascites-to-Albumin Gradient ) מעל1.1 g/dL , קרוב לוודאי מדובר ביתר לחץ דם פורטלי",
+      "( מיימת על רקע אי ספיקת לבCardiac Ascites ) מאופיינת על ידי רמת חלבון מתחת ל2.5 g/dL בנוזל המיימת",
+      "רמת החלבון בנוזל המיימת מעל1.5 g/dL מעלה סיכון לפתח SBP ( Spontaneous Bacterial Peritonitis )"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 9,
+    "e": "**התשובה הנכונה (ב) — SAAG מעל 1.1 מעיד על יתר לחץ דם פורטלי**\n\nSAAG מחושב כהפרש בין אלבומין סרום לאלבומין נוזל מיימת; ערך מעל 1.1 g/dL מצביע על מנגנון פורטל-היפרטנסיבי (שחמת, אי ספיקת לב, טרומבוזה פורטלית) ברגישות של כ-97%. מיימת לבבית דווקא מאופיינת בחלבון גבוה מעל 2.5 g/dL (טרנסודט עשיר חלבון), ואילו SBP נקשר לרמת חלבון נמוכה מ-1 g/dL ולא גבוהה.\n\nמקור: Runyon BA, UpToDate — \"Diagnosis and evaluation of patients with ascites\"",
+    "ref": "Hazzard Ch 30 — NUTRITION DISORDERS, OBESITY , AND ENTERAL/PARENTERAL ALIMENTATION · Harrison Ch 50 — Unintentional Weight Loss",
+    "_ti_hits": 3,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "121",
+    "q": "מה מהבאים אופייני למעורבות הפריקרד בחולים אונקולוגי י ?ם",
+    "o": [
+      "מתייצג לעיתים קרובות כטמפונדה",
+      "ברוב החולים האונקולוגיים עם פריקרדיטיס נמצא תאים ממאירים בניקור הנוזל",
+      "מדידת מרקרים בנוזל לא מסייעת באבחון הנוזל כממאיר",
+      "מגיב טוב לטיפול בסטרואידים"
+    ],
+    "c": [
+      1,
+      2
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 2,
+    "e": "**התשובה הנכונה: ב+ג — ממאירות בנוזל ומגבלת מרקרים**\n\nבמעורבות פריקרדיאלית ממארת, ברוב המקרים ניתן לזהות תאים ממאירים בנוזל הפריקרד בניקור (pericardiocentesis), מה שהופך את הציטולוגיה לכלי אבחוני מרכזי. עם זאת, מרקרים ביוכימיים בנוזל (כגון CEA, LDH) אינם מספיק ספציפיים להבחנה בין נוזל ממאיר לתגובתי. טמפונדה מתרחשת אך אינה הביטוי השכיח ביותר, וסטרואידים אינם הטיפול הייעודי.\n\nמקור: Hazzard's Principles of Geriatric Medicine, פרק מחלות לב וכלי דם — סיבוכים אונקולוגיים; UpToDate: \"Pericardial disease in cancer patients.\"",
+    "ref": "Hazzard Ch 8 — PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "_ti_hits": 0,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "122",
+    "q": "בן67 , ללא עבר של עישון ופעיל גופנית , מגיע למרפאה עם תלונה על שיעול יבש קוצר נשימה מזה שישה חודשים. בבדיקה יש קרפיטציות אינספירטוריות בבסיסי שתי הריאות ו - Clubbing .באצבעות בבדיקת תפקודי ריאה יש ירידה ב- TLC, FEV1 ו- FVC ביחס לנורמה וירידה( בדיפוזיהDLCO .) ?אילו ממצאים נוספים צפויים להיות",
+    "o": [
+      "בבדיקתHigh resolution CT \"נראה תמונה של \"חלת דבש",
+      "בבדיקת אקו לב נראה ירידה בתפקוד הסיסטולי",
+      "בצילום חזה נראה סימנים של לימפאדנופתיה בשערי הריאה",
+      "בבדיקתCT נראה אמפיזמה משמעותית"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 21,
+    "e": "**התשובה הנכונה: א — ממצא \"חלת דבש\" ב-HRCT האופייני ל-IPF**\n\nהמצגת הקלינית (שיעול יבש, קרפיטציות בבסיסים, Clubbing, דפוס רסטריקטיבי עם ירידה ב-DLCO) תואמת **Idiopathic Pulmonary Fibrosis (IPF)**. ב-HRCT ניתן לראות את הממצא הפתוגנומוני של **Honeycombing** (חלת דבש) עם **Traction Bronchiectasis** בבסיסי הריאות, המשקפים פיברוזיס מתקדם. אמפיזמה שייכת לעישון, לימפאדנופתיה אופיינית לסרקואידוזיס, ואי-ספיקה סיסטולית אינה חלק מהתמונה.\n\nמקור: Hazzard's Geriatric Medicine, פרק Pulmonary Disease; UpToDate — *IPF: Diagnosis and Management*.",
+    "ref": "Hazzard Ch 81 — CHRONIC OBSTRUCTIVE PULMONARY DISEASE · Harrison Ch 295 — Approach to the Patient with Disease of the Respiratory System",
+    "_ti_hits": 5,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "123",
+    "q": "בן74 הגיע למרפאה עקב בצקות מפושטות. המטופל ללא מחלות רקע ידועות ולא עשה בדיקות דם .בשנים האחרונות ?איזה ממצא בבדיקה גופנית מכוון לגורם אפשרי לבצקות",
+    "o": [
+      "עליה ב- JVP מכוונת לשחמת",
+      "ממצא של קריפיטציות בריאות מכוון לאי ספיקת כליות",
+      "בצקות פריאורביטליות מכוונות להיפואלבומינמיה",
+      "PULSE PRESSURE גבוה מכוון לאי ספיקת לב"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "**התשובה הנכונה: ג — בצקות פריאורביטליות מכוונות להיפואלבומינמיה**\n\nבצקות פריאורביטליות (סביב העיניים) הן סימן אופייני לירידה בלחץ האונקוטי עקב היפואלבומינמיה, המופיעה בתסמונת נפרוטית, תת-תזונה או מחלת כבד. בניגוד לאי ספיקת לב, שם ה-JVP עולה ומופיעות קריפיטציות, כאן הבצקת \"רכה\" ומתחילה באזורים עם רקמה רופפת. ה-pulse pressure הגבוה מאפיין אי ספיקת אבי העורקים ולא אי ספיקת לב גרידא.\n\nמקור: Hazzard's Geriatric Medicine, פרק על הפרעות נוזלים ואלבומין; UpToDate — \"Edema: Pathophysiology and etiology\"",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "124",
+    "q": "בת72 , פליטה מאוקראינה, ללא היסטוריה רפואית ידועה, לדבריה בריאה בדרך כלל, לא שותה הרבה אלכוהול, וללא טיפול תרופתי קבוע. הופנתה בשל הרגשה כללית רעה מזה2-3 ימים. בבדיקות הדם הפרעה משולבת באנזימי כבד. אילו מהממצאים הבאים מכוונים לכך שמדובר בהפרעה ממושכת, ולא ?אקוטית",
+    "o": [
+      "רמתALT גבוהה יותר מאשרAST",
+      ". הפרעה בתפקודי קרישה",
+      "רמה תקינה של אמוניה",
+      "רמת אלבומין מתחת ל3 gr/dL"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 21,
+    "e": "**התשובה הנכונה: ד — היפואלבומינמיה כסמן למחלת כבד כרונית**\n\nרמת אלבומין נמוכה מ-3 גר'/ד\"ל משקפת ירידה בתפקוד הסינתטי של הכבד לאורך שבועות עד חודשים, מאחר שמחצית החיים של אלבומין היא כ-20 יום. בניגוד לכך, הפרעה בקרישה ועלייה בטרנסאמינאזות עשויות להופיע גם באירוע אקוטי. היפואלבומינמיה מתמשכת מרמזת על נזק כרוני לתאי הכבד, ולא על פגיעה חריפה בלבד.\n\n**מקור:** Hazzard's Geriatric Medicine, פרק Liver Disease; UpToDate — \"Approach to the patient with abnormal liver biochemical tests\"",
+    "ref": "Hazzard Ch 81 — CHRONIC OBSTRUCTIVE PULMONARY DISEASE · Harrison Ch 295 — Approach to the Patient with Disease of the Respiratory System",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "125",
+    "q": "בן82, לא ידוע על ירידה קוגניטיבית, ברקע ידוע על שחמת מזה כ - 20 .שנים, על רקע כבד שומני אושפז בשל מספר הקאות דמיות כשעתיים טרם קבלתו, מלווה בדליריום. לציין3-4 אירועים דומים בשנים האחרונות, אירוע אחרון לפני שנה וחצי, אז עבר קשירת דליות. בקבלתו יציב המודינמית ונשימתית, חום סיסטמי תקין. בבדיקות דם ללא חריגות משמעו תיות ביחס לבדיקות קודמות, למעט רמתHB 10 , כאשר הבסיס סביב11 ?, מה נכון לומר לגבי הבירור והטיפול במצבו",
+    "o": [
+      "המטופל מתאים לחוק החולה הנוטה למות, יש לבדוק אם קיימות הנחיות מקדימות, ולשקול להימנע מטיפולים פולשניים בהתאם",
+      "מתן מנת דם, ובמידה וההמוגלובין יישאר יציב עד הבוקר למחרת ויהיה שיפור במצבו הקוגניטיבי, תבוצע גסטרוסקופיה אבחנתית",
+      "לנוכח סיכון של20-30% לתמותה סביב כל אירוע של דימום מדליות, חשוב ליידע את אישתו של המטופל על מצבו, ולהקפיד על מעקב קליני ומעבדתי קפדני",
+      "בהיעדר מדדי דלקת מוגברים, ולנוכח חשד נמוך ל- SBP ( Spontaneous Bacterial Peritonitis ), אין מקום למתן טיפול אנטיביוטי"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 34,
+    "e": "**התשובה הנכונה: ג — סיכון תמותה 20–30% לאירוע דימום מדליות מחייב שיתוף המשפחה ומעקב קפדני**\n\nבדימום מדליות ושטי בחולה שחמת מתקדמת, שיעור התמותה לאירוע עומד על 20–30%, ועולה עם חזרת האירועים. הדליריום בקבלה עשוי לנבוע מאנצפלופתיה כבדית הנגרמת מהדימום עצמו, ואינו מעיד בהכרח על ירידה קוגניטיבית כרונית. יידוע בן הזוג על חומרת המצב הוא חובה אתית, ומעקב קליני–מעבדתי צמוד הכרחי לאיתור הידרדרות מוקדמת.\n\n*מקור: Hazzard's Geriatric Medicine, פרק ניהול מחלות כבד וסיבוכיהן בגיל מבוגר; UpToDate – \"Management of variceal hemorrhage in adults\"*",
+    "ref": "Hazzard Ch 7 — DECISION MAKING AND ADVANCE CARE PLANNING: WHAT MATTERS MOST",
+    "_ti_hits": 4,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "126",
+    "q": "?מה אופייני לאפידמיולוגיה הזיהומית במטופלים לאחר כריתת טחול",
+    "o": [
+      "סיכון מוגבר לזיהומים ויראלים",
+      "הסיכון לזיהומים גבוה יותר בשלוש השנים הראשונות לאחר הניתוח",
+      "סיכון מוגבר לזיהומים בחיידקים גרהם שליליים",
+      "כ- 3-5% מהמטופלים יפתחו זיהום מסכן חיים במהלך חייהם"
+    ],
+    "c": [
+      1,
+      2
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 27,
+    "e": "**התשובות הנכונות: ב, ג — סיכון מוגבר בשנים הראשונות ולחיידקים גרם-שליליים**\n\nלאחר כריתת טחול (splenectomy) נפגעת הסינון האימונולוגי של חיידקים מכוסי קפסולה פוליסכרידית, ובמיוחד גרם-שליליים כגון *Neisseria meningitidis* ו-*Haemophilus influenzae*. הסיכון ל-OPSI (Overwhelming Post-Splenectomy Infection) גבוה במיוחד בשלוש השנים הראשונות, אם כי נמשך לכל החיים. שיעור זיהום מסכן-חיים מוערך בכ-5% לכל החיים, ולא 3–5% בלבד.\n\nמקור: Hazzard's Geriatric Medicine, פרק זיהומים בחולה הגריאטרי; UpToDate — \"Prevention of infection in asplenic patients\".",
+    "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION · Harrison Ch 315 — Sepsis and Septic Shock",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "127",
+    "q": "בת80 , פנתה לבירור בשל חולשה גוברת. במעבדהHb = 8.1 , רמת ויטמין B12 = 100 . מה מהבאים מתאים לאבחנה של חסר ויטמיןB12?",
+    "o": [
+      "Reticulocyte index = 1.1",
+      "MCV=90",
+      "LDH מוגבר",
+      "תאי מטרה במשטח דם"
+    ],
+    "c": [
+      0,
+      2
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 25,
+    "e": "**התשובה הנכונה: א+ג — Reticulocyte index נמוך ו-LDH מוגבר**\n\nחסר ויטמין B12 גורם לאריתרופואזיס לא יעיל (ineffective erythropoiesis): תאי דם אדומים נהרסים במח העצם עצמו, ולכן LDH עולה משמעותית ו-Reticulocyte index נמוך (מתחת ל-2), המשקף תגובת מח עצם לקויה לאנמיה. MCV בדרך כלל מוגבר (מקרוציטוזיס), ותאי מטרה אופייניים לאנמיות המוליטיות או מחלת כבד — לא לחסר B12.\n\nמקור: Hazzard's Geriatric Medicine, פרק אנמיה בגיל מבוגר; UpToDate — \"Diagnosis of vitamin B12 deficiency.\"",
+    "ref": "Hazzard Ch 94 — AGING OF THE HEMATOPOIETIC SYSTEM AND ANEMIA · Harrison Ch 66 — Anemia and Polycythemia",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "128",
+    "q": "?מה מהבאים נכון לגבי פגיעה כלייתית מאמינוגליקוזידים",
+    "o": [
+      "מאופיינת בהיפרמגנזמיה בבדיקות הדם",
+      "יכולה להופיע גם שבוע לאחר סיום הטיפול",
+      "תלויה ברמת התרופה בדם",
+      "נגרמת כתוצאה מנזק לגלומרולים"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "**התשובה הנכונה: ב — נפרוטוקסיות מאמינוגליקוזידים יכולה להופיע גם שבוע לאחר סיום הטיפול.**\n\nאמינוגליקוזידים נצברים בתאי הצינית הפרוקסימלית (proximal tubule) ומשתחררים לאט לאחר הפסקת הטיפול, ולכן הנזק הכלייתי עשוי להתגלות או להחמיר ימים עד שבוע לאחר סיום הטיפול. הנזק הוא בעיקר טובולרי ולא גלומרולרי, ומלווה בהיפומגנזמיה (ולא היפרמגנזמיה). הרעילות תלויה בחשיפה המצטברת הכוללת ולא ברמת שיא בודדת בדם.\n\nמקור: UpToDate — \"Aminoglycoside nephrotoxicity\"",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "129",
+    "q": "מה ניתן למצוא בהאזנה במטופל עם איוושה סיסטולית שבאקו לב ממצאים המתאימים ל- Hypertrophic Obstructive Cardiomyopathy?",
+    "o": [
+      "האיוושה תשמע מקסימלית במרווח בין צלעי שני מימין",
+      "האיוושה תתגבר בעת הרמת רגלי המטופל",
+      "האיוושה תהיה מיד- סיסטולית",
+      "( תשמע איוושה דיאסטולית אפיקלית נילוותAustin Flint Murmur )"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 17,
+    "e": "**התשובה הנכונה: ג — האיוושה ב-HOCM היא מיד-סיסטולית (קרשנדו-דקרשנדו).**\n\nב-HOCM, חסימת מוצא החדר השמאלי נוצרת באמצע הסיסטולה עקב תנועת העלה הקדמי של המסתם המיטרלי (SAM), ולכן האיוושה מתחילה לאחר S1 ומגיעה לשיאה במיד-סיסטולה. בניגוד לסטנוזיס אאורטלי, האיוושה אינה מקסימלית בחלל הבין-צלעי השני מימין, והיא מתגברת דווקא במאנוברות המקטינות מילוי חדרי (כמו Valsalva או עמידה) — ולא בהרמת רגליים.\n\nמקור: Hazzard's Geriatric Medicine, פרק קרדיולוגיה; UpToDate — \"Hypertrophic cardiomyopathy: Auscultation.\"",
+    "ref": "Hazzard Ch 74 — CORONARY HEART DISEASE AND DYSLIPIDEMIA · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "130",
+    "q": "בן75 עובר בדיקה במעבדת שינה בשל תלונות על נחירות, הפסקות נשימה ליליות ועייפות ונמנום .במשך היום בבדיקה נמצאAHI of ≥30 events/h . ? מה נכון לגבי הטיפול",
+    "o": [
+      "טיפול ב- CPAP אינו מוכח כיעיל בטיפול במצבו",
+      "שיעור ההיענות לשימוש בסדים מנדיבולריים נמוך יותר ביחס ל- CPAP",
+      "גודש באף היא תופעת לוואי של טיפול ב- CPAP",
+      "טיפול ניתוחי בדרכי האויר העליונות יעיל יותר מ- CPAP בטיפול במצבו"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 13,
+    "e": "**התשובה הנכונה: ג — גודש באף היא תופעת לוואי מוכרת של CPAP**\n\nב-OSA חמור (AHI ≥30), CPAP הוא הטיפול הקו ראשון המוכח ביותר. תופעות לוואי שכיחות כוללות גודש ויובש בדרכי האף-גרון, עקב זרימת אוויר בלחץ המייבשת את הרירית; שימוש במכשיר לחות מובנה (humidifier) מפחית אי-נוחות זו. סדים מנדיבולריים מיועדים בעיקר ל-OSA קל-בינוני, והיענות אליהם בפועל גבוהה יותר מ-CPAP, לא נמוכה יותר; ניתוח אינו עדיף על CPAP במחלה חמורה.\n\n*מקור: Hazzard's Geriatric Medicine, פרק Sleep Disorders; UpToDate – \"Management of obstructive sleep apnea in adults\"*",
+    "ref": "Hazzard Ch 44 — SLEEP DISORDERS",
+    "_ti_hits": 3,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "131",
+    "q": "מה ההבדל בסיבוכים בין החלפת מסתם אאורטלי בניתוח לביןTAVI?",
+    "o": [
+      "שיעור התפתחות פרפור עליות גבוה יותר לאחר TAVI לעומת ניתוח",
+      "שיעור היארעות שבץ מוחי גבוה יותר אחריTAVI לעומת ניתוח",
+      "צורך בהשתלת קוצב לב באחוז יותר גבוה לאחר TAVI לעומת ניתוח",
+      "( דלף סביב המסתםPARAVALVULAR LEAK) בשכיחות נמוכה יותר לאחר TAVI לעומת ניתוח"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 41,
+    "e": "**התשובה הנכונה: ג — צורך בהשתלת קוצב לב גבוה יותר לאחר TAVI**\n\nבהשוואה לניתוח פתוח, TAVI כרוך בשיעור גבוה משמעותית של חסימות הולכה (Left Bundle Branch Block וחסם AV מלא), עקב קרבת מסתם האאורטה למערכת ההולכה. שיעור השתלת קוצב לב לאחר TAVI עומד על כ-10–25%, לעומת 3–5% בניתוח פתוח. לעומת זאת, דלף פרה-ולוולרי ופרפור עליות נפוחים דווקא יותר ב-TAVI, ושיעור השבץ דומה בין שתי הגישות.\n\nמקור: UpToDate — \"Transcatheter aortic valve implantation: Complications\"",
+    "ref": "Hazzard Ch 77 — CARDIAC ARRHYTHMIAS · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 4,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "132",
+    "q": "בת80, אושפזה לבירור אנמיה מחסר ברזל. ברקע דיסליפידמיה ויתר לחץ דם, מטופלת ב - ASPIRIN למניעה ראשונית. בגסטרוסקופיה הודגם כיב בתוכו כלי דם מדמם, בוצעה צריבה והונחו קליפסים. ביופסיה חזרה חיובית להימצאות שלHelicobacter Pylori . הותחל טיפול במעכבי משאבת ( פרוטוניםPPI – Proton Pump Inhibitors .), והומלץ על השלמת קורס אנטיביוטי מה ההמלצות ?למטופלת זו",
+    "o": [
+      "לא י רדיקציה מלאה שלHelicobacter Pylori יש ליטול טיפול אנטיביוטי רציף במשך4 שבועות",
+      "מומלץ לחדש את הטיפול באספירין תוך שבוע",
+      "( טיפול במעכבי משאבות פרוטוניםPPI ) לשארית חייה",
+      "לאחר האנדוסקופיה, יכולה לשתות נוזלים בלבד למשך48 שעות"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 44,
+    "e": "**התשובה הנכונה: ג — טיפול ב-PPI לשארית חייה**\n\nבחולה קשישה עם כיב פפטי מדמם וגורם סיכון מתמשך (אספירין למניעה ראשונית), גם לאחר ביצוע אירדיקציה של H. Pylori, ההנחיות ממליצות על המשך PPI לטווח ארוך להגנה על רירית הקיבה. הפסקת אספירין בגיל 80 למניעה ראשונית מומלצת ממילא, אך אם ימשיך — חובה PPI קבוע. טיפול אנטיביוטי לאירדיקציה הוא קורס קצר (14 יום), לא רציף לארבעה שבועות.\n\nמקור: UpToDate — \"Overview of the treatment of bleeding peptic ulcers\"; ACG Guidelines on H. Pylori and NSAID/Aspirin ulcer prevention.",
+    "ref": "USPSTF 2024",
+    "_ti_hits": 4,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "133",
+    "q": "בן70 , ברקע סוכרת, אי ספיקת לב וממאירות ריאה גרורתית מסוגSmall Cell Carcinoma . מתאשפז לבירור השתנה מרובה. כמות שתן ביממה3.5 ליטר",
+    "o": [
+      "וסמולריות השתן200mosml/L . ?מה הסיבה המתאימה לממצאים אלו א . Resolving Acute Tubular Necrosis",
+      "Uncontrolled Diabetes Mellitus",
+      "Hypercalcemia",
+      "High dose Furosemide (Fusid)"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "**התשובה הנכונה: ג — היפרקלצמיה**\n\nבחולה עם Small Cell Carcinoma גרורתי, היפרקלצמיה פרנאופלסטית גורמת לנפרוגניק דיאבטס אינסיפידוס על ידי עיכוב רצפטורי ADH בצינורית האיסוף, מה שמוביל לפוליאוריה עם שתן מהול (אוסמולריות 200 mOsm/L). בניגוד לסוכרת בלתי מאוזנת, כאן אין גלוקוזוריה אוסמוטית, ובניגוד ל-ATN המתאושש — השתן דווקא מדולל ולא מרוכז.\n\nמקור: UpToDate — \"Hypercalcemia of malignancy: Mechanisms\"; Hazzard's Geriatric Medicine, Ch. 73.",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 3,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "134",
+    "q": "באיזה מהמקרים הבאים צפויFeNa < 1%?",
+    "o": [
+      "Rhabdomyolysis",
+      "Sepsis",
+      "Contrast Nephropathy",
+      "Pre-Renal Azotemia"
+    ],
+    "c": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "**כל התשובות נכונות — FeNa < 1% מופיע במצבים מגוונים**\n\nFeNa < 1% משקף שמירת נתרן כלייתית יעילה, ואינו בלעדי לאי-ספיקה קדם-כלייתית. ב-Rhabdomyolysis וב-Contrast Nephropathy נגרם נזק טובולרי ישיר, אך כלי הדם הכלייתיים מתכווצים וסינון הנתרן נשמר בשלב המוקדם. בספסיס חמור ובאי-ספיקה קדם-כלייתית, אלדוסטרון ו-ADH גורמים לשימור נתרן אגרסיבי, כך ש-FeNa יורד מתחת ל-1% גם ללא נזק טובולרי ממשי.\n\nמקור: UpToDate — \"Fractional excretion of sodium and other diagnostic indices in acute kidney injury\"",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "135",
+    "q": "בת70 , ללא טיפול תרופתי קבוע, במהלך בירור לגרד, אובחנה עם הפרעה באנזימי כבד משולבת מזה כחודש. כחלק מהבירור בוצעUS בטן, הודגם כבד קטן במראה שחמתי. המטופלת הוזמנה לצורך ?השלמת בירור לאתיולוגיה של שחמת. מה ההסבר הנכון לבדיקות שבוצעו לבירור",
+    "o": [
+      "סרולוגיה להפטיטיסC, מכיוון ש - 80% מנשאי הפטיטיסC יפתחו שחמת תוך20-30 שנים",
+      "פאנל אוטואימוני, כולל נוגדנים אנטי- מיטוכונדריאלייםAntimitochondrial antibodies (AMA) , אשר חיוביים בכ - 20-40% מחוליPrimary Billiary Cholangitis",
+      "ביצוע כולנגיוגרפיה על ידיMRCP שהוא אבחנתי ל - Primary Sclerosing Cholangitis",
+      "ביצוע אקו לב לאבחנה שלCardiac Cirrhosis"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 0,
+    "e": "**התשובה הנכונה (ג) — MRCP הוא הבדיקה האבחנתית ל-Primary Sclerosing Cholangitis**\n\nבירור שחמת כולל הדמיה של עץ המרה; MRCP מדגים היצרויות ועיוותים אופייניים בצינורות המרה התוך- והחוץ-כבדיים, ומהווה את הסטנדרט האבחנתי ל-PSC. שאר האפשרויות שגויות: AMA חיוביים ב-90-95% ב-PBC (לא 20-40%), הפטיטיס C מוביל לשחמת רק בכ-20-30% מהנשאים, ואקו לב אינו אבחנתי לשחמת לבבית.\n\nמקור: UpToDate — \"Primary sclerosing cholangitis: Epidemiology and pathogenesis\"; Hazzard's Geriatric Medicine, Ch. 90.",
+    "ref": "Hazzard Ch 1 — BIOLOGY OF AGING AND LONGEVITY",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "136",
+    "q": "מה נכון לגבי המאפיינים הקליניים שלGout?",
+    "o": [
+      "מרבית הנשים עם Gout הן פרמנופאוזליות",
+      "מפרק ה- MTP של הבוהן הראשונה מעורב בכמעט שליש מהמקרים",
+      "אצבעות הידיים, שורש כף היד והמרפק מעורבים יותר בזקנים",
+      "ההתקפים מתחילים בשכיחות שווה לאורך שעות היממה"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 16,
+    "e": "**התשובה הנכונה: ג — אצבעות הידיים, שורש כף היד והמרפק שכיחים יותר בגאוט של קשישים**\n\nבקשישים, גאוט מציג דפוס מפרקי שונה מהאוכלוסייה הצעירה: מעורבות של מפרקים עליונים (אצבעות, שורש כף היד, מרפק) שכיחה יותר, לעיתים קרובות על רקע שימוש בתרופות משתנות וירידה בתפקוד כלייתי. מפרק ה-MTP הראשון מעורב ברוב המקרים (כ-75%), לא שליש בלבד; נשים עם גאוט הן בדרך כלל פוסט-מנופאוזליות; וההתקפים מתחילים לרוב בלילה.\n\nמקור: Hazzard's Geriatric Medicine, פרק גאוט וארתריט גבישי בקשישים.",
+    "ref": "Hazzard Ch 52 — OSTEOARTHRITIS · Harrison Ch 382 — Approach to Articular and Musculoskeletal Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "137",
+    "q": "מי מהבאים מהווה את הסיבה לנטייה לטרומבואמבוליזם בחולי אי ספיקת כליות כרונית מתקדמת ?ופרוטאינוריה משמעותית",
+    "o": [
+      "ירידה בפעילות פקטורIII",
+      "אובדן פקטורים אנטי - קואגולנטים דרך הכליה",
+      "אגרגציה אבנורמלית של טסיות",
+      "צריכת פרוטרמבין לקויה"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "**התשובה הנכונה: ב — אובדן פקטורים אנטי-קואגולנטים דרך הכליה**\n\nבתסמונת נפרוטית ובפרוטאינוריה משמעותית, חלבונים קטנים מאבדים דרך השתן, ובהם אנטיתרומבין III, פרוטאין C ופרוטאין S. אובדן המעכבים הטבעיים הללו יוצר מצב פרו-תרומבוטי המגביר את הסיכון לפקקת ורידים עמוקים ותסחיף ריאתי. בנוסף, רמות פיברינוגן עולות כחלק מתגובת שלב חריף, ומחזקות את נטיית הקרישה.\n\nמקור: UpToDate — \"Hypercoagulability in nephrotic syndrome\"",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "138",
+    "q": "בן67 , מעשן20 שנות קופס",
+    "o": [
+      "פונה למלר\"ד בשל שיעול דמי מזה כיומיים עם החמרה בשעתיים האחרונות, מדד בערך כמות של כוס דם",
+      "בדיקתו: סטורציה87% באוויר חדר, מתוקנת עם2 ליטר חמצן ל - 98% . לחץ דם90/60 , דופק110 .לדקה, סדיר ?לאחר וידוא נתיב אוויר מוגן מה יהיה השלב הבא א . אמבוליזציה של המערכת הברונכיאלית ב . ברונכוסקופיה קשיחה בחדר ניתוח",
+      "ניתוח לכריתת הממצא המדמם",
+      "השכבה ב - Prone Poisition"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 19,
+    "e": "**התשובה הנכונה: א — אמבוליזציה של המערכת הברונכיאלית**\n\nבהמופטיזיס המוני (massive hemoptysis) עם אי-יציבות המודינמית (לחץ דם 90/60, דופק 110), לאחר אבטחת נתיב אוויר, הטיפול הראשוני המועדף הוא אמבוליזציה טרנס-קתטר של העורקים הברונכיאליים — יעילות של 70–90% בעצירת הדימום. ברונכוסקופיה קשיחה שמורה לכישלון האמבוליזציה, וניתוח הוא אפשרות אחרונה בחולה יציב עם מיקום ממצא ברור.\n\nמקור: UpToDate — \"Massive hemoptysis: Initial management\"",
+    "ref": "Hazzard Ch 79 — HYPERTENSION · Harrison Ch 243 — Approach to the Patient with Possible Cardiovascular Disease",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "139",
+    "q": "בן71 , ברקעCardiac Cirrhosis , אי ספיקת כליות עם קריאטנין בסיס סביב2 mg/dL . מתאשפז בשל דה - .קומפנסציה כבדית ומיימת קשה :במעבדה מדד ויחידות מידה ערך לחולה ערכי הנורמה PH 7.36 7.37-7.44 PCO2 mmHg 37 40-51 HCO3 mEq/L 20 22-26 Creatinine mg/dL 2.9 0.67-1.17 Urea mg/dL 270 17-43 Albumin gr/dL 2.1 3.5-5.2 Na mEq/L 135 135-145 Cl mEq/L 105 96-106 ?מהי הפרעת החומצה בסיס ממנה סובל המטופל",
+    "o": [
+      "Normal Anion Gap Metabolic Acidosis משולב עםRespiratory Alkalosis",
+      "Normal Anion Gap Metabolic Acidosis",
+      "High Anion Gap Metabolic Acidosis",
+      "High Anion Gap Metabolic Acidosis משולב עםMetabolic Alkalosis"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 24,
+    "e": "**התשובה הנכונה: ג — High Anion Gap Metabolic Acidosis**\n\nה-Anion Gap המתוקנן לאלבומין: AG = Na − (Cl + HCO3) = 135 − (105 + 20) = **10**, אך תיקון לאלבומין נמוך (2.1 g/dL במקום 4): AG מתוקן = 10 + 2.5 × (4 − 2.1) ≈ **14.75** — גבוה מ-12, ועונה על הגדרת High Anion Gap. האצידוזיס המטבולית נגרמת מאורמיה (Urea 270, קריאטנין 2.9) ומצבירת חומצות אורגניות בהפרעת תפקוד כבד-כליה. ה-PCO2 של 37 מהווה פיצוי נשימתי תקין לפי נוסחת Winter (PCO2 צפוי = 1.5×20 + 8 ± 2 = 36–40).\n\n*מקור: UpToDate — \"Approach to the adult with metabolic acidosis\", Albumin-corrected anion gap.*",
+    "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+    "_ti_hits": 3,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "140",
+    "q": "בן82 הסובל ממחלת לב איסכמית ידועה, מאושפז במחלקה גריאטרית לאחר נפילה. המטופל .מתלונן על כאבים עזים בחזה מה מהווה קונטראינדיקציה לטיפול ב- NITROGLYCERIN ?במצב זה",
+    "o": [
+      "עליית לחץ דם מעל150 סיסטולי",
+      "DEGREE AV BLOCK st 1 באק\"ג",
+      "ממצא באק\"ג של אוטם ימני",
+      "שימוש ב- SILDENAFIL VIAGRA) ) לפני שבוע"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 4,
+    "e": "**התשובה הנכונה: ג — אוטם ימני הוא קונטראינדיקציה מוחלטת לניטרוגליצרין**\n\nאוטם חדר ימין גורם לתלות קריטית בעומס מילוי (preload) לשמירה על תפוקת לב תקינה. מתן ניטרוגליצרין גורם לורודיאלציה המפחיתה את ה-preload בצורה חדה ועלולה לגרום לקריסה המודינמית קשה. לעומת זאת, חסם AV דרגה ראשונה, לחץ דם גבוה, ושימוש ב-Sildenafil לפני שבוע (ולא 24-48 שעות) אינם מהווים קונטראינדיקציה במצב זה.\n\nמקור: Hazzard's Geriatric Medicine, פרק מחלת לב איסכמית; UpToDate — \"Nitrates in acute coronary syndrome\"",
+    "ref": "Hazzard Ch 43 — FALLS · Harrison Ch 26 — Neurologic Causes of Weakness and Paralysis",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "141",
+    "q": "בן68 , דייר רחוב, ידוע על כבד שומני על רקע שתיית אלכוהול, אושפז בשל הפטיטיס משנית לשתייה של2 בקבוקי ויסקי ערב טרם קבלתו. בבדיקות הדם הפרעה קשה בתפקודי כבד, אושפז באבחנה .של הפטיטיס אלכוהולי ?מה הגישה המתאימה לגבי הטיפול בסטרואידים במטופל זה",
+    "o": [
+      "במידה וה - Discriminant Function מתחת ל- 30 , יש להתחיל טיפול בסטרואידים סיסטמיים בהקדם",
+      "במידה ותהיה תגובה טובה לטיפול בסטרואידים, יש להמשיכו למשך28 ימים",
+      "בהיעדר תגובה מספקת לטיפול בסטרואידים, יש להציג את המטופל להשתלת כבד",
+      "בהיעדר תגובה לטיפול בסטרואידים סיסטמיים, מומלץ להשלים בירור על ידי ביופסיית כבד, לשלילת אתיולוגיות חלופיות"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 17,
+    "e": "**התשובה הנכונה (ב) — טיפול בסטרואידים בהפטיטיס אלכוהולי נמשך 28 ימים בתגובה טובה**\n\nבהפטיטיס אלכוהולי חמור (Discriminant Function ≥ 32, לא מתחת ל-30), מתחילים טיפול בפרדניזולון 40 מ\"ג ליום. לאחר 7 ימים מעריכים תגובה לפי Lille Score — אם התגובה טובה, ממשיכים את הטיפול לסך כולל של 28 ימים ולאחר מכן מפחיתים בהדרגה. השתלת כבד אינה אופציה סטנדרטית בהפטיטיס אלכוהולי אקוטי, וביופסיה אינה נדרשת כשהאבחנה ברורה קלינית.\n\nמקור: EASL Clinical Practice Guidelines — Alcohol-Related Liver Disease, 2018; Hazzard's Geriatric Medicine, פרק הפרעות כבד.",
+    "ref": "Hazzard Ch 74 — CORONARY HEART DISEASE AND DYSLIPIDEMIA · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "142",
+    "q": "?מהו השילוב הנכון בין סוג סרטן לסיבוך הזיהומי השכיח",
+    "o": [
+      "ACUTE MYELOID LEUKEMIA – PNEUMOCYSTIS CARINII PNEUMONIA",
+      "CARCINOMA OF COLON – STREP. BOVIS BACTEREMIA",
+      "HODGKIN’S DISEASE – STREPTOCOCUS PNEUMONIA",
+      "MULTIPLE MYELOMA- GRAHM NEGATIVE UROSEPSIS"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 27,
+    "e": "**התשובה הנכונה: ב — קרצינומה של המעי הגס קשורה לבקטרמיה של Streptococcus bovis**\n\nהקשר בין S. bovis (כיום S. gallolyticus) לסרטן המעי הגס מבוסס היטב: הבקטריה מתיישבת על רירית המעי הגס הסרטנית ונכנסת למחזור הדם. גילוי בקטרמיה מסוג זה מחייב בירור קולונוסקופי מיידי אף בהעדר סימפטומים מעיים.\n\nמקור: UpToDate — \"Streptococcus bovis bacteremia and its association with colorectal neoplasia\"",
+    "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION · Harrison Ch 315 — Sepsis and Septic Shock",
+    "_ti_hits": 3,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "143",
+    "q": "בן64 בצום לצורך פעולה דחופה. מצורפות תוצאות בדיקות המעבדה שלו: מדד ויחידות מידה ערך לחולה ערכי הנורמה Creatinine mg/dL 2.1 0.67-1.17 Glucose mg/dL 120 72-100 Na mEq/L 146 135-145 K mM/L 2.9 3.5-5 Ca mg/dL 9.1 8.5-10.5 Albumin gr/dL 4 3.5-5.2 מאיזו תמיסה במתן תוך ורידי מומלץ להימנע במקרה זה?",
+    "o": [
+      "Ringer`s lactate",
+      "Saline 0.9% + KCl 40 mEq",
+      "Saline 0.45% +KCl 20 mEq+ Dextrose 5%",
+      "Saline 0.45% +KCl 40 mEq"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 0,
+    "e": "**התשובה הנכונה: ג — תמיסת סלין חצי + KCl 20 mEq + דקסטרוז 5% אסורה במקרה זה.**\n\nהחולה סובל מהיפרגליקמיה (גלוקוז 120), היפרנתרמיה (Na 146) והיפוקלמיה (K 2.9), יחד עם אי-ספיקת כליות (קראטינין 2.1). מתן דקסטרוז 5% יחמיר את ההיפרגליקמיה ועלול לגרום להיפוקלמיה נוספת דרך העברת אשלגן תוך-תאית; בנוסף KCl 20 mEq בלבד אינו מספיק לתיקון ההיפוקלמיה הקיימת. בחולה עם אי-ספיקת כליות יש להימנע מעירוי המחמיר חוסר איזון אלקטרוליטי ומטבולי.\n\nמקור: UpToDate — \"Maintenance and replacement fluid therapy in adults\", 2024.",
+    "ref": "Hazzard Ch 1 — BIOLOGY OF AGING AND LONGEVITY",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "144",
+    "q": "בן70 , מובא למלר\"ד ע\"י אשתו. היא מדווחת כי ביומיים האחרונים הוא מבולבל, מתנהג בצורה .מוזרה, נראה בדכאון ועם קושי להתרכז. כמו כן הוא מתלונן על כאבים ברום הבטן, ובחילות בבדיקת א.ק.ג נצפה הא.ק.ג המופיע בתמונה מספר9",
+    "o": [
+      "יזו הפרעה ?אלקטרוליטרית צפוייה להימצא את המטופל א . היפרנתרמיה",
+      "היפרקלצמיה",
+      "היפרקלמיה",
+      "היפרפוספטמיה בשאלות הבאות יש לסמן את התשובה הלא נכונה"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 14,
+    "e": "**התשובה הנכונה: ב — היפרקלצמיה**\n\nהתמונה הקלינית הקלאסית של היפרקלצמיה כוללת את ה-\"bones, stones, groans, psychic moans\": בלבול, דיכאון, קשיי ריכוז, כאבי בטן עליונה ובחילות. באק\"ג מאפיין של היפרקלצמיה נראה קיצור מרווח QT, ממצא הנובע מקיצור פאזת הרפלריזציה בתאי שריר הלב. מבין האפשרויות, היפרקלצמיה היא ההפרעה האלקטרוליטית המסבירה את מכלול הסימנים הקוגניטיביים, הגסטרואינטסטינליים והאק\"גיים יחדיו.\n\nמקור: Hazzard's Geriatric Medicine, פרק Metabolic Disorders; UpToDate – \"Clinical manifestations of hypercalcemia\"",
+    "ref": "Hazzard Ch 68 — PAIN MANAGEMENT · Harrison Ch 14 — Pain: Pathophysiology and Management",
+    "_ti_hits": 2,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "145",
+    "q": "מה לא ?מהווה חלק מפרוטוקול הטיפול האקוטי בהיפרקלמיה",
+    "o": [
+      "IV NaHCO3 50 ml over 5 minutes",
+      "IV Furosemide 40 mg – push",
+      "IV Insulin 10 U - push",
+      "IV Calcium gluconate 10% 10 ml over 2-3 minutes"
+    ],
+    "c": 0,
+    "t": "2024-Sep-Basic",
+    "ti": 0,
+    "e": "**התשובה הנכונה: א — IV NaHCO3 אינו חלק מהפרוטוקול האקוטי הסטנדרטי להיפרקלמיה.**\n\nביקרבונאט נתרן שנוי במחלוקת ואינו מומלץ כטיפול קו ראשון בהיפרקלמיה אקוטית, במיוחד בהיעדר חמצת מטבולית קשה. בניגוד לכך, גלוקונאט סידן מייצב את ממברנת הקרדיומיוציט, אינסולין מעביר אשלגן לתוך התא, ופורוזמיד מגביר הפרשת אשלגן בשתן. ה-NaHCO3 עלול להיות יעיל בחולים דיאליזתיים עם חמצת, אך אינו נכלל בפרוטוקול האקוטי הרגיל.\n\nמקור: UpToDate — \"Treatment and prevention of hyperkalemia in adults\", סעיף Emergency management.",
+    "ref": "Hazzard Ch 1 — BIOLOGY OF AGING AND LONGEVITY",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "146",
+    "q": "איזה מהמאפיינים הבאים אינו מתאים ל- Viral Encephalitis?",
+    "o": [
+      "רמות גלוקוז תקינות ב- CSF",
+      "אמפליטודות גבוהות וגלים איטיים ב - EEG",
+      "שינויים פרונטו- טמפורליים ב - MRI",
+      "לימפוציטוזיס ב - CSF"
+    ],
+    "c": 1,
+    "t": "2024-Sep-Basic",
+    "ti": 2,
+    "e": "**התשובה הנכונה: ב — אמפליטודות גבוהות וגלים איטיים ב-EEG אינם אופייניים לדלקת מוח ויראלית.**\n\nב-Viral Encephalitis ממצאי ה-EEG האופייניים הם האטה מפושטת עם אמפליטודות **נמוכות**, ולא גבוהות; אמפליטודות גבוהות מאפיינות יותר תהליכים אפילפטיים או מטבוליים. ה-CSF מראה לימפוציטוזיס וגלוקוז תקין (בניגוד לדלקת חיידקית), וה-MRI מדגים שינויים פרונטו-טמפורליים האופייניים ל-HSV Encephalitis.\n\nמקור: Hazzard's Geriatric Medicine, פרק נוירולוגיה — זיהומים של מערכת העצבים המרכזית.",
+    "ref": "Hazzard Ch 8 — PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "_ti_hits": 0,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "147",
+    "q": "כל הרפלקסים הבאים קשורים לפגיעה בגזע המוח בחולה ב- Coma .פרט לאחד איזה רפלקס לא ?קשור לפגיעה בגזע המוח",
+    "o": [
+      "PUPILARY LIGHT REACTION",
+      "OCULOVESTIBULAR REFLEX",
+      "CORNEAL REFLEX",
+      "DEEP TENDON REFLEX"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 18,
+    "e": "**התשובה הנכונה: ד — רפלקס גידי עמוק (Deep Tendon Reflex) אינו קשור לפגיעה בגזע המוח**\n\nרפלקסי האישון, הקרנית והאוקולו-וסטיבולרי מיוצגים ישירות בגזע המוח (mesencephalon, pons), ולכן נבדקים לצורך הערכת תפקוד גזע המוח בחולה קומה. לעומת זאת, רפלקסים גידיים עמוקים מתווכים על ידי קשת רפלקסית ספינלית ואינם תלויים בשלמות גזע המוח.\n\nמקור: Hazzard's Geriatric Medicine, פרק הערכה נוירולוגית בחולה קומה; UpToDate \"Stupor and coma in adults\".",
+    "ref": "Hazzard Ch 76 — HEART FAILURE · Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "148",
+    "q": "איזה מהפרמטרים הבאים לא נכלל באומדןSOFA ( related Organ Failure - Sepsis Assessment :)",
+    "o": [
+      "Platelets",
+      "Bilirubin",
+      "Creatinine",
+      "Respiratory rate"
+    ],
+    "c": 3,
+    "t": "2024-Sep-Basic",
+    "ti": 21,
+    "e": "**התשובה הנכונה: ד — קצב נשימה אינו חלק מ-SOFA**\n\nציון SOFA כולל שישה מערכות איברים: חמצון (PaO₂/FiO₂), קרישה (טסיות), כבד (בילירובין), המודינמיקה (לחץ דם/וזופרסורים), מוח (Glasgow Coma Scale) וכליות (קריאטינין/שתן). קצב הנשימה מופיע ב-qSOFA הסקרינג המהיר, אך לא בציון SOFA המלא המודד אי-ספיקת איברים.\n\nמקור: Singer et al., JAMA 2016 (Sepsis-3 Definitions); UpToDate — \"Evaluation and management of suspected sepsis in adults\"",
+    "ref": "Hazzard Ch 81 — CHRONIC OBSTRUCTIVE PULMONARY DISEASE · Harrison Ch 295 — Approach to the Patient with Disease of the Respiratory System",
+    "_ti_hits": 1,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "149",
+    "q": "איזה מהבאים אינו נכלל בבירור ראשוני ל - FUO?",
+    "o": [
+      "US בטן",
+      "PEP",
+      "ANA",
+      "אקו"
+    ],
+    "c": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "t": "2024-Sep-Basic",
+    "ti": 2,
+    "e": "**כל התשובות נכונות — כל הבדיקות נכללות בבירור ראשוני של FUO**\n\nבחום ממקור לא ידוע (FUO) הבירור הראשוני כולל הדמיית בטן (US בטן) לשלילת מורסה או ממאירות, בדיקות סרולוגיות אוטואימוניות (ANA) לשלילת מחלת רקמות חיבור, ואקוקרדיוגרפיה לשלילת אנדוקרדיטיס. בנוסף, PEP (Protein Electrophoresis) מבוצע לשלילת מיאלומה נפוצה ומחלות פרה-נאופלסטיות.\n\nמקור: Hazzard's Geriatric Medicine, פרק Fever of Unknown Origin in Older Adults.",
+    "ref": "Hazzard Ch 8 — PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "_ti_hits": 0,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  },
+  {
+    "tag": "2024-Sep-Basic",
+    "qnum": "150",
+    "q": "כל התרופות הבאות גורמות לנויטרופניה פרט ל -",
+    "o": [
+      "Clozapine",
+      "Carbamazepine",
+      "Lithium",
+      "Chloramphenicol בהצלחה"
+    ],
+    "c": 2,
+    "t": "2024-Sep-Basic",
+    "ti": 2,
+    "e": "**התשובה הנכונה: ג — ליתיום אינו גורם לנויטרופניה; להפך, הוא מגביר את ספירת הנויטרופילים.**\n\nליתיום (Lithium) מעודד שחרור גרנולוציטים ממח העצם ומגביר ייצור G-CSF, ולכן משמש לעיתים לטיפול בנויטרופניה כרונית שפירה. לעומתו, Clozapine ו-Carbamazepine גורמים לאגרנולוציטוזיס/נויטרופניה חמורה, ו-Chloramphenicol גורם לדיכוי מח עצם כולל נויטרופניה ואנמיה אפלסטית.\n\n*מקור: Hazzard's Geriatric Medicine, פרק פרמקולוגיה קלינית; UpToDate — \"Drug-induced neutropenia\"*",
+    "ref": "Hazzard Ch 8 — PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "_ti_hits": 0,
+    "_source": "canonical_missing",
+    "_validate": "ok",
+    "_attempts": 1
+  }
+]

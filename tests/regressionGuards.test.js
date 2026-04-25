@@ -323,16 +323,16 @@ describe('questions.json — per-session counts locked', () => {
     '2021-Dec': 104,
     '2021-Jun': 103,
     '2022-Jun-Subspec': 95,
-    '2022-Jun-Basic': 145,
+    '2022-Jun-Basic': 150,
     '2022-Jun-orphan': 15,
     '2023-Jun-Subspec': 100,
-    '2023-Jun-Basic': 150,
+    '2023-Jun-Basic': 141,
     '2023-Jun-orphan': 22,
     '2023-Sep': 22,
     '2024-May-Subspec': 100,
     '2024-May-Basic': 150,
     '2024-Sep-Subspec': 100,
-    '2024-Sep-Basic': 99,
+    '2024-Sep-Basic': 150,
     '2024-orphan': 47,
     '2025-Jun-Basic': 150,
     'Exam': 24,
@@ -346,8 +346,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3709 (v10.33: removed 219 2025-Jun + 100 2025-Jun-Subspec dupes, +1 cleaned Basic Q12, -1 corrupt Basic dup)', () => {
-    expect(questions.length).toBe(3709);
+  test('total question count is exactly 3756 (v10.35: +5 2022-Basic recovered, -9 2023-Basic orphan/canonical reconciliation, +51 2024-Sep-Basic recovered, -2 2024-May-Basic orphans + 2 recovered)', () => {
+    expect(questions.length).toBe(3756);
   });
 });
 

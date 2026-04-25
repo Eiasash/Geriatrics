@@ -37,7 +37,8 @@ const PAST_EXAM_TAGS = new Set([
 
 // 4-patient comparison Qs where long options are LEGIT (each option = full patient description).
 // These are stable bank indices — if the bank gets re-sorted, this whitelist must be updated.
-const LEGIT_LONG_OPTION_INDICES = new Set([2565, 3265, 2974, 3552]);
+// v10.35 update: indices shifted by 15 orphan deletes (all <3265). 3265→3250, 2974→2971, 3552→3537.
+const LEGIT_LONG_OPTION_INDICES = new Set([2565, 3250, 2971, 3537]);
 
 // Q-stem-start phrases — the universal IMA Hebrew Q openings.
 // If one of these appears in an option after position 30, it's a bleed.
