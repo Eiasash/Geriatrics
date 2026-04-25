@@ -6,7 +6,7 @@
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~421 KB, ~6,046 lines, 191 functions)
-- **App version**: v10.26 (as of 25/04/26) — 3,994 Qs across 46 topics. v10.26: cleared the 34-Q e_issue queue (26 explanation rewrites, 7 answer-key flips, 1 multi-accept) + cleaned 11 dramatic-opener Qs (idx 97, 155, 160, 163, 201, 215, 300, 346, 368, 372, 507). v10.25: imported 13 GRS8 Qs across 3 new topic buckets — see `ATTRIBUTION-GRS8.md`.
+- **App version**: v10.27 (as of 25/04/26) — 3,994 Qs across 46 topics. v10.27: citation sweep — `ref` field populated on all 3,994 Qs with Hazzard / Harrison chapter + title (e.g. 'Hazzard Ch 58 — DEMENTIA INCLUDING ALZHEIMER DISEASE · Harrison Ch 433 — Approach to the Patient with Neurologic Disease'). Also fixed v10.25 TOPIC_CHAPTER_MAP off-by-one for ti=43,44,45. v10.26: cleared 34-Q e_issue queue (26 explanation rewrites, 7 answer-key flips, 1 multi-accept) + 11 dramatic-opener cleanups. v10.25: 13 GRS8 imports across 3 new buckets.
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -220,7 +220,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `10.26` (sw.js cache key: `shlav-a-v10.26`)
+- Currently both at version `10.27` (sw.js cache key: `shlav-a-v10.27`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
@@ -461,8 +461,8 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — shared `fsrs.js` canonical md5 `cea66a0435…`, shared Supabase project `krmlzwwelqvlfslwltol` |
 | CI workflows | 3 (ci.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=169, onchange=25, oninput=6 |
-| App version | v10.26 |
-| SW cache key | `shlav-a-v10.26` |
+| App version | v10.27 |
+| SW cache key | `shlav-a-v10.27` |
 
 
 ## Test Coverage Recommendations

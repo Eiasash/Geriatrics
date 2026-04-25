@@ -82,9 +82,9 @@ const TOPIC_CHAPTER_MAP = {
   40: { haz: 61, har: 433 },               // Parkinson → Hazzard Ch 61 (Parkinson Disease), Harrison Neuro approach
   41: { haz: 77, har: 286 },               // Arrhythmia → Hazzard Ch 77 (Cardiac Arrhythmias), Harrison Cardiac
   42: { haz: 31, har: 50 },                // Dysphagia → Hazzard Ch 31 (Disorders of Swallowing), Harrison Weight Loss
-  43: { haz: 36, har: null },              // Andropause / aging man → Hazzard Ch 36 (Sexuality and the Aging Man)
-  44: { haz: 10, har: null },              // Prevention & health promotion → Hazzard Ch 10 (Prevention and Screening)
-  45: { haz: 11, har: null },              // Geriatric team / interdisciplinary care → Hazzard Ch 11 (Age-Friendly Care)
+  43: { haz: 37, har: null },              // Andropause / aging man → Hazzard Ch 37 (Sexuality, Sexual Function, and the Aging Man)
+  44: { haz: 11, har: null },              // Prevention & health promotion → Hazzard Ch 11 (Prevention and Screening)
+  45: { haz: 12, har: null },              // Geriatric team / interdisciplinary care → Hazzard Ch 12 (Age-Friendly Care)
 };
 
 /**
