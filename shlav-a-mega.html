@@ -3418,7 +3418,12 @@ ${_gpct!==null?`<span style="font-weight:700;color:${_gpct>=70?'#059669':_gpct>=
 }
 h+=`<div class="card" style="padding:8px">
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:6px;padding:0 6px">${ch.syllabus_topic?'IMA syllabus topic: '+ch.syllabus_topic:''}${Array.isArray(ch.questions)&&ch.questions.length?' · GRS8 Book 3 Qs: '+ch.questions.join(', '):''}</div>
-<embed src="${part}#page=${startPage}" type="application/pdf" style="width:100%;height:70vh;min-height:480px;border:1px solid rgb(var(--brd));border-radius:8px"/>
+<div style="padding:24px 16px;text-align:center;background:rgb(var(--bg2));border-radius:10px">
+<div style="font-size:14px;font-weight:700;margin-bottom:6px">📄 ${ch.title}${titleHe?' · '+titleHe:''}</div>
+<div style="font-size:11px;color:rgb(var(--fg2));margin-bottom:14px">pp. ${startPage}–${ch.pages?ch.pages[1]:startPage} · GRS8 Book 3 (AGS, 8th ed.)</div>
+<button onclick="window.open('${part}#page=${startPage}','_blank')" style="background:#0891b2;color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:13px;font-weight:600;cursor:pointer">📄 Open PDF at Page ${startPage}</button>
+<div style="margin-top:12px;font-size:10px;color:rgb(var(--fg3));line-height:1.5">Mobile browsers can't preview PDFs inline — opens in your browser's PDF viewer.</div>
+</div>
 </div>`;
 }else if(_grsLoading){
 h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">⏳ Loading GRS8 chapters...</div></div>`;
@@ -3574,10 +3579,13 @@ render();
 async function openGrs8Chapter(ch){
 grsChOpen=ch;
 if(typeof trackChapterRead==='function'){try{trackChapterRead('grs',ch);}catch(_){}}
-if(_grsData){render();return;}
+// Always render first — prevents the race where renderLibrary's auto-fetch
+// is in flight and our early-returns skipped re-rendering after grsChOpen
+// was set, leaving the detail view permanently invisible.
+render();
+if(_grsData)return;
 if(_grsLoading)return;
 _grsLoading=true;
-render();
 try{
 const r=await fetch('data/grs8_chapters.json');
 _grsData=await r.json();
@@ -5582,8 +5590,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.36';
+const APP_VERSION='10.36.1';
 const CHANGELOG={
+'10.36.1':[
+'🐛 GRS8 reading tab: tap-to-open hotfix. (a) תוקנה race condition בין auto-fetch של renderLibrary לבין openGrs8Chapter — early-return בזמן ש-_grsLoading=true דילג על render() אחרי שהוגדר grsChOpen, ולכן תצוגת ה-detail מעולם לא נצבעה. עכשיו render() נקרא תמיד מיד אחרי grsChOpen=ch. (b) הוחלף <embed> של PDF (שמרנדר ריק ב-Chrome/Firefox מובייל) בכרטיס "📄 Open PDF at Page N" שפותח ב-tab חדש — flow אמין יותר על Android/iOS.',
+],
 '10.36':[
 '📙 שילוב מלא של GRS8 (Geriatrics Review Syllabus, AGS, 8th ed., ISBN 9781886775251). ה-PDF (כרך 3, 333 שאלות case-based MCQs, 292 עמודים) הועלה כ-grs8_part01.pdf בשורש הריפו וזמין כעת גם כתבסיס לציטוט וגם כספר קריאה בתוך האפליקציה — במקביל ל-Hazzard ול-Harrison.',
 '🗂️ data/grs8_chapters.json: 67 פרקי-נושא (62 מהאינדקס המקורי בעמ׳ 11 + 5 פרקי-עזר וירטואליים) עם schema זהה ל-Hazzard: id, title, title_he, part, pages [start, end], ti[], syllabus_topic, questions[]. כיסוי הסילבוס של ההסתדרות הרפואית ל-2024: 42/42 נושאי הבחינה ממופים לפחות פרק GRS אחד.',
