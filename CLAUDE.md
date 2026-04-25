@@ -5,8 +5,8 @@
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (~408 KB, ~5,920 lines, 191 functions)
-- **App version**: v10.10 (as of 23/04/26) — Stage A Basic track: +946 Qs from Pnimit exams (2020-2025), 3,326→4,272 Qs
+- **Main file**: `shlav-a-mega.html` (~421 KB, ~6,046 lines, 191 functions)
+- **App version**: v10.24 (as of 25/04/26) — 3,981 Qs across 43 topics. Recent sweeps: e_issue triage via Toranot proxy (v10.22-24), Hazzard-grounded gap fill in fecal incontinence + non-hip fragility fractures (v10.19), explanation generation passes filled all empty `e` fields.
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -16,7 +16,7 @@
 
 ### Single-File PWA
 
-All application logic lives in `shlav-a-mega.html` (~5,920 lines, 191 functions) — no bundler, no framework, no build step. The file contains:
+All application logic lives in `shlav-a-mega.html` (~6,046 lines, 191 functions) — no bundler, no framework, no build step. The file contains:
 - All CSS (1,000+ lines, responsive, RTL-aware, dark/light/study modes)
 - All JavaScript (ES6+, vanilla)
 - HTML structure
@@ -62,19 +62,19 @@ the full decomposition ledger and safe-next-steps list.
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.10)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.24)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
 │
 ├── data/                    # Lazy-loaded JSON data — single source of truth
-│   ├── questions.json       # 4,272 MCQs (primary runtime source)
-│   ├── notes.json           # 40 study topic notes
+│   ├── questions.json       # 3,981 MCQs (primary runtime source)
+│   ├── notes.json           # 43 study topic notes
 │   ├── drugs.json           # 114 Beers/ACB drugs database
 │   ├── flashcards.json      # 159 high-yield flashcards
 │   ├── osce.json            # OSCE station scenarios
 │   ├── tabs.json            # Tab definitions for app navigation
-│   └── topics.json          # 40 topic keyword mappings for auto-tagging
+│   └── topics.json          # 43 topic keyword mappings for auto-tagging
 │
 ├── explanations_cache.json  # Pre-generated AI explanations (2.3 MB)
 ├── hazzard_chapters.json    # Hazzard's 8e textbook content (structured JSON)
@@ -220,15 +220,15 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `10.10` (sw.js cache key: `shlav-a-v10.10`)
+- Currently both at version `10.24` (sw.js cache key: `shlav-a-v10.24`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, 693 tests)
+npm test             # Run all tests (vitest, 715 tests across 26 files)
 ```
 
-**693 tests across 23 files (~23 tests per file avg)** — run `npm test` to see current count.
+**715 tests across 26 files (~28 tests per file avg)** — run `npm test` to see current count.
 
 **Auto-expand rule:** Every feature, improvement, or bug fix MUST include new or updated tests:
 - New data file or field → schema validation test
@@ -237,7 +237,7 @@ npm test             # Run all tests (vitest, 693 tests)
 - Modified data processing → edge case + boundary tests
 - After adding tests, update the test count in this section
 
-**Test file inventory (21 files, 678 tests):**
+**Test file inventory (26 files, 715 tests):**
 
 | File | Tests | Description |
 |------|-------|-------------|
@@ -302,9 +302,9 @@ Runs on push to `main` and all PRs. Python-based data validation + Vitest test s
 | JS brace balance | Matching braces in shlav-a-mega.html |
 | Service worker version sync | APP_VERSION matches sw.js CACHE version |
 | innerHTML sanitization | Audit for unsanitized innerHTML usage |
-| Topic coverage | >= 5 questions per topic (all 40 topics) |
+| Topic coverage | >= 5 questions per topic (all 43 topics) |
 
-**Vitest tests** (678 tests, 21 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
+**Vitest tests** (715 tests, 26 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
 
 ---
 
@@ -417,7 +417,7 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 
 - The file is intentionally a single monolith — do not split it
 - CSS is at the top, JS is at the bottom before `</body>`
-- TOPICS array in JS must stay in sync with the 40-topic list (indices 0–39)
+- TOPICS array in JS must stay in sync with the 43-topic list (indices 0–42)
 - All localStorage operations must use the established keys (`samega`, `samega_ex`, `samega_apikey`, `shlav_q_images`)
 - `explainWithAI()` must handle errors gracefully and cache results in localStorage
 - Data loads lazily from `data/*.json` — do not inline large data back into HTML
@@ -448,21 +448,21 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 
 | Metric | Value |
 |---|---|
-| Main file | `shlav-a-mega.html` (~5,920 lines, ~403 KB) |
+| Main file | `shlav-a-mega.html` (~6,046 lines, ~421 KB) |
 | Named functions | 219 (188 core + 31 decomposed helpers) |
-| Questions | 3,326 (1,207 IMA exam + 2,119 AI-generated) |
-| Topics | 40 |
+| Questions | 3,981 (~2,200 IMA past exam + ~1,800 Hazzard/Harrison-grounded AI-generated) |
+| Topics | 43 |
 | Drugs | 114 |
 | Flashcards | 159 |
-| Study notes | 40 |
+| Study notes | 43 |
 | Hazzard chapters | 108 (in-app reader) |
 | Harrison chapters | 69 (in-app reader) |
-| Test suite | 693 tests across 23 files (vitest) |
+| Test suite | 715 tests across 26 files (vitest) |
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — shared `fsrs.js` canonical md5 `cea66a0435…`, shared Supabase project `krmlzwwelqvlfslwltol` |
 | CI workflows | 3 (ci.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=169, onchange=25, oninput=6 |
-| App version | v10.10 |
-| SW cache key | `shlav-a-v10.10` |
+| App version | v10.24 |
+| SW cache key | `shlav-a-v10.24` |
 
 
 ## Test Coverage Recommendations
@@ -505,7 +505,7 @@ Reach **300+ tests** with coverage of every data file, every engine function, an
 ### Medium Priority
 - [ ] **Port features from InternalMedicine v9.33** — Changelog rendering fix, stats.map crash fix, IDB hoisting fix, Rescue Drill mode, Activity Tracking
 - [ ] **Add Hazzard chapter JSON tests** — Validate structure of `hazzard_chapters.json` and `data/hazzard_chapters.json`
-- [ ] **OSCE expansion** — Add more OSCE stations covering all 40 topics (currently 10 stations)
+- [ ] **OSCE expansion** — Add more OSCE stations covering all 43 topics (currently 10 stations)
 
 ### Low Priority
 - [ ] **PWA install prompt** — Add beforeinstallprompt handler for mobile install
@@ -515,14 +515,14 @@ Reach **300+ tests** with coverage of every data file, every engine function, an
 
 ### Content Roadmap
 - [ ] **2025-ב exam questions** — Parse and add questions from the next exam session when available
-- [ ] **Flashcard expansion** — Target 200+ flashcards covering all 40 topics (currently 159)
+- [ ] **Flashcard expansion** — Target 200+ flashcards covering all 43 topics (currently 159)
 - [ ] **Notes update** — Ensure all 40 notes reflect latest Hazzard's 8e + Harrison's 22e content
 - [ ] **Image coverage** — Add question images for newer exam sessions (currently 30 images)
 
 ### Recently completed (kept here briefly for changelog context)
 - ~~Update package.json version~~ — synced to APP_VERSION (9.76)
 - ~~Weekly-audit CI~~ — `.github/workflows/weekly-audit.yml` runs Sun 06:00 UTC (acorn, GRS, CSP, version drift)
-- ~~Expand test suite to 300+~~ — 693 tests across 23 files (hit 2x the target)
+- ~~Expand test suite to 300+~~ — 715 tests across 26 files (well past 2x target)
 - ~~test:coverage script~~ — `vitest run --coverage` already in package.json
 - ~~Hazzard-generated questions~~ — 1,789 AI-generated Hazzard questions in corpus
 - ~~CSP meta tag~~ — present in `shlav-a-mega.html`
