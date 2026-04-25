@@ -5483,8 +5483,14 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.29';
+const APP_VERSION='10.30';
 const CHANGELOG={
+'10.30':[
+'🌱 35 שאלות חדשות בנושאי הסילבוס שהיו תת-מאוכלסים: ti=43 Andropause (2→13, +11), ti=44 Prevention/USPSTF (8→20, +12), ti=45 Geriatric Team (3→15, +12). הנושאים האלה הופיעו בסילבוס IMA v3.0 אך היו עם 2-8 שאלות בלבד בכל אחד.',
+'🧠 התוכן: TRT contraindications/monitoring (TRAVERSE 2023, Endocrine Society 2018), USPSTF cessation ages (mammo/colonoscopy/AAA), ASPREE aspirin harm, ACIP 2024 vaccines (Shingrix post-Zostavax, PCV20, RSV ≥75), ACE/HELP/GRACE/PACE care models, OT/PT/SLP/SW scope, חוק סיעוד 1988.',
+'⚙️ ה-pipeline: scripts/generate_topic_qs.py — pattern של eissue_via_proxy.py (6 workers, 1Q/call, ~5s) הופעל לייצור. 35/36 התקבלו (97.2%). validation: עברית >40%, אורך q 60-350, אורך e 200-700, 4 אופציות עם תגי א/ב/ג/ד, c בטווח 0-3, ללא markdown/חיצים, ללא duplicates עם stem קיים. ~3 דקות wall.',
+'📊 רגרסיה ratchet: regressionGuards Hazzard 1817→1852, total 3994→4029. 741 בדיקות עוברות.',
+],
 '10.29':[
 '📚 הרחבת 12 הסברים דקיקים (e<100 תווים). השאלות נמצאות בנושאי End of Life (4), Ethics/Legal (4), Dysphagia (1), Stroke (3) — כל אחת קיבלה הסבר מורחב 270-400 תווים שמסביר למה התשובה המסומנת נכונה ולמה האחרות שגויות, עם ציטוט/מקור (Hazzard ch / חוק החולה הנוטה למות / Appelbaum / קריטריוני NIHSS) כשרלוונטי.',
 '⚙️ ה-pipeline: scripts/eissue_via_proxy.py ה-pattern (6 workers, 1Q/call, ~3s) מומש לשם הרחבת הסברים. 12/12 התקבלו, 0 דחיות. ~21s wall time. Hebrew validation (>40% עברית, אורך 100-700, ללא markdown) הופעל.',
