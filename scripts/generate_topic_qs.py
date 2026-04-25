@@ -185,6 +185,11 @@ def validate(q):
     for bad in ['**', '##', '```', '→', '←', '↑', '↓']:
         if bad in blob:
             return False, f"contains_{bad}"
+    # CJK / Cyrillic leak guard — Sonnet sometimes drops non-Hebrew tokens
+    # mid-word (Mishpacha v1.6.0 Q[1060] had 悸 between ו and לב; safer to
+    # check here too even though Geriatrics hasn't tripped it yet).
+    if re.search(r'[\u4e00-\u9fff\u3040-\u30ff\u0400-\u04ff]', blob):
+        return False, "non_target_script_leak"
     # Ref present, looks like real ref
     if not isinstance(q['ref'], str) or len(q['ref']) < 8:
         return False, "ref_too_short"
