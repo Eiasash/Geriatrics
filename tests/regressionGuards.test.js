@@ -246,10 +246,10 @@ describe('questions.json — structural invariants', () => {
     expect(bad.length).toBe(0);
   });
 
-  test('ti (topic index) is integer in [0, 42]', () => {
+  test('ti (topic index) is integer in [0, 45]', () => {
     const bad = [];
     questions.forEach((q, i) => {
-      if (!(typeof q.ti === 'number' && Number.isInteger(q.ti) && q.ti >= 0 && q.ti <= 42)) {
+      if (!(typeof q.ti === 'number' && Number.isInteger(q.ti) && q.ti >= 0 && q.ti <= 45)) {
         bad.push({ i, tag: q.t, ti: q.ti });
       }
     });
@@ -348,7 +348,7 @@ describe('questions.json — per-session counts locked', () => {
   });
 
   test('total question count is exactly 3981', () => {
-    expect(questions.length).toBe(3981);
+    expect(questions.length).toBe(3994);
   });
 });
 

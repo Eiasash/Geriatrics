@@ -84,10 +84,10 @@ describe("questions.json — answer integrity", () => {
     });
   });
 
-  it("topic index (ti) is an integer 0-42", () => {
+  it("topic index (ti) is an integer 0-45", () => {
     const invalid = [];
     questions.forEach((q, i) => {
-      if (!Number.isInteger(q.ti) || q.ti < 0 || q.ti > 42) {
+      if (!Number.isInteger(q.ti) || q.ti < 0 || q.ti > 45) {
         invalid.push({ index: i, ti: q.ti });
       }
     });
@@ -141,12 +141,12 @@ describe("questions.json — explanation quality", () => {
 // ─── Notes — deeper validation ──────────────────────────────────────────────
 
 describe("notes.json — content quality", () => {
-  it("every note has an id field (integer 0-42)", () => {
+  it("every note has an id field (integer 0-45)", () => {
     notes.forEach((n, i) => {
       expect(n.id, `Note[${i}].id should be defined`).toBeDefined();
       expect(Number.isInteger(n.id), `Note[${i}].id should be integer`).toBe(true);
-      expect(n.id, `Note[${i}].id should be in range 0-42`).toBeGreaterThanOrEqual(0);
-      expect(n.id, `Note[${i}].id should be in range 0-42`).toBeLessThanOrEqual(42);
+      expect(n.id, `Note[${i}].id should be in range 0-45`).toBeGreaterThanOrEqual(0);
+      expect(n.id, `Note[${i}].id should be in range 0-45`).toBeLessThanOrEqual(45);
     });
   });
 
@@ -492,7 +492,7 @@ describe("questions/images — file size limits", () => {
 
 describe("topics.json — keyword completeness", () => {
   it("has exactly 43 topics", () => {
-    expect(topics.length).toBe(43);
+    expect(topics.length).toBe(46);
   });
 
   it("all 43 topics have non-empty keyword arrays", () => {
@@ -552,7 +552,7 @@ describe("cross-reference — question topics to topics.json", () => {
 // ─── Notes coverage: every topic has at least one note ─────────────────────
 
 describe("notes coverage — every topic has a note", () => {
-  it("every topic index 0-42 has a corresponding note entry", () => {
+  it("every topic index 0-45 has a corresponding note entry", () => {
     const noteIds = new Set(notes.map(n => n.id));
     for (let i = 0; i < 43; i++) {
       expect(noteIds.has(i), `Topic ${i} should have a note entry`).toBe(true);
