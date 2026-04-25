@@ -5483,8 +5483,14 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.32';
+const APP_VERSION='10.33';
 const CHANGELOG={
+'10.33':[
+'🧹 ניקוי גדול בבנק 2025-Jun. הוסרו 320 שאלות כפולות/פגומות: (1) תג 2025-Jun (219 שאלות) היה העתק מקוצר/מחודש של Basic+Subspec — 154 כפילויות מילה-במילה ועוד 65 ניסוחים מקוצרים בכתיבת AI; 8 מהכפילויות החזיקו c שונה בין התגים (אותה שאלה — שתי תשובות "נכונות"). (2) תג 2025-Jun-Subspec (100 שאלות) — 99 כפילויות מילה-במילה של Basic; השאלה ה-100 הייתה Q12 הבסיסי שתויקה בטעות. (3) שורת basic[67] הייתה כפילות פגומה של Q69 עם תו ראשי "ם " מפרסר.',
+'➕ שאלת UTI/Ceftriaxone שחסרה (Basic Q12) הוחזרה למאגר עם stem נקי, options ללא טקסט תחתית, ti=27 (זיהומים, היה ti=26 cancer בטעות), והסבר מבוסס SZMC DAG + IDSA Complicated UTI. תשובה ב (Ceftriaxone IV) — תואם למפתח IMA רשמי 15314.',
+'✅ ביקורת מפתח תשובות מול answer_key_basic.pdf הרשמי: 0 אי-התאמות מתוך 149 שאלות בתאמה נקייה. המפתח של 8 שאלות "כל התשובות מתקבלות" (60, 79, 86, 97, 109, 113, 128, 130) ו-10 שאלות עם תשובות מרובות (17, 57, 77, 91, 107, 118, 124, 134, 136, 148) מובא לתשומת לב — מנוע השאלות בוחר c יחיד אך אף בחירה לא סותרת את המפתח.',
+'📊 סך השאלות: 4029 → 3709. תג Basic נשאר 150 (חסר 1 + נוסף 1). תגי 2025-Jun ו-2025-Jun-Subspec הוסרו לחלוטין מ-PAST_EXAM_TAGS, ALLOWED, EXAM_YEARS ב-regressionGuards. CLAUDE.md לא היה מעודכן — היה רשום v10.28/3994; אמת היא v10.32/4028 לפני הניקוי, v10.33/3709 אחרי.',
+],
 '10.30':[
 '🌱 35 שאלות חדשות בנושאי הסילבוס שהיו תת-מאוכלסים: ti=43 Andropause (2→13, +11), ti=44 Prevention/USPSTF (8→20, +12), ti=45 Geriatric Team (3→15, +12). הנושאים האלה הופיעו בסילבוס IMA v3.0 אך היו עם 2-8 שאלות בלבד בכל אחד.',
 '🧠 התוכן: TRT contraindications/monitoring (TRAVERSE 2023, Endocrine Society 2018), USPSTF cessation ages (mammo/colonoscopy/AAA), ASPREE aspirin harm, ACIP 2024 vaccines (Shingrix post-Zostavax, PCV20, RSV ≥75), ACE/HELP/GRACE/PACE care models, OT/PT/SLP/SW scope, חוק סיעוד 1988.',
