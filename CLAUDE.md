@@ -6,7 +6,7 @@
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~421 KB, ~6,046 lines, 191 functions)
-- **App version**: v10.25 (as of 25/04/26) — 3,994 Qs across 46 topics. v10.25: imported 13 GRS8 Qs across 3 new topic buckets (andropause ti=43, prevention ti=44, geriatric team ti=45) — see `ATTRIBUTION-GRS8.md` for license. Recent sweeps: e_issue triage via Toranot proxy (v10.22-24), Hazzard-grounded gap fill in fecal incontinence + non-hip fragility fractures (v10.19).
+- **App version**: v10.26 (as of 25/04/26) — 3,994 Qs across 46 topics. v10.26: cleared the 34-Q e_issue queue (26 explanation rewrites, 7 answer-key flips, 1 multi-accept) + cleaned 11 dramatic-opener Qs (idx 97, 155, 160, 163, 201, 215, 300, 346, 368, 372, 507). v10.25: imported 13 GRS8 Qs across 3 new topic buckets — see `ATTRIBUTION-GRS8.md`.
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -220,7 +220,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `10.25` (sw.js cache key: `shlav-a-v10.25`)
+- Currently both at version `10.26` (sw.js cache key: `shlav-a-v10.26`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
@@ -461,8 +461,8 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — shared `fsrs.js` canonical md5 `cea66a0435…`, shared Supabase project `krmlzwwelqvlfslwltol` |
 | CI workflows | 3 (ci.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=169, onchange=25, oninput=6 |
-| App version | v10.25 |
-| SW cache key | `shlav-a-v10.25` |
+| App version | v10.26 |
+| SW cache key | `shlav-a-v10.26` |
 
 
 ## Test Coverage Recommendations
