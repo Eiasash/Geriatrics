@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * tag_chapters.cjs — bidirectional chapter linker (Hazzard + Harrison).
+ * tag_chapters.cjs — bidirectional chapter linker (Hazzard + Harrison + GRS8).
  *
  * Strategy: topic-first, text-refined.
  *
  *   Phase 1 — TOPIC_CHAPTER_MAP: hand-curated mapping of every topic index
- *   (0..39) to its canonical Hazzard + Harrison chapter. This gives every
+ *   (0..45) to its canonical Hazzard + Harrison chapter. This gives every
  *   question a reliable default based on its topic.
  *
  *   Phase 2 — Text override: if the question text contains strong keywords
@@ -13,7 +13,12 @@
  *   but the question is specifically about endocarditis), override with the
  *   better-matching chapter. Uses OVERRIDE_PATTERNS — explicit regex → chapter.
  *
- * Output: data/question_chapters.json  — { qIdx: { haz: N, har: M } }
+ *   Phase 3 — GRS8: each chapter in data/grs8_chapters.json carries a `ti`
+ *   array; questions whose `ti` matches get the GRS8 chapter id (smallest
+ *   chapter index wins on tie). Topic-first only — GRS8 is a Q&A volume,
+ *   so text-override would require per-question OCR-quality matching.
+ *
+ * Output: data/question_chapters.json  — { qIdx: { haz: N, har: M, grs: K } }
  *
  * Idempotent; same inputs → same output.
  *
@@ -27,6 +32,7 @@ const QUESTIONS_PATH = path.join(ROOT, 'data/questions.json');
 const TOPICS_PATH = path.join(ROOT, 'data/topics.json');
 const HAZ_PATH = path.join(ROOT, 'data/hazzard_chapters.json');
 const HAR_PATH = path.join(ROOT, 'harrison_chapters.json');
+const GRS_PATH = path.join(ROOT, 'data/grs8_chapters.json');
 const OUT_PATH = path.join(ROOT, 'data/question_chapters.json');
 
 const VERBOSE = process.argv.includes('--verbose');
@@ -166,11 +172,32 @@ function applyOverrides(text, topicIdx, defaults) {
   return { haz, har };
 }
 
+/**
+ * Build a topic-index → GRS8 chapter id map.
+ * Each GRS8 chapter has a `ti` array (one or more topic indices it covers).
+ * For each ti we keep the SMALLEST chapter id mapped to it — gives stable,
+ * deterministic linking when multiple GRS8 chapters touch the same topic.
+ */
+function buildGrsTiMap(grs) {
+  const map = {};
+  for (const [chId, info] of Object.entries(grs)) {
+    const idNum = parseInt(chId, 10);
+    if (!Array.isArray(info.ti)) continue;
+    for (const ti of info.ti) {
+      if (typeof ti !== 'number') continue;
+      if (map[ti] === undefined || idNum < map[ti]) map[ti] = idNum;
+    }
+  }
+  return map;
+}
+
 function main() {
   const questions = JSON.parse(fs.readFileSync(QUESTIONS_PATH, 'utf8'));
   const topics = JSON.parse(fs.readFileSync(TOPICS_PATH, 'utf8'));
   const haz = JSON.parse(fs.readFileSync(HAZ_PATH, 'utf8'));
   const har = JSON.parse(fs.readFileSync(HAR_PATH, 'utf8'));
+  const grs = JSON.parse(fs.readFileSync(GRS_PATH, 'utf8'));
+  const grsTiMap = buildGrsTiMap(grs);
 
   // Validate all mapped chapter ids actually exist in the source books
   for (const [ti, m] of Object.entries(TOPIC_CHAPTER_MAP)) {
@@ -183,8 +210,8 @@ function main() {
   }
 
   const out = {};
-  let tagged = 0, hazHits = 0, harHits = 0;
-  const hazCounts = {}, harCounts = {};
+  let tagged = 0, hazHits = 0, harHits = 0, grsHits = 0;
+  const hazCounts = {}, harCounts = {}, grsCounts = {};
   let overridesApplied = 0;
 
   questions.forEach((q, i) => {
@@ -204,7 +231,13 @@ function main() {
       harHits++;
       harCounts[entry.har] = (harCounts[entry.har] || 0) + 1;
     }
-    if (entry.haz !== undefined || entry.har !== undefined) {
+    const grsCh = grsTiMap[q.ti];
+    if (grsCh !== undefined) {
+      entry.grs = grsCh;
+      grsHits++;
+      grsCounts[grsCh] = (grsCounts[grsCh] || 0) + 1;
+    }
+    if (entry.haz !== undefined || entry.har !== undefined || entry.grs !== undefined) {
       out[i] = entry;
       tagged++;
     }
@@ -213,8 +246,9 @@ function main() {
   fs.writeFileSync(OUT_PATH, JSON.stringify(out) + '\n', 'utf8');
   const hazTitle = id => (haz[id] && haz[id].title) || '?';
   const harTitle = id => (har[id] && har[id].title) || '?';
+  const grsTitle = id => (grs[id] && grs[id].title) || '?';
   console.log(`Tagged ${tagged}/${questions.length} (${(tagged/questions.length*100).toFixed(1)}%)`);
-  console.log(`  Hazzard hits: ${hazHits}  Harrison hits: ${harHits}  Overrides: ${overridesApplied}`);
+  console.log(`  Hazzard hits: ${hazHits}  Harrison hits: ${harHits}  GRS8 hits: ${grsHits}  Overrides: ${overridesApplied}`);
   if (VERBOSE) {
     console.log('  Top Hazzard:');
     Object.entries(hazCounts).sort((a,b)=>b[1]-a[1]).slice(0,10).forEach(([k,v])=>
@@ -222,6 +256,9 @@ function main() {
     console.log('  Top Harrison:');
     Object.entries(harCounts).sort((a,b)=>b[1]-a[1]).slice(0,10).forEach(([k,v])=>
       console.log(`    ch${k} (${v}): ${harTitle(k).slice(0,50)}`));
+    console.log('  Top GRS8:');
+    Object.entries(grsCounts).sort((a,b)=>b[1]-a[1]).slice(0,10).forEach(([k,v])=>
+      console.log(`    ch${k} (${v}): ${grsTitle(k).slice(0,50)}`));
   }
   console.log(`→ ${path.relative(process.cwd(), OUT_PATH)}`);
 }
