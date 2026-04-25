@@ -6,7 +6,7 @@
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~421 KB, ~6,046 lines, 191 functions)
-- **App version**: v10.24 (as of 25/04/26) — 3,981 Qs across 43 topics. Recent sweeps: e_issue triage via Toranot proxy (v10.22-24), Hazzard-grounded gap fill in fecal incontinence + non-hip fragility fractures (v10.19), explanation generation passes filled all empty `e` fields.
+- **App version**: v10.25 (as of 25/04/26) — 3,994 Qs across 46 topics. v10.25: imported 13 GRS8 Qs across 3 new topic buckets (andropause ti=43, prevention ti=44, geriatric team ti=45) — see `ATTRIBUTION-GRS8.md` for license. Recent sweeps: e_issue triage via Toranot proxy (v10.22-24), Hazzard-grounded gap fill in fecal incontinence + non-hip fragility fractures (v10.19).
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -68,13 +68,13 @@ the full decomposition ledger and safe-next-steps list.
 ├── manifest.json            # PWA manifest
 │
 ├── data/                    # Lazy-loaded JSON data — single source of truth
-│   ├── questions.json       # 3,981 MCQs (primary runtime source)
+│   ├── questions.json       # 3,994 MCQs (primary runtime source)
 │   ├── notes.json           # 43 study topic notes
 │   ├── drugs.json           # 114 Beers/ACB drugs database
 │   ├── flashcards.json      # 159 high-yield flashcards
 │   ├── osce.json            # OSCE station scenarios
 │   ├── tabs.json            # Tab definitions for app navigation
-│   └── topics.json          # 43 topic keyword mappings for auto-tagging
+│   └── topics.json          # 46 topic keyword mappings for auto-tagging
 │
 ├── explanations_cache.json  # Pre-generated AI explanations (2.3 MB)
 ├── hazzard_chapters.json    # Hazzard's 8e textbook content (structured JSON)
@@ -220,7 +220,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js`
-- Currently both at version `10.24` (sw.js cache key: `shlav-a-v10.24`)
+- Currently both at version `10.25` (sw.js cache key: `shlav-a-v10.25`)
 - Update both when making changes to ensure users get cache-busted
 
 ### Testing
@@ -302,7 +302,7 @@ Runs on push to `main` and all PRs. Python-based data validation + Vitest test s
 | JS brace balance | Matching braces in shlav-a-mega.html |
 | Service worker version sync | APP_VERSION matches sw.js CACHE version |
 | innerHTML sanitization | Audit for unsanitized innerHTML usage |
-| Topic coverage | >= 5 questions per topic (all 43 topics) |
+| Topic coverage | >= 5 questions per topic (existing 43 buckets); new GRS8 buckets ti=43-45 may have <5 until follow-up sprint |
 
 **Vitest tests** (715 tests, 26 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
 
@@ -417,7 +417,7 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 
 - The file is intentionally a single monolith — do not split it
 - CSS is at the top, JS is at the bottom before `</body>`
-- TOPICS array in JS must stay in sync with the 43-topic list (indices 0–42)
+- TOPICS array in JS must stay in sync with the 46-topic list (indices 0–45)
 - All localStorage operations must use the established keys (`samega`, `samega_ex`, `samega_apikey`, `shlav_q_images`)
 - `explainWithAI()` must handle errors gracefully and cache results in localStorage
 - Data loads lazily from `data/*.json` — do not inline large data back into HTML
@@ -450,8 +450,8 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 |---|---|
 | Main file | `shlav-a-mega.html` (~6,046 lines, ~421 KB) |
 | Named functions | 219 (188 core + 31 decomposed helpers) |
-| Questions | 3,981 (~2,200 IMA past exam + ~1,800 Hazzard/Harrison-grounded AI-generated) |
-| Topics | 43 |
+| Questions | 3,994 (~2,200 IMA past exam + ~1,800 Hazzard/Harrison AI-generated + 13 GRS8 imports) |
+| Topics | 46 |
 | Drugs | 114 |
 | Flashcards | 159 |
 | Study notes | 43 |
@@ -461,8 +461,8 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — shared `fsrs.js` canonical md5 `cea66a0435…`, shared Supabase project `krmlzwwelqvlfslwltol` |
 | CI workflows | 3 (ci.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=169, onchange=25, oninput=6 |
-| App version | v10.24 |
-| SW cache key | `shlav-a-v10.24` |
+| App version | v10.25 |
+| SW cache key | `shlav-a-v10.25` |
 
 
 ## Test Coverage Recommendations
