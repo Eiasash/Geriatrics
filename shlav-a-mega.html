@@ -5483,8 +5483,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.28';
+const APP_VERSION='10.29';
 const CHANGELOG={
+'10.29':[
+'📚 הרחבת 12 הסברים דקיקים (e<100 תווים). השאלות נמצאות בנושאי End of Life (4), Ethics/Legal (4), Dysphagia (1), Stroke (3) — כל אחת קיבלה הסבר מורחב 270-400 תווים שמסביר למה התשובה המסומנת נכונה ולמה האחרות שגויות, עם ציטוט/מקור (Hazzard ch / חוק החולה הנוטה למות / Appelbaum / קריטריוני NIHSS) כשרלוונטי.',
+'⚙️ ה-pipeline: scripts/eissue_via_proxy.py ה-pattern (6 workers, 1Q/call, ~3s) מומש לשם הרחבת הסברים. 12/12 התקבלו, 0 דחיות. ~21s wall time. Hebrew validation (>40% עברית, אורך 100-700, ללא markdown) הופעל.',
+'📊 חציוני אורך הסבר חדש: 312 תווים (לעומת 87 לפני). אין שאלה במאגר עם e<100 כעת.',
+],
 '10.23':[
 '🧹 e_issue triage cleanup. הזרקנו 32 הסברי-טריאז\' אל תוך data/questions.json (שדה e_issue_reason) כך שהבאנר הצהוב יראה את הסיבה הספציפית לכל שאלה — לא צריך לפתוח עוד את docs/eissue_triage_v10.22.json.',
 '🛡️ GATE 7 התקשח. סף ההזהרה ירד מ-600 ל-50 וסף הכשל מ-800 ל-200. אם ה-queue יחזור לתפוח בעקבות הוספת מבחן חדש, ה-CI יעצור עד טריאז\'.',
