@@ -278,6 +278,8 @@ describe('questions.json — structural invariants', () => {
       'Hazzard', 'Harrison', 'Exam',
       // Split from 2025-א theory-type questions
       'Hazzard-suppl',
+      // v10.25: GRS8 import (American Geriatrics Society Q&A book) — see ATTRIBUTION-GRS8.md
+      'GRS8',
     ]);
     const unknown = new Set();
     questions.forEach(q => {
