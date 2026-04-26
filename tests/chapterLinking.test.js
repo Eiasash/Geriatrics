@@ -135,9 +135,12 @@ describe('SW cache manifest', () => {
 });
 
 describe('Spot-checks — topic anchor questions map to the right chapter', () => {
-  // Pick a handful of high-volume topics and assert their canonical mapping
-  // survives end-to-end: questions[i].ti known → QCHAPS[i] points at the
-  // expected Hazzard chapter.
+  // v10.41.0: with tis[]-aware multi-topic tagging, a topic now covers Qs
+  // whose central concept matches that topic — but those Qs may be set in
+  // many clinical contexts and tagged to many different Hazzard chapters.
+  // The pre-v10.41 50% threshold over-fitted the old narrow ti distribution.
+  // 25% still catches collapse to a wrong chapter, while accepting legitimate
+  // dispersion across textbook organization.
   const ANCHORS = [
     { ti: 6, expectHaz: 59 },   // dementia topic → Hazzard Dementia Ch 59
     { ti: 5, expectHaz: 58 },   // delirium → Ch 58
@@ -151,11 +154,10 @@ describe('Spot-checks — topic anchor questions map to the right chapter', () =
       const idxs = questions.map((q, i) => ({ q, i })).filter(x => x.q.ti === ti).map(x => x.i);
       expect(idxs.length, `no questions with ti=${ti}`).toBeGreaterThan(0);
       const matched = idxs.filter(i => qchaps[i] && qchaps[i].haz === expectHaz).length;
-      // Allow up to 40% to be overridden to more-specific chapters
       expect(
         matched / idxs.length,
         `only ${matched}/${idxs.length} of topic ${ti} → Hazzard ch${expectHaz}`,
-      ).toBeGreaterThanOrEqual(0.5);
+      ).toBeGreaterThanOrEqual(0.25);
     });
   }
 });
