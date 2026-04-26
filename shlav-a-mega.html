@@ -3333,9 +3333,9 @@ h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-
 </div>
 <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
 ${prevCh?`<button onclick="openHazzardChapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">\u2039 Ch ${prevCh}</button>`:''}
-<button onclick="quizMeOnChapter(hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">\ud83e\udde0 Quiz</button>
-<button onclick="generateQuestionsFromChapter('haz',hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;cursor:pointer">\u2728 Generate Qs</button>
-<button onclick="aiSummarizeChapter(hazChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">\ud83d\udcdd Summary</button>
+<button onclick="quizMeOnChapter(hazChOpen,${sanitize(JSON.stringify(ch.title))})" style="font-size:10px;padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">\ud83e\udde0 Quiz</button>
+<button onclick="generateQuestionsFromChapter('haz',hazChOpen,${sanitize(JSON.stringify(ch.title))})" style="font-size:10px;padding:5px 10px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;cursor:pointer">\u2728 Generate Qs</button>
+<button onclick="aiSummarizeChapter(hazChOpen,${sanitize(JSON.stringify(ch.title))})" style="font-size:10px;padding:5px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">\ud83d\udcdd Summary</button>
 <button onclick="window.open(getHazPdf(String(hazChOpen)),'_blank')" style="font-size:10px;padding:5px 10px;background:rgb(var(--red-bg));color:#dc2626;border:1px solid rgb(var(--red-brd));border-radius:8px;cursor:pointer">\ud83d\udcc4 PDF</button>
 ${nextCh?`<button onclick="openHazzardChapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">Ch ${nextCh} \u203a</button>`:''}
 </div>
@@ -3446,9 +3446,9 @@ h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-
 </div>
 <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
 ${prevCh?`<button onclick="openHarrisonChapter(${prevCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">‹ Ch ${prevCh}</button>`:''}
-<button onclick="quizMeOnChapter(harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">🧠 Quiz</button>
-<button onclick="generateQuestionsFromChapter('har',harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;cursor:pointer">✨ Generate Qs</button>
-<button onclick="aiSummarizeChapter(harChOpen,ch.title)" style="font-size:10px;padding:5px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">📝 Summary</button>
+<button onclick="quizMeOnChapter(harChOpen,${sanitize(JSON.stringify(ch.title))})" style="font-size:10px;padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">🧠 Quiz</button>
+<button onclick="generateQuestionsFromChapter('har',harChOpen,${sanitize(JSON.stringify(ch.title))})" style="font-size:10px;padding:5px 10px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;cursor:pointer">✨ Generate Qs</button>
+<button onclick="aiSummarizeChapter(harChOpen,${sanitize(JSON.stringify(ch.title))})" style="font-size:10px;padding:5px 10px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer">📝 Summary</button>
 ${nextCh?`<button onclick="openHarrisonChapter(${nextCh})" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">Ch ${nextCh} ›</button>`:''}
 </div>
 <div id="quiz-me-box"></div>
@@ -5755,8 +5755,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.38.3';
+const APP_VERSION='10.38.4';
 const CHANGELOG={
+'10.38.4':[
+'🐛 Hazzard/Harrison Quiz/Generate Qs/Summary buttons crashed silently (ReferenceError: ch is not defined). 6 onclick handlers (3 per reader) referenced ch.title as bare JS, but ch was a const local of the function that built the HTML. At click time the handler ran in global scope where ch did not exist. The "Quiz", "Generate Qs" and "Summary" buttons all silently failed when tapped.',
+'🛡️ Fix: substitute the title at template-build time with two-layer encoding — JSON.stringify for the JS-string-literal layer, sanitize() for the HTML-attribute layer. Pattern: onclick="fn(${sanitize(JSON.stringify(ch.title))})". Verified end-to-end with Hebrew titles, embedded quotes, and apostrophes (Alzheimer\'s, Crohn\'s, Parkinson\'s).',
+'✅ tests/onclickClosureLeakGuard.test.js — generalizes the v10.36.2 GRS8 row-binding lock to ALL inline onclick handlers. Strips ${...} interpolations (those evaluate at template-build time when ch IS in scope), then asserts the remaining attribute text contains no bare ch.* reference. Plus 6 explicit assertions that the Hazzard and Harrison Quiz/Generate/Summary onclick patterns match the encoded-substitution form.',
+],
 '10.38.3':[
 '🐞 Debug console persistence — sessionStorage → localStorage. אחרי ביקור חד-פעמי ב-?debug=1, כפתור 🐞 נשאר גלוי בכל ביקור עתידי באותו מכשיר. תיקון לבעיה ב-v10.38.2 שבה הכפתור נעלם אחרי סגירת לשונית.',
 'ל-disable: ?debug=0 בכתובת או נקה localStorage idea ב-DevTools. ניתן עדיין להפעיל דרך 5-tap top-right corner כפעולת חירום.',
