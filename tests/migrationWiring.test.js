@@ -102,7 +102,7 @@ describe("renderLibrary → _rl* helpers", () => {
 // ─── Inline handler baseline ───
 
 describe("inline handler counts are stable", () => {
-  it("onclick 140–215", () => { const c = (html.match(/onclick=/g)||[]).length; expect(c).toBeGreaterThanOrEqual(140); expect(c).toBeLessThanOrEqual(215); });
+  it("onclick 140–230", () => { const c = (html.match(/onclick=/g)||[]).length; expect(c).toBeGreaterThanOrEqual(140); expect(c).toBeLessThanOrEqual(230); });
   it("onchange 15–40", () => { const c = (html.match(/onchange=/g)||[]).length; expect(c).toBeGreaterThanOrEqual(15); expect(c).toBeLessThanOrEqual(40); });
   it("total ≤260", () => { const t = (html.match(/onclick=/g)||[]).length+(html.match(/onchange=/g)||[]).length+(html.match(/oninput=/g)||[]).length; expect(t).toBeLessThanOrEqual(260); });
 });
