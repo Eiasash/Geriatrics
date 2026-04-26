@@ -439,7 +439,7 @@ function registerTap(){var n=Date.now();taps=taps.filter(function(z){return n-z<
 // Keyboard shortcut: Ctrl+Shift+D (desktop) or window.__debug.show()
 document.addEventListener('keydown',function(e){if(e.ctrlKey&&e.shiftKey&&(e.key==='D'||e.key==='d')){e.preventDefault();showDebugPanel();}},true);
 // Persistent button after first activation (sessionStorage flag) or ?debug=1 URL param
-function shouldShowButton(){try{if(/[?&]debug=1\b/.test(location.search))return true;if(sessionStorage.getItem('__dbg_seen')==='1')return true;}catch(e){}return false;}
+function shouldShowButton(){try{if(/[?&]debug=1\b/.test(location.search))return true;if(localStorage.getItem('__dbg_seen')==='1')return true;}catch(e){}return false;}
 function injectActivatorAndButton(){
 if(!document.body)return;
 if(!document.getElementById('__debug_activator')){
@@ -497,7 +497,7 @@ buffer.actions.slice(-30).map(function(a){return '['+a.ts+'] '+a.label;}),
 ['','=== END REPORT ===']).join('\n');
 }
 function showDebugPanel(){
-try{sessionStorage.setItem('__dbg_seen','1');}catch(e){}
+try{localStorage.setItem('__dbg_seen','1');}catch(e){}
 injectActivatorAndButton();
 var existing=document.getElementById('__debug_panel');
 if(existing){existing.remove();return;}
@@ -5755,7 +5755,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.38.2';
+const APP_VERSION='10.38.3';
 const CHANGELOG={
 '10.38.2':[
 '🐛 Debug console v2: תוקן הבאג שגרם ל-explainWithAI להחזיר 15/15 AbortError. הסיבה לא הייתה ב-fetch wrapper של ה-debug console (העטיפה הייתה תקינה, מעבירה signal דרך origFetch.apply(this,arguments)) אלא ב-callAI עצמו: שימוש ב-AbortController singleton ברמת המודול גרם לכל קריאה חדשה לבטל את הקודמת. עכשיו AbortController per-call + 30s safety timeout. בקשות מקבילות לא מבטלות זו את זו.',
