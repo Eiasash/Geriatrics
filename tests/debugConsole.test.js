@@ -16,10 +16,17 @@ describe('debug console (v10.38.1)', () => {
     expect(debugInit, 'initDebugConsole before 2nd <script>').toBeLessThan(secondScriptOpen);
   });
 
-  it('5-tap counter logic exists (taps array + corner check)', () => {
+  it('5-tap counter logic exists (taps array + activator div)', () => {
     expect(html).toMatch(/var taps\s*=\s*\[\]/);
     expect(html).toMatch(/taps\.length\s*>=\s*5/);
-    expect(html).toMatch(/function corner\b/);
+    // v10.38.2: switched from coordinate detection to invisible div #__debug_activator
+    expect(html).toMatch(/__debug_activator/);
+  });
+
+  it('alternate activation paths exist (v10.38.2): URL ?debug=1, sessionStorage flag, Ctrl+Shift+D', () => {
+    expect(html).toMatch(/\[\?&\]debug=1/);
+    expect(html).toMatch(/sessionStorage\.(getItem|setItem)\(['"]__dbg_seen['"]/);
+    expect(html).toMatch(/e\.ctrlKey\s*&&\s*e\.shiftKey/);
   });
 
   it('copy-to-clipboard handler exists with execCommand fallback', () => {
