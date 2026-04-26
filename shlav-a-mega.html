@@ -3400,31 +3400,67 @@ h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-
 </div>
 <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
 ${prevCh?`<button onclick="openGrs8Chapter('${prevCh}')" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">‹ Ch ${prevCh}</button>`:''}
-<button onclick="window.open('${part}#page=${startPage}','_blank')" style="font-size:10px;padding:5px 10px;background:#0891b2;color:#fff;border:none;border-radius:8px;cursor:pointer">📄 Open PDF</button>
+<button onclick="window.open('${part}','_blank')" style="font-size:10px;padding:5px 10px;background:#0891b2;color:#fff;border:none;border-radius:8px;cursor:pointer">📄 Open full PDF</button>
 ${nextCh?`<button onclick="openGrs8Chapter('${nextCh}')" style="font-size:10px;padding:5px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">Ch ${nextCh} ›</button>`:''}
 </div>`;
-// Per-chapter question stats from QCHAPS
+// ===== Per-Q renderer (Fix B) — replaces the chapter-range PDF anchor card =====
+const chapterQs=Array.isArray(ch.questions)?ch.questions:[];
+const _allBankGrs=QZ.filter(q=>q.t==='GRS8');
+const _findBankQ=(qNum)=>{const re=new RegExp('Q#'+qNum+'\\b');return _allBankGrs.find(q=>re.test(q.ref||''));};
+const _grsPages=window._grsPages||{};
+// GRS-only drill: bank Qs in chapterQs (canonical source of truth)
+const _bankInChapter=chapterQs.map(_findBankQ).filter(Boolean);
+const _bankIdxInChapter=_bankInChapter.map(q=>QZ.indexOf(q));
+// Topic-mixed drill (legacy ti-based filter, kept for broader study)
 const _grsQCidx=Object.keys(QCHAPS).filter(qi=>QCHAPS[qi]&&String(QCHAPS[qi].grs)===String(grsChOpen)).map(Number);
-if(_grsQCidx.length){
 let _gok=0,_gno=0;
 _grsQCidx.forEach(qIdx=>{const ck=S.ck&&S.ck[qIdx];if(ck==='ok')_gok++;else if(ck==='no')_gno++;});
 const _gtot=_gok+_gno;
 const _gpct=_gtot?Math.round(_gok/_gtot*100):null;
 h+=`<div style="display:flex;gap:8px;margin-bottom:12px;padding:8px 12px;background:#ecfeff;border-radius:10px;font-size:10px;align-items:center;flex-wrap:wrap">
-<span>📝 ${_grsQCidx.length} bank Qs mapped to this chapter</span>
-${_gpct!==null?`<span style="font-weight:700;color:${_gpct>=70?'#059669':_gpct>=50?'#d97706':'#dc2626'}">${_gpct}% accuracy (${_gtot} attempted)</span>`:'<span style="color:rgb(var(--fg3))">Not attempted yet</span>'}
-<button onclick="filt='grs-ch';topicFilt=${grsChOpen};tab='quiz';buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#0891b2;color:#fff;border:none;border-radius:6px;cursor:pointer">▶ Drill all ${_grsQCidx.length}</button>
+<span>📝 ${chapterQs.length} GRS Qs · ${_bankInChapter.length} imported · ${_grsQCidx.length} topic-mixed</span>
+${_gpct!==null?`<span style="font-weight:700;color:${_gpct>=70?'#059669':_gpct>=50?'#d97706':'#dc2626'}">${_gpct}% on topic-mix (${_gtot})</span>`:''}
 </div>`;
+h+=`<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">`;
+if(_bankIdxInChapter.length){
+h+=`<button onclick="pool=${JSON.stringify(_bankIdxInChapter)};qi=0;sel=null;ans=false;tab='quiz';render()" style="font-size:11px;padding:7px 14px;background:#0891b2;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600">▶ Drill ${_bankIdxInChapter.length} GRS Qs</button>`;
 }
-h+=`<div class="card" style="padding:8px">
-<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:6px;padding:0 6px">${ch.syllabus_topic?'IMA syllabus topic: '+ch.syllabus_topic:''}${Array.isArray(ch.questions)&&ch.questions.length?' · GRS8 Book 3 Qs: '+ch.questions.join(', '):''}</div>
-<div style="padding:24px 16px;text-align:center;background:rgb(var(--bg2));border-radius:10px">
-<div style="font-size:14px;font-weight:700;margin-bottom:6px">📄 ${ch.title}${titleHe?' · '+titleHe:''}</div>
-<div style="font-size:11px;color:rgb(var(--fg2));margin-bottom:14px">pp. ${startPage}–${ch.pages?ch.pages[1]:startPage} · GRS8 Book 3 (AGS, 8th ed.)</div>
-<button onclick="window.open('${part}#page=${startPage}','_blank')" style="background:#0891b2;color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:13px;font-weight:600;cursor:pointer">📄 Open PDF at Page ${startPage}</button>
-<div style="margin-top:12px;font-size:10px;color:rgb(var(--fg3));line-height:1.5">Mobile browsers can't preview PDFs inline — opens in your browser's PDF viewer.</div>
+if(_grsQCidx.length){
+const _topicBtnStyle=_bankIdxInChapter.length?'background:rgb(var(--bg2));border:1px solid rgb(var(--brd));color:rgb(var(--fg))':'background:#0891b2;color:#fff;border:none';
+h+=`<button onclick="filt='grs-ch';topicFilt=${grsChOpen};tab='quiz';buildPool();render()" style="font-size:11px;padding:7px 14px;${_topicBtnStyle};border-radius:8px;cursor:pointer">▶ Drill chapter topic (${_grsQCidx.length} mixed)</button>`;
+}
+h+=`</div>`;
+if(ch.syllabus_topic){
+h+=`<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">IMA syllabus topic: ${ch.syllabus_topic}</div>`;
+}
+if(chapterQs.length===0){
+h+=`<div class="card" style="padding:14px;text-align:center;color:rgb(var(--fg2));font-size:11px">No GRS8 Book 3 questions mapped to this chapter.</div>`;
+}else{
+h+=`<div style="font-size:11px;color:rgb(var(--fg2));margin-bottom:10px">📋 GRS8 Book 3 questions in this chapter:</div>`;
+chapterQs.forEach(qNum=>{
+const bankQ=_findBankQ(qNum);
+const pdfPage=_grsPages[String(qNum)]||(ch.pages&&ch.pages[0])||1;
+if(bankQ){
+const bankIdx=QZ.indexOf(bankQ);
+const stem=String(bankQ.q||'');
+const stemPreview=stem.slice(0,140);
+h+=`<div class="card" style="padding:10px;margin-bottom:8px;border-left:3px solid #0891b2">
+<div style="font-size:10px;font-weight:700;color:#0891b2;margin-bottom:4px">Q${qNum} · in bank</div>
+<div style="font-size:11.5px;line-height:1.5;margin-bottom:8px">${stemPreview}${stem.length>140?'…':''}</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<button onclick="pool=[${bankIdx}];qi=0;sel=null;ans=false;tab='quiz';render()" style="font-size:10px;padding:5px 12px;background:#0891b2;color:#fff;border:none;border-radius:6px;cursor:pointer">▶ Drill this</button>
+<button onclick="window.open('${part}#page=${pdfPage}','_blank')" style="font-size:10px;padding:5px 12px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:6px;cursor:pointer">📄 PDF p.${pdfPage}</button>
 </div>
 </div>`;
+}else{
+h+=`<div class="card" style="padding:10px;margin-bottom:8px;background:rgb(var(--bg2));opacity:0.78">
+<div style="font-size:10px;font-weight:600;color:rgb(var(--fg2));margin-bottom:4px">Q${qNum} · not yet imported</div>
+<div style="font-size:10.5px;color:rgb(var(--fg3));margin-bottom:6px">Available in GRS8 Book 3 PDF</div>
+<button onclick="window.open('${part}#page=${pdfPage}','_blank')" style="font-size:10px;padding:5px 12px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:6px;cursor:pointer">📄 Open PDF at p.${pdfPage}</button>
+</div>`;
+}
+});
+}
 }else if(_grsLoading){
 h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">⏳ Loading GRS8 chapters...</div></div>`;
 }else{
@@ -3529,7 +3565,10 @@ function renderLibrary(){
 // Lazy-load GRS8 chapters list when user clicks into the GRS8 sub-tab
 if(libSec==='grs8'&&!_grsData&&!_grsLoading){
 _grsLoading=true;
-fetch('data/grs8_chapters.json').then(r=>r.json()).then(j=>{_grsData=j;_grsLoading=false;render();}).catch(e=>{console.error('Failed to load GRS8 chapters',e);_grsData={};_grsLoading=false;render();});
+Promise.all([
+fetch('data/grs8_chapters.json').then(r=>r.json()),
+fetch('data/grs8_question_pages.json').then(r=>r.json()).catch(()=>({}))
+]).then(([ch,pages])=>{_grsData=ch;window._grsPages=pages;_grsLoading=false;render();}).catch(e=>{console.error('Failed to load GRS8 chapters',e);_grsData={};window._grsPages={};_grsLoading=false;render();});
 }
 let h=_rlHeader();
 h+=_rlHazzard();
@@ -5599,8 +5638,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.36.2';
+const APP_VERSION='10.36.3';
 const CHANGELOG={
+'10.36.3':[
+'📝 GRS8 reading view rebuild: chapters now list their actual GRS8 Book 3 question numbers (e.g., Behavior Problems = Qs 20, 28, 53, 212, 217, 245, 272). Bank-imported Qs (13 total) render inline with stem preview + drill button. Not-yet-imported Qs show as placeholders with per-Q PDF page anchors derived from data/grs8_question_pages.json (333 ANSWER-marker page anchors). Replaces the previous chapter-range "Open PDF at Page N" anchor which was unreliable on Android Chrome.',
+],
 '10.36.2':[
 '🐛 GRS8 row tap ReferenceError — root cause hotfix. הבאג ב-v10.36.1 לא נפתר: ה-DevTools של Eias חשפו "Uncaught ReferenceError: grs8 is not defined" בכל לחיצה על שורת פרק. הסיבה: בשורה שבונה את רשימת הפרקים, סדר ה-spread {id:parseInt(id,10),...info} נתן ל-info.id (string "grs8-ch01") לדרוס את ה-numeric key, ואז ה-template literal של ה-row handler יצר HTML literal של openGrs8Chapter(grs8-ch01) — הדפדפן פירש את המקף כחיסור JS על משתנה לא-מוגדר grs8 → ReferenceError → שום navigation.',
 '🛡️ Two-line fix + lock: (1) ה-spread הופך ל- {...info, id:parseInt(id,10)} כך שה-numeric key מנצח את ה-string id מתוך info. (2) כל 3 ה-inline-handler sites של openGrs8Chapter עוטפים את הארגומנט במרכאות בודדות (belt-and-suspenders — גם string id חוקי לא יישבר). (3) openGrs8Chapter מבצע Number(ch) coerce כדי ש-allChNums.indexOf prev/next ימשיך לעבוד גם כש-id מגיע כ-string. (4) tests/grs8RowBindingFormat.test.js נועל: regex סורק את כל הקריאות ל-openGrs8Chapter בתוך attribute values ודורש שהארגומנט יהיה quoted או literal numeric.',
