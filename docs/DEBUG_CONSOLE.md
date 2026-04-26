@@ -4,11 +4,15 @@ A built-in mobile-first debug console. No `chrome://inspect` needed.
 
 ## How to open
 
-**Tap the top-right corner of the screen 5 times within 3 seconds.**
+**Three options:**
 
-The corner zone covers roughly the upper 15% of the screen, right of the 70% mark — anywhere up there counts. If 3 seconds pass without 5 taps, the counter resets.
+1. **Tap the top-right corner of the screen 5 times within 3 seconds.** The activator is a tiny 40×40 invisible div in the absolute top-right corner. If you have trouble triggering it (the dark/study/help buttons sit in the same area and take precedence), use option 2 or 3.
+2. **`?debug=1` URL parameter**: navigate to `https://eiasash.github.io/Geriatrics/?debug=1` once. A floating 🐞 button appears bottom-right and stays for the rest of your browser session (cleared on tab close — `sessionStorage`, not `localStorage`).
+3. **Ctrl+Shift+D** keyboard shortcut (desktop).
 
-Manual fallback (DevTools): `__debug.show()`
+Manual fallback from DevTools: `__debug.show()`
+
+After the panel has been opened once, the 🐞 button persists for the session — no need to re-tap or re-add `?debug=1`.
 
 ## What it shows
 
