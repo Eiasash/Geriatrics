@@ -178,11 +178,18 @@ describe('v10.9 — topic source scope', () => {
     });
 
     it('buildPool topic branch gates by _topicSrcMatch', () => {
-      expect(html).toContain("q.ti===topicFilt&&_topicSrcMatch(q)");
+      // v10.41.0: now uses tis[] OR-match. Assert the branch still calls
+      // _topicSrcMatch, regardless of the exact comparison structure.
+      const m = html.match(/filt===['"]topic['"][\s\S]{0,500}?pool\.push/);
+      expect(m).toBeTruthy();
+      expect(m[0]).toMatch(/_topicSrcMatch\s*\(\s*q\s*\)/);
     });
 
     it('startTopicMiniExam gates by _topicSrcMatch', () => {
-      expect(html).toContain("QZ[i].ti===ti&&_topicSrcMatch(QZ[i])");
+      // v10.41.0: now uses tis[] OR-match.
+      const m = html.match(/function\s+startTopicMiniExam\s*\([\s\S]*?render\(\);\s*\}/);
+      expect(m).toBeTruthy();
+      expect(m[0]).toMatch(/_topicSrcMatch/);
     });
 
     it('empty-state reset button is wired when src filter caused the empty', () => {
