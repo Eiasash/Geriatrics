@@ -203,6 +203,34 @@ async function main() {
     catch (e) { console.error('distractors.json parse failed, starting fresh:', e.message); }
   }
 
+  // Drift cleanup pass (added v10.43+): drop entries that no longer align
+  // with current questions.json. Was a chronic problem after v10.33's bank
+  // dedup left orphaned distractor keys >= len(questions). Without this,
+  // tests/distractorsDrift.test.js fails on every CI run after a bank trim.
+  {
+    const before = Object.keys(existing).length;
+    const cleaned = {};
+    let dropped_overflow = 0, dropped_lenmis = 0;
+    for (const [k, v] of Object.entries(existing)) {
+      const idx = Number(k);
+      if (!Number.isInteger(idx) || idx < 0 || idx >= questions.length) {
+        dropped_overflow++;
+        continue;
+      }
+      const q = questions[idx];
+      if (!q || !Array.isArray(v) || !Array.isArray(q.o) || v.length !== q.o.length) {
+        dropped_lenmis++;
+        continue;
+      }
+      cleaned[k] = v;
+    }
+    if (dropped_overflow + dropped_lenmis > 0) {
+      console.log(`Drift cleanup: ${before} → ${Object.keys(cleaned).length} ` +
+                  `(dropped ${dropped_overflow} overflow + ${dropped_lenmis} length-mismatched)`);
+      existing = cleaned;
+    }
+  }
+
   let candidates = questions
     .map((q, idx) => ({ q, idx }))
     .filter(({ q, idx }) => {
