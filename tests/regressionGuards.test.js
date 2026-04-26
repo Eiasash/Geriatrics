@@ -213,11 +213,18 @@ describe('questions.json — structural invariants', () => {
   let questions;
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
-  test('every question has EXACTLY 4 options', () => {
+  test('every question has 4 options (GRS8 source allows 5; v10.37 imports)', () => {
+    // Israeli IMA exam questions are always 4-option. GRS8 (AGS, US source)
+    // has many 5-option case-MCQs; both formats are valid in the bank.
     const bad = [];
     questions.forEach((q, i) => {
-      if (!Array.isArray(q.o) || q.o.length !== 4) {
-        bad.push({ i, tag: q.t, optCount: Array.isArray(q.o) ? q.o.length : 'not-array' });
+      if (!Array.isArray(q.o)) {
+        bad.push({ i, tag: q.t, optCount: 'not-array' });
+        return;
+      }
+      const allowed = q.t === 'GRS8' ? [4, 5] : [4];
+      if (!allowed.includes(q.o.length)) {
+        bad.push({ i, tag: q.t, optCount: q.o.length });
       }
     });
     if (bad.length) console.error('Non-4-option Qs:', bad.slice(0, 3));
@@ -346,8 +353,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3756 (v10.35: +5 2022-Basic recovered, -9 2023-Basic orphan/canonical reconciliation, +51 2024-Sep-Basic recovered, -2 2024-May-Basic orphans + 2 recovered)', () => {
-    expect(questions.length).toBe(3756);
+  test('total question count is exactly 3833 (v10.37: +77 GRS8 Book 3 imports across 14 high-yield chapters)', () => {
+    expect(questions.length).toBe(3833);
   });
 });
 
