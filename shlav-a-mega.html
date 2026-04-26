@@ -3102,28 +3102,44 @@ const excerpt=(chData.sections||[]).slice(0,5).map(function(s){
   return (Array.isArray(c)?c.join(' '):String(c||'')).slice(0,800);
 }).join('\n');
 const textbookName=source==='haz'?"Hazzard's 8e":"Harrison's 22e";
-// v10.39.0 — was 5 Qs at 3000 max_tokens which routinely 504'd at the proxy
-// timeout (Sonnet 4.6 generates at ~60 tok/s → 50s wall). Cut to 3 Qs/1800
-// tokens which fits in ~22s, well under the new 25s upstream ceiling.
-const prompt=`Based on this ${textbookName} chapter, generate exactly 3 board-style MCQ for the Israeli geriatrics שלב א׳ exam.
+// v10.40.0 — parallel-3 single-Q pattern. v10.39.0's single 1800-tok call
+// took ~35s wall (Sonnet 4.6 ~60 tok/s) and got killed by the 30s client
+// AbortController, surfacing as "signal is aborted without reason". Mirror
+// of the proven scripts/eissue_via_proxy.py 6-worker / 1-Q-per-call pattern:
+// 3 calls × 600 tokens each, parallel. Each ~10-15s, wall <20s.
+const slices=[
+  excerpt.slice(0,1200),
+  excerpt.slice(1000,2200)||excerpt.slice(0,1200),
+  excerpt.slice(2000,3200)||excerpt.slice(0,1200)
+];
+const focuses=['the opening third','the middle third','the final third'];
+const buildPrompt=(idx)=>`Based on this ${textbookName} chapter section, generate exactly ONE board-style MCQ for the Israeli geriatrics שלב א׳ exam. Focus on ${focuses[idx]} of the chapter.
 
 Chapter: ${chTitle}
 Content:
-${excerpt.slice(0,3000)}
+${slices[idx]}
 
-Return ONLY a JSON array (no markdown, no preamble). Each question:
+Return ONLY a single JSON object (no markdown, no preamble, no array brackets):
 - q: clinical vignette stem (Hebrew preferred)
 - o: 4 options
 - c: correct index (0-3)
 - e: 2-3 sentence Hebrew explanation covering the correct answer + the most likely distractor
 
-Format: [{"q":"...","o":["A","B","C","D"],"c":0,"e":"..."}]`;
+Format: {"q":"...","o":["A","B","C","D"],"c":0,"e":"..."}`;
 try{
-const text=await callAI([{role:'user',content:prompt}],1800,'sonnet');
-// Parse JSON from response
-const jsonMatch=text.match(/\[\s*\{[\s\S]*\}\s*\]/);
-if(!jsonMatch)throw new Error('No JSON array found in response');
-const questions=JSON.parse(jsonMatch[0]);
+const settled=await Promise.allSettled([
+  callAI([{role:'user',content:buildPrompt(0)}],600,'sonnet'),
+  callAI([{role:'user',content:buildPrompt(1)}],600,'sonnet'),
+  callAI([{role:'user',content:buildPrompt(2)}],600,'sonnet')
+]);
+const questions=[];
+for(const r of settled){
+  if(r.status!=='fulfilled')continue;
+  const m=r.value.match(/\{[\s\S]*\}/);
+  if(!m)continue;
+  try{const obj=JSON.parse(m[0]);if(obj&&obj.q&&Array.isArray(obj.o)&&typeof obj.c==='number')questions.push(obj);}catch(e){}
+}
+if(!questions.length)throw new Error('No valid questions returned (proxy may be overloaded — try again in a moment)');
 // Display for review
 let html='<div class="card" style="padding:16px">';
 html+='<div style="font-size:13px;font-weight:700;margin-bottom:8px;color:#0ea5e9">✨ Generated '+questions.length+' Questions</div>';
@@ -3251,24 +3267,40 @@ async function quizMeOnChapter(chNum,chTitle){
   if(!chapterText){
     chapterText=textbookName+" Chapter "+chNum+": "+chTitle+' (full content unavailable — generate from textbook knowledge)';
   }
-  const prompt=`You are an Israeli geriatrics board examiner writing MCQ for the שלב א׳ exam.
+  // v10.40.0 — parallel-3 single-Q pattern (mirrors generateQuestionsFromChapter).
+  // v10.39.0's single 1500-tok call took ~30s wall, hit the 30s client AbortController,
+  // surfacing as "signal is aborted without reason". Split across 3 chapter slices.
+  const slices=[chapterText.slice(0,1200),chapterText.slice(1000,2200)||chapterText.slice(0,1200),chapterText.slice(2000,3200)||chapterText.slice(0,1200)];
+  const focuses=['the opening third','the middle third','the final third'];
+  const buildPrompt=(idx)=>`You are an Israeli geriatrics board examiner writing MCQ for the שלב א׳ exam.
 
-Based on this chapter content from ${textbookName} Ch ${chNum} (${chTitle}):
-${chapterText}
+Based on ${textbookName} Ch ${chNum} (${chTitle}), focus on ${focuses[idx]}:
+${slices[idx]}
 
-Generate 3 original MCQ questions NOT already in the question bank. Each question must:
-1. Test a specific fact, threshold, or mechanism from this chapter
+Generate ONE original MCQ. The question must:
+1. Test a specific fact, threshold, or mechanism from this content
 2. Have exactly 5 answer options (A-E)
 3. Have one definitively correct answer
-4. Include a brief Hebrew explanation (2-3 sentences)
+4. Include a 2-3 sentence Hebrew explanation
 
-Return ONLY valid JSON array:
-[{"q":"question text","o":["A. opt","B. opt","C. opt","D. opt","E. opt"],"c":0,"e":"הסבר בעברית"}]
-c = 0-based index of correct answer. No markdown, no preamble.`;
+Return ONLY a single JSON object (no markdown, no preamble, no array brackets):
+{"q":"question text","o":["A. opt","B. opt","C. opt","D. opt","E. opt"],"c":0,"e":"הסבר בעברית"}
+c = 0-based index of correct answer.`;
   try{
-    const txt=await callAI([{role:'user',content:prompt}],1500,'sonnet');
-    const clean=txt.replace(/\`\`\`json|\`\`\`/g,'').trim();
-    const qs=JSON.parse(clean);
+    const settled=await Promise.allSettled([
+      callAI([{role:'user',content:buildPrompt(0)}],600,'sonnet'),
+      callAI([{role:'user',content:buildPrompt(1)}],600,'sonnet'),
+      callAI([{role:'user',content:buildPrompt(2)}],600,'sonnet')
+    ]);
+    const qs=[];
+    for(const r of settled){
+      if(r.status!=='fulfilled')continue;
+      const clean=r.value.replace(/\`\`\`json|\`\`\`/g,'').trim();
+      const m=clean.match(/\{[\s\S]*\}/);
+      if(!m)continue;
+      try{const obj=JSON.parse(m[0]);if(obj&&obj.q&&Array.isArray(obj.o)&&typeof obj.c==='number')qs.push(obj);}catch(e){}
+    }
+    if(!qs.length)throw new Error('No valid questions returned (proxy may be overloaded — try again in a moment)');
     // Display the generated questions
     let h='<div style="margin-top:16px;border-top:2px solid #7c3aed;padding-top:12px">';
     h+='<div style="font-weight:700;font-size:12px;color:#7c3aed;margin-bottom:10px">🧠 AI-Generated Questions — Ch '+sanitize(String(chNum))+': '+sanitize(chTitle)+'</div>';
@@ -5893,8 +5925,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.39.0';
+const APP_VERSION='10.40.0';
 const CHANGELOG={
+'10.40.0':[
+'⚡ Quiz / Generate Qs buttons no longer fail with "signal is aborted without reason". Real root cause: v10.39.0 cut to 3 Qs at max_tokens=1800 with the comment "fits in ~22s, well under the 25s upstream ceiling" — but the math was wrong. Sonnet 4.6 generates at ~60 tok/s, so 1800 tokens = 30s pure output time, hitting the 30s client AbortController exactly. Verified empirically: a 1500-token call to the proxy clocked at 34.7s.',
+'🔀 Switched to parallel-3 single-Q pattern (mirrors the proven scripts/eissue_via_proxy.py 6-worker / 1-Q-per-call architecture from CLAUDE.md). generateQuestionsFromChapter and quizMeOnChapter now do 3 callAI calls in parallel via Promise.allSettled, each capped at 600 tokens (~10s wall), each focused on a different chapter slice (opening / middle / final third). Wall clock ~15s, well under the 30s client timeout. Partial successes return remaining valid Qs; total failures show a "proxy may be overloaded" hint instead of a cryptic AbortError.',
+'🛡️ tests/topicIntentRouting.test.js: 4 new regression guards locking the parallel-3 architecture. Asserts (a) Promise.allSettled is used, (b) exactly 3 callAI invocations per function, (c) each call <=800 tokens. Prevents regressing back to a single big call that would re-trigger the AbortController kill.',
+],
 '10.39.0':[
 '🐛 Quiz / Generate Qs / Summary buttons broken for ALL Hazzard + Harrison chapters. Both quizMeOnChapter and aiSummarizeChapter were reading window._libData which is never assigned anywhere — chapter content was always empty in the prompt, so AI got just the chapter number/title and produced generic noise. Fix: read from the actual loaded data (_hazData / _harData) keyed by String(chNum). Source-detect from currently-open chapter (harChOpen vs hazChOpen) so summary correctly cites Harrison vs Hazzard.',
 '⏱️ Generate Qs no longer 504. Was 5 Qs at max_tokens=3000 — Sonnet 4.6 generates ~60 tok/s, so 50s wall, well past the proxy 23s ceiling. Cut to 3 Qs at max_tokens=1800 (~22s wall, fits under the new 25s upstream timeout in Toranot). Prompt also tightened — per-distractor explanation requirement removed (was the main token sink), kept correct + most-likely-distractor coverage.',

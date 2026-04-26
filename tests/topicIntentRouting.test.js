@@ -143,17 +143,59 @@ describe('v10.39.0 — chapter content reading (no more phantom _libData)', () =
   });
 });
 
-describe('v10.39.0 — Generate Qs token budget', () => {
-  test('generateQuestionsFromChapter uses max_tokens <= 2000 to fit under proxy timeout', () => {
+describe('v10.40.0 — chapter-AI parallel-3 single-Q pattern', () => {
+  // v10.39.0 used single big calls (1500–1800 max_tokens) that hit the 30s
+  // client AbortController and failed in production. v10.40.0 splits each
+  // chapter operation into 3 parallel single-Q calls @ 600 tokens.
+
+  test('generateQuestionsFromChapter uses Promise.allSettled with 3 callAI calls', () => {
     const m = html.match(/async\s+function\s+generateQuestionsFromChapter\s*\([\s\S]*?\}catch\(err\)\{/);
     expect(m).toBeTruthy();
     const body = m[0];
-    // Find the callAI invocation and the max_tokens argument.
-    // Format: callAI(messages_arg, NNNN, 'sonnet')
-    const callMatch = body.match(/callAI\s*\([^]*?,\s*(\d+)\s*,\s*['"]sonnet['"]\s*\)/);
-    expect(callMatch).toBeTruthy();
-    const maxTokens = parseInt(callMatch[1], 10);
-    expect(maxTokens).toBeGreaterThan(0);
-    expect(maxTokens).toBeLessThanOrEqual(2000); // was 3000, must stay under to fit Sonnet 4.6 in 25s
+    expect(body, 'must use Promise.allSettled to keep partial successes').toMatch(/Promise\.allSettled/);
+    const callAICount = (body.match(/callAI\s*\(/g) || []).length;
+    expect(callAICount, '3 parallel callAI invocations expected').toBe(3);
+  });
+
+  test('generateQuestionsFromChapter caps each call at 800 max_tokens', () => {
+    const m = html.match(/async\s+function\s+generateQuestionsFromChapter\s*\([\s\S]*?\}catch\(err\)\{/);
+    expect(m).toBeTruthy();
+    const calls = [...m[0].matchAll(/callAI\s*\([^]*?,\s*(\d+)\s*,\s*['"]sonnet['"]\s*\)/g)];
+    expect(calls.length).toBe(3);
+    for (const c of calls) {
+      const tok = parseInt(c[1], 10);
+      expect(tok, `each parallel call must be <=800 tok to fit under 30s client timeout, got ${tok}`).toBeLessThanOrEqual(800);
+    }
+  });
+
+  test('quizMeOnChapter uses Promise.allSettled with 3 callAI calls', () => {
+    const m = html.match(/async\s+function\s+quizMeOnChapter\s*\([\s\S]*?\n\}\n/);
+    expect(m).toBeTruthy();
+    const body = m[0];
+    expect(body, 'must use Promise.allSettled to keep partial successes').toMatch(/Promise\.allSettled/);
+    const callAICount = (body.match(/callAI\s*\(/g) || []).length;
+    expect(callAICount, '3 parallel callAI invocations expected').toBe(3);
+  });
+
+  test('quizMeOnChapter caps each call at 800 max_tokens', () => {
+    const m = html.match(/async\s+function\s+quizMeOnChapter\s*\([\s\S]*?\n\}\n/);
+    expect(m).toBeTruthy();
+    const calls = [...m[0].matchAll(/callAI\s*\([^]*?,\s*(\d+)\s*,\s*['"]sonnet['"]\s*\)/g)];
+    expect(calls.length).toBe(3);
+    for (const c of calls) {
+      const tok = parseInt(c[1], 10);
+      expect(tok, `each parallel call must be <=800 tok to fit under 30s client timeout, got ${tok}`).toBeLessThanOrEqual(800);
+    }
+  });
+});
+
+describe('v10.39.0 — Generate Qs token budget (legacy guard, kept)', () => {
+  test('generateQuestionsFromChapter never reintroduces a single >2000-tok call', () => {
+    const m = html.match(/async\s+function\s+generateQuestionsFromChapter\s*\([\s\S]*?\}catch\(err\)\{/);
+    expect(m).toBeTruthy();
+    const calls = [...m[0].matchAll(/callAI\s*\([^]*?,\s*(\d+)\s*,\s*['"]sonnet['"]\s*\)/g)];
+    for (const c of calls) {
+      expect(parseInt(c[1], 10)).toBeLessThanOrEqual(2000);
+    }
   });
 });
