@@ -1,0 +1,1500 @@
+{
+  "1": {
+    "id": "grs8-ch01",
+    "title": "Adverse Drug Events",
+    "title_he": "תופעות לוואי תרופתיות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      20,
+      253
+    ],
+    "ti": [
+      8
+    ],
+    "syllabus_topic": "Problems of polypharmacy",
+    "questions": [
+      9,
+      24,
+      246,
+      269,
+      303
+    ]
+  },
+  "2": {
+    "id": "grs8-ch02",
+    "title": "Anxiety Disorders",
+    "title_he": "הפרעות חרדה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      63,
+      255
+    ],
+    "ti": [
+      7
+    ],
+    "syllabus_topic": "Depression",
+    "questions": [
+      62,
+      173,
+      196,
+      214,
+      305
+    ]
+  },
+  "3": {
+    "id": "grs8-ch03",
+    "title": "Assessment",
+    "title_he": "הערכה גריאטרית",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      50,
+      275
+    ],
+    "ti": [
+      2
+    ],
+    "syllabus_topic": "Comprehensive geriatric assessment",
+    "questions": [
+      46,
+      72,
+      97,
+      219,
+      237,
+      249,
+      313,
+      327
+    ]
+  },
+  "4": {
+    "id": "grs8-ch04",
+    "title": "Back and Neck Pain",
+    "title_he": "כאבי גב וצוואר",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      161,
+      273
+    ],
+    "ti": [
+      14,
+      16
+    ],
+    "syllabus_topic": "Osteoarthritis, Osteoporosis",
+    "questions": [
+      189,
+      270,
+      301,
+      325
+    ]
+  },
+  "5": {
+    "id": "grs8-ch05",
+    "title": "Behavior Problems in Dementia",
+    "title_he": "הפרעות התנהגות בדמנציה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      30,
+      230
+    ],
+    "ti": [
+      6
+    ],
+    "syllabus_topic": "Dementia and cognitive impairment",
+    "questions": [
+      20,
+      28,
+      53,
+      212,
+      217,
+      245,
+      272
+    ]
+  },
+  "6": {
+    "id": "grs8-ch06",
+    "title": "Biology",
+    "title_he": "ביולוגיה של ההזדקנות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      35,
+      252
+    ],
+    "ti": [
+      0
+    ],
+    "syllabus_topic": "Biology of aging",
+    "questions": [
+      26,
+      247,
+      265,
+      266,
+      302
+    ]
+  },
+  "7": {
+    "id": "grs8-ch07",
+    "title": "Cardiovascular Diseases and Disorders",
+    "title_he": "מחלות לב וכלי דם",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      14,
+      217
+    ],
+    "ti": [
+      17
+    ],
+    "syllabus_topic": "Ischemic heart disease – peripheral vascular disease",
+    "questions": [
+      3,
+      48,
+      95,
+      108,
+      114,
+      236,
+      256
+    ]
+  },
+  "8": {
+    "id": "grs8-ch08",
+    "title": "Community-Based Care",
+    "title_he": "טיפול קהילתי",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      105,
+      244
+    ],
+    "ti": [
+      35
+    ],
+    "syllabus_topic": "Geriatrics in Israel – local aspects",
+    "questions": [
+      117,
+      119,
+      125,
+      132,
+      138,
+      178,
+      254,
+      292
+    ]
+  },
+  "9": {
+    "id": "grs8-ch09",
+    "title": "Complementary and Alternative Medicine",
+    "title_he": "רפואה משלימה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      34,
+      174
+    ],
+    "ti": [
+      8
+    ],
+    "syllabus_topic": "Quality of life",
+    "questions": [
+      25,
+      58,
+      66,
+      77,
+      189,
+      205
+    ]
+  },
+  "10": {
+    "id": "grs8-ch10",
+    "title": "Cultural Aspects of Care",
+    "title_he": "היבטים תרבותיים בטיפול",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      24,
+      266
+    ],
+    "ti": [
+      33
+    ],
+    "syllabus_topic": "Geriatrics in Israel – local aspects",
+    "questions": [
+      13,
+      18,
+      82,
+      156,
+      317
+    ]
+  },
+  "11": {
+    "id": "grs8-ch11",
+    "title": "Delirium",
+    "title_he": "דליריום",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      13,
+      270
+    ],
+    "ti": [
+      5
+    ],
+    "syllabus_topic": "Confusional states/ Delirium",
+    "questions": [
+      1,
+      32,
+      39,
+      154,
+      158,
+      293,
+      321
+    ]
+  },
+  "12": {
+    "id": "grs8-ch12",
+    "title": "Dementia",
+    "title_he": "דמנציה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      15,
+      262
+    ],
+    "ti": [
+      6
+    ],
+    "syllabus_topic": "Alzheimer and other Dementias",
+    "questions": [
+      4,
+      28,
+      110,
+      120,
+      130,
+      154,
+      217,
+      226,
+      272,
+      278,
+      283,
+      299,
+      313
+    ]
+  },
+  "13": {
+    "id": "grs8-ch13",
+    "title": "Demography",
+    "title_he": "דמוגרפיה של הזיקנה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      43,
+      230
+    ],
+    "ti": [
+      1
+    ],
+    "syllabus_topic": "Demography of aging",
+    "questions": [
+      37,
+      143,
+      179,
+      273
+    ]
+  },
+  "14": {
+    "id": "grs8-ch14",
+    "title": "Depression and Other Mood Disorders",
+    "title_he": "דיכאון והפרעות מצב רוח",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      30,
+      210
+    ],
+    "ti": [
+      7
+    ],
+    "syllabus_topic": "Depression",
+    "questions": [
+      20,
+      68,
+      72,
+      103,
+      182,
+      190,
+      235,
+      244,
+      249
+    ]
+  },
+  "15": {
+    "id": "grs8-ch15",
+    "title": "Dermatologic Diseases and Disorders",
+    "title_he": "מחלות עור",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      25,
+      221
+    ],
+    "ti": [
+      10
+    ],
+    "syllabus_topic": "Pressure sores",
+    "questions": [
+      14,
+      22,
+      65,
+      109,
+      140,
+      142,
+      262
+    ]
+  },
+  "16": {
+    "id": "grs8-ch16",
+    "title": "Diabetes Mellitus",
+    "title_he": "סוכרת",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      51,
+      263
+    ],
+    "ti": [
+      22
+    ],
+    "syllabus_topic": "Diabetes",
+    "questions": [
+      47,
+      63,
+      165,
+      208,
+      257,
+      291,
+      314
+    ]
+  },
+  "17": {
+    "id": "grs8-ch17",
+    "title": "Diseases and Disorders of the Foot",
+    "title_he": "מחלות כף הרגל",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      79,
+      251
+    ],
+    "ti": [
+      4
+    ],
+    "syllabus_topic": "Postural instability",
+    "questions": [
+      84,
+      147,
+      198,
+      241,
+      300
+    ]
+  },
+  "18": {
+    "id": "grs8-ch18",
+    "title": "Dizziness",
+    "title_he": "סחרחורת",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      76,
+      240
+    ],
+    "ti": [
+      4,
+      39
+    ],
+    "syllabus_topic": "Postural instability",
+    "questions": [
+      80,
+      99,
+      161,
+      187,
+      228,
+      243,
+      287
+    ]
+  },
+  "19": {
+    "id": "grs8-ch19",
+    "title": "Eating and Feeding Problems",
+    "title_he": "בעיות אכילה והאכלה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      62,
+      108
+    ],
+    "ti": [
+      9,
+      42
+    ],
+    "syllabus_topic": "Nutrition and enteral feeding",
+    "questions": [
+      61,
+      120
+    ]
+  },
+  "20": {
+    "id": "grs8-ch20",
+    "title": "Endocrine and Metabolic Disorders",
+    "title_he": "מחלות אנדוקריניות ומטבוליות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      42,
+      274
+    ],
+    "ti": [
+      22,
+      23
+    ],
+    "syllabus_topic": "Diabetes",
+    "questions": [
+      35,
+      43,
+      105,
+      263,
+      282,
+      326
+    ]
+  },
+  "21": {
+    "id": "grs8-ch21",
+    "title": "Falls",
+    "title_he": "נפילות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      22,
+      273
+    ],
+    "ti": [
+      4
+    ],
+    "syllabus_topic": "Falls",
+    "questions": [
+      11,
+      41,
+      132,
+      148,
+      238,
+      240,
+      281,
+      324
+    ]
+  },
+  "22": {
+    "id": "grs8-ch22",
+    "title": "Finance",
+    "title_he": "היבטים פיננסיים",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      23,
+      209
+    ],
+    "ti": [
+      33,
+      35
+    ],
+    "syllabus_topic": "Geriatrics in Israel – local aspects",
+    "questions": [
+      12,
+      17,
+      36,
+      76,
+      89,
+      141,
+      176,
+      239,
+      248
+    ]
+  },
+  "23": {
+    "id": "grs8-ch23",
+    "title": "Frailty",
+    "title_he": "שברירות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      22,
+      273
+    ],
+    "ti": [
+      3
+    ],
+    "syllabus_topic": "Frailty",
+    "questions": [
+      11,
+      54,
+      60,
+      98,
+      324
+    ]
+  },
+  "24": {
+    "id": "grs8-ch24",
+    "title": "Gait Impairment",
+    "title_he": "הפרעות הליכה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      75,
+      185
+    ],
+    "ti": [
+      4,
+      36
+    ],
+    "syllabus_topic": "Postural instability",
+    "questions": [
+      79,
+      115,
+      139,
+      152,
+      219
+    ]
+  },
+  "25": {
+    "id": "grs8-ch25",
+    "title": "Gastrointestinal Diseases and Disorders",
+    "title_he": "מחלות מערכת העיכול",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      92,
+      238
+    ],
+    "ti": [
+      12
+    ],
+    "syllabus_topic": "Constipation",
+    "questions": [
+      101,
+      155,
+      183,
+      209,
+      284
+    ]
+  },
+  "26": {
+    "id": "grs8-ch26",
+    "title": "Gynecologic Diseases and Disorders",
+    "title_he": "מחלות גינקולוגיות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      41,
+      271
+    ],
+    "ti": [
+      43
+    ],
+    "syllabus_topic": "Andropausa",
+    "questions": [
+      33,
+      38,
+      104,
+      145,
+      197,
+      322
+    ]
+  },
+  "27": {
+    "id": "grs8-ch27",
+    "title": "Hearing Impairment",
+    "title_he": "ליקוי שמיעה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      26,
+      170
+    ],
+    "ti": [
+      37
+    ],
+    "syllabus_topic": "Auditory and visual issues",
+    "questions": [
+      15,
+      23,
+      74,
+      102,
+      153,
+      200
+    ]
+  },
+  "28": {
+    "id": "grs8-ch28",
+    "title": "Heart Failure",
+    "title_he": "אי-ספיקת לב",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      91,
+      242
+    ],
+    "ti": [
+      18
+    ],
+    "syllabus_topic": "Congestive heart failure",
+    "questions": [
+      100,
+      106,
+      169,
+      227,
+      276,
+      289
+    ]
+  },
+  "29": {
+    "id": "grs8-ch29",
+    "title": "Hematologic Diseases and Disorders",
+    "title_he": "מחלות המטולוגיות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      21,
+      248
+    ],
+    "ti": [
+      25
+    ],
+    "syllabus_topic": "Anemias",
+    "questions": [
+      10,
+      86,
+      90,
+      112,
+      131,
+      224,
+      274,
+      296
+    ]
+  },
+  "30": {
+    "id": "grs8-ch30",
+    "title": "Hospital Care",
+    "title_he": "אשפוז וטיפול בבית-חולים",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      18,
+      236
+    ],
+    "ti": [
+      38,
+      45
+    ],
+    "syllabus_topic": "The geriatric team – team-work",
+    "questions": [
+      6,
+      40,
+      49,
+      88,
+      139,
+      144,
+      158,
+      250,
+      281
+    ]
+  },
+  "31": {
+    "id": "grs8-ch31",
+    "title": "Hypertension",
+    "title_he": "יתר לחץ דם",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      91,
+      276
+    ],
+    "ti": [
+      19
+    ],
+    "syllabus_topic": "Hypertension",
+    "questions": [
+      100,
+      122,
+      129,
+      316,
+      328
+    ]
+  },
+  "32": {
+    "id": "grs8-ch32",
+    "title": "Infectious Diseases",
+    "title_he": "מחלות זיהומיות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      58,
+      247
+    ],
+    "ti": [
+      27
+    ],
+    "syllabus_topic": "Infections in the elderly",
+    "questions": [
+      56,
+      93,
+      123,
+      144,
+      222,
+      231,
+      295
+    ]
+  },
+  "33": {
+    "id": "grs8-ch33",
+    "title": "Kidney Diseases",
+    "title_he": "מחלות כליה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      39,
+      272
+    ],
+    "ti": [
+      24
+    ],
+    "syllabus_topic": "Urinary tract infection – renal failure",
+    "questions": [
+      31,
+      71,
+      210,
+      264,
+      310,
+      323
+    ]
+  },
+  "34": {
+    "id": "grs8-ch34",
+    "title": "Legal and Ethical Issues",
+    "title_he": "סוגיות משפטיות ואתיות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      17,
+      268
+    ],
+    "ti": [
+      29,
+      33
+    ],
+    "syllabus_topic": "Ethics",
+    "questions": [
+      5,
+      59,
+      157,
+      212,
+      218,
+      223,
+      234,
+      251,
+      268,
+      312,
+      319
+    ]
+  },
+  "35": {
+    "id": "grs8-ch35",
+    "title": "Malnutrition",
+    "title_he": "תת-תזונה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      14,
+      277
+    ],
+    "ti": [
+      9
+    ],
+    "syllabus_topic": "Nutrition and enteral feeding",
+    "questions": [
+      2,
+      26,
+      69,
+      207,
+      282,
+      332
+    ]
+  },
+  "36": {
+    "id": "grs8-ch36",
+    "title": "Mental Retardation and Developmental Disabilities",
+    "title_he": "פיגור שכלי ומוגבלויות התפתחותיות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      73,
+      269
+    ],
+    "ti": [
+      33
+    ],
+    "syllabus_topic": "Quality of life",
+    "questions": [
+      75,
+      195,
+      312,
+      320
+    ]
+  },
+  "37": {
+    "id": "grs8-ch37",
+    "title": "Mistreatment of Older Adults",
+    "title_he": "התעללות בקשישים",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      17,
+      268
+    ],
+    "ti": [
+      30
+    ],
+    "syllabus_topic": "Ethics",
+    "questions": [
+      5,
+      202,
+      255,
+      319
+    ]
+  },
+  "38": {
+    "id": "grs8-ch38",
+    "title": "Multimorbidity",
+    "title_he": "ריבוי מחלות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      70,
+      257
+    ],
+    "ti": [
+      2
+    ],
+    "syllabus_topic": "Comprehensive geriatric assessment",
+    "questions": [
+      71,
+      259,
+      307
+    ]
+  },
+  "39": {
+    "id": "grs8-ch39",
+    "title": "Neurologic Diseases and Disorders",
+    "title_he": "מחלות נוירולוגיות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      69,
+      246
+    ],
+    "ti": [
+      20,
+      40
+    ],
+    "syllabus_topic": "Stroke and related disorders",
+    "questions": [
+      70,
+      162,
+      167,
+      180,
+      191,
+      194,
+      204,
+      294
+    ]
+  },
+  "40": {
+    "id": "grs8-ch40",
+    "title": "Nursing-Home Care",
+    "title_he": "טיפול במוסד סיעודי",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      54,
+      221
+    ],
+    "ti": [
+      35
+    ],
+    "syllabus_topic": "Geriatrics in Israel – local aspects",
+    "questions": [
+      51,
+      89,
+      172,
+      175,
+      231,
+      261
+    ]
+  },
+  "41": {
+    "id": "grs8-ch41",
+    "title": "Oncology",
+    "title_he": "אונקולוגיה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      50,
+      233
+    ],
+    "ti": [
+      26
+    ],
+    "syllabus_topic": "Quality of life",
+    "questions": [
+      46,
+      174,
+      206,
+      211,
+      271,
+      277
+    ]
+  },
+  "42": {
+    "id": "grs8-ch42",
+    "title": "Oral Diseases and Disorders",
+    "title_he": "מחלות חלל הפה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      140,
+      277
+    ],
+    "ti": [
+      42
+    ],
+    "syllabus_topic": "Dysphagia",
+    "questions": [
+      160,
+      215,
+      216,
+      229,
+      262,
+      329
+    ]
+  },
+  "43": {
+    "id": "grs8-ch43",
+    "title": "Osteoporosis",
+    "title_he": "אוסטאופורוזיס",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      37,
+      277
+    ],
+    "ti": [
+      15
+    ],
+    "syllabus_topic": "Osteoarthritis, Osteoporosis",
+    "questions": [
+      29,
+      83,
+      159,
+      163,
+      168,
+      290,
+      298,
+      311,
+      331
+    ]
+  },
+  "44": {
+    "id": "grs8-ch44",
+    "title": "Outpatient Care Systems",
+    "title_he": "מרפאות חוץ",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      85,
+      231
+    ],
+    "ti": [
+      35,
+      45
+    ],
+    "syllabus_topic": "The geriatric team – team-work",
+    "questions": [
+      91,
+      119,
+      124,
+      275
+    ]
+  },
+  "45": {
+    "id": "grs8-ch45",
+    "title": "Palliative Care",
+    "title_he": "טיפול פליאטיבי",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      28,
+      264
+    ],
+    "ti": [
+      28,
+      34
+    ],
+    "syllabus_topic": "End of life care",
+    "questions": [
+      17,
+      30,
+      52,
+      81,
+      121,
+      128,
+      137,
+      150,
+      230,
+      315
+    ]
+  },
+  "46": {
+    "id": "grs8-ch46",
+    "title": "Perioperative Care",
+    "title_he": "טיפול פריאופרטיבי",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      13,
+      270
+    ],
+    "ti": [
+      38
+    ],
+    "syllabus_topic": "Fractures",
+    "questions": [
+      1,
+      32,
+      213,
+      258,
+      259,
+      321
+    ]
+  },
+  "47": {
+    "id": "grs8-ch47",
+    "title": "Persistent Pain",
+    "title_he": "כאב כרוני",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      66,
+      277
+    ],
+    "ti": [
+      14
+    ],
+    "syllabus_topic": "End of life care",
+    "questions": [
+      66,
+      107,
+      116,
+      253,
+      283,
+      291,
+      333
+    ]
+  },
+  "48": {
+    "id": "grs8-ch48",
+    "title": "Personality and Somatoform Disorders",
+    "title_he": "הפרעות אישיות וסומטופורמיות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      67,
+      256
+    ],
+    "ti": [
+      7
+    ],
+    "syllabus_topic": "Depression",
+    "questions": [
+      67,
+      188,
+      232,
+      304,
+      306
+    ]
+  },
+  "49": {
+    "id": "grs8-ch49",
+    "title": "Pharmacotherapy",
+    "title_he": "פרמקותרפיה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      20,
+      261
+    ],
+    "ti": [
+      8
+    ],
+    "syllabus_topic": "Problems of polypharmacy",
+    "questions": [
+      8,
+      57,
+      70,
+      78,
+      127,
+      130,
+      134,
+      172,
+      203,
+      311
+    ]
+  },
+  "50": {
+    "id": "grs8-ch50",
+    "title": "Physical Activity",
+    "title_he": "פעילות גופנית",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      29,
+      267
+    ],
+    "ti": [
+      3,
+      36
+    ],
+    "syllabus_topic": "Physical activity and exercise",
+    "questions": [
+      19,
+      54,
+      149,
+      225,
+      285,
+      318
+    ]
+  },
+  "51": {
+    "id": "grs8-ch51",
+    "title": "Pressure Ulcers and Wound Care",
+    "title_he": "פצעי לחץ וטיפול בפצעים",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      41,
+      277
+    ],
+    "ti": [
+      10
+    ],
+    "syllabus_topic": "Pressure sores",
+    "questions": [
+      34,
+      44,
+      92,
+      137,
+      199,
+      330
+    ]
+  },
+  "52": {
+    "id": "grs8-ch52",
+    "title": "Prevention",
+    "title_he": "מניעה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      58,
+      187
+    ],
+    "ti": [
+      44
+    ],
+    "syllabus_topic": "Prevention and health promotion",
+    "questions": [
+      55,
+      96,
+      186,
+      220,
+      221
+    ]
+  },
+  "53": {
+    "id": "grs8-ch53",
+    "title": "Prostate Disease",
+    "title_he": "מחלות הערמונית",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      120,
+      229
+    ],
+    "ti": [
+      11,
+      26,
+      43
+    ],
+    "syllabus_topic": "Andropausa",
+    "questions": [
+      135,
+      170,
+      177,
+      185,
+      206,
+      271
+    ]
+  },
+  "54": {
+    "id": "grs8-ch54",
+    "title": "Psychotic Disorders",
+    "title_he": "הפרעות פסיכוטיות",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      80,
+      250
+    ],
+    "ti": [
+      7,
+      6
+    ],
+    "syllabus_topic": "Depression",
+    "questions": [
+      85,
+      235,
+      242,
+      299
+    ]
+  },
+  "55": {
+    "id": "grs8-ch55",
+    "title": "Rehabilitation",
+    "title_he": "שיקום",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      62,
+      173
+    ],
+    "ti": [
+      36
+    ],
+    "syllabus_topic": "Rehabilitation",
+    "questions": [
+      61,
+      191,
+      193,
+      204
+    ]
+  },
+  "56": {
+    "id": "grs8-ch56",
+    "title": "Respiratory Diseases and Disorders",
+    "title_he": "מחלות מערכת הנשימה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      18,
+      226
+    ],
+    "ti": [
+      21
+    ],
+    "syllabus_topic": "Pulmonary embolism",
+    "questions": [
+      6,
+      27,
+      94,
+      111,
+      118,
+      267
+    ]
+  },
+  "57": {
+    "id": "grs8-ch57",
+    "title": "Sexual Function Disorders",
+    "title_he": "הפרעות בתפקוד מיני",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      44,
+      129
+    ],
+    "ti": [
+      43
+    ],
+    "syllabus_topic": "Andropausa",
+    "questions": [
+      38,
+      45,
+      73,
+      146
+    ]
+  },
+  "58": {
+    "id": "grs8-ch58",
+    "title": "Sleep Problems",
+    "title_he": "בעיות שינה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      31,
+      258
+    ],
+    "ti": [
+      13
+    ],
+    "syllabus_topic": "Quality of life",
+    "questions": [
+      21,
+      111,
+      184,
+      192,
+      201,
+      308
+    ]
+  },
+  "59": {
+    "id": "grs8-ch59",
+    "title": "Syncope",
+    "title_he": "סינקופה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      53,
+      213
+    ],
+    "ti": [
+      4,
+      18,
+      39
+    ],
+    "syllabus_topic": "Postural instability",
+    "questions": [
+      50,
+      87,
+      113,
+      162,
+      194,
+      252
+    ]
+  },
+  "60": {
+    "id": "grs8-ch60",
+    "title": "Transitional Care",
+    "title_he": "טיפול מעברי",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      19,
+      244
+    ],
+    "ti": [
+      35,
+      45
+    ],
+    "syllabus_topic": "The geriatric team – team-work",
+    "questions": [
+      7,
+      64,
+      292
+    ]
+  },
+  "61": {
+    "id": "grs8-ch61",
+    "title": "Urinary Incontinence",
+    "title_he": "אי-נקיטת שתן",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      118,
+      241
+    ],
+    "ti": [
+      11
+    ],
+    "syllabus_topic": "Incontinence – urinary and fecal",
+    "questions": [
+      133,
+      164,
+      181,
+      203,
+      250,
+      288
+    ]
+  },
+  "62": {
+    "id": "grs8-ch62",
+    "title": "Visual Impairment",
+    "title_he": "ליקוי ראייה",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      113,
+      263
+    ],
+    "ti": [
+      37
+    ],
+    "syllabus_topic": "Sensory deprivation",
+    "questions": [
+      126,
+      151,
+      171,
+      260,
+      280,
+      314
+    ]
+  },
+  "63": {
+    "id": "grs8-ch63",
+    "title": "Musculoskeletal Diseases and Disorders",
+    "title_he": "מחלות שלד-שריר",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      27,
+      249
+    ],
+    "ti": [
+      16,
+      15
+    ],
+    "syllabus_topic": "Osteoarthritis, Osteoporosis",
+    "questions": [
+      16,
+      42,
+      66,
+      233,
+      258,
+      297
+    ]
+  },
+  "64": {
+    "id": "grs8-ch64",
+    "title": "Parkinson Disease",
+    "title_he": "מחלת פרקינסון",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      69,
+      173
+    ],
+    "ti": [
+      40
+    ],
+    "syllabus_topic": "Parkinson’s disease and Extrapyramidal syndrome",
+    "questions": [
+      70,
+      162,
+      167,
+      191,
+      204
+    ]
+  },
+  "65": {
+    "id": "grs8-ch65",
+    "title": "Cardiac Arrhythmias",
+    "title_he": "הפרעות קצב לב",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      14,
+      200
+    ],
+    "ti": [
+      41
+    ],
+    "syllabus_topic": "Arrhythmia",
+    "questions": [
+      3,
+      95,
+      108,
+      114,
+      236
+    ]
+  },
+  "66": {
+    "id": "grs8-ch66",
+    "title": "Sarcopenia and Muscle Loss",
+    "title_he": "סרקופניה ואיבוד מסת שריר",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      57,
+      90
+    ],
+    "ti": [
+      3
+    ],
+    "syllabus_topic": "Sarcopenia",
+    "questions": [
+      54,
+      60,
+      98
+    ]
+  },
+  "67": {
+    "id": "grs8-ch67",
+    "title": "Hypothermia and Thermoregulation",
+    "title_he": "היפותרמיה וויסות חום",
+    "part": "grs8_part01.pdf",
+    "pages": [
+      222,
+      274
+    ],
+    "ti": [
+      39
+    ],
+    "syllabus_topic": "Hypothermia",
+    "questions": [
+      263,
+      282,
+      326
+    ]
+  }
+}
