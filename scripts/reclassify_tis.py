@@ -60,15 +60,35 @@ CORRECT ANSWER: option {c}
 EXPLANATION (if any):
 {e}
 
+CURRENT PRIMARY TAG: index {current_ti} = "{current_primary}"
+
 THE 46 TOPICS (use these exact indices):
 {topics}
 
-TASK: Assign 1-3 topics from the list above, RANKED by relevance:
-- Primary topic (most central — what the Q tests).
-- Secondary topic (clearly relevant supporting concept). Optional.
-- Tertiary topic (mentioned but peripheral). Optional.
+TASK: Assign 1-3 topics from the list above, RANKED by relevance.
 
-DO NOT pick topics that are merely mentioned in passing. The primary MUST be the central concept being tested. If a Q tests delirium-in-anemia-on-warfarin, primary=Delirium, secondary=Anemia, tertiary=Polypharmacy. If a Q just mentions a CBC value while testing dementia management, primary=Dementia, NO Anemia tag.
+PRIMARY-TAG RULE (IMPORTANT — read carefully):
+- DEFAULT to keeping the current primary tag ({current_ti}).
+- ONLY change the primary if the current tag is CLEARLY WRONG: mistagged, off-topic, or strictly less central than another option.
+- "It could also be X" or "X is also relevant" is NOT enough to flip — add X as secondary instead.
+- When in doubt, KEEP the existing primary and put the alternative as secondary.
+
+SECONDARY / TERTIARY (0-2 extras):
+- Add only topics CLEARLY relevant to what the Q tests.
+- DO NOT pick topics merely mentioned in passing.
+- Example: A Q testing delirium-in-anemia-on-warfarin → primary=Delirium, secondary=Anemia, tertiary=Polypharmacy.
+- Example: A Q testing dementia management that mentions a CBC value → primary=Dementia, NO Anemia tag.
+
+TAXONOMY GUARDRAILS (do NOT confuse these):
+- Parathyroid disease (hyperPTH / hypoPTH / Ca-PTH disorders) is NOT "Thyroid" (23). Best fit: CKD (24) or Osteoporosis (15), or keep current.
+- Neuromuscular / non-PD movement disorders (myasthenia, ALS, dystonia, GBS) are NOT "Geri EM" (39). Keep current primary unless clearly wrong.
+- Generic obesity / BMI risk-factor Qs → "Nutrition" (9) or "Prevention" (44), NOT "Incontinence" (11).
+- "Polypharmacy" (8) is primary ONLY when the Q TESTS med management / Beers / interactions — not merely when a med list appears.
+- "Geri EM" (39) is for true ED / acute-presentation Qs about ED workflow, NOT any acute illness.
+- Post-stroke depression Qs → primary=Depression (7), secondary=Stroke (20).
+- Driving + epilepsy/dementia Qs → primary=Driving (31).
+- "Demography" (1) is ONLY for Qs that TEST population-level statistics, longevity trends, gender-gap epidemiology, or healthcare-utilization data. A clinical scenario that merely mentions a patient's nationality, ethnicity, or country of origin (e.g., "78yo Russian man with falls", "Japanese woman with osteoporosis") is NOT Demography — pick the clinical primary (Falls, Frailty, Substance Use, etc.). Demography requires the QUESTION STEM ITSELF to test population data.
+- Vasculitis / GCA / temporal arteritis / PMR / rheumatologic FUO are NOT "Infections" (27). Even if the workup includes cultures or fever-of-unknown-origin framing, if the ANSWER is temporal artery biopsy, steroids for GCA/PMR, or any vasculitis diagnosis, choose primary = Pain (14) for PMR/GCA pain presentations, or Anemia (25) when the lead-in is anemia of chronic disease, or Biology of Aging (0) as fallback. Negative cultures + elevated ESR + headache/jaw claudication/visual symptoms in a 70+ patient → vasculitis, NOT infection. The taxonomy has no dedicated rheumatology bucket; Infections is wrong for these.
 
 OUTPUT: a single JSON array of 1-3 integer indices (0-45), no markdown, no preamble, no explanation.
 Examples:
@@ -83,7 +103,7 @@ MAX_RETRIES = 2
 
 def call_proxy(prompt: str) -> str:
     body = json.dumps({
-        "model": "sonnet",
+        "model": "opus",
         "max_tokens": 60,
         "messages": [{"role": "user", "content": prompt}],
     }).encode()
@@ -143,14 +163,17 @@ def classify_one(idx: int, q: dict) -> tuple[int, list[int], int | None]:
     """Returns (idx, tis_list, original_ti). On hard error, falls back to [original_ti]."""
     options = q.get("o") or []
     opts_block = "\n".join(f"  {i}. {o}" for i, o in enumerate(options))
+    fallback = q.get("ti", 0)
+    current_primary = TOPICS_46[fallback] if 0 <= fallback < len(TOPICS_46) else "(unknown)"
     prompt = PROMPT_TEMPLATE.format(
         q=(q.get("q") or "").strip()[:1500],
         opts=opts_block[:1200],
         c=q.get("c"),
         e=(q.get("e") or "")[:600],
         topics=TOPIC_LIST_BLOCK,
+        current_ti=fallback,
+        current_primary=current_primary,
     )
-    fallback = q.get("ti", 0)
     try:
         text = call_proxy(prompt)
         return (idx, parse_tis(text, fallback), fallback)
