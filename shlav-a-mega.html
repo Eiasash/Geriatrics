@@ -5638,8 +5638,15 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.36.3';
+const APP_VERSION='10.37.0';
 const CHANGELOG={
+'10.37.0':[
+'🎯 ייבוא סלקטיבי GRS8 Book 3: +77 שאלות חדשות מ-14 פרקים מרכזיים (הפרעות התנהגות בדמנציה, טיפול קהילתי, דליריום, דמנציה, נפילות, שבריריות, אי-ספיקת לב, מחלות זיהומיות, תת-תזונה, אוסטאופורוזיס, פרמקותרפיה, פצעי לחץ, אי-נקיטת שתן, טיפול פריאופרטיבי).',
+'📈 GRS8 import progress: 13/333 → 90/333 (27% from 4%). יישארו ~243 שאלות ב-53 פרקים נוספים לסבב הבא.',
+'🤖 הסברים בעברית נוצרו דרך toranot proxy עם 6 workers, 1 שאלה לקריאה, model=sonnet, ~233s wall time. 77/77 הסברים עברו ולידציה (עברית≥40%, אורך 200-700, ללא markdown או חיצי Unicode).',
+'✅ tests/regressionGuards.test.js עודכן: total Q count lock 3756→3833. tests/grs8ChapterCoverage.test.js (lock C) ממשיך לעבוד עם ≥13 → 90 שאלות t=GRS8.',
+'📚 Library → 📙 GRS8: כעת ב-14 פרקי-יעד רוב/כל השאלות מוצגות כקלפי "in bank · Drill this" עם תצוגה מקדימה של ה-stem ולחצן ניסוי, ב-53 הפרקים הנותרים השאלות נשארות placeholders עם anchor ל-PDF הספר.',
+],
 '10.36.3':[
 '📝 GRS8 reading view rebuild: chapters now list their actual GRS8 Book 3 question numbers (e.g., Behavior Problems = Qs 20, 28, 53, 212, 217, 245, 272). Bank-imported Qs (13 total) render inline with stem preview + drill button. Not-yet-imported Qs show as placeholders with per-Q PDF page anchors derived from data/grs8_question_pages.json (333 ANSWER-marker page anchors). Replaces the previous chapter-range "Open PDF at Page N" anchor which was unreliable on Android Chrome.',
 ],
