@@ -3057,15 +3057,20 @@ async function aiSummarizeChapter(chNum,chTitle){
   const box=document.getElementById('quiz-me-box');
   if(!box)return;
   box.innerHTML='<div style="text-align:center;padding:16px;color:rgb(var(--fg2))">⏳ מסכם את הפרק...</div>';
+  // v10.39.0 fix — was reading window._libData which is never assigned.
+  // Source-detect from currently-open chapter: harChOpen vs hazChOpen.
+  const isHarrison=(typeof harChOpen!=='undefined'&&harChOpen!==null&&String(harChOpen)===String(chNum));
+  const dataMap=isHarrison?_harData:_hazData;
+  const textbookName=isHarrison?"Harrison's Principles of Internal Medicine, 22e":"Hazzard's Geriatric Medicine, 8e";
   let chText='';
-  if(window._libData){
-    const ch=window._libData.chapters.find(c=>c.ch===chNum);
-    if(ch&&ch.sections)chText=ch.sections.slice(0,8).map(s=>s.title+(s.content?': '+s.content.slice(0,300):'')).join('\n').slice(0,3500);
+  if(dataMap&&dataMap[String(chNum)]){
+    const ch=dataMap[String(chNum)];
+    if(ch&&Array.isArray(ch.sections))chText=ch.sections.slice(0,8).map(s=>(s.title||'')+(Array.isArray(s.content)?': '+s.content.join(' ').slice(0,300):s.content?': '+String(s.content).slice(0,300):'')).join('\n').slice(0,3500);
   }
-  const prompt=`You are summarizing Hazzard's Geriatric Medicine Ch ${chNum}: ${chTitle} for the Israeli geriatrics board exam (שלב א׳).
+  const prompt=`You are summarizing ${textbookName} Ch ${chNum}: ${chTitle} for the Israeli geriatrics board exam (שלב א׳).
 
 Chapter content:
-${chText||'Chapter '+chNum+': '+chTitle}
+${chText||'Chapter '+chNum+': '+chTitle+' (full content unavailable — answer from textbook knowledge)'}
 
 Create a board-focused summary in HEBREW with:
 1. 5-7 key facts/thresholds the examiner will test (specific numbers, criteria)
@@ -3088,25 +3093,33 @@ Format as clean bullet points. Be concise and high-yield.`;
 async function generateQuestionsFromChapter(source,chNum,chTitle){
 const box=document.getElementById('quiz-me-box');
 if(!box)return;
-box.innerHTML='<div class="card" style="padding:16px;text-align:center"><div style="font-size:12px;color:#0ea5e9">✨ Generating board-style questions from Ch '+sanitize(chNum)+'...</div><div style="font-size:10px;color:rgb(var(--fg3));margin-top:4px">This takes 15-20 seconds</div></div>';
+box.innerHTML='<div class="card" style="padding:16px;text-align:center"><div style="font-size:12px;color:#0ea5e9">✨ Generating board-style questions from Ch '+sanitize(chNum)+'...</div><div style="font-size:10px;color:rgb(var(--fg3));margin-top:4px">~15s</div></div>';
 const chData=source==='haz'?(_hazData&&_hazData[String(chNum)]):(_harData&&_harData[String(chNum)]);
-if(!chData){box.innerHTML='<div class="card" style="padding:16px;color:#dc2626">Chapter data not loaded</div>';return;}
-const excerpt=chData.sections.slice(0,5).map(s=>s.content.join(' ').slice(0,800)).join('\n');
-const prompt=`Based on this geriatrics/medicine chapter content, generate exactly 5 board-style multiple-choice questions.
+if(!chData){box.innerHTML='<div class="card" style="padding:16px;color:#dc2626">Chapter data not loaded — open the chapter first</div>';return;}
+// v10.39.0 — defensive: section.content can be string OR array depending on parser
+const excerpt=(chData.sections||[]).slice(0,5).map(function(s){
+  const c=s.content;
+  return (Array.isArray(c)?c.join(' '):String(c||'')).slice(0,800);
+}).join('\n');
+const textbookName=source==='haz'?"Hazzard's 8e":"Harrison's 22e";
+// v10.39.0 — was 5 Qs at 3000 max_tokens which routinely 504'd at the proxy
+// timeout (Sonnet 4.6 generates at ~60 tok/s → 50s wall). Cut to 3 Qs/1800
+// tokens which fits in ~22s, well under the new 25s upstream ceiling.
+const prompt=`Based on this ${textbookName} chapter, generate exactly 3 board-style MCQ for the Israeli geriatrics שלב א׳ exam.
 
 Chapter: ${chTitle}
-Content excerpt:
+Content:
 ${excerpt.slice(0,3000)}
 
-Return ONLY valid JSON array, no markdown. Each question must have:
-- q: question text (Hebrew or English, clinical vignette style)
-- o: array of exactly 4 options
-- c: correct answer index (0-3)
-- e: explanation including why correct answer is right AND why each wrong option is wrong (per-distractor)
+Return ONLY a JSON array (no markdown, no preamble). Each question:
+- q: clinical vignette stem (Hebrew preferred)
+- o: 4 options
+- c: correct index (0-3)
+- e: 2-3 sentence Hebrew explanation covering the correct answer + the most likely distractor
 
-Format: [{"q":"...","o":["A","B","C","D"],"c":0,"e":"..."},...]`;
+Format: [{"q":"...","o":["A","B","C","D"],"c":0,"e":"..."}]`;
 try{
-const text=await callAI([{role:'user',content:prompt}],3000,'sonnet');
+const text=await callAI([{role:'user',content:prompt}],1800,'sonnet');
 // Parse JSON from response
 const jsonMatch=text.match(/\[\s*\{[\s\S]*\}\s*\]/);
 if(!jsonMatch)throw new Error('No JSON array found in response');
@@ -3223,20 +3236,24 @@ async function quizMeOnChapter(chNum,chTitle){
   // Show loading state in Library
   const el=document.getElementById('quiz-me-box');
   if(el){el.innerHTML='<div style="text-align:center;padding:20px;color:rgb(var(--fg2))">⏳ Generating questions from Ch '+sanitize(chNum)+'...</div>';}
-  // Get chapter text from already-loaded data
+  // v10.39.0 fix — was reading window._libData which is never assigned.
+  // Source-detect from currently-open chapter: harChOpen vs hazChOpen.
+  const isHarrison=(typeof harChOpen!=='undefined'&&harChOpen!==null&&String(harChOpen)===String(chNum));
+  const dataMap=isHarrison?_harData:_hazData;
+  const textbookName=isHarrison?"Harrison's Principles of Internal Medicine, 22e":"Hazzard's Geriatric Medicine, 8e";
   let chapterText='';
-  if(window._libData&&window._libData.chapters){
-    const ch=window._libData.chapters.find(c=>c.ch===chNum);
-    if(ch&&ch.sections){
-      chapterText=ch.sections.slice(0,6).map(s=>s.title+': '+s.content).join('\n').slice(0,3000);
+  if(dataMap&&dataMap[String(chNum)]){
+    const ch=dataMap[String(chNum)];
+    if(ch&&Array.isArray(ch.sections)){
+      chapterText=ch.sections.slice(0,6).map(s=>(s.title||'')+': '+(Array.isArray(s.content)?s.content.join(' '):String(s.content||''))).join('\n').slice(0,3000);
     }
   }
   if(!chapterText){
-    chapterText="Hazzard's Geriatric Medicine Chapter "+chNum+": "+chTitle;
+    chapterText=textbookName+" Chapter "+chNum+": "+chTitle+' (full content unavailable — generate from textbook knowledge)';
   }
   const prompt=`You are an Israeli geriatrics board examiner writing MCQ for the שלב א׳ exam.
 
-Based on this chapter content from Hazzard's Geriatric Medicine Ch ${chNum} (${chTitle}):
+Based on this chapter content from ${textbookName} Ch ${chNum} (${chTitle}):
 ${chapterText}
 
 Generate 3 original MCQ questions NOT already in the question bank. Each question must:
@@ -3249,7 +3266,7 @@ Return ONLY valid JSON array:
 [{"q":"question text","o":["A. opt","B. opt","C. opt","D. opt","E. opt"],"c":0,"e":"הסבר בעברית"}]
 c = 0-based index of correct answer. No markdown, no preamble.`;
   try{
-    const txt=await callAI([{role:'user',content:prompt}],1200,'sonnet');
+    const txt=await callAI([{role:'user',content:prompt}],1500,'sonnet');
     const clean=txt.replace(/\`\`\`json|\`\`\`/g,'').trim();
     const qs=JSON.parse(clean);
     // Display the generated questions
@@ -5340,12 +5357,104 @@ save();render();
 }
 
 // ===== AI CHAT =====
+// v10.39.0 — natural-language topic aliases. The IMA syllabus splits hematology
+// across "Anemia" (idx 25) and "Cancer" (idx 26), so when a user asks for
+// "hematology questions" they hit zero direct matches. Same for "cardiology",
+// "neurology" etc. — those are clinical groupings, not single topics.
+// Maps user-typed keywords (Hebrew or English, lowercased) to TOPICS indices.
+// Order in array = priority for the primary-route case.
+const TOPIC_ALIASES={
+'hematology':[25,26],'hema':[25,26],'blood':[25],'המטולוגיה':[25,26],'דם':[25],
+'oncology':[26],'cancer':[26],'tumor':[26],'אונקולוגיה':[26],'סרטן':[26],
+'cardiology':[18,17,19,41],'cardiac':[18,17,19,41],'cardio':[18,17,19,41],'heart':[18,17],'קרדיולוגיה':[18,17,19,41],'לב':[18,17],
+'arrhythmia':[41],'afib':[41],'atrial fibrillation':[41],'הפרעות קצב':[41],
+'hypertension':[19],'htn':[19],'יתר לחץ דם':[19],
+'heart failure':[18],'chf':[18],'hf':[18],'אי ספיקת לב':[18],
+'nephrology':[24],'kidney':[24],'renal':[24],'ckd':[24],'נפרולוגיה':[24],'כליה':[24],'אי ספיקת כליות':[24],
+'endocrine':[22,23],'endocrinology':[22,23],'אנדוקרינולוגיה':[22,23],
+'diabetes':[22],'dm':[22],'סוכרת':[22],
+'thyroid':[23],'בלוטת התריס':[23],
+'neurology':[6,5,20,40,7],'neuro':[6,5,20,40],'brain':[6,20],'נוירולוגיה':[6,5,20,40],
+'dementia':[6],'alzheimer':[6],'cognitive':[6],'דמנציה':[6],'אלצהיימר':[6],
+'delirium':[5],'confusion':[5],'דליריום':[5],'בלבול':[5],
+'stroke':[20],'cva':[20],'tia':[20],'שבץ':[20],
+'parkinson':[40],'parkinsons':[40],'extrapyramidal':[40],'פרקינסון':[40],
+'depression':[7],'mood':[7],'דכאון':[7],
+'pulmonary':[21],'pulm':[21],'lung':[21],'copd':[21],'ריאות':[21],
+'gi':[12,42],'gastro':[12,42],'gastroenterology':[12,42],'מערכת העיכול':[12,42],
+'constipation':[12],'עצירות':[12],
+'dysphagia':[42],'swallowing':[42],'בליעה':[42],'דיספגיה':[42],
+'urology':[11],'urinary':[11],'incontinence':[11],'אורולוגיה':[11],'אי נקיטת שתן':[11],
+'rheumatology':[16,15],'rheum':[16,15],'arthritis':[16],'oa':[16],'osteoarthritis':[16],'דלקת מפרקים':[16],
+'orthopedic':[15,16,4],'ortho':[15,16,4],'bone':[15],'osteoporosis':[15],'אוסטאופורוזיס':[15],
+'fall':[4],'falls':[4],'gait':[4],'נפילות':[4],
+'frailty':[3],'frail':[3],'sarcopenia':[3],'שבריריות':[3],
+'cga':[2],'comprehensive geriatric assessment':[2],'הערכה גריאטרית':[2],
+'pharm':[8],'pharmacology':[8],'polypharmacy':[8],'beers':[8],'stopp':[8],'start':[8],'רוקחות':[8],'פרמקולוגיה':[8],'פוליפרמסיה':[8],
+'pain':[14],'analgesia':[14],'כאב':[14],
+'sleep':[13],'insomnia':[13],'שינה':[13],
+'nutrition':[9],'malnutrition':[9],'תזונה':[9],
+'pressure':[10],'pressure ulcer':[10],'pressure injury':[10],'bedsore':[10],'פצעי לחץ':[10],
+'infection':[27],'infectious':[27],'id':[27],'uti':[27],'pneumonia':[27],'זיהום':[27],'דלקות':[27],
+'palliative':[28],'eol':[28],'end of life':[28],'hospice':[28],'פליאטיבי':[28],'סוף החיים':[28],
+'ethics':[29],'אתיקה':[29],
+'abuse':[30],'elder abuse':[30],'התעללות':[30],
+'driving':[31],'drive':[31],'נהיגה':[31],
+'guardianship':[32],'אפוטרופוס':[32],
+'rights':[33],'patient rights':[33],'זכויות':[33],
+'advance':[34],'directive':[34],'living will':[34],'הנחיות מקדימות':[34],'ייפוי כוח מתמשך':[34],
+'ltc':[35],'long term care':[35],'community':[35],'סיעוד':[35],'קהילה':[35],
+'rehab':[36],'rehabilitation':[36],'שיקום':[36],
+'sensory':[37],'vision':[37],'hearing':[37],'eye':[37],'ראייה':[37],'שמיעה':[37],
+'periop':[38],'perioperative':[38],'surgery':[38],'preop':[38],'פריאופרטיבי':[38],
+'emergency':[39],'er':[39],'ed':[39],'חירום':[39],'מיון':[39],
+};
+
+// Resolve a user message (typed in chat) to a topic index list.
+// Returns null if no alias and no exact-topic-name match found.
+function resolveTopicFromText(text){
+  if(!text)return null;
+  const lower=String(text).toLowerCase();
+  // Pass 1 — direct alias hit (longest-keyword-first to avoid "id" matching inside "incontinence")
+  const keys=Object.keys(TOPIC_ALIASES).sort(function(a,b){return b.length-a.length;});
+  for(let i=0;i<keys.length;i++){
+    const k=keys[i];
+    // Word boundary for English keys (avoid "ed" in "delirium"); substring for Hebrew
+    const isHebrew=/[\u0590-\u05FF]/.test(k);
+    const hit=isHebrew?lower.indexOf(k.toLowerCase())>=0:new RegExp('\\b'+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i').test(lower);
+    if(hit)return{tis:TOPIC_ALIASES[k],matched:k};
+  }
+  // Pass 2 — exact TOPICS name match
+  for(let ti=0;ti<TOPICS.length;ti++){
+    const tname=String(TOPICS[ti]||'').toLowerCase();
+    if(tname&&lower.indexOf(tname)>=0)return{tis:[ti],matched:TOPICS[ti]};
+  }
+  return null;
+}
+
+// Detect "give me X questions / make X questions / quiz me on X" patterns
+// across Hebrew + English. Returns the topic-relevant fragment, or null.
+function detectQuizIntent(text){
+  if(!text)return null;
+  const t=String(text).trim();
+  // English patterns
+  const enPat=/^(?:make|give|generate|show|quiz|test|drill|practice)\s+(?:me\s+)?(?:some\s+|a\s+few\s+|more\s+)?(.+?)(?:\s+(?:questions?|qs?|mcq|mcqs|quiz|practice|drill))?\s*[?.!]?$/i;
+  // Hebrew patterns: תן לי X / תייצר X / שאלות על X / תרגל אותי על X / תבחן אותי על X
+  const hePat=/(?:תן\s*לי|תייצר|תרגל\s*אותי|תבחן\s*אותי|בחן\s*אותי|אני\s*רוצה)?\s*(?:שאלות|מבחן|תרגול)?\s*(?:על|ב|של)\s+(.+?)\s*[?.!]?$/;
+  const m=t.match(enPat)||t.match(hePat);
+  if(m&&m[1])return m[1].trim();
+  // Bare topic — "hematology", "frailty", "cga" — also counts as intent if it matches a known alias
+  if(t.length<=40&&t.split(/\s+/).length<=4&&resolveTopicFromText(t))return t;
+  return null;
+}
+
 const CHAT_STARTERS=[
+'תרגל אותי על המטולוגיה',
+'תן לי שאלות על נפילות',
 'מה ההבדל בין דמנציה לדליריום?',
 'תסביר על תסמונת השברירות (frailty)',
 'מה כולל הערכה גריאטרית מקיפה?',
 'תרופות שיש להימנע מהן בקשישים (Beers)',
-'מה הגישה לנפילות בקשיש?',
 ];
 const CHAT_SYSTEM="You are a senior geriatrician and mentor at Shaare Zedek Medical Center in Jerusalem. The user is a geriatrics fellow preparing for their shlav-aleph (board) exam (P005-2026). Answer in the same language as the question (Hebrew or English). Be concise, clinically precise. Focus on Hazzard's 8e, Harrison's 22e, Beers criteria, STOPP/START, CGA, FRAX, and exam-relevant guidelines.";
 let chatLoading=false;
@@ -5522,6 +5631,35 @@ const input=document.getElementById('chat-input');
 const text=(input?input.value:'').trim();
 if(!text||chatLoading)return;
 S.chat.push({role:'user',text:text});
+// v10.39.0 — quiz intent detection. "make me hematology questions" no longer
+// gets sent to Claude (slow, AI-generated, untracked). Instead: parse the topic,
+// jump straight into the topic-filtered quiz from the existing 3,800+ Q bank.
+// This fixes "I asked for hematology and got anticoagulants" — that was the
+// chat doing free-text generation with no awareness of the bank's topic schema.
+const _intent=detectQuizIntent(text);
+const _topic=_intent?resolveTopicFromText(_intent):null;
+if(_topic&&_topic.tis&&_topic.tis.length){
+  const tis=_topic.tis;
+  const primary=tis[0];
+  const counts=tis.map(function(ti){return{ti:ti,n:QZ.filter(function(q){return q.ti===ti;}).length};});
+  const total=counts.reduce(function(a,c){return a+c.n;},0);
+  if(total>0){
+    const tnames=counts.filter(function(c){return c.n>0;}).map(function(c){return TOPICS[c.ti]+' ('+c.n+')';}).join(' · ');
+    const reply='✅ "'+_topic.matched+'" → '+tnames+'\n\nטוען '+counts.find(function(c){return c.ti===primary;}).n+' שאלות מ-'+TOPICS[primary]+'.';
+    S.chat.push({role:'assistant',text:reply});
+    save();render();
+    // Defer the actual jump so user sees the chat reply first
+    setTimeout(function(){
+      try{setTopicFilt(primary);tab='quiz';render();}catch(e){console.warn('topic route failed',e);}
+    },400);
+    return;
+  }else{
+    // Topic resolved but bank has 0 Qs in those buckets — fall through to AI chat
+    S.chat.push({role:'assistant',text:'⚠️ זיהיתי "'+_topic.matched+'" אבל אין שאלות בנושאים '+tis.map(function(ti){return TOPICS[ti];}).join(', ')+' בבנק. ממשיך כצ\'אט רגיל.'});
+    save();render();
+    // continue to AI chat below
+  }
+}
 chatLoading=true;save();render();
 setTimeout(function(){const el=document.getElementById('chat-msgs');if(el)el.scrollTop=el.scrollHeight;},50);
 let history=S.chat.slice(-10);
@@ -5755,8 +5893,15 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.38.4';
+const APP_VERSION='10.39.0';
 const CHANGELOG={
+'10.39.0':[
+'🐛 Quiz / Generate Qs / Summary buttons broken for ALL Hazzard + Harrison chapters. Both quizMeOnChapter and aiSummarizeChapter were reading window._libData which is never assigned anywhere — chapter content was always empty in the prompt, so AI got just the chapter number/title and produced generic noise. Fix: read from the actual loaded data (_hazData / _harData) keyed by String(chNum). Source-detect from currently-open chapter (harChOpen vs hazChOpen) so summary correctly cites Harrison vs Hazzard.',
+'⏱️ Generate Qs no longer 504. Was 5 Qs at max_tokens=3000 — Sonnet 4.6 generates ~60 tok/s, so 50s wall, well past the proxy 23s ceiling. Cut to 3 Qs at max_tokens=1800 (~22s wall, fits under the new 25s upstream timeout in Toranot). Prompt also tightened — per-distractor explanation requirement removed (was the main token sink), kept correct + most-likely-distractor coverage.',
+'💬 AI Chat — natural-language quiz routing. "תרגל אותי על המטולוגיה" / "make me hematology questions" no longer goes to Claude (slow, hallucinated, untracked). Now: detectQuizIntent parses the topic, resolveTopicFromText maps it to TOPICS indices via TOPIC_ALIASES (60+ Hebrew + English keys covering all 43 IMA-syllabus topics), and the chat replies with the bucket counts then jumps straight into a topic-filtered drill from the actual 3,800+ Q bank. Hematology → Anemia (primary) + Cancer (secondary) — fixes "I asked for hematology and got anticoagulant questions".',
+'🔧 Toranot proxy timeouts bumped: 20→24s default, 23→25s long. Long-generation threshold lowered max_tokens >= 2000 → >= 600 so chat (1024) and summary (800) also get the longer timeout. The old 2000 cutoff was letting chat 504 even though it is the most user-visible path.',
+'📚 Topic alias map (TOPIC_ALIASES): hematology, oncology, cardiology, nephrology, endocrine, neurology, pulmonary, GI, urology, rheumatology, ortho, ID, palliative, ethics, legal — and Hebrew equivalents. Routes natural-language to the syllabus-defined TOPICS bucket so users do not need to know the bank schema.',
+],
 '10.38.4':[
 '🐛 Hazzard/Harrison Quiz/Generate Qs/Summary buttons crashed silently (ReferenceError: ch is not defined). 6 onclick handlers (3 per reader) referenced ch.title as bare JS, but ch was a const local of the function that built the HTML. At click time the handler ran in global scope where ch did not exist. The "Quiz", "Generate Qs" and "Summary" buttons all silently failed when tapped.',
 '🛡️ Fix: substitute the title at template-build time with two-layer encoding — JSON.stringify for the JS-string-literal layer, sanitize() for the HTML-attribute layer. Pattern: onclick="fn(${sanitize(JSON.stringify(ch.title))})". Verified end-to-end with Hebrew titles, embedded quotes, and apostrophes (Alzheimer\'s, Crohn\'s, Parkinson\'s).',
