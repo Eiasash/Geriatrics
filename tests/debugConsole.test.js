@@ -23,9 +23,9 @@ describe('debug console (v10.38.1)', () => {
     expect(html).toMatch(/__debug_activator/);
   });
 
-  it('alternate activation paths exist (v10.38.2): URL ?debug=1, sessionStorage flag, Ctrl+Shift+D', () => {
+  it('alternate activation paths exist (v10.38.2): URL ?debug=1, LocalStorage flag, Ctrl+Shift+D', () => {
     expect(html).toMatch(/\[\?&\]debug=1/);
-    expect(html).toMatch(/sessionStorage\.(getItem|setItem)\(['"]__dbg_seen['"]/);
+    expect(html).toMatch(/LocalStorage\.(getItem|setItem)\(['"]__dbg_seen['"]/);
     expect(html).toMatch(/e\.ctrlKey\s*&&\s*e\.shiftKey/);
   });
 
