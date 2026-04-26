@@ -411,6 +411,93 @@ body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg))
 </style>
 
 <script>
+// === DEBUG CONSOLE === (tap top-right corner 5x within 3s; window.__debug.show() to open manually)
+(function initDebugConsole(){
+var APP_NAME='Shlav A Mega';
+var MAX_LOGS=200, MAX_ERRORS=50, MAX_NETWORK=100, MAX_ACTIONS=100;
+var buffer={logs:[],errors:[],network:[],actions:[]};
+function ts(){return new Date().toISOString().slice(11,23);}
+function clip(arr,max){if(arr.length>max)arr.shift();}
+function safeStr(a){if(a===undefined)return 'undefined';if(a===null)return 'null';if(typeof a==='string')return a;if(a instanceof Error)return a.message+(a.stack?'\n'+a.stack.slice(0,500):'');try{return JSON.stringify(a).slice(0,500);}catch(e){return String(a);}}
+var origConsole={};
+['log','info','warn','error','debug'].forEach(function(lvl){
+origConsole[lvl]=console[lvl].bind(console);
+console[lvl]=function(){var args=Array.prototype.slice.call(arguments);try{buffer.logs.push({ts:ts(),level:lvl,msg:args.map(safeStr).join(' ')});clip(buffer.logs,MAX_LOGS);}catch(e){}return origConsole[lvl].apply(console,args);};
+});
+window.addEventListener('error',function(e){buffer.errors.push({ts:ts(),msg:e.message||String(e),file:e.filename||'?',line:e.lineno||0,col:e.colno||0,stack:(e.error&&e.error.stack)||'(no stack)'});clip(buffer.errors,MAX_ERRORS);});
+window.addEventListener('unhandledrejection',function(e){var r=e.reason;buffer.errors.push({ts:ts(),msg:'UnhandledRejection: '+((r&&r.message)||String(r)),stack:(r&&r.stack)||'(no stack)'});clip(buffer.errors,MAX_ERRORS);});
+var origFetch=window.fetch;
+if(origFetch){window.fetch=function(url,opts){var t0=performance.now();var u=typeof url==='string'?url:(url&&url.url)||'?';return origFetch.apply(this,arguments).then(function(r){buffer.network.push({ts:ts(),url:u,status:r.status,ms:Math.round(performance.now()-t0),ok:r.ok});clip(buffer.network,MAX_NETWORK);return r;},function(err){buffer.network.push({ts:ts(),url:u,status:0,ms:Math.round(performance.now()-t0),error:err.message||String(err)});clip(buffer.network,MAX_NETWORK);throw err;});};}
+document.addEventListener('click',function(e){var t=e.target;if(!t||!t.tagName)return;var label='';if(t.id)label='#'+t.id;else if(t.className&&typeof t.className==='string')label='.'+t.className.split(/\s+/)[0];else label=t.tagName.toLowerCase();var oc=t.getAttribute&&t.getAttribute('onclick')||'';var fnMatch=oc.match(/^([a-zA-Z_$][\w$]*)\s*\(/);if(fnMatch)label+=' → '+fnMatch[1]+'()';buffer.actions.push({ts:ts(),label:label});clip(buffer.actions,MAX_ACTIONS);},true);
+var taps=[];
+function corner(x,y){return x>window.innerWidth*0.7&&y<window.innerHeight*0.15;}
+function tap(x,y){if(!corner(x,y))return;var n=Date.now();taps=taps.filter(function(z){return n-z<3000;});taps.push(n);if(taps.length>=5){taps=[];showDebugPanel();}}
+document.addEventListener('touchend',function(e){var t=e.changedTouches&&e.changedTouches[0];if(t)tap(t.clientX,t.clientY);},true);
+document.addEventListener('click',function(e){tap(e.clientX,e.clientY);},true);
+function escapeHtml(s){return String(s==null?'':s).replace(/[<>&"']/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c];});}
+function buildReport(){
+var ver=typeof APP_VERSION!=='undefined'?APP_VERSION:'?';
+var swInfo=navigator.serviceWorker&&navigator.serviceWorker.controller?'shlav-a-v'+ver+' ('+navigator.serviceWorker.controller.state+')':'inactive';
+var mem=performance.memory?'used '+Math.round(performance.memory.usedJSHeapSize/1048576)+'MB / total '+Math.round(performance.memory.totalJSHeapSize/1048576)+'MB / limit '+Math.round(performance.memory.jsHeapSizeLimit/1048576)+'MB':'n/a';
+var state=[];
+try{if(typeof tab!=='undefined')state.push('tab='+tab);}catch(e){}
+try{if(typeof libSec!=='undefined')state.push('libSec='+libSec);}catch(e){}
+try{if(typeof qi!=='undefined')state.push('qi='+qi);}catch(e){}
+try{if(typeof pool!=='undefined'&&pool)state.push('pool='+pool.length);}catch(e){}
+try{if(typeof QZ!=='undefined'&&QZ)state.push('QZ='+QZ.length);}catch(e){}
+try{if(typeof grsChOpen!=='undefined'&&grsChOpen)state.push('grsChOpen='+grsChOpen);}catch(e){}
+try{if(typeof hazChOpen!=='undefined'&&hazChOpen)state.push('hazChOpen='+hazChOpen);}catch(e){}
+try{if(typeof harChOpen!=='undefined'&&harChOpen)state.push('harChOpen='+harChOpen);}catch(e){}
+return ['=== DEBUG REPORT ===',
+'App: '+APP_NAME+' v'+ver,
+'SW: '+swInfo,
+'URL: '+location.href,
+'UA: '+navigator.userAgent,
+'Screen: '+innerWidth+'x'+innerHeight+' @ '+(window.devicePixelRatio||1)+'dpr',
+'Memory: '+mem,
+'State: '+(state.join(', ')||'none'),
+'Time: '+new Date().toISOString(),
+'',
+'=== RECENT ERRORS ('+buffer.errors.length+', last 10) ==='].concat(
+buffer.errors.slice(-10).map(function(e){return '['+e.ts+'] '+e.msg+'\n  at '+(e.file||'?')+':'+(e.line||'?')+':'+(e.col||'?')+'\n  '+(e.stack||'').split('\n').slice(0,5).join('\n  ');}),
+['','=== RECENT CONSOLE ('+buffer.logs.length+', last 50) ==='],
+buffer.logs.slice(-50).map(function(l){return '['+l.ts+' '+l.level.toUpperCase()+'] '+l.msg.slice(0,300);}),
+['','=== RECENT NETWORK ('+buffer.network.length+', last 20) ==='],
+buffer.network.slice(-20).map(function(n){return '['+n.ts+' '+(n.status||'ERR')+' '+n.ms+'ms] '+n.url.slice(0,120)+(n.error?' ERROR: '+n.error:'');}),
+['','=== RECENT ACTIONS ('+buffer.actions.length+', last 30) ==='],
+buffer.actions.slice(-30).map(function(a){return '['+a.ts+'] '+a.label;}),
+['','=== END REPORT ===']).join('\n');
+}
+function showDebugPanel(){
+var existing=document.getElementById('__debug_panel');
+if(existing){existing.remove();return;}
+var panel=document.createElement('div');
+panel.id='__debug_panel';
+panel.setAttribute('style','position:fixed;bottom:0;left:0;right:0;height:75vh;background:#1a1a1a;color:#e0e0e0;font:11px/1.5 ui-monospace,monospace;z-index:999999;border-top:2px solid #0891b2;overflow-y:scroll;padding:12px;box-shadow:0 -10px 30px rgba(0,0,0,0.5);direction:ltr;text-align:left');
+var report=buildReport();
+panel.innerHTML='<div style="display:flex;gap:8px;margin-bottom:10px;position:sticky;top:0;background:#1a1a1a;padding-bottom:8px;border-bottom:1px solid #333;flex-wrap:wrap"><button id="__db_copy" style="background:#0891b2;color:#fff;border:0;padding:8px 14px;border-radius:6px;font-weight:600">📋 Copy</button><button id="__db_clear" style="background:#444;color:#fff;border:0;padding:8px 14px;border-radius:6px">🗑️ Clear</button><button id="__db_close" style="background:#dc2626;color:#fff;border:0;padding:8px 14px;border-radius:6px">✕ Close</button><span style="color:#888;align-self:center;font-size:10px">Tap top-right 5x to reopen</span></div><pre style="white-space:pre-wrap;word-break:break-word;margin:0">'+escapeHtml(report)+'</pre>'; // safe-innerhtml: report passed through escapeHtml; static button markup is code-controlled
+document.body.appendChild(panel);
+document.getElementById('__db_copy').onclick=function(){copyReport(report);};
+document.getElementById('__db_clear').onclick=function(){buffer.logs.length=0;buffer.errors.length=0;buffer.network.length=0;buffer.actions.length=0;panel.querySelector('pre').textContent=buildReport();};
+document.getElementById('__db_close').onclick=function(){panel.remove();};
+}
+function copyReport(text){
+var btn=document.getElementById('__db_copy');
+function flash(msg){if(!btn)return;var o=btn.textContent;btn.textContent=msg;setTimeout(function(){var b=document.getElementById('__db_copy');if(b)b.textContent='📋 Copy';},2000);}
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){flash('✅ Copied!');},fb);}else{fb();}
+function fb(){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');flash('✅ Copied (fallback)!');}catch(e){flash('❌ Copy failed');}ta.remove();}
+}
+window.__debug={
+show:showDebugPanel,
+report:function(){origConsole.log(buildReport());return buildReport();},
+buffer:buffer,
+clear:function(){buffer.logs.length=0;buffer.errors.length=0;buffer.network.length=0;buffer.actions.length=0;}
+};
+origConsole.info('[debug-console] initialized — tap top-right 5x or call __debug.show()');
+})();
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded',function(){
 const el=document.getElementById('hdr-sub');
 if(!el)return;
@@ -5638,8 +5725,23 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.36.3';
+const APP_VERSION='10.38.1';
 const CHANGELOG={
+'10.38.1':[
+'🐞 Debug console polish: report format עבר ל-=== DEBUG REPORT === בסגנון plain-text section headers (במקום markdown #/##), כולל URL ו-time ISO. הוספת window.__debug API: __debug.show() / __debug.report() / __debug.buffer / __debug.clear(). MAX_NETWORK 50→100, MAX_ACTIONS 50→100. לוגיקת click-action מזהה כעת onclick=fnName(...) ומדגים אותו בלוג. tests/debugConsole.test.js + docs/DEBUG_CONSOLE.md מקובץ סטנדרטי לכל שלושת ה-PWAs.',
+],
+'10.38.0':[
+'🐛 Built-in debug console: 5 הקשות ברצף (תוך 3 שניות) על הפינה הימנית-עליונה של המסך פותחות panel דיבוג חי. מציג: APP/SW versions, מצב נוכחי (tab/libSec/pool/qi/QZ), 10 שגיאות אחרונות עם stack traces, 50 שורות console (בצבעים לפי level), 20 קריאות fetch אחרונות (status+ms+URL), 30 פעולות משתמש אחרונות. כפתור "📋 Copy" מעתיק הכל כ-markdown ללוח. מצמצם דרסטית את צורך USB-debugging מהטלפון.',
+'🪝 Hooks: window.console.{log,info,warn,error,debug} עטוף בבירור-buffer (200 entries circular). window.fetch עטוף לוג של (URL, status, ms). window.onerror + unhandledrejection מקבלים stash של full stack. document click capture (capture phase) רושם target+text. ה-hooks מותקנים בתחילת ה-<script> הראשון כדי לתפוס שגיאות מוקדמות לפני יתר ה-app.',
+'🔧 Manual trigger: window.__debug_open() זמין מ-DevTools console. ה-panel הוא z-index:999999, position:fixed, dark-themed monospace, צבעי semantic לפי level/status (אדום שגיאה, כתום warn, ירוק 2xx, צהוב summary).',
+],
+'10.37.0':[
+'🎯 ייבוא סלקטיבי GRS8 Book 3: +77 שאלות חדשות מ-14 פרקים מרכזיים (הפרעות התנהגות בדמנציה, טיפול קהילתי, דליריום, דמנציה, נפילות, שבריריות, אי-ספיקת לב, מחלות זיהומיות, תת-תזונה, אוסטאופורוזיס, פרמקותרפיה, פצעי לחץ, אי-נקיטת שתן, טיפול פריאופרטיבי).',
+'📈 GRS8 import progress: 13/333 → 90/333 (27% from 4%). יישארו ~243 שאלות ב-53 פרקים נוספים לסבב הבא.',
+'🤖 הסברים בעברית נוצרו דרך toranot proxy עם 6 workers, 1 שאלה לקריאה, model=sonnet, ~233s wall time. 77/77 הסברים עברו ולידציה (עברית≥40%, אורך 200-700, ללא markdown או חיצי Unicode).',
+'✅ tests/regressionGuards.test.js עודכן: total Q count lock 3756→3833. tests/grs8ChapterCoverage.test.js (lock C) ממשיך לעבוד עם ≥13 → 90 שאלות t=GRS8.',
+'📚 Library → 📙 GRS8: כעת ב-14 פרקי-יעד רוב/כל השאלות מוצגות כקלפי "in bank · Drill this" עם תצוגה מקדימה של ה-stem ולחצן ניסוי, ב-53 הפרקים הנותרים השאלות נשארות placeholders עם anchor ל-PDF הספר.',
+],
 '10.36.3':[
 '📝 GRS8 reading view rebuild: chapters now list their actual GRS8 Book 3 question numbers (e.g., Behavior Problems = Qs 20, 28, 53, 212, 217, 245, 272). Bank-imported Qs (13 total) render inline with stem preview + drill button. Not-yet-imported Qs show as placeholders with per-Q PDF page anchors derived from data/grs8_question_pages.json (333 ANSWER-marker page anchors). Replaces the previous chapter-range "Open PDF at Page N" anchor which was unreliable on Android Chrome.',
 ],
