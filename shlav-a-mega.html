@@ -562,6 +562,8 @@ upd();setInterval(upd,30000);
 <script src="shared/fsrs.js"></script>
 <script src="src/storage.js"></script>
 <script src="src/sw-update.js"></script>
+<script src="src/study_plan_algorithm.js"></script>
+<script src="src/study_plan.js"></script>
 <script>
 let QZ=[];
 // Pre-generated distractor autopsy map (qIdx → 4-element array of rationales, "" at correct index)
@@ -874,6 +876,8 @@ document.addEventListener('visibilitychange',function(){if(document.visibilitySt
 migrateToIDB().then(()=>{
 // v9.39: Reset study plan tier open states to collapsed
 if(S._spVer!=='9.42'){S._spVer='9.42';delete S.sp_t1;delete S.sp_t2;delete S.sp_t3;delete S.sp_t4;delete S.spOpen;S.spOpen=false;save();}
+// v10.46.0: bind cloud study-plan delegated handlers (idempotent via window.__studyPlanBound)
+if(typeof window.bindStudyPlanEvents==='function')window.bindStudyPlanEvents();
 renderTabs();render();if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_help','1');setTimeout(showHelp,500);}}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();});
 
 // ===== SCREEN WAKE LOCK =====
@@ -5212,6 +5216,8 @@ h+=`<div class="card" style="padding:14px;text-align:center;margin-top:12px">
 </div>`;
 // Account section (auth)
 h+=window.renderAuthSection();
+// Study Plan section (mirror of Mishpacha v1.9.1 / Pnimit v9.86.0)
+if(typeof window.renderStudyPlanSection==='function')h+=window.renderStudyPlanSection();
 // Data management
 h+=`<div class="card" style="padding:14px;margin-top:12px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
@@ -6219,8 +6225,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.45.0';
+const APP_VERSION='10.46.0';
 const CHANGELOG={
+'10.46.0':[
+'📅 תכנית לימוד בתוך האפליקציה — Settings → 📅 תכנית לימוד. בוחרים תאריך בחינה, שעות לימוד שבועיות (1-20), שבועות חזרה (1-6); המנוע מחלק את 46 הנושאים לפי תדירות אמפירית מ-3,833 שאלות עבר ובונה לוח שבועי. JS port verbatim של allocate_hours + schedule מ-auto-audit/scripts/generate_study_plan.py — fixture חוצה-שפות מאמת התאמה byte-identical (top-5 שעות + week_used לכל תא ≤ 1e-9). שמירה בענן דרך RPC SECURITY DEFINER (study_plan_upsert / study_plan_get) על טבלה משותפת public.study_plans (key (username, app)); אורחים יוצרים תכנית מקומית עם רמז להתחבר. ייצוא .ics צד-לקוח לכל לוחות השנה (Google / Outlook / Apple) — אירועי שבוע + 3 מוקים + יום הבחינה. Mirror של Mishpacha v1.9.1 + Pnimit v9.86.0; הטבלה + ה-RPCs כבר רצים על הפרויקט המשותף krmlzwwelqvlfslwltol (האפליקציה רק קוראת להם עם app=\'shlav\').',
+'🪝 Hooks: src/study_plan_algorithm.js (algorithm primitives, browser-loadable + vm-testable) + src/study_plan.js (UI/RPC/ICS) + data/syllabus_data.json (24+27+46 = 97 frozen topics across the three apps). שני ה-script files נטענים בראש הקובץ אחרי shared/fsrs.js; tests/studyPlanAlgorithm.test.js מריץ את ה-algorithm ב-vm context.',
+],
 '10.45.0':[
 '🚨 Distractor Autopsy data corruption fixed — 2,729 of 3,795 distractor entries (72%) were misaligned with their parent question after prior bank reorderings + the v9.58 answer-key correction sweep. The "empty slot" in DIS[k] was no longer at Q[k].c, so the UI rendered "Wrong because:" rationales on the CORRECT (green ✓) answer and silently swallowed real wrong-option rationales. Symptom on screen: distractor explanations talking about depression/SSRIs/hip-fracture under a question about Russian male mortality.',
 '🔁 Full regeneration via scripts/generate_distractors.cjs (Haiku via Toranot proxy, 6-worker batch, ~30 min, ~$10 spend) — every Q now has fresh, content-aligned distractor rationales.',
