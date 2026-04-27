@@ -3242,8 +3242,8 @@ const est=calcEstScore();
 if(est==null)return{skipped:'no_est',answered:totalAnswered};
 const streak=getStudyStreak();
 const readiness=est;
-// Anonymous user hash
-let uid=localStorage.getItem('samega_uid');
+// Cloud user id: username if logged in, otherwise stable per-device random.
+let uid=(typeof getUserId==='function'?getUserId():localStorage.getItem('samega_uid'));
 if(!uid){uid='u'+Math.random().toString(36).slice(2,10);try{localStorage.setItem('samega_uid',uid);}catch(e){}}
 const payload={uid,answered:totalAnswered,correct:totalCorrect,streak,readiness,ts:new Date().toISOString()};
 try{
@@ -3272,7 +3272,7 @@ await submitLeaderboardScore();
 box.innerHTML='<div style="text-align:center;padding:8px;font-size:10px;color:rgb(var(--fg2))">Loading...</div>';
 const data=await fetchLeaderboard();
 _leaderboardData=data;
-const myUid=localStorage.getItem('samega_uid')||'';
+const myUid=(typeof getUserId==='function'?getUserId():(localStorage.getItem('samega_uid')||''));
 let html='';
 if(!data.length){html='<div style="font-size:10px;color:rgb(var(--fg3));text-align:center">No data yet</div>';}
 else{
@@ -5208,6 +5208,8 @@ h+=`<div class="card" style="padding:14px;text-align:center;margin-top:12px">
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Share this app with fellow geriatric medicine residents</div>
 <button class="btn btn-p" onclick="shareApp()" style="margin-bottom:8px" aria-label="Share app link">📤 Share App Link</button>
 </div>`;
+// Account section (auth)
+h+=window.renderAuthSection();
 // Data management
 h+=`<div class="card" style="padding:14px;margin-top:12px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
@@ -5718,7 +5720,7 @@ async function submitFeedback(){
 const type=document.getElementById('fb-type')?.value||'other';
 const text=document.getElementById('fb-text')?.value?.trim();
 if(!text){toast('Please describe your feedback','info');return;}
-const entry={type,text,ts:Date.now(),version:APP_VERSION,uid:localStorage.getItem('samega_uid')||'anon'};
+const entry={type,text,ts:Date.now(),version:APP_VERSION,uid:(typeof getUserId==='function'?getUserId():(localStorage.getItem('samega_uid')||'anon'))};
 // Save locally
 let fb=[];try{fb=JSON.parse(localStorage.getItem('samega_fb_sent')||'[]');}catch(e){}
 fb.push(entry);
@@ -5834,9 +5836,185 @@ setTimeout(function(){const el=document.getElementById('chat-msgs');if(el)el.scr
 function sendChatStarter(text){const input=document.getElementById('chat-input');if(input)input.value=text;sendChat();}
 function clearChat(){S.chat=[];chatLoading=false;save();render();}
 
+// ===== ACCOUNTS — username/password (mirror of Mishpacha v1.8.0 / Pnimit v9.85.0) =====
+// Backed by shared Supabase RPCs (auth_register_user / auth_login_user /
+// auth_change_password). The same account works across all 3 medical PWAs.
+// Logged-in username becomes the cloud uid → leaderboard + samega_backups follow
+// the user across devices. Existing random-uid users keep working as guests.
+(function initAuth(){
+  const AUTH_LS='samega_authUser', UID_LS='samega_uid', DEV_LS='samega_devid';
+
+  function getCurrentUser(){
+    try{
+      const raw=localStorage.getItem(AUTH_LS); if(!raw) return null;
+      const u=JSON.parse(raw);
+      if(!u||typeof u!=='object'||typeof u.username!=='string') return null;
+      if(!/^[a-z0-9][a-z0-9_-]{2,31}$/.test(u.username)) return null;
+      return u;
+    }catch(_){return null;}
+  }
+  function getUserId(){
+    const u=getCurrentUser(); if(u) return u.username;
+    let id=localStorage.getItem(UID_LS);
+    if(!id){id='u'+Math.random().toString(36).slice(2,10);try{localStorage.setItem(UID_LS,id);}catch(e){}}
+    return id;
+  }
+  function setAuthSession(username, displayName){
+    const profile={username, displayName:displayName||null, loggedInAt:Date.now()};
+    try{localStorage.setItem(AUTH_LS,JSON.stringify(profile));}catch(e){}
+    try{localStorage.setItem(UID_LS,username);}catch(e){}
+    return profile;
+  }
+  function logout(){
+    try{localStorage.removeItem(AUTH_LS);}catch(e){}
+    const id='u'+Math.random().toString(36).slice(2,10);
+    try{localStorage.setItem(UID_LS,id);}catch(e){}
+    try{localStorage.setItem(DEV_LS,'dev_'+Math.random().toString(36).slice(2,12));}catch(e){}
+  }
+
+  async function _rpc(fn,body){
+    try{
+      const res=await fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON},
+        body:JSON.stringify(body),
+      });
+      if(!res.ok){const txt=await res.text().catch(()=>''); return {ok:false,error:'http_'+res.status,message:txt.slice(0,200)};}
+      const d=await res.json().catch(()=>null);
+      if(!d||typeof d!=='object') return {ok:false,error:'bad_response'};
+      return d;
+    }catch(e){return {ok:false,error:'network',message:String(e)};}
+  }
+  async function authRegister(u,p,dn){return _rpc('auth_register_user',{p_username:u||'',p_password:p||'',p_display_name:dn||null});}
+  async function authLogin(u,p){return _rpc('auth_login_user',{p_username:u||'',p_password:p||''});}
+  async function authChangePassword(u,oldP,newP){return _rpc('auth_change_password',{p_username:u||'',p_old_password:oldP||'',p_new_password:newP||''});}
+
+  function renderAuthSection(){
+    const u=getCurrentUser();
+    if(u){
+      return `<div class="card" style="padding:14px;margin-top:12px;background:#ecfeff;border:1px solid #a5f3fc">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+  <div style="width:36px;height:36px;border-radius:50%;background:#0891b2;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">${sanitize((u.displayName||u.username).slice(0,1).toUpperCase())}</div>
+  <div style="flex:1;min-width:0">
+    <div style="font-size:12px;font-weight:700;color:#0c4a6e;direction:ltr;text-align:left">${sanitize(u.displayName||u.username)}</div>
+    <div style="font-size:10px;color:#64748b;direction:ltr;text-align:left">@${sanitize(u.username)}</div>
+  </div>
+</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+  <button class="btn" onclick="_authDoChangePwd()" style="flex:1;font-size:10px;background:#f0f9ff;color:#075985;border:1px solid #bae6fd;min-height:36px">🔑 שנה סיסמה</button>
+  <button class="btn" onclick="_authDoLogout()" style="flex:1;font-size:10px;background:#fef2f2;color:#991b1b;border:1px solid #fecaca;min-height:36px">🚪 התנתק</button>
+</div>
+<div style="font-size:10px;color:#64748b;margin-top:8px;line-height:1.5">
+  ההתקדמות, הציון בלוח התוצאות והגיבוי בענן קשורים לחשבון הזה — אפשר להתחבר באותו שם משתמש מכל מכשיר.
+</div></div>`;
+    }
+    return `<div class="card" style="padding:14px;margin-top:12px">
+<div style="font-weight:700;font-size:12px;margin-bottom:6px">👤 Account · חשבון</div>
+<div style="font-size:11px;color:rgb(var(--fg2));margin-bottom:10px;line-height:1.6">
+  התחבר כדי לסנכרן התקדמות בין מכשירים. <strong>אין חובה</strong> — אפשר להמשיך כאורח.
+</div>
+<div style="display:flex;gap:0;background:#f1f5f9;padding:3px;border-radius:10px;margin-bottom:10px" id="auth-tabs">
+  <button class="btn" onclick="_authSwitchTab('login')" style="flex:1;font-size:11px;min-height:34px;background:#fff;color:#0f172a;border:none;border-radius:8px;font-weight:700">התחברות</button>
+  <button class="btn" onclick="_authSwitchTab('register')" style="flex:1;font-size:11px;min-height:34px;background:transparent;color:#64748b;border:none;border-radius:8px">הרשמה</button>
+</div>
+<div id="auth-form-login">
+  <input id="auth-li-user" placeholder="שם משתמש" autocomplete="username" style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:12px;margin-bottom:6px;direction:ltr;text-align:left;font-family:inherit">
+  <input id="auth-li-pwd" type="password" placeholder="סיסמה" autocomplete="current-password" style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:12px;margin-bottom:8px;direction:ltr;text-align:left;font-family:inherit">
+  <button class="btn btn-p" onclick="_authDoLogin()" style="width:100%;font-size:12px;min-height:42px;font-weight:700">🔓 התחבר</button>
+</div>
+<div id="auth-form-register" style="display:none">
+  <input id="auth-rg-user" placeholder="שם משתמש (3-32 תווים, אנגלית קטנה+מספרים)" autocomplete="username" style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:12px;margin-bottom:6px;direction:ltr;text-align:left;font-family:inherit">
+  <input id="auth-rg-pwd" type="password" placeholder="סיסמה (לפחות 6 תווים)" autocomplete="new-password" style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:12px;margin-bottom:6px;direction:ltr;text-align:left;font-family:inherit">
+  <input id="auth-rg-name" placeholder="שם להצגה (אופציונלי)" autocomplete="name" style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:12px;margin-bottom:8px;direction:rtl;text-align:right;font-family:inherit">
+  <button class="btn btn-p" onclick="_authDoRegister()" style="width:100%;font-size:12px;min-height:42px;font-weight:700">✨ צור חשבון</button>
+</div>
+<div id="auth-status" style="font-size:11px;margin-top:10px;text-align:center;min-height:16px"></div>
+</div>`;
+  }
+
+  function _setStatus(msg,tone){
+    const el=document.getElementById('auth-status'); if(!el) return;
+    el.textContent=msg||'';
+    el.style.color = tone==='error' ? '#991b1b' : (tone==='success' ? '#059669' : '#64748b');
+  }
+  function _switchTab(which){
+    const isLogin=which==='login';
+    const li=document.getElementById('auth-form-login'), rg=document.getElementById('auth-form-register');
+    if(li) li.style.display=isLogin?'':'none';
+    if(rg) rg.style.display=isLogin?'none':'';
+    const tabs=document.getElementById('auth-tabs');
+    if(tabs) Array.from(tabs.querySelectorAll('button')).forEach((b,i)=>{
+      const active=(i===0&&isLogin)||(i===1&&!isLogin);
+      b.style.background=active?'#fff':'transparent';
+      b.style.color=active?'#0f172a':'#64748b';
+      b.style.fontWeight=active?'700':'400';
+    });
+    _setStatus('');
+  }
+  async function _doLogin(){
+    const u=(document.getElementById('auth-li-user')||{}).value||'';
+    const p=(document.getElementById('auth-li-pwd')||{}).value||'';
+    if(!u||!p){_setStatus('נא למלא שם משתמש וסיסמה','error');return;}
+    _setStatus('מתחבר…');
+    const r=await authLogin(u,p);
+    if(!r.ok){
+      const map={invalid_credentials:'שם משתמש או סיסמה שגויים',locked:'יותר מדי ניסיונות כושלים. נסה שוב בעוד 15 דקות.',network:'שגיאת רשת — נסה שוב'};
+      _setStatus(map[r.error]||r.message||('שגיאה: '+r.error),'error'); return;
+    }
+    setAuthSession(r.username,r.display_name);
+    toast('✅ התחברת בהצלחה: '+(r.display_name||r.username),'success');
+    if(typeof render==='function') render();
+  }
+  async function _doRegister(){
+    const u=(document.getElementById('auth-rg-user')||{}).value||'';
+    const p=(document.getElementById('auth-rg-pwd')||{}).value||'';
+    const n=(document.getElementById('auth-rg-name')||{}).value||'';
+    if(!u||!p){_setStatus('שם משתמש וסיסמה הם שדות חובה','error');return;}
+    _setStatus('יוצר חשבון…');
+    const r=await authRegister(u,p,n);
+    if(!r.ok){
+      const map={invalid_username:'שם משתמש לא חוקי (3-32 תווים, אותיות אנגלית קטנות, מספרים, מקף ותחתון)',weak_password:'סיסמה צריכה להיות לפחות 6 תווים',username_taken:'שם המשתמש כבר תפוס',network:'שגיאת רשת — נסה שוב'};
+      _setStatus(map[r.error]||r.message||('שגיאה: '+r.error),'error'); return;
+    }
+    setAuthSession(r.username,r.display_name);
+    toast('✅ נוצר חשבון בהצלחה: '+(r.display_name||r.username),'success');
+    if(typeof render==='function') render();
+  }
+  async function _doChangePwd(){
+    const u=getCurrentUser(); if(!u) return;
+    const oldP=window.prompt('הקלד את הסיסמה הנוכחית:'); if(!oldP) return;
+    const newP=window.prompt('הקלד סיסמה חדשה (לפחות 6 תווים):'); if(!newP) return;
+    const r=await authChangePassword(u.username,oldP,newP);
+    if(r.ok) toast('✅ הסיסמה שונתה','success');
+    else{const map={invalid_credentials:'הסיסמה הנוכחית שגויה',weak_password:'הסיסמה החדשה קצרה מדי'}; toast('❌ '+(map[r.error]||r.message||r.error),'info');}
+  }
+  function _doLogout(){
+    if(!window.confirm('להתנתק? ההתקדמות שלך נשמרת בענן ותחזור בהתחברות הבאה.')) return;
+    logout();
+    toast('הותנתקת','info');
+    if(typeof render==='function') render();
+  }
+
+  Object.assign(window,{
+    getCurrentUser,getUserId,setAuthSession,authLogout:logout,
+    authRegister,authLogin,authChangePassword,
+    renderAuthSection,
+    _authDoLogin:_doLogin, _authDoRegister:_doRegister,
+    _authDoChangePwd:_doChangePwd, _authDoLogout:_doLogout,
+    _authSwitchTab:_switchTab,
+  });
+})();
+
 // ===== SUPABASE CLOUD SYNC =====
 const _SB_KEY=SUPA_ANON;
-function _sbDeviceId(){let id=localStorage.getItem('samega_devid');if(!id){id='dev_'+Math.random().toString(36).slice(2,12);try{localStorage.setItem('samega_devid',id);}catch(e){}}return id;}
+function _sbDeviceId(){
+  // When logged in, use the username so cloud backups follow the user across devices.
+  const _u=(typeof getCurrentUser==='function'?getCurrentUser():null);
+  if(_u) return 'user_'+_u.username;
+  let id=localStorage.getItem('samega_devid');
+  if(!id){id='dev_'+Math.random().toString(36).slice(2,12);try{localStorage.setItem('samega_devid',id);}catch(e){}}
+  return id;
+}
 async function cloudBackup(){
   const btn=document.getElementById('cloud-backup-btn');
   if(btn){btn.disabled=true;btn.textContent='☁️ Saving...';}
@@ -5877,7 +6055,9 @@ async function cloudBackup(){
   if(btn){btn.disabled=false;btn.textContent='☁️ Backup to Cloud';}
 }
 async function cloudRestore(){
-  const id=prompt('Enter device ID to restore from (leave blank for this device):',_sbDeviceId())||_sbDeviceId();
+  // Logged-in users auto-restore from their account row; guests are prompted.
+  const _u=(typeof getCurrentUser==='function'?getCurrentUser():null);
+  const id=_u?_sbDeviceId():(prompt('Enter device ID to restore from (leave blank for this device):',_sbDeviceId())||_sbDeviceId());
   if(!id)return;
   try{
     const res=await fetch(SUPA_URL+'/rest/v1/samega_backups?id=eq.'+encodeURIComponent(id)+'&select=data,updated_at',{
@@ -6037,8 +6217,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.43.2';
+const APP_VERSION='10.44.0';
 const CHANGELOG={
+'10.44.0':[
+'👤 חשבונות משתמש — שם משתמש + סיסמה לחברי הצוות. Powered by Supabase pgcrypto bcrypt דרך RPC SECURITY DEFINER (auth_register_user / auth_login_user / auth_change_password). שם המשתמש הופך ל-uid: ההתקדמות, לוח התוצאות (shlav_leaderboard) והגיבוי בענן (samega_backups) עוקבים אחריך בין מכשירים. משתמשים אורחים (uid אקראי) ממשיכים לעבוד כרגיל — אין מיגרציה הכרחית. Lockout אחרי 5 נסיונות כושלים. Settings → 👤 חשבון. Mirror של Mishpacha v1.8.0 + Pnimit v9.85.0 — אותו פרויקט Supabase, אז חשבון אחד פותח את שלוש האפליקציות.',
+],
 '10.43.2':[
 '🛠️ GATE 1 hotfix — node --check rejected v10.43.1. Three CHANGELOG entries had a stray double-backslash before an apostrophe (a transcription accident from prior tooling). JS resolved the pair as one literal backslash and then read the apostrophe as the closing string delimiter, so the rest of the entry parsed as bare identifiers and threw SyntaxError. Reduced to a single backslash (the canonical escape). No behavior change; restores deploy. Affected entries: v10.43.1 drugs.json normalization, v10.43.1 distractor drift fix, v10.43.0 per-topic study hub.',
 ],
