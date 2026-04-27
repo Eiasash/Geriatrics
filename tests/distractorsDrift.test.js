@@ -71,4 +71,41 @@ describe("data/distractors.json — drift guard", () => {
     }
     expect(mismatches).toEqual([]);
   });
+
+  /**
+   * ALIGNMENT GUARD — empty slot in DIS[k] must equal Q[k].c.
+   *
+   * Generator invariant: distractors are produced for the 3 wrong options only;
+   * the slot at q.c is always "" (or whitespace). If questions.json is reordered,
+   * inserted into, or has its answer key corrected without regenerating
+   * distractors.json, this invariant breaks silently — and the UI ends up showing
+   * "Wrong because:" rationales on the correct answer.
+   *
+   * Real-world precedent: caught a 72%-misaligned distractors.json in v10.44.x
+   * (2729 of 3795 keys) after the v9.58 answer-key correction sweep + question
+   * insertions had silently desynced the file.
+   *
+   * If this fails: re-run `node scripts/generate_distractors.cjs`.
+   */
+  it("empty slot in DIS[k] aligns with Q[k].c (the correct option index)", () => {
+    const misaligned = [];
+    for (const [k, v] of Object.entries(distractors)) {
+      const q = questions[Number(k)];
+      if (!q || !Array.isArray(q.o) || typeof q.c !== "number") continue;
+      if (v.length !== q.o.length) continue;
+      const emptyIdx = v.findIndex((s) => !s || !String(s).trim());
+      if (emptyIdx === -1) continue;
+      if (emptyIdx !== q.c) {
+        misaligned.push({ key: k, qC: q.c, emptyIdx });
+      }
+    }
+    if (misaligned.length > 0) {
+      const sample = misaligned.slice(0, 5);
+      throw new Error(
+        `${misaligned.length} of ${Object.keys(distractors).length} distractor entries ` +
+          `are misaligned with their question's correct-answer index. ` +
+          `Re-run scripts/generate_distractors.cjs. Sample: ${JSON.stringify(sample)}`,
+      );
+    }
+  });
 });
