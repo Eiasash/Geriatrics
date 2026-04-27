@@ -61,13 +61,14 @@ const SYSTEM_PROMPT =
 
 function buildUserPrompt(q) {
   const lines = [];
+  const nWrong = (q.o ? q.o.length : 4) - 1;
   lines.push('Question: ' + q.q);
   (q.o || []).forEach((o, i) => lines.push(`${LETTERS[i] || i}: ${o}`));
   lines.push(`Correct option index: ${q.c} (${LETTERS[q.c] || q.c})`);
   lines.push('');
   lines.push('For each WRONG option (NOT the correct one), produce JSON in this exact shape:');
   lines.push('{"distractors":[{"i":<option_index>,"wrong":"<1-2 sentences why wrong HERE>","right_if":"<1-2 sentences describing when it WOULD be correct>"}, ...]}');
-  lines.push('Include exactly 3 entries (the 3 wrong options). Skip the correct option. Same language as the question.');
+  lines.push(`Include exactly ${nWrong} entries (the ${nWrong} wrong options). Skip the correct option (index ${q.c}). Same language as the question.`);
   return lines.join('\n');
 }
 
@@ -93,16 +94,26 @@ function callProxyOnce(model, userPrompt) {
       let data = '';
       res.on('data', c => data += c);
       res.on('end', () => {
+        const trimmed = (data || '').trim();
         // Upstream timeouts come back as plain-text "Upstream timeout" from Netlify
-        if (data && data.trim().startsWith('Upstream')) {
-          return reject(new Error('proxy_timeout'));
+        if (trimmed.startsWith('Upstream')) {
+          const e = new Error('proxy_timeout'); e.transient = true; return reject(e);
+        }
+        // Netlify / Cloudflare 5xx pages come back as HTML, not JSON.
+        // Detect by leading '<' (covers both '<!DOCTYPE' and bare '<html>').
+        if (trimmed.startsWith('<') || (res.statusCode >= 500 && res.statusCode < 600)) {
+          const e = new Error(`upstream_${res.statusCode||'html'}`); e.transient = true; return reject(e);
         }
         try {
           const p = JSON.parse(data);
           if (p.content && p.content[0] && p.content[0].text) {
             resolve(p.content[0].text.trim());
           } else if (p.error) {
-            reject(new Error(`API error: ${p.error.type||'?'} — ${p.error.message||data.slice(0,200)}`));
+            const t = (p.error.type || '').toLowerCase();
+            const e = new Error(`API error: ${p.error.type||'?'} — ${p.error.message||data.slice(0,200)}`);
+            // Anthropic transient classes — retry-able
+            if (t.includes('overloaded') || t.includes('rate_limit') || t.includes('rate-limit')) e.transient = true;
+            reject(e);
           } else {
             reject(new Error(`Unexpected: ${data.slice(0,300)}`));
           }
@@ -111,21 +122,34 @@ function callProxyOnce(model, userPrompt) {
         }
       });
     });
-    req.on('error', reject);
-    req.setTimeout(120000, () => req.destroy(new Error('Timeout 120s')));
+    req.on('error', e => {
+      // Network-layer errors: DNS cache overflow (ENOTFOUND/EAI_AGAIN), conn drops, timeouts
+      if (e && typeof e.code === 'string' &&
+          ['ENOTFOUND','ECONNRESET','ETIMEDOUT','EAI_AGAIN','ECONNREFUSED','EPIPE','EHOSTUNREACH'].includes(e.code)) {
+        e.transient = true;
+      }
+      reject(e);
+    });
+    req.setTimeout(120000, () => {
+      const e = new Error('Timeout 120s'); e.transient = true; req.destroy(e);
+    });
     req.write(body);
     req.end();
   });
 }
 
-async function callProxy(model, userPrompt, attempts = 3) {
+async function callProxy(model, userPrompt, attempts = 5) {
   let lastErr;
   for (let i = 0; i < attempts; i++) {
     try { return await callProxyOnce(model, userPrompt); }
     catch (e) {
       lastErr = e;
-      if (e.message !== 'proxy_timeout') throw e;
-      await new Promise(r => setTimeout(r, 600 * (i + 1)));
+      const retriable = e && (e.transient || e.message === 'proxy_timeout');
+      if (!retriable) throw e;
+      // Exponential backoff with jitter: 600ms, 1.2s, 2.4s, 4.8s, 9.6s ± up to 300ms
+      const base = 600 * Math.pow(2, i);
+      const jitter = Math.floor(Math.random() * 300);
+      await new Promise(r => setTimeout(r, base + jitter));
     }
   }
   throw lastErr || new Error('proxy_timeout');
