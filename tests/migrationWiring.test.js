@@ -21,8 +21,7 @@ describe("render function orchestrators exist", () => {
   const ORCHESTRATORS = [
     "renderQuiz", "renderTrack", "renderCalc", "renderLibrary",
     "renderStudy", "renderFlash", "renderDrugs", "renderSearch",
-    "renderMedBasket", "renderEOLTree", "renderLabOverlay",
-    "renderAgingSheet", "renderOnCall", "render", "renderTabs",
+    "renderMedBasket", "renderOnCall", "render", "renderTabs",
   ];
   for (const name of ORCHESTRATORS) {
     it(`${name} exists`, () => {
@@ -75,13 +74,7 @@ function extractBody(sc, fnName) {
   return body;
 }
 
-describe("renderCalc → _rc* helpers", () => {
-  // v10.55.0: renderCalc collapsed to renderMedBasket only. Calculators/EOL/
-  // Lab/Aging sub-views removed per user feedback. _rc* helpers still defined
-  // in source (unreachable from UI) — keep the existence checks so accidental
-  // deletion is caught, but no longer assert renderCalc invokes them.
-  const H = ["_rcCrCl","_rcChads","_rcCurb","_rcGds","_rcBraden","_rcPadua","_rcKatz","_rcLawton","_rc4at","_rcMna","_rcCfs","_rcNorton","_rcMorse"];
-  for (const n of H) { it(`${n} exists`, () => { expect(scriptContent).toMatch(new RegExp(`function\\s+${n.replace(/[$()*+.?[\\\]^{|}]/g,'\\$&')}\\s*\\(`)); }); }
+describe("renderCalc collapsed to renderMedBasket", () => {
   it("renderCalc returns renderMedBasket()", () => { const b = extractBody(scriptContent, "renderCalc"); expect(b).toContain("renderMedBasket()"); });
 });
 
@@ -110,7 +103,7 @@ describe("inline handler counts are stable", () => {
   // new wrong-answer Review CTA, the SVG topic-heatmap cell click handlers,
   // and the source-link buttons (3 features × ~3 inline handlers each).
   it("onclick 140–240", () => { const c = (html.match(/onclick=/g)||[]).length; expect(c).toBeGreaterThanOrEqual(140); expect(c).toBeLessThanOrEqual(240); });
-  it("onchange 15–40", () => { const c = (html.match(/onchange=/g)||[]).length; expect(c).toBeGreaterThanOrEqual(15); expect(c).toBeLessThanOrEqual(40); });
+  it("onchange 3–40", () => { const c = (html.match(/onchange=/g)||[]).length; expect(c).toBeGreaterThanOrEqual(3); expect(c).toBeLessThanOrEqual(40); });  // v10.56.0: floor lowered after calculator deletion
   it("total ≤275", () => { const t = (html.match(/onclick=/g)||[]).length+(html.match(/onchange=/g)||[]).length+(html.match(/oninput=/g)||[]).length; expect(t).toBeLessThanOrEqual(275); });
 });
 
@@ -231,11 +224,6 @@ describe("runtime scope — all decomposed helpers are top-level functions", () 
       marker: "// ===== LIBRARY HELPERS",
       orchestrator: "renderLibrary",
       helpers: ["_rlHeader","_rlHazzard","_rlHarrison","_rlLaws","_rlArticles","_rlExams","_rlFooter"],
-    },
-    {
-      marker: "// ===== CALCULATOR HELPERS",
-      orchestrator: "renderCalc",
-      helpers: ["_rcCrCl","_rcChads","_rcCurb","_rcGds","_rcBraden","_rcPadua","_rcKatz","_rcLawton","_rcMna","_rcCfs","_rcNorton","_rcMorse"],
     },
     {
       marker: "// ===== QUIZ HELPERS",
