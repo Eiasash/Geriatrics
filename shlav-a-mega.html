@@ -4944,21 +4944,6 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px;background:${_bg};b
 </div></div>`;
 })();
 
-// Activity Calendar (30 days)
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">
-<div style="font-size:12px;font-weight:700;margin-bottom:8px">📅 Activity (last 30 days)</div>
-<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px">`;
-for(let _i=29;_i>=0;_i--){
-const _d=new Date();_d.setDate(_d.getDate()-_i);
-const _dk=_d.toISOString().slice(0,10);
-const _act=S.dailyAct&&S.dailyAct[_dk];
-const _qc=_act?_act.q:0;
-const _int=_qc===0?0:_qc<5?1:_qc<15?2:_qc<30?3:4;
-const _cols=[document.body.classList.contains('dark')||document.body.classList.contains('study')?'#1e293b':'#f1f5f9','#dcfce7','#86efac','#22c55e','#15803d'];
-h+=`<div style="aspect-ratio:1;border-radius:3px;background:${_cols[_int]}" title="${_dk}: ${_qc} Qs"></div>`;
-}
-h+=`</div></div>`;
-
 return h;
 }
 function _rtMid(){
@@ -5007,10 +4992,9 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
 <button class="btn btn-d" onclick="exportCheatSheet()" style="font-size:11px" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</button>
 <div style="font-size:9px;color:rgb(var(--fg3));margin-top:4px">Print-ready 2-page summary of your 15 weakest topics</div>
 </div>`;
-// Feature 5: Change exam date
-if(S.examDate||localStorage.getItem('shlav_exam_date')){
-h+=`<div style="text-align:center;margin-bottom:10px"><button onclick="setExamDate()" style="font-size:9px;color:rgb(var(--fg3));background:none;border:none;cursor:pointer;text-decoration:underline">📅 Change exam date</button></div>`;
-}
+// v10.57.0: removed standalone Change exam date underline link — duplicates
+// More → Settings → Exam Date. setExamDate() is still wired everywhere it
+// was; the button just isn't surfaced from here.
 h+=renderExamTrendCard();
 // v10.50.0: removed the duplicate "Progress" stats grid (Topics/Quiz/EstScore/Due-SR) that
 // used to live here — it duplicated the 4 stat cards already shown at the top of _rtTop()
@@ -5144,6 +5128,22 @@ TOPICS.forEach((t,i)=>{h+=`<div class="topic${S.ck[i]?' done':''}" onclick="S.ck
 <input type="checkbox" ${S.ck[i]?'checked':''} readonly style="width:13px;height:13px" tabindex="-1"><span>${t}</span></div>`;});
 h+=`<div onclick="S._sylOpen=!S._sylOpen;render()" style="text-align:center;padding:8px;cursor:pointer;font-size:10px;color:rgb(var(--sky));font-weight:600" role="button" tabindex="0" aria-expanded="${S._sylOpen}" aria-label="Toggle syllabus topics">${S._sylOpen?'▲ Collapse':'▼ Show '+TOPICS.length+' topics'}</div>`;
 h+=`</div>`;
+// v10.57.0: Activity Calendar (30 days) — moved here from _rtTop where it
+// was buried under the action CTAs. This is a passive progress view, so it
+// belongs at the bottom of _rtProgress alongside the other history widgets.
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">📊 Activity Heatmap (last 30 days)</div>
+<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px">`;
+for(let _i=29;_i>=0;_i--){
+const _d=new Date();_d.setDate(_d.getDate()-_i);
+const _dk=_d.toISOString().slice(0,10);
+const _act=S.dailyAct&&S.dailyAct[_dk];
+const _qc=_act?_act.q:0;
+const _int=_qc===0?0:_qc<5?1:_qc<15?2:_qc<30?3:4;
+const _cols=[document.body.classList.contains('dark')||document.body.classList.contains('study')?'#1e293b':'#f1f5f9','#dcfce7','#86efac','#22c55e','#15803d'];
+h+=`<div style="aspect-ratio:1;border-radius:3px;background:${_cols[_int]}" title="${_dk}: ${_qc} Qs"></div>`;
+}
+h+=`</div></div>`;
 return h;
 }
 function _rtFooter(){
@@ -6093,7 +6093,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.56.0';
+const APP_VERSION='10.57.0';
 const CHANGELOG={
 '10.50.0':[
 '💾 Backup is now one tap away — clicking the "🟢 Synced" pill in the top-left used to show a static toast pointing to a stale "Track → Backup to Cloud" location (the Backup card moved to Settings in v10.48.0; the toast was lying). It is now a proper bottom-sheet modal with three actions: 💾 Backup now (one-tap call to cloudBackup), ☁️ Restore from cloud (cloudRestore), and a "Manage all data →" link that deep-links to More → Settings and scrolls smoothly to the Data Management section. Offline state disables the Backup/Restore buttons and shows a clear hint instead of silently failing.',
