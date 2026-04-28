@@ -5128,9 +5128,15 @@ h+=`</div>`;
 // v10.57.0: Activity Calendar (30 days) — moved here from _rtTop where it
 // was buried under the action CTAs. This is a passive progress view, so it
 // belongs at the bottom of _rtProgress alongside the other history widgets.
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">
-<div style="font-size:12px;font-weight:700;margin-bottom:8px">📊 Activity Heatmap (last 30 days)</div>
-<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px">`;
+// v10.58.0: Demoted to collapsible (default closed). 30 squares of mostly-empty
+// cells eat screen height; power users can expand via S._actOpen toggle.
+{
+const _actOpen=S._actOpen===true;
+const _actDays=(function(){let n=0;for(let _i=29;_i>=0;_i--){const _d=new Date();_d.setDate(_d.getDate()-_i);const _dk=_d.toISOString().slice(0,10);const _act=S.dailyAct&&S.dailyAct[_dk];if(_act&&_act.q>0)n++;}return n;})();
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">`;
+h+=`<div onclick="S._actOpen=!S._actOpen;save();render()" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px;${_actOpen?'margin-bottom:8px':''}" role="button" tabindex="0" aria-expanded="${_actOpen?'true':'false'}" aria-label="Toggle activity heatmap"><span style="flex:1">📊 Activity Heatmap (last 30 days) <span style="font-weight:400;color:rgb(var(--fg3));font-size:10px">· ${_actDays} active day${_actDays===1?'':'s'}</span></span><span style="color:rgb(var(--fg2))">${_actOpen?'▲':'▼'}</span></div>`;
+if(_actOpen){
+h+=`<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px">`;
 for(let _i=29;_i>=0;_i--){
 const _d=new Date();_d.setDate(_d.getDate()-_i);
 const _dk=_d.toISOString().slice(0,10);
@@ -5140,7 +5146,10 @@ const _int=_qc===0?0:_qc<5?1:_qc<15?2:_qc<30?3:4;
 const _cols=[document.body.classList.contains('dark')||document.body.classList.contains('study')?'#1e293b':'#f1f5f9','#dcfce7','#86efac','#22c55e','#15803d'];
 h+=`<div style="aspect-ratio:1;border-radius:3px;background:${_cols[_int]}" title="${_dk}: ${_qc} Qs"></div>`;
 }
-h+=`</div></div>`;
+h+=`</div>`;
+}
+h+=`</div>`;
+}
 return h;
 }
 function _rtFooter(){
