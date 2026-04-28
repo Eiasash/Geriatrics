@@ -9,11 +9,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f172a">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://*.supabase.co https://ima-contentfiles.s3.amazonaws.com https://ima-files.s3.amazonaws.com; connect-src 'self' https://*.supabase.co https://api.anthropic.com https://toranot.netlify.app; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://ima-contentfiles.s3.amazonaws.com https://ima-files.s3.amazonaws.com; connect-src 'self' https://*.supabase.co https://api.anthropic.com https://toranot.netlify.app; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩺</text></svg>">
 <link rel="manifest" href="manifest.json">
 <title>Shlav A Mega — Board Prep</title>
 <link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/layout-primitives.css">
 <style>
 /* ──── SZMC Clinical Kit v1 (injected) ──── */
 /* SZMC Clinical Kit — semantic tokens + per-app skin. Additive layer; does
@@ -57,6 +58,22 @@
   src:url("fonts/inter-latin-600-normal.woff2") format("woff2");}
 @font-face{font-family:"Inter";font-style:normal;font-weight:700;font-display:swap;
   src:url("fonts/inter-latin-700-normal.woff2") format("woff2");}
+
+/* ── Editorial Clinical 2026-04: Frank Ruhl Libre (display, Hebrew + Latin)
+ * Loaded from Google Fonts CDN (no local woff2 yet — fall back to Heebo+Georgia
+ * via --font-display until cached). font-display:swap prevents FOIT. ── */
+@font-face{font-family:"Frank Ruhl Libre";font-style:normal;font-weight:500;font-display:swap;
+  src:url("https://fonts.gstatic.com/s/frankruhllibre/v22/j8_96_fAw7jrcalD7oKYNX0QfAnP.woff2") format("woff2");
+  unicode-range:U+0590-05FF,U+FB1D-FB4F;}
+@font-face{font-family:"Frank Ruhl Libre";font-style:normal;font-weight:700;font-display:swap;
+  src:url("https://fonts.gstatic.com/s/frankruhllibre/v22/j8_q6_fAw7jrcalD7oKYNX0Q-zT_BX0H1A.woff2") format("woff2");
+  unicode-range:U+0590-05FF,U+FB1D-FB4F;}
+@font-face{font-family:"Frank Ruhl Libre";font-style:normal;font-weight:500;font-display:swap;
+  src:url("https://fonts.gstatic.com/s/frankruhllibre/v22/j8_96_fAw7jrcalD7oKYNX0QfAnP.woff2") format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:"Frank Ruhl Libre";font-style:normal;font-weight:700;font-display:swap;
+  src:url("https://fonts.gstatic.com/s/frankruhllibre/v22/j8_q6_fAw7jrcalD7oKYNX0Q-zT_BX0H1A.woff2") format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
 
 /* ── Semantic tokens (clinical — reserved, never decorative) ── */
 :root{
@@ -143,21 +160,37 @@ body.study [style*="background:#ede9fe"]{background:#2a1e0d!important;color:#e8d
 --blue-bg:239 246 255;--blue-brd:191 219 254;--blue-fg:30 64 175;
 --yellow-bg:255 251 235;--yellow-brd:253 230 138;--yellow-fg:146 64 14;
 --red-bg:254 242 242;--red-brd:254 202 202;--red-fg:153 27 27}
-body{font-family:'Heebo','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:rgb(var(--bg));color:rgb(var(--fg));-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--color-bg);color:var(--color-fg);-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;font-size:var(--text-md);line-height:var(--leading-body)}
+/* Body keeps the legacy --bg/--fg vars wired so non-migrated surfaces (cards
+ * with rgb(var(--card-bg)), pills, etc.) still render. The Editorial-Clinical
+ * top layer below that uses var(--color-*) is the new visible surface. */
 .heb{font-family:'Heebo',sans-serif;unicode-bidi:plaintext;text-align:start}
 button{cursor:pointer;border:none;background:none;font:inherit}
 input,textarea,select{font:inherit}
-.hdr{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;position:sticky;top:0;z-index:40}
-.hdr h1{font-size:16px;font-weight:700;letter-spacing:-.5px}
-.hdr p{font-size:10px;color:rgb(var(--fg2));margin-top:1px}
-.tabs{position:fixed;bottom:0;left:0;right:0;background:rgb(var(--card-bg));border-top:1px solid #e2e8f0;display:flex;z-index:50;box-shadow:0 -2px 10px rgba(0,0,0,.06);padding-bottom:max(4px,env(safe-area-inset-bottom));overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+/* Editorial Clinical header — cream surface, hairline border, display headline.
+ * Replaces the dark-gradient bar that read as "lazy" against the new baseline. */
+.hdr{background:var(--color-bg);color:var(--color-fg);padding:calc(var(--space-4) + env(safe-area-inset-top)) var(--space-4) var(--space-4);position:sticky;top:0;z-index:40;border-block-end:1px solid var(--color-border)}
+.hdr h1{font-family:var(--font-display);font-size:var(--text-xl);font-weight:var(--weight-bold);letter-spacing:-.01em;line-height:var(--leading-tight);color:var(--color-fg)}
+.hdr p{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-fg-muted);margin-top:var(--space-1);letter-spacing:.04em}
+.hdr #headerVer{font-family:var(--font-mono)!important;letter-spacing:.04em;color:var(--color-fg-muted)!important}
+.hdr .dm-btn{color:var(--color-fg-muted);background:transparent}
+.hdr .dm-btn:hover{color:var(--color-fg);background:var(--color-surface-2)}
+/* Editorial Clinical underline tabs — sliding indicator, no pills, no shadows.
+ * Bottom-fixed for the mobile PWA shell; top border serves as the rail the
+ * indicator rides. RTL handled via getBoundingClientRect math (browser-native). */
+.tabs{position:fixed;bottom:0;left:0;right:0;background:var(--color-bg);border-top:1px solid var(--color-border);display:flex;z-index:50;padding-bottom:max(4px,env(safe-area-inset-bottom));overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0}
 .tabs::-webkit-scrollbar{display:none}
-.tabs button{flex:0 0 auto;min-width:52px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px 6px;transition:.15s;font-size:10px;font-weight:600}
-.tabs button.on{color:var(--app-primary)}
-.tabs button:not(.on){color:rgb(var(--fg3))}
-.tabs .ic{font-size:18px}
+.tabs button{flex:1 1 0;min-width:52px;min-height:var(--touch-min);display:flex;flex-direction:column;align-items:center;gap:2px;padding:var(--space-2) var(--space-2) var(--space-2);background:transparent;border:0;font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-medium);letter-spacing:.02em;color:var(--color-fg-muted);transition:color var(--motion-fast) var(--easing-out);cursor:pointer;white-space:nowrap}
+.tabs button:hover{color:var(--color-fg)}
+.tabs button.on{color:var(--color-fg);font-weight:var(--weight-bold)}
+.tabs button:focus-visible{outline:2px solid var(--color-accent);outline-offset:-2px}
+.tabs .ic{font-size:18px;color:inherit}
+.tab-indicator{position:absolute;top:0;left:0;height:2px;background:var(--color-accent);transform:translateX(0);transition:transform var(--motion-base) var(--easing-out),width var(--motion-base) var(--easing-out);pointer-events:none;z-index:1}
 .ct{max-width:640px;margin:0 auto;padding:12px 12px 80px}
-.card{background:rgb(var(--card-bg));border-radius:16px;border:1px solid rgb(var(--brd));box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:10px}
+/* Editorial Clinical card — hairline border, no shadow, 8px radius.
+ * Cards float by surface contrast (cream bg vs white card), not shadow theatrics. */
+.card{background:var(--color-surface);color:var(--color-fg);border-radius:var(--radius-md);border:1px solid var(--color-border);overflow:hidden;margin-bottom:var(--space-3);transition:border-color var(--motion-fast) var(--easing-out)}
+.card:hover{border-color:var(--color-border-strong)}
 .pill{display:inline-block;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;transition:.15s;cursor:pointer}
 .pill.on{background:var(--app-primary);color:var(--app-on-primary);box-shadow:0 2px 6px rgba(59,130,246,.25)}
 .pill:not(.on){background:rgb(var(--card-bg));color:rgb(var(--fg2));border:1px solid rgb(var(--brd))}
@@ -167,12 +200,20 @@ input,textarea,select{font:inherit}
 .qo.ok{border-color:rgb(var(--em));background:#ecfdf5;color:rgb(var(--green-fg))}
 .qo.no{border-color:rgb(var(--red));background:rgb(var(--red-bg));color:rgb(var(--red-fg))}
 .qo.dim{border-color:#f1f5f9;color:#cbd5e1}
-.btn{padding:7px 18px;border-radius:12px;font-size:12px;font-weight:700;transition:.15s;display:inline-block}
-.btn:disabled{opacity:.35}
-.btn-p{background:var(--app-primary);color:var(--app-on-primary)}
-.btn-d{background:rgb(var(--sl8));color:#fff}
-.btn-g{background:rgb(var(--em));color:#fff}
-.btn-o{background:rgb(var(--bg2));color:rgb(var(--fg2))}
+/* Editorial Clinical buttons — three tiers (primary/secondary/ghost).
+ * Legacy class names retained (.btn-p/.btn-d/.btn-g/.btn-o) so existing call
+ * sites keep working unchanged; new look applied via these selectors. */
+.btn{padding:var(--space-2) var(--space-5);border-radius:var(--radius-md);font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);letter-spacing:.02em;border:1px solid transparent;transition:background-color var(--motion-fast) var(--easing-out),border-color var(--motion-fast) var(--easing-out),color var(--motion-fast) var(--easing-out);display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:var(--touch-min);cursor:pointer}
+.btn:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-p{background:var(--color-accent);color:var(--color-accent-fg);border-color:var(--color-accent)}
+.btn-p:hover:not(:disabled){filter:brightness(.92)}
+.btn-d{background:transparent;color:var(--color-fg);border-color:var(--color-border)}
+.btn-d:hover:not(:disabled){border-color:var(--color-border-strong)}
+.btn-g{background:var(--color-accent);color:var(--color-accent-fg);border-color:var(--color-accent)}
+.btn-g:hover:not(:disabled){filter:brightness(.92)}
+.btn-o{background:transparent;color:var(--color-fg-muted);border-color:transparent}
+.btn-o:hover:not(:disabled){color:var(--color-fg)}
 .ab{max-height:0;overflow:hidden;transition:max-height .3s ease}.ab.op{max-height:5000px}
 .acc-h{width:100%;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;text-align:left;transition:.1s}
 .acc-h:hover{background:rgb(var(--bg2))}
@@ -1403,10 +1444,25 @@ const _svgIcons={
 };
 document.getElementById('tb').innerHTML=TABS.map(t=>
 // safe-innerhtml: TABS is a hardcoded array of tab definitions (id/label/icon); _svgIcons is a hardcoded map; no user input
-`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" aria-label="${t.l}" style="transition:all .15s ease"><span class="ic">${_svgIcons[t.id]||t.ic}</span>${t.l}</button>`
-).join('');
+`<button class="${t.id===tab?'on':''}" role="tab" aria-selected="${t.id===tab}" onclick="go('${t.id}')" aria-label="${t.l}" style="transition:all .15s ease"><span class="ic">${_svgIcons[t.id]||t.ic}</span>${t.l}</button>`
+).join('')+'<span class="tab-indicator" aria-hidden="true"></span>';
+// v10.53: Editorial-Clinical underline indicator — slides to active tab.
+// RTL-safe: getBoundingClientRect() returns layout coords the browser already
+// adjusted for direction, so the math works for both LTR/RTL with no branching.
+requestAnimationFrame(updateTabIndicator);
 }
-function go(t){tab=t;renderTabs();render()}
+function updateTabIndicator(){
+  const tb=document.getElementById('tb');if(!tb)return;
+  const ind=tb.querySelector('.tab-indicator');if(!ind)return;
+  const active=tb.querySelector('button.on');if(!active){ind.style.opacity='0';return;}
+  const pr=tb.getBoundingClientRect();const ar=active.getBoundingClientRect();
+  const x=ar.left-pr.left+tb.scrollLeft;
+  ind.style.opacity='1';
+  ind.style.width=ar.width+'px';
+  ind.style.transform='translateX('+x+'px)';
+}
+window.addEventListener('resize',()=>{requestAnimationFrame(updateTabIndicator);});
+function go(t){tab=t;renderTabs();render();requestAnimationFrame(updateTabIndicator);}
 
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
@@ -6507,7 +6563,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.52.0';
+const APP_VERSION='10.53.0';
 const CHANGELOG={
 '10.50.0':[
 '💾 Backup is now one tap away — clicking the "🟢 Synced" pill in the top-left used to show a static toast pointing to a stale "Track → Backup to Cloud" location (the Backup card moved to Settings in v10.48.0; the toast was lying). It is now a proper bottom-sheet modal with three actions: 💾 Backup now (one-tap call to cloudBackup), ☁️ Restore from cloud (cloudRestore), and a "Manage all data →" link that deep-links to More → Settings and scrolls smoothly to the Data Management section. Offline state disables the Backup/Restore buttons and shows a clear hint instead of silently failing.',
