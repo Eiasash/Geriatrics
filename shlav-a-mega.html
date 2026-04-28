@@ -4991,11 +4991,9 @@ h+=`<div id="leaderboard-box" style="font-size:10px;color:rgb(var(--fg3));text-a
 h+=`</div>`;
 }
 
-// Feature 10: Cheat sheet export button
-h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
-<button class="btn btn-d" onclick="exportCheatSheet()" style="font-size:11px" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</button>
-<div style="font-size:9px;color:rgb(var(--fg3));margin-top:4px">Print-ready 2-page summary of your 15 weakest topics</div>
-</div>`;
+// Feature 10: Cheat sheet export — v10.58.0 demoted from full card to small text
+// link under the Priority Matrix in _rtProgress(). The standalone card was
+// disproportionate for a one-tap utility action.
 // v10.57.0: removed standalone Change exam date underline link — duplicates
 // More → Settings → Exam Date. setExamDate() is still wired everywhere it
 // was; the button just isn't surfaced from here.
@@ -5127,6 +5125,8 @@ ${_blindSpots>0?`<div style="margin-top:8px;font-size:10px;color:#dc2626;font-we
 }
 // ROI Matrix and Radar chart removed — accuracy bars above are sufficient
 h+=renderPriorityMatrix();
+// v10.58.0: Cheat-sheet export link, demoted from full card in _rtMid()
+h+=`<div style="text-align:center;margin:-4px 0 10px"><a href="#" onclick="event.preventDefault();exportCheatSheet()" style="font-size:10px;color:rgb(var(--sky));text-decoration:underline;cursor:pointer" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</a></div>`;
 
 TOPICS.forEach((t,i)=>{h+=`<div class="topic${S.ck[i]?' done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()" style="display:${S._sylOpen?'flex':'none'}" role="checkbox" aria-checked="${S.ck[i]?'true':'false'}" tabindex="0" aria-label="${t}">
 <input type="checkbox" ${S.ck[i]?'checked':''} readonly style="width:13px;height:13px" tabindex="-1"><span>${t}</span></div>`;});
