@@ -13,6 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩺</text></svg>">
 <link rel="manifest" href="manifest.json">
 <title>Shlav A Mega — Board Prep</title>
+<link rel="stylesheet" href="shared/tokens.css">
 <style>
 /* ──── SZMC Clinical Kit v1 (injected) ──── */
 /* SZMC Clinical Kit — semantic tokens + per-app skin. Additive layer; does
@@ -6506,7 +6507,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.51.0';
+const APP_VERSION='10.52.0';
 const CHANGELOG={
 '10.50.0':[
 '💾 Backup is now one tap away — clicking the "🟢 Synced" pill in the top-left used to show a static toast pointing to a stale "Track → Backup to Cloud" location (the Backup card moved to Settings in v10.48.0; the toast was lying). It is now a proper bottom-sheet modal with three actions: 💾 Backup now (one-tap call to cloudBackup), ☁️ Restore from cloud (cloudRestore), and a "Manage all data →" link that deep-links to More → Settings and scrolls smoothly to the Data Management section. Offline state disables the Backup/Restore buttons and shows a clear hint instead of silently failing.',
@@ -7229,5 +7230,7 @@ case 'close-overlay':var ov=btn.closest('[id$="-overlay"]');if(ov)ov.remove();br
 
 _dataPromise.then(()=>{renderTabs();render();updateSyncPill();}).catch((e)=>{console.error('Boot failed:',e);document.body.innerHTML='<div style="padding:2em;text-align:center;color:#ef4444"><h2>Failed to load app data</h2><p>'+sanitize(String(e&&e.message||e))+'</p><button onclick="location.reload()">Retry</button></div>';});
 </script>
+<script>window.PWA_INSTALL_CONFIG = { appName: 'Shlav A Mega', minSessions: 2, minEngagedSec: 60 };</script>
+<script src="shared/install-promo.js" defer></script>
 </body>
 </html>
