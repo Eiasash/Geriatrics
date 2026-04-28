@@ -76,9 +76,13 @@ function extractBody(sc, fnName) {
 }
 
 describe("renderCalc → _rc* helpers", () => {
+  // v10.55.0: renderCalc collapsed to renderMedBasket only. Calculators/EOL/
+  // Lab/Aging sub-views removed per user feedback. _rc* helpers still defined
+  // in source (unreachable from UI) — keep the existence checks so accidental
+  // deletion is caught, but no longer assert renderCalc invokes them.
   const H = ["_rcCrCl","_rcChads","_rcCurb","_rcGds","_rcBraden","_rcPadua","_rcKatz","_rcLawton","_rc4at","_rcMna","_rcCfs","_rcNorton","_rcMorse"];
   for (const n of H) { it(`${n} exists`, () => { expect(scriptContent).toMatch(new RegExp(`function\\s+${n.replace(/[$()*+.?[\\\]^{|}]/g,'\\$&')}\\s*\\(`)); }); }
-  it("renderCalc calls all helpers", () => { const b = extractBody(scriptContent, "renderCalc"); for (const n of H) expect(b).toContain(n+"()"); });
+  it("renderCalc returns renderMedBasket()", () => { const b = extractBody(scriptContent, "renderCalc"); expect(b).toContain("renderMedBasket()"); });
 });
 
 describe("renderQuiz → _rq* helpers", () => {
