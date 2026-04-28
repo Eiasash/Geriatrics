@@ -4943,7 +4943,7 @@ ti=Number(ti);if(!TOPICS[ti])return;
 const _p=s.tot>=2?Math.round(s.ok/s.tot*100):null;
 const color=_p===null?'#e2e8f0':_p>=80?'#059669':_p>=60?'#84cc16':_p>=40?'#f59e0b':'#ef4444';
 const bg=_p===null?'#f8fafc':_p>=80?'#ecfdf5':_p>=60?'#f7fee7':_p>=40?'#fffbeb':'#fef2f2';
-h+=`<div onclick="tab='quiz';filt='topic';topicFilt=${ti};buildPool();render()" style="padding:4px 6px;border-radius:6px;font-size:7px;background:${bg};color:${color};font-weight:700;cursor:pointer;border:1px solid ${color}30;min-width:32px;text-align:center;line-height:1.3" title="${TOPICS[ti]}: ${_p!==null?_p+'%':'no data'} (${s.tot} Qs)"><div style="font-size:6px;opacity:0.8;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:40px">${TOPICS[ti].split(' ')[0].substring(0,6)}</div>${_p!==null?_p+'%':'·'}</div>`;
+h+=`<div onclick="tab='quiz';filt='topic';topicFilt=${ti};buildPool();render()" style="padding:5px 7px;border-radius:6px;font-size:10px;background:${bg};color:${color};font-weight:700;cursor:pointer;border:1px solid ${color}30;min-width:44px;text-align:center;line-height:1.3" title="${TOPICS[ti]}: ${_p!==null?_p+'%':'no data'} (${s.tot} Qs)"><div style="font-size:9px;opacity:0.85;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:60px">${TOPICS[ti].split(' ')[0].substring(0,8)}</div>${_p!==null?_p+'%':'·'}</div>`;
 });
 h+=`</div></div>`;
 h+=renderStudyPlan();
@@ -5214,44 +5214,10 @@ h+=`<div class="card" style="padding:14px;text-align:center;margin-top:12px">
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Share this app with fellow geriatric medicine residents</div>
 <button class="btn btn-p" onclick="shareApp()" style="margin-bottom:8px" aria-label="Share app link">📤 Share App Link</button>
 </div>`;
-// Account section (auth)
-h+=window.renderAuthSection();
-// Study Plan section (mirror of Mishpacha v1.9.1 / Pnimit v9.86.0)
-if(typeof window.renderStudyPlanSection==='function')h+=window.renderStudyPlanSection();
-// Data management
-h+=`<div class="card" style="padding:14px;margin-top:12px">
-<div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
-<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Your progress is saved automatically in your browser. Export to backup or transfer between devices.</div>
-<div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
-<button class="btn btn-p" onclick="exportProgress()" aria-label="Export progress">📥 Export Progress</button>
-<button class="btn btn-g" onclick="importProgress()" aria-label="Import progress">📤 Import Progress</button>
-<button class="btn btn-o" onclick="confirmModal('Reset ALL data? This cannot be undone.').then(ok=>{if(ok){localStorage.removeItem('${LS}');location.reload()}})" aria-label="Reset all data">🗑️ Reset</button>
-</div>
-<div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px">
-<button id="cloud-backup-btn" class="btn" style="background:#e0f2fe;color:#0284c7" onclick="cloudBackup()" aria-label="Backup to cloud">☁️ Backup to Cloud</button>
-<button class="btn" style="background:rgb(var(--green-bg));color:#15803d" onclick="cloudRestore()" aria-label="Restore from cloud">☁️ Restore from Cloud</button>
-</div>
-<div style="font-size:9px;color:rgb(var(--fg3));text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
-</div></div>`;
-// Study Journal moved — wrong answer reporting now in Quiz tab post-answer UI
-// API key settings card
-var _storedKey=getApiKey();
-h+='<div class="card" style="padding:14px;margin-top:10px;border:2px solid '+(_storedKey?'#bbf7d0':'#fde68a')+'">';
-h+='<div class="sec-t" style="font-size:13px">🔑 Anthropic API Key</div>';
-h+='<div class="sec-s" style="margin-bottom:10px">לשימוש ב-AI Explain ו-Teach-Back · מאוחסן בדפדפן בלבד</div>';
-if(!_storedKey){h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;font-size:10px;color:rgb(var(--green-fg));margin-bottom:10px">✅ AI פועל דרך שרת proxy — לא צריך מפתח אישי. אפשר להוסיף כגיבוי. <a href="https://console.anthropic.com/keys" target="_blank" style="color:#d97706;font-weight:700">קבל מפתח ↗</a></div>';}
-if(_storedKey){
-  h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
-  h+='<div style="flex:1;font-size:11px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;padding:6px 10px;color:rgb(var(--green-fg))">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
-  h+='<button class="btn btn-o" style="font-size:11px" onclick="setApiKey(\'\');render()" aria-label="Remove API key">הסר</button>';
-  h+='</div>';
-} else {
-  h+='<div style="display:flex;gap:8px;margin-bottom:8px">';
-  h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-..." class="calc-in" style="flex:1;margin:0;font-size:11px" aria-label="Claude API key">';
-  h+='<button class="btn btn-p" style="font-size:11px" onclick="var v=document.getElementById(\'apiKeyInput\').value.trim();if(v){setApiKey(v);render();}" aria-label="Save API key">שמור</button>';
-  h+='</div>';
-}
-h+='<div style="font-size:9px;color:rgb(var(--fg3))">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
+// Account / Study Plan / Data Management / API Key all moved to Settings tab in v10.48.0 — they were
+// stuffed into Track and made the page hard to navigate. The "discovery" entry from Track is the
+// ⚙️ Settings tab in the top tab bar, plus the "Set Exam Date" CTA earlier in this view which
+// scrolls there for the unset case.
 // Version footer
 h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:rgb(var(--fg3));line-height:1.8">
 <div>Shlav A Mega v${APP_VERSION} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · build ${BUILD_HASH}</div>
@@ -5639,6 +5605,45 @@ h+=permHint;
 h+='</div>';
 h+='<button onclick="toggleNotifOptIn()" '+(canToggle?'':'disabled ')+'aria-pressed="'+optIn+'" style="background:'+(optIn?'#059669':'#cbd5e1')+';color:#fff;border:none;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:700;cursor:'+(canToggle?'pointer':'not-allowed')+';opacity:'+(canToggle?'1':'.5')+'">'+(optIn?'פעיל':'כבוי')+'</button>';
 h+='</div></div>';
+// v10.48.0: Account, Study Plan, Data Management, API Key all moved here from Track tab.
+// Track was overloaded with Settings content; users couldn't find login. Mirror of Pnimit/FM Settings layout.
+// Account (auth)
+if(typeof window.renderAuthSection==='function')h+=window.renderAuthSection();
+// Study Plan (exam date + ramp + hours/week)
+if(typeof window.renderStudyPlanSection==='function')h+=window.renderStudyPlanSection();
+// Data management
+h+=`<div class="card" style="padding:14px;margin-top:12px">
+<div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
+<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Your progress is saved automatically in your browser. Export to backup or transfer between devices.</div>
+<div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+<button class="btn btn-p" onclick="exportProgress()" aria-label="Export progress">📥 Export Progress</button>
+<button class="btn btn-g" onclick="importProgress()" aria-label="Import progress">📤 Import Progress</button>
+<button class="btn btn-o" onclick="confirmModal('Reset ALL data? This cannot be undone.').then(ok=>{if(ok){localStorage.removeItem('${LS}');location.reload()}})" aria-label="Reset all data">🗑️ Reset</button>
+</div>
+<div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px">
+<button id="cloud-backup-btn" class="btn" style="background:#e0f2fe;color:#0284c7" onclick="cloudBackup()" aria-label="Backup to cloud">☁️ Backup to Cloud</button>
+<button class="btn" style="background:rgb(var(--green-bg));color:#15803d" onclick="cloudRestore()" aria-label="Restore from cloud">☁️ Restore from Cloud</button>
+</div>
+<div style="font-size:9px;color:rgb(var(--fg3));text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
+</div>`;
+// API key
+var _storedKey=getApiKey();
+h+='<div class="card" style="padding:14px;margin-top:10px;border:2px solid '+(_storedKey?'#bbf7d0':'#fde68a')+'">';
+h+='<div class="sec-t" style="font-size:13px">🔑 Anthropic API Key</div>';
+h+='<div class="sec-s" style="margin-bottom:10px">לשימוש ב-AI Explain ו-Teach-Back · מאוחסן בדפדפן בלבד</div>';
+if(!_storedKey){h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;font-size:10px;color:rgb(var(--green-fg));margin-bottom:10px">✅ AI פועל דרך שרת proxy — לא צריך מפתח אישי. אפשר להוסיף כגיבוי. <a href="https://console.anthropic.com/keys" target="_blank" style="color:#d97706;font-weight:700">קבל מפתח ↗</a></div>';}
+if(_storedKey){
+  h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+  h+='<div style="flex:1;font-size:11px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;padding:6px 10px;color:rgb(var(--green-fg))">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
+  h+='<button class="btn btn-o" style="font-size:11px" onclick="setApiKey(\'\');render()" aria-label="Remove API key">הסר</button>';
+  h+='</div>';
+} else {
+  h+='<div style="display:flex;gap:8px;margin-bottom:8px">';
+  h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-..." class="calc-in" style="flex:1;margin:0;font-size:11px" aria-label="Claude API key">';
+  h+='<button class="btn btn-p" style="font-size:11px" onclick="var v=document.getElementById(\'apiKeyInput\').value.trim();if(v){setApiKey(v);render();}" aria-label="Save API key">שמור</button>';
+  h+='</div>';
+}
+h+='<div style="font-size:9px;color:rgb(var(--fg3))">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
 return h;
 }
 async function toggleNotifOptIn(){
@@ -6225,8 +6230,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.47.0';
+const APP_VERSION='10.48.0';
 const CHANGELOG={
+'10.48.0':[
+'🎨 Track tab declutter — Account, Study Plan, Data Management (export/import/cloud sync), and API Key cards moved out of Track and into Settings (matches Pnimit/FM layout). Track was an overloaded firehose; the entry-points to "log in", "set my exam date", "back up my progress" were buried under stats / heatmaps / leaderboard / IMA archive. Now Track is purely about progress and study, and Settings (⚙️) is the canonical home for account + plan + data management.',
+'🗺️ Topic Mastery Map readability — tile font 7px → 10px, inner label 6px → 9px, max-width 40px → 60px, min-width 32px → 44px, label cutoff 6 chars → 8. Tiles are still dense enough to fit 40+ topics on a phone but actually legible.',
+'📐 No new behaviour, no schema change, no migration. Pure UX cleanup; renderTrack and renderSettings are now structurally aligned with Mishpacha v1.9.x and Pnimit v9.86.x.',
+],
 '10.46.0':[
 '📅 תכנית לימוד בתוך האפליקציה — Settings → 📅 תכנית לימוד. בוחרים תאריך בחינה, שעות לימוד שבועיות (1-20), שבועות חזרה (1-6); המנוע מחלק את 46 הנושאים לפי תדירות אמפירית מ-3,833 שאלות עבר ובונה לוח שבועי. JS port verbatim של allocate_hours + schedule מ-auto-audit/scripts/generate_study_plan.py — fixture חוצה-שפות מאמת התאמה byte-identical (top-5 שעות + week_used לכל תא ≤ 1e-9). שמירה בענן דרך RPC SECURITY DEFINER (study_plan_upsert / study_plan_get) על טבלה משותפת public.study_plans (key (username, app)); אורחים יוצרים תכנית מקומית עם רמז להתחבר. ייצוא .ics צד-לקוח לכל לוחות השנה (Google / Outlook / Apple) — אירועי שבוע + 3 מוקים + יום הבחינה. Mirror של Mishpacha v1.9.1 + Pnimit v9.86.0; הטבלה + ה-RPCs כבר רצים על הפרויקט המשותף krmlzwwelqvlfslwltol (האפליקציה רק קוראת להם עם app=\'shlav\').',
 '🪝 Hooks: src/study_plan_algorithm.js (algorithm primitives, browser-loadable + vm-testable) + src/study_plan.js (UI/RPC/ICS) + data/syllabus_data.json (24+27+46 = 97 frozen topics across the three apps). שני ה-script files נטענים בראש הקובץ אחרי shared/fsrs.js; tests/studyPlanAlgorithm.test.js מריץ את ה-algorithm ב-vm context.',
