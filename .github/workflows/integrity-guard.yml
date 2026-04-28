@@ -94,9 +94,6 @@ jobs:
               'renderFeedback',
               # Geriatrics-specific tools
               'renderMedBasket',
-              'renderEOLTree',
-              'renderLabOverlay',
-              'renderAgingSheet',
               # Cloud + backup
               'cloudBackup',
               'cloudRestore',
