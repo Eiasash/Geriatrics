@@ -161,3 +161,21 @@ describe("index.html — GitHub Pages redirect", () => {
     expect(indexHtml).toContain("shlav-a-mega.html");
   });
 });
+
+describe("study_plan APP_KEY contract", () => {
+  // Server RPC (study_plan_upsert / study_plan_get) whitelists exactly
+  // ('geri','pnimit','mishpacha'). Sending the Hebrew colloquial 'shlav'
+  // returns {ok:false, error:'invalid_app'} despite HTTP 200.
+  // Caught in v10.46.0 (mobile screenshot 2026-04-28), fixed in v10.47.0.
+  it("src/study_plan.js sends APP_KEY = 'geri' (matches RPC whitelist)", () => {
+    const sp = readFileSync(resolve(ROOT, "src/study_plan.js"), "utf-8");
+    const m = sp.match(/const\s+APP_KEY\s*=\s*['"]([^'"]+)['"]/);
+    expect(m, "APP_KEY constant found in src/study_plan.js").not.toBeNull();
+    expect(m[1]).toBe("geri");
+  });
+
+  it("error map handles invalid_app (defensive against future server drift)", () => {
+    const sp = readFileSync(resolve(ROOT, "src/study_plan.js"), "utf-8");
+    expect(sp).toMatch(/invalid_app:\s*['"][^'"]+['"]/);
+  });
+});
