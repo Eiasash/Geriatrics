@@ -6225,7 +6225,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.46.0';
+const APP_VERSION='10.47.0';
 const CHANGELOG={
 '10.46.0':[
 '📅 תכנית לימוד בתוך האפליקציה — Settings → 📅 תכנית לימוד. בוחרים תאריך בחינה, שעות לימוד שבועיות (1-20), שבועות חזרה (1-6); המנוע מחלק את 46 הנושאים לפי תדירות אמפירית מ-3,833 שאלות עבר ובונה לוח שבועי. JS port verbatim של allocate_hours + schedule מ-auto-audit/scripts/generate_study_plan.py — fixture חוצה-שפות מאמת התאמה byte-identical (top-5 שעות + week_used לכל תא ≤ 1e-9). שמירה בענן דרך RPC SECURITY DEFINER (study_plan_upsert / study_plan_get) על טבלה משותפת public.study_plans (key (username, app)); אורחים יוצרים תכנית מקומית עם רמז להתחבר. ייצוא .ics צד-לקוח לכל לוחות השנה (Google / Outlook / Apple) — אירועי שבוע + 3 מוקים + יום הבחינה. Mirror של Mishpacha v1.9.1 + Pnimit v9.86.0; הטבלה + ה-RPCs כבר רצים על הפרויקט המשותף krmlzwwelqvlfslwltol (האפליקציה רק קוראת להם עם app=\'shlav\').',
