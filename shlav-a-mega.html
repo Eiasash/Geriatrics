@@ -1385,6 +1385,7 @@ let TABS=[];
 
 let tab='quiz';
 let learnSub='study'; // sub-tab within Learn: study|flash|drugs
+let _studyMode='learn'; // v10.54.0: 'learn'|'lib' — which mode in unified Study tab
 let moreSub='calc';   // sub-tab within More: calc|search|chat|feedback
 let calcView='calc'; // sub-view within Calc: calc|basket|eol|lab|aging
 let libSec='haz-pdf';
@@ -4020,6 +4021,24 @@ h+=_rlExams();
 h+=_rlFooter();
 return h;
 }
+// v10.54.0: body-only variant for merged Study tab — skips _rlHeader (the per-section
+// pill bar is replaced by the unified Study sub-bar) and _rlFooter.
+function renderLibraryBody(){
+if(libSec==='grs8'&&!_grsData&&!_grsLoading){
+_grsLoading=true;
+Promise.all([
+fetch('data/grs8_chapters.json').then(r=>r.json()),
+fetch('data/grs8_question_pages.json').then(r=>r.json()).catch(()=>({}))
+]).then(([ch,pages])=>{_grsData=ch;window._grsPages=pages;_grsLoading=false;render();}).catch(e=>{console.error('Failed to load GRS8 chapters',e);_grsData={};window._grsPages={};_grsLoading=false;render();});
+}
+let h=_rlHazzard();
+h+=_rlHarrison();
+h+=_rlGrs8();
+h+=_rlLaws();
+h+=_rlArticles();
+h+=_rlExams();
+return h;
+}
 
 
 
@@ -4696,35 +4715,52 @@ function renderExamTrendCard(){
     const delta=(newN/newTot - oldN/oldTot)*100;
     return{ti,name,oldN,newN,oldPct:oldN/oldTot*100,newPct:newN/newTot*100,delta};
   }).filter(r=>r.oldN+r.newN>0);
-  
-  const growing=trends.filter(r=>r.delta>0.5).sort((a,b)=>b.delta-a.delta).slice(0,6);
-  const shrinking=trends.filter(r=>r.delta<-0.5).sort((a,b)=>a.delta-b.delta).slice(0,4);
-  
-  let h=`<div class="card" style="padding:14px;margin-bottom:10px;border-left:4px solid #7c3aed">
-<div style="font-weight:700;font-size:12px;margin-bottom:4px;color:#7c3aed">📈 Exam Trend — 2020-23 vs 2024-25</div>
-<div style="font-size:9px;color:rgb(var(--fg3));margin-bottom:10px">Where the exam is heading. Study accordingly.</div>`;
-  
-  h+=`<div style="font-size:10px;font-weight:700;color:#059669;margin-bottom:5px">▲ GROWING — prioritize</div>`;
-  growing.forEach(r=>{
-    const barW=Math.min(100,Math.round(r.delta*15));
-    h+=`<div style="margin-bottom:5px">
-<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px">
-  <span style="font-weight:${r.delta>1.5?'700':'400'}">${r.name}</span>
-  <span style="color:#059669">+${r.delta.toFixed(1)}pp · ${r.newPct.toFixed(1)}% of exam</span>
+
+  const growing=trends.filter(r=>r.delta>0.5).sort((a,b)=>b.delta-a.delta).slice(0,5);
+  const shrinking=trends.filter(r=>r.delta<-0.5).sort((a,b)=>a.delta-b.delta).slice(0,5);
+  const maxAbs=Math.max(1,...growing.map(r=>r.delta),...shrinking.map(r=>-r.delta));
+
+  // v10.54.0: editorial-cleaner layout — 2-col responsive grid, balanced 5+5,
+  // proportional bars (relative to max delta), legacy slate tokens.
+  let h=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px">
+  <span style="font-weight:700;font-size:13px;color:rgb(var(--fg))">📈 Exam Trend</span>
+  <span style="font-size:10px;color:rgb(var(--fg3));font-variant-numeric:tabular-nums">2020–23 vs 2024–25</span>
 </div>
-<div style="height:4px;background:#e2e8f0;border-radius:2px"><div style="width:${barW}%;height:100%;background:#10b981;border-radius:2px"></div></div>
+<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:12px">Where the exam is heading. Study accordingly.</div>`;
+
+  h+=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">`;
+  // Growing column
+  h+=`<div><div style="font-size:10px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">▲ Growing</div>`;
+  if(growing.length===0){h+=`<div style="font-size:10px;color:rgb(var(--fg3))">no significant growth</div>`;}
+  growing.forEach(r=>{
+    const barW=Math.round(r.delta/maxAbs*100);
+    h+=`<div style="margin-bottom:6px">
+<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;gap:8px">
+  <span style="color:rgb(var(--fg));overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0">${r.name}</span>
+  <span style="color:#059669;font-variant-numeric:tabular-nums;flex-shrink:0">+${r.delta.toFixed(1)}pp</span>
+</div>
+<div style="height:3px;background:rgb(var(--bg2));border-radius:2px"><div style="width:${barW}%;height:100%;background:#10b981;border-radius:2px"></div></div>
 </div>`;
   });
-  
-  h+=`<div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:5px;margin-top:10px">▼ SHRINKING — less priority</div>`;
+  h+=`</div>`;
+  // Shrinking column
+  h+=`<div><div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">▼ Shrinking</div>`;
+  if(shrinking.length===0){h+=`<div style="font-size:10px;color:rgb(var(--fg3))">no significant decline</div>`;}
   shrinking.forEach(r=>{
-    h+=`<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px">
-<span style="color:rgb(var(--fg2))">${r.name}</span>
-<span style="color:#dc2626">${r.delta.toFixed(1)}pp</span>
+    const barW=Math.round(-r.delta/maxAbs*100);
+    h+=`<div style="margin-bottom:6px">
+<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;gap:8px">
+  <span style="color:rgb(var(--fg2));overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0">${r.name}</span>
+  <span style="color:#dc2626;font-variant-numeric:tabular-nums;flex-shrink:0">${r.delta.toFixed(1)}pp</span>
+</div>
+<div style="height:3px;background:rgb(var(--bg2));border-radius:2px"><div style="width:${barW}%;height:100%;background:#ef4444;border-radius:2px"></div></div>
 </div>`;
   });
-  
-  h+=`<div style="font-size:9px;color:rgb(var(--fg3));margin-top:8px;border-top:1px solid rgb(var(--brd));padding-top:6px">Old: 2020-2023 (${oldTot}q) · New: 2024-May, 2024-Sep, 2025-Jun (${newTot}q)</div>`;
+  h+=`</div>`;
+  h+=`</div>`;
+
+  h+=`<div style="font-size:9px;color:rgb(var(--fg3));margin-top:10px;border-top:1px solid rgb(var(--brd));padding-top:8px;font-variant-numeric:tabular-nums">Old: ${oldTot}q (2020–2023) · New: ${newTot}q (2024-May, 2024-Sep, 2025-Jun)</div>`;
   h+=`</div>`;
   return h;
 }
@@ -5358,7 +5394,7 @@ h+=`</div>`;
 }
 }
 // Syllabus
-h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📋 Syllabus (${done}/40)</div>`;
+h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📋 Syllabus (${done}/${TOPICS.length})</div>`;
 // v10.50.0: removed "📊 Accuracy by Topic" list — it duplicated the 🗺️ Topic Mastery Map
 // already shown at the top of Track in _rtTop(). One topic-accuracy view is enough.
 const tSt=getTopicStats();
@@ -5387,7 +5423,7 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px">`;
 h+=`<div onclick="S._wsmOpen=!S._wsmOpen;save();render()" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px;${_wsmOpen?'margin-bottom:8px':''}" role="button" tabindex="0" aria-expanded="${_wsmOpen?'true':'false'}" aria-label="Toggle weak spots map"><span style="flex:1">🗺️ Weak Spots Map <span style="font-weight:400;color:rgb(var(--fg3));font-size:10px">· ${heatData.length} topic${heatData.length>1?'s':''} × ${years.length} exam${years.length>1?'s':''}</span></span><span style="color:rgb(var(--fg2))">${_wsmOpen?'▲':'▼'}</span></div>`;
 if(_wsmOpen){
 h+=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:9px"><thead><tr><th style="text-align:right;padding:3px;font-size:8px">Topic</th>`;
-const _yearAbbr={'2020':'20','2021':'21','2021-Jun':"21·6",'2022':'22','2023-Jun':"23·6",'2023-Sep':"23·9",'2024-May':"24·5",'2024-Sep':"24·9",'2025-Jun':"25·6",'Hazzard':'Haz','Harrison':'Har','Exam':'Ex','Hazzard-suppl':'Sup'};
+const _yearAbbr={'2020':'20','2021':'21','2021-Jun':"21·6",'2022':'22','2023-Jun':"23·6",'2023-Sep':"23·9",'2024-May':"24·5",'2024-Sep':"24·9",'2025-Jun':"25·6",'Hazzard':'Haz','Harrison':'Har','Exam':'Ex','Hazzard-suppl':'Sup','FM-Core':'FM','GRS8':'GRS','Harrison-suppl':'HSup'};
 years.forEach(y=>{h+=`<th style="padding:3px;text-align:center;font-size:8px;white-space:nowrap;min-width:28px" title="${y}">${_yearAbbr[y]||y}</th>`;});
 h+=`</tr></thead><tbody>`;
 heatData.sort((a,b)=>{
@@ -5449,15 +5485,7 @@ return h;
 }
 function _rtFooter(){
 let h='';
-// IMA Links
-h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">📥 IMA Exam Archive</div><div style="font-size:10px">`;
-[["2022","639899_34c9618e-ff88-4811-84d5-ba1fdd9d5f1c","639902_9a12e7aa-9876-40e1-bdea-0786dc417406"],
-["2023","639904_14aa53eb-d114-4ab8-8bfe-938b32d02fc0","639907_33601987-d23e-4f5f-8180-53890b2cfcb4"],
-["May 24","652285_f10c088f-c183-4f9c-8324-b37bedabe522","652288_5f94445c-1fe5-4207-bd42-e223be8064a0"],
-["Sep 24","652291_5946c97e-78c1-4920-81e3-1081d46fdb6e","652294_46e7d570-db16-4307-b4f1-66f002ed456e"],
-["Jun 25","749665_d23a3de1-a2af-4467-b2b0-71f297f6b800","766892_d886488d-27d3-487c-8088-56f67ae43409"],
-].forEach(([y,q,a])=>{h+=`<div style="display:flex;gap:8px;padding:3px 0"><b style="width:48px">${y}</b><a href="https://ima-files.s3.amazonaws.com/${q}.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">שאלון</a><a href="https://ima-files.s3.amazonaws.com/${a}.pdf" target="_blank" style="color:rgb(var(--sky));text-decoration:underline">תשובות</a></div>`;});
-h+=`</div></div>`;
+// v10.54.0: IMA Exam Archive removed — duplicated Library → Exams sub-tab.
 // Reset
 // Share with friends
 h+=`<div class="card" style="padding:14px;text-align:center;margin-top:12px">
@@ -6349,19 +6377,44 @@ if(tab!==lastTab){el.classList.remove('fade-in');void el.offsetWidth;el.classLis
 switch(tab){
 case'quiz':el.innerHTML=onCallMode?renderOnCall():renderQuiz();break;
 case'learn':
-  {const _subBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+
-  [{id:'study',ic:'📚',l:'Study'},{id:'flash',ic:'🃏',l:'Cards'},{id:'drugs',ic:'💊',l:'Drugs'}].map(s=>
-    '<button onclick="learnSub=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(learnSub===s.id?'700':'400')+';cursor:pointer;background:'+(learnSub===s.id?'#fff':'transparent')+';color:'+(learnSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(learnSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>'
-  ).join('')+'</div>';
+  // v10.54.0: unified Study tab — merges old Learn (Notes/Cards/Drugs) + Library
+  // (Hazzard/Harrison/GRS8/Laws/Articles/Exams) into one horizontally-scrollable
+  // pill bar. _studyMode tracks which mode is current. Existing onclick handlers
+  // `tab='lib';libSec='haz-pdf'` still work via case 'lib' alias below.
+  {const _learnPills=[
+    {id:'study', mode:'learn', ic:'📝', l:'Notes'},
+    {id:'flash', mode:'learn', ic:'🃏', l:'Cards'},
+    {id:'drugs', mode:'learn', ic:'💊', l:'Drugs'},
+    {id:'haz-pdf',mode:'lib',  ic:'📕', l:'Hazzard'},
+    {id:'harrison',mode:'lib', ic:'📗', l:'Harrison'},
+    {id:'grs8',  mode:'lib',   ic:'📙', l:'GRS8'},
+    {id:'laws',  mode:'lib',   ic:'⚖️', l:'Laws'},
+    {id:'articles',mode:'lib', ic:'📄', l:'Articles'},
+    {id:'exams', mode:'lib',   ic:'📝', l:'Exams'}
+  ];
+  const _curId = _studyMode==='learn' ? learnSub : libSec;
+  let _subBar='<div style="display:flex;gap:6px;overflow-x:auto;padding:4px 2px 6px;margin-bottom:12px;-webkit-overflow-scrolling:touch;scrollbar-width:none">';
+  _learnPills.forEach(p=>{
+    const _on = (p.id===_curId);
+    const _click = p.mode==='learn'
+      ? `_studyMode='learn';learnSub='${p.id}';render()`
+      : `_studyMode='lib';libSec='${p.id}';render()`;
+    _subBar += `<button onclick="${_click}" style="flex:0 0 auto;padding:7px 14px;border:1px solid ${_on?'rgb(var(--sl8))':'rgb(var(--brd))'};border-radius:999px;font-size:11px;font-weight:${_on?'700':'500'};cursor:pointer;background:${_on?'rgb(var(--sl8))':'rgb(var(--card-bg))'};color:${_on?'#fff':'rgb(var(--fg2))'};white-space:nowrap;transition:all .15s ease">${p.ic} ${p.l}</button>`;
+  });
+  _subBar += '</div>';
   let _body='';
-  if(learnSub==='study')_body=renderStudy();
-  else if(learnSub==='flash')_body=renderFlash();
-  else if(learnSub==='drugs')_body=renderDrugs();
-  el.innerHTML=_subBar+_body;}break; // safe-innerhtml: _subBar is static HTML; _body from internal render*() functions (no user input)
+  if(_studyMode==='lib'){
+    _body = renderLibraryBody(); // lib body without its own header+sub-bar
+  } else {
+    if(learnSub==='study')_body=renderStudy();
+    else if(learnSub==='flash')_body=renderFlash();
+    else if(learnSub==='drugs')_body=renderDrugs();
+  }
+  el.innerHTML=_subBar+_body;}break; // safe-innerhtml: _subBar is built from a hardcoded pill array (no user input)
 case'study':tab='learn';learnSub='study';el.innerHTML='';render();break;
 case'flash':tab='learn';learnSub='flash';el.innerHTML='';render();break;
 case'drugs':tab='learn';learnSub='drugs';el.innerHTML='';render();break;
-case'lib':el.innerHTML=renderLibrary();break;
+case'lib':_studyMode='lib';tab='learn';render();break; // v10.54.0: alias to merged Study tab
 case'calc':tab='more';moreSub='calc';el.innerHTML='';render();break;
 case'track':
   // Save session summary when switching to track tab
@@ -6384,7 +6437,7 @@ case'more':
   el.innerHTML=_moreBar+_mBody;}break; // safe-innerhtml: _moreBar is static HTML; _mBody from internal render*() functions (no user input)
 case'search':tab='more';moreSub='search';el.innerHTML='';render();break;
 case'chat':tab='more';moreSub='chat';el.innerHTML='';render();break;
-case'book':case'syl':tab='lib';el.innerHTML=renderLibrary();break;
+case'book':case'syl':_studyMode='lib';tab='learn';el.innerHTML='';render();break; // v10.54.0
 default:tab='quiz';el.innerHTML=renderQuiz();break;
 }
 // Ward modal
@@ -6507,7 +6560,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.52.0';
+const APP_VERSION='10.54.0';
 const CHANGELOG={
 '10.50.0':[
 '💾 Backup is now one tap away — clicking the "🟢 Synced" pill in the top-left used to show a static toast pointing to a stale "Track → Backup to Cloud" location (the Backup card moved to Settings in v10.48.0; the toast was lying). It is now a proper bottom-sheet modal with three actions: 💾 Backup now (one-tap call to cloudBackup), ☁️ Restore from cloud (cloudRestore), and a "Manage all data →" link that deep-links to More → Settings and scrolls smoothly to the Data Management section. Offline state disables the Backup/Restore buttons and shows a clear hint instead of silently failing.',
