@@ -1,0 +1,194 @@
+/* ============================================================================
+ * Shared Design Tokens — Medical PWA Suite
+ * Used by: Geriatrics, InternalMedicine, FamilyMedicine
+ *
+ * BYTE-IDENTICAL across the three medical PWAs (same precedent as fsrs.js).
+ * Source of truth: C:\Users\User\repos\.shared\tokens.css
+ * Each consuming repo copies this file to its own location and `@import`s it.
+ *
+ * Conventions:
+ *   --color-* → palette. Light + dark variants via [data-theme="dark"]
+ *   --type-*  → font-family + scale (1.25 ratio, fluid clamps)
+ *   --space-* → 4px-base scale, 0..16
+ *   --radius-*, --shadow-*, --motion-*, --easing-*
+ *
+ * RTL/Hebrew note: all sizing is logical (no `right`/`left`). Use
+ *   `inset-inline-start/end`, `margin-inline-*`, `padding-inline-*`.
+ * ========================================================================= */
+
+:root {
+  /* ---------- Color: light theme (default) ---------- */
+  --color-bg:           #fafaf7;
+  --color-surface:      #ffffff;
+  --color-surface-2:    #f3f3ee;
+  --color-border:       #e3e2dc;
+  --color-border-strong:#bdbcb4;
+
+  --color-fg:           #1a1916;
+  --color-fg-muted:     #5b5a52;
+  --color-fg-subtle:    #8d8b80;
+
+  --color-accent:       #5b3df5;     /* primary action — purple-blue, neutral on Hebrew & English */
+  --color-accent-fg:    #ffffff;
+  --color-accent-soft:  #efe9ff;
+
+  --color-success:      #2f7a3a;
+  --color-warn:         #c98a1d;
+  --color-danger:       #c4332e;
+  --color-info:         #1c6ea4;
+
+  /* Mastery heat scale (colorblind-safe Viridis-derived, 5 steps) */
+  --heat-0: #440154;  /* lowest mastery */
+  --heat-1: #3b528b;
+  --heat-2: #21918c;
+  --heat-3: #5ec962;
+  --heat-4: #fde725;  /* highest mastery */
+  --heat-na:#7a7a72;  /* not enough data */
+
+  /* ---------- Type ---------- */
+  /* Hebrew display — Frank Ruhl Libre. Hebrew body — Heebo.
+   * Latin/code fallback first so unloaded fonts don't shift layout grossly. */
+  --font-display: 'Frank Ruhl Libre', 'David Libre', 'EB Garamond', Georgia, serif;
+  --font-body:    'Heebo', 'Assistant', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --font-mono:    ui-monospace, 'Cascadia Mono', 'JetBrains Mono', Consolas, 'Courier New', monospace;
+
+  /* Fluid type scale, 1.25 ratio */
+  --text-xs:   clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
+  --text-sm:   clamp(0.83rem, 0.80rem + 0.15vw, 0.92rem);
+  --text-md:   clamp(1.00rem, 0.95rem + 0.25vw, 1.08rem);
+  --text-lg:   clamp(1.25rem, 1.18rem + 0.35vw, 1.40rem);
+  --text-xl:   clamp(1.56rem, 1.45rem + 0.55vw, 1.80rem);
+  --text-2xl:  clamp(1.95rem, 1.78rem + 0.85vw, 2.30rem);
+  --text-3xl:  clamp(2.44rem, 2.18rem + 1.30vw, 2.95rem);
+
+  --leading-tight: 1.18;
+  --leading-snug:  1.32;
+  --leading-body:  1.55;
+  --leading-loose: 1.72;
+
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-bold:    700;
+  --weight-black:   900;
+
+  /* ---------- Space (4px base) ---------- */
+  --space-0:  0;
+  --space-1:  0.25rem;  /*  4px */
+  --space-2:  0.5rem;   /*  8px */
+  --space-3:  0.75rem;  /* 12px */
+  --space-4:  1rem;     /* 16px */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* ---------- Radius / Shadow ---------- */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-pill: 999px;
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 1px rgb(0 0 0 / 0.04);
+  --shadow-2: 0 2px 6px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-3: 0 8px 24px rgb(0 0 0 / 0.10), 0 2px 6px rgb(0 0 0 / 0.06);
+  --shadow-inset: inset 0 0 0 1px rgb(0 0 0 / 0.06);
+
+  /* ---------- Motion ---------- */
+  --motion-fast:   120ms;
+  --motion-base:   220ms;
+  --motion-slow:   400ms;
+  --easing-out:    cubic-bezier(0.20, 0.80, 0.30, 1.00);
+  --easing-in-out: cubic-bezier(0.65, 0.05, 0.36, 1.00);
+  --easing-spring: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+
+  /* ---------- Component sizing ---------- */
+  --touch-min: 44px;       /* WCAG 2.5.5 + iOS HIG */
+  --tap-pad:   var(--space-3);
+  --hairline:  1px;
+
+  /* z-index */
+  --z-base:    1;
+  --z-overlay: 100;
+  --z-sticky:  200;
+  --z-modal:   1000;
+  --z-toast:   2000;
+}
+
+/* ---------- Color: dark theme ---------- */
+[data-theme="dark"] {
+  --color-bg:           #0e0e10;
+  --color-surface:      #17171a;
+  --color-surface-2:    #1f1f23;
+  --color-border:       #2a2a30;
+  --color-border-strong:#41414a;
+
+  --color-fg:           #f1f0eb;
+  --color-fg-muted:     #b6b5ad;
+  --color-fg-subtle:    #7c7b73;
+
+  --color-accent:       #9b8aff;
+  --color-accent-fg:    #1a1916;
+  --color-accent-soft:  #2a2240;
+
+  --color-success:      #5fbf6e;
+  --color-warn:         #e8b25e;
+  --color-danger:       #e87770;
+  --color-info:         #6fb6e0;
+}
+
+/* Auto-prefers-dark fallback if app didn't set [data-theme] yet */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg:           #0e0e10;
+    --color-surface:      #17171a;
+    --color-surface-2:    #1f1f23;
+    --color-border:       #2a2a30;
+    --color-border-strong:#41414a;
+    --color-fg:           #f1f0eb;
+    --color-fg-muted:     #b6b5ad;
+    --color-fg-subtle:    #7c7b73;
+    --color-accent:       #9b8aff;
+    --color-accent-fg:    #1a1916;
+    --color-accent-soft:  #2a2240;
+    --color-success:      #5fbf6e;
+    --color-warn:         #e8b25e;
+    --color-danger:       #e87770;
+    --color-info:         #6fb6e0;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-slow: 0ms;
+  }
+}
+
+/* ---------- Common base utilities (opt-in via class) ---------- */
+.t-display { font-family: var(--font-display); font-weight: var(--weight-bold); line-height: var(--leading-tight); }
+.t-body    { font-family: var(--font-body); font-weight: var(--weight-regular); line-height: var(--leading-body); }
+.t-mono    { font-family: var(--font-mono); }
+
+.surface   { background: var(--color-surface); color: var(--color-fg); border: var(--hairline) solid var(--color-border); border-radius: var(--radius-lg); }
+.surface-2 { background: var(--color-surface-2); color: var(--color-fg); border-radius: var(--radius-md); }
+
+.heat-cell { display: inline-block; width: 64px; height: 64px; border-radius: var(--radius-sm); transition: transform var(--motion-fast) var(--easing-out); }
+.heat-cell:hover { transform: scale(1.06); }
+.heat-0 { background: var(--heat-0); }
+.heat-1 { background: var(--heat-1); }
+.heat-2 { background: var(--heat-2); }
+.heat-3 { background: var(--heat-3); }
+.heat-4 { background: var(--heat-4); }
+.heat-na{ background: var(--heat-na); }
+
+/* Hebrew/RTL hygiene — applies wherever class is set; doesn't force */
+.heb {
+  font-family: var(--font-body);
+  unicode-bidi: plaintext;
+  text-align: start;
+}
