@@ -1387,7 +1387,6 @@ let tab='quiz';
 let learnSub='study'; // sub-tab within Learn: study|flash|drugs
 let _studyMode='learn'; // v10.54.0: 'learn'|'lib' — which mode in unified Study tab
 let moreSub='calc';   // sub-tab within More: calc|search|chat|feedback
-let calcView='calc'; // sub-view within Calc: calc|basket|eol|lab|aging
 let libSec='haz-pdf';
 let harChOpen=null,_harData=null,_harLoading=false;
 let hazChOpen=null,_hazData=null,_hazLoading=false;
@@ -4278,8 +4277,6 @@ return h;
 }
 
 // ===== CALCULATORS =====
-let calcVals={};
-function calcUp(k,v){calcVals[k]=parseFloat(v)||0;render();}
 
 // ===== CALCULATOR HELPERS (_rc* prefix) =====
 function renderCalc(){
@@ -6093,7 +6090,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.57.0';
+const APP_VERSION='10.57.1';
 const CHANGELOG={
 '10.50.0':[
 '💾 Backup is now one tap away — clicking the "🟢 Synced" pill in the top-left used to show a static toast pointing to a stale "Track → Backup to Cloud" location (the Backup card moved to Settings in v10.48.0; the toast was lying). It is now a proper bottom-sheet modal with three actions: 💾 Backup now (one-tap call to cloudBackup), ☁️ Restore from cloud (cloudRestore), and a "Manage all data →" link that deep-links to More → Settings and scrolls smoothly to the Data Management section. Offline state disables the Backup/Restore buttons and shows a clear hint instead of silently failing.',
