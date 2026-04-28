@@ -242,7 +242,7 @@ describe("flashcards.json — content quality", () => {
 
 describe("tabs.json — app navigation", () => {
   it("has the expected number of tabs", () => {
-    expect(tabs.length).toBeGreaterThanOrEqual(5);
+    expect(tabs.length).toBeGreaterThanOrEqual(4); // v10.54.0: merged Learn+Library into Study
   });
 
   it("every tab has id, icon (ic), and label (l)", () => {
