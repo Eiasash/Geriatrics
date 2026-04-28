@@ -1419,7 +1419,7 @@ function _topicSrcMatch(q){if(topicSrc==='all')return true;const ex=_isExamTag(q
 function setTopicSrc(s){if(!['all','exams','books'].includes(s))return;topicSrc=s;try{localStorage.setItem('samega_topic_src',s);}catch(e){}if(filt==='topic'){buildPool();}render();}
 // Canonical exam-session tags (ported from Pnimit's EXAM_YEARS). Bare 2020/2021/2022
 // month-unresolved — kept on whitelist so multi-select pills can still target them.
-const EXAM_YEARS=['2020','2021','2021-Jun','2022','2023-Jun','2023-Sep','2024-May','2024-Sep','2025-Jun','2025-Jun-Basic'];
+const EXAM_YEARS=['2020','2021-Jun','2021-Dec','2022-Jun-Basic','2022-Jun-Subspec','2022-Jun-orphan','2023-Jun-Basic','2023-Jun-Subspec','2023-Jun-orphan','2023-Sep','2024-May-Basic','2024-May-Subspec','2024-Sep-Basic','2024-Sep-Subspec','2024-orphan','2025-Jun-Basic']; // v10.55.0: matches actual DB tags (was stale — '2022','2023-Jun','2024-May' matched 0q)
 // Multi-select exam-year filter. Persisted across sessions (unlike Pnimit's runtime-only G.years).
 let selectedExamYears=(function(){
   try{const raw=localStorage.getItem('samega_exam_filter');if(!raw)return new Set();
@@ -3207,51 +3207,80 @@ const HAZZARD_MARKED_PARTS=[
 ];
 // ===== TOPIC PRIORITY MATRIX (added to Track tab) =====
 function renderPriorityMatrix(){
+  // v10.55.0: rewrite — compute exam frequency dynamically from real DB tags
+  // (was hardcoded EF_FREQ=40 entries, broken for the 6 topics 40–45). Split
+  // into "Drilled" (sorted by gap × freq) and "Never drilled" (sorted by freq
+  // alone) so untested topics don't dominate when freq*0.7 > tested topics.
   const TOPICS_L=TOPICS;
-  const EF_FREQ=[0,34,30,28,36,43,178,39,63,36,20,27,19,22,50,40,22,94,70,78,18,80,43,21,46,27,29,52,10,11,7,0,6,9,26,19,23,9,17,0];
-  const maxFreq=Math.max(...EF_FREQ);
+  const _topicFreq=new Array(TOPICS_L.length).fill(0);
+  QZ.forEach(q=>{ if(EXAM_YEARS.includes(q.t) && q.ti>=0 && q.ti<TOPICS_L.length) _topicFreq[q.ti]++; });
+  const maxFreq=Math.max(1,..._topicFreq);
   const tSt=getTopicStats();
-  const rows=TOPICS_L.map((name,ti)=>{
+  const all=TOPICS_L.map((name,ti)=>{
     const s=tSt[ti]||{ok:0,no:0,tot:0};
     const acc=s.tot>0?s.ok/s.tot:null;
-    const freq=EF_FREQ[ti]||0;
-    const freqPct=maxFreq>0?freq/maxFreq:0;
-    const gap=acc===null?0.7:(1-acc); // unknown → treat as 70% gap
-    const priority=Math.round(freqPct*gap*100);
-    return{ti,name,freq,acc,gap,priority,s};
-  }).filter(r=>r.freq>0).sort((a,b)=>b.priority-a.priority);
-  
-  let h='<div style="font-weight:700;font-size:12px;margin:14px 0 8px;color:#0f172a">🎯 Priority Matrix — where to study next</div>';
-  h+='<div style="font-size:9px;color:rgb(var(--fg3));margin-bottom:8px">Score = exam frequency × your gap. Higher = drill harder.</div>';
-  rows.slice(0,15).forEach((r,rank)=>{
-    const accStr=r.acc===null?'untested':`${Math.round(r.acc*100)}%`;
-    const barW=Math.round(r.priority);
-    const color=r.priority>=60?'#dc2626':r.priority>=30?'#f59e0b':'#10b981';
-    const trend=getTopicTrend(r.ti);
-    const trendStr=trend===null?'':trend>5?'<span style="color:#059669;font-size:10px">↑</span>':trend<-5?'<span style="color:#dc2626;font-size:10px">↓</span>':'<span style="color:rgb(var(--fg3));font-size:10px">→</span>';
-    h+=`<div style="margin-bottom:6px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
-        <div style="font-size:11px;font-weight:${rank<5?'700':'400'}">${rank+1}. ${r.name} ${trendStr}</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <span style="font-size:9px;color:rgb(var(--fg2))">${r.s.tot}q · ${accStr}</span>
-          <span style="font-size:10px;font-weight:700;color:${color}">${r.priority}</span>
+    const freq=_topicFreq[ti]||0;
+    const freqPct=freq/maxFreq;
+    return{ti,name,freq,acc,s,freqPct};
+  }).filter(r=>r.freq>0);
+
+  // Drilled = ≥3 attempts (statistically meaningful). Sort by gap × freq.
+  const drilled=all.filter(r=>r.s.tot>=3).map(r=>{
+    const gap=1-r.acc;
+    const priority=Math.round(r.freqPct*gap*100);
+    return{...r,gap,priority};
+  }).sort((a,b)=>b.priority-a.priority);
+
+  // Untested or barely-tested (<3 attempts). Sort by raw frequency.
+  const undrilled=all.filter(r=>r.s.tot<3).sort((a,b)=>b.freq-a.freq);
+
+  let h='<div style="font-weight:700;font-size:12px;margin:14px 0 4px;color:#0f172a">🎯 Priority Matrix — where to study next</div>';
+  h+='<div style="font-size:9px;color:rgb(var(--fg3));margin-bottom:10px">Drilled (≥3 attempts): freq × your gap. Untested: by exam frequency.</div>';
+
+  // Drilled section
+  if(drilled.length>0){
+    h+='<div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.04em;margin:8px 0 6px">📊 Drilled — fix your gaps ('+drilled.length+')</div>';
+    drilled.slice(0,10).forEach((r,rank)=>{
+      const accStr=Math.round(r.acc*100)+'%';
+      const barW=Math.round(r.priority);
+      const color=r.priority>=60?'#dc2626':r.priority>=30?'#f59e0b':'#10b981';
+      const trend=getTopicTrend(r.ti);
+      const trendStr=trend===null?'':trend>5?'<span style="color:#059669;font-size:10px">↑</span>':trend<-5?'<span style="color:#dc2626;font-size:10px">↓</span>':'<span style="color:rgb(var(--fg3));font-size:10px">→</span>';
+      h+=`<div style="margin-bottom:6px;cursor:pointer" onclick="setTopicFilt(${r.ti});tab='quiz';render()" title="Drill ${r.name}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+          <div style="font-size:11px;font-weight:${rank<3?'700':'500'}">${rank+1}. ${r.name} ${trendStr}</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:9px;color:rgb(var(--fg2))">${r.s.tot}q · ${accStr}</span>
+            <span style="font-size:10px;font-weight:700;color:${color}">${r.priority}</span>
+          </div>
         </div>
-      </div>
-      <div style="height:5px;background:#e2e8f0;border-radius:3px;overflow:hidden">
-        <div style="width:${barW}%;height:100%;background:${color};border-radius:3px"></div>
-      </div>
-    </div>`;
-  });
-  h+=`<div onclick="var el=document.getElementById('pmFull');el.style.display=el.style.display==='none'?'block':'none'" style="font-size:10px;color:rgb(var(--sky));cursor:pointer;margin-top:6px">Show all 40 topics ▾</div>`;
-  h+=`<div id="pmFull" style="display:none">`;
-  rows.slice(15).forEach((r,rank)=>{
-    const accStr=r.acc===null?'untested':`${Math.round(r.acc*100)}%`;
-    h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgb(var(--brd));font-size:10px">
-      <span>${rank+16}. ${r.name}</span>
-      <span style="color:rgb(var(--fg2))">${r.s.tot}q · ${accStr}</span>
-    </div>`;
-  });
-  h+=`</div>`;
+        <div style="height:5px;background:rgb(var(--bg2));border-radius:3px;overflow:hidden">
+          <div style="width:${barW}%;height:100%;background:${color};border-radius:3px"></div>
+        </div>
+      </div>`;
+    });
+  } else {
+    h+='<div style="font-size:10px;color:rgb(var(--fg3));margin:6px 0 10px;padding:8px 10px;background:rgb(var(--bg2));border-radius:8px">No topic drilled ≥3× yet — answer questions to build a real gap map.</div>';
+  }
+
+  // Never drilled section — by frequency
+  if(undrilled.length>0){
+    const _udOpen=S._udOpen===true;
+    h+=`<div onclick="S._udOpen=!S._udOpen;save();render()" role="button" tabindex="0" style="font-size:10px;font-weight:700;color:#3a5b8a;text-transform:uppercase;letter-spacing:.04em;margin:14px 0 6px;cursor:pointer;display:flex;align-items:center;gap:6px"><span>🆕 Never drilled — by exam frequency (${undrilled.length})</span><span style="color:rgb(var(--fg3))">${_udOpen?'▲':'▼'}</span></div>`;
+    if(_udOpen){
+      undrilled.slice(0,15).forEach((r,rank)=>{
+        const barW=Math.round(r.freqPct*100);
+        h+=`<div style="margin-bottom:5px;cursor:pointer" onclick="setTopicFilt(${r.ti});tab='quiz';render()" title="Drill ${r.name}">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+            <div style="font-size:11px;color:rgb(var(--fg2))">${rank+1}. ${r.name}</div>
+            <span style="font-size:9px;color:rgb(var(--fg3))">${r.freq}q · untested</span>
+          </div>
+          <div style="height:3px;background:rgb(var(--bg2));border-radius:2px"><div style="width:${barW}%;height:100%;background:#3a5b8a;border-radius:2px"></div></div>
+        </div>`;
+      });
+      if(undrilled.length>15)h+=`<div style="font-size:9px;color:rgb(var(--fg3));margin-top:4px;text-align:center">+ ${undrilled.length-15} more topics with no attempts</div>`;
+    }
+  }
   return h;
 }
 function renderWrongAnswerLog(){
@@ -4549,30 +4578,13 @@ return h;
 }
 
 function renderCalc(){
-// Tool selector pills
-const _cv=[{id:'calc',l:'🧮 Calculators'},{id:'basket',l:'🧺 Med Basket'},{id:'eol',l:'🕊️ EOL Tree'},{id:'lab',l:'🔬 Lab Ref'},{id:'aging',l:'📋 Aging Sheet'}];
-let h=`<div style="display:flex;gap:4px;overflow-x:auto;padding:4px 0;margin-bottom:8px">`;
-_cv.forEach(v=>{h+=`<button onclick="calcView='${v.id}';render()" style="white-space:nowrap;padding:6px 12px;border:none;border-radius:20px;font-size:10px;font-weight:${calcView===v.id?'700':'400'};cursor:pointer;background:${calcView===v.id?'#0f172a':'#f1f5f9'};color:${calcView===v.id?'#fff':'#64748b'}">${v.l}</button>`;});
-h+=`</div>`;
-if(calcView==='basket')return h+renderMedBasket();
-if(calcView==='eol')return h+renderEOLTree();
-if(calcView==='lab')return h+renderLabOverlay();
-if(calcView==='aging')return h+renderAgingSheet();
-h+=`<div class="sec-s">CrCl · CHA₂DS₂-VASc · CURB-65 · GDS-15 · Braden · PADUA</div>`;
-h+=_rcCrCl();
-h+=_rcChads();
-h+=_rcCurb();
-h+=_rcGds();
-h+=_rcBraden();
-h+=_rcPadua();
-h+=_rcKatz();
-h+=_rcLawton();
-h+=_rc4at();
-h+=_rcMna();
-h+=_rcCfs();
-h+=_rcNorton();
-h+=_rcMorse();
-return h;
+// v10.55.0: collapsed to Med Basket only. The Calculators (CrCl/CHA2DS2/CURB/
+// GDS/Braden/PADUA/Katz/Lawton/4AT/MNA/CFS/Norton/Morse), EOL Tree, Lab Ref,
+// and Aging Sheet sub-views were removed per user feedback (signal-to-noise:
+// these duplicate textbook quick-refs and add clutter to the More tab).
+// _rc* and renderEOLTree/renderLabOverlay/renderAgingSheet helpers are kept
+// in source for now but unreachable from UI; can be deleted in a follow-up.
+return renderMedBasket();
 }
 
 // ===== RTL MEDICOLEGAL TEXT GENERATOR =====
@@ -4704,8 +4716,10 @@ const TOPIC_REF={
 };
 
 function renderExamTrendCard(){
-  const OLD_EX=new Set(['2020','2021','2021-Jun','2022','2023-Jun','2023-Sep']);
-  const NEW_EX=new Set(['2024-May','2024-Sep','2025-Jun']);
+  // v10.55.0: real DB tags. Was matching only 225q (stale '2021','2022','2023-Jun')
+  const OLD_EX=new Set(['2020','2021-Jun','2021-Dec','2022-Jun-Basic','2022-Jun-Subspec','2022-Jun-orphan','2023-Jun-Basic','2023-Jun-Subspec','2023-Jun-orphan','2023-Sep']);
+  // v10.55.0: real DB tags. Was matching 0q (stale '2024-May','2024-Sep','2025-Jun')
+  const NEW_EX=new Set(['2024-May-Basic','2024-May-Subspec','2024-Sep-Basic','2024-Sep-Subspec','2024-orphan','2025-Jun-Basic']);
   const TOPICS_L=TOPICS;
   const oldTot=QZ.filter(q=>OLD_EX.has(q.t)).length||1;
   const newTot=QZ.filter(q=>NEW_EX.has(q.t)).length||1;
@@ -4760,7 +4774,7 @@ function renderExamTrendCard(){
   h+=`</div>`;
   h+=`</div>`;
 
-  h+=`<div style="font-size:9px;color:rgb(var(--fg3));margin-top:10px;border-top:1px solid rgb(var(--brd));padding-top:8px;font-variant-numeric:tabular-nums">Old: ${oldTot}q (2020–2023) · New: ${newTot}q (2024-May, 2024-Sep, 2025-Jun)</div>`;
+  h+=`<div style="font-size:9px;color:rgb(var(--fg3));margin-top:10px;border-top:1px solid rgb(var(--brd));padding-top:8px;font-variant-numeric:tabular-nums">Old: ${oldTot}q (2020–2023, 10 exam tags) · New: ${newTot}q (2024–2025, 6 exam tags)</div>`;
   h+=`</div>`;
   return h;
 }
@@ -6560,7 +6574,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.54.0';
+const APP_VERSION='10.55.0';
 const CHANGELOG={
 '10.50.0':[
 '💾 Backup is now one tap away — clicking the "🟢 Synced" pill in the top-left used to show a static toast pointing to a stale "Track → Backup to Cloud" location (the Backup card moved to Settings in v10.48.0; the toast was lying). It is now a proper bottom-sheet modal with three actions: 💾 Backup now (one-tap call to cloudBackup), ☁️ Restore from cloud (cloudRestore), and a "Manage all data →" link that deep-links to More → Settings and scrolls smoothly to the Data Management section. Offline state disables the Backup/Restore buttons and shows a clear hint instead of silently failing.',
