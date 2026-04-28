@@ -1,46 +1,49 @@
 /* ============================================================================
- * Shared Design Tokens — Medical PWA Suite (Editorial Clinical, 2026-04)
+ * Shared Design Tokens — Medical PWA Suite
  * Used by: Geriatrics, InternalMedicine, FamilyMedicine
  *
  * BYTE-IDENTICAL across the three medical PWAs (same precedent as fsrs.js).
  * Source of truth: C:\Users\User\repos\.shared\tokens.css
+ * Each consuming repo copies this file to its own location and `@import`s it.
  *
- * Aesthetic direction: see .shared/aesthetic-2026-04.md (Editorial Clinical —
- * warm-cream/forest-green, Frank Ruhl Libre + Heebo, hairline cards,
- * underline tabs, restrained motion).
+ * Conventions:
+ *   --color-* → palette. Light + dark variants via [data-theme="dark"]
+ *   --type-*  → font-family + scale (1.25 ratio, fluid clamps)
+ *   --space-* → 4px-base scale, 0..16
+ *   --radius-*, --shadow-*, --motion-*, --easing-*
  *
- * RTL/Hebrew: all sizing uses logical properties (inset-inline-*, margin-inline-*,
- *   padding-inline-*). Never use right/left.
+ * RTL/Hebrew note: all sizing is logical (no `right`/`left`). Use
+ *   `inset-inline-start/end`, `margin-inline-*`, `padding-inline-*`.
  * ========================================================================= */
 
 :root {
-  /* ---------- Color: light theme (default) — warm cream + forest green ---- */
-  --color-bg:           #faf7f2;
+  /* ---------- Color: light theme (default) ---------- */
+  --color-bg:           #fafaf7;
   --color-surface:      #ffffff;
-  --color-surface-2:    #f3efe7;
-  --color-border:       #e0d9cd;
-  --color-border-strong:#a89f8d;
+  --color-surface-2:    #f3f3ee;
+  --color-border:       #e3e2dc;
+  --color-border-strong:#bdbcb4;
 
-  --color-fg:           #1a1817;
-  --color-fg-muted:     #5e5b54;
-  --color-fg-subtle:    #8a8478;
+  --color-fg:           #1a1916;
+  --color-fg-muted:     #5b5a52;
+  --color-fg-subtle:    #8d8b80;
 
-  --color-accent:       #1d4d3e;     /* deep forest — calm, distinctive */
-  --color-accent-fg:    #faf7f2;
-  --color-accent-soft:  #dfe9e3;
+  --color-accent:       #5b3df5;     /* primary action — purple-blue, neutral on Hebrew & English */
+  --color-accent-fg:    #ffffff;
+  --color-accent-soft:  #efe9ff;
 
-  --color-success:      #1d4d3e;
-  --color-warn:         #9c6b18;
-  --color-danger:       #a83232;
-  --color-info:         #3a5b8a;
+  --color-success:      #2f7a3a;
+  --color-warn:         #c98a1d;
+  --color-danger:       #c4332e;
+  --color-info:         #1c6ea4;
 
-  /* Mastery heat scale (Cividis-derived, colorblind-safe, 5 steps + na) */
-  --heat-0: #00204d;
-  --heat-1: #2c4875;
-  --heat-2: #65749d;
-  --heat-3: #a3a8a5;
-  --heat-4: #f1cb33;
-  --heat-na:#7a7a72;
+  /* Mastery heat scale (colorblind-safe Viridis-derived, 5 steps) */
+  --heat-0: #440154;  /* lowest mastery */
+  --heat-1: #3b528b;
+  --heat-2: #21918c;
+  --heat-3: #5ec962;
+  --heat-4: #fde725;  /* highest mastery */
+  --heat-na:#7a7a72;  /* not enough data */
 
   /* ---------- Type ---------- */
   /* Hebrew display — Frank Ruhl Libre. Hebrew body — Heebo.
@@ -70,18 +73,16 @@
 
   /* ---------- Space (4px base) ---------- */
   --space-0:  0;
-  --space-1:  0.25rem;
-  --space-2:  0.5rem;
-  --space-3:  0.75rem;
-  --space-4:  1rem;
-  --space-5:  1.25rem;
-  --space-6:  1.5rem;
-  --space-8:  2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-
-  --max-content: 1100px;
+  --space-1:  0.25rem;  /*  4px */
+  --space-2:  0.5rem;   /*  8px */
+  --space-3:  0.75rem;  /* 12px */
+  --space-4:  1rem;     /* 16px */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
 
   /* ---------- Radius / Shadow ---------- */
   --radius-sm: 0.25rem;
@@ -90,9 +91,10 @@
   --radius-xl: 1rem;
   --radius-pill: 999px;
 
-  /* No drop shadows by default — Editorial Clinical relies on surface contrast.
-   * --shadow-* kept available for modal/overlay layers only. */
-  --shadow-modal: 0 12px 32px rgb(0 0 0 / 0.18), 0 4px 8px rgb(0 0 0 / 0.06);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 1px rgb(0 0 0 / 0.04);
+  --shadow-2: 0 2px 6px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-3: 0 8px 24px rgb(0 0 0 / 0.10), 0 2px 6px rgb(0 0 0 / 0.06);
+  --shadow-inset: inset 0 0 0 1px rgb(0 0 0 / 0.06);
 
   /* ---------- Motion ---------- */
   --motion-fast:   120ms;
@@ -103,7 +105,7 @@
   --easing-spring: cubic-bezier(0.18, 0.89, 0.32, 1.28);
 
   /* ---------- Component sizing ---------- */
-  --touch-min: 44px;
+  --touch-min: 44px;       /* WCAG 2.5.5 + iOS HIG */
   --tap-pad:   var(--space-3);
   --hairline:  1px;
 
@@ -115,52 +117,78 @@
   --z-toast:   2000;
 }
 
-/* ---------- Dark theme — warm-black + lighter forest ----------------------- */
-[data-theme="dark"], body.dark {
-  --color-bg:           #0d0c0a;
-  --color-surface:      #15140f;
-  --color-surface-2:    #1d1c17;
-  --color-border:       #2a2823;
-  --color-border-strong:#4a4740;
+/* ---------- Color: dark theme ---------- */
+[data-theme="dark"] {
+  --color-bg:           #0e0e10;
+  --color-surface:      #17171a;
+  --color-surface-2:    #1f1f23;
+  --color-border:       #2a2a30;
+  --color-border-strong:#41414a;
 
-  --color-fg:           #ece8de;
-  --color-fg-muted:     #a8a39a;
-  --color-fg-subtle:    #6e6a62;
+  --color-fg:           #f1f0eb;
+  --color-fg-muted:     #b6b5ad;
+  --color-fg-subtle:    #7c7b73;
 
-  --color-accent:       #7eb89a;
-  --color-accent-fg:    #0d0c0a;
-  --color-accent-soft:  #1f3128;
+  --color-accent:       #9b8aff;
+  --color-accent-fg:    #1a1916;
+  --color-accent-soft:  #2a2240;
 
-  --color-success:      #7eb89a;
-  --color-warn:         #d29651;
-  --color-danger:       #d8746f;
-  --color-info:         #7da0c4;
+  --color-success:      #5fbf6e;
+  --color-warn:         #e8b25e;
+  --color-danger:       #e87770;
+  --color-info:         #6fb6e0;
 }
 
+/* Auto-prefers-dark fallback if app didn't set [data-theme] yet */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]):not(body.light *) {
-    --color-bg:           #0d0c0a;
-    --color-surface:      #15140f;
-    --color-surface-2:    #1d1c17;
-    --color-border:       #2a2823;
-    --color-border-strong:#4a4740;
-    --color-fg:           #ece8de;
-    --color-fg-muted:     #a8a39a;
-    --color-fg-subtle:    #6e6a62;
-    --color-accent:       #7eb89a;
-    --color-accent-fg:    #0d0c0a;
-    --color-accent-soft:  #1f3128;
-    --color-success:      #7eb89a;
-    --color-warn:         #d29651;
-    --color-danger:       #d8746f;
-    --color-info:         #7da0c4;
+  :root:not([data-theme="light"]) {
+    --color-bg:           #0e0e10;
+    --color-surface:      #17171a;
+    --color-surface-2:    #1f1f23;
+    --color-border:       #2a2a30;
+    --color-border-strong:#41414a;
+    --color-fg:           #f1f0eb;
+    --color-fg-muted:     #b6b5ad;
+    --color-fg-subtle:    #7c7b73;
+    --color-accent:       #9b8aff;
+    --color-accent-fg:    #1a1916;
+    --color-accent-soft:  #2a2240;
+    --color-success:      #5fbf6e;
+    --color-warn:         #e8b25e;
+    --color-danger:       #e87770;
+    --color-info:         #6fb6e0;
   }
 }
 
+/* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --motion-fast: 0ms;
     --motion-base: 0ms;
     --motion-slow: 0ms;
   }
+}
+
+/* ---------- Common base utilities (opt-in via class) ---------- */
+.t-display { font-family: var(--font-display); font-weight: var(--weight-bold); line-height: var(--leading-tight); }
+.t-body    { font-family: var(--font-body); font-weight: var(--weight-regular); line-height: var(--leading-body); }
+.t-mono    { font-family: var(--font-mono); }
+
+.surface   { background: var(--color-surface); color: var(--color-fg); border: var(--hairline) solid var(--color-border); border-radius: var(--radius-lg); }
+.surface-2 { background: var(--color-surface-2); color: var(--color-fg); border-radius: var(--radius-md); }
+
+.heat-cell { display: inline-block; width: 64px; height: 64px; border-radius: var(--radius-sm); transition: transform var(--motion-fast) var(--easing-out); }
+.heat-cell:hover { transform: scale(1.06); }
+.heat-0 { background: var(--heat-0); }
+.heat-1 { background: var(--heat-1); }
+.heat-2 { background: var(--heat-2); }
+.heat-3 { background: var(--heat-3); }
+.heat-4 { background: var(--heat-4); }
+.heat-na{ background: var(--heat-na); }
+
+/* Hebrew/RTL hygiene — applies wherever class is set; doesn't force */
+.heb {
+  font-family: var(--font-body);
+  unicode-bidi: plaintext;
+  text-align: start;
 }
