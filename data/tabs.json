@@ -1,27 +1,22 @@
 [
   {
     "id": "quiz",
-    "ic": "\ud83d\udcdd",
+    "ic": "📝",
     "l": "Quiz"
   },
   {
     "id": "learn",
-    "ic": "\ud83d\udcda",
-    "l": "Learn"
-  },
-  {
-    "id": "lib",
-    "ic": "\ud83d\udcd6",
-    "l": "Library"
+    "ic": "📚",
+    "l": "Study"
   },
   {
     "id": "track",
-    "ic": "\ud83d\udcca",
+    "ic": "📊",
     "l": "Track"
   },
   {
     "id": "more",
-    "ic": "\u2699\ufe0f",
+    "ic": "⚙️",
     "l": "More"
   }
 ]
