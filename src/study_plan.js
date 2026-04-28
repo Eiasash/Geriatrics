@@ -19,7 +19,10 @@
 (function () {
   'use strict';
 
-  const APP_KEY = 'shlav';
+  // Server-side RPC whitelist: ('geri','pnimit','mishpacha').
+  // Hebrew colloquial 'shlav' is for the human/UX layer only — never sent to RPC.
+  // Locked by tests/appIntegrity.test.js (APP_KEY contract).
+  const APP_KEY = 'geri';
   const SYLLABUS_URL = 'data/syllabus_data.json';
   const DEFAULT_HOURS_PER_WEEK = 8;
   const DEFAULT_RAMP_WEEKS = 3;
@@ -325,6 +328,8 @@
     } else {
       const map = {
         no_such_user: 'המשתמש לא נמצא — התחבר מחדש',
+        invalid_username: 'שם משתמש לא חוקי',
+        invalid_app: 'שגיאת תצורה — דווח (app key mismatch)',
         invalid_exam_date: 'תאריך בחינה לא חוקי',
         invalid_hours_per_week: 'מספר שעות לא חוקי',
         invalid_ramp_weeks: 'מספר שבועות חזרה לא חוקי',
