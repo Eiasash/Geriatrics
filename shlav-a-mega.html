@@ -689,18 +689,48 @@ function showSyncStatus(){
   const st=(_syncState==='syncing'||_syncState==='failed')?_syncState:computeSyncState();
   const last=S&&S._lastCloudSync?new Date(S._lastCloudSync).toLocaleString():'never';
   const did=(typeof localStorage!=='undefined'?localStorage.getItem('samega_devid'):null)||'(not set)';
-  const lines=[
-    'Sync status: '+st,
-    'Last cloud backup: '+last,
-    'Device ID: '+String(did).slice(0,18)+(String(did).length>18?'…':''),
-    '',
-    navigator.onLine===false
-      ? 'You are offline — changes are saved locally and will sync when you reconnect.'
-      : (st==='synced'
-        ? 'Everything is backed up. Go to Track → ☁️ Backup to Cloud to back up manually.'
-        : 'To back up now, go to Track → ☁️ Backup to Cloud.'),
-  ];
-  toast(lines.join('\n'),'info',5000);
+  const m=syncPillMeta(st);
+  // v10.50.0: was a static toast saying "go to Track → ☁️ Backup to Cloud" — but Track no
+  // longer has a Backup card (moved to Settings in v10.48.0), so the toast was lying. Now it's
+  // a proper modal with one-tap Backup / Restore buttons + a deep-link to Data Management.
+  // Old toast fallback is preserved for the syncing/failed transient states where we don't
+  // want a modal stealing focus.
+  if(st==='syncing'){toast('☁️ Sync in progress…','info',2000);return;}
+  // Remove any prior copy of the modal first (defensive)
+  const prior=document.getElementById('sync-modal-overlay');
+  if(prior){prior.remove();return;}
+  const _online=navigator.onLine!==false;
+  const overlay=document.createElement('div');
+  overlay.id='sync-modal-overlay';
+  overlay.setAttribute('role','dialog');
+  overlay.setAttribute('aria-modal','true');
+  overlay.setAttribute('aria-labelledby','sync-modal-title');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:flex-end;justify-content:center;padding:0;animation:fadeIn .15s ease-out';
+  // Bottom-sheet style on mobile, more compact on tablet — Geri's primary device is Oppo phone
+  overlay.innerHTML=`
+    <div style="background:rgb(var(--card-bg));color:rgb(var(--fg));width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -4px 24px rgba(0,0,0,.18);animation:slideUp .2s ease-out">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div id="sync-modal-title" style="font-size:15px;font-weight:700;flex:1">Cloud Sync</div>
+        <button onclick="document.getElementById('sync-modal-overlay').remove()" aria-label="Close" style="background:rgb(var(--bg2));border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;color:rgb(var(--fg2))">×</button>
+      </div>
+      <div style="background:${m.bg};color:${m.fg};border:1px solid ${m.brd};border-radius:10px;padding:10px 12px;font-size:12px;font-weight:600;margin-bottom:12px">${m.label}</div>
+      <div style="font-size:11px;color:rgb(var(--fg2));line-height:1.7;margin-bottom:16px">
+        Last cloud backup: <b style="color:rgb(var(--fg))">${last}</b><br>
+        Device ID: <code style="font-size:10px">${String(did).slice(0,18)}${String(did).length>18?'…':''}</code><br>
+        ${_online?'':'⚠️ <span style="color:#dc2626">You are offline</span> — actions disabled until reconnected.'}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button onclick="document.getElementById('sync-modal-overlay').remove();cloudBackup()" ${_online?'':'disabled'} style="background:#0D7377;color:#fff;border:none;border-radius:10px;padding:14px;font-size:13px;font-weight:700;cursor:${_online?'pointer':'not-allowed'};opacity:${_online?'1':'.5'}">💾 Backup now</button>
+        <button onclick="document.getElementById('sync-modal-overlay').remove();cloudRestore()" ${_online?'':'disabled'} style="background:rgb(var(--bg2));color:rgb(var(--fg));border:1px solid rgb(var(--brd));border-radius:10px;padding:12px;font-size:12px;font-weight:600;cursor:${_online?'pointer':'not-allowed'};opacity:${_online?'1':'.5'}">☁️ Restore from cloud</button>
+        <button onclick="document.getElementById('sync-modal-overlay').remove();tab='more';moreSub='settings';renderTabs();render();setTimeout(function(){var el=document.getElementById('data-mgmt-anchor');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});else window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});},100)" style="background:none;color:rgb(var(--sky));border:none;font-size:11px;padding:10px;cursor:pointer;text-decoration:underline">Manage all data (export / import / clear) →</button>
+      </div>
+    </div>`;
+  // Backdrop click closes
+  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
+  // Escape key closes
+  const onKey=function(e){if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',onKey);}};
+  document.addEventListener('keydown',onKey);
+  document.body.appendChild(overlay);
 }
 if(typeof window!=='undefined'){
   window.addEventListener('online', ()=>{if(_syncState!=='syncing')_syncState='init';updateSyncPill();});
@@ -4957,24 +4987,8 @@ h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
 h+=renderDailyPlan();
 }
 h+=renderSessionCard();
-// Feature 9: Confidence accuracy matrix
-const _confStats={sure_ok:0,sure_no:0,unsure_ok:0,unsure_no:0};
-Object.values(S.sr||{}).forEach(s=>{if(s.conf){Object.entries(s.conf).forEach(([k,v])=>{if(_confStats[k]!==undefined)_confStats[k]+=v;});}});
-const _confTotal=Object.values(_confStats).reduce((a,b)=>a+b,0);
-if(_confTotal>=10){
-const _blindSpots=_confStats.sure_no;
-const _lucky=_confStats.unsure_ok;
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">
-<div style="font-weight:700;font-size:12px;margin-bottom:8px">🎯 Confidence Matrix (${_confTotal} rated)</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;text-align:center">
-<div style="padding:8px;background:#dcfce7;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.sure_ok}</div>😎✅ Confident + Right</div>
-<div style="padding:8px;background:#fecaca;border-radius:8px"><div style="font-size:16px;font-weight:700;color:#dc2626">${_confStats.sure_no}</div>😎❌ BLIND SPOTS</div>
-<div style="padding:8px;background:#fef9c3;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.unsure_ok}</div>😬✅ Lucky</div>
-<div style="padding:8px;background:rgb(var(--bg2));border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.unsure_no}</div>😬❌ Expected miss</div>
-</div>
-${_blindSpots>0?`<div style="margin-top:8px;font-size:10px;color:#dc2626;font-weight:600">⚠️ ${_blindSpots} blind spots — you were confident but wrong. These are your most dangerous gaps.</div>`:''}
-</div>`;
-}
+// v10.50.0: Confidence Matrix moved to a collapsible "Detailed analysis" section in
+// _rtProgress() — it's useful but niche, not something that needs to live above-the-fold.
 // Rescue Drill CTA
 const _weakTopics=getWeakTopics(3);
 if(_weakTopics.length&&_weakTopics[0].pct!==null&&_weakTopics[0].pct<65){
@@ -5076,15 +5090,10 @@ if(S.examDate||localStorage.getItem('shlav_exam_date')){
 h+=`<div style="text-align:center;margin-bottom:10px"><button onclick="setExamDate()" style="font-size:9px;color:rgb(var(--fg3));background:none;border:none;cursor:pointer;text-decoration:underline">📅 Change exam date</button></div>`;
 }
 h+=renderExamTrendCard();
-h+=`<div class="sec-t">Progress</div><div class="sec-s">Syllabus · Bookmarks · Spaced Repetition</div>`;
-if(S.streak>0)h+=`<div style="text-align:center;margin-bottom:12px"><span class="streak-badge">🔥 ${S.streak} day${S.streak>1?'s':''} streak</span></div>`;
-const estScore=calcEstScore();
-h+=`<div class="stats">
-<div class="stat"><div class="n" style="color:rgb(var(--em))">${done}/40</div><div class="l">Topics</div></div>
-<div class="stat"><div class="n" style="color:rgb(var(--sky))">${pct}</div><div class="l">Quiz</div></div>
-<div class="stat"><span class="tt-wrap"><div class="n" style="color:${estScore===null?'#94a3b8':estScore>=70?'#059669':estScore>=60?'#d97706':'#dc2626'}">${estScore!==null?estScore+'%':'—'}</div><div class="l">Est. Score <button class="tt-icon" tabindex="0">ⓘ</button></div><div class="tt-box" style="left:0;transform:none">Rolling exam score estimate: topic accuracy × exam frequency weight. Penalizes overdue SR cards. Needs 3+ answers per topic for accuracy. Pass = 60%.</div></span></div>
-<div class="stat"><span class="tt-wrap"><div class="n" style="color:rgb(var(--amb))">${dueN}</div><div class="l">Due (SR) <button class="tt-icon" tabindex="0">ⓘ</button></div><div class="tt-box" style="left:0;transform:none">Spaced repetition cards due for review. Based on your past performance.</div></span></div>
-</div>`;
+// v10.50.0: removed the duplicate "Progress" stats grid (Topics/Quiz/EstScore/Due-SR) that
+// used to live here — it duplicated the 4 stat cards already shown at the top of _rtTop()
+// (EstScore/DayStreak/Answered/Accuracy). Day-streak shown there already, so the standalone
+// streak badge is redundant too.
 return h;
 }
 function _rtProgress(){
@@ -5127,23 +5136,9 @@ h+=`</div>`;
 }
 // Syllabus
 h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📋 Syllabus (${done}/40)</div>`;
-// Per-topic accuracy bars
+// v10.50.0: removed "📊 Accuracy by Topic" list — it duplicated the 🗺️ Topic Mastery Map
+// already shown at the top of Track in _rtTop(). One topic-accuracy view is enough.
 const tSt=getTopicStats();
-const ranked=TOPICS.map((t,i)=>({name:t,i,s:tSt[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>0);
-if(ranked.length>0){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📊 Accuracy by Topic <span class="tt-wrap"><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">Shows your accuracy (% correct) for each topic you've attempted. Green ≥70%, amber ≥50%, red <50%.</div></span></div>`;
-ranked.sort((a,b)=>{const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).forEach(p=>{
-const pct=p.s.tot?Math.round(p.s.ok/p.s.tot*100):0;
-const clr=pct>=70?'rgb(var(--em))':pct>=50?'rgb(var(--amb))':'rgb(var(--red))';
-h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #f8fafc;font-size:10px">
-<span style="flex:1">${p.name}</span>
-<div style="display:flex;align-items:center;gap:6px">
-<div style="width:50px;height:5px;background:rgb(var(--bg2));border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${clr};border-radius:3px"></div></div>
-<span style="width:28px;text-align:right;font-weight:600;color:${clr}">${pct}%</span>
-<span style="color:rgb(var(--fg3));font-size:8px">${p.s.tot}</span>
-</div></div>`;
-});
-h+=`</div>`;}
 // Year × Topic heatmap
 const years=[...new Set(QZ.map(q=>q.t))].sort();
 const heatData=[];
@@ -5159,7 +5154,15 @@ row.cells.push({yr,pct:answered.length?Math.round(correct.length/answered.length
 if(row.cells.some(c=>c.n>0))heatData.push(row);
 });
 if(heatData.length>0){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🗺️ Weak Spots Map</div>`;
+// v10.50.0: Weak Spots Map is now collapsed by default. The year × topic heatmap is
+// dense and only useful once you've answered enough questions across multiple exam
+// periods (~50+) for cells to fill in. Until then it's mostly empty rows. Power users
+// who want the per-exam-period view can tap the header to expand. State persisted
+// in S._wsmOpen so the choice survives reloads.
+const _wsmOpen=S._wsmOpen===true;
+h+=`<div class="card" style="padding:14px;margin-bottom:10px">`;
+h+=`<div onclick="S._wsmOpen=!S._wsmOpen;save();render()" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px;${_wsmOpen?'margin-bottom:8px':''}" role="button" tabindex="0" aria-expanded="${_wsmOpen?'true':'false'}" aria-label="Toggle weak spots map"><span style="flex:1">🗺️ Weak Spots Map <span style="font-weight:400;color:rgb(var(--fg3));font-size:10px">· ${heatData.length} topic${heatData.length>1?'s':''} × ${years.length} exam${years.length>1?'s':''}</span></span><span style="color:rgb(var(--fg2))">${_wsmOpen?'▲':'▼'}</span></div>`;
+if(_wsmOpen){
 h+=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:9px"><thead><tr><th style="text-align:right;padding:3px;font-size:8px">Topic</th>`;
 const _yearAbbr={'2020':'20','2021':'21','2021-Jun':"21·6",'2022':'22','2023-Jun':"23·6",'2023-Sep':"23·9",'2024-May':"24·5",'2024-Sep':"24·9",'2025-Jun':"25·6",'Hazzard':'Haz','Harrison':'Har','Exam':'Ex','Hazzard-suppl':'Sup'};
 years.forEach(y=>{h+=`<th style="padding:3px;text-align:center;font-size:8px;white-space:nowrap;min-width:28px" title="${y}">${_yearAbbr[y]||y}</th>`;});
@@ -5186,7 +5189,32 @@ h+=`<div style="display:flex;gap:8px;margin-top:6px;font-size:8px;color:rgb(var(
 <span style="display:flex;align-items:center;gap:2px"><span style="width:10px;height:10px;background:#fef9c3;border-radius:2px"></span>50-74%</span>
 <span style="display:flex;align-items:center;gap:2px"><span style="width:10px;height:10px;background:#dcfce7;border-radius:2px"></span>&ge;75%</span>
 </div>`;
+}
 h+=`</div>`;}
+// v10.50.0: Confidence Matrix — moved out of _rtTop into _rtProgress and made collapsible.
+// Same pattern as Weak Spots Map. Default closed; only renders if user has rated ≥10
+// questions for confidence (otherwise the matrix is meaningless).
+{
+  const _confStats={sure_ok:0,sure_no:0,unsure_ok:0,unsure_no:0};
+  Object.values(S.sr||{}).forEach(s=>{if(s.conf){Object.entries(s.conf).forEach(([k,v])=>{if(_confStats[k]!==undefined)_confStats[k]+=v;});}});
+  const _confTotal=Object.values(_confStats).reduce((a,b)=>a+b,0);
+  if(_confTotal>=10){
+    const _cmOpen=S._cmOpen===true;
+    const _blindSpots=_confStats.sure_no;
+    h+=`<div class="card" style="padding:14px;margin-bottom:10px">`;
+    h+=`<div onclick="S._cmOpen=!S._cmOpen;save();render()" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px;${_cmOpen?'margin-bottom:8px':''}" role="button" tabindex="0" aria-expanded="${_cmOpen?'true':'false'}" aria-label="Toggle confidence matrix"><span style="flex:1">🎯 Confidence Matrix <span style="font-weight:400;color:rgb(var(--fg3));font-size:10px">· ${_confTotal} rated${_blindSpots>0?` · <span style="color:#dc2626;font-weight:600">${_blindSpots} blind spots</span>`:''}</span></span><span style="color:rgb(var(--fg2))">${_cmOpen?'▲':'▼'}</span></div>`;
+    if(_cmOpen){
+      h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;text-align:center">
+<div style="padding:8px;background:#dcfce7;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.sure_ok}</div>😎✅ Confident + Right</div>
+<div style="padding:8px;background:#fecaca;border-radius:8px"><div style="font-size:16px;font-weight:700;color:#dc2626">${_confStats.sure_no}</div>😎❌ BLIND SPOTS</div>
+<div style="padding:8px;background:#fef9c3;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.unsure_ok}</div>😬✅ Lucky</div>
+<div style="padding:8px;background:rgb(var(--bg2));border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.unsure_no}</div>😬❌ Expected miss</div>
+</div>
+${_blindSpots>0?`<div style="margin-top:8px;font-size:10px;color:#dc2626;font-weight:600">⚠️ ${_blindSpots} blind spots — you were confident but wrong. These are your most dangerous gaps.</div>`:''}`;
+    }
+    h+=`</div>`;
+  }
+}
 // ROI Matrix and Radar chart removed — accuracy bars above are sufficient
 h+=renderPriorityMatrix();
 
@@ -5612,7 +5640,7 @@ if(typeof window.renderAuthSection==='function')h+=window.renderAuthSection();
 // Study Plan (exam date + ramp + hours/week)
 if(typeof window.renderStudyPlanSection==='function')h+=window.renderStudyPlanSection();
 // Data management
-h+=`<div class="card" style="padding:14px;margin-top:12px">
+h+=`<div class="card" id="data-mgmt-anchor" style="padding:14px;margin-top:12px;scroll-margin-top:80px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Your progress is saved automatically in your browser. Export to backup or transfer between devices.</div>
 <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
@@ -6256,8 +6284,17 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.49.0';
+const APP_VERSION='10.50.0';
 const CHANGELOG={
+'10.50.0':[
+'💾 Backup is now one tap away — clicking the "🟢 Synced" pill in the top-left used to show a static toast pointing to a stale "Track → Backup to Cloud" location (the Backup card moved to Settings in v10.48.0; the toast was lying). It is now a proper bottom-sheet modal with three actions: 💾 Backup now (one-tap call to cloudBackup), ☁️ Restore from cloud (cloudRestore), and a "Manage all data →" link that deep-links to More → Settings and scrolls smoothly to the Data Management section. Offline state disables the Backup/Restore buttons and shows a clear hint instead of silently failing.',
+'🧹 Track tab redundancy purge — three sections cut or collapsed because they showed data already visible elsewhere on the same tab:',
+'  ✂️ The "Progress" header + 4-stat grid (Topics / Quiz / Est.Score / Due-SR) in _rtMid is gone. The four cards at the top of Track (Est.Score / Day Streak / Answered / Accuracy) already cover this; having both was just doubling the page length.',
+'  ✂️ "📊 Accuracy by Topic" bar list in _rtProgress is gone. The 🗺️ Topic Mastery Map at the top of Track shows the exact same numbers (your accuracy per topic) as colored tiles. One topic-accuracy view is enough.',
+'  📦 "🗺️ Weak Spots Map" (year × topic heatmap) is now collapsed by default. The map is dense and only meaningful once you have ~50+ answered questions across multiple exam periods — until then it is mostly empty rows. Tap the header to expand; choice persists in S._wsmOpen.',
+'  📦 "🎯 Confidence Matrix" moved out of _rtTop (where it was sitting above-the-fold) into _rtProgress as a collapsed-by-default card alongside Weak Spots Map. Same niche-but-useful category. State in S._cmOpen.',
+'📐 No data migration; no schema change. Pure render-side cleanup — Track is now structurally aligned with Pnimit/FM Track tabs, with a much shorter scroll.',
+],
 '10.49.0':[
 '👤 Header account chip — small button next to ❓/🌙/☀ in the top-right header. Logged in: shows your initial in white-on-teal. Guest: shows 👤 in faded white. Click → jumps straight to More → Settings (where login/account moved in v10.48.0). One tap from any tab to log in / log out / change password / set up your study plan, instead of navigating More → Settings → scroll past the daily-reminders toggle.',
 '🪞 Mirrors Pnimit v9.87.0 + Mishpacha v1.10.0 — same chip, same position, same teal #0D7377, same hook. updateAccountChip() runs at the end of render(); _doLogin/_doRegister/_doLogout already call render() after auth state changes, so the chip refreshes naturally with no extra wiring.',
