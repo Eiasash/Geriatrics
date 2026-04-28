@@ -707,6 +707,7 @@ function showSyncStatus(){
   overlay.setAttribute('aria-labelledby','sync-modal-title');
   overlay.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:flex-end;justify-content:center;padding:0;animation:fadeIn .15s ease-out';
   // Bottom-sheet style on mobile, more compact on tablet — Geri's primary device is Oppo phone
+  // safe-innerhtml: all interpolations are internal computed state — m.{label,bg,fg,brd} from syncPillMeta() (hardcoded color/text mapping), `last` from Date.toLocaleString(), `did` is the device id stored in localStorage by this client, `_online` is boolean. No user-input flow into the template.
   overlay.innerHTML=`
     <div style="background:rgb(var(--card-bg));color:rgb(var(--fg));width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -4px 24px rgba(0,0,0,.18);animation:slideUp .2s ease-out">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
@@ -6284,7 +6285,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.50.0';
+const APP_VERSION='10.50.1';
 const CHANGELOG={
 '10.50.0':[
 '💾 Backup is now one tap away — clicking the "🟢 Synced" pill in the top-left used to show a static toast pointing to a stale "Track → Backup to Cloud" location (the Backup card moved to Settings in v10.48.0; the toast was lying). It is now a proper bottom-sheet modal with three actions: 💾 Backup now (one-tap call to cloudBackup), ☁️ Restore from cloud (cloudRestore), and a "Manage all data →" link that deep-links to More → Settings and scrolls smoothly to the Data Management section. Offline state disables the Backup/Restore buttons and shows a clear hint instead of silently failing.',
