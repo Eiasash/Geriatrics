@@ -548,7 +548,7 @@ upd();setInterval(upd,30000);
 <a href="#ct" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
 <h1>Shlav A Mega <span style="font-size:10px;font-weight:500;color:#0D7377;vertical-align:middle">Geriatrics</span> <span id="headerVer" style="font-size:9px;font-weight:400;color:rgb(var(--fg2));vertical-align:middle"></span></h1>
-<button class="dm-btn" data-action="toggle-study" title="Sepia / Study Mode (warm light)" aria-label="Toggle sepia study mode" style="right:12px">☀</button><button class="dm-btn" data-action="toggle-dark" title="Dark Mode" aria-label="Toggle dark mode" style="right:56px">🌙</button><button class="dm-btn" data-action="show-help" title="Help" aria-label="Help" style="right:100px;font-size:15px;font-weight:700">?</button>
+<button class="dm-btn" data-action="toggle-study" title="Sepia / Study Mode (warm light)" aria-label="Toggle sepia study mode" style="right:12px">☀</button><button class="dm-btn" data-action="toggle-dark" title="Dark Mode" aria-label="Toggle dark mode" style="right:56px">🌙</button><button class="dm-btn" data-action="show-help" title="Help" aria-label="Help" style="right:100px;font-size:15px;font-weight:700">?</button><button class="dm-btn" data-action="goto-account" id="hdr-account-btn" title="Account" aria-label="Account / Login" style="right:144px;font-size:14px;font-weight:700">👤</button>
 <p id="hdr-sub">Loading...</p>
 <div id="syncPill" class="sync-pill" role="status" aria-live="polite" style="position:absolute;top:4px;left:6px;font-size:9px;padding:2px 7px;border-radius:10px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));cursor:pointer;user-select:none;display:none" title="Sync status — click for details" onclick="showSyncStatus()"></div>
 </div>
@@ -6143,7 +6143,33 @@ if(sv.srchi!==undefined&&document.getElementById('srchi'))document.getElementByI
 if(sv.nfilt!==undefined&&document.getElementById('nfilt'))document.getElementById('nfilt').value=sv.nfilt;
 if(sv.dsrch!==undefined&&document.getElementById('dsrch'))document.getElementById('dsrch').value=sv.dsrch;
 if(focused){const fe=document.getElementById(focused);if(fe){fe.focus();if(fe.value)fe.setSelectionRange(fe.value.length,fe.value.length);}}
+updateAccountChip();
 }
+
+// v10.49.0: Header account chip — shows initial when logged in, 👤 when guest.
+// Click → goes to More → Settings, where renderAuthSection lives (moved from Track in v10.48.0).
+// Re-rendered after every render(); _doLogin/_doRegister already call render() after setAuthSession.
+function updateAccountChip(){
+  const btn=document.getElementById('hdr-account-btn');
+  if(!btn)return;
+  const u=(typeof window.getCurrentUser==='function'?window.getCurrentUser():null);
+  if(u){
+    const name=u.displayName||u.username||'?';
+    const initial=name.trim().charAt(0).toUpperCase();
+    btn.textContent=initial;
+    btn.style.background='#0D7377'; // teal
+    btn.style.color='#fff';
+    btn.style.fontWeight='700';
+    btn.title=name+' — Account';
+  }else{
+    btn.textContent='👤';
+    btn.style.background='rgba(255,255,255,0.08)';
+    btn.style.color='#fff';
+    btn.style.fontWeight='400';
+    btn.title='Log in / Register';
+  }
+}
+window.updateAccountChip=updateAccountChip;
 
 
 // ===== DARK MODE =====
@@ -6230,8 +6256,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.48.0';
+const APP_VERSION='10.49.0';
 const CHANGELOG={
+'10.49.0':[
+'👤 Header account chip — small button next to ❓/🌙/☀ in the top-right header. Logged in: shows your initial in white-on-teal. Guest: shows 👤 in faded white. Click → jumps straight to More → Settings (where login/account moved in v10.48.0). One tap from any tab to log in / log out / change password / set up your study plan, instead of navigating More → Settings → scroll past the daily-reminders toggle.',
+'🪞 Mirrors Pnimit v9.87.0 + Mishpacha v1.10.0 — same chip, same position, same teal #0D7377, same hook. updateAccountChip() runs at the end of render(); _doLogin/_doRegister/_doLogout already call render() after auth state changes, so the chip refreshes naturally with no extra wiring.',
+],
 '10.48.0':[
 '🎨 Track tab declutter — Account, Study Plan, Data Management (export/import/cloud sync), and API Key cards moved out of Track and into Settings (matches Pnimit/FM layout). Track was an overloaded firehose; the entry-points to "log in", "set my exam date", "back up my progress" were buried under stats / heatmaps / leaderboard / IMA archive. Now Track is purely about progress and study, and Settings (⚙️) is the canonical home for account + plan + data management.',
 '🗺️ Topic Mastery Map readability — tile font 7px → 10px, inner label 6px → 9px, max-width 40px → 60px, min-width 32px → 44px, label cutoff 6 chars → 8. Tiles are still dense enough to fit 40+ topics on a phone but actually legible.',
@@ -6926,6 +6956,12 @@ switch(btn.dataset.action){
 case 'toggle-study':toggleStudyMode();break;
 case 'toggle-dark':toggleDark();break;
 case 'show-help':showHelp();break;
+case 'goto-account':
+  // v10.49.0: jump to More → Settings, where renderAuthSection now lives
+  // (moved out of Track in v10.48.0).
+  tab='more';moreSub='settings';renderTabs();render();
+  setTimeout(function(){window.scrollTo({top:0,behavior:'smooth'});},50);
+  break;
 case 'apply-update':applyUpdate();break;
 case 'dismiss-update':dismissUpdateBanner();break;
 case 'close-overlay':var ov=btn.closest('[id$="-overlay"]');if(ov)ov.remove();break;
