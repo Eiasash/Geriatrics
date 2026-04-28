@@ -4472,8 +4472,37 @@ h+=`<div>3️⃣ Drill: <b>20q mini-exam on ${w.name}</b> <button onclick="start
 if(trapCount>0)h+=`<div>4️⃣ Review <b>${trapCount} trap questions</b> <button onclick="setFilt('traps');tab='quiz';render()" style="font-size:9px;padding:2px 8px;background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg));border:none;border-radius:6px;cursor:pointer">🪤 Start</button></div>`;
 // Step 4: Replay last mock wrong (if any)
 try{const _mh=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');const _last=_mh[_mh.length-1];const _wn=_last&&_last.wrongIdxs?_last.wrongIdxs.length:0;if(_wn>0){const _dt=new Date(_last.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'});h+=`<div>5️⃣ Replay <b>${_wn} wrong answers</b> from mock on ${_dt} <button onclick="replayLastMockWrong()" style="font-size:9px;padding:2px 8px;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;cursor:pointer">🔁 Start</button></div>`;}}catch(e){}
-h+=`</div></div>`;
+h+=`</div>`;
+// v10.58.0: append today's session stats inline below the plan steps,
+// inside the same card, instead of a separate "Today's Session" card.
+const _sessInline=renderSessionInline();
+if(_sessInline)h+=_sessInline;
+h+=`</div>`;
 return h;
+}
+// v10.58.0: inline session block — no outer card; rendered inside the daily
+// plan card to merge "Today's Study Plan" + "Today's Session" into one block.
+function renderSessionInline(){
+  try{
+    const hist=JSON.parse(localStorage.getItem('samega_sessions')||'[]');
+    if(!hist.length)return '';
+    const last=hist[hist.length-1];
+    const tot=last.ok+last.no;
+    const pct=tot?Math.round(last.ok/tot*100):0;
+    const mins=Math.round(last.dur/60);
+    const today=new Date().toDateString();
+    const sessDate=new Date(last.date).toDateString();
+    if(sessDate!==today)return '';
+    return `<div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgb(var(--brd))">
+<div style="font-weight:700;font-size:11px;margin-bottom:6px;color:#7c3aed">📊 Today's Session</div>
+<div style="display:flex;gap:12px;margin-bottom:4px">
+  <div style="text-align:center"><div style="font-size:16px;font-weight:700;color:${pct>=70?'#059669':pct>=50?'#d97706':'#dc2626'}">${pct}%</div><div style="font-size:9px;color:rgb(var(--fg3))">${last.ok}/${tot} correct</div></div>
+  <div style="text-align:center"><div style="font-size:16px;font-weight:700">${mins}m</div><div style="font-size:9px;color:rgb(var(--fg3))">duration</div></div>
+  <div style="text-align:center"><div style="font-size:16px;font-weight:700;color:#f59e0b">${last.due}</div><div style="font-size:9px;color:rgb(var(--fg3))">due tomorrow</div></div>
+</div>
+${last.best?`<div style="font-size:10px">✅ Best: <b>${last.best.name}</b> (${last.best.n} correct)</div>`:''}
+</div>`;
+  }catch(e){return '';}
 }
 function setExamDate(){
 const d=prompt('Enter exam date (YYYY-MM-DD):',S.examDate||'');
@@ -4509,29 +4538,9 @@ doc+='</body></html>';
 const w=window.open('','_blank');w.document.write(doc);w.document.close();
 setTimeout(()=>w.print(),500);
 }
-function renderSessionCard(){
-  try{
-    const hist=JSON.parse(localStorage.getItem('samega_sessions')||'[]');
-    if(!hist.length)return '';
-    const last=hist[hist.length-1];
-    const tot=last.ok+last.no;
-    const pct=tot?Math.round(last.ok/tot*100):0;
-    const mins=Math.round(last.dur/60);
-    const today=new Date().toDateString();
-    const sessDate=new Date(last.date).toDateString();
-    if(sessDate!==today)return '';
-    return `<div class="card" style="padding:14px;margin-bottom:10px;border-left:4px solid #7c3aed">
-<div style="font-weight:700;font-size:12px;margin-bottom:6px;color:#7c3aed">📊 Today's Session</div>
-<div style="display:flex;gap:12px;margin-bottom:8px">
-  <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:${pct>=70?'#059669':pct>=50?'#d97706':'#dc2626'}">${pct}%</div><div style="font-size:9px;color:rgb(var(--fg3))">${last.ok}/${tot} correct</div></div>
-  <div style="text-align:center"><div style="font-size:18px;font-weight:700">${mins}m</div><div style="font-size:9px;color:rgb(var(--fg3))">duration</div></div>
-  <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#f59e0b">${last.due}</div><div style="font-size:9px;color:rgb(var(--fg3))">due tomorrow</div></div>
-</div>
-${last.best?`<div style="font-size:10px;margin-bottom:2px">✅ Best: <b>${last.best.name}</b> (${last.best.n} correct)</div>`:''}
-<button onclick="this.parentElement.style.display='none'" style="margin-top:8px;font-size:9px;color:rgb(var(--fg3));background:none;border:none;cursor:pointer" aria-label="Dismiss notification">dismiss</button>
-</div>`;
-  }catch(e){return '';}
-}
+// v10.58.0: renderSessionCard merged into renderDailyPlan via renderSessionInline().
+// Kept as a stub returning '' so any external/cached references no-op cleanly.
+function renderSessionCard(){return '';}
 function calcEstScore(){
   // FSRS-aware estimated score: weight by retrievability for seen questions
   const now2=Date.now();
