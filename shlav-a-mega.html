@@ -2769,7 +2769,7 @@ ${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10
 </div>`;
 // Exam-year multi-select row — pills are toggleable, "All" / "Clear" quick actions.
 // Chronologically sorted. Unresolved bare years (2020/2021/2022) display faded with tooltip.
-h+=`<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:8px;padding-bottom:4px;-webkit-overflow-scrolling:touch" role="group" aria-label="Exam-year multi-select">`;
+h+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;padding-bottom:4px" role="group" aria-label="Exam-year multi-select">`;
 const _yearCounts={};QZ.forEach(q=>{if(EXAM_YEARS.includes(q.t))_yearCounts[q.t]=(_yearCounts[q.t]||0)+1;});
 const _yearsMode=filt==='years'&&selectedExamYears.size>0;
 h+=`<span class="pill ${filt==='all'&&!_yearsMode?'on':''}" onclick="setFilt('all')" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 14px">הכל (${QZ.length})</span>`;
