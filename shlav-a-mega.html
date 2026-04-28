@@ -6115,8 +6115,14 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.57.1';
+const APP_VERSION='10.58.0';
 const CHANGELOG={
+'10.58.0':[
+'🧹 Track tab visual consolidation — Activity Heatmap (last 30 days) and Leaderboard demoted to collapsibles (default closed) with status inline in the header. Both ate vertical space even when empty.',
+'🔗 "Export Weak Topics Cheat Sheet" demoted from full card to a small underline link directly under the Priority Matrix — that is where the action belongs.',
+'🧷 "Today\'s Session" merged into the "Today\'s Study Plan" card as an inline strip below the plan steps. No more two adjacent same-day cards.',
+'📐 No removed features. Bookmark/folder cards already empty-state-gated since v10.49.x; renderTopicHeatmap + renderPriorityMatrix call sites untouched.',
+],
 '10.50.0':[
 '💾 Backup is now one tap away — clicking the "🟢 Synced" pill in the top-left used to show a static toast pointing to a stale "Track → Backup to Cloud" location (the Backup card moved to Settings in v10.48.0; the toast was lying). It is now a proper bottom-sheet modal with three actions: 💾 Backup now (one-tap call to cloudBackup), ☁️ Restore from cloud (cloudRestore), and a "Manage all data →" link that deep-links to More → Settings and scrolls smoothly to the Data Management section. Offline state disables the Backup/Restore buttons and shows a clear hint instead of silently failing.',
 '🧹 Track tab redundancy purge — three sections cut or collapsed because they showed data already visible elsewhere on the same tab:',
