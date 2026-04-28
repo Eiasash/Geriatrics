@@ -102,9 +102,12 @@ describe("renderLibrary → _rl* helpers", () => {
 // ─── Inline handler baseline ───
 
 describe("inline handler counts are stable", () => {
-  it("onclick 140–230", () => { const c = (html.match(/onclick=/g)||[]).length; expect(c).toBeGreaterThanOrEqual(140); expect(c).toBeLessThanOrEqual(230); });
+  // v10.51.0: bumped onclick ceiling 230→240 + total 260→275 to absorb the
+  // new wrong-answer Review CTA, the SVG topic-heatmap cell click handlers,
+  // and the source-link buttons (3 features × ~3 inline handlers each).
+  it("onclick 140–240", () => { const c = (html.match(/onclick=/g)||[]).length; expect(c).toBeGreaterThanOrEqual(140); expect(c).toBeLessThanOrEqual(240); });
   it("onchange 15–40", () => { const c = (html.match(/onchange=/g)||[]).length; expect(c).toBeGreaterThanOrEqual(15); expect(c).toBeLessThanOrEqual(40); });
-  it("total ≤260", () => { const t = (html.match(/onclick=/g)||[]).length+(html.match(/onchange=/g)||[]).length+(html.match(/oninput=/g)||[]).length; expect(t).toBeLessThanOrEqual(260); });
+  it("total ≤275", () => { const t = (html.match(/onclick=/g)||[]).length+(html.match(/onchange=/g)||[]).length+(html.match(/oninput=/g)||[]).length; expect(t).toBeLessThanOrEqual(275); });
 });
 
 // ─── Function count floor ───

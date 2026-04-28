@@ -590,6 +590,109 @@ if(d.tot>0&&d.ok/d.tot>=0.5)st[ti].ok++;else st[ti].no++;
 return st;
 }
 
+// v10.51.0: per-topic FSRS retention aggregation for the heatmap.
+// Returns {ti: {r: meanR (0-1) or null, n: questions counted}}.
+// Aggregates over all reviewed questions (S.sr[i].fsrsS present), computing
+// each Q's current retention probability via fsrsR(daysSinceReview, fsrsS),
+// then averaging per topic. Topics with <3 reviewed Qs return null (neutral).
+function getTopicMastery(){
+  const out={};
+  TOPICS.forEach((_,ti)=>{out[ti]={sum:0,n:0,r:null};});
+  if(typeof fsrsR!=='function'){return out;}
+  const now=Date.now();
+  for(const k in S.sr){
+    const i=+k;
+    if(!Number.isInteger(i)||i<0||i>=QZ.length)continue;
+    const s=S.sr[k];if(!s||typeof s!=='object')continue;
+    const fS=Number.isFinite(s.fsrsS)?s.fsrsS:null;
+    if(!fS||fS<=0)continue;
+    const q=QZ[i];if(!q)continue;
+    const ti=Number.isInteger(q.ti)?q.ti:-1;
+    if(ti<0||!out[ti])continue;
+    const days=s.lastReview?Math.max(0,(now-s.lastReview)/86400000):0;
+    let r;try{r=fsrsR(days,fS);}catch(_){r=null;}
+    if(!Number.isFinite(r))continue;
+    r=Math.max(0,Math.min(1,r));
+    out[ti].sum+=r;out[ti].n++;
+  }
+  TOPICS.forEach((_,ti)=>{
+    const o=out[ti];o.r=o.n>=3?o.sum/o.n:null;
+  });
+  return out;
+}
+
+// v10.51.0: 5-step Cividis-derived colorblind-safe palette.
+// Anchors picked from the canonical Cividis colormap (https://bids.github.io/colormap/)
+// at fractions 0.05/0.30/0.55/0.80/0.95. Indices map to mastery quintiles:
+// 0=lowest retention (struggling) ... 4=highest retention (mastered).
+const _HEAT_PALETTE=['#00224e','#3b496c','#707173','#a59c74','#fee838'];
+const _HEAT_NEUTRAL='#cbd5e1';
+function _heatBucket(r){
+  if(r===null||r===undefined||!Number.isFinite(r))return -1;
+  if(r<0.4)return 0;
+  if(r<0.6)return 1;
+  if(r<0.75)return 2;
+  if(r<0.88)return 3;
+  return 4;
+}
+function _heatColor(r){const b=_heatBucket(r);return b<0?_HEAT_NEUTRAL:_HEAT_PALETTE[b];}
+// Pick a contrasting label color for a given background.
+function _heatTextColor(bgHex){
+  // crude luminance — Cividis dark→light spans dark navy → bright yellow.
+  if(!bgHex||typeof bgHex!=='string')return '#0f172a';
+  const h=bgHex.replace('#','');if(h.length!==6)return '#0f172a';
+  const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+  const lum=(0.299*r+0.587*g+0.114*b)/255;
+  return lum<0.55?'#fff':'#0f172a';
+}
+
+// v10.51.0: SVG topic-mastery heatmap for the Track view. Renders all 46
+// TOPICS as ~64px square cells in a responsive grid, colored by aggregated
+// FSRS retention probability (Cividis-derived 5-step palette + neutral gray
+// for topics with <3 reviewed questions). Tap a cell → opens the quiz
+// filtered to that topic. RTL-aware via dir="auto".
+function renderTopicHeatmap(){
+  if(typeof TOPICS==='undefined'||!TOPICS.length)return '';
+  const mastery=getTopicMastery();
+  // Layout: SVG with ~64px cells, 6 columns max (mobile-first), 7-8 rows.
+  // We use CSS grid in HTML rather than positioning inside SVG so RTL + flow
+  // come for free; each cell is a small SVG-backed rect for the colour and
+  // an HTML label on top — preserves accessibility + colorblind-safe palette.
+  const cellSize=64;
+  const reviewedTotal=Object.values(mastery).reduce((s,o)=>s+(o.n||0),0);
+  let h=`<div class="card" style="padding:14px;margin-bottom:10px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;gap:8px">
+<div style="font-size:12px;font-weight:700">🗺️ Topic Heatmap <span style="font-weight:400;color:rgb(var(--fg3));font-size:10px">· FSRS retention · ${TOPICS.length} topics</span></div>
+<div style="font-size:9px;color:rgb(var(--fg3))">${reviewedTotal} review${reviewedTotal===1?'':'s'} aggregated</div>
+</div>
+<div role="grid" aria-label="Topic mastery heatmap" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(${cellSize}px,1fr));gap:4px">`;
+  TOPICS.forEach((name,ti)=>{
+    const m=mastery[ti]||{r:null,n:0};
+    const bg=_heatColor(m.r);
+    const fg=_heatTextColor(bg);
+    const pct=m.r!==null?Math.round(m.r*100)+'%':'·';
+    const titleSafe=String(name).replace(/"/g,'&quot;');
+    const label=m.r!==null?`R=${pct} · ${m.n}q`:`no data (${m.n}q)`;
+    h+=`<div role="gridcell" tabindex="0" dir="auto" onclick="setTopicFilt(${ti});tab='quiz';render()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setTopicFilt(${ti});tab='quiz';render()}" title="${titleSafe} — ${label}" aria-label="${titleSafe}, ${label}, open quiz" style="position:relative;height:${cellSize}px;background:${bg};color:${fg};border-radius:8px;padding:6px 6px 4px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;border:1px solid rgba(15,23,42,.08);box-shadow:0 1px 2px rgba(15,23,42,.06);overflow:hidden;line-height:1.15;font-family:Inter,Heebo,sans-serif">
+<div style="font-size:10px;font-weight:600;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;unicode-bidi:plaintext">${sanitize(name)}</div>
+<div style="font-size:11px;font-weight:800;letter-spacing:.2px">${pct}</div>
+</div>`;
+  });
+  h+=`</div>`;
+  // Legend: 5 swatches + neutral
+  h+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:6px;font-size:9px;color:rgb(var(--fg3))" dir="ltr">
+<span>struggling</span>
+<div style="display:flex;gap:2px;flex:1;justify-content:center">`;
+  _HEAT_PALETTE.forEach(c=>{h+=`<span style="width:18px;height:10px;background:${c};border-radius:2px;border:1px solid rgba(15,23,42,.08)"></span>`;});
+  h+=`<span style="width:18px;height:10px;background:${_HEAT_NEUTRAL};border-radius:2px;border:1px solid rgba(15,23,42,.08);margin-inline-start:6px" title="not enough data"></span>
+</div>
+<span>mastered</span>
+</div>
+<div style="font-size:9px;color:rgb(var(--fg3));margin-top:4px;text-align:center">Cividis colorblind-safe palette · gray = &lt;3 reviewed Qs</div>
+</div>`;
+  return h;
+}
+
 let NOTES=[];
 let NOTES_BY_TI={};
 
@@ -634,6 +737,9 @@ if(!S.streak)S.streak=0;if(!S.lastDay)S.lastDay=null;
 if(!S.sp)S.sp={};
 if(S.spOpen===undefined)S.spOpen=false;
 if(S.notifOptIn===undefined)S.notifOptIn=false;
+// v10.51.0: wrong-answer review set. Keyed by qIdx → {ts: lastWrongMs, streak: consecutive correct count}.
+// A Q enters when answered wrong; it leaves once `streak >= 2` (two correct in a row).
+if(!S.wrongQs||typeof S.wrongQs!=='object'||Array.isArray(S.wrongQs))S.wrongQs={};
 let _saveTimer;function save(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>{
   try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){console.error('Save failed:',e);}
   // Warn if localStorage approaching 5MB limit
@@ -1354,7 +1460,41 @@ if(!wrongValues.length)return false;
 const maxWrong=Math.max(...wrongValues);
 return maxWrong/totalAttempts>=0.4;
 }
+// v10.51.0: count of "live" wrong-answer Qs (still need re-review).
+function getWrongReviewCount(){
+  if(!S.wrongQs)return 0;
+  let n=0;
+  for(const k in S.wrongQs){
+    const i=+k;
+    if(i>=0&&i<QZ.length&&S.wrongQs[k]&&(S.wrongQs[k].streak||0)<2)n++;
+  }
+  return n;
+}
+// v10.51.0: ordered pool for wrong-review mode — recency × IMA topic weight.
+// IMA_WEIGHTS covers 0–39; topics 40–45 get a baseline weight of 4 (avg).
+function getWrongReviewPool(){
+  if(!S.wrongQs)return [];
+  const out=[];
+  for(const k in S.wrongQs){
+    const i=+k;
+    if(!Number.isInteger(i)||i<0||i>=QZ.length)continue;
+    const e=S.wrongQs[k];if(!e||(e.streak||0)>=2)continue;
+    const q=QZ[i];if(!q)return;
+    const ti=Number.isInteger(q.ti)?q.ti:0;
+    const w=Number.isFinite(IMA_WEIGHTS[ti])?IMA_WEIGHTS[ti]:4;
+    // priority = recency-weight (newer = higher) × topic weight
+    const ageDays=Math.max(0,(Date.now()-(e.ts||0))/86400000);
+    const recency=1/(1+ageDays);
+    out.push({i,score:recency*w});
+  }
+  out.sort((a,b)=>b.score-a.score);
+  return out.map(o=>o.i);
+}
 function buildPool(){
+if(filt==='wrong'){
+pool=getWrongReviewPool();
+qi=0;sel=null;ans=false;return;
+}
 if(filt==='traps'){
 pool=QZ.map((_,i)=>i).filter(i=>isExamTrap(i));
 for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
@@ -1674,7 +1814,13 @@ if(!S.sr[pool[qi]].conf)S.sr[pool[qi]].conf={sure_ok:0,sure_no:0,unsure_ok:0,uns
 const _ck=(_confidence>=2?'sure':'unsure')+'_'+(isOk(q,sel)?'ok':'no');
 S.sr[pool[qi]].conf[_ck]++;
 }
-if(isOk(q,sel)){S.qOk++;_pendingSR=pool[qi];}
+if(isOk(q,sel)){S.qOk++;_pendingSR=pool[qi];
+  // v10.51.0: wrong-answer review set — increment correct streak; remove once user gets it right twice in a row.
+  if(S.wrongQs&&S.wrongQs[pool[qi]]){
+    const _w=S.wrongQs[pool[qi]];_w.streak=(_w.streak||0)+1;
+    if(_w.streak>=2){delete S.wrongQs[pool[qi]];}
+  }
+}
 else{S.qNo++;
   // Store which distractor was chosen for future mistake-pattern analysis
   if(!S.sr[pool[qi]])S.sr[pool[qi]]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};
@@ -1682,6 +1828,9 @@ else{S.qNo++;
   const _wci=String(sel);
   S.sr[pool[qi]].wc[_wci]=(S.sr[pool[qi]].wc[_wci]||0)+1;
   srScore(pool[qi],false);
+  // v10.51.0: wrong-answer review set — add / refresh entry, reset correct streak.
+  if(!S.wrongQs)S.wrongQs={};
+  S.wrongQs[pool[qi]]={ts:Date.now(),streak:0};
   // Feature 1: store wrong reason later via onclick
   const _apk='autopsy_'+pool[qi];
   if(!_exCache[_apk]){setTimeout(()=>aiAutopsy(pool[qi]),400);}
@@ -2495,6 +2644,26 @@ h+=`<div style="margin-top:8px;padding:10px 12px;background:${q.e_issue?"#fffbeb
 h+=`<div style="font-weight:700;margin-bottom:4px;font-size:10px">📝 הסבר</div>`;
 const _shuf=getOptShuffle(pool[qi],q);
 h+=`<div dir="${heDir(q.e)}" style="unicode-bidi:plaintext">${sanitize(remapExplanationLetters(q.e,_shuf)).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
+// v10.51.0: source-link row — render every parsed ref citation as a deep-link
+// button into the in-app Hazzard/Harrison reader at the right chapter.
+if(q.ref){
+  const _refs=parseQuestionRef(q.ref);
+  if(_refs.length){
+    h+=`<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(15,23,42,.08);display:flex;flex-wrap:wrap;gap:6px;align-items:center" dir="ltr">
+<span style="font-size:9px;color:rgb(var(--fg3));font-weight:600;letter-spacing:.4px;text-transform:uppercase;margin-inline-end:2px">📖 Source</span>`;
+    _refs.forEach(rc=>{
+      const _isHaz=rc.src==='haz';
+      const _emoji=_isHaz?'📕':'📗';
+      const _bg=_isHaz?'rgb(var(--red-bg))':'rgb(var(--blue-bg))';
+      const _brd=_isHaz?'rgb(var(--red-brd))':'rgb(var(--blue-brd))';
+      const _fg=_isHaz?'rgb(var(--red-fg))':'rgb(var(--blue-fg))';
+      const _book=_isHaz?'Hazzard':'Harrison';
+      const _titleAttr=String(rc.raw).replace(/"/g,'&quot;');
+      h+=`<button type="button" onclick="event.stopPropagation();openRefCitation('${rc.src}',${rc.ch})" title="${_titleAttr} — open in-app reader" aria-label="Open ${_book} chapter ${rc.ch} in reader" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:5px 10px;min-height:32px;background:${_bg};color:${_fg};border:1px solid ${_brd};border-radius:8px;cursor:pointer;text-decoration:none;line-height:1.3">${_emoji} ${_book} Ch ${rc.ch}${rc.title?` <span style="font-weight:400;opacity:0.85;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle" dir="auto">— ${sanitize(rc.title)}</span>`:''}</button>`;
+    });
+    h+=`</div>`;
+  }
+}
 h+=`</div>`;
 }
 // AI Explain button
@@ -2618,6 +2787,9 @@ h+=`<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;margin-bot
 const _trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
 const _slowCount=slowQuestionCount();
 const _regCount=Array.isArray(REG)?REG.length:0;
+// v10.51.0: wrong-answer review pill (highest-priority drill — surfaced as a
+// red-tinted action button when the user has a non-empty wrong set).
+const _wrongCount=getWrongReviewCount();
 const filts=[['Hazzard',`🤖 AI (${QZ.filter(q=>q.t==='Hazzard').length})`],['Hazzard-suppl',`📖 Suppl (${QZ.filter(q=>q.t==='Hazzard-suppl').length})`],['Harrison',`📘 Harrison (${QZ.filter(q=>q.t==='Harrison').length})`],['hard','🔥 Hard'],['slow',`⏱️ Slow${_slowCount>0?' ('+_slowCount+')':''}`],['weak','🎯 Weak'],['due','🔄 Due'],['traps',`🪤 Traps (${_trapCount})`],['nbs','🎯 Next Best Step'],['regulatory',`🏛️ תקנות (${_regCount})`]];
 if(dueN>0)filts.push(['due',`🔄 Due (${dueN})`]);
 filts.forEach(([f,l])=>{
@@ -2625,6 +2797,18 @@ if(f==='nbs')h+=`<span class="pill ${filt==='nbs'?'on':''}" onclick="startNextBe
 else h+=`<span class="pill ${filt===f&&filt!=='topic'?'on':''}" onclick="setFilt('${f}')">${l}</span>`;
 });
 h+=`</div>`;
+// v10.51.0: Review-wrong CTA — dedicated, high-visibility button so the
+// wrong-set never gets buried in the filter strip. Disabled state if empty.
+{
+  const _wrongDisabled=_wrongCount===0;
+  const _wrongActive=filt==='wrong';
+  h+=`<div style="display:flex;gap:6px;margin-bottom:10px;align-items:center">
+<button class="btn" onclick="setFilt('wrong')" ${_wrongDisabled?'disabled aria-disabled="true"':''} aria-label="Review wrong answers" title="${_wrongDisabled?'Get a question wrong to start a review set':'Drill the questions you got wrong, sorted by recency × topic weight. Marked solved after 2 correct in a row.'}" style="flex:1;min-height:40px;font-size:12px;font-weight:700;border-radius:10px;border:1px solid ${_wrongActive?'#dc2626':'rgb(var(--red-brd))'};background:${_wrongDisabled?'rgb(var(--bg2))':_wrongActive?'#dc2626':'rgb(var(--red-bg))'};color:${_wrongDisabled?'rgb(var(--fg3))':_wrongActive?'#fff':'rgb(var(--red-fg))'};cursor:${_wrongDisabled?'not-allowed':'pointer'};opacity:${_wrongDisabled?0.6:1}">⚠️ Review wrong (${_wrongCount})</button>`;
+  if(_wrongActive&&_wrongCount>0){
+    h+=`<button class="btn" onclick="if(confirm('Clear all '+${_wrongCount}+' wrong-answer entries?')){S.wrongQs={};save();if(filt==='wrong'){filt='all';buildPool();}render();}" aria-label="Clear wrong-answer set" title="Clear the wrong-answer review set" style="font-size:11px;padding:6px 12px;min-height:40px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:10px;cursor:pointer">🗑 Clear</button>`;
+  }
+  h+=`</div>`;
+}
 // Mode toggles — Distractor Autopsy is always on, no toggle
 h+=`<div style="display:flex;gap:8px;margin-bottom:10px;font-size:10px;align-items:center;flex-wrap:wrap">
 <span class="tt-wrap"><label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" ${blindRecall?'checked':''} onchange="blindRecall=this.checked;render()"> 🙈 Cover Options</label><button class="tt-icon" tabindex="0">ⓘ</button><div class="tt-box">Hides answer choices — forces you to recall the answer before seeing options.</div></span>
@@ -3838,6 +4022,50 @@ return h;
 
 
 
+// v10.51.0: parse a question's `ref` field (e.g.
+// "Hazzard Ch 52 — OSTEOARTHRITIS · Harrison Ch 382 — Approach to Articular...")
+// into structured citations: [{src:'haz'|'har', ch:Number, title:String, raw:String}, ...].
+// Tolerates · or | or ; or " - " as separators between citations and "Ch", "Chapter",
+// "ch.", "chapter" forms for the chapter token. Returns [] for empty/unparseable refs.
+function parseQuestionRef(ref){
+  if(!ref||typeof ref!=='string')return [];
+  const out=[];
+  // Split on " · " (preferred), then fall back to " | " or " ; " — but preserve
+  // em/en dashes inside the title.
+  const parts=ref.split(/\s+[·|;]\s+/);
+  parts.forEach(p=>{
+    if(!p||typeof p!=='string')return;
+    // Match leading source (Hazzard or Harrison, case-insensitive), then a
+    // chapter number (with optional "Ch"/"Chapter"/"ch." prefix), then an
+    // em-/en-/hyphen separator, then the rest as title.
+    const m=p.match(/^\s*(Hazzard|Harrison)\s+(?:Ch(?:apter)?\.?\s*)?(\d{1,3})\s*[—–\-:]?\s*(.*)$/i);
+    if(!m)return;
+    const src=m[1].toLowerCase().startsWith('hazz')?'haz':'har';
+    const ch=parseInt(m[2],10);
+    if(!Number.isFinite(ch)||ch<=0)return;
+    const title=(m[3]||'').trim();
+    out.push({src,ch,title,raw:p.trim()});
+  });
+  return out;
+}
+
+// v10.51.0: deep-jump into the in-app reader for a parsed ref citation.
+// Wraps the existing openHazzardChapter / openHarrisonChapter helpers and
+// performs the router/state change so the click handler is a one-liner.
+function openRefCitation(src,ch){
+  try{
+    if(src==='haz'){
+      tab='lib';libSec='haz-pdf';
+      if(typeof openHazzardChapter==='function')openHazzardChapter(ch);
+      else render();
+    }else if(src==='har'){
+      tab='lib';libSec='harrison';
+      if(typeof openHarrisonChapter==='function')openHarrisonChapter(ch);
+      else render();
+    }
+  }catch(e){console.error('openRefCitation failed',e);render();}
+}
+
 async function openHarrisonChapter(ch){
 harChOpen=ch;
 trackChapterRead('har',ch);
@@ -4964,19 +5192,12 @@ h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:rgb(var(-
 <button onclick="filt='due';buildPool();tab='quiz';render()" class="btn" style="font-size:10px;padding:6px 12px;background:#dc2626;color:#fff;border:none;border-radius:8px">▶ Review</button>
 </div></div>`;
 }
-// Topic mastery heatmap
-const _tStats=getTopicStats();
-h+=`<div class="card" style="padding:14px;margin-bottom:8px">
-<div style="font-size:12px;font-weight:700;margin-bottom:8px">🗺️ Topic Mastery Map</div>
-<div style="display:flex;flex-wrap:wrap;gap:3px">`;
-Object.entries(_tStats).forEach(([ti,s])=>{
-ti=Number(ti);if(!TOPICS[ti])return;
-const _p=s.tot>=2?Math.round(s.ok/s.tot*100):null;
-const color=_p===null?'#e2e8f0':_p>=80?'#059669':_p>=60?'#84cc16':_p>=40?'#f59e0b':'#ef4444';
-const bg=_p===null?'#f8fafc':_p>=80?'#ecfdf5':_p>=60?'#f7fee7':_p>=40?'#fffbeb':'#fef2f2';
-h+=`<div onclick="tab='quiz';filt='topic';topicFilt=${ti};buildPool();render()" style="padding:5px 7px;border-radius:6px;font-size:10px;background:${bg};color:${color};font-weight:700;cursor:pointer;border:1px solid ${color}30;min-width:44px;text-align:center;line-height:1.3" title="${TOPICS[ti]}: ${_p!==null?_p+'%':'no data'} (${s.tot} Qs)"><div style="font-size:9px;opacity:0.85;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:60px">${TOPICS[ti].split(' ')[0].substring(0,8)}</div>${_p!==null?_p+'%':'·'}</div>`;
-});
-h+=`</div></div>`;
+// v10.51.0: Topic Heatmap — single SVG-styled grid of all 46 topics colored
+// by aggregated FSRS retention (Cividis-safe palette). Tap a cell → filter
+// quiz to that topic. The legacy "Topic Mastery Map" mini-tile grid that
+// used to live here was retired in favour of this denser, accessibility-
+// friendlier view; the renderTopicHeatmap() function is the single source.
+h+=renderTopicHeatmap();
 h+=renderStudyPlan();
 // Feature 5: Exam date + daily plan
 if(!S.examDate&&!localStorage.getItem('shlav_exam_date')){
@@ -6285,7 +6506,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.50.1';
+const APP_VERSION='10.51.0';
 const CHANGELOG={
 '10.50.0':[
 '💾 Backup is now one tap away — clicking the "🟢 Synced" pill in the top-left used to show a static toast pointing to a stale "Track → Backup to Cloud" location (the Backup card moved to Settings in v10.48.0; the toast was lying). It is now a proper bottom-sheet modal with three actions: 💾 Backup now (one-tap call to cloudBackup), ☁️ Restore from cloud (cloudRestore), and a "Manage all data →" link that deep-links to More → Settings and scrolls smoothly to the Data Management section. Offline state disables the Backup/Restore buttons and shows a clear hint instead of silently failing.',
