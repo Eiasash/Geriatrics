@@ -184,7 +184,7 @@ function buildScopeHarness(helperBlock, targetName) {
     let onCallMode=false, flipRevealed=false;
     let timedMode=false, timedSec=90, timedInt=null, timedPaused=false;
     let _optShuffle=null, _sessionSaved=false, _sessionOk=0, _sessionNo=0;
-    let learnSub="study", moreSub="calc", calcView="calc", libSec="haz-pdf";
+    let learnSub="study", moreSub="calc", libSec="haz-pdf";
     let hazChOpen=null, _hazData=null, _hazLoading=false;
     let harChOpen=null, _harData=null, _harLoading=false;
     const S = new Proxy({sr:{}, dark:false, studyMode:false, streak:0}, __stubHandler);
