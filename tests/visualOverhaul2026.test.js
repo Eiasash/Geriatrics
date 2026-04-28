@@ -1,7 +1,7 @@
 /**
- * v10.53.0 visual overhaul guards.
+ * v10.52.0 visual overhaul guards.
  *
- * Three features shipped in v10.53.0 — this file pins the wiring so future
+ * Three features shipped in v10.52.0 — this file pins the wiring so future
  * refactors don't silently rip them out:
  *
  *   1. Topic Heatmap (Track view): a single SVG-styled grid of all 46 TOPICS
@@ -24,7 +24,7 @@ import { resolve } from 'path';
 const rootDir = resolve(import.meta.dirname, '..');
 const html = readFileSync(resolve(rootDir, 'shlav-a-mega.html'), 'utf-8');
 
-describe('v10.53.0 — Topic Heatmap', () => {
+describe('v10.52.0 — Topic Heatmap', () => {
   it('renderTopicHeatmap function is defined', () => {
     expect(html).toMatch(/function\s+renderTopicHeatmap\s*\(/);
   });
@@ -57,7 +57,7 @@ describe('v10.53.0 — Topic Heatmap', () => {
   });
 });
 
-describe('v10.53.0 — Wrong-answer review mode', () => {
+describe('v10.52.0 — Wrong-answer review mode', () => {
   it('S.wrongQs is initialised at boot', () => {
     expect(html).toMatch(/S\.wrongQs\s*=\s*\{\}/);
   });
@@ -94,7 +94,7 @@ describe('v10.53.0 — Wrong-answer review mode', () => {
   });
 });
 
-describe('v10.53.0 — Source-link in explanations', () => {
+describe('v10.52.0 — Source-link in explanations', () => {
   it('parseQuestionRef helper is defined', () => {
     expect(html).toMatch(/function\s+parseQuestionRef\s*\(/);
   });
@@ -145,16 +145,16 @@ describe('v10.53.0 — Source-link in explanations', () => {
   });
 });
 
-describe('v10.53.0 — version trinity', () => {
-  it('shlav-a-mega.html APP_VERSION is 10.53.0', () => {
-    expect(html).toMatch(/APP_VERSION\s*=\s*['"]10\.53\.0['"]/);
+describe('v10.52.0 — version trinity', () => {
+  it('shlav-a-mega.html APP_VERSION is 10.52.0', () => {
+    expect(html).toMatch(/APP_VERSION\s*=\s*['"]10\.52\.0['"]/);
   });
-  it('sw.js CACHE key is shlav-a-v10.53.0', () => {
+  it('sw.js CACHE key is shlav-a-v10.52.0', () => {
     const sw = readFileSync(resolve(rootDir, 'sw.js'), 'utf-8');
-    expect(sw).toMatch(/CACHE\s*=\s*['"]shlav-a-v10\.53\.0['"]/);
+    expect(sw).toMatch(/CACHE\s*=\s*['"]shlav-a-v10\.52\.0['"]/);
   });
-  it('package.json version is 10.53.0', () => {
+  it('package.json version is 10.52.0', () => {
     const pkg = JSON.parse(readFileSync(resolve(rootDir, 'package.json'), 'utf-8'));
-    expect(pkg.version).toBe('10.53.0');
+    expect(pkg.version).toBe('10.52.0');
   });
 });
