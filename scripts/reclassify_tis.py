@@ -27,7 +27,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PROXY = "https://toranot.netlify.app/api/claude"
-SECRET = "shlav-a-mega-2026"
+SECRET = "shlav-a-mega-1f97f311d307-2026"
 
 # 46 IMA syllabus topics (matches data/topics.json indices, which is the
 # authoritative ordering). The HTML TOPICS array currently stops at 42 —
