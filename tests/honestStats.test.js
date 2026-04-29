@@ -75,6 +75,19 @@ describe("honest stats — source-level guards", () => {
     expect(takeFn[0]).not.toMatch(/s\.tot>0\s*\?\s*Math\.round/);
     expect(takeFn[0]).toMatch(/s\.tot\s*>=\s*[3-9]/);
   });
+
+  it("takeWeeklySnapshot iterates over TOPICS.length, not hardcoded 40", () => {
+    // Bug (v10.61.2 fix): hardcoded `i<40` silently dropped topics 40-45
+    // (Parkinson's, Arrhythmia, Dysphagia, Andropause, Prevention,
+    // Interdisciplinary Care) added in v10.41 (TOPICS expanded 40→46).
+    // getTopicTrend(ti) for those indices stayed null forever.
+    const takeFn = html.match(/function takeWeeklySnapshot\(\)\{[\s\S]*?\n\}/);
+    expect(takeFn, 'takeWeeklySnapshot not found').not.toBeNull();
+    // Negative marker: hardcoded i<40 is the bug.
+    expect(takeFn[0]).not.toMatch(/for\s*\(\s*let\s+i\s*=\s*0\s*;\s*i\s*<\s*40\s*;/);
+    // Positive marker: must use TOPICS.length so newly-added topics are tracked.
+    expect(takeFn[0]).toMatch(/i\s*<\s*TOPICS\.length/);
+  });
 });
 
 // ─── Behavioural test: extract & eval the inline functions ────────────────
