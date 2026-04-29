@@ -66,6 +66,15 @@ describe("honest stats — source-level guards", () => {
     expect(getTopicMasterySrc).toMatch(/accuracy|s\.ok|ok\s*\/\s*tot/);
     expect(getTopicMasterySrc).toMatch(/mastery/);
   });
+
+  it("takeWeeklySnapshot must require ≥3 answers per topic", () => {
+    // Bug: snapshotting `s.tot>0?Math.round(s.ok/s.tot*100):null` produces
+    // 0% or 100% from a single answer, driving misleading trend arrows.
+    const takeFn = html.match(/function takeWeeklySnapshot\(\)\{[\s\S]*?\n\}/);
+    expect(takeFn, 'takeWeeklySnapshot not found').not.toBeNull();
+    expect(takeFn[0]).not.toMatch(/s\.tot>0\s*\?\s*Math\.round/);
+    expect(takeFn[0]).toMatch(/s\.tot\s*>=\s*[3-9]/);
+  });
 });
 
 // ─── Behavioural test: extract & eval the inline functions ────────────────
