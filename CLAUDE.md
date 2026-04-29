@@ -5,8 +5,8 @@
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (~506 KB, ~6,927 lines, ~270 named functions)
-- **App version**: v10.46.0 (as of 28/04/26) — 3,833 Qs across 46 topics. All 3,833 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.46 in-app Study Plan generator; v10.45 distractor autopsy data corruption fix (72% misaligned); v10.44 username/password accounts; v10.43 per-topic study hub + tis[] multi-tag field; v10.41 TOPICS expanded to 46 + tis[] pool builder; v10.40 Quiz generate AbortError fix; v10.38 built-in debug console; v10.37 GRS8 Book 3 selective import (+77 Qs).
+- **Main file**: `shlav-a-mega.html` (~523 KB, ~7,150 lines, ~270 named functions)
+- **App version**: v10.60.0 (as of 29/04/26) — 3,833 Qs across 46 topics. All 3,833 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.60 Track tab class-driven rebuild (zero inline styles on shells, mirrors FM Quiz PR #16); v10.59 backups RLS Phase 2 — RPC-mediated reads (cloudRestore via public.backup_get, public SELECT dropped); v10.58 Track tab visual consolidation; v10.57 Track tab cleanup; v10.56 hard-delete orphan calc code; v10.55 real fixes — exam-tags + priority matrix; v10.54 Learn+Library merge; v10.46 in-app Study Plan generator; v10.45 distractor autopsy data corruption fix (72% misaligned).
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -16,7 +16,7 @@
 
 ### Single-File PWA
 
-All application logic lives in `shlav-a-mega.html` (~6,927 lines, ~270 named functions) — no bundler, no framework, no build step. The file contains:
+All application logic lives in `shlav-a-mega.html` (~7,150 lines, ~270 named functions) — no bundler, no framework, no build step. The file contains:
 - All CSS (1,000+ lines, responsive, RTL-aware, dark/light/study modes)
 - All JavaScript (ES6+, vanilla)
 - HTML structure
@@ -216,15 +216,16 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js` and `package.json` `version`
-- Currently all three at `10.46.0` (sw.js cache key: `shlav-a-v10.46.0`)
+- Currently all three at `10.60.0` (sw.js cache key: `shlav-a-v10.60.0`)
 - Update all three when making changes to ensure users get cache-busted (see workspace CLAUDE.md "version-trinity invariant")
+- The trinity guard lives in two places: strict pairwise alignment in `tests/appIntegrity.test.js`, and a version-agnostic re-derivation from `package.json` in `tests/visualOverhaul2026.test.js` (refactored v10.60 — used to hard-code the literal version string and went stale every release)
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, ~756 tests across 38 files)
+npm test             # Run all tests (vitest, ~905 tests across 40 files)
 ```
 
-**~756 tests across 38 files (~20 tests per file avg)** — run `npm test` to see current count.
+**~905 tests across 40 files (~22 tests per file avg)** — run `npm test` to see current count.
 
 **Auto-expand rule:** Every feature, improvement, or bug fix MUST include new or updated tests:
 - New data file or field → schema validation test
@@ -233,7 +234,7 @@ npm test             # Run all tests (vitest, ~756 tests across 38 files)
 - Modified data processing → edge case + boundary tests
 - After adding tests, update the test count in this section
 
-**Test file inventory (38 files, ~756 tests):**
+**Test file inventory (40 files, ~905 tests):**
 
 | File | Tests | Description |
 |------|-------|-------------|
@@ -275,6 +276,8 @@ npm test             # Run all tests (vitest, ~756 tests across 38 files)
 | `tests/storage.test.js` | 8 | localStorage/IndexedDB persistence |
 | `tests/studyPlanAlgorithm.test.js` | 17 | Study Plan generator algorithm (v10.46+) |
 | `tests/fsrsDeadline.test.js` | 18 | FSRS deadline logic |
+| `tests/trackViewMarkup.test.js` | 51 | Track tab class taxonomy + zero-inline-style guard on outer shells (v10.60+, mirrors FM Quiz markup test) |
+| `tests/visualOverhaul2026.test.js` | varies | Editorial-overhaul markup pins + version-trinity guard (auto-derived from package.json) |
 
 **Test coverage by area:**
 
@@ -317,7 +320,7 @@ Runs on push to `main` and all PRs. Python-based data validation + Vitest test s
 | innerHTML sanitization | Audit for unsanitized innerHTML usage |
 | Topic coverage | >= 5 questions per topic across the 46 buckets (some newer ti=43–45 may be exempted) |
 
-**Vitest tests** (~756 tests, 38 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
+**Vitest tests** (~905 tests, 40 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
 
 ---
 
@@ -462,8 +465,8 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 
 | Metric | Value |
 |---|---|
-| Main file | `shlav-a-mega.html` (~6,927 lines, ~506 KB) |
-| Named functions | ~270 |
+| Main file | `shlav-a-mega.html` (~7,150 lines, ~523 KB) |
+| Named functions | ~270 (273 incl. shared/*.js, the integrity-guard counting basis) |
 | Questions | 3,833 (IMA past exams + Hazzard/Harrison AI-generated + GRS8 imports; all carry `ref` + `e`) |
 | Topics | 46 |
 | Drugs | 113 |
@@ -471,12 +474,12 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Study notes | 46 |
 | Hazzard chapters | 108 (in-app reader) |
 | Harrison chapters | 69 (in-app reader) |
-| Test suite | ~756 tests across 38 files (vitest) |
+| Test suite | ~905 tests across 40 files (vitest) |
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — see workspace CLAUDE.md for shared invariants |
 | CI workflows | 7 (ci.yml, claude.yml, claude-code-review.yml, distractor-autopsy.yml, distractor-merge-pr.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=214, onchange=25, oninput=6 |
-| App version | v10.46.0 |
-| SW cache key | `shlav-a-v10.46.0` |
+| App version | v10.60.0 |
+| SW cache key | `shlav-a-v10.60.0` |
 
 
 ## Test Coverage Recommendations
