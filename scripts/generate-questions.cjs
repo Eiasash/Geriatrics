@@ -461,7 +461,7 @@ async function callClaude(prompt, apiKey, useProxy) {
   };
 
   if (useProxy) {
-    body.secret = 'shlav-a-mega-2026';
+    body.secret = 'shlav-a-mega-1f97f311d307-2026';
   }
 
   const headers = {
