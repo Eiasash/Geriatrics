@@ -5907,13 +5907,22 @@ async function cloudRestore(){
   const id=_u?_sbDeviceId():(prompt('Enter device ID to restore from (leave blank for this device):',_sbDeviceId())||_sbDeviceId());
   if(!id)return;
   try{
-    const res=await fetch(SUPA_URL+'/rest/v1/samega_backups?id=eq.'+encodeURIComponent(id)+'&select=data,updated_at',{
-      headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY}
+    // Phase 2 (2026-04-29): reads go through SECURITY DEFINER RPC instead of
+    // direct table SELECT. Public SELECT policies on *_backups have been dropped,
+    // so direct queries return 0 rows. RPC takes (app, id) and returns the data
+    // jsonb (or NULL).
+    const res=await fetch(SUPA_URL+'/rest/v1/rpc/backup_get',{
+      method:'POST',
+      headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_app:'geri',p_id:id})
     });
     if(!res.ok){toast('❌ Restore failed: '+res.status,'info');return;}
-    const rows=await res.json();
-    if(!rows||!rows.length){toast('No backup found for ID: '+id,'info');return;}
-    const row=rows[0];
+    const data=await res.json();
+    if(!data){toast('No backup found for ID: '+id,'info');return;}
+    // RPC returns just the jsonb payload. The restore UI used to show
+    // updated_at — we no longer have it post-Phase-2, so default to "just now"
+    // for the confirm modal. (The actual data is current; the label is cosmetic.)
+    const row={data:data,updated_at:new Date().toISOString()};
     if(await confirmModal('Restore backup from '+new Date(row.updated_at).toLocaleString()+'?\nThis will overwrite your current progress.')){
       // Pull sibling localStorage bundles out of the payload before S whitelist
       try{if(Array.isArray(row.data&&row.data._mockHist))localStorage.setItem('samega_mock_hist',JSON.stringify(row.data._mockHist.slice(-20)));}catch(e){}
@@ -6115,7 +6124,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.58.0';
+const APP_VERSION='10.59.0';
 const CHANGELOG={
 '10.58.0':[
 '🧹 Track tab visual consolidation — Activity Heatmap (last 30 days) and Leaderboard demoted to collapsibles (default closed) with status inline in the header. Both ate vertical space even when empty.',
