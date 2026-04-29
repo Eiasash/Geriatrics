@@ -6,13 +6,14 @@
   "scripts": {
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "hooks:install": "git config core.hooksPath scripts/git-hooks && echo '\u2713 pre-commit + pre-push hooks active'",
-    "verify": "node --check src/sw-update.js && python3 scripts/check-version-sync.py && python3 scripts/check-brace-balance.py && python3 scripts/check-innerhtml.py && python3 scripts/check-innerhtml-pieces.py && HARRISON_HEBREW_BASELINE=0 node scripts/harrison-hebrew-baseline.cjs --strict && vitest run",
+    "hooks:install": "git config core.hooksPath scripts/git-hooks && echo '\u00e2\u0153\u201c pre-commit + pre-push hooks active'",
+    "verify": "node --check src/sw-update.js && python3 scripts/check-version-sync.py && python3 scripts/check-brace-balance.py && python3 scripts/check-innerhtml.py && python3 scripts/check-innerhtml-pieces.py && cross-env HARRISON_HEBREW_BASELINE=0 node scripts/harrison-hebrew-baseline.cjs --strict && vitest run",
     "image:check": "node scripts/add-image-question.cjs --help"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.4",
     "acorn": "^8.16.0",
+    "cross-env": "^10.1.0",
     "vitest": "^4.1.4"
   }
 }
