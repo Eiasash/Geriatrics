@@ -409,6 +409,298 @@ body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg))
 .tt-box{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1e293b;color:#f1f5f9;font-size:10px;line-height:1.5;padding:7px 10px;border-radius:8px;width:180px;z-index:999;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.3)}
 .tt-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgb(var(--fg))}
 .tt-icon:hover+.tt-box,.tt-icon:focus+.tt-box{display:block}
+
+/* ===== TRACK TAB — class-driven rebuild (v10.60.0) =====
+ * Mirrors the FM Quiz rebuild pattern (PR #16 on FamilyMedicine).
+ * Every shell element on the Track tab carries a `track-*` class and
+ * zero `style="..."` attributes. Dynamic data values (bar widths,
+ * per-row colors driven by user data) are still inline on inner,
+ * unclassed children. Test contract is `tests/trackViewMarkup.test.js`.
+ * Tokens come from the shared :root block above (rgb(var(--*))).
+ */
+.track-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.track-kpi{padding:10px;text-align:center}
+.track-kpi__value{font-size:22px;font-weight:800}
+.track-kpi__value--ok{color:#059669}
+.track-kpi__value--warn{color:#d97706}
+.track-kpi__value--err{color:#dc2626}
+.track-kpi__value--neutral{color:#94a3b8}
+.track-kpi__value--accent{color:#7c3aed}
+.track-kpi__value--info{color:#0ea5e9}
+.track-kpi__label{font-size:9px;color:rgb(var(--fg2))}
+.track-due{padding:12px;margin-bottom:8px;background:rgb(var(--red-bg));border:1px solid rgb(var(--red-brd));display:flex;align-items:center;gap:8px}
+.track-due__icon{font-size:18px}
+.track-due__body{flex:1}
+.track-due__title{font-size:12px;font-weight:700;color:#dc2626}
+.track-due__sub{font-size:10px;color:rgb(var(--fg2))}
+.track-due__cta{font-size:10px;padding:6px 12px;background:#dc2626;color:#fff;border:none;border-radius:8px}
+.track-heatmap{padding:14px;margin-bottom:10px}
+.track-heatmap__head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;gap:8px}
+.track-heatmap__title{font-size:12px;font-weight:700}
+.track-heatmap__sub{font-weight:400;color:rgb(var(--fg3));font-size:10px}
+.track-heatmap__count{font-size:9px;color:rgb(var(--fg3))}
+.track-heatmap__grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:4px}
+.track-heatmap__cell{position:relative;height:64px;border-radius:8px;padding:6px 6px 4px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;border:1px solid rgba(15,23,42,.08);box-shadow:0 1px 2px rgba(15,23,42,.06);overflow:hidden;line-height:1.15;font-family:Inter,Heebo,sans-serif}
+/* Cividis 5-step palette + neutral. Mirrors _HEAT_PALETTE in JS — keep in sync. */
+.track-heatmap__cell--b0{background:#00224e;color:#fff}
+.track-heatmap__cell--b1{background:#3b496c;color:#fff}
+.track-heatmap__cell--b2{background:#707173;color:#fff}
+.track-heatmap__cell--b3{background:#a59c74;color:#0f172a}
+.track-heatmap__cell--b4{background:#fee838;color:#0f172a}
+.track-heatmap__cell--neutral{background:#cbd5e1;color:#0f172a}
+.track-heatmap__swatch--b0{background:#00224e}
+.track-heatmap__swatch--b1{background:#3b496c}
+.track-heatmap__swatch--b2{background:#707173}
+.track-heatmap__swatch--b3{background:#a59c74}
+.track-heatmap__swatch--b4{background:#fee838}
+.track-heatmap__swatch--n{background:#cbd5e1}
+.track-heatmap__name{font-size:10px;font-weight:600;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;unicode-bidi:plaintext}
+.track-heatmap__pct{font-size:11px;font-weight:800;letter-spacing:.2px}
+.track-heatmap__legend{display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:6px;font-size:9px;color:rgb(var(--fg3))}
+.track-heatmap__swatches{display:flex;gap:2px;flex:1;justify-content:center}
+.track-heatmap__swatch{width:18px;height:10px;border-radius:2px;border:1px solid rgba(15,23,42,.08)}
+.track-heatmap__swatch--neutral{margin-inline-start:6px}
+.track-heatmap__caption{font-size:9px;color:rgb(var(--fg3));margin-top:4px;text-align:center}
+.track-empty{padding:14px;margin-bottom:10px;text-align:center}
+.track-empty__title{font-size:12px;font-weight:700;margin-bottom:6px}
+.track-rescue{padding:14px;margin-bottom:10px;background:linear-gradient(135deg,#fef2f2,#fffbeb);border:1px solid rgb(var(--red-brd));display:flex;align-items:center;gap:10px}
+.track-rescue__icon{font-size:24px}
+.track-rescue__body{flex:1}
+.track-rescue__title{font-weight:700;font-size:12px;color:#dc2626}
+.track-rescue__topics{font-size:10px;color:rgb(var(--fg2))}
+.track-rescue__cta{font-size:11px;padding:8px 16px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-weight:700}
+.track-final{padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;border:1px solid transparent}
+.track-final--calm{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:rgba(59,130,246,.25)}
+.track-final--urgent{background:linear-gradient(135deg,#fef3c7,#fde68a);border-color:rgba(245,158,11,.25)}
+.track-final__icon{font-size:24px}
+.track-final__body{flex:1}
+.track-final__title{font-weight:700;font-size:12px}
+.track-final__title--calm{color:#1e40af}
+.track-final__title--urgent{color:#b45309}
+.track-final__sub{font-size:10px;color:rgb(var(--fg2))}
+.track-final__cta{font-size:11px;padding:8px 16px;color:#fff;border:none;border-radius:10px;font-weight:700}
+.track-final__cta--calm{background:#3b82f6}
+.track-final__cta--urgent{background:#f59e0b}
+.track-reread{padding:14px;margin-bottom:10px}
+.track-reread__title{font-size:12px;font-weight:700;margin-bottom:8px}
+.track-reread__group{font-size:10px;font-weight:600;margin-bottom:4px}
+.track-reread__group--haz{color:#dc2626}
+.track-reread__group--har{color:#7c3aed;margin-top:6px}
+.track-reread__row{font-size:10px;padding:4px 0;cursor:pointer;color:rgb(var(--fg2));border-bottom:1px solid #f8fafc}
+.track-reread__since{font-weight:700}
+.track-reread__since--haz{color:#dc2626}
+.track-reread__since--har{color:#7c3aed}
+.track-lb{padding:14px;margin-bottom:10px}
+.track-lb__head{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px}
+.track-lb__head--open{margin-bottom:8px}
+.track-lb__icon{font-size:14px}
+.track-lb__title{flex:1}
+.track-lb__sub{font-weight:400;color:rgb(var(--fg3));font-size:10px}
+.track-lb__chev{color:rgb(var(--fg2))}
+.track-lb__refresh-row{display:flex;justify-content:flex-end;margin-bottom:8px}
+.track-lb__refresh{font-size:9px;padding:4px 10px;background:#f59e0b;color:#fff;border:none;border-radius:6px;cursor:pointer}
+.track-lb__board{font-size:10px;color:rgb(var(--fg3));text-align:center}
+.track-trend{padding:14px;margin-bottom:10px}
+.track-trend__head{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+.track-trend__title{font-weight:700;font-size:13px;color:rgb(var(--fg))}
+.track-trend__period{font-size:10px;color:rgb(var(--fg3));font-variant-numeric:tabular-nums}
+.track-trend__sub{font-size:10px;color:rgb(var(--fg2));margin-bottom:12px}
+.track-trend__cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.track-trend__col-heading{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.track-trend__col-heading--up{color:#059669}
+.track-trend__col-heading--down{color:#dc2626}
+.track-trend__empty{font-size:10px;color:rgb(var(--fg3))}
+.track-trend__row{margin-bottom:6px}
+.track-trend__row-line{display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;gap:8px}
+.track-trend__row-name{color:rgb(var(--fg));overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.track-trend__row-name--muted{color:rgb(var(--fg2))}
+.track-trend__row-delta{font-variant-numeric:tabular-nums;flex-shrink:0}
+.track-trend__row-delta--up{color:#059669}
+.track-trend__row-delta--down{color:#dc2626}
+.track-trend__bar{height:3px;background:rgb(var(--bg2));border-radius:2px}
+.track-trend__bar-fill{height:100%;border-radius:2px}
+.track-trend__bar-fill--up{background:#10b981}
+.track-trend__bar-fill--down{background:#ef4444}
+.track-trend__footer{font-size:9px;color:rgb(var(--fg3));margin-top:10px;border-top:1px solid rgb(var(--brd));padding-top:8px;font-variant-numeric:tabular-nums}
+.track-bk{padding:14px}
+.track-bk__title{font-weight:700;font-size:12px;margin-bottom:8px}
+.track-bk__folder{margin-bottom:6px}
+.track-bk__folder-head{display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgb(var(--bg2));border-radius:8px;cursor:pointer;font-size:11px;font-weight:600}
+.track-bk__folder-row{padding:6px 12px;font-size:10px;border-bottom:1px solid rgb(var(--brd))}
+.track-bk__row{font-size:10px;padding:6px 0;border-bottom:1px solid #f8fafc}
+.track-syllabus{padding:14px}
+.track-syllabus__title{font-weight:700;font-size:12px;margin-bottom:10px}
+.track-syllabus__toggle{text-align:center;padding:8px;cursor:pointer;font-size:10px;color:rgb(var(--sky));font-weight:600}
+.track-syllabus__topic{display:none}
+.track-syllabus--open .track-syllabus__topic{display:flex}
+.track-syllabus__cb{width:13px;height:13px}
+.track-wsm{padding:14px;margin-bottom:10px}
+.track-wsm__head{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px}
+.track-wsm__head--open{margin-bottom:8px}
+.track-wsm__title{flex:1}
+.track-wsm__sub{font-weight:400;color:rgb(var(--fg3));font-size:10px}
+.track-wsm__chev{color:rgb(var(--fg2))}
+.track-wsm__scroll{overflow-x:auto}
+.track-wsm__table{width:100%;border-collapse:collapse;font-size:9px}
+.track-wsm__th-topic{text-align:right;padding:3px;font-size:8px}
+.track-wsm__th-year{padding:3px;text-align:center;font-size:8px;white-space:nowrap;min-width:28px}
+.track-wsm__td-topic{padding:3px;text-align:right;white-space:nowrap;font-size:10px;min-width:80px;padding-right:6px}
+.track-wsm__td-cell{padding:2px;text-align:center;font-weight:600;border-radius:2px}
+.track-wsm__td-cell--empty{background:rgb(var(--bg2));color:#cbd5e1;font-weight:400}
+.track-wsm__td-cell--single{background:rgb(var(--bg2));color:rgb(var(--fg3));font-size:8px;font-weight:400}
+.track-wsm__td-cell--ok{background:#dcfce7}
+.track-wsm__td-cell--mid{background:#fef9c3}
+.track-wsm__td-cell--low{background:#fecaca}
+.track-wsm__cell-detail{font-size:7px;opacity:.7}
+.track-wsm__legend{display:flex;gap:8px;margin-top:6px;font-size:8px;color:rgb(var(--fg3));justify-content:center}
+.track-wsm__legend-row{display:flex;align-items:center;gap:2px}
+.track-wsm__legend-swatch{width:10px;height:10px;border-radius:2px}
+.track-wsm__legend-swatch--low{background:#fecaca}
+.track-wsm__legend-swatch--mid{background:#fef9c3}
+.track-wsm__legend-swatch--ok{background:#dcfce7}
+.track-cm{padding:14px;margin-bottom:10px}
+.track-cm__head{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px}
+.track-cm__head--open{margin-bottom:8px}
+.track-cm__title{flex:1}
+.track-cm__sub{font-weight:400;color:rgb(var(--fg3));font-size:10px}
+.track-cm__blind{color:#dc2626;font-weight:600}
+.track-cm__chev{color:rgb(var(--fg2))}
+.track-cm__grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;text-align:center}
+.track-cm__cell{padding:8px;border-radius:8px}
+.track-cm__cell--good{background:#dcfce7}
+.track-cm__cell--blind{background:#fecaca}
+.track-cm__cell--lucky{background:#fef9c3}
+.track-cm__cell--miss{background:rgb(var(--bg2))}
+.track-cm__num{font-size:16px;font-weight:700}
+.track-cm__num--blind{color:#dc2626}
+.track-cm__warn{margin-top:8px;font-size:10px;color:#dc2626;font-weight:600}
+.track-matrix__title{font-weight:700;font-size:12px;margin:14px 0 4px;color:#0f172a}
+.track-matrix__sub{font-size:9px;color:rgb(var(--fg3));margin-bottom:10px}
+.track-matrix__heading{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin:8px 0 6px}
+.track-matrix__heading--drilled{color:#dc2626}
+.track-matrix__heading--undrilled{color:#3a5b8a;cursor:pointer;display:flex;align-items:center;gap:6px;margin-top:14px}
+.track-matrix__heading-arrow{color:rgb(var(--fg3))}
+.track-matrix__row{margin-bottom:6px;cursor:pointer}
+.track-matrix__row--undrilled{margin-bottom:5px}
+.track-matrix__line{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.track-matrix__name{font-size:11px}
+.track-matrix__name--top{font-weight:700}
+.track-matrix__name--undrilled{color:rgb(var(--fg2))}
+.track-matrix__meta{display:flex;gap:8px;align-items:center}
+.track-matrix__counts{font-size:9px;color:rgb(var(--fg2))}
+.track-matrix__counts--undrilled{color:rgb(var(--fg3))}
+.track-matrix__priority{font-size:10px;font-weight:700}
+.track-matrix__priority--high{color:#dc2626}
+.track-matrix__priority--mid{color:#f59e0b}
+.track-matrix__priority--low{color:#10b981}
+.track-matrix__bar{height:5px;background:rgb(var(--bg2));border-radius:3px;overflow:hidden}
+.track-matrix__bar--thin{height:3px;border-radius:2px;overflow:visible}
+.track-matrix__bar-fill{height:100%;border-radius:3px}
+.track-matrix__bar-fill--high{background:#dc2626}
+.track-matrix__bar-fill--mid{background:#f59e0b}
+.track-matrix__bar-fill--low{background:#10b981}
+.track-matrix__bar-fill--info{background:#3a5b8a;border-radius:2px}
+.track-matrix__empty{font-size:10px;color:rgb(var(--fg3));margin:6px 0 10px;padding:8px 10px;background:rgb(var(--bg2));border-radius:8px}
+.track-matrix__more{font-size:9px;color:rgb(var(--fg3));margin-top:4px;text-align:center}
+.track-matrix__trend{font-size:10px}
+.track-matrix__trend--up{color:#059669}
+.track-matrix__trend--down{color:#dc2626}
+.track-matrix__trend--flat{color:rgb(var(--fg3))}
+.track-cheat-row{text-align:center;margin:-4px 0 10px}
+.track-cheat-link{font-size:10px;color:rgb(var(--sky));text-decoration:underline;cursor:pointer}
+.track-activity{padding:14px;margin-bottom:10px}
+.track-activity__head{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px}
+.track-activity__head--open{margin-bottom:8px}
+.track-activity__title{flex:1}
+.track-activity__sub{font-weight:400;color:rgb(var(--fg3));font-size:10px}
+.track-activity__chev{color:rgb(var(--fg2))}
+.track-activity__grid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+.track-activity__cell{aspect-ratio:1;border-radius:3px}
+.track-activity__cell--lvl0{background:#f1f5f9}
+body.dark .track-activity__cell--lvl0,
+body.study .track-activity__cell--lvl0{background:#1e293b}
+.track-activity__cell--lvl1{background:#dcfce7}
+.track-activity__cell--lvl2{background:#86efac}
+.track-activity__cell--lvl3{background:#22c55e}
+.track-activity__cell--lvl4{background:#15803d}
+.track-daily{padding:14px;margin-bottom:10px;border-left:4px solid #059669}
+.track-daily__title{font-weight:700;font-size:13px;margin-bottom:4px;color:#059669}
+.track-daily__meta{font-size:10px;color:rgb(var(--fg2));margin-bottom:10px}
+.track-daily__compress{color:#d97706}
+.track-daily__steps{font-size:11px;line-height:2}
+.track-daily__step{display:block}
+.track-daily__btn{font-size:9px;padding:2px 8px;border:none;border-radius:6px;cursor:pointer}
+.track-daily__btn--primary{background:rgb(var(--blue-bg));color:#3b82f6}
+.track-daily__btn--secondary{background:#ede9fe;color:#7c3aed}
+.track-daily__btn--good{background:#dcfce7;color:rgb(var(--green-fg))}
+.track-daily__btn--warn{background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg))}
+.track-daily__btn--danger{background:#fee2e2;color:#dc2626}
+.track-session-inline{margin-top:10px;padding-top:10px;border-top:1px dashed rgb(var(--brd))}
+.track-session-inline__title{font-weight:700;font-size:11px;margin-bottom:6px;color:#7c3aed}
+.track-session-inline__row{display:flex;gap:12px;margin-bottom:4px}
+.track-session-inline__stat{text-align:center}
+.track-session-inline__num{font-size:16px;font-weight:700}
+.track-session-inline__num--ok{color:#059669}
+.track-session-inline__num--warn{color:#d97706}
+.track-session-inline__num--err{color:#dc2626}
+.track-session-inline__num--due{color:#f59e0b}
+.track-session-inline__lbl{font-size:9px;color:rgb(var(--fg3))}
+.track-session-inline__best{font-size:10px}
+.track-plan{margin-bottom:12px}
+.track-plan__head{padding:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.track-plan__head-main{display:flex;align-items:center;gap:8px;flex:1}
+.track-plan__icon{font-size:16px}
+.track-plan__title-block{flex:1}
+.track-plan__title{font-weight:700;font-size:13px;margin-bottom:2px}
+.track-plan__sub{font-size:9px;color:rgb(var(--fg2))}
+.track-plan__chevron{font-size:12px;color:rgb(var(--fg3));transition:transform .2s}
+.track-plan__progress{padding:0 14px;margin-bottom:10px}
+.track-plan__bar{width:100%;height:6px;background:rgb(var(--bg2));border-radius:3px;overflow:hidden}
+.track-plan__bar-fill{height:100%;background:rgb(var(--em));border-radius:3px;transition:width .3s ease}
+.track-plan__tier{border-top:1px solid rgb(var(--brd))}
+.track-plan__tier-head{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:rgb(var(--bg2))}
+.track-plan__tier-main{display:flex;align-items:center;gap:8px;flex:1}
+.track-plan__tier-badge{width:20px;height:20px;border-radius:8px;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.track-plan__tier-badge--t1{background:#dc3545}
+.track-plan__tier-badge--t2{background:#fd7e14}
+.track-plan__tier-badge--t3{background:#0D7377}
+.track-plan__tier-badge--t4{background:#6c757d}
+.track-plan__tier-text{flex:1}
+.track-plan__tier-label{font-weight:600;font-size:11px}
+.track-plan__tier-meta{font-size:8px;color:rgb(var(--fg3));margin-top:1px}
+.track-plan__tier-arrow{font-size:10px;color:rgb(var(--fg3));transition:transform .2s}
+.track-plan__tier-arrow--collapsed{transform:rotate(-90deg)}
+.track-plan__domain{padding:8px 14px;border-top:1px solid rgb(var(--brd))}
+.track-plan__domain-name{font-size:10px;font-weight:600;color:rgb(var(--fg2));margin-bottom:6px}
+.track-plan__topic{border-radius:8px;margin-bottom:4px}
+.track-plan__topic--checked{background:#f8fafc}
+.track-plan__topic-row{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:10px;cursor:pointer}
+.track-plan__topic-cb{width:14px;height:14px;flex-shrink:0;cursor:pointer}
+.track-plan__topic-name{flex:1;color:rgb(var(--fg))}
+.track-plan__topic-name--done{color:rgb(var(--fg3));text-decoration:line-through}
+.track-plan__topic-acc{padding:2px 6px;border-radius:4px;font-size:8px;font-weight:600}
+.track-plan__topic-acc--ok{background:rgba(5,150,105,.12);color:#059669}
+.track-plan__topic-acc--warn{background:rgba(217,119,6,.12);color:#d97706}
+.track-plan__topic-acc--err{background:rgba(220,38,38,.12);color:#dc2626}
+.track-plan__topic-acc--neutral{background:rgba(148,163,184,.12);color:#94a3b8}
+.track-plan__topic-hrs{color:rgb(var(--fg3));font-size:9px;white-space:nowrap}
+.track-plan__actions{display:flex;gap:4px;padding:0 8px 6px 36px;flex-wrap:wrap}
+.track-plan__action{font-size:9px;padding:3px 8px;border:1px solid rgb(var(--brd));border-radius:6px;background:rgb(var(--card-bg));cursor:pointer;white-space:nowrap}
+.track-plan__action--haz{color:#b45309}
+.track-plan__action--note{color:#0D7377}
+.track-plan__action--quiz{color:#3b82f6}
+.track-plan__action--ai{color:#7c3aed}
+.track-share{padding:14px;text-align:center;margin-top:12px}
+.track-share__title{font-weight:700;font-size:12px;margin-bottom:8px}
+.track-share__sub{font-size:10px;color:rgb(var(--fg2));margin-bottom:10px}
+.track-share__btn{margin-bottom:8px}
+.track-version-footer{text-align:center;margin-top:20px;padding:12px;font-size:9px;color:rgb(var(--fg3));line-height:1.8}
+.track-version-footer__row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.track-version-footer__btn{font-size:10px;padding:5px 14px;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600}
+.track-version-footer__btn--update{background:#0D7377}
+.track-version-footer__link{font-size:10px;padding:5px 14px;background:#4f46e5;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block}
+.track-version-footer__sig{margin-top:6px}
+/* ===== END TRACK TAB CSS ===== */
 </style>
 
 <script>
@@ -661,35 +953,35 @@ function renderTopicHeatmap(){
   // an HTML label on top — preserves accessibility + colorblind-safe palette.
   const cellSize=64;
   const reviewedTotal=Object.values(mastery).reduce((s,o)=>s+(o.n||0),0);
-  let h=`<div class="card" style="padding:14px;margin-bottom:10px">
-<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;gap:8px">
-<div style="font-size:12px;font-weight:700">🗺️ Topic Heatmap <span style="font-weight:400;color:rgb(var(--fg3));font-size:10px">· FSRS retention · ${TOPICS.length} topics</span></div>
-<div style="font-size:9px;color:rgb(var(--fg3))">${reviewedTotal} review${reviewedTotal===1?'':'s'} aggregated</div>
+  let h=`<div class="card track-heatmap">
+<div class="track-heatmap__head">
+<div class="track-heatmap__title">🗺️ Topic Heatmap <span class="track-heatmap__sub">· FSRS retention · ${TOPICS.length} topics</span></div>
+<div class="track-heatmap__count">${reviewedTotal} review${reviewedTotal===1?'':'s'} aggregated</div>
 </div>
-<div role="grid" aria-label="Topic mastery heatmap" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(${cellSize}px,1fr));gap:4px">`;
+<div role="grid" aria-label="Topic mastery heatmap" class="track-heatmap__grid">`;
   TOPICS.forEach((name,ti)=>{
     const m=mastery[ti]||{r:null,n:0};
-    const bg=_heatColor(m.r);
-    const fg=_heatTextColor(bg);
+    const bucket=_heatBucket(m.r);
+    const cellMod=bucket<0?'neutral':'b'+bucket;
     const pct=m.r!==null?Math.round(m.r*100)+'%':'·';
     const titleSafe=String(name).replace(/"/g,'&quot;');
     const label=m.r!==null?`R=${pct} · ${m.n}q`:`no data (${m.n}q)`;
-    h+=`<div role="gridcell" tabindex="0" dir="auto" onclick="setTopicFilt(${ti});tab='quiz';render()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setTopicFilt(${ti});tab='quiz';render()}" title="${titleSafe} — ${label}" aria-label="${titleSafe}, ${label}, open quiz" style="position:relative;height:${cellSize}px;background:${bg};color:${fg};border-radius:8px;padding:6px 6px 4px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;border:1px solid rgba(15,23,42,.08);box-shadow:0 1px 2px rgba(15,23,42,.06);overflow:hidden;line-height:1.15;font-family:Inter,Heebo,sans-serif">
-<div style="font-size:10px;font-weight:600;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;unicode-bidi:plaintext">${sanitize(name)}</div>
-<div style="font-size:11px;font-weight:800;letter-spacing:.2px">${pct}</div>
+    h+=`<div role="gridcell" tabindex="0" dir="auto" onclick="setTopicFilt(${ti});tab='quiz';render()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setTopicFilt(${ti});tab='quiz';render()}" title="${titleSafe} — ${label}" aria-label="${titleSafe}, ${label}, open quiz" class="track-heatmap__cell track-heatmap__cell--${cellMod}">
+<div class="track-heatmap__name">${sanitize(name)}</div>
+<div class="track-heatmap__pct">${pct}</div>
 </div>`;
   });
   h+=`</div>`;
-  // Legend: 5 swatches + neutral
-  h+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:6px;font-size:9px;color:rgb(var(--fg3))" dir="ltr">
+  // Legend: 5 Cividis swatches + neutral (gray)
+  h+=`<div class="track-heatmap__legend" dir="ltr">
 <span>struggling</span>
-<div style="display:flex;gap:2px;flex:1;justify-content:center">`;
-  _HEAT_PALETTE.forEach(c=>{h+=`<span style="width:18px;height:10px;background:${c};border-radius:2px;border:1px solid rgba(15,23,42,.08)"></span>`;});
-  h+=`<span style="width:18px;height:10px;background:${_HEAT_NEUTRAL};border-radius:2px;border:1px solid rgba(15,23,42,.08);margin-inline-start:6px" title="not enough data"></span>
+<div class="track-heatmap__swatches">`;
+  for(let _b=0;_b<5;_b++){h+=`<span class="track-heatmap__swatch track-heatmap__swatch--b${_b}"></span>`;}
+  h+=`<span class="track-heatmap__swatch track-heatmap__swatch--neutral track-heatmap__swatch--n" title="not enough data"></span>
 </div>
 <span>mastered</span>
 </div>
-<div style="font-size:9px;color:rgb(var(--fg3));margin-top:4px;text-align:center">Cividis colorblind-safe palette · gray = &lt;3 reviewed Qs</div>
+<div class="track-heatmap__caption">Cividis colorblind-safe palette · gray = &lt;3 reviewed Qs</div>
 </div>`;
   return h;
 }
@@ -3233,51 +3525,51 @@ function renderPriorityMatrix(){
   // Untested or barely-tested (<3 attempts). Sort by raw frequency.
   const undrilled=all.filter(r=>r.s.tot<3).sort((a,b)=>b.freq-a.freq);
 
-  let h='<div style="font-weight:700;font-size:12px;margin:14px 0 4px;color:#0f172a">🎯 Priority Matrix — where to study next</div>';
-  h+='<div style="font-size:9px;color:rgb(var(--fg3));margin-bottom:10px">Drilled (≥3 attempts): freq × your gap. Untested: by exam frequency.</div>';
+  let h='<div class="track-matrix__title">🎯 Priority Matrix — where to study next</div>';
+  h+='<div class="track-matrix__sub">Drilled (≥3 attempts): freq × your gap. Untested: by exam frequency.</div>';
 
   // Drilled section
   if(drilled.length>0){
-    h+='<div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.04em;margin:8px 0 6px">📊 Drilled — fix your gaps ('+drilled.length+')</div>';
+    h+='<div class="track-matrix__heading track-matrix__heading--drilled">📊 Drilled — fix your gaps ('+drilled.length+')</div>';
     drilled.slice(0,10).forEach((r,rank)=>{
       const accStr=Math.round(r.acc*100)+'%';
       const barW=Math.round(r.priority);
-      const color=r.priority>=60?'#dc2626':r.priority>=30?'#f59e0b':'#10b981';
+      const prioMod=r.priority>=60?'high':r.priority>=30?'mid':'low';
       const trend=getTopicTrend(r.ti);
-      const trendStr=trend===null?'':trend>5?'<span style="color:#059669;font-size:10px">↑</span>':trend<-5?'<span style="color:#dc2626;font-size:10px">↓</span>':'<span style="color:rgb(var(--fg3));font-size:10px">→</span>';
-      h+=`<div style="margin-bottom:6px;cursor:pointer" onclick="setTopicFilt(${r.ti});tab='quiz';render()" title="Drill ${r.name}">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
-          <div style="font-size:11px;font-weight:${rank<3?'700':'500'}">${rank+1}. ${r.name} ${trendStr}</div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <span style="font-size:9px;color:rgb(var(--fg2))">${r.s.tot}q · ${accStr}</span>
-            <span style="font-size:10px;font-weight:700;color:${color}">${r.priority}</span>
+      const trendStr=trend===null?'':trend>5?'<span class="track-matrix__trend track-matrix__trend--up">↑</span>':trend<-5?'<span class="track-matrix__trend track-matrix__trend--down">↓</span>':'<span class="track-matrix__trend track-matrix__trend--flat">→</span>';
+      h+=`<div class="track-matrix__row" onclick="setTopicFilt(${r.ti});tab='quiz';render()" title="Drill ${r.name}">
+        <div class="track-matrix__line">
+          <div class="track-matrix__name${rank<3?' track-matrix__name--top':''}">${rank+1}. ${r.name} ${trendStr}</div>
+          <div class="track-matrix__meta">
+            <span class="track-matrix__counts">${r.s.tot}q · ${accStr}</span>
+            <span class="track-matrix__priority track-matrix__priority--${prioMod}">${r.priority}</span>
           </div>
         </div>
-        <div style="height:5px;background:rgb(var(--bg2));border-radius:3px;overflow:hidden">
-          <div style="width:${barW}%;height:100%;background:${color};border-radius:3px"></div>
+        <div class="track-matrix__bar">
+          <div class="track-matrix__bar-fill track-matrix__bar-fill--${prioMod}" style="width:${barW}%"></div>
         </div>
       </div>`;
     });
   } else {
-    h+='<div style="font-size:10px;color:rgb(var(--fg3));margin:6px 0 10px;padding:8px 10px;background:rgb(var(--bg2));border-radius:8px">No topic drilled ≥3× yet — answer questions to build a real gap map.</div>';
+    h+='<div class="track-matrix__empty">No topic drilled ≥3× yet — answer questions to build a real gap map.</div>';
   }
 
   // Never drilled section — by frequency
   if(undrilled.length>0){
     const _udOpen=S._udOpen===true;
-    h+=`<div onclick="S._udOpen=!S._udOpen;save();render()" role="button" tabindex="0" style="font-size:10px;font-weight:700;color:#3a5b8a;text-transform:uppercase;letter-spacing:.04em;margin:14px 0 6px;cursor:pointer;display:flex;align-items:center;gap:6px"><span>🆕 Never drilled — by exam frequency (${undrilled.length})</span><span style="color:rgb(var(--fg3))">${_udOpen?'▲':'▼'}</span></div>`;
+    h+=`<div onclick="S._udOpen=!S._udOpen;save();render()" role="button" tabindex="0" class="track-matrix__heading track-matrix__heading--undrilled"><span>🆕 Never drilled — by exam frequency (${undrilled.length})</span><span class="track-matrix__heading-arrow">${_udOpen?'▲':'▼'}</span></div>`;
     if(_udOpen){
       undrilled.slice(0,15).forEach((r,rank)=>{
         const barW=Math.round(r.freqPct*100);
-        h+=`<div style="margin-bottom:5px;cursor:pointer" onclick="setTopicFilt(${r.ti});tab='quiz';render()" title="Drill ${r.name}">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
-            <div style="font-size:11px;color:rgb(var(--fg2))">${rank+1}. ${r.name}</div>
-            <span style="font-size:9px;color:rgb(var(--fg3))">${r.freq}q · untested</span>
+        h+=`<div class="track-matrix__row track-matrix__row--undrilled" onclick="setTopicFilt(${r.ti});tab='quiz';render()" title="Drill ${r.name}">
+          <div class="track-matrix__line">
+            <div class="track-matrix__name track-matrix__name--undrilled">${rank+1}. ${r.name}</div>
+            <span class="track-matrix__counts track-matrix__counts--undrilled">${r.freq}q · untested</span>
           </div>
-          <div style="height:3px;background:rgb(var(--bg2));border-radius:2px"><div style="width:${barW}%;height:100%;background:#3a5b8a;border-radius:2px"></div></div>
+          <div class="track-matrix__bar track-matrix__bar--thin"><div class="track-matrix__bar-fill track-matrix__bar-fill--info" style="width:${barW}%"></div></div>
         </div>`;
       });
-      if(undrilled.length>15)h+=`<div style="font-size:9px;color:rgb(var(--fg3));margin-top:4px;text-align:center">+ ${undrilled.length-15} more topics with no attempts</div>`;
+      if(undrilled.length>15)h+=`<div class="track-matrix__more">+ ${undrilled.length-15} more topics with no attempts</div>`;
     }
   }
   return h;
@@ -4381,47 +4673,47 @@ function renderExamTrendCard(){
   const shrinking=trends.filter(r=>r.delta<-0.5).sort((a,b)=>a.delta-b.delta).slice(0,5);
   const maxAbs=Math.max(1,...growing.map(r=>r.delta),...shrinking.map(r=>-r.delta));
 
-  // v10.54.0: editorial-cleaner layout — 2-col responsive grid, balanced 5+5,
-  // proportional bars (relative to max delta), legacy slate tokens.
-  let h=`<div class="card" style="padding:14px;margin-bottom:10px">
-<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px">
-  <span style="font-weight:700;font-size:13px;color:rgb(var(--fg))">📈 Exam Trend</span>
-  <span style="font-size:10px;color:rgb(var(--fg3));font-variant-numeric:tabular-nums">2020–23 vs 2024–25</span>
+  // v10.60.0: class-driven rebuild — track-trend-* taxonomy. Bar widths stay
+  // inline (data-driven); shells carry zero `style="..."`.
+  let h=`<div class="card track-trend">
+<div class="track-trend__head">
+  <span class="track-trend__title">📈 Exam Trend</span>
+  <span class="track-trend__period">2020–23 vs 2024–25</span>
 </div>
-<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:12px">Where the exam is heading. Study accordingly.</div>`;
+<div class="track-trend__sub">Where the exam is heading. Study accordingly.</div>`;
 
-  h+=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">`;
+  h+=`<div class="track-trend__cols">`;
   // Growing column
-  h+=`<div><div style="font-size:10px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">▲ Growing</div>`;
-  if(growing.length===0){h+=`<div style="font-size:10px;color:rgb(var(--fg3))">no significant growth</div>`;}
+  h+=`<div><div class="track-trend__col-heading track-trend__col-heading--up">▲ Growing</div>`;
+  if(growing.length===0){h+=`<div class="track-trend__empty">no significant growth</div>`;}
   growing.forEach(r=>{
     const barW=Math.round(r.delta/maxAbs*100);
-    h+=`<div style="margin-bottom:6px">
-<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;gap:8px">
-  <span style="color:rgb(var(--fg));overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0">${r.name}</span>
-  <span style="color:#059669;font-variant-numeric:tabular-nums;flex-shrink:0">+${r.delta.toFixed(1)}pp</span>
+    h+=`<div class="track-trend__row">
+<div class="track-trend__row-line">
+  <span class="track-trend__row-name">${r.name}</span>
+  <span class="track-trend__row-delta track-trend__row-delta--up">+${r.delta.toFixed(1)}pp</span>
 </div>
-<div style="height:3px;background:rgb(var(--bg2));border-radius:2px"><div style="width:${barW}%;height:100%;background:#10b981;border-radius:2px"></div></div>
+<div class="track-trend__bar"><div class="track-trend__bar-fill track-trend__bar-fill--up" style="width:${barW}%"></div></div>
 </div>`;
   });
   h+=`</div>`;
   // Shrinking column
-  h+=`<div><div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">▼ Shrinking</div>`;
-  if(shrinking.length===0){h+=`<div style="font-size:10px;color:rgb(var(--fg3))">no significant decline</div>`;}
+  h+=`<div><div class="track-trend__col-heading track-trend__col-heading--down">▼ Shrinking</div>`;
+  if(shrinking.length===0){h+=`<div class="track-trend__empty">no significant decline</div>`;}
   shrinking.forEach(r=>{
     const barW=Math.round(-r.delta/maxAbs*100);
-    h+=`<div style="margin-bottom:6px">
-<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;gap:8px">
-  <span style="color:rgb(var(--fg2));overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0">${r.name}</span>
-  <span style="color:#dc2626;font-variant-numeric:tabular-nums;flex-shrink:0">${r.delta.toFixed(1)}pp</span>
+    h+=`<div class="track-trend__row">
+<div class="track-trend__row-line">
+  <span class="track-trend__row-name track-trend__row-name--muted">${r.name}</span>
+  <span class="track-trend__row-delta track-trend__row-delta--down">${r.delta.toFixed(1)}pp</span>
 </div>
-<div style="height:3px;background:rgb(var(--bg2));border-radius:2px"><div style="width:${barW}%;height:100%;background:#ef4444;border-radius:2px"></div></div>
+<div class="track-trend__bar"><div class="track-trend__bar-fill track-trend__bar-fill--down" style="width:${barW}%"></div></div>
 </div>`;
   });
   h+=`</div>`;
   h+=`</div>`;
 
-  h+=`<div style="font-size:9px;color:rgb(var(--fg3));margin-top:10px;border-top:1px solid rgb(var(--brd));padding-top:8px;font-variant-numeric:tabular-nums">Old: ${oldTot}q (2020–2023, 10 exam tags) · New: ${newTot}q (2024–2025, 6 exam tags)</div>`;
+  h+=`<div class="track-trend__footer">Old: ${oldTot}q (2020–2023, 10 exam tags) · New: ${newTot}q (2024–2025, 6 exam tags)</div>`;
   h+=`</div>`;
   return h;
 }
@@ -4453,25 +4745,25 @@ const tSt=getTopicStats();
 const weakest=TOPICS.map((t,i)=>({name:t,i,s:tSt[i]||{ok:0,no:0,tot:0}})).filter(p=>p.s.tot>=3).sort((a,b)=>{
 const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).slice(0,3);
 const trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
-let h=`<div class="card" style="padding:14px;margin-bottom:10px;border-left:4px solid #059669">
-<div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#059669">📋 Today's Study Plan</div>`;
-if(daysLeft!==null)h+=`<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">${daysLeft} days to exam · ${new Date(examDate).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}${(function(){try{let w=0;for(let i=0;i<QZ.length;i++){const sr=S.sr[i];if(sr&&sr.fsrsS&&sr.fsrsD){const base=fsrsInterval(sr.fsrsS);const wrp=fsrsIntervalWithDeadline(sr.fsrsS,sr.fsrsD,1);if(wrp<base)w++;}}return w>0?` · <span style="color:#d97706">⚡ ${w} cards compressed</span>`:'';}catch(e){return '';}})()}</div>`;
-h+=`<div style="font-size:11px;line-height:2">`;
+let h=`<div class="card track-daily">
+<div class="track-daily__title">📋 Today's Study Plan</div>`;
+if(daysLeft!==null)h+=`<div class="track-daily__meta">${daysLeft} days to exam · ${new Date(examDate).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}${(function(){try{let w=0;for(let i=0;i<QZ.length;i++){const sr=S.sr[i];if(sr&&sr.fsrsS&&sr.fsrsD){const base=fsrsInterval(sr.fsrsS);const wrp=fsrsIntervalWithDeadline(sr.fsrsS,sr.fsrsD,1);if(wrp<base)w++;}}return w>0?` · <span class="track-daily__compress">⚡ ${w} cards compressed</span>`:'';}catch(e){return '';}})()}</div>`;
+h+=`<div class="track-daily__steps">`;
 // Step 1: Due questions
-if(dueN>0)h+=`<div>1️⃣ <b>${dueN} due questions</b> (~${Math.round(dueN*1.5)} min) <button onclick="setFilt('due');tab='quiz';render()" style="font-size:9px;padding:2px 8px;background:rgb(var(--blue-bg));color:#3b82f6;border:none;border-radius:6px;cursor:pointer">▶ Start</button></div>`;
-else h+=`<div>1️⃣ ✅ No questions due — you're caught up!</div>`;
+if(dueN>0)h+=`<div class="track-daily__step">1️⃣ <b>${dueN} due questions</b> (~${Math.round(dueN*1.5)} min) <button onclick="setFilt('due');tab='quiz';render()" class="track-daily__btn track-daily__btn--primary">▶ Start</button></div>`;
+else h+=`<div class="track-daily__step">1️⃣ ✅ No questions due — you're caught up!</div>`;
 // Step 2: Weakest topic
 if(weakest.length){
 const w=weakest[0];
 const wPct=w.s.tot?Math.round(w.s.ok/w.s.tot*100):0;
 const ref=TOPIC_REF[w.i];
-h+=`<div>2️⃣ Read: <b>${w.name}</b> (${wPct}% accuracy, ${QZ.filter(q=>q.ti===w.i).length} questions) ${ref?`<button onclick="tab='lib';libSec='harrison';render()" style="font-size:9px;padding:2px 8px;background:#ede9fe;color:#7c3aed;border:none;border-radius:6px;cursor:pointer">📖 Open</button>`:''}</div>`;
-h+=`<div>3️⃣ Drill: <b>20q mini-exam on ${w.name}</b> <button onclick="startTopicMiniExam(${w.i})" style="font-size:9px;padding:2px 8px;background:#dcfce7;color:rgb(var(--green-fg));border:none;border-radius:6px;cursor:pointer">🎯 Start</button></div>`;
+h+=`<div class="track-daily__step">2️⃣ Read: <b>${w.name}</b> (${wPct}% accuracy, ${QZ.filter(q=>q.ti===w.i).length} questions) ${ref?`<button onclick="tab='lib';libSec='harrison';render()" class="track-daily__btn track-daily__btn--secondary">📖 Open</button>`:''}</div>`;
+h+=`<div class="track-daily__step">3️⃣ Drill: <b>20q mini-exam on ${w.name}</b> <button onclick="startTopicMiniExam(${w.i})" class="track-daily__btn track-daily__btn--good">🎯 Start</button></div>`;
 }
 // Step 3: Traps
-if(trapCount>0)h+=`<div>4️⃣ Review <b>${trapCount} trap questions</b> <button onclick="setFilt('traps');tab='quiz';render()" style="font-size:9px;padding:2px 8px;background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg));border:none;border-radius:6px;cursor:pointer">🪤 Start</button></div>`;
+if(trapCount>0)h+=`<div class="track-daily__step">4️⃣ Review <b>${trapCount} trap questions</b> <button onclick="setFilt('traps');tab='quiz';render()" class="track-daily__btn track-daily__btn--warn">🪤 Start</button></div>`;
 // Step 4: Replay last mock wrong (if any)
-try{const _mh=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');const _last=_mh[_mh.length-1];const _wn=_last&&_last.wrongIdxs?_last.wrongIdxs.length:0;if(_wn>0){const _dt=new Date(_last.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'});h+=`<div>5️⃣ Replay <b>${_wn} wrong answers</b> from mock on ${_dt} <button onclick="replayLastMockWrong()" style="font-size:9px;padding:2px 8px;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;cursor:pointer">🔁 Start</button></div>`;}}catch(e){}
+try{const _mh=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');const _last=_mh[_mh.length-1];const _wn=_last&&_last.wrongIdxs?_last.wrongIdxs.length:0;if(_wn>0){const _dt=new Date(_last.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'});h+=`<div class="track-daily__step">5️⃣ Replay <b>${_wn} wrong answers</b> from mock on ${_dt} <button onclick="replayLastMockWrong()" class="track-daily__btn track-daily__btn--danger">🔁 Start</button></div>`;}}catch(e){}
 h+=`</div>`;
 // v10.58.0: append today's session stats inline below the plan steps,
 // inside the same card, instead of a separate "Today's Session" card.
@@ -4493,14 +4785,15 @@ function renderSessionInline(){
     const today=new Date().toDateString();
     const sessDate=new Date(last.date).toDateString();
     if(sessDate!==today)return '';
-    return `<div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgb(var(--brd))">
-<div style="font-weight:700;font-size:11px;margin-bottom:6px;color:#7c3aed">📊 Today's Session</div>
-<div style="display:flex;gap:12px;margin-bottom:4px">
-  <div style="text-align:center"><div style="font-size:16px;font-weight:700;color:${pct>=70?'#059669':pct>=50?'#d97706':'#dc2626'}">${pct}%</div><div style="font-size:9px;color:rgb(var(--fg3))">${last.ok}/${tot} correct</div></div>
-  <div style="text-align:center"><div style="font-size:16px;font-weight:700">${mins}m</div><div style="font-size:9px;color:rgb(var(--fg3))">duration</div></div>
-  <div style="text-align:center"><div style="font-size:16px;font-weight:700;color:#f59e0b">${last.due}</div><div style="font-size:9px;color:rgb(var(--fg3))">due tomorrow</div></div>
+    const pctMod=pct>=70?'ok':pct>=50?'warn':'err';
+    return `<div class="track-session-inline">
+<div class="track-session-inline__title">📊 Today's Session</div>
+<div class="track-session-inline__row">
+  <div class="track-session-inline__stat"><div class="track-session-inline__num track-session-inline__num--${pctMod}">${pct}%</div><div class="track-session-inline__lbl">${last.ok}/${tot} correct</div></div>
+  <div class="track-session-inline__stat"><div class="track-session-inline__num">${mins}m</div><div class="track-session-inline__lbl">duration</div></div>
+  <div class="track-session-inline__stat"><div class="track-session-inline__num track-session-inline__num--due">${last.due}</div><div class="track-session-inline__lbl">due tomorrow</div></div>
 </div>
-${last.best?`<div style="font-size:10px">✅ Best: <b>${last.best.name}</b> (${last.best.n} correct)</div>`:''}
+${last.best?`<div class="track-session-inline__best">✅ Best: <b>${last.best.name}</b> (${last.best.n} correct)</div>`:''}
 </div>`;
   }catch(e){return '';}
 }
@@ -4768,23 +5061,23 @@ function renderStudyPlan(){
 
   const spPct = totalTopics > 0 ? Math.round(checkedTopics / totalTopics * 100) : 0;
 
-  let h = `<div class="card" style="margin-bottom:12px">
-  <div style="padding:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="S.spOpen=!S.spOpen;save();render()" role="button" tabindex="0" aria-expanded="${spOpen?'true':'false'}" aria-label="Study Plan">
-    <div style="display:flex;align-items:center;gap:8px;flex:1">
-      <div style="font-size:16px">📅</div>
-      <div style="flex:1">
-        <div style="font-weight:700;font-size:13px;margin-bottom:2px">Study Plan — Hazzard's 8e</div>
-        <div style="font-size:9px;color:rgb(var(--fg2))">${checkedTopics}/${totalTopics} topics (${spPct}%)</div>
+  let h = `<div class="card track-plan">
+  <div class="track-plan__head" onclick="S.spOpen=!S.spOpen;save();render()" role="button" tabindex="0" aria-expanded="${spOpen?'true':'false'}" aria-label="Study Plan">
+    <div class="track-plan__head-main">
+      <div class="track-plan__icon">📅</div>
+      <div class="track-plan__title-block">
+        <div class="track-plan__title">Study Plan — Hazzard's 8e</div>
+        <div class="track-plan__sub">${checkedTopics}/${totalTopics} topics (${spPct}%)</div>
       </div>
     </div>
-    <div style="font-size:12px;color:rgb(var(--fg3));transition:transform .2s" class="${spOpen?'':''}">▼</div>
+    <div class="track-plan__chevron">▼</div>
   </div>`;
 
   if(spOpen){
     // Progress bar
-    h += `<div style="padding:0 14px;margin-bottom:10px">
-    <div style="width:100%;height:6px;background:rgb(var(--bg2));border-radius:3px;overflow:hidden">
-      <div style="width:${spPct}%;height:100%;background:rgb(var(--em));border-radius:3px;transition:width .3s ease"></div>
+    h += `<div class="track-plan__progress">
+    <div class="track-plan__bar">
+      <div class="track-plan__bar-fill" style="width:${spPct}%"></div>
     </div>
     </div>`;
 
@@ -4801,22 +5094,22 @@ function renderStudyPlan(){
         });
       });
 
-      h += `<div style="border-top:1px solid rgb(var(--brd));padding:0">
-      <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:rgb(var(--bg2))" onclick="S['sp_t${tier.tier}']=!S['sp_t${tier.tier}'];save();render()" role="button" tabindex="0" aria-expanded="${tierOpen?'true':'false'}">
-        <div style="display:flex;align-items:center;gap:8px;flex:1">
-          <div style="width:20px;height:20px;border-radius:8px;background:${tier.color};display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">${tier.tier}</div>
-          <div style="flex:1">
-            <div style="font-weight:600;font-size:11px">${tier.label}</div>
-            <div style="font-size:8px;color:rgb(var(--fg3));margin-top:1px">${tierChecked}/${tierTopics} · ${tier.desc}</div>
+      h += `<div class="track-plan__tier">
+      <div class="track-plan__tier-head" onclick="S['sp_t${tier.tier}']=!S['sp_t${tier.tier}'];save();render()" role="button" tabindex="0" aria-expanded="${tierOpen?'true':'false'}">
+        <div class="track-plan__tier-main">
+          <div class="track-plan__tier-badge track-plan__tier-badge--t${tier.tier}">${tier.tier}</div>
+          <div class="track-plan__tier-text">
+            <div class="track-plan__tier-label">${tier.label}</div>
+            <div class="track-plan__tier-meta">${tierChecked}/${tierTopics} · ${tier.desc}</div>
           </div>
         </div>
-        <div style="font-size:10px;color:rgb(var(--fg3));transition:transform .2s;transform:${tierOpen?'':'rotate(-90deg)'}">${tierOpen?'▼':'▶'}</div>
+        <div class="track-plan__tier-arrow${tierOpen?'':' track-plan__tier-arrow--collapsed'}">${tierOpen?'▼':'▶'}</div>
       </div>`;
 
       if(tierOpen){
         tier.domains.forEach(domain => {
-          h += `<div style="padding:8px 14px;border-top:1px solid rgb(var(--brd))">
-          <div style="font-size:10px;font-weight:600;color:rgb(var(--fg2));margin-bottom:6px">${domain.name}</div>`;
+          h += `<div class="track-plan__domain">
+          <div class="track-plan__domain-name">${domain.name}</div>`;
 
           domain.topics.forEach(topic => {
             const isChecked = S.sp && S.sp[topic.n];
@@ -4825,25 +5118,22 @@ function renderStudyPlan(){
             let accBadge = '';
             if(topicStat && topicStat.tot > 0){
               const acc = Math.round(topicStat.ok / topicStat.tot * 100);
-              let badgeColor = '#94a3b8';
-              if(acc >= 70) badgeColor = '#059669';
-              else if(acc >= 50) badgeColor = '#d97706';
-              else badgeColor = '#dc2626';
-              accBadge = `<span style="background:${badgeColor}20;color:${badgeColor};padding:2px 6px;border-radius:4px;font-size:8px;font-weight:600">${acc}%</span>`;
+              const accMod = acc >= 70 ? 'ok' : acc >= 50 ? 'warn' : 'err';
+              accBadge = `<span class="track-plan__topic-acc track-plan__topic-acc--${accMod}">${acc}%</span>`;
             }
 
-            h += `<div style="border-radius:8px;margin-bottom:4px;background:${isChecked?'#f8fafc':'transparent'}">
-            <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:10px;cursor:pointer" onclick="event.stopPropagation();S.sp=S.sp||{};S.sp['${topic.n.replace(/'/g,"\\'")}']=!S.sp['${topic.n.replace(/'/g,"\\'")}']; save();render()" role="checkbox" aria-checked="${isChecked?'true':'false'}" tabindex="0">
-            <input type="checkbox" ${isChecked?'checked':''} readonly style="width:14px;height:14px;flex-shrink:0;cursor:pointer" tabindex="-1">
-            <span style="flex:1;${isChecked?'color:rgb(var(--fg3));text-decoration:line-through':'color:rgb(var(--fg))'}">${topic.n}</span>
+            h += `<div class="track-plan__topic${isChecked?' track-plan__topic--checked':''}">
+            <div class="track-plan__topic-row" onclick="event.stopPropagation();S.sp=S.sp||{};S.sp['${topic.n.replace(/'/g,"\\'")}']=!S.sp['${topic.n.replace(/'/g,"\\'")}']; save();render()" role="checkbox" aria-checked="${isChecked?'true':'false'}" tabindex="0">
+            <input type="checkbox" class="track-plan__topic-cb" ${isChecked?'checked':''} readonly tabindex="-1">
+            <span class="track-plan__topic-name${isChecked?' track-plan__topic-name--done':''}">${topic.n}</span>
             ${accBadge}
-            <span style="color:rgb(var(--fg3));font-size:9px;white-space:nowrap">${topic.hrs}</span>
+            <span class="track-plan__topic-hrs">${topic.hrs}</span>
             </div>
-            <div style="display:flex;gap:4px;padding:0 8px 6px 36px;flex-wrap:wrap">
-            ${HAZ_CHAPTERS[topic.n]?`<button onclick="event.stopPropagation();tab='lib';libSec='haz-pdf';openHazzardChapter(parseInt(HAZ_CHAPTERS['${topic.n.replace(/'/g,"\\'")}'].ch))" style="font-size:9px;padding:3px 8px;border:1px solid rgb(var(--brd));border-radius:6px;background:rgb(var(--card-bg));color:#b45309;cursor:pointer;white-space:nowrap" aria-label="Read Hazzard's chapter for ${topic.n.replace(/'/g,'')}">📕 Ch ${HAZ_CHAPTERS[topic.n].ch}</button>`:''}
-            <button onclick="event.stopPropagation();openNote=${topic.ti};go('study')" style="font-size:9px;padding:3px 8px;border:1px solid rgb(var(--brd));border-radius:6px;background:rgb(var(--card-bg));color:#0D7377;cursor:pointer;white-space:nowrap" aria-label="Open notes for ${topic.n.replace(/'/g,'')}">📖 Notes</button>
-            <button onclick="event.stopPropagation();setTopicFilt(${topic.ti});go('quiz')" style="font-size:9px;padding:3px 8px;border:1px solid rgb(var(--brd));border-radius:6px;background:rgb(var(--card-bg));color:#3b82f6;cursor:pointer;white-space:nowrap" aria-label="Quiz ${topic.n.replace(/'/g,'')}">📝 Quiz</button>
-            <button onclick="event.stopPropagation();S.chat=[];go('chat');setTimeout(function(){sendChatStarter('Give me a concise board-review summary of ${topic.n.replace(/'/g,"\\'")} in geriatrics. Cover: key definitions, diagnostic criteria, management pearls, exam traps, and must-know numbers. Format with bold headings.')},100)" style="font-size:9px;padding:3px 8px;border:1px solid rgb(var(--brd));border-radius:6px;background:rgb(var(--card-bg));color:#7c3aed;cursor:pointer;white-space:nowrap" aria-label="AI summary of ${topic.n.replace(/'/g,'')}">🤖 Summarize</button>
+            <div class="track-plan__actions">
+            ${HAZ_CHAPTERS[topic.n]?`<button onclick="event.stopPropagation();tab='lib';libSec='haz-pdf';openHazzardChapter(parseInt(HAZ_CHAPTERS['${topic.n.replace(/'/g,"\\'")}'].ch))" class="track-plan__action track-plan__action--haz" aria-label="Read Hazzard's chapter for ${topic.n.replace(/'/g,'')}">📕 Ch ${HAZ_CHAPTERS[topic.n].ch}</button>`:''}
+            <button onclick="event.stopPropagation();openNote=${topic.ti};go('study')" class="track-plan__action track-plan__action--note" aria-label="Open notes for ${topic.n.replace(/'/g,'')}">📖 Notes</button>
+            <button onclick="event.stopPropagation();setTopicFilt(${topic.ti});go('quiz')" class="track-plan__action track-plan__action--quiz" aria-label="Quiz ${topic.n.replace(/'/g,'')}">📝 Quiz</button>
+            <button onclick="event.stopPropagation();S.chat=[];go('chat');setTimeout(function(){sendChatStarter('Give me a concise board-review summary of ${topic.n.replace(/'/g,"\\'")} in geriatrics. Cover: key definitions, diagnostic criteria, management pearls, exam traps, and must-know numbers. Format with bold headings.')},100)" class="track-plan__action track-plan__action--ai" aria-label="AI summary of ${topic.n.replace(/'/g,'')}">🤖 Summarize</button>
             </div>
             </div>`;
           });
@@ -4869,34 +5159,35 @@ const bkCount=Object.values(S.bk).filter(Boolean).length;
 const dueN=getDueQuestions().length;
 const readiness=calcEstScore();
 const streak=getStudyStreak();
-// Key metrics row
-let h=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
-<div class="card" style="padding:10px;text-align:center">
-<div style="font-size:22px;font-weight:800;color:${readiness===null?'#94a3b8':readiness>=70?'#059669':readiness>=50?'#d97706':'#dc2626'}">${readiness!==null?readiness+'%':'—'}</div>
-<div style="font-size:9px;color:rgb(var(--fg2))">Est. Score</div>
+// Key metrics row — class-driven KPI tiles (v10.60.0)
+const readinessMod=readiness===null?'neutral':readiness>=70?'ok':readiness>=50?'warn':'err';
+const accMod=pctN>=70?'ok':'warn';
+let h=`<div class="track-kpi-row">
+<div class="card track-kpi">
+<div class="track-kpi__value track-kpi__value--${readinessMod}">${readiness!==null?readiness+'%':'—'}</div>
+<div class="track-kpi__label">Est. Score</div>
 </div>
-<div class="card" style="padding:10px;text-align:center">
-<div style="font-size:22px;font-weight:800;color:#7c3aed">${streak}</div>
-<div style="font-size:9px;color:rgb(var(--fg2))">Day Streak</div>
+<div class="card track-kpi">
+<div class="track-kpi__value track-kpi__value--accent">${streak}</div>
+<div class="track-kpi__label">Day Streak</div>
 </div>
-<div class="card" style="padding:10px;text-align:center">
-<div style="font-size:22px;font-weight:800;color:#0ea5e9">${tot}</div>
-<div style="font-size:9px;color:rgb(var(--fg2))">Answered</div>
+<div class="card track-kpi">
+<div class="track-kpi__value track-kpi__value--info">${tot}</div>
+<div class="track-kpi__label">Answered</div>
 </div>
-<div class="card" style="padding:10px;text-align:center">
-<div style="font-size:22px;font-weight:800;color:${pctN>=70?'#059669':'#d97706'}">${pct}</div>
-<div style="font-size:9px;color:rgb(var(--fg2))">Accuracy</div>
+<div class="card track-kpi">
+<div class="track-kpi__value track-kpi__value--${accMod}">${pct}</div>
+<div class="track-kpi__label">Accuracy</div>
 </div>
 </div>`;
 // SRS due alert
 if(dueN>0){
-h+=`<div class="card" style="padding:12px;margin-bottom:8px;background:rgb(var(--red-bg));border:1px solid rgb(var(--red-brd))">
-<div style="display:flex;align-items:center;gap:8px">
-<span style="font-size:18px">🔔</span>
-<div style="flex:1"><div style="font-size:12px;font-weight:700;color:#dc2626">${dueN} questions due for review</div>
-<div style="font-size:10px;color:rgb(var(--fg2))">Spaced repetition items ready now</div></div>
-<button onclick="filt='due';buildPool();tab='quiz';render()" class="btn" style="font-size:10px;padding:6px 12px;background:#dc2626;color:#fff;border:none;border-radius:8px">▶ Review</button>
-</div></div>`;
+h+=`<div class="card track-due">
+<span class="track-due__icon">🔔</span>
+<div class="track-due__body"><div class="track-due__title">${dueN} questions due for review</div>
+<div class="track-due__sub">Spaced repetition items ready now</div></div>
+<button onclick="filt='due';buildPool();tab='quiz';render()" class="btn track-due__cta">▶ Review</button>
+</div>`;
 }
 // v10.51.0: Topic Heatmap — single SVG-styled grid of all 46 topics colored
 // by aggregated FSRS retention (Cividis-safe palette). Tap a cell → filter
@@ -4907,9 +5198,9 @@ h+=renderTopicHeatmap();
 h+=renderStudyPlan();
 // Feature 5: Exam date + daily plan
 if(!S.examDate&&!localStorage.getItem('shlav_exam_date')){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px;text-align:center">
-<div style="font-size:12px;font-weight:700;margin-bottom:6px">📅 When is your exam?</div>
-<button class="btn btn-p" onclick="setExamDate()" style="font-size:11px">Set Exam Date</button>
+h+=`<div class="card track-empty">
+<div class="track-empty__title">📅 When is your exam?</div>
+<button class="btn btn-p" onclick="setExamDate()">Set Exam Date</button>
 </div>`;
 }else{
 h+=renderDailyPlan();
@@ -4920,15 +5211,14 @@ h+=renderSessionCard();
 // Rescue Drill CTA
 const _weakTopics=getWeakTopics(3);
 if(_weakTopics.length&&_weakTopics[0].pct!==null&&_weakTopics[0].pct<65){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px;background:linear-gradient(135deg,#fef2f2,#fffbeb);border:1px solid rgb(var(--red-brd))">
-<div style="display:flex;align-items:center;gap:10px">
-<span style="font-size:24px">🚨</span>
-<div style="flex:1">
-<div style="font-weight:700;font-size:12px;color:#dc2626">Rescue Drill</div>
-<div style="font-size:10px;color:rgb(var(--fg2))">${_weakTopics.map(w=>TOPICS[w.ti]+' ('+w.pct+'%)').join(' · ')}</div>
+h+=`<div class="card track-rescue">
+<span class="track-rescue__icon">🚨</span>
+<div class="track-rescue__body">
+<div class="track-rescue__title">Rescue Drill</div>
+<div class="track-rescue__topics">${_weakTopics.map(w=>TOPICS[w.ti]+' ('+w.pct+'%)').join(' · ')}</div>
 </div>
-<button onclick="buildRescuePool();tab='quiz';render()" class="btn" style="font-size:11px;padding:8px 16px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-weight:700">GO</button>
-</div></div>`;
+<button onclick="buildRescuePool();tab='quiz';render()" class="btn track-rescue__cta">GO</button>
+</div>`;
 }
 
 // Final Stretch CTA (shows always; pushes unseen + high-yield)
@@ -4937,17 +5227,15 @@ const _exDate=S.examDate||localStorage.getItem('shlav_exam_date')||'';
 const _daysLeft=_exDate?Math.max(0,Math.ceil((new Date(_exDate)-Date.now())/864e5)):null;
 const _label=_daysLeft===null?'Final Stretch':(_daysLeft<=30?`Final Stretch · ${_daysLeft}d left`:`Final Stretch · ${_daysLeft}d`);
 const _urgent=_daysLeft!==null&&_daysLeft<=30;
-const _bg=_urgent?'linear-gradient(135deg,#fef3c7,#fde68a)':'linear-gradient(135deg,#eff6ff,#dbeafe)';
-const _brd=_urgent?'#f59e0b':'#3b82f6';
-h+=`<div class="card" style="padding:14px;margin-bottom:10px;background:${_bg};border:1px solid ${_brd}40">
-<div style="display:flex;align-items:center;gap:10px">
-<span style="font-size:24px">🎯</span>
-<div style="flex:1">
-<div style="font-weight:700;font-size:12px;color:${_urgent?'#b45309':'#1e40af'}">${_label}</div>
-<div style="font-size:10px;color:rgb(var(--fg2))">40 high-yield Qs · prioritises never-seen + your weak spots</div>
+const _mod=_urgent?'urgent':'calm';
+h+=`<div class="card track-final track-final--${_mod}">
+<span class="track-final__icon">🎯</span>
+<div class="track-final__body">
+<div class="track-final__title track-final__title--${_mod}">${_label}</div>
+<div class="track-final__sub">40 high-yield Qs · prioritises never-seen + your weak spots</div>
 </div>
-<button onclick="buildFinalStretchPool(40);tab='quiz';render()" class="btn" style="font-size:11px;padding:8px 16px;background:${_urgent?'#f59e0b':'#3b82f6'};color:#fff;border:none;border-radius:10px;font-weight:700">GO</button>
-</div></div>`;
+<button onclick="buildFinalStretchPool(40);tab='quiz';render()" class="btn track-final__cta track-final__cta--${_mod}">GO</button>
+</div>`;
 })();
 
 return h;
@@ -4962,22 +5250,22 @@ let h='';
 const _hazDue=getChaptersDueForReading('haz',30);
 const _harDue=getChaptersDueForReading('har',30);
 if(_hazDue.length||_harDue.length){
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">
-<div style="font-size:12px;font-weight:700;margin-bottom:8px">📖 Chapters Due for Re-Reading</div>`;
+h+=`<div class="card track-reread">
+<div class="track-reread__title">📖 Chapters Due for Re-Reading</div>`;
 if(_hazDue.length){
-h+=`<div style="font-size:10px;font-weight:600;color:#dc2626;margin-bottom:4px">Hazzard's:</div>`;
+h+=`<div class="track-reread__group track-reread__group--haz">Hazzard's:</div>`;
 _hazDue.slice(0,5).forEach(c=>{
   const _chData=_hazData&&_hazData[c.ch];
   const _title=_chData?_chData.title:'Ch '+c.ch;
-  h+=`<div onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${c.ch})" style="font-size:10px;padding:4px 0;cursor:pointer;color:rgb(var(--fg2));border-bottom:1px solid #f8fafc">📕 Ch ${c.ch}: ${_title} <span style="color:#dc2626;font-weight:700">(${c.daysSince}d ago)</span></div>`;
+  h+=`<div onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${c.ch})" class="track-reread__row">📕 Ch ${c.ch}: ${_title} <span class="track-reread__since track-reread__since--haz">(${c.daysSince}d ago)</span></div>`;
 });
 }
 if(_harDue.length){
-h+=`<div style="font-size:10px;font-weight:600;color:#7c3aed;margin-bottom:4px;margin-top:6px">Harrison's:</div>`;
+h+=`<div class="track-reread__group track-reread__group--har">Harrison's:</div>`;
 _harDue.slice(0,5).forEach(c=>{
   const _chData=_harData&&_harData[c.ch];
   const _title=_chData?_chData.title:'Ch '+c.ch;
-  h+=`<div onclick="tab='lib';libSec='harrison';openHarrisonChapter(${c.ch})" style="font-size:10px;padding:4px 0;cursor:pointer;color:rgb(var(--fg2));border-bottom:1px solid #f8fafc">📗 Ch ${c.ch}: ${_title} <span style="color:#7c3aed;font-weight:700">(${c.daysSince}d ago)</span></div>`;
+  h+=`<div onclick="tab='lib';libSec='harrison';openHarrisonChapter(${c.ch})" class="track-reread__row">📗 Ch ${c.ch}: ${_title} <span class="track-reread__since track-reread__since--har">(${c.daysSince}d ago)</span></div>`;
 });
 }
 h+=`</div>`;
@@ -4991,11 +5279,11 @@ const _lbOpen=S._lbOpen===true;
 const _lbReadiness=calcEstScore();
 const _lbAnswered=Object.values(S.sr||{}).reduce((a,s)=>a+(s.tot||0),0);
 const _lbInline=_lbReadiness!==null?`${_lbReadiness}% · ${_lbAnswered} answered`:'submit ≥20 answers to rank';
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">`;
-h+=`<div onclick="S._lbOpen=!S._lbOpen;save();render()" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px;${_lbOpen?'margin-bottom:8px':''}" role="button" tabindex="0" aria-expanded="${_lbOpen?'true':'false'}" aria-label="Toggle leaderboard"><span style="font-size:14px">🏆</span><span style="flex:1">Leaderboard <span style="font-weight:400;color:rgb(var(--fg3));font-size:10px">· ${_lbInline}</span></span><span style="color:rgb(var(--fg2))">${_lbOpen?'▲':'▼'}</span></div>`;
+h+=`<div class="card track-lb">`;
+h+=`<div onclick="S._lbOpen=!S._lbOpen;save();render()" class="track-lb__head${_lbOpen?' track-lb__head--open':''}" role="button" tabindex="0" aria-expanded="${_lbOpen?'true':'false'}" aria-label="Toggle leaderboard"><span class="track-lb__icon">🏆</span><span class="track-lb__title">Leaderboard <span class="track-lb__sub">· ${_lbInline}</span></span><span class="track-lb__chev">${_lbOpen?'▲':'▼'}</span></div>`;
 if(_lbOpen){
-h+=`<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button onclick="showLeaderboard()" style="font-size:9px;padding:4px 10px;background:#f59e0b;color:#fff;border:none;border-radius:6px;cursor:pointer">Refresh</button></div>`;
-h+=`<div id="leaderboard-box" style="font-size:10px;color:rgb(var(--fg3));text-align:center">Tap refresh to load</div>`;
+h+=`<div class="track-lb__refresh-row"><button onclick="showLeaderboard()" class="track-lb__refresh">Refresh</button></div>`;
+h+=`<div id="leaderboard-box" class="track-lb__board">Tap refresh to load</div>`;
 }
 h+=`</div>`;
 }
@@ -5031,28 +5319,28 @@ _byTopic[tp].push({k:k,q:q});
 });
 const _topicKeys=Object.keys(_byTopic);
 if(_topicKeys.length>1){
-h+='<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">📁 Bookmark Folders</div>';
+h+='<div class="card track-bk"><div class="track-bk__title">📁 Bookmark Folders</div>';
 _topicKeys.forEach(function(topic){
 var fk='bkf_'+topic.replace(/[^a-z0-9]/gi,'_');
 var open=S[fk];
 var qs=_byTopic[topic];
-h+='<div style="margin-bottom:6px">';
-h+='<div onclick="S[\''+fk+'\']=' + '!S[\''+fk+'\'];save();render()" style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgb(var(--bg2));border-radius:8px;cursor:pointer;font-size:11px;font-weight:600" role="button" tabindex="0" aria-expanded="'+(open?'true':'false')+'" aria-label="'+topic+'">';
+h+='<div class="track-bk__folder">';
+h+='<div onclick="S[\''+fk+'\']=' + '!S[\''+fk+'\'];save();render()" class="track-bk__folder-head" role="button" tabindex="0" aria-expanded="'+(open?'true':'false')+'" aria-label="'+topic+'">';
 h+='<span>📁 '+topic+' ('+qs.length+')</span><span>'+(open?'▼':'▶')+'</span></div>';
-if(open){qs.forEach(function(e){h+='<div style="padding:6px 12px;font-size:10px;border-bottom:1px solid rgb(var(--brd))" class="heb" dir="'+heDir(e.q.q)+'">'+e.q.q.substring(0,90)+'...</div>';});}
+if(open){qs.forEach(function(e){h+='<div class="track-bk__folder-row heb" dir="'+heDir(e.q.q)+'">'+e.q.q.substring(0,90)+'...</div>';});}
 h+='</div>';
 });
 h+='</div>';
 }else{
-h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🔖 Bookmarked (${bkCount})</div>`;
+h+=`<div class="card track-bk"><div class="track-bk__title">🔖 Bookmarked (${bkCount})</div>`;
 Object.entries(S.bk).filter(([,v])=>v).slice(0,10).forEach(([k])=>{
-const q=QZ[k];if(q)h+=`<div style="font-size:10px;padding:6px 0;border-bottom:1px solid #f8fafc" class="heb" dir="${heDir(q.q)}">${q.q.substring(0,80)}...</div>`;
+const q=QZ[k];if(q)h+=`<div class="track-bk__row heb" dir="${heDir(q.q)}">${q.q.substring(0,80)}...</div>`;
 });
 h+=`</div>`;
 }
 }
 // Syllabus
-h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:10px">📋 Syllabus (${done}/${TOPICS.length})</div>`;
+h+=`<div class="card track-syllabus${S._sylOpen?' track-syllabus--open':''}"><div class="track-syllabus__title">📋 Syllabus (${done}/${TOPICS.length})</div>`;
 // v10.50.0: removed "📊 Accuracy by Topic" list — it duplicated the 🗺️ Topic Mastery Map
 // already shown at the top of Track in _rtTop(). One topic-accuracy view is enough.
 const tSt=getTopicStats();
@@ -5077,12 +5365,12 @@ if(heatData.length>0){
 // who want the per-exam-period view can tap the header to expand. State persisted
 // in S._wsmOpen so the choice survives reloads.
 const _wsmOpen=S._wsmOpen===true;
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">`;
-h+=`<div onclick="S._wsmOpen=!S._wsmOpen;save();render()" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px;${_wsmOpen?'margin-bottom:8px':''}" role="button" tabindex="0" aria-expanded="${_wsmOpen?'true':'false'}" aria-label="Toggle weak spots map"><span style="flex:1">🗺️ Weak Spots Map <span style="font-weight:400;color:rgb(var(--fg3));font-size:10px">· ${heatData.length} topic${heatData.length>1?'s':''} × ${years.length} exam${years.length>1?'s':''}</span></span><span style="color:rgb(var(--fg2))">${_wsmOpen?'▲':'▼'}</span></div>`;
+h+=`<div class="card track-wsm">`;
+h+=`<div onclick="S._wsmOpen=!S._wsmOpen;save();render()" class="track-wsm__head${_wsmOpen?' track-wsm__head--open':''}" role="button" tabindex="0" aria-expanded="${_wsmOpen?'true':'false'}" aria-label="Toggle weak spots map"><span class="track-wsm__title">🗺️ Weak Spots Map <span class="track-wsm__sub">· ${heatData.length} topic${heatData.length>1?'s':''} × ${years.length} exam${years.length>1?'s':''}</span></span><span class="track-wsm__chev">${_wsmOpen?'▲':'▼'}</span></div>`;
 if(_wsmOpen){
-h+=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:9px"><thead><tr><th style="text-align:right;padding:3px;font-size:8px">Topic</th>`;
+h+=`<div class="track-wsm__scroll"><table class="track-wsm__table"><thead><tr><th class="track-wsm__th-topic">Topic</th>`;
 const _yearAbbr={'2020':'20','2021':'21','2021-Jun':"21·6",'2022':'22','2023-Jun':"23·6",'2023-Sep':"23·9",'2024-May':"24·5",'2024-Sep':"24·9",'2025-Jun':"25·6",'Hazzard':'Haz','Harrison':'Har','Exam':'Ex','Hazzard-suppl':'Sup','FM-Core':'FM','GRS8':'GRS','Harrison-suppl':'HSup'};
-years.forEach(y=>{h+=`<th style="padding:3px;text-align:center;font-size:8px;white-space:nowrap;min-width:28px" title="${y}">${_yearAbbr[y]||y}</th>`;});
+years.forEach(y=>{h+=`<th class="track-wsm__th-year" title="${y}">${_yearAbbr[y]||y}</th>`;});
 h+=`</tr></thead><tbody>`;
 heatData.sort((a,b)=>{
 const avgA=a.cells.filter(c=>c.n>0).reduce((s,c)=>s+c.pct,0)/(a.cells.filter(c=>c.n>0).length||1);
@@ -5090,21 +5378,21 @@ const avgB=b.cells.filter(c=>c.n>0).reduce((s,c)=>s+c.pct,0)/(b.cells.filter(c=>
 return avgA-avgB;
 });
 heatData.forEach(row=>{
-h+=`<tr><td style="padding:3px;text-align:right;white-space:nowrap;font-size:10px;min-width:80px;padding-right:6px">${row.topic}</td>`;
+h+=`<tr><td class="track-wsm__td-topic">${row.topic}</td>`;
 row.cells.forEach(c=>{
-if(c.n===0){h+=`<td style="padding:2px;text-align:center;background:rgb(var(--bg2));color:#cbd5e1">·</td>`;}
-else if(c.n===1){h+=`<td style="padding:2px;text-align:center;background:rgb(var(--bg2));color:rgb(var(--fg3));font-size:8px" title="Only 1 attempt — too few for a meaningful score">${c.pct}%<br><span style="font-size:7px">1q</span></td>`;}
+if(c.n===0){h+=`<td class="track-wsm__td-cell track-wsm__td-cell--empty">·</td>`;}
+else if(c.n===1){h+=`<td class="track-wsm__td-cell track-wsm__td-cell--single" title="Only 1 attempt — too few for a meaningful score">${c.pct}%<br><span class="track-wsm__cell-detail">1q</span></td>`;}
 else{
-const bg=c.pct>=75?'#dcfce7':c.pct>=50?'#fef9c3':'#fecaca';
-h+=`<td style="padding:2px;text-align:center;background:${bg};font-weight:600;border-radius:2px" title="${c.pct}% on ${c.n} attempts">${c.pct}%<br><span style="font-size:7px;opacity:0.7">${c.n}q</span></td>`;}
+const cellMod=c.pct>=75?'ok':c.pct>=50?'mid':'low';
+h+=`<td class="track-wsm__td-cell track-wsm__td-cell--${cellMod}" title="${c.pct}% on ${c.n} attempts">${c.pct}%<br><span class="track-wsm__cell-detail">${c.n}q</span></td>`;}
 });
 h+=`</tr>`;
 });
 h+=`</tbody></table></div>`;
-h+=`<div style="display:flex;gap:8px;margin-top:6px;font-size:8px;color:rgb(var(--fg3));justify-content:center">
-<span style="display:flex;align-items:center;gap:2px"><span style="width:10px;height:10px;background:#fecaca;border-radius:2px"></span>&lt;50%</span>
-<span style="display:flex;align-items:center;gap:2px"><span style="width:10px;height:10px;background:#fef9c3;border-radius:2px"></span>50-74%</span>
-<span style="display:flex;align-items:center;gap:2px"><span style="width:10px;height:10px;background:#dcfce7;border-radius:2px"></span>&ge;75%</span>
+h+=`<div class="track-wsm__legend">
+<span class="track-wsm__legend-row"><span class="track-wsm__legend-swatch track-wsm__legend-swatch--low"></span>&lt;50%</span>
+<span class="track-wsm__legend-row"><span class="track-wsm__legend-swatch track-wsm__legend-swatch--mid"></span>50-74%</span>
+<span class="track-wsm__legend-row"><span class="track-wsm__legend-swatch track-wsm__legend-swatch--ok"></span>&ge;75%</span>
 </div>`;
 }
 h+=`</div>`;}
@@ -5118,16 +5406,16 @@ h+=`</div>`;}
   if(_confTotal>=10){
     const _cmOpen=S._cmOpen===true;
     const _blindSpots=_confStats.sure_no;
-    h+=`<div class="card" style="padding:14px;margin-bottom:10px">`;
-    h+=`<div onclick="S._cmOpen=!S._cmOpen;save();render()" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px;${_cmOpen?'margin-bottom:8px':''}" role="button" tabindex="0" aria-expanded="${_cmOpen?'true':'false'}" aria-label="Toggle confidence matrix"><span style="flex:1">🎯 Confidence Matrix <span style="font-weight:400;color:rgb(var(--fg3));font-size:10px">· ${_confTotal} rated${_blindSpots>0?` · <span style="color:#dc2626;font-weight:600">${_blindSpots} blind spots</span>`:''}</span></span><span style="color:rgb(var(--fg2))">${_cmOpen?'▲':'▼'}</span></div>`;
+    h+=`<div class="card track-cm">`;
+    h+=`<div onclick="S._cmOpen=!S._cmOpen;save();render()" class="track-cm__head${_cmOpen?' track-cm__head--open':''}" role="button" tabindex="0" aria-expanded="${_cmOpen?'true':'false'}" aria-label="Toggle confidence matrix"><span class="track-cm__title">🎯 Confidence Matrix <span class="track-cm__sub">· ${_confTotal} rated${_blindSpots>0?` · <span class="track-cm__blind">${_blindSpots} blind spots</span>`:''}</span></span><span class="track-cm__chev">${_cmOpen?'▲':'▼'}</span></div>`;
     if(_cmOpen){
-      h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;text-align:center">
-<div style="padding:8px;background:#dcfce7;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.sure_ok}</div>😎✅ Confident + Right</div>
-<div style="padding:8px;background:#fecaca;border-radius:8px"><div style="font-size:16px;font-weight:700;color:#dc2626">${_confStats.sure_no}</div>😎❌ BLIND SPOTS</div>
-<div style="padding:8px;background:#fef9c3;border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.unsure_ok}</div>😬✅ Lucky</div>
-<div style="padding:8px;background:rgb(var(--bg2));border-radius:8px"><div style="font-size:16px;font-weight:700">${_confStats.unsure_no}</div>😬❌ Expected miss</div>
+      h+=`<div class="track-cm__grid">
+<div class="track-cm__cell track-cm__cell--good"><div class="track-cm__num">${_confStats.sure_ok}</div>😎✅ Confident + Right</div>
+<div class="track-cm__cell track-cm__cell--blind"><div class="track-cm__num track-cm__num--blind">${_confStats.sure_no}</div>😎❌ BLIND SPOTS</div>
+<div class="track-cm__cell track-cm__cell--lucky"><div class="track-cm__num">${_confStats.unsure_ok}</div>😬✅ Lucky</div>
+<div class="track-cm__cell track-cm__cell--miss"><div class="track-cm__num">${_confStats.unsure_no}</div>😬❌ Expected miss</div>
 </div>
-${_blindSpots>0?`<div style="margin-top:8px;font-size:10px;color:#dc2626;font-weight:600">⚠️ ${_blindSpots} blind spots — you were confident but wrong. These are your most dangerous gaps.</div>`:''}`;
+${_blindSpots>0?`<div class="track-cm__warn">⚠️ ${_blindSpots} blind spots — you were confident but wrong. These are your most dangerous gaps.</div>`:''}`;
     }
     h+=`</div>`;
   }
@@ -5135,11 +5423,11 @@ ${_blindSpots>0?`<div style="margin-top:8px;font-size:10px;color:#dc2626;font-we
 // ROI Matrix and Radar chart removed — accuracy bars above are sufficient
 h+=renderPriorityMatrix();
 // v10.58.0: Cheat-sheet export link, demoted from full card in _rtMid()
-h+=`<div style="text-align:center;margin:-4px 0 10px"><a href="#" onclick="event.preventDefault();exportCheatSheet()" style="font-size:10px;color:rgb(var(--sky));text-decoration:underline;cursor:pointer" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</a></div>`;
+h+=`<div class="track-cheat-row"><a href="#" onclick="event.preventDefault();exportCheatSheet()" class="track-cheat-link" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</a></div>`;
 
-TOPICS.forEach((t,i)=>{h+=`<div class="topic${S.ck[i]?' done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()" style="display:${S._sylOpen?'flex':'none'}" role="checkbox" aria-checked="${S.ck[i]?'true':'false'}" tabindex="0" aria-label="${t}">
-<input type="checkbox" ${S.ck[i]?'checked':''} readonly style="width:13px;height:13px" tabindex="-1"><span>${t}</span></div>`;});
-h+=`<div onclick="S._sylOpen=!S._sylOpen;render()" style="text-align:center;padding:8px;cursor:pointer;font-size:10px;color:rgb(var(--sky));font-weight:600" role="button" tabindex="0" aria-expanded="${S._sylOpen}" aria-label="Toggle syllabus topics">${S._sylOpen?'▲ Collapse':'▼ Show '+TOPICS.length+' topics'}</div>`;
+TOPICS.forEach((t,i)=>{h+=`<div class="topic track-syllabus__topic${S.ck[i]?' is-done done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()" role="checkbox" aria-checked="${S.ck[i]?'true':'false'}" tabindex="0" aria-label="${t}">
+<input type="checkbox" class="track-syllabus__cb" ${S.ck[i]?'checked':''} readonly tabindex="-1"><span>${t}</span></div>`;});
+h+=`<div onclick="S._sylOpen=!S._sylOpen;render()" class="track-syllabus__toggle" role="button" tabindex="0" aria-expanded="${S._sylOpen}" aria-label="Toggle syllabus topics">${S._sylOpen?'▲ Collapse':'▼ Show '+TOPICS.length+' topics'}</div>`;
 h+=`</div>`;
 // v10.57.0: Activity Calendar (30 days) — moved here from _rtTop where it
 // was buried under the action CTAs. This is a passive progress view, so it
@@ -5149,18 +5437,17 @@ h+=`</div>`;
 {
 const _actOpen=S._actOpen===true;
 const _actDays=(function(){let n=0;for(let _i=29;_i>=0;_i--){const _d=new Date();_d.setDate(_d.getDate()-_i);const _dk=_d.toISOString().slice(0,10);const _act=S.dailyAct&&S.dailyAct[_dk];if(_act&&_act.q>0)n++;}return n;})();
-h+=`<div class="card" style="padding:14px;margin-bottom:10px">`;
-h+=`<div onclick="S._actOpen=!S._actOpen;save();render()" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:12px;${_actOpen?'margin-bottom:8px':''}" role="button" tabindex="0" aria-expanded="${_actOpen?'true':'false'}" aria-label="Toggle activity heatmap"><span style="flex:1">📊 Activity Heatmap (last 30 days) <span style="font-weight:400;color:rgb(var(--fg3));font-size:10px">· ${_actDays} active day${_actDays===1?'':'s'}</span></span><span style="color:rgb(var(--fg2))">${_actOpen?'▲':'▼'}</span></div>`;
+h+=`<div class="card track-activity">`;
+h+=`<div onclick="S._actOpen=!S._actOpen;save();render()" class="track-activity__head${_actOpen?' track-activity__head--open':''}" role="button" tabindex="0" aria-expanded="${_actOpen?'true':'false'}" aria-label="Toggle activity heatmap"><span class="track-activity__title">📊 Activity Heatmap (last 30 days) <span class="track-activity__sub">· ${_actDays} active day${_actDays===1?'':'s'}</span></span><span class="track-activity__chev">${_actOpen?'▲':'▼'}</span></div>`;
 if(_actOpen){
-h+=`<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px">`;
+h+=`<div class="track-activity__grid">`;
 for(let _i=29;_i>=0;_i--){
 const _d=new Date();_d.setDate(_d.getDate()-_i);
 const _dk=_d.toISOString().slice(0,10);
 const _act=S.dailyAct&&S.dailyAct[_dk];
 const _qc=_act?_act.q:0;
 const _int=_qc===0?0:_qc<5?1:_qc<15?2:_qc<30?3:4;
-const _cols=[document.body.classList.contains('dark')||document.body.classList.contains('study')?'#1e293b':'#f1f5f9','#dcfce7','#86efac','#22c55e','#15803d'];
-h+=`<div style="aspect-ratio:1;border-radius:3px;background:${_cols[_int]}" title="${_dk}: ${_qc} Qs"></div>`;
+h+=`<div class="track-activity__cell track-activity__cell--lvl${_int}" title="${_dk}: ${_qc} Qs"></div>`;
 }
 h+=`</div>`;
 }
@@ -5173,24 +5460,24 @@ let h='';
 // v10.54.0: IMA Exam Archive removed — duplicated Library → Exams sub-tab.
 // Reset
 // Share with friends
-h+=`<div class="card" style="padding:14px;text-align:center;margin-top:12px">
-<div style="font-weight:700;font-size:12px;margin-bottom:8px">🔗 Share with Friends</div>
-<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Share this app with fellow geriatric medicine residents</div>
-<button class="btn btn-p" onclick="shareApp()" style="margin-bottom:8px" aria-label="Share app link">📤 Share App Link</button>
+h+=`<div class="card track-share">
+<div class="track-share__title">🔗 Share with Friends</div>
+<div class="track-share__sub">Share this app with fellow geriatric medicine residents</div>
+<button class="btn btn-p track-share__btn" onclick="shareApp()" aria-label="Share app link">📤 Share App Link</button>
 </div>`;
 // Account / Study Plan / Data Management / API Key all moved to Settings tab in v10.48.0 — they were
 // stuffed into Track and made the page hard to navigate. The "discovery" entry from Track is the
 // ⚙️ Settings tab in the top tab bar, plus the "Set Exam Date" CTA earlier in this view which
 // scrolls there for the unset case.
 // Version footer
-h+=`<div style="text-align:center;margin-top:20px;padding:12px;font-size:9px;color:rgb(var(--fg3));line-height:1.8">
+h+=`<div class="track-version-footer">
 <div>Shlav A Mega v${APP_VERSION} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · build ${BUILD_HASH}</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
-<div style="margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-<button data-action="apply-update" style="font-size:10px;padding:5px 14px;background:#0D7377;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600">🔄 Force Update</button>
-<a href="https://eiasash.github.io/InternalMedicine/" target="_blank" style="font-size:10px;padding:5px 14px;background:#4f46e5;color:#fff;border:none;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">🏥 Internal Medicine App →</a>
+<div class="track-version-footer__row">
+<button data-action="apply-update" class="track-version-footer__btn track-version-footer__btn--update">🔄 Force Update</button>
+<a href="https://eiasash.github.io/InternalMedicine/" target="_blank" class="track-version-footer__link">🏥 Internal Medicine App →</a>
 </div>
-<div style="margin-top:6px">صدقة جارية الى من نحب</div></div>`;
+<div class="track-version-footer__sig">صدقة جارية الى من نحب</div></div>`;
 return h;
 }
 
@@ -6124,8 +6411,14 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.59.0';
+const APP_VERSION='10.60.0';
 const CHANGELOG={
+'10.60.0':[
+'🎨 Track tab rebuild — every render function on Track is now class-driven with a `track-*` taxonomy and zero `style="..."` attributes on the outer shells. Mirrors the FM Quiz rebuild pattern (FamilyMedicine PR #16). Touched: _rtTop, _rtMid, _rtProgress, _rtFooter, renderTopicHeatmap, renderPriorityMatrix, renderStudyPlan, renderDailyPlan, renderSessionInline, renderExamTrendCard.',
+'🧪 New `tests/trackViewMarkup.test.js` pins the class taxonomy and fails CI if any track-* shell regrows an inline style attribute. The same regression guard FM Quiz now has.',
+'📐 Visual is unchanged — palette, spacing, behaviour, all data-action wiring (setTopicFilt, buildRescuePool, buildFinalStretchPool, openHazzardChapter, replayLastMockWrong, etc.) preserved. Inline styles only remain on inner data-driven elements (`*__bar-fill` widths) where the value is inherently per-render.',
+'🩺 No data migration, no schema change, no removed functions (function count stable at 252 — GATE 4 unchanged). Distractor-alignment invariant untouched (UI-only rebuild).',
+],
 '10.58.0':[
 '🧹 Track tab visual consolidation — Activity Heatmap (last 30 days) and Leaderboard demoted to collapsibles (default closed) with status inline in the header. Both ate vertical space even when empty.',
 '🔗 "Export Weak Topics Cheat Sheet" demoted from full card to a small underline link directly under the Priority Matrix — that is where the action belongs.',
