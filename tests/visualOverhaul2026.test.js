@@ -146,15 +146,18 @@ describe('v10.52.0 — Source-link in explanations', () => {
 });
 
 describe('v10.52.0 — version trinity', () => {
-  it('shlav-a-mega.html APP_VERSION is 10.58.0', () => {
-    expect(html).toMatch(/APP_VERSION\s*=\s*['"]10\.58\.0['"]/);
+  // appIntegrity.test.js owns the strict three-way alignment guard. This
+  // block just pins the current shipping version so a forgotten bump
+  // surfaces here too. Bump all three on each release.
+  it('shlav-a-mega.html APP_VERSION is 10.60.0', () => {
+    expect(html).toMatch(/APP_VERSION\s*=\s*['"]10\.60\.0['"]/);
   });
-  it('sw.js CACHE key is shlav-a-v10.58.0', () => {
+  it('sw.js CACHE key is shlav-a-v10.60.0', () => {
     const sw = readFileSync(resolve(rootDir, 'sw.js'), 'utf-8');
-    expect(sw).toMatch(/CACHE\s*=\s*['"]shlav-a-v10\.58\.0['"]/);
+    expect(sw).toMatch(/CACHE\s*=\s*['"]shlav-a-v10\.60\.0['"]/);
   });
-  it('package.json version is 10.58.0', () => {
+  it('package.json version is 10.60.0', () => {
     const pkg = JSON.parse(readFileSync(resolve(rootDir, 'package.json'), 'utf-8'));
-    expect(pkg.version).toBe('10.58.0');
+    expect(pkg.version).toBe('10.60.0');
   });
 });
