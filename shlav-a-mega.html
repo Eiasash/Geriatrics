@@ -6419,6 +6419,12 @@ const CHANGELOG={
 '📐 Visual is unchanged — palette, spacing, behaviour, all data-action wiring (setTopicFilt, buildRescuePool, buildFinalStretchPool, openHazzardChapter, replayLastMockWrong, etc.) preserved. Inline styles only remain on inner data-driven elements (`*__bar-fill` widths) where the value is inherently per-render.',
 '🩺 No data migration, no schema change, no removed functions (function count stable at 252 — GATE 4 unchanged). Distractor-alignment invariant untouched (UI-only rebuild).',
 ],
+'10.59.0':[
+'🔒 Backups RLS Phase 2 — RPC-mediated reads. cloudRestore() now calls the public.backup_get(p_app, p_id) Supabase RPC instead of a direct SELECT on *_backups. The RPC is SECURITY DEFINER + GRANT EXECUTE to anon+authenticated and validates the app parameter against a strict whitelist (\'mishpacha\', \'pnimit\', \'geri\'/\'samega\').',
+'🛡️ Phase 2 migration on Supabase dropped the public SELECT policies on all three *_backups tables — direct queries now return 0 rows; the RPC is the only read path. INSERT/UPDATE policies remain, write traffic still governed by backups_monotonic_update_trg (anti-spoofing + anti-back-dating, shipped v10.58.x).',
+'🚫 Privacy: knowing the id is still the cap token (guests use random per-device IDs, authed users use their username). What this kills is enumeration — previously SELECT * on the table returned every user\'s id list + write-time graph. Now you have to know an id to learn anything.',
+'⚠️ Cosmetic regression: the restore confirm modal used to show the backup\'s actual updated_at; the RPC does not return that, so we synthesize "now" for the label. The data itself is current; only the timestamp display is approximate.',
+],
 '10.58.0':[
 '🧹 Track tab visual consolidation — Activity Heatmap (last 30 days) and Leaderboard demoted to collapsibles (default closed) with status inline in the header. Both ate vertical space even when empty.',
 '🔗 "Export Weak Topics Cheat Sheet" demoted from full card to a small underline link directly under the Priority Matrix — that is where the action belongs.',

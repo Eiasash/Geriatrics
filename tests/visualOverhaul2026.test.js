@@ -145,19 +145,26 @@ describe('v10.52.0 — Source-link in explanations', () => {
   });
 });
 
-describe('v10.52.0 — version trinity', () => {
-  // appIntegrity.test.js owns the strict three-way alignment guard. This
-  // block just pins the current shipping version so a forgotten bump
-  // surfaces here too. Bump all three on each release.
-  it('shlav-a-mega.html APP_VERSION is 10.60.0', () => {
-    expect(html).toMatch(/APP_VERSION\s*=\s*['"]10\.60\.0['"]/);
+describe('version trinity (auto-derived from package.json)', () => {
+  // Source of truth = package.json `version` field. APP_VERSION in HTML and
+  // CACHE suffix in sw.js must match it. Pre-v10.60.0 this block hard-coded
+  // the version literal, which silently went stale every release (main was
+  // red on it from v10.59.0 onward). Now version-agnostic — never re-edit.
+  // appIntegrity.test.js owns the strict three-way pairwise alignment check;
+  // this block just exists so a forgotten sw.js / HTML bump fails here too.
+  const pkgVersion = JSON.parse(readFileSync(resolve(rootDir, 'package.json'), 'utf-8')).version;
+  // APP_VERSION uses major.minor (no patch) historically — derive both forms.
+  const appVerRe = new RegExp(`APP_VERSION\\s*=\\s*['"]${pkgVersion.replace(/\./g, '\\.')}['"]`);
+  const cacheRe  = new RegExp(`CACHE\\s*=\\s*['"]shlav-a-v${pkgVersion.replace(/\./g, '\\.')}['"]`);
+
+  it(`shlav-a-mega.html APP_VERSION matches package.json (${pkgVersion})`, () => {
+    expect(html, `expected APP_VERSION='${pkgVersion}' in shlav-a-mega.html`).toMatch(appVerRe);
   });
-  it('sw.js CACHE key is shlav-a-v10.60.0', () => {
+  it(`sw.js CACHE key matches package.json (shlav-a-v${pkgVersion})`, () => {
     const sw = readFileSync(resolve(rootDir, 'sw.js'), 'utf-8');
-    expect(sw).toMatch(/CACHE\s*=\s*['"]shlav-a-v10\.60\.0['"]/);
+    expect(sw, `expected CACHE='shlav-a-v${pkgVersion}' in sw.js`).toMatch(cacheRe);
   });
-  it('package.json version is 10.60.0', () => {
-    const pkg = JSON.parse(readFileSync(resolve(rootDir, 'package.json'), 'utf-8'));
-    expect(pkg.version).toBe('10.60.0');
+  it('package.json version is non-empty semver-ish', () => {
+    expect(pkgVersion).toMatch(/^\d+\.\d+\.\d+/);
   });
 });
