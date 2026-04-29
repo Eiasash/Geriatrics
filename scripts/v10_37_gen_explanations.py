@@ -16,7 +16,7 @@ IN = '/tmp/grs8_extracted.json'
 OUT = '/tmp/grs8_with_explanations.json'
 
 PROXY_URL = 'https://toranot.netlify.app/api/claude'
-PROXY_SECRET = 'shlav-a-mega-2026'
+PROXY_SECRET = 'shlav-a-mega-1f97f311d307-2026'
 MODEL = 'claude-sonnet-4-6'
 WORKERS = 6
 MAX_RETRIES = 2
