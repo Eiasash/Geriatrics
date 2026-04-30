@@ -4555,6 +4555,16 @@ return h;
 }
 function fcSetMode(mode){S.fcDueMode=(mode==='due');S.fcFlip=false;if(S.fcDueMode)fcRebuildQueue();save();render();}
 
+// ===== CALCULATORS =====
+
+// ===== CALCULATOR HELPERS (_rc* prefix) =====
+function renderCalc(){
+// v10.55: collapsed to Med Basket only. v10.56: hard-deleted the dead _rc*
+// calculator helpers + renderEOLTree/renderLabOverlay/renderAgingSheet that
+// were left behind unreachable from UI.
+return renderMedBasket();
+}
+
 // ===== TRACKER =====
 const TOPICS=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM","Parkinson's","Arrhythmia","Dysphagia","Andropause","Prevention","Interdisciplinary Care"];
 
@@ -6390,11 +6400,8 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.62.1';
+const APP_VERSION='10.62.0';
 const CHANGELOG={
-'10.62.1':[
-'UX cleanup: kill renderCalc() shim (was 1-line route to renderMedBasket — UX lie). Rename More→calc sub-tab id to "meds" matching its visible "🧺 Meds" label. case\'calc\' router kept as back-compat alias for old deep-links.',
-],
 '10.62.0':[
 'UX cleanup: kill Drug Lookup (covered by Med Basket) — mirrors Pnimit v9.97.0',
 'Drop renderDrugs + renderCalc from integrity-guard CRITICAL_FUNCTIONS',
