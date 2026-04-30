@@ -4555,29 +4555,6 @@ return h;
 }
 function fcSetMode(mode){S.fcDueMode=(mode==='due');S.fcFlip=false;if(S.fcDueMode)fcRebuildQueue();save();render();}
 
-// ===== DRUG LOOKUP =====
-let drugSearch='';
-function renderDrugs(){
-let h=`<div class="sec-t">💊 Drug Lookup</div><div class="sec-s">Beers Criteria + ACB Score Checker</div>`;
-h+=`<input class="search-box" placeholder="Search drug name..." oninput="drugSearch=this.value;render()" value="${drugSearch}" id="dsrch">`;
-const fv=drugSearch.toLowerCase();
-const filtered=DRUGS.filter(d=>!fv||d.name.toLowerCase().includes(fv)||d.heb.includes(fv)||(d.cat||'').toLowerCase().includes(fv));
-h+=`<div class="card">`;
-if(!filtered.length)h+=`<div style="padding:16px;text-align:center;color:rgb(var(--fg3));font-size:12px">No drugs found</div>`;
-filtered.forEach(d=>{
-h+=`<div class="drug-row"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-<span style="font-weight:700;font-size:12px">${d.name} ${d.heb?'<span style="color:rgb(var(--fg3))">('+d.heb+')</span>':''}</span>
-<div style="display:flex;gap:4px">
-${d.beers?'<span class="badge badge-r">BEERS</span>':''}
-${d.acb>=3?'<span class="badge badge-r">ACB '+d.acb+'</span>':d.acb>=2?'<span class="badge badge-y">ACB '+d.acb+'</span>':d.acb>=1?'<span class="badge badge-g">ACB '+d.acb+'</span>':''}
-</div></div>
-<div style="font-size:10px;color:rgb(var(--fg2))">${d.cat||''}</div>
-<div style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${d.risk}</div></div>`;
-});
-h+=`</div>`;
-return h;
-}
-
 // ===== CALCULATORS =====
 
 // ===== CALCULATOR HELPERS (_rc* prefix) =====
@@ -6238,7 +6215,7 @@ async function cloudRestore(){
 function render(){
 const el=document.getElementById('ct');
 const focused=document.activeElement?.id;
-const sv={srchi:document.getElementById('srchi')?.value,nfilt:document.getElementById('nfilt')?.value,dsrch:document.getElementById('dsrch')?.value};
+const sv={srchi:document.getElementById('srchi')?.value,nfilt:document.getElementById('nfilt')?.value};
 if(tab!==lastTab){el.classList.remove('fade-in');void el.offsetWidth;el.classList.add('fade-in');window.scrollTo({top:0});lastTab=tab;}
 switch(tab){
 case'quiz':el.innerHTML=onCallMode?renderOnCall():renderQuiz();break;
@@ -6250,7 +6227,6 @@ case'learn':
   {const _learnPills=[
     {id:'study', mode:'learn', ic:'📝', l:'Notes'},
     {id:'flash', mode:'learn', ic:'🃏', l:'Cards'},
-    {id:'drugs', mode:'learn', ic:'💊', l:'Drugs'},
     {id:'haz-pdf',mode:'lib',  ic:'📕', l:'Hazzard'},
     {id:'harrison',mode:'lib', ic:'📗', l:'Harrison'},
     {id:'grs8',  mode:'lib',   ic:'📙', l:'GRS8'},
@@ -6274,12 +6250,10 @@ case'learn':
   } else {
     if(learnSub==='study')_body=renderStudy();
     else if(learnSub==='flash')_body=renderFlash();
-    else if(learnSub==='drugs')_body=renderDrugs();
   }
   el.innerHTML=_subBar+_body;}break; // safe-innerhtml: _subBar is built from a hardcoded pill array (no user input)
 case'study':tab='learn';learnSub='study';el.innerHTML='';render();break;
 case'flash':tab='learn';learnSub='flash';el.innerHTML='';render();break;
-case'drugs':tab='learn';learnSub='drugs';el.innerHTML='';render();break;
 case'lib':_studyMode='lib';tab='learn';render();break; // v10.54.0: alias to merged Study tab
 case'calc':tab='more';moreSub='calc';el.innerHTML='';render();break;
 case'track':
@@ -6311,7 +6285,6 @@ default:tab='quiz';el.innerHTML=renderQuiz();break;
 // Restore input values and focus
 if(sv.srchi!==undefined&&document.getElementById('srchi'))document.getElementById('srchi').value=sv.srchi;
 if(sv.nfilt!==undefined&&document.getElementById('nfilt'))document.getElementById('nfilt').value=sv.nfilt;
-if(sv.dsrch!==undefined&&document.getElementById('dsrch'))document.getElementById('dsrch').value=sv.dsrch;
 if(focused){const fe=document.getElementById(focused);if(fe){fe.focus();if(fe.value)fe.setSelectionRange(fe.value.length,fe.value.length);}}
 updateAccountChip();
 }
@@ -6426,8 +6399,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.61.2';
+const APP_VERSION='10.62.0';
 const CHANGELOG={
+'10.62.0':[
+'UX cleanup: kill Drug Lookup (covered by Med Basket) — mirrors Pnimit v9.97.0',
+'Drop renderDrugs + renderCalc from integrity-guard CRITICAL_FUNCTIONS',
+],
 '10.61.2':[
 '🐛 תיקון — takeWeeklySnapshot איטרציה קבועה ל-i<40 דילגה על 6 הנושאים שנוספו ב-v10.41 (Parkinson\'s, Arrhythmia, Dysphagia, Andropause, Prevention, Interdisciplinary Care, indices 40-45). תיקון: i<TOPICS.length. תוצאה: snapshots שבועיים קולטים את כל 46 הנושאים, getTopicTrend() החזיר null קבוע על הנושאים האלה ועכשיו פעיל. נתונים היסטוריים לא מושפעים — snapshots קיימים פשוט חסרים את indices 40-45 (הקוד הקיים כבר טופל ב-undefined כ-null).',
 ],
