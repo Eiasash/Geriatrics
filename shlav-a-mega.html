@@ -1686,9 +1686,9 @@ let TABS=[];
 // ===== END DATA LOADER =====
 
 let tab='quiz';
-let learnSub='study'; // sub-tab within Learn: study|flash|drugs
+let learnSub='study'; // sub-tab within Learn: study|flash
 let _studyMode='learn'; // v10.54.0: 'learn'|'lib' — which mode in unified Study tab
-let moreSub='calc';   // sub-tab within More: calc|search|chat|feedback
+let moreSub='meds';   // sub-tab within More: meds|search|notes|chat|feedback|settings
 let libSec='haz-pdf';
 let harChOpen=null,_harData=null,_harLoading=false;
 let hazChOpen=null,_hazData=null,_hazLoading=false;
@@ -6255,7 +6255,8 @@ case'learn':
 case'study':tab='learn';learnSub='study';el.innerHTML='';render();break;
 case'flash':tab='learn';learnSub='flash';el.innerHTML='';render();break;
 case'lib':_studyMode='lib';tab='learn';render();break; // v10.54.0: alias to merged Study tab
-case'calc':tab='more';moreSub='calc';el.innerHTML='';render();break;
+case'meds':tab='more';moreSub='meds';el.innerHTML='';render();break;
+case'calc':tab='more';moreSub='meds';el.innerHTML='';render();break; // v10.62.1: back-compat alias for old #calc deep-links
 case'track':
   // Save session summary when switching to track tab
   if(!_sessionSaved&&(_sessionOk+_sessionNo)>=5){
@@ -6264,11 +6265,11 @@ case'track':
   el.innerHTML=renderTrack();break;
 case'more':
   {const _moreBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+
-  [{id:'calc',ic:'🧺',l:'Meds'},{id:'search',ic:'🔍',l:'Search'},{id:'notes',ic:'📝',l:'Notes'},{id:'chat',ic:'💬',l:'Chat'},{id:'feedback',ic:'💡',l:'Feedback'},{id:'settings',ic:'⚙️',l:'Settings'}].map(s=>
+  [{id:'meds',ic:'🧺',l:'Meds'},{id:'search',ic:'🔍',l:'Search'},{id:'notes',ic:'📝',l:'Notes'},{id:'chat',ic:'💬',l:'Chat'},{id:'feedback',ic:'💡',l:'Feedback'},{id:'settings',ic:'⚙️',l:'Settings'}].map(s=>
     '<button onclick="moreSub=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(moreSub===s.id?'700':'400')+';cursor:pointer;background:'+(moreSub===s.id?'#fff':'transparent')+';color:'+(moreSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(moreSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>'
   ).join('')+'</div>';
   let _mBody='';
-  if(moreSub==='calc')_mBody=renderCalc();
+  if(moreSub==='meds')_mBody=renderMedBasket();
   else if(moreSub==='search')_mBody=renderSearch();
   else if(moreSub==='notes')_mBody=renderNotes();
   else if(moreSub==='chat')_mBody=renderChat();
