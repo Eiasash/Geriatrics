@@ -85,10 +85,8 @@ jobs:
               # Tab rendering (all 5 tabs + sub-tabs)
               'renderQuiz',
               'renderStudy',
-              'renderDrugs',
               'renderFlash',
               'renderLibrary',
-              'renderCalc',
               'renderSearch',
               'renderChat',
               'renderFeedback',

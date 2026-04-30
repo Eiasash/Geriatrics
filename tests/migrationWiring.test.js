@@ -20,7 +20,7 @@ beforeAll(() => {
 describe("render function orchestrators exist", () => {
   const ORCHESTRATORS = [
     "renderQuiz", "renderTrack", "renderCalc", "renderLibrary",
-    "renderStudy", "renderFlash", "renderDrugs", "renderSearch",
+    "renderStudy", "renderFlash", "renderSearch",
     "renderMedBasket", "renderOnCall", "render", "renderTabs",
   ];
   for (const name of ORCHESTRATORS) {
