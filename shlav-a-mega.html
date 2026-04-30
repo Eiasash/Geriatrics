@@ -6426,8 +6426,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.61.1';
+const APP_VERSION='10.61.2';
 const CHANGELOG={
+'10.61.2':[
+'🐛 תיקון — takeWeeklySnapshot איטרציה קבועה ל-i<40 דילגה על 6 הנושאים שנוספו ב-v10.41 (Parkinson\'s, Arrhythmia, Dysphagia, Andropause, Prevention, Interdisciplinary Care, indices 40-45). תיקון: i<TOPICS.length. תוצאה: snapshots שבועיים קולטים את כל 46 הנושאים, getTopicTrend() החזיר null קבוע על הנושאים האלה ועכשיו פעיל. נתונים היסטוריים לא מושפעים — snapshots קיימים פשוט חסרים את indices 40-45 (הקוד הקיים כבר טופל ב-undefined כ-null).',
+],
 '10.61.0':[
 '🐛 תיקון קריטי — Topic Mastery Heatmap הציג mastery גבוהה על נושאים שזה עתה ענית עליהם, גם אם רוב התשובות היו שגויות. השורש: הנוסחה ב-getTopicMastery() השתמשה ב-FSRS R בלבד, שהוא דעיכת זמן (R≈1 מיד אחרי כל ביקורת — נכונה או שגויה). חישוב חדש: per-card mastery = (ok/tot) × R. תשובה שגויה מורידה מאסטרי ל-0 מיידית; תשובות נכונות ישנות דועכות עם R. Fallback ל-hit-rate גולמי כשמצב FSRS חסר (legacy SM-2). Mirror של Pnimit v9.92.0 + Mishpacha v1.17.0.',
 '🐛 תיקון — Est. Score החזיר 60% מטעה כשרק נושאים בודדים נבחנו. השורש: הנוסחה הניחה 60% (neutral default) לכל נושא עם <3 תשובות, אז המשקל הכולל קרס סביב 60% גם אחרי 26 שאלות. תיקון: נושאים עם <3 תשובות מודרים מהסכימה. מחזיר null כשפחות מ-3 נושאים יש להם נתונים — UI מציג "—" עד שיש מספיק כיסוי.',
@@ -6890,7 +6893,7 @@ function takeWeeklySnapshot(){
     if(snapshots[weekKey])return; // already taken this week
     const tSt=getTopicStats();
     const snap={};
-    for(let i=0;i<40;i++){const s=tSt[i]||{ok:0,no:0,tot:0};snap[i]=s.tot>=3?Math.round(s.ok/s.tot*100):null;}
+    for(let i=0;i<TOPICS.length;i++){const s=tSt[i]||{ok:0,no:0,tot:0};snap[i]=s.tot>=3?Math.round(s.ok/s.tot*100):null;}
     snapshots[weekKey]={date:now.toISOString(),acc:snap};
     const keys=Object.keys(snapshots).sort();
     if(keys.length>52)delete snapshots[keys[0]];
