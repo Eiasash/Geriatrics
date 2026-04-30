@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he" data-skin="geriatrics">
+<html lang="he" data-skin="geriatrics" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
@@ -6553,8 +6553,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.63.0';
+const APP_VERSION='10.63.1';
 const CHANGELOG={
+'10.63.1':[
+'🛡️ Defensive — `<html data-theme="light">` כברירת מחדל סטטית. רקע: shared/tokens.css כולל מדיה-קוורי `@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){...}}` שעלול לזהם CSS custom properties כש-OS כהה והדף לא הצהיר על data-theme. Geri עדיין משתמש בעיקר ב-CSS inline ב-shlav-a-mega.html, אבל מונע רגרסיה עתידית אם רכיב יקרא var(--color-fg) ללא הצהרת theme. Mirror של FM v1.21.0. אין שינוי ב-shared/tokens.css או בלוגיקה.',
+],
 '10.63.0':[
 '☁️ Auto-restore-on-login — מתחבר במכשיר חדש שאין בו עדיין נתונים? אנחנו מציעים לשחזר אוטומטית מהענן (תיבת דו-שיח אחת, שתי כפתורים: "שחזר" / "לא עכשיו"). הצעה מופיעה רק כש-(א) זה login, לא register; (ב) המכשיר ריק לחלוטין — qOk+qNo===0 ואין נתוני SR; (ג) קיים גיבוי בענן עבור שם המשתמש; (ד) לא ביקשנו את אותו דבר במכשיר הזה בעבר. סימון "לא להציג שוב" נשמר ב-localStorage לפי (מכשיר, שם משתמש), אז ההפעלה היא חד-פעמית גם אם בוחרים "לא עכשיו". Mirror של Mishpacha v1.18.0 + Pnimit v10.4.0 + ward-helper v1.32.0.',
 '🔌 Auth events — auth IIFE פולט כעת אירועי `geri:auth` (CustomEvent על `window`) + API פנימי `subscribeAuthEvents(handler)`. פעולות: login / register / logout / change-password. מאפשר למודולים אחרים להגיב למעברי auth ללא תלות ב-UI. שמירה על עקביות API חוצה-PWA.',
