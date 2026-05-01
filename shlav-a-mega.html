@@ -1178,18 +1178,51 @@ tx.objectStore(IDB_STORE).put(val,key);
 tx.oncomplete=()=>resolve();
 tx.onerror=()=>resolve();
 });}
-// ===== DATA LOADER (v10.63.4: distractors lazy) =====
-// LCP fix: distractors.json (6.7 MB) is no longer in the critical path.
-// It loads in the background; until it resolves, _dist() returns null and
-// the explanation falls back to AI autopsy. Rationale: Lighthouse mobile
-// audit showed LCP=23s on Slow 3G + 4× CPU before this change.
+// ===== DATA LOADER (v10.63.5: questions+distractors both lazy) =====
+// LCP fix: questions.json (2 MB gzipped) AND distractors.json (1.9 MB gzipped)
+// are no longer in the critical path. The shell renders header + tabs + tracker
+// immediately on small-file load (~400 KB total). QZ loads via idle callback;
+// when ready, any quiz/track view re-renders. Until QZ loads, code paths
+// already guard with `if(QZ.length)` (line 1895) or `if(!Array.isArray(QZ))`
+// (line 4634). Rationale: Lighthouse mobile audit (Slow 3G + 4× CPU) showed
+// LCP=23s gated by QZ download — questions.json (7 MB on disk, 2 MB gzipped)
+// at 200 KB/s = ~10s of network time before main thread can paint largest
+// element.
 let _dataReady = false;
+let _qzReady = false;
 let _disReady = false;
+const _qzPromise = (async () => {
+  try {
+    // Yield to critical render first
+    if (typeof requestIdleCallback === 'function') {
+      await new Promise(res => requestIdleCallback(res, { timeout: 1500 }));
+    } else {
+      await new Promise(res => setTimeout(res, 0));
+    }
+    const r = await fetch('./data/questions.json');
+    if (r.ok) {
+      QZ = await r.json();
+    } else {
+      console.error('questions.json failed:', r.status);
+    }
+  } catch (err) {
+    console.error('questions.json load failed:', err.message);
+  } finally {
+    _qzReady = true;
+    // Refresh whichever view is showing if it depends on QZ
+    try {
+      if (typeof S !== 'undefined' && typeof render === 'function') {
+        const tabsThatNeedQz = ['quiz', 'track', 'lib', 'search', 'more'];
+        if (!S.tab || tabsThatNeedQz.includes(S.tab)) render();
+        if (typeof renderTabs === 'function') renderTabs();
+      }
+    } catch (e) { console.warn('post-QZ rerender skipped:', e.message); }
+  }
+})();
 const _disPromise = (async () => {
   try {
-    // Defer to idle to avoid contending with critical render
     if (typeof requestIdleCallback === 'function') {
-      await new Promise(res => requestIdleCallback(res, { timeout: 2000 }));
+      await new Promise(res => requestIdleCallback(res, { timeout: 3000 }));
     }
     const r = await fetch('./data/distractors.json');
     if (r.ok) DIS = await r.json();
@@ -1203,7 +1236,6 @@ const _disPromise = (async () => {
 const _dataPromise = (async function loadDataArrays() {
   const basePath = './data/';
   const files = {
-    QZ: 'questions.json',
     TK: 'topics.json',
     NOTES: 'notes.json',
     DRUGS: 'drugs.json',
@@ -1223,8 +1255,7 @@ const _dataPromise = (async function loadDataArrays() {
       )
     );
     entries.forEach(([varName], i) => {
-      if (varName === 'QZ') QZ = results[i];
-      else if (varName === 'TK') TK = results[i];
+      if (varName === 'TK') TK = results[i];
       else if (varName === 'NOTES') NOTES = results[i];
       else if (varName === 'DRUGS') DRUGS = results[i];
       else if (varName === 'FLASH') FLASH = results[i];
@@ -6566,8 +6597,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.63.4';
+const APP_VERSION='10.63.5';
 const CHANGELOG={
+'10.63.5':[
+'⚡ LCP fix attempt 2 — questions.json (2 MB gzipped) ALSO deferred out of critical Promise.all. v10.63.4 (distractors deferred) showed no LCP improvement because QZ was the real bottleneck. Now: critical path loads only ~400 KB of small JSON; QZ + DIS both fire-and-forget via requestIdleCallback. When QZ resolves, any quiz/track/library/search/more tab re-renders automatically. Header + tabs + welcome render immediately on small-file load. Targets: LCP 23s → ~3-5s.',
+'🛡️ Safety: existing guards `if(QZ.length)buildPool()` (line 1895) and `if(typeof QZ==="undefined"||!Array.isArray(QZ))return 0` (line 4634) handle the empty-QZ window. Boot path `_dataPromise.then(()=>{renderTabs();render();})` runs with empty QZ initially; _qzPromise.finally re-renders when ready.',
+'⚠️  Risk: any code path that assumes QZ.length>0 at first paint will see 0 until QZ loads (~1-3s on fast networks, longer on slow). Counters that show "X questions" may briefly show 0. Acceptable trade for ~20s LCP improvement.',
+],
 '10.63.4':[
 '⚡ LCP fix — distractors.json (6.7 MB) deferred out of critical-path Promise.all. Lighthouse mobile audit (Slow 3G + 4× CPU) showed LCP=23s due to JSON.parse blocking main thread; expected post-fix ~3s. The _dist() reader at line ~3000 already returns null when DIS is empty, falling back to AI autopsy — no breaking change for callers. Fixes #124.',
 '🛡️ DIS now loads via requestIdleCallback (2s timeout) so it does not contend with critical render. Sets _disReady=true on completion (or failure). All 1088 vitest tests still green.',
