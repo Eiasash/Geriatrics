@@ -17,7 +17,7 @@ These four rules are the floor. They override any conflicting guidance later in 
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~524 KB, ~7,150 lines, 210 named functions)
-- **App version**: v10.63.1 (as of 01/05/26) — 3,833 Qs across 46 topics. All 3,833 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.63.1 light-theme default (defends against `shared/tokens.css` `prefers-color-scheme:dark` leak); v10.63.0 auto-restore-on-login + auth events (mirror of FM v1.18.0 / Pnimit v10.4.0); v10.62.1 kill renderCalc shim; v10.62.0 drop renderDrugs+renderCalc from integrity-guard CRITICAL_FUNCTIONS; v10.61 Topic Mastery Heatmap accuracy fix; v10.60 Track tab class-driven rebuild; v10.59 backups RLS Phase 2 — RPC-mediated reads.
+- **App version**: v10.63.2 (as of 01/05/26) — 3,833 Qs across 46 topics. All 3,833 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.63.1 light-theme default (defends against `shared/tokens.css` `prefers-color-scheme:dark` leak); v10.63.0 auto-restore-on-login + auth events (mirror of FM v1.18.0 / Pnimit v10.4.0); v10.62.1 kill renderCalc shim; v10.62.0 drop renderDrugs+renderCalc from integrity-guard CRITICAL_FUNCTIONS; v10.61 Topic Mastery Heatmap accuracy fix; v10.60 Track tab class-driven rebuild; v10.59 backups RLS Phase 2 — RPC-mediated reads.
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -73,7 +73,7 @@ the full decomposition ledger and safe-next-steps list.
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.46.0)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.63.2)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
@@ -122,7 +122,7 @@ the full decomposition ledger and safe-next-steps list.
 ├── .github/
 │   └── workflows/ci.yml     # Validation CI — JSON schema, duplicates, version sync, etc.
 │
-├── tests/                          # 38 vitest files, ~756 tests (see Testing section)
+├── tests/                          # 46 vitest files (see Testing section)
 │
 ├── supabase-setup.sql        # Supabase RLS schema
 ├── .mcp.json                 # MCP server config (Supabase)
@@ -227,16 +227,16 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js` and `package.json` `version`
-- Currently all three at `10.60.0` (sw.js cache key: `shlav-a-v10.60.0`)
+- Currently all three at `10.63.2` (sw.js cache key: `shlav-a-v10.63.2`)
 - Update all three when making changes to ensure users get cache-busted (see workspace CLAUDE.md "version-trinity invariant")
 - The trinity guard lives in two places: strict pairwise alignment in `tests/appIntegrity.test.js`, and a version-agnostic re-derivation from `package.json` in `tests/visualOverhaul2026.test.js` (refactored v10.60 — used to hard-code the literal version string and went stale every release)
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, 1,047 tests across 45 files)
+npm test             # Run all tests (vitest, 1,047 tests across 46 files)
 ```
 
-**1,047 tests across 45 files (~22 tests per file avg)** — run `npm test` to see current count.
+**1,047 tests across 46 files** — run `npm test` to see current count.
 
 **Auto-expand rule:** Every feature, improvement, or bug fix MUST include new or updated tests:
 - New data file or field → schema validation test
@@ -245,7 +245,7 @@ npm test             # Run all tests (vitest, 1,047 tests across 45 files)
 - Modified data processing → edge case + boundary tests
 - After adding tests, update the test count in this section
 
-**Test file inventory (40 files, ~905 tests):**
+**Test file inventory (46 files):**
 
 | File | Tests | Description |
 |------|-------|-------------|
@@ -331,7 +331,7 @@ Runs on push to `main` and all PRs. Python-based data validation + Vitest test s
 | innerHTML sanitization | Audit for unsanitized innerHTML usage |
 | Topic coverage | >= 5 questions per topic across the 46 buckets (some newer ti=43–45 may be exempted) |
 
-**Vitest tests** (~905 tests, 40 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
+**Vitest tests** (46 files) validate data schemas, app structure, and service worker integrity. Run `npm test` before pushing.
 
 ---
 
@@ -485,12 +485,12 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Study notes | 46 |
 | Hazzard chapters | 108 (in-app reader) |
 | Harrison chapters | 69 (in-app reader) |
-| Test suite | 1,047 tests across 45 files (vitest) |
+| Test suite | 1,047 tests across 46 files (vitest) |
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — see workspace CLAUDE.md for shared invariants |
 | CI workflows | 7 (ci.yml, claude.yml, claude-code-review.yml, distractor-autopsy.yml, distractor-merge-pr.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=214, onchange=25, oninput=6 |
-| App version | v10.63.1 |
-| SW cache key | `shlav-a-v10.63.1` |
+| App version | v10.63.2 |
+| SW cache key | `shlav-a-v10.63.2` |
 
 
 ## Test Coverage Recommendations
@@ -524,7 +524,7 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 10. **Accessibility audit** — Automated check that all interactive elements have >= 44px touch targets in CSS
 
 ### Long-Term Goal
-Reach **1,000+ tests** with coverage of every data file, every engine function, and every CI validation rule having a corresponding Vitest test (currently ~756, well past the original 300 target).
+Reach **1,000+ tests** with coverage of every data file, every engine function, and every CI validation rule having a corresponding Vitest test (currently ~1,047, well past the original 300 target).
 
 ---
 
