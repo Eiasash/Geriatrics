@@ -71,9 +71,9 @@ function fsrsMigrateFromSM2(sm2entry){
  */
 function isChronicFail(srEntry){
   if(!srEntry)return false;
-  const lowAccuracy=srEntry.tot>=4&&srEntry.ok/srEntry.tot<0.35;
-  const highDifficulty=srEntry.fsrsD&&srEntry.fsrsD>=8&&srEntry.tot>=3;
-  return lowAccuracy||highDifficulty;
+  const lowAccuracy=srEntry.tot>=4 && srEntry.ok/srEntry.tot<0.35;
+  const highDifficulty=srEntry.fsrsD!=null && srEntry.fsrsD>=8 && srEntry.tot>=3;
+  return Boolean(lowAccuracy||highDifficulty);
 }
 
 // ===== DEADLINE AWARENESS (v2) =====
