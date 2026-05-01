@@ -1178,8 +1178,28 @@ tx.objectStore(IDB_STORE).put(val,key);
 tx.oncomplete=()=>resolve();
 tx.onerror=()=>resolve();
 });}
-// ===== DATA LOADER (v10.0) =====
+// ===== DATA LOADER (v10.63.4: distractors lazy) =====
+// LCP fix: distractors.json (6.7 MB) is no longer in the critical path.
+// It loads in the background; until it resolves, _dist() returns null and
+// the explanation falls back to AI autopsy. Rationale: Lighthouse mobile
+// audit showed LCP=23s on Slow 3G + 4× CPU before this change.
 let _dataReady = false;
+let _disReady = false;
+const _disPromise = (async () => {
+  try {
+    // Defer to idle to avoid contending with critical render
+    if (typeof requestIdleCallback === 'function') {
+      await new Promise(res => requestIdleCallback(res, { timeout: 2000 }));
+    }
+    const r = await fetch('./data/distractors.json');
+    if (r.ok) DIS = await r.json();
+    else console.warn('distractors.json unavailable:', r.status);
+  } catch (err) {
+    console.warn('distractors.json deferred load failed:', err.message);
+  } finally {
+    _disReady = true;
+  }
+})();
 const _dataPromise = (async function loadDataArrays() {
   const basePath = './data/';
   const files = {
@@ -1190,7 +1210,6 @@ const _dataPromise = (async function loadDataArrays() {
     FLASH: 'flashcards.json',
     TABS: 'tabs.json',
     QCHAPS: 'question_chapters.json',
-    DIS: 'distractors.json',
     REG: 'regulatory.json',
   };
   try {
@@ -1198,15 +1217,8 @@ const _dataPromise = (async function loadDataArrays() {
     const results = await Promise.all(
       entries.map(([varName, fileName]) =>
         fetch(basePath + fileName).then(r => {
-          if (!r.ok) {
-            // DIS is optional: missing distractors.json should not break data load
-            if (varName === 'DIS') return {};
-            throw new Error(varName + ': ' + r.status);
-          }
+          if (!r.ok) throw new Error(varName + ': ' + r.status);
           return r.json();
-        }).catch(err => {
-          if (varName === 'DIS') { console.warn('distractors.json unavailable:', err.message); return {}; }
-          throw err;
         })
       )
     );
@@ -1218,7 +1230,6 @@ const _dataPromise = (async function loadDataArrays() {
       else if (varName === 'FLASH') FLASH = results[i];
       else if (varName === 'TABS') TABS = results[i];
       else if (varName === 'QCHAPS') QCHAPS = results[i] || {};
-      else if (varName === 'DIS') DIS = results[i];
       else if (varName === 'REG') REG = results[i];
       });
     _dataReady = true;
@@ -6555,8 +6566,15 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.63.3';
+const APP_VERSION='10.63.4';
 const CHANGELOG={
+'10.63.4':[
+'⚡ LCP fix — distractors.json (6.7 MB) deferred out of critical-path Promise.all. Lighthouse mobile audit (Slow 3G + 4× CPU) showed LCP=23s due to JSON.parse blocking main thread; expected post-fix ~3s. The _dist() reader at line ~3000 already returns null when DIS is empty, falling back to AI autopsy — no breaking change for callers. Fixes #124.',
+'🛡️ DIS now loads via requestIdleCallback (2s timeout) so it does not contend with critical render. Sets _disReady=true on completion (or failure). All 1088 vitest tests still green.',
+],
+'10.63.3':[
+'🩹 12 SEVERE answer-key/explanation fixes + 1 trailing ** artifact strip. See PR #123.',
+],
 '10.63.2':[
 '🔇 Round 2 audit — gate 2 ungated boot-time `console.log`s (data-load diagnostics at lines 1254-1255) behind a `DEBUG_BOOT` flag. Gate is true only on `localhost`, `127.0.0.1`, or `?debug=1` — production console stays quiet. No behaviour change for users; surfaces stay observable for devs.',
 '🧪 +30 tests across 1 new file — `tests/calcAndQuizBoundaries.test.js` covers DEBUG_BOOT gate, CrCl boundary math (Cockcroft-Gault sex/age/weight extremes), CFS bucket math (1-9), MNA score thresholds, escapeHtml round-trip on surrogate pairs / RTL+LTR mix, lsGet legacy-key migration, FSRS deadline math under DST, and 3 mutation-test pins (chronic-fail boundary, fsrsR monotonicity, isChronicFail edge). Total: 1077 / 46 files.',
