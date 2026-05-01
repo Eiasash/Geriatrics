@@ -3207,6 +3207,25 @@ return h;
 function renderQuiz(){
 const _sd=_rqSuddenDeath();
 if(_sd)return _sd;
+// v10.63.6 LCP fix: paint a skeleton card while questions.json is still loading.
+// _qzPromise defers QZ to keep FCP fast; without this, the quiz card waits for
+// QZ before it paints anything (Lighthouse measured 3.4s element-render-delay).
+// Skeleton mirrors the real card's structure so LCP locks at FCP (~1.3s) instead
+// of fluctuating when the real question replaces it. The .finally() block in
+// _qzPromise re-renders, swapping skeleton for real content.
+if(!QZ||!QZ.length){
+return `<div class="card" style="padding:14px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+<div style="display:flex;gap:4px;flex-wrap:wrap"><span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;opacity:.6">📝 ····</span></div>
+<span style="color:rgb(var(--fg3));font-size:10px">·/·</span>
+</div>
+<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px;color:rgb(var(--fg2))" dir="rtl">⏳ טוען מאגר שאלות... מאגר 3,833 שאלות בעברית, נטען ברקע לשיפור מהירות הטעינה הראשונית</p>
+<div class="qo" style="opacity:.45">⠀⠀⠀⠀⠀⠀⠀⠀</div>
+<div class="qo" style="opacity:.4;margin-top:6px">⠀⠀⠀⠀⠀⠀⠀⠀</div>
+<div class="qo" style="opacity:.35;margin-top:6px">⠀⠀⠀⠀⠀⠀⠀⠀</div>
+<div class="qo" style="opacity:.3;margin-top:6px">⠀⠀⠀⠀⠀⠀⠀⠀</div>
+</div>`;
+}
 return _rqMain();
 }
 // Sudden Death check/next
@@ -6600,7 +6619,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.63.5';
+const APP_VERSION='10.63.6';
 const CHANGELOG={
 '10.63.5':[
 '⚡ LCP fix attempt 2 — questions.json (2 MB gzipped) ALSO deferred out of critical Promise.all. v10.63.4 (distractors deferred) showed no LCP improvement because QZ was the real bottleneck. Now: critical path loads only ~400 KB of small JSON; QZ + DIS both fire-and-forget via requestIdleCallback. When QZ resolves, any quiz/track/library/search/more tab re-renders automatically. Header + tabs + welcome render immediately on small-file load. Targets: LCP 23s → ~3-5s.',
