@@ -71,3 +71,145 @@ Topics under 5 Qs are weak — flagged for next content pass.
 3. **Function-count delta watch** — current 210; previous skill-text figure was 219. Net `-9` since last audit-fix-deploy skill update. `_rc*` family removal in v10.62.1 + v10.62.0 explains most of that. No action; record.
 4. **HTML size watch** — 524 KB, just past the 500 KB warn. Most of the bulk is the changelog `CHANGELOG = { ... }` literal. Consider extracting to a lazy-loaded `data/changelog.json` next pass if size keeps growing.
 5. **`.claude/skills/geriatrics-dev/SKILL.md`** — proposed local skill file with current-state metrics + helper-prefix taxonomy + hard constraints. Could not be created in this pass (write-permission blocked on `.claude/skills/`); recorded for next pass to either land it after the permission gate is lifted, or to use the existing `.claude/skills/shlav-a-mega.md` (also write-blocked) as the carrier.
+
+---
+
+## 2026-05-01 — v10.63.2 audit pass (Round 2 — deeper dig)
+
+### R1 open items resolution
+
+| R1 item | R2 outcome |
+|---|---|
+| Skill file `.claude/skills/geriatrics-dev/SKILL.md` | Directory created (`mkdir -p` succeeded), but file `Write` was permission-blocked. Full content drafted inline below — drop into the file once the gate is lifted. |
+| RLS sanity pass via Supabase MCP | Still requires interactive OAuth — deferred to R3 cross-repo pass on `krmlzwwelqvlfslwltol` (covers § B / C / D / E in one query batch). |
+| 2 ungated `console.log` lines (1254-1255) | **FIXED**. Gated behind `DEBUG_BOOT` flag — true on `localhost` / `127.0.0.1` / `0.0.0.0` / `?debug=1`, false in production. Pure diagnostic; no behaviour change for end-users. New tests pin the gate logic against accidental ungating. |
+| HTML 524 KB CHANGELOG extraction | **DEFERRED with proposal**. CHANGELOG block is lines 6559-7013 (≈108 KB literal of `~456` entries). Extracting to `data/CHANGELOG.json` (boot-fetch in About modal) would drop HTML below 500 KB but requires (a) JSON-encoding ~456 entries with embedded backslashes / RTL quotes / emoji safely, (b) async-loading + caching in SW, (c) updating the help-overlay render around line 7211, (d) integrity-guard updates. Estimated effort 45-60 min — over the 30-min quick-win budget. **R3 candidate** with full plan ready. |
+
+### R2 deeper findings
+
+| Surface | Finding | Action |
+|---|---|---|
+| Topic coverage | All 46 topics have ≥9 Qs. Weakest: ti=45 (Interdisciplinary Care, n=9), ti=43 (Andropause, n=21). **Zero topics under the 5-Q threshold.** | None — content team can target ti=43-45 next, but no audit gap. |
+| Past-exam tag taxonomy | All 7 exam dirs (`2020_al`, `2021_dec_al`, `2022_jun_al`, `2023_jun_al`, `2024_may_al`, `2024_sep_al`, `2025_jun_al`) have matching tagged Qs. 1,549 Qs with year tags across 17 distinct tag values (Basic / Subspec / orphan splits). | None. |
+| Harrison/Hazzard chapter mapping | `data/question_chapters.json` has **3,833 entries** mapping every Q-index → `{haz: N, grs: N}`. **0 orphaned haz refs** (haz keys all in 1-108) and **0 orphaned har refs**. Hazzard 108 chapters / Harrison 69 chapters available. | None — clean. |
+| Function-count trajectory | Current 210. History: ~270 (early v9.x) → 219 (v10.46+ decomposition) → 210 (v10.62.0 dropped renderDrugs + renderCalc shim). The drop is intentional. | Documented here so future auditors don't panic at the delta. |
+| Coverage gaps (uncalled functions) | Cross-ref `tests/*.test.js` calls vs 210 named functions in HTML: ~165 not directly invoked from any test. Most are render helpers (`_rc*` / `_rl*` / `_rqm*`) that return HTML strings — single-file PWA prevents direct unit testing. Indirect coverage via integration tests (`migrationWiring`, `trackViewMarkup`, `appLogic`). | No action — known architectural limit. |
+| `npm outdated` / `npm audit` | Skipped this pass (devDeps only — `vitest`, `acorn`, `cross-env`, `@vitest/coverage-v8`). Last audit pass cleared all known vulns. | Recheck at R3. |
+
+### `shared/fsrs.js` dual hash record (R2)
+
+| Hash type | Value |
+|---|---|
+| Git blob (SHA1, what `git hash-object` reports) | `9f91faaf4f814c5747318f8f6bcf2157b883582d` |
+| MD5 of LF-normalized content (canonical, per workspace `CLAUDE.md`) | `cea66a0435be626eda9c1bf120d2625c` |
+
+The MD5 figure matches the canonical `cea66a0435…` from the skill — sibling parity intact. **No edit to `shared/fsrs.js` from this repo** (R3 cross-repo will sync if drift surfaces).
+
+### New tests added in R2 (+30 tests / +1 file → 1077 / 46)
+
+| File | Tests | Risk surface |
+|---|---|---|
+| `tests/calcAndQuizBoundaries.test.js` | 41 | DEBUG_BOOT gate logic + accidental-ungating regression; CrCl Cockcroft-Gault boundary math (sex multiplier 0.85 mutation pin, age=140 floor, weight/Cr extremes, mutation pins on (140-age) numerator and (72×Cr) denominator); CFS 1..9 bucket math + ≥5 frail boundary; MNA-SF score thresholds (0-7 / 8-11 / 12-14 boundaries); escapeHtml hardening (round-trip, surrogate pairs, ZWJ sequences, mixed RTL+LTR injection, control chars, 10K-char stress); sacred localStorage key contract (positive + rogue-rename negatives); FSRS deadline math under DST + leap year (Mar 8 2026 spring-forward, Feb 27 2024 leap, Feb 27 2025 non-leap, year rollover); shared/fsrs.js mutation pins (isChronicFail tot≥4 + acc<0.35 boundary, fsrsD≥8 + tot≥3 high-difficulty path, fsrsR strict monotonicity in stability AND time, fsrsInitNew returns fresh instances, fsrsR(0,s)=1.0 always-1-at-t=0 contract). |
+
+41 added (file plan was +30; useful expansion came naturally). All tests use the established `new Function(extracted_source + 'return {...}')` sandbox pattern.
+
+### Skill file content (drop into `.claude/skills/geriatrics-dev/SKILL.md` once write permission is restored)
+
+```markdown
+---
+name: geriatrics-dev
+description: Reference for working on the Shlav A Mega (Israeli geriatrics board) PWA — version pins, Q-bank shape, function-count bounds, exam directories, helper-prefix conventions, integrity-guard gates, sacred localStorage keys.
+---
+
+# geriatrics-dev — Shlav A Mega Working Reference
+
+Last updated: 2026-05-01 (Round 2 audit, v10.63.2).
+
+## Version trinity (must always match)
+| File | Field | Current |
+|---|---|---|
+| shlav-a-mega.html | const APP_VERSION='X.Y.Z' | 10.63.2 |
+| sw.js | const CACHE='shlav-a-vX.Y.Z' | shlav-a-v10.63.2 |
+| package.json | "version": "X.Y.Z" | 10.63.2 |
+
+## Codebase metrics
+- shlav-a-mega.html: 7,322 lines / 524 KB / **210 named functions**
+- Questions: **3,833** in data/questions.json (all carry ref + e)
+- Topics: 46 (ti 0..45)
+- Tests: **1,077** across **46** files
+- Brace pairs: 3,386
+- Hazzard chapters: 108 / Harrison chapters: 69
+
+## Exam directories (7)
+2020_al, 2021_dec_al, 2022_jun_al, 2023_jun_al, 2024_may_al, 2024_sep_al, 2025_jun_al
+
+## Render-helper naming (v9.76 decomposition)
+| Orchestrator | Prefix | Count |
+|---|---|---|
+| renderCalc | _rc* | 13 |
+| renderQuiz | _rq* | 2 |
+| _rqMain | _rqm* | 5 |
+| renderTrack | _rt* | 4 |
+| renderLibrary | _rl* | 7 |
+
+## Integrity-guard (npm run verify)
+1. node --check src/sw-update.js
+2. python3 scripts/check-version-sync.py
+3. python3 scripts/check-brace-balance.py
+4. python3 scripts/check-innerhtml.py
+5. python3 scripts/check-innerhtml-pieces.py
+6. cross-env HARRISON_HEBREW_BASELINE=0 node scripts/harrison-hebrew-baseline.cjs --strict
+7. vitest run
+
+**GATE 4**: never remove >5 named functions per commit (CI blocks).
+
+## Sacred localStorage keys (NEVER rename)
+- samega (state)
+- samega_ex (exam state)
+- samega_apikey
+- shlav_q_images
+
+## Sibling files
+- shared/fsrs.js: byte-identical with InternalMedicine + FamilyMedicine.
+  Canonical content md5: cea66a0435… (LF). Git SHA1: 9f91faaf….
+  Edit in one place, propagate to all three.
+- harrison_chapters.json: shared across the three medical PWAs.
+
+## Hard constraints
+- No build step. New deps: vendor or CDN with SRI.
+- Hebrew RTL: dir="auto" + unicode-bidi: plaintext. Never force dir="rtl".
+- Supabase project: krmlzwwelqvlfslwltol (NEVER cross-wire to oaojkanozbfpofbewtfq).
+- progress_state lives in public schema.
+
+## Deploy
+No build. Push to main → Pages live in ~60s. CHANGELOG entry must be added to the
+CHANGELOG object in shlav-a-mega.html (around line 6559) for every version bump.
+```
+
+### CHANGELOG-extraction proposal (deferred to R3)
+
+**Goal**: Drop HTML below 500 KB by moving the CHANGELOG literal (lines 6559-7013, ~108 KB) to `data/CHANGELOG.json` and rendering it on demand in the About modal.
+
+**Plan**:
+1. Add a Node script `scripts/extract-changelog.cjs` — parses the inline `const CHANGELOG={...}` object, writes `data/CHANGELOG.json` (newest-first array of `{version, entries[]}`).
+2. Replace the inline literal with `const CHANGELOG = window.__CHANGELOG_CACHE || {};`
+3. Boot-time: lazy fetch via `fetch('data/CHANGELOG.json').then(r => r.json()).then(j => { window.__CHANGELOG_CACHE = j; })` — non-blocking; About modal handler waits for the promise.
+4. Add `data/CHANGELOG.json` to `sw.js` `JSON_DATA_URLS` for offline cache.
+5. Update help-overlay render (around line 7211) to show "loading…" if cache miss.
+6. New `tests/changelogJson.test.js` — schema validation + version-tag uniqueness.
+
+**Risks**:
+- Embedded backslashes / RTL quotes / emoji require careful JSON escaping. The existing CHANGELOG already has known stress points (v10.43.1 hotfix proves this — string termination bug).
+- Help-overlay currently renders synchronously. Moving to async needs a loading-state placeholder.
+- Adds one more network round-trip on About-modal first open (acceptable).
+
+**Estimated effort**: 45-60 min including test coverage. **Skipped this pass** because R2 mandate was the 30-min quick-win budget for HTML-size work.
+
+### Next-pass open follow-ups (R3+)
+
+1. **Run RLS sanity pass on `krmlzwwelqvlfslwltol`** — share with InternalMedicine, FamilyMedicine, Toranot, ward-helper. One auth, four-repo coverage.
+2. **CHANGELOG-extraction** — execute the proposal above. Drops HTML below 500 KB.
+3. **Sibling fsrs.js sync** — coordinated cross-repo change if drift surfaces.
+4. **Skill file land** — `.claude/skills/geriatrics-dev/SKILL.md` content above is ready; needs Write permission to land.
+5. **Topic ti=43-45 content expansion** — Andropause / Prevention / Interdisciplinary Care all under 35 Qs; not failing audit, but thinnest of the 46.
+6. **Coverage instrumentation** — currently no way to see which named functions are exercised at runtime. Adding a minimal per-fn counter (gated behind DEBUG_BOOT) would convert the 165-untested figure from "may not be tested" to "verifiably exercised in integration".

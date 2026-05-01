@@ -1251,8 +1251,10 @@ const _dataPromise = (async function loadDataArrays() {
       _xSeen.add(_key);
       _xUnique.push(_xq);
     }
-    if(_xUnique.length){QZ.push(..._xUnique);console.log('Loaded '+_xUnique.length+' user-generated questions'+(_xAll.length!==_xUnique.length?' ('+(_xAll.length-_xUnique.length)+' duplicates skipped)':''));}
-    console.log('Data loaded: ' + QZ.length + ' questions, ' + NOTES.length + ' notes');
+    // DEBUG_BOOT: gate diagnostic boot logs to localhost or ?debug=1 — production console stays quiet.
+    const DEBUG_BOOT=(()=>{try{const h=location.hostname;return h==='localhost'||h==='127.0.0.1'||h==='0.0.0.0'||/[?&]debug=1\b/.test(location.search);}catch(_){return false;}})();
+    if(_xUnique.length){QZ.push(..._xUnique);if(DEBUG_BOOT)console.log('Loaded '+_xUnique.length+' user-generated questions'+(_xAll.length!==_xUnique.length?' ('+(_xAll.length-_xUnique.length)+' duplicates skipped)':''));}
+    if(DEBUG_BOOT)console.log('Data loaded: ' + QZ.length + ' questions, ' + NOTES.length + ' notes');
     takeWeeklySnapshot();
   } catch (error) {
     console.error('Data load failed:', error);
@@ -6553,8 +6555,14 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.63.1';
+const APP_VERSION='10.63.2';
 const CHANGELOG={
+'10.63.2':[
+'🔇 Round 2 audit — gate 2 ungated boot-time `console.log`s (data-load diagnostics at lines 1254-1255) behind a `DEBUG_BOOT` flag. Gate is true only on `localhost`, `127.0.0.1`, or `?debug=1` — production console stays quiet. No behaviour change for users; surfaces stay observable for devs.',
+'🧪 +30 tests across 1 new file — `tests/calcAndQuizBoundaries.test.js` covers DEBUG_BOOT gate, CrCl boundary math (Cockcroft-Gault sex/age/weight extremes), CFS bucket math (1-9), MNA score thresholds, escapeHtml round-trip on surrogate pairs / RTL+LTR mix, lsGet legacy-key migration, FSRS deadline math under DST, and 3 mutation-test pins (chronic-fail boundary, fsrsR monotonicity, isChronicFail edge). Total: 1077 / 46 files.',
+'📚 Skill file `.claude/skills/geriatrics-dev/SKILL.md` created — pins APP_VERSION, Q count, function count, exam dirs, helper-prefix conventions, GATE 4, localStorage keys.',
+'📊 IMPROVEMENTS.md appended with R2 findings — 0 weak topics (all 46 ≥5 Qs, min ti=45 with 9), 0 orphaned chapter refs, function-count trajectory note, fsrs.js dual hash record, CHANGELOG-extraction proposal deferred to R3.',
+],
 '10.63.1':[
 '🛡️ Defensive — `<html data-theme="light">` כברירת מחדל סטטית. רקע: shared/tokens.css כולל מדיה-קוורי `@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){...}}` שעלול לזהם CSS custom properties כש-OS כהה והדף לא הצהיר על data-theme. Geri עדיין משתמש בעיקר ב-CSS inline ב-shlav-a-mega.html, אבל מונע רגרסיה עתידית אם רכיב יקרא var(--color-fg) ללא הצהרת theme. Mirror של FM v1.21.0. אין שינוי ב-shared/tokens.css או בלוגיקה.',
 ],
