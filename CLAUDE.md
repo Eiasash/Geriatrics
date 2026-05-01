@@ -231,6 +231,12 @@ No build step needed. Edit and refresh.
 - Update all three when making changes to ensure users get cache-busted (see workspace CLAUDE.md "version-trinity invariant")
 - The trinity guard lives in two places: strict pairwise alignment in `tests/appIntegrity.test.js`, and a version-agnostic re-derivation from `package.json` in `tests/visualOverhaul2026.test.js` (refactored v10.60 — used to hard-code the literal version string and went stale every release)
 
+### Release Invariants (run before declaring "shipped")
+1. **Local trinity** — `python3 scripts/check-version-sync.py` (HTML APP_VERSION + sw.js CACHE + package.json all aligned). Already part of `npm run verify`.
+2. **Tests + guards** — `npm run verify` (vitest + innerHTML safety + brace balance + Harrison hebrew baseline).
+3. **Live witness** — after `git push` lands and Pages rebuilds (~60–90s), `bash scripts/verify-deploy.sh` curls the live URL and asserts the new version actually appears in deployed `shlav-a-mega.html` and `sw.js`. **Don't claim "deployed" until this passes** — local trinity match ≠ live deploy match (Pages can silently fail to publish, or CDN can serve stale).
+4. **Question content edits** — any change to `data/questions.json` `o[]` text, `c` index, or `e` explanation must quote the source PDF (Hazzard 8e / Harrison 22e / GRS8) in the chat or commit message before the edit lands. Never paraphrase or fabricate option text — the v9.81 idx 510 incident was caught only by manual sanity check and required a v9.82 hotfix.
+
 ### Testing
 ```bash
 npm test             # Run all tests (vitest, 1,047 tests across 45 files)
