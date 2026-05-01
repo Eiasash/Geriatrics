@@ -16,8 +16,8 @@ These four rules are the floor. They override any conflicting guidance later in 
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (~523 KB, ~7,150 lines, ~270 named functions)
-- **App version**: v10.60.0 (as of 29/04/26) — 3,833 Qs across 46 topics. All 3,833 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.60 Track tab class-driven rebuild (zero inline styles on shells, mirrors FM Quiz PR #16); v10.59 backups RLS Phase 2 — RPC-mediated reads (cloudRestore via public.backup_get, public SELECT dropped); v10.58 Track tab visual consolidation; v10.57 Track tab cleanup; v10.56 hard-delete orphan calc code; v10.55 real fixes — exam-tags + priority matrix; v10.54 Learn+Library merge; v10.46 in-app Study Plan generator; v10.45 distractor autopsy data corruption fix (72% misaligned).
+- **Main file**: `shlav-a-mega.html` (~524 KB, ~7,150 lines, 210 named functions)
+- **App version**: v10.63.1 (as of 01/05/26) — 3,833 Qs across 46 topics. All 3,833 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.63.1 light-theme default (defends against `shared/tokens.css` `prefers-color-scheme:dark` leak); v10.63.0 auto-restore-on-login + auth events (mirror of FM v1.18.0 / Pnimit v10.4.0); v10.62.1 kill renderCalc shim; v10.62.0 drop renderDrugs+renderCalc from integrity-guard CRITICAL_FUNCTIONS; v10.61 Topic Mastery Heatmap accuracy fix; v10.60 Track tab class-driven rebuild; v10.59 backups RLS Phase 2 — RPC-mediated reads.
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -233,10 +233,10 @@ No build step needed. Edit and refresh.
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, ~905 tests across 40 files)
+npm test             # Run all tests (vitest, 1,047 tests across 45 files)
 ```
 
-**~905 tests across 40 files (~22 tests per file avg)** — run `npm test` to see current count.
+**1,047 tests across 45 files (~22 tests per file avg)** — run `npm test` to see current count.
 
 **Auto-expand rule:** Every feature, improvement, or bug fix MUST include new or updated tests:
 - New data file or field → schema validation test
@@ -476,8 +476,8 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 
 | Metric | Value |
 |---|---|
-| Main file | `shlav-a-mega.html` (~7,150 lines, ~523 KB) |
-| Named functions | ~270 (273 incl. shared/*.js, the integrity-guard counting basis) |
+| Main file | `shlav-a-mega.html` (~7,150 lines, ~524 KB) |
+| Named functions | 210 (213 incl. shared/*.js, the integrity-guard counting basis) |
 | Questions | 3,833 (IMA past exams + Hazzard/Harrison AI-generated + GRS8 imports; all carry `ref` + `e`) |
 | Topics | 46 |
 | Drugs | 113 |
@@ -485,12 +485,12 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Study notes | 46 |
 | Hazzard chapters | 108 (in-app reader) |
 | Harrison chapters | 69 (in-app reader) |
-| Test suite | ~905 tests across 40 files (vitest) |
+| Test suite | 1,047 tests across 45 files (vitest) |
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — see workspace CLAUDE.md for shared invariants |
 | CI workflows | 7 (ci.yml, claude.yml, claude-code-review.yml, distractor-autopsy.yml, distractor-merge-pr.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=214, onchange=25, oninput=6 |
-| App version | v10.60.0 |
-| SW cache key | `shlav-a-v10.60.0` |
+| App version | v10.63.1 |
+| SW cache key | `shlav-a-v10.63.1` |
 
 
 ## Test Coverage Recommendations
