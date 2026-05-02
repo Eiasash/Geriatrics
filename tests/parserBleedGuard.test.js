@@ -41,7 +41,8 @@ const PAST_EXAM_TAGS = new Set([
 // v10.64.2 update: indices shifted by 16 parser-corruption fixes. 2565→2555, 3250→3237, 2971→2959, 3537→3523.
 // v10.64.4 update: indices shifted by 19 multi-sibling fixes. 2555→2548, 3237→3225, 2959→2948, 3523→3506.
 // v10.64.7 update: indices shifted by 3 unambiguous orphan deletes. 2548→2545, 3225→3222, 2948→2945, 3506→3503.
-const LEGIT_LONG_OPTION_INDICES = new Set([2545, 3222, 2945, 3503]);
+// v10.64.8 update: indices shifted by 4 PDF-confirmed fragment deletes. 2545→2541, 3222→3218, 2945→2941, 3503→3499.
+const LEGIT_LONG_OPTION_INDICES = new Set([2541, 3218, 2941, 3499]);
 
 // Q-stem-start phrases — the universal IMA Hebrew Q openings.
 // If one of these appears in an option after position 30, it's a bleed.

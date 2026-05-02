@@ -6625,8 +6625,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.7';
+const APP_VERSION='10.64.8';
 const CHANGELOG={
+'10.64.8':[
+'🩹 4 PDF-confirmed orphan-fragment deletions — labs/calculations without patient stem context. Each was confirmed against the IMA exam PDF the user uploaded; in each case the canonical full version exists in the source PDF but the orphan is just the labs block.',
+'🚀 Major data unlock — user uploaded structured PDF dataset (geriatrics_exam_outputs.zip): 56-PDF inventory mapping each PDF to (track, session, key_version), 1451-row final_answer_keys.csv (post-appeal answers including multi-accept like "א ד"), 712-row sources_extracted.csv (canonical IMA refs), 82-row answer_key_changes.csv (appeal results). Saved to .audit_logs/. Opens up: D phase 3 retags, C v2 ref replacement using IMA-canonical refs, full c-field audit against authoritative key, in-app multi-accept support.',
+],
 '10.64.7':[
 '🩹 3 unambiguous orphan-fragment deletions — 1 too-short stem ("מה נכון מבחינת סיבוכי מחלת הסוכרת" no ?), 2 lab-block-only stems (just K/CREATININE/BUN values without patient context). Audit task D first batch. Net 3798→3795.',
 '📋 Audit D phase 1 — built PDF inventory of 56 IMA exam booklets/answer-keys/ref-maps in .audit_logs/pdf_inventory.json. Remaining 52 *-orphan questions need per-Q PDF cross-check before retag/delete decisions; saved to .audit_logs/orphan_triage_v10.64.6.md.',
