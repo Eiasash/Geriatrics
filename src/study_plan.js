@@ -43,6 +43,47 @@
   let _SYLLABUS = null;            // cached after first fetch
   let _syllabusInflight = null;    // dedupe parallel fetches
 
+  // ─────────────────────── exam-date bridge ───────────────────────
+  //
+  // The Track tab (rendered by shlav-a-mega.html) reads exam date from a
+  // separate store: `S.examDate` (in the `samega` localStorage blob) with
+  // `localStorage.shlav_exam_date` as a fallback. The Study Plan generator
+  // stores the date in `_state.examDateISO` (in-memory) and Supabase
+  // (cloud).
+  //
+  // Without bridging, a date set in Settings → Study Plan never reaches
+  // Track, so the Track tab keeps showing its "📅 When is your exam?
+  // Set Exam Date" empty-state CTA even after the user has set the date.
+  // Same the other way: setting the date on Track via setExamDate() doesn't
+  // pre-fill the Study Plan input.
+  //
+  // These two functions sync the canonical localStorage key
+  // `shlav_exam_date` and (when reachable) the global `S.examDate`. The
+  // sync is YYYY-MM-DD format both ways since both stores accept it.
+
+  function _persistExamDateToTrack(iso) {
+    if (!iso || typeof iso !== 'string') return;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+    try { localStorage.setItem('shlav_exam_date', iso); } catch (_) {}
+    try {
+      if (typeof window !== 'undefined' && window.S && typeof window.S === 'object') {
+        window.S.examDate = iso;
+        if (typeof window.save === 'function') window.save();
+      }
+    } catch (_) {}
+  }
+
+  function _readExamDateFromTrack() {
+    try {
+      if (typeof window !== 'undefined' && window.S && window.S.examDate) {
+        return window.S.examDate;
+      }
+      const v = localStorage.getItem('shlav_exam_date');
+      if (v && /^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+    } catch (_) {}
+    return null;
+  }
+
   function _getSyllabus() {
     if (_SYLLABUS) return Promise.resolve(_SYLLABUS);
     if (_syllabusInflight) return _syllabusInflight;
@@ -132,6 +173,9 @@
           _state.examDateISO = r.plan.exam_date || null;
           _state.hoursPerWeek = Number(r.plan.hours_per_week) || DEFAULT_HOURS_PER_WEEK;
           _state.rampWeeks = Number(r.plan.ramp_weeks) || DEFAULT_RAMP_WEEKS;
+          // Bridge to Track tab so its empty-state CTA disappears now that
+          // we have a saved date from the cloud.
+          _persistExamDateToTrack(_state.examDateISO);
           if (typeof render === 'function') render();
         }
       }).catch(() => { _state.loading = false; });
@@ -140,7 +184,10 @@
     // Pre-warm syllabus fetch (don't block first render).
     _getSyllabus().catch(() => {});
 
-    const defaultExam = _state.examDateISO || _addDaysISO(_todayISO(), 19 * 7);
+    // Pre-fill order: in-memory state (most recent edit / cloud-load) →
+    // Track tab's stored date (set via setExamDate() on Track) →
+    // calendar default (today + 19 weeks).
+    const defaultExam = _state.examDateISO || _readExamDateFromTrack() || _addDaysISO(_todayISO(), 19 * 7);
     const minExam = _addDaysISO(_todayISO(), 7 * 7);
 
     let h = `
@@ -312,6 +359,11 @@
     _state.hoursPerWeek = inputs.hoursPerWeek;
     _state.rampWeeks = inputs.rampWeeks;
     _state.generating = false;
+
+    // Bridge to Track tab — make the "Set Exam Date" empty-state CTA on
+    // the Track view disappear now that the user has set a date here.
+    // Runs whether or not the user is logged in (cloud save is separate).
+    _persistExamDateToTrack(inputs.examDateISO);
 
     const user = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
     if (!user) {
