@@ -331,16 +331,16 @@ describe('questions.json — per-session counts locked', () => {
     '2021-Jun': 103,
     '2022-Jun-Subspec': 95,
     '2022-Jun-Basic': 150,
-    '2022-Jun-orphan': 9,
+    '2022-Jun-orphan': 0,
     '2023-Jun-Subspec': 100,
     '2023-Jun-Basic': 141,
-    '2023-Jun-orphan': 14,
+    '2023-Jun-orphan': 0,
     '2023-Sep': 22,
     '2024-May-Subspec': 96,
     '2024-May-Basic': 150,
     '2024-Sep-Subspec': 98,
     '2024-Sep-Basic': 150,
-    '2024-orphan': 25,
+    '2024-orphan': 0,
     '2025-Jun-Basic': 150,
     'Exam': 24,
     'Harrison': 294,
@@ -353,8 +353,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3791 (v10.64.8: -4 PDF-confirmed orphan-fragment fixes)', () => {
-    expect(questions.length).toBe(3791);
+  test('total question count is exactly 3743 (v10.64.11: -48 orphan deletions, all fragment-dups of canonical-tagged siblings)', () => {
+    expect(questions.length).toBe(3743);
   });
 });
 
@@ -470,7 +470,8 @@ describe('multi-select exam-year filter — Task 3 contract', () => {
   let questions;
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
-  const EXAM_YEARS = ['2020', '2021-Dec', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun-Basic'];
+  // v10.64.11: orphan tags removed (all 48 deleted as fragment-dups)
+  const EXAM_YEARS = ['2020', '2021-Dec', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2025-Jun-Basic'];
 
   // Reproduces the pool-building logic inline so test doesn't depend on
   // running the monolith's runtime.
