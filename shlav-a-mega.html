@@ -6625,8 +6625,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.12';
+const APP_VERSION='10.64.13';
 const CHANGELOG={
+'10.64.13':[
+'🛡️ Defensive revert — 15 of v10.64.12\'s 501 canonical Hebrew refs came from ambiguous v2 mappings (multiple PDF Q-N candidates with conflicting canonical refs). Reverted to the topic-correct English chapter ref to avoid potentially-wrong page pointers. Net: 486 page-specific Hebrew refs (still applied), 15 reverted to chapter-only English refs. Spot-check showed at least one revert was right (idx=2810 knee OA had Hazzard ch 80 applied but content is Ch 52 osteoarthritis).',
+'📋 Audit closure: 94 c_wrong_single candidates classified as deliberate curator overrides (NOT bugs). 0 in appeals CSV, 0 explanations support IMA letter, 11 explanations explicitly support dataset letter. Per-session evidence sheets at `.audit_logs/review/{tag}.md` for user reference. NOT auto-applying any flips.',
+],
 '10.64.12':[
 '📚 501 questions get canonical IMA-published source citations (page-specific Hazzard / Harrison page+chapter pointers, e.g. "הזארד88 | 1263, 1391" or "הריסון310 | 2305"). Replaces heuristic English chapter-only refs (e.g. "Hazzard Ch 58 — DELIRIUM") with the actual source IMA based the question on. Source: geriatrics_sources_extracted.csv via v2 4-corner mapping (PR #132 infrastructure).',
 '🛡️ 92 corrupted/placeholder canonical refs filtered (PDF row-merge artifacts like "חוקX | X" or "מאמר... | 11 | HAZZARD | 12 | HAZZARD") — those keep their existing English chapter ref. Apply criterion: ref must start with `הזארד` or `הריסון` and not contain row-merge separator `| HAZZARD | ` or `| GRS |`.',
