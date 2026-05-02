@@ -6625,8 +6625,13 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.9';
+const APP_VERSION='10.64.10';
 const CHANGELOG={
+'10.64.10':[
+'✅ 6 more c_accept additions from v2-mapping audit (mapping rebuilt with stem+all-4-options 4-corner predicate as primary builder, not just verifier; 1162/1334 unique high-confidence mappings, up from 477 strict-verified in v1). Multi-accept expansions: CLL questions idx=2855/3460 [3]→[1,2,3] (IMA accepted Coombs+/leukostasis/AIHA), ABCD2-TIA idx=3271 [1]→[1,3]. Voided post-appeal: 2020 Q97 idx=152/153, 2022-Jun-Subspec Q42 anticholinergic idx=3227.',
+'🔧 Mapping v2 builder hardened — anchor regex `(?:^|[\\s\\n])(\\d{1,3})\\s*[.?]+\\s+` excludes lab-value decimals (no whitespace after dot) and clinical-numeric commas like "40 , סטורציה 85%". Section bounding falls back to next-any-anchor when sequential successor (n+1..n+5) is missing — prevents "section runs to EOF" overmatching. 2024-May-Subspec hits 100% mapping; only 2021-Dec lags at 42% (image-heavy PDF with broken text extraction).',
+'🛡️ Held back 95 c_wrong_single candidates and 593 ref-replacement candidates pending per-question medical review and a separate release. Mapping reliability is high but answer-key disagreements still need expert eyes — IMA keys do contain real errors (see geriatrics_answer_key_changes.csv for 82 appeals) but so does any post-hoc audit.',
+],
 '10.64.9':[
 '✅ 4 c_accept additions confirmed against IMA final answer keys via 4-corner verification (stem + all 4 options match PDF Q-section): idx=2506 (2021-Dec Q1 stroke pathophysiology) [2,3]; idx=3221 (2022-Jun-Subspec Q36 dementia case) [1,2]; idx=3249 (2022-Jun-Subspec Q66 HF case) [0,1]; idx=29 (2024-Sep-Basic Q134 FeNa<1%) [0,1,2,3] (IMA-voided). Users picking the "other accepted" letter on these 4 will now see ✓ instead of ✗.',
 '🛡️ Audit-tooling honesty — original c-WRONG audit (192 raw cases) was overturned by stem-verification. Mapping had a systematic +1 shift due to BIDI-induced regex bug ("N\\n?.\\n stem" anchors were missed because regex required digit-period without intervening "?"). After fix: 192 raw → 76 multi-accept-verified + 18 voided-verified + 1 single-c-disagreement (held back for manual review). Spot-checked 3 strict-verified candidates were ALL dataset-correct — applying them would have CORRUPTED right answers. Lesson: matcher reliability ≠ option-text-found-in-PDF; always require stem-anchored 4-corner verification before bulk content edits.',
