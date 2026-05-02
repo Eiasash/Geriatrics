@@ -39,7 +39,8 @@ const PAST_EXAM_TAGS = new Set([
 // These are stable bank indices — if the bank gets re-sorted, this whitelist must be updated.
 // v10.35 update: indices shifted by 15 orphan deletes (all <3265). 3265→3250, 2974→2971, 3552→3537.
 // v10.64.2 update: indices shifted by 16 parser-corruption fixes. 2565→2555, 3250→3237, 2971→2959, 3537→3523.
-const LEGIT_LONG_OPTION_INDICES = new Set([2555, 3237, 2959, 3523]);
+// v10.64.4 update: indices shifted by 19 multi-sibling fixes. 2555→2548, 3237→3225, 2959→2948, 3523→3506.
+const LEGIT_LONG_OPTION_INDICES = new Set([2548, 3225, 2948, 3506]);
 
 // Q-stem-start phrases — the universal IMA Hebrew Q openings.
 // If one of these appears in an option after position 30, it's a bleed.
