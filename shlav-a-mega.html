@@ -6625,8 +6625,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.6';
+const APP_VERSION='10.64.7';
 const CHANGELOG={
+'10.64.7':[
+'🩹 3 unambiguous orphan-fragment deletions — 1 too-short stem ("מה נכון מבחינת סיבוכי מחלת הסוכרת" no ?), 2 lab-block-only stems (just K/CREATININE/BUN values without patient context). Audit task D first batch. Net 3798→3795.',
+'📋 Audit D phase 1 — built PDF inventory of 56 IMA exam booklets/answer-keys/ref-maps in .audit_logs/pdf_inventory.json. Remaining 52 *-orphan questions need per-Q PDF cross-check before retag/delete decisions; saved to .audit_logs/orphan_triage_v10.64.6.md.',
+],
 '10.64.6':[
 '🎨 Header redesign — title bigger (22px / weight 800), version now a green pill (was 9px subdued grey, nearly invisible).',
 '📋 Changelog restored — entries for v10.63.9 through v10.64.5 had been silently missing; the help-overlay was falling back to stale v9.83 content under a "What\'s New in v10.64.x" header. Eight releases of changelog drift cleared.',
