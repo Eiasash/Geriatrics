@@ -2470,7 +2470,7 @@ function showFullExamPicker(){
     <div style="font-weight:700;font-size:12px;margin:10px 0 6px;color:rgb(var(--fg2))">מקורות AI:</div>
     ${srcRows}
     <button onclick="const ys=[...document.querySelectorAll('#feModal .fe-year:checked')].map(c=>c.value);const ss=[...document.querySelectorAll('#feModal .fe-src:checked')].map(c=>c.value);if(!ys.length&&!ss.length){toast('בחר לפחות מקור אחד','warn');return;}document.getElementById('feModal').remove();_runFullExam(ys,ss)" class="btn btn-p" style="display:block;width:100%;margin-top:14px;padding:12px;font-size:13px;font-weight:700;min-height:48px">התחל מבחן ←</button>
-    <button onclick="document.getElementById('feModal').remove()" class="btn" style="display:block;width:100%;margin-top:8px;padding:8px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;font-size:11px">ביטול</button>
+    <button data-action="close-fe-modal" onclick="document.getElementById('feModal').remove()" class="btn" style="display:block;width:100%;margin-top:8px;padding:8px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;font-size:11px">ביטול</button>
   </div>
 </div>`;
   document.body.insertAdjacentHTML('beforeend',html);
@@ -6625,7 +6625,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.63.9';
+const APP_VERSION='10.64.0';
 const CHANGELOG={
 '10.63.5':[
 '⚡ LCP fix attempt 2 — questions.json (2 MB gzipped) ALSO deferred out of critical Promise.all. v10.63.4 (distractors deferred) showed no LCP improvement because QZ was the real bottleneck. Now: critical path loads only ~400 KB of small JSON; QZ + DIS both fire-and-forget via requestIdleCallback. When QZ resolves, any quiz/track/library/search/more tab re-renders automatically. Header + tabs + welcome render immediately on small-file load. Targets: LCP 23s → ~3-5s.',
@@ -7285,8 +7285,6 @@ const ov=document.createElement('div');
 ov.id='help-overlay';
 ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px';
 ov.onclick=e=>{if(e.target===ov)ov.remove();};
-const onKey=e=>{if(e.key!=='Escape')return;const cur=document.getElementById('help-overlay');if(cur)cur.remove();document.removeEventListener('keydown',onKey);};
-document.addEventListener('keydown',onKey);
 const sec=(title,icon,color,items)=>`<div style="margin-bottom:14px">
 <div style="font-weight:700;font-size:12px;margin-bottom:6px;color:${color}">${icon} ${title}</div>
 <div style="font-size:10px;line-height:1.8">${items}</div></div>`;
@@ -7347,6 +7345,12 @@ ${sec('Progress Tracking','📊','#f59e0b',
 document.body.appendChild(ov);
 }
 
+// ===== GLOBAL MODAL DISMISS (Escape) =====
+// Closes top-most blocking modal. feModal is z-index 9999 and visually covers help-overlay,
+// so dismiss it first; help-overlay second. Returns true if anything was closed.
+function closeTopModal(){const f=document.getElementById('feModal');if(f){f.remove();return true;}const h=document.getElementById('help-overlay');if(h){h.remove();return true;}return false;}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTopModal();});
+
 // ===== SYLLABUS CONFIG =====
 const SYLLABUS_VERSION='P005-2026';
 
@@ -7404,6 +7408,7 @@ case 'goto-account':
 case 'apply-update':applyUpdate();break;
 case 'dismiss-update':dismissUpdateBanner();break;
 case 'close-overlay':var ov=btn.closest('[id$="-overlay"]');if(ov)ov.remove();break;
+case 'close-fe-modal':var fm=document.getElementById('feModal');if(fm)fm.remove();break;
 }
 });
 
