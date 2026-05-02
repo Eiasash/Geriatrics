@@ -1778,7 +1778,7 @@ function _topicSrcMatch(q){if(topicSrc==='all')return true;const ex=_isExamTag(q
 function setTopicSrc(s){if(!['all','exams','books'].includes(s))return;topicSrc=s;try{localStorage.setItem('samega_topic_src',s);}catch(e){}if(filt==='topic'){buildPool();}render();}
 // Canonical exam-session tags (ported from Pnimit's EXAM_YEARS). Bare 2020/2021/2022
 // month-unresolved — kept on whitelist so multi-select pills can still target them.
-const EXAM_YEARS=['2020','2021-Jun','2021-Dec','2022-Jun-Basic','2022-Jun-Subspec','2022-Jun-orphan','2023-Jun-Basic','2023-Jun-Subspec','2023-Jun-orphan','2023-Sep','2024-May-Basic','2024-May-Subspec','2024-Sep-Basic','2024-Sep-Subspec','2024-orphan','2025-Jun-Basic']; // v10.55.0: matches actual DB tags (was stale — '2022','2023-Jun','2024-May' matched 0q)
+const EXAM_YEARS=['2020','2021-Jun','2021-Dec','2022-Jun-Basic','2022-Jun-Subspec','2023-Jun-Basic','2023-Jun-Subspec','2023-Sep','2024-May-Basic','2024-May-Subspec','2024-Sep-Basic','2024-Sep-Subspec','2025-Jun-Basic']; // v10.64.11: orphan tags removed (all 48 deleted as fragment-dups)
 // Multi-select exam-year filter. Persisted across sessions (unlike Pnimit's runtime-only G.years).
 let selectedExamYears=(function(){
   try{const raw=localStorage.getItem('samega_exam_filter');if(!raw)return new Set();
@@ -6625,8 +6625,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.10';
+const APP_VERSION='10.64.11';
 const CHANGELOG={
+'10.64.11':[
+'🧹 Orphan triage complete — all 48 *-orphan questions deleted as fragment-duplicates. 47 had canonical-tagged siblings already in dataset (v2 4-corner predicate uniquely matched their content to a specific exam Q-N where a sibling already lives). 1 was AI-hallucinated (4AT "second question" — not in any exam PDF, fabricated content). Net 3791→3743 (-48). Memory note `project_geriatrics_pdf_dataset.md` D-phase-3 task complete.',
+'🔁 Index-coupled JSON files re-keyed: distractors.json, regulatory.json, question_chapters.json all filtered + remapped to dense 0..3742. parserBleedGuard whitelist shifted: {2541,3218,2941,3499} → {2493,3170,2893,3451}. regressionGuards thresholds: 2022/2023-Jun-orphan + 2024-orphan all set to 0; total 3791→3743.',
+],
 '10.64.10':[
 '✅ 6 more c_accept additions from v2-mapping audit (mapping rebuilt with stem+all-4-options 4-corner predicate as primary builder, not just verifier; 1162/1334 unique high-confidence mappings, up from 477 strict-verified in v1). Multi-accept expansions: CLL questions idx=2855/3460 [3]→[1,2,3] (IMA accepted Coombs+/leukostasis/AIHA), ABCD2-TIA idx=3271 [1]→[1,3]. Voided post-appeal: 2020 Q97 idx=152/153, 2022-Jun-Subspec Q42 anticholinergic idx=3227.',
 '🔧 Mapping v2 builder hardened — anchor regex `(?:^|[\\s\\n])(\\d{1,3})\\s*[.?]+\\s+` excludes lab-value decimals (no whitespace after dot) and clinical-numeric commas like "40 , סטורציה 85%". Section bounding falls back to next-any-anchor when sequential successor (n+1..n+5) is missing — prevents "section runs to EOF" overmatching. 2024-May-Subspec hits 100% mapping; only 2021-Dec lags at 42% (image-heavy PDF with broken text extraction).',
