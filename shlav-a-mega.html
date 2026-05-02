@@ -6625,8 +6625,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.11';
+const APP_VERSION='10.64.12';
 const CHANGELOG={
+'10.64.12':[
+'📚 501 questions get canonical IMA-published source citations (page-specific Hazzard / Harrison page+chapter pointers, e.g. "הזארד88 | 1263, 1391" or "הריסון310 | 2305"). Replaces heuristic English chapter-only refs (e.g. "Hazzard Ch 58 — DELIRIUM") with the actual source IMA based the question on. Source: geriatrics_sources_extracted.csv via v2 4-corner mapping (PR #132 infrastructure).',
+'🛡️ 92 corrupted/placeholder canonical refs filtered (PDF row-merge artifacts like "חוקX | X" or "מאמר... | 11 | HAZZARD | 12 | HAZZARD") — those keep their existing English chapter ref. Apply criterion: ref must start with `הזארד` or `הריסון` and not contain row-merge separator `| HAZZARD | ` or `| GRS |`.',
+],
 '10.64.11':[
 '🧹 Orphan triage complete — all 48 *-orphan questions deleted as fragment-duplicates. 47 had canonical-tagged siblings already in dataset (v2 4-corner predicate uniquely matched their content to a specific exam Q-N where a sibling already lives). 1 was AI-hallucinated (4AT "second question" — not in any exam PDF, fabricated content). Net 3791→3743 (-48). Memory note `project_geriatrics_pdf_dataset.md` D-phase-3 task complete.',
 '🔁 Index-coupled JSON files re-keyed: distractors.json, regulatory.json, question_chapters.json all filtered + remapped to dense 0..3742. parserBleedGuard whitelist shifted: {2541,3218,2941,3499} → {2493,3170,2893,3451}. regressionGuards thresholds: 2022/2023-Jun-orphan + 2024-orphan all set to 0; total 3791→3743.',
