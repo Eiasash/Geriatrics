@@ -846,7 +846,7 @@ upd();setInterval(upd,30000);
 
 <a href="#ct" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
-<h1>Shlav A Mega <span style="font-size:10px;font-weight:500;color:#0D7377;vertical-align:middle">Geriatrics</span> <span id="headerVer" style="font-size:9px;font-weight:400;color:rgb(var(--fg2));vertical-align:middle"></span></h1>
+<h1 style="font-size:22px;font-weight:800;letter-spacing:-.01em">Shlav A Mega <span style="font-size:11px;font-weight:600;color:#0D7377;vertical-align:middle;letter-spacing:0">Geriatrics</span> <span id="headerVer" style="font-size:11px;font-weight:700;color:#047857;background:#ecfdf5;padding:2px 7px;border-radius:8px;vertical-align:middle;letter-spacing:.02em;border:1px solid rgb(var(--green-brd))"></span></h1>
 <button class="dm-btn" data-action="toggle-study" title="Sepia / Study Mode (warm light)" aria-label="Toggle sepia study mode" style="right:12px">☀</button><button class="dm-btn" data-action="toggle-dark" title="Dark Mode" aria-label="Toggle dark mode" style="right:56px">🌙</button><button class="dm-btn" data-action="show-help" title="Help" aria-label="Help" style="right:100px;font-size:15px;font-weight:700">?</button><button class="dm-btn" data-action="goto-account" id="hdr-account-btn" title="Account" aria-label="Account / Login" style="right:144px;font-size:14px;font-weight:700">👤</button>
 <p id="hdr-sub">Loading...</p>
 <div id="syncPill" class="sync-pill" role="status" aria-live="polite" style="position:absolute;top:4px;left:6px;font-size:9px;padding:2px 7px;border-radius:10px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));cursor:pointer;user-select:none;display:none" title="Sync status — click for details" onclick="showSyncStatus()"></div>
@@ -6625,8 +6625,41 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.5';
+const APP_VERSION='10.64.6';
 const CHANGELOG={
+'10.64.6':[
+'🎨 Header redesign — title bigger (22px / weight 800), version now a green pill (was 9px subdued grey, nearly invisible).',
+'📋 Changelog restored — entries for v10.63.9 through v10.64.5 had been silently missing; the help-overlay was falling back to stale v9.83 content under a "What\'s New in v10.64.x" header. Eight releases of changelog drift cleared.',
+'🛡️ Defensive — help-overlay "What\'s New" no longer falls back to the oldest changelog entry when the current version is missing; shows explicit "(no entry)" message instead, so this drift is visible immediately on future version bumps.',
+],
+'10.64.5':[
+'🔧 162 questions had ref="Hazzard Ch 1 — BIOLOGY OF AGING" as a default-fallback (only 64 actually have ti=0). Replaced with topic-correct refs derived from existing canonical refs in the dataset. Audit task C, narrow scope.',
+'🛠️ Wider ref/ti mismatch surfaced — top 10 chapter clusters all show 31-72% wrong-ti rates (~865+ total). Separate cleanup pass needed; not addressed in this release.',
+],
+'10.64.4':[
+'🩹 13 multi-sibling paired-orphan triage — same Q in 2+ catalogs (Basic+Subspec). 7 fragment-orphans deleted; 6 corrupted-sib pairs replaced by their clean orphan retagged to Basic-tier. Net -19 questions (3817→3798). Audit task B.',
+'📉 Subspec catalog counts: 2024-May 100→96, 2024-Sep 100→98 (cost of dedup; trade-off recorded in commit message).',
+],
+'10.64.3':[
+'🧹 132 Hazzard-AI questions had redundant "א."/"ב."/"ג."/"ד." prefixes prepended to each option — stylistic AI-generator artifact, inconsistent with rest of bank. Stripped 528 prefixes (132 × 4 options). No semantic change. Audit task A.',
+],
+'10.64.2':[
+'🩺 16 parser-corruption question fixes from full-question audit. Includes hemoptysis Q35/73 (had truncated stem "בן 67 , מעשן 20 שנות קופס" with chief-complaint mis-shoved into options). Two failure modes: corrupted-sib paired with clean orphan (delete sib, retag orphan), or fragment-orphan paired with full sib (delete orphan).',
+'🩺 Hemoptysis ref corrected from "Hazzard Ch 79 — HYPERTENSION" (default-fallback, wrong topic) to pulmonary-correct chapter.',
+'📉 Question count 3833 → 3817.',
+],
+'10.64.1':[
+'🔗 Added data-testid="full-exam-trigger" on the Full 150q button — stable hook for browser-chaos-tester deterministic scenarios; survives Hebrew label rename.',
+'🔧 Regenerated package-lock.json after a parallel-session playwright devDep add. CI/validate had been silently failing (npm ci strict mode) since v10.63.9 across three releases.',
+],
+'10.64.0':[
+'🚪 Modal dismissal hardening — both #help-overlay AND #feModal (Full Exam picker) now closeable by Escape via a single global keydown handler (was only Help, per-call, in v10.63.9).',
+'🏷️ Cancel button on Full Exam modal now carries data-action="close-fe-modal" alongside existing inline onclick — lets delegated-handler-aware tools (incl. chaos bot) close it via stable selector.',
+'🤖 Surfaced by browser-chaos-tester finding that "pressed Escape" was being logged as recovery without verifying the modal actually closed — fix shipped both app-side (this) and bot-side (verified-recovery rewrite).',
+],
+'10.63.9':[
+'♿ Help overlay closeable by Escape — was only closeable by ✕ button or backdrop click. Surfaced by browser-chaos-tester smoke test (bot kept hitting "intercepts pointer events" because there was no keyboard exit). Three-line per-call keydown listener inside showHelp(). Superseded by v10.64.0\'s global handler that handles both Help and Full Exam modals.',
+],
 '10.63.5':[
 '⚡ LCP fix attempt 2 — questions.json (2 MB gzipped) ALSO deferred out of critical Promise.all. v10.63.4 (distractors deferred) showed no LCP improvement because QZ was the real bottleneck. Now: critical path loads only ~400 KB of small JSON; QZ + DIS both fire-and-forget via requestIdleCallback. When QZ resolves, any quiz/track/library/search/more tab re-renders automatically. Header + tabs + welcome render immediately on small-file load. Targets: LCP 23s → ~3-5s.',
 '🛡️ Safety: existing guards `if(QZ.length)buildPool()` (line 1895) and `if(typeof QZ==="undefined"||!Array.isArray(QZ))return 0` (line 4634) handle the empty-QZ window. Boot path `_dataPromise.then(()=>{renderTabs();render();})` runs with empty QZ initially; _qzPromise.finally re-renders when ready.',
@@ -7298,7 +7331,7 @@ ov.innerHTML=`<div style="max-width:420px;margin:0 auto;background:rgb(var(--car
 <div style="padding:10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:10px;margin-bottom:14px">
 <div style="font-weight:700;font-size:11px;margin-bottom:6px;color:rgb(var(--green-fg))">🆕 What's New in v${APP_VERSION}</div>
 <div style="font-size:10px;line-height:1.7;color:#047857">
-${(CHANGELOG[APP_VERSION]||CHANGELOG[Object.keys(CHANGELOG).sort().pop()]||['No changelog available']).map(c=>'<b>'+c.split(' — ')[0]+'</b>'+(c.includes(' — ')?' — '+c.split(' — ').slice(1).join(' — '):'')).join('<br>')}
+${(CHANGELOG[APP_VERSION]||['(no changelog entry for v'+APP_VERSION+' — see commit log on GitHub)']).map(c=>'<b>'+c.split(' — ')[0]+'</b>'+(c.includes(' — ')?' — '+c.split(' — ').slice(1).join(' — '):'')).join('<br>')}
 </div></div>
 ${sec('Quiz Filters','📝','#059669',
 '<b>הכל</b> — כל '+QZ.length.toLocaleString()+' השאלות, מעורבב<br>'+
