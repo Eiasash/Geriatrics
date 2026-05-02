@@ -6625,7 +6625,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.2';
+const APP_VERSION='10.64.3';
 const CHANGELOG={
 '10.63.5':[
 '⚡ LCP fix attempt 2 — questions.json (2 MB gzipped) ALSO deferred out of critical Promise.all. v10.63.4 (distractors deferred) showed no LCP improvement because QZ was the real bottleneck. Now: critical path loads only ~400 KB of small JSON; QZ + DIS both fire-and-forget via requestIdleCallback. When QZ resolves, any quiz/track/library/search/more tab re-renders automatically. Header + tabs + welcome render immediately on small-file load. Targets: LCP 23s → ~3-5s.',
