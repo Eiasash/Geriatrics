@@ -331,16 +331,16 @@ describe('questions.json — per-session counts locked', () => {
     '2021-Jun': 103,
     '2022-Jun-Subspec': 95,
     '2022-Jun-Basic': 150,
-    '2022-Jun-orphan': 15,
+    '2022-Jun-orphan': 13,
     '2023-Jun-Subspec': 100,
     '2023-Jun-Basic': 141,
-    '2023-Jun-orphan': 22,
+    '2023-Jun-orphan': 19,
     '2023-Sep': 22,
     '2024-May-Subspec': 100,
     '2024-May-Basic': 150,
     '2024-Sep-Subspec': 100,
     '2024-Sep-Basic': 150,
-    '2024-orphan': 47,
+    '2024-orphan': 36,
     '2025-Jun-Basic': 150,
     'Exam': 24,
     'Harrison': 294,
@@ -353,8 +353,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3833 (v10.37: +77 GRS8 Book 3 imports across 14 high-yield chapters)', () => {
-    expect(questions.length).toBe(3833);
+  test('total question count is exactly 3817 (v10.64.2: -16 parser-corruption fixes from full-question audit)', () => {
+    expect(questions.length).toBe(3817);
   });
 });
 
