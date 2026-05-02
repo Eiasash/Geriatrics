@@ -3,12 +3,20 @@ name: Distractor Autopsy Generator
 # Autonomous bulk-run generator for data/distractors.json.
 # Runs on cowork/distractor-autopsy branch; commits+force-pushes progress each run.
 # Exits no-op if distractors.json is already at 100% coverage.
+#
+# 2026-05-02: schedule trigger REMOVED. The autopsy bulk-gen wave is
+# structurally done (data/distractors.json shipped at 100% coverage in
+# v10.45) and the side branch `cowork/distractor-autopsy` was deleted —
+# every 2h cron fire was failing at the checkout step (HTTP 404), eroding
+# CI signal-to-noise on the Actions UI. The auto-audit
+# `regenerate_misaligned_distractors` template is the modern drift-driven
+# replacement (re-generates only when real misalignment is detected).
+# `workflow_dispatch:` below preserves the option to manually re-arm this
+# workflow if a future structural autopsy is needed (you'd also need to
+# recreate the cowork/distractor-autopsy branch).
 
 on:
   workflow_dispatch:
-  schedule:
-    # Every 2 hours; GHA free tier supports ~6h per job, we cap at 50min
-    - cron: '0 */2 * * *'
 
 permissions:
   contents: write
