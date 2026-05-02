@@ -6625,8 +6625,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.8';
+const APP_VERSION='10.64.9';
 const CHANGELOG={
+'10.64.9':[
+'✅ 4 c_accept additions confirmed against IMA final answer keys via 4-corner verification (stem + all 4 options match PDF Q-section): idx=2506 (2021-Dec Q1 stroke pathophysiology) [2,3]; idx=3221 (2022-Jun-Subspec Q36 dementia case) [1,2]; idx=3249 (2022-Jun-Subspec Q66 HF case) [0,1]; idx=29 (2024-Sep-Basic Q134 FeNa<1%) [0,1,2,3] (IMA-voided). Users picking the "other accepted" letter on these 4 will now see ✓ instead of ✗.',
+'🛡️ Audit-tooling honesty — original c-WRONG audit (192 raw cases) was overturned by stem-verification. Mapping had a systematic +1 shift due to BIDI-induced regex bug ("N\\n?.\\n stem" anchors were missed because regex required digit-period without intervening "?"). After fix: 192 raw → 76 multi-accept-verified + 18 voided-verified + 1 single-c-disagreement (held back for manual review). Spot-checked 3 strict-verified candidates were ALL dataset-correct — applying them would have CORRUPTED right answers. Lesson: matcher reliability ≠ option-text-found-in-PDF; always require stem-anchored 4-corner verification before bulk content edits.',
+],
 '10.64.8':[
 '🩹 4 PDF-confirmed orphan-fragment deletions — labs/calculations without patient stem context. Each was confirmed against the IMA exam PDF the user uploaded; in each case the canonical full version exists in the source PDF but the orphan is just the labs block.',
 '🚀 Major data unlock — user uploaded structured PDF dataset (geriatrics_exam_outputs.zip): 56-PDF inventory mapping each PDF to (track, session, key_version), 1451-row final_answer_keys.csv (post-appeal answers including multi-accept like "א ד"), 712-row sources_extracted.csv (canonical IMA refs), 82-row answer_key_changes.csv (appeal results). Saved to .audit_logs/. Opens up: D phase 3 retags, C v2 ref replacement using IMA-canonical refs, full c-field audit against authoritative key, in-app multi-accept support.',
