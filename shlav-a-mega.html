@@ -2310,7 +2310,7 @@ async function explainWithAI(qIdx){
     var _langInstr=_qLang==='en'?'Explain in English (3-4 sentences) why this is the correct answer. Be concise and exam-focused.':'הסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה לשאלה הבאה מתחום הגריאטריה. עגן תמיד בתשובה הנכונה הנל.';
     var txt=await callAI([{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\n'+_langInstr+'\n\nשאלה: '+q.q+'\nאפשרויות: '+q.o.join(' / ')+'\nתשובה נכונה: '+correct}],400,'sonnet');
     _exCache[qIdx]={text:txt};
-    localStorage.setItem('samega_ex',JSON.stringify(_exCache));
+    lsSet('samega_ex',_exCache);
   }catch(e){
     _exCache[qIdx]={err:e.message==='no_key'?'AI unavailable — set API key in Track':e.message};
   }
@@ -2342,7 +2342,7 @@ const formatted=safeTxt.replace(/✗/g,'<b style="color:#dc2626">✗</b>')
   .replace(/Would be correct if:/g,'<span style="color:#059669">Would be correct if:</span>')
   .replace(/\n/g,'<br>');
 _exCache[_apKey]=formatted;
-localStorage.setItem('samega_ex',JSON.stringify(_exCache));
+lsSet('samega_ex',_exCache);
 }catch(e){
 _exCache[_apKey]='<span style="color:#dc2626">Error: '+sanitize(e.message).substring(0,40)+'</span>';
 }
@@ -2553,7 +2553,7 @@ function endMockExam(){
   try{const hist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');
     hist.push({date:new Date().toISOString(),score:pct,correct:eOk,total:tot,elapsed,byTopic:mockExamResults.byTopic,wrongIdxs:mockExamResults.wrongIdxs||[],tag:mockExamResults.tag||null});
     if(hist.length>20)hist.splice(0,hist.length-20);
-    localStorage.setItem('samega_mock_hist',JSON.stringify(hist));
+    lsSet('samega_mock_hist',hist);
   }catch(e){}
   // Show in custom modal instead of alert
   showMockExamResult(pct,eOk,tot,elapsed,mockExamResults.byTopic);
@@ -2651,10 +2651,13 @@ method:'POST',headers:{'Authorization':'Bearer '+SUPA_ANON,'Content-Type':file.t
 if(!res.ok)throw new Error('Upload failed: '+res.status);
 const imgUrl=SUPA_URL+'/storage/v1/object/public/question-images/'+fname;
 QZ[qIdx].img=imgUrl;
-// Save to localStorage
+// Save to localStorage (lsSet handles iOS Safari quota gracefully — returns false on failure)
 const imgMap=JSON.parse(localStorage.getItem('shlav_q_images')||'{}');
 imgMap[qIdx]=imgUrl;
-localStorage.setItem('shlav_q_images',JSON.stringify(imgMap));
+if(!lsSet('shlav_q_images',imgMap)){
+  if(statusEl)statusEl.textContent='⚠️ Save failed (storage full?) — try clearing old images or signing in to sync';
+  return;
+}
 if(statusEl)statusEl.textContent='✅ Image attached';
 setTimeout(()=>render(),500);
 }catch(e){if(statusEl)statusEl.textContent='❌ '+e.message;}
@@ -2665,7 +2668,7 @@ function removeQImage(qIdx){
 QZ[qIdx].img=null;
 try{const imgMap=JSON.parse(localStorage.getItem('shlav_q_images')||'{}');
 delete imgMap[qIdx];
-localStorage.setItem('shlav_q_images',JSON.stringify(imgMap));}catch(e){}
+lsSet('shlav_q_images',imgMap);}catch(e){}
 render();
 }
 // Load saved images on startup
@@ -4019,7 +4022,10 @@ function addChapterQsToBank(idOrJson){
     }
     const existing=JSON.parse(localStorage.getItem('samega_custom_qs')||'[]');
     qs.forEach(q=>{q.t='AI-Ch';q.ti=-1;existing.push(q);});
-    localStorage.setItem('samega_custom_qs',JSON.stringify(existing));
+    if(!lsSet('samega_custom_qs',existing)){
+      toast('שמירה נכשלה — אחסון מלא. נסו לרענן או לסנכרן לענן.','info');
+      return;
+    }
     toast('✅ '+qs.length+' questions added! Reload to see them in the AI-Ch filter.','info');
   }catch(e){toast('Failed: '+e.message,'info');}
 }
@@ -4784,7 +4790,7 @@ function saveSessionSummary(){
     };
     const hist=JSON.parse(localStorage.getItem('samega_sessions')||'[]');
     hist.push(sess);if(hist.length>30)hist.splice(0,hist.length-30);
-    localStorage.setItem('samega_sessions',JSON.stringify(hist));
+    lsSet('samega_sessions',hist);
   }catch(e){}
 }
 // ===== FEATURE 5: Daily Study Plan =====
@@ -6623,8 +6629,15 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.18';
+const APP_VERSION='10.64.19';
 const CHANGELOG={
+'10.64.19':[
+'🧹 63 corrupt explanations repaired — the `e` (AI explanation) field on 63 questions contained 127 Unicode replacement chars (`�`) from a UTF-8 byte-boundary truncation upstream (e.g. "ייתכ��" → "ייתכן", "דל��ת" → "דלקת"). Stripped the `�` chars in place (preserves the surrounding 95% of the explanation text intact); affected words read as truncated but explanations stay useful. Added regression test in expandedDataIntegrity.test.js to block any new `�` from shipping.',
+'💾 Critical save paths migrated to lsSet() — 6 sacred-key writes (samega_ex×2, samega_mock_hist, shlav_q_images×2, samega_custom_qs, samega_sessions) were calling localStorage.setItem directly, swallowing iOS Safari quota errors silently. Now go through lsSet() which returns false on failure; the image-attach flow surfaces a user toast on quota-exhausted writes instead of a silent broken save.',
+'🛡️ CI guard for syllabus drift — added test in dataIntegrity.test.js that asserts `data/syllabus_data.json` total + per-topic n_questions match the live `data/questions.json` ti distribution. Catches the staleness problem (3833 vs 3743) automatically — no more silent denominator drift in study-plan analytics.',
+'📝 5-option spec corrected — CLAUDE.md said "exactly 4 options, c index in 0-3" but 38 GRS8-imported questions have 5 options with c=4. Doc now reflects reality: 4 standard for IMA, 5 allowed for GRS8, hard rule is `0 ≤ c < q.o.length`.',
+'🧪 Audit bundle CI guard — image-file existence tests skip when `AUDIT_BUNDLE=1` env var is set. Lean bundles ship image_map.json without the 17 MB of PNGs — previously tests failed misleadingly. Added AUDIT_README.md to the bundle explaining the env-var flag.',
+],
 '10.64.18':[
 '🔗 Ref correction — 24 questions had `ref="Hazzard Ch 22 — MEDICATION PRESCRIBING"` despite being non-pharmacology topics (stroke, prevention, rehab, demography, valvular HD, OA, infections, ethics, pain, CKD, palliative, advance directives, etc.). Replaced each with the correct chapter from `data/question_chapters.json` (Hazzard + Harrison where available). Two cases (idx=0 stroke, idx=1121 thyroid) had wrong Hazzard assignments in question_chapters.json itself — used Harrison-only for those.',
 '🛡️ SW critical-shell completeness — `shared/tokens.css`, `src/study_plan_algorithm.js`, and `src/study_plan.js` are loaded SYNCHRONOUSLY by shlav-a-mega.html (no defer/async) but were marked optional in v10.64.17\'s `OPTIONAL_URLS`. SW install could succeed while these blocking-shell assets failed to cache → broken first offline launch. Moved them to CRITICAL_URLS — install must guarantee they land in cache.',
