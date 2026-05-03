@@ -10,7 +10,17 @@
  */
 function lsGet(key, fallback) {
   try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
-  catch(e) { localStorage.removeItem(key); return fallback; }
+  catch(e) {
+    // Quarantine corrupt data under a timestamped key instead of deleting it —
+    // sacred keys (`samega`, `samega_ex`, `shlav_q_images`) carry user study
+    // progress; one bad write should not become permanent data loss.
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw != null) localStorage.setItem(`${key}.corrupt.${Date.now()}`, raw);
+      localStorage.removeItem(key);
+    } catch (_) { /* quota or read-blocked — give up gracefully */ }
+    return fallback;
+  }
 }
 
 /**
