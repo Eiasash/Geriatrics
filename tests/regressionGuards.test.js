@@ -520,3 +520,53 @@ describe('multi-select exam-year filter — Task 3 contract', () => {
     expect(missing).toEqual([]);
   });
 });
+
+// ─────────────────────────────────────────────────────────────
+// Inline onclick attribute integrity (v10.64.32 regression guard)
+// ─────────────────────────────────────────────────────────────
+//
+// 3-hour chaos run (2026-05-03) found 48× "Uncaught SyntaxError: Unexpected
+// end of input" pageerrors traced to a template literal at line 2873 that
+// produced:
+//
+//   onclick="this.classList.remove(\"qo-blur\");pick(2)"
+//
+// Inside a backtick template literal, `\"` is consumed as an escape →
+// becomes a literal `"`. The resulting HTML attribute had unescaped
+// double-quotes inside its `"`-delimited value. The HTML parser
+// terminated the attribute at the first inner `"`, leaving the browser
+// to compile only `this.classList.remove(` as the onclick body — V8
+// throws "Unexpected end of input" at click-dispatch time.
+//
+// Fix: use single-quoted JS string literals (`'qo-blur'`) inside the
+// attribute, so single quotes don't conflict with the outer `"`
+// delimiter. This guard scans the source for the broken pattern.
+describe('inline onclick attribute integrity', () => {
+  test('no onclick template literal contains unescaped double-quotes after backslash escape consumption', () => {
+    const html = readFile('shlav-a-mega.html');
+    // Match: onclick="..." attribute values that, after \"  is consumed as an
+    // escape (template-literal semantics), would contain literal " inside
+    // the HTML attribute. The source-level smoking gun is `\"` appearing
+    // INSIDE an `onclick="..."` attribute value within a backtick template.
+    //
+    // We grep for the pattern that survived through render() in the bug:
+    //   onclick="${...?'...remove(\"qo-blur\")...':...}..."
+    //
+    // The unsafe fingerprint: any backslash-quote pair inside `onclick="..."`
+    // delimited by backticks. Since the file is a single-monolith template,
+    // we look for `onclick="` followed by content containing `\"` before
+    // the next `"`. Note: `&quot;` is the SAFE encoded alternative; `\'`
+    // (backslash-single-quote) is the SAFE single-quote escape we shipped.
+    const re = /onclick="[^"]*\\"[^"]*"/g;
+    const matches = [...html.matchAll(re)];
+    if (matches.length > 0) {
+      // Return helpful context for triage
+      const offenders = matches.map(m => ({
+        idx: m.index,
+        snippet: html.slice(Math.max(0, m.index), m.index + 200),
+      }));
+      console.error('Unsafe onclick patterns found:', JSON.stringify(offenders, null, 2));
+    }
+    expect(matches).toEqual([]);
+  });
+});
