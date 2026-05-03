@@ -5939,17 +5939,27 @@ async function submitFeedback(){
 const type=document.getElementById('fb-type')?.value||'other';
 const text=document.getElementById('fb-text')?.value?.trim();
 if(!text){toast('Please describe your feedback','info');return;}
-const entry={type,text,ts:Date.now(),version:APP_VERSION,uid:(typeof getUserId==='function'?getUserId():(localStorage.getItem('samega_uid')||'anon'))};
-// Save locally
+// Local trace keeps the legacy {type,text,ts,version,uid} shape for backward
+// compat with anything that reads samega_fb_sent locally.
+const localTrace={type,text,ts:Date.now(),version:APP_VERSION,uid:(typeof getUserId==='function'?getUserId():(localStorage.getItem('samega_uid')||'anon'))};
 let fb=[];try{fb=JSON.parse(localStorage.getItem('samega_fb_sent')||'[]');}catch(e){}
-fb.push(entry);
+fb.push(localTrace);
 try{localStorage.setItem('samega_fb_sent',JSON.stringify(fb));}catch(e){}
-// Submit to Supabase
+// Submit to Supabase using the shlav_feedback canonical schema
+// (message/app_version/type/context — verified via Supabase MCP 2026-05-04).
+// The other Claude session in v10.64.31 audit assumed sibling parity with
+// mishpacha_feedback's {type,text,ts,version,uid} but the schemas diverged.
+const supaPayload={
+  type,
+  message:text,
+  app_version:APP_VERSION,
+  context:'submitFeedback (More→Feedback panel) | uid='+localTrace.uid,
+};
 try{
   await fetch(SUPA_URL+'/rest/v1/shlav_feedback',{
     method:'POST',
-    headers:{'Content-Type':'application/json','apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON},
-    body:JSON.stringify(entry)
+    headers:{'Content-Type':'application/json','apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON,'Prefer':'return=minimal'},
+    body:JSON.stringify(supaPayload)
   });
 }catch(e){console.warn('Feedback submit failed',e);}
 // AI analysis of the feedback
@@ -6648,7 +6658,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.33';
+const APP_VERSION='10.64.34';
 const CHANGELOG={
 '10.64.31':[
 '☁️ Cloud backup 401/403 now actionable — when Supabase rejects the upsert because the caller isn\'t logged in, surface a Hebrew login-required toast and route to More → Settings with the auth username field focused, instead of toast-less silence (or a generic English "Backup failed: 401" with no path forward). Mirror of IM v10.4.12 / FM v1.21.10. Also fixes a stale `slice(0,200,\'info\')` typo in the generic error branch so the toast tone is now passed correctly.',
