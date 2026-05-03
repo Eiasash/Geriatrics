@@ -522,6 +522,41 @@ describe('multi-select exam-year filter — Task 3 contract', () => {
 });
 
 // ─────────────────────────────────────────────────────────────
+// Broken-question filter (v10.64.33 regression guard)
+// ─────────────────────────────────────────────────────────────
+//
+// Track D (chaos-audit 2026-05-03): 22 questions tagged 2023-Sep are
+// problematic — 6 are tag-collision duplicates of 2023-Jun-Basic, 16 are
+// multi-part stem fragments that lost their parent context during ingestion.
+// All 22 are flagged with `broken: true` and `broken_reason`.
+//
+// The buildPool wrapper at line 1857 of shlav-a-mega.html filters them out
+// of every pool path. This guard locks both the data-side flag and the
+// filter wrapper.
+describe('broken-question filter — v10.64.33', () => {
+  let questions;
+  beforeAll(() => { questions = loadJSON('data/questions.json'); });
+
+  test('there are at least 22 questions flagged broken (Track D D-1 baseline)', () => {
+    const broken = questions.filter(q => q.broken === true);
+    expect(broken.length).toBeGreaterThanOrEqual(22);
+  });
+
+  test('every question with broken=true has a broken_reason', () => {
+    const broken = questions.filter(q => q.broken === true);
+    const noReason = broken.filter(q => !q.broken_reason || typeof q.broken_reason !== 'string');
+    expect(noReason).toEqual([]);
+  });
+
+  test('shlav-a-mega.html buildPool wrapper applies the broken filter', () => {
+    const html = readFile('shlav-a-mega.html');
+    // Wrapper at line 1857: function buildPool(){_buildPoolRaw();...filter(i=>!QZ[i]||!QZ[i].broken)...}
+    expect(html).toMatch(/function buildPool\(\)\s*\{\s*_buildPoolRaw\(\)/);
+    expect(html).toMatch(/pool=pool\.filter\(i=>!QZ\[i\]\|\|!QZ\[i\]\.broken\)/);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────
 // Inline onclick attribute integrity (v10.64.32 regression guard)
 // ─────────────────────────────────────────────────────────────
 //
