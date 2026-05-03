@@ -6274,21 +6274,14 @@ async function cloudBackup(){
     try{_sessions=JSON.parse(localStorage.getItem('samega_sessions')||'[]');}catch(e){}
     const _bundled={...S,_mockHist,_sessions};
     const payload={id:_sbDeviceId(),data:_bundled,updated_at:new Date().toISOString()};
+    // Native upsert via PostgREST Prefer header — single round-trip, no 409 noise
+    // on duplicate-PK retries (vs prior POST→409→PATCH dance).
     const res=await fetch(SUPA_URL+'/rest/v1/samega_backups',{
       method:'POST',
-      headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'},
+      headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
       body:JSON.stringify(payload)
     });
-    if(res.ok||res.status===409){
-      // If 409, try upsert
-      if(res.status===409){
-        const patchRes=await fetch(SUPA_URL+'/rest/v1/samega_backups?id=eq.'+_sbDeviceId(),{
-          method:'PATCH',
-          headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'},
-          body:JSON.stringify({data:_bundled,updated_at:new Date().toISOString()})
-        });
-        if(!patchRes.ok){const pe=await patchRes.text();toast('❌ Backup update failed: '+patchRes.status+'\n'+pe.slice(0,200),'info');return;}
-      }
+    if(res.ok){
       ok=true;
       S._lastCloudSync=new Date().toISOString();save();
       toast('✅ Progress backed up to cloud!\nDevice ID: '+_sbDeviceId().slice(0,12)+'...','success');
@@ -6646,7 +6639,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.27';
+const APP_VERSION='10.64.28';
 const CHANGELOG={
 '10.64.23':[
 '🔤 remapExplanationLetters lookahead generalized — v10.64.22 used a narrower char class `[\\s.,;:!?)]` for the post-letter context, missing "תשובה אcorrect" (Hebrew letter directly followed by ASCII letter, no separator). FM\'s existing utilsExtras tests caught this; backporting the broader `(?=[^א-ת]|$)` lookahead here. Same semantic intent — accept anything-not-Hebrew (or EOL) — just covers more cases. 2 new tests added.',
