@@ -2760,10 +2760,15 @@ function remapExplanationLetters(text,shuf){
   // v10.64.22 — was missing form (3), making explanations show wrong letter
   //   refs whenever the option-shuffle moved labels (e.g., "אקו (תשובה ב')"
   //   stayed as ב' even after echo got shuffled to display position ד').
+  // Lookahead `(?=[^א-ת]|$)` = "next char is not a Hebrew letter (or EOL)".
+  // Catches: geresh `'`, whitespace, ASCII letters, punct, EOL.
+  // Excludes: another Hebrew letter (so "תשובה בא" / "ג'נטיקה" stay untouched).
+  // Generalized in v10.64.23 — was a narrower char class missing
+  // "תשובה אcorrect" form (Hebrew letter directly followed by Latin).
   return text
     .replace(/\b([A-E])\b/g,(m,l)=>remap(l,latin))
     .replace(
-      /(?:(תשובה\s*)([א-ה])(?=['׳’]|[\s.,;:!?)]|$)|(?<![א-ת])([א-ה])(['׳’])(?=[\s.,;:!?)]|$))/g,
+      /(?:(תשובה\s*)([א-ה])(?=[^א-ת]|$)|(?<![א-ת])([א-ה])(['׳’])(?=[^א-ת]|$))/g,
       (m,p,l1,l2,ger)=>p?p+remap(l1,heb):remap(l2,heb)+ger
     );
 }
@@ -6641,8 +6646,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.22';
+const APP_VERSION='10.64.23';
 const CHANGELOG={
+'10.64.23':[
+'🔤 remapExplanationLetters lookahead generalized — v10.64.22 used a narrower char class `[\\s.,;:!?)]` for the post-letter context, missing "תשובה אcorrect" (Hebrew letter directly followed by ASCII letter, no separator). FM\'s existing utilsExtras tests caught this; backporting the broader `(?=[^א-ת]|$)` lookahead here. Same semantic intent — accept anything-not-Hebrew (or EOL) — just covers more cases. 2 new tests added.',
+],
 '10.64.22':[
 '🔤 Major fix — `remapExplanationLetters` now remaps BARE label forms ("**א\' שגויה**", "ב\' נכונה") in addition to the "תשובה X\'" form. Before this, when option-shuffle moved the correct answer to a different display position (e.g. orig ב=echo → display ד=echo), the explanation still said "תשובה ב\'" and "א\'/ג\'/ד\' שגויה" referring to ORIGINAL positions — users saw wrong letter cross-references everywhere. Repro: 2024-May-Basic Q1 (idx=2841 stroke / MCA / cardio-embolic). Affected ~1779 explanations using bare label form across the bank. Lookbehind excludes mid-word gershayim ("מג\'ורי", "ג\'נטיקה") so foreign-sound markers are untouched. 8 new regression tests in tests/remapExplanationLetters.test.js. Same bug exists in IM + FM (porting separately).',
 ],

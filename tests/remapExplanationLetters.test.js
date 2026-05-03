@@ -79,6 +79,18 @@ describe("remapExplanationLetters — v10.64.22 fix", () => {
     expect(remapExplanationLetters("Option C is wrong.", shuf)).toBe("Option A is wrong.");
   });
 
+  it("remaps Hebrew letter directly followed by ASCII letter (v10.64.23)", () => {
+    // "תשובה אcorrect" form — caught by FM's existing utilsExtras.test.js;
+    // earlier v10.64.22 narrower lookahead missed it.
+    const shuf = [1, 2, 0, 3];
+    expect(remapExplanationLetters("תשובה אcorrect", shuf)).toBe("תשובה גcorrect");
+  });
+
+  it("remaps Hebrew letter directly followed by whitespace (v10.64.23)", () => {
+    const shuf = [1, 2, 0, 3];
+    expect(remapExplanationLetters("תשובה א נכונה", shuf)).toBe("תשובה ג נכונה");
+  });
+
   it("does not double-remap a letter in alternated patterns", () => {
     // "תשובה ב'" — first branch matches "תשובה ב", consumes through ב.
     // The trailing geresh + lookbehind keeps the second branch from firing.
