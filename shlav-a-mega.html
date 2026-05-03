@@ -6527,6 +6527,19 @@ if(sv.srchi!==undefined&&document.getElementById('srchi'))document.getElementByI
 if(sv.nfilt!==undefined&&document.getElementById('nfilt'))document.getElementById('nfilt').value=sv.nfilt;
 if(focused){const fe=document.getElementById(focused);if(fe){fe.focus();if(fe.value){try{fe.setSelectionRange(fe.value.length,fe.value.length);}catch(_){/* range/date/etc inputs reject setSelectionRange */}}}}
 updateAccountChip();
+// Diagnostic wedge for the "Unexpected end of input" pageerror class — this is
+// V8's wording for inline event-handler compilation failures at click-dispatch
+// time. Gated by ?validate=1 URL param so it never runs in production.
+// Audit run with `?validate=1` and watch console for `[onclick-validate]`
+// entries — they pinpoint dynamically-built onclick strings whose ${var}
+// interpolation broke JS syntax. See .audit_logs/NEXT_AUDIT_NOTES.md.
+if(typeof window!=='undefined'&&/[?&]validate=1\b/.test(location.search||'')){
+  document.querySelectorAll('[onclick]').forEach(function(elt){
+    var src=elt.getAttribute('onclick')||'';
+    try{new Function('event',src);}
+    catch(e){console.error('[onclick-validate]',e.message,'tag=',elt.tagName,'onclick=',src.slice(0,200));}
+  });
+}
 }
 
 // v10.49.0: Header account chip — shows initial when logged in, 👤 when guest.
@@ -6639,7 +6652,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.28';
+const APP_VERSION='10.64.29';
 const CHANGELOG={
 '10.64.23':[
 '🔤 remapExplanationLetters lookahead generalized — v10.64.22 used a narrower char class `[\\s.,;:!?)]` for the post-letter context, missing "תשובה אcorrect" (Hebrew letter directly followed by ASCII letter, no separator). FM\'s existing utilsExtras tests caught this; backporting the broader `(?=[^א-ת]|$)` lookahead here. Same semantic intent — accept anything-not-Hebrew (or EOL) — just covers more cases. 2 new tests added.',
