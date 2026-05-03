@@ -6623,8 +6623,15 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.17';
+const APP_VERSION='10.64.18';
 const CHANGELOG={
+'10.64.18':[
+'🔗 Ref correction — 24 questions had `ref="Hazzard Ch 22 — MEDICATION PRESCRIBING"` despite being non-pharmacology topics (stroke, prevention, rehab, demography, valvular HD, OA, infections, ethics, pain, CKD, palliative, advance directives, etc.). Replaced each with the correct chapter from `data/question_chapters.json` (Hazzard + Harrison where available). Two cases (idx=0 stroke, idx=1121 thyroid) had wrong Hazzard assignments in question_chapters.json itself — used Harrison-only for those.',
+'🛡️ SW critical-shell completeness — `shared/tokens.css`, `src/study_plan_algorithm.js`, and `src/study_plan.js` are loaded SYNCHRONOUSLY by shlav-a-mega.html (no defer/async) but were marked optional in v10.64.17\'s `OPTIONAL_URLS`. SW install could succeed while these blocking-shell assets failed to cache → broken first offline launch. Moved them to CRITICAL_URLS — install must guarantee they land in cache.',
+'📊 Syllabus refresh — `data/syllabus_data.json` updated from stale 3833 to current 3743 questions; per-topic `n_questions` and `frequency_pct` regenerated from real `ti` distribution. Top-5 by frequency: Polypharmacy (8.44%, was 8.3%), Cancer (5.24%), Dementia (4.76%), Delirium (4.68%, leapfrogged Infections), Infections (4.65%). Updated the JS↔Python fixture in studyPlanAlgorithm.test.js to the new vectors; auto-audit Python ref needs separate re-run to confirm cross-language alignment is preserved.',
+'🔄 reload(true) → reload() — the legacy "force from server" boolean is ignored by modern browsers; cleaner to call without it. Cache-bust is already handled upstream by deleting `shlav-a-*` caches before reload. (src/sw-update.js)',
+'📝 Spec clarification — CLAUDE.md noted the legal-topics exemption in the `notes.ch` invariant: ids 29-35 may cite Israeli law sources instead of Hazzard/Harrison. Was implicit in dataIntegrity.test.js but not documented in the spec.',
+],
 '10.64.17':[
 '🖼️ Image rendering fix — 16 questions had `imgs:[url]` (Supabase-hosted exam figures) but no `q.img`, and the render path only checked `q.img`. They displayed text-only — diagnose-the-invisible-lesion. Normalized: all 16 now have `q.img` set. Affects subspecialty image questions: wounds, X-rays, neuro images, ECGs.',
 '🛡️ Service worker robustness — `cache.addAll(ALL_URLS)` was all-or-nothing; one missing optional asset (font/icon/JSON) aborted the entire SW install. Split into CRITICAL_URLS (app shell — must succeed) + best-effort `Promise.allSettled` for optional assets. Plus the IDB open in background-sync no longer pins version=1 (would `VersionError` on schema migration), and there\'s an objectStore guard.',

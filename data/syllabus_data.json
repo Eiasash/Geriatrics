@@ -1,7 +1,7 @@
 {
   "Geri": {
     "repo": "Eiasash/Geriatrics",
-    "total_questions_analyzed": 3833,
+    "total_questions_analyzed": 3743,
     "total_topics": 46,
     "topics": [
       {
@@ -20,8 +20,8 @@
           "prescribing cascade",
           "PIM"
         ],
-        "n_questions": 318,
-        "frequency_pct": 8.3,
+        "n_questions": 316,
+        "frequency_pct": 8.44,
         "weight": 3.82
       },
       {
@@ -40,8 +40,8 @@
           "tumor lysis",
           "typhlitis"
         ],
-        "n_questions": 201,
-        "frequency_pct": 5.2,
+        "n_questions": 196,
+        "frequency_pct": 5.24,
         "weight": 2.41
       },
       {
@@ -61,8 +61,8 @@
           "lewy",
           "amyloid"
         ],
-        "n_questions": 183,
-        "frequency_pct": 4.8,
+        "n_questions": 178,
+        "frequency_pct": 4.76,
         "weight": 2.2
       },
       {
@@ -80,8 +80,8 @@
           "immunosenesc",
           "nitrofurantoin"
         ],
-        "n_questions": 179,
-        "frequency_pct": 4.7,
+        "n_questions": 174,
+        "frequency_pct": 4.65,
         "weight": 2.15
       },
       {
@@ -98,8 +98,8 @@
           "HELP protocol",
           "hypoactive"
         ],
-        "n_questions": 176,
-        "frequency_pct": 4.6,
+        "n_questions": 175,
+        "frequency_pct": 4.68,
         "weight": 2.11
       },
       {
@@ -116,7 +116,7 @@
           "Tai Chi"
         ],
         "n_questions": 141,
-        "frequency_pct": 3.7,
+        "frequency_pct": 3.77,
         "weight": 1.69
       },
       {
@@ -135,8 +135,8 @@
           "NG tube",
           "PEG tube"
         ],
-        "n_questions": 120,
-        "frequency_pct": 3.1,
+        "n_questions": 118,
+        "frequency_pct": 3.15,
         "weight": 1.44
       },
       {
@@ -161,7 +161,7 @@
           "אי-נקיטת צואה",
           "אי נקיטת צואה"
         ],
-        "n_questions": 117,
+        "n_questions": 116,
         "frequency_pct": 3.1,
         "weight": 1.4
       },
@@ -180,8 +180,8 @@
           "PVD",
           "peripheral vascular"
         ],
-        "n_questions": 116,
-        "frequency_pct": 3.0,
+        "n_questions": 112,
+        "frequency_pct": 2.99,
         "weight": 1.39
       },
       {
@@ -198,8 +198,8 @@
           "acetaminophen",
           "morphine"
         ],
-        "n_questions": 113,
-        "frequency_pct": 2.9,
+        "n_questions": 111,
+        "frequency_pct": 2.97,
         "weight": 1.36
       },
       {
@@ -218,7 +218,7 @@
           "rationing"
         ],
         "n_questions": 111,
-        "frequency_pct": 2.9,
+        "frequency_pct": 2.97,
         "weight": 1.33
       },
       {
@@ -234,7 +234,7 @@
           "withhold",
           "withdraw"
         ],
-        "n_questions": 105,
+        "n_questions": 101,
         "frequency_pct": 2.7,
         "weight": 1.26
       },
@@ -252,8 +252,8 @@
           "DVT prophylaxis",
           "hip fracture"
         ],
-        "n_questions": 103,
-        "frequency_pct": 2.7,
+        "n_questions": 102,
+        "frequency_pct": 2.73,
         "weight": 1.24
       },
       {
@@ -271,8 +271,8 @@
           "dialys",
           "aminoglycoside"
         ],
-        "n_questions": 102,
-        "frequency_pct": 2.7,
+        "n_questions": 93,
+        "frequency_pct": 2.48,
         "weight": 1.22
       },
       {
@@ -290,8 +290,8 @@
           "carvedilol",
           "spironolactone"
         ],
-        "n_questions": 99,
-        "frequency_pct": 2.6,
+        "n_questions": 93,
+        "frequency_pct": 2.48,
         "weight": 1.19
       },
       {
@@ -309,8 +309,8 @@
           "motor",
           "walking stick"
         ],
-        "n_questions": 96,
-        "frequency_pct": 2.5,
+        "n_questions": 95,
+        "frequency_pct": 2.54,
         "weight": 1.15
       },
       {
@@ -348,8 +348,8 @@
           "פרקינסוני",
           "פרקינסוניזם"
         ],
-        "n_questions": 94,
-        "frequency_pct": 2.5,
+        "n_questions": 92,
+        "frequency_pct": 2.46,
         "weight": 1.13
       },
       {
@@ -367,7 +367,7 @@
           "caloric"
         ],
         "n_questions": 88,
-        "frequency_pct": 2.3,
+        "frequency_pct": 2.35,
         "weight": 1.06
       },
       {
@@ -384,8 +384,8 @@
           "laxat",
           "normalax"
         ],
-        "n_questions": 83,
-        "frequency_pct": 2.2,
+        "n_questions": 80,
+        "frequency_pct": 2.14,
         "weight": 1.0
       },
       {
@@ -402,8 +402,8 @@
           "CFS",
           "grip strength"
         ],
-        "n_questions": 79,
-        "frequency_pct": 2.1,
+        "n_questions": 77,
+        "frequency_pct": 2.06,
         "weight": 0.95
       },
       {
@@ -421,8 +421,8 @@
           "dressing",
           "ulcer stage"
         ],
-        "n_questions": 79,
-        "frequency_pct": 2.1,
+        "n_questions": 75,
+        "frequency_pct": 2.0,
         "weight": 0.95
       },
       {
@@ -441,8 +441,8 @@
           "hypoglycem",
           "ACCORD"
         ],
-        "n_questions": 72,
-        "frequency_pct": 1.9,
+        "n_questions": 65,
+        "frequency_pct": 1.74,
         "weight": 0.86
       },
       {
@@ -460,7 +460,7 @@
           "kupat"
         ],
         "n_questions": 69,
-        "frequency_pct": 1.8,
+        "frequency_pct": 1.84,
         "weight": 0.83
       },
       {
@@ -478,8 +478,8 @@
           "bupropion",
           "mirtazapine"
         ],
-        "n_questions": 66,
-        "frequency_pct": 1.7,
+        "n_questions": 65,
+        "frequency_pct": 1.74,
         "weight": 0.79
       },
       {
@@ -499,8 +499,8 @@
           "hemipl",
           "thrombolys"
         ],
-        "n_questions": 62,
-        "frequency_pct": 1.6,
+        "n_questions": 61,
+        "frequency_pct": 1.63,
         "weight": 0.74
       },
       {
@@ -518,8 +518,8 @@
           "zoledronic",
           "bone density"
         ],
-        "n_questions": 61,
-        "frequency_pct": 1.6,
+        "n_questions": 58,
+        "frequency_pct": 1.55,
         "weight": 0.73
       },
       {
@@ -538,8 +538,8 @@
           "IPF",
           "residual volume"
         ],
-        "n_questions": 61,
-        "frequency_pct": 1.6,
+        "n_questions": 56,
+        "frequency_pct": 1.5,
         "weight": 0.73
       },
       {
@@ -556,8 +556,8 @@
           "erythropoietin",
           "transferrin"
         ],
-        "n_questions": 61,
-        "frequency_pct": 1.6,
+        "n_questions": 55,
+        "frequency_pct": 1.47,
         "weight": 0.73
       },
       {
@@ -573,8 +573,8 @@
           "TENS",
           "arthroplasty"
         ],
-        "n_questions": 58,
-        "frequency_pct": 1.5,
+        "n_questions": 57,
+        "frequency_pct": 1.52,
         "weight": 0.7
       },
       {
@@ -589,7 +589,7 @@
           "elder abuse"
         ],
         "n_questions": 57,
-        "frequency_pct": 1.5,
+        "frequency_pct": 1.52,
         "weight": 0.68
       },
       {
@@ -640,7 +640,7 @@
           "dabigatran"
         ],
         "n_questions": 50,
-        "frequency_pct": 1.3,
+        "frequency_pct": 1.34,
         "weight": 0.6
       },
       {
@@ -658,8 +658,8 @@
           "ירידה במשקל",
           "protein"
         ],
-        "n_questions": 48,
-        "frequency_pct": 1.3,
+        "n_questions": 47,
+        "frequency_pct": 1.26,
         "weight": 0.58
       },
       {
@@ -676,7 +676,7 @@
           "hyperthyroid",
           "euthyroid"
         ],
-        "n_questions": 46,
+        "n_questions": 45,
         "frequency_pct": 1.2,
         "weight": 0.55
       },
@@ -693,7 +693,7 @@
           "תשוש נפש"
         ],
         "n_questions": 44,
-        "frequency_pct": 1.1,
+        "frequency_pct": 1.18,
         "weight": 0.53
       },
       {
@@ -712,7 +712,7 @@
           "comprehensive"
         ],
         "n_questions": 39,
-        "frequency_pct": 1.0,
+        "frequency_pct": 1.04,
         "weight": 0.47
       },
       {
@@ -729,8 +729,8 @@
           "CPAP",
           "RBD"
         ],
-        "n_questions": 38,
-        "frequency_pct": 1.0,
+        "n_questions": 36,
+        "frequency_pct": 0.96,
         "weight": 0.46
       },
       {
@@ -749,7 +749,7 @@
           "glaucoma"
         ],
         "n_questions": 36,
-        "frequency_pct": 0.9,
+        "frequency_pct": 0.96,
         "weight": 0.43
       },
       {
@@ -766,8 +766,8 @@
           "typhlitis",
           "atypical present"
         ],
-        "n_questions": 36,
-        "frequency_pct": 0.9,
+        "n_questions": 35,
+        "frequency_pct": 0.94,
         "weight": 0.43
       },
       {
@@ -784,7 +784,7 @@
           "road safety"
         ],
         "n_questions": 34,
-        "frequency_pct": 0.9,
+        "frequency_pct": 0.91,
         "weight": 0.41
       },
       {
@@ -815,7 +815,7 @@
           "PSA"
         ],
         "n_questions": 34,
-        "frequency_pct": 0.9,
+        "frequency_pct": 0.91,
         "weight": 0.41
       },
       {
@@ -831,7 +831,7 @@
           "life expectancy"
         ],
         "n_questions": 33,
-        "frequency_pct": 0.9,
+        "frequency_pct": 0.88,
         "weight": 0.4
       },
       {
@@ -869,8 +869,8 @@
           "קלינאי תקשורת",
           "קלינאית תקשורת"
         ],
-        "n_questions": 33,
-        "frequency_pct": 0.9,
+        "n_questions": 32,
+        "frequency_pct": 0.85,
         "weight": 0.4
       },
       {
@@ -887,7 +887,7 @@
           "antihypertens",
           "doxazosin"
         ],
-        "n_questions": 31,
+        "n_questions": 30,
         "frequency_pct": 0.8,
         "weight": 0.37
       },
@@ -905,7 +905,7 @@
           "autonomy"
         ],
         "n_questions": 31,
-        "frequency_pct": 0.8,
+        "frequency_pct": 0.83,
         "weight": 0.37
       },
       {
@@ -932,7 +932,7 @@
           "androgen deficiency"
         ],
         "n_questions": 21,
-        "frequency_pct": 0.5,
+        "frequency_pct": 0.56,
         "weight": 0.25
       },
       {
@@ -960,7 +960,7 @@
           "בית חולים בבית"
         ],
         "n_questions": 9,
-        "frequency_pct": 0.2,
+        "frequency_pct": 0.24,
         "weight": 0.11
       }
     ]
