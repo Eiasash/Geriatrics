@@ -6658,7 +6658,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.34';
+const APP_VERSION='10.64.35';
 const CHANGELOG={
 '10.64.31':[
 '☁️ Cloud backup 401/403 now actionable — when Supabase rejects the upsert because the caller isn\'t logged in, surface a Hebrew login-required toast and route to More → Settings with the auth username field focused, instead of toast-less silence (or a generic English "Backup failed: 401" with no path forward). Mirror of IM v10.4.12 / FM v1.21.10. Also fixes a stale `slice(0,200,\'info\')` typo in the generic error branch so the toast tone is now passed correctly.',
