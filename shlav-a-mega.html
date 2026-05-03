@@ -2149,7 +2149,7 @@ async function runExplainOnCall(qIdx){
   const q=QZ[qIdx];const correct=q.o[q.c];
   try{
     const txt=await callAI([{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה. עגן בתשובה הנכונה. שאלה: '+q.q+'\nתשובה נכונה: '+correct}],400,'sonnet');
-    _exCache[qIdx]=txt;try{localStorage.setItem('samega_ex',JSON.stringify(_exCache));}catch(e){}
+    _exCache[qIdx]=txt;lsSet('samega_ex',_exCache);
     // safe-innerhtml: heDir returns fixed 'auto'|'rtl'|'ltr'; txt is sanitize()'d
     box.innerHTML='<div style="font-size:12px;color:rgb(var(--fg2));line-height:1.7;text-align:right;margin-top:8px;unicode-bidi:plaintext" dir="'+heDir(txt)+'">'+sanitize(txt)+'</div>';
     btn.remove();
@@ -6337,8 +6337,8 @@ async function peekCloudBackup(){
 function applyRestorePayload(rowData){
   if(!rowData||typeof rowData!=='object') return;
   // Pull sibling localStorage bundles out of the payload before S whitelist
-  try{if(Array.isArray(rowData._mockHist))localStorage.setItem('samega_mock_hist',JSON.stringify(rowData._mockHist.slice(-20)));}catch(e){}
-  try{if(Array.isArray(rowData._sessions))localStorage.setItem('samega_sessions',JSON.stringify(rowData._sessions.slice(-30)));}catch(e){}
+  if(Array.isArray(rowData._mockHist))lsSet('samega_mock_hist',rowData._mockHist.slice(-20));
+  if(Array.isArray(rowData._sessions))lsSet('samega_sessions',rowData._sessions.slice(-30));
   const allowed=Object.keys(S);
   const validated={};
   for(const k of allowed){
@@ -6629,8 +6629,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.19';
+const APP_VERSION='10.64.20';
 const CHANGELOG={
+'10.64.20':[
+'🧹 lsSet migration completion — 3 remaining bare `localStorage.setItem` calls on sacred keys (samega_ex line 2152, samega_mock_hist + samega_sessions in cloud-restore path lines 6340-6341) migrated to lsSet(). The migration started in v10.64.17 (helper) → v10.64.19 (6 main paths) is now 100% complete; no sacred-key write swallows iOS Safari quota errors silently.',
+],
 '10.64.19':[
 '🧹 63 corrupt explanations repaired — the `e` (AI explanation) field on 63 questions contained 127 Unicode replacement chars (`�`) from a UTF-8 byte-boundary truncation upstream (e.g. "ייתכ��" → "ייתכן", "דל��ת" → "דלקת"). Stripped the `�` chars in place (preserves the surrounding 95% of the explanation text intact); affected words read as truncated but explanations stay useful. Added regression test in expandedDataIntegrity.test.js to block any new `�` from shipping.',
 '💾 Critical save paths migrated to lsSet() — 6 sacred-key writes (samega_ex×2, samega_mock_hist, shlav_q_images×2, samega_custom_qs, samega_sessions) were calling localStorage.setItem directly, swallowing iOS Safari quota errors silently. Now go through lsSet() which returns false on failure; the image-attach flow surfaces a user toast on quota-exhausted writes instead of a silent broken save.',
