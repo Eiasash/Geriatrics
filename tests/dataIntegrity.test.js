@@ -229,4 +229,22 @@ describe("cross-file referential integrity", () => {
     const invalid = questions.filter((q, i) => q.ti < 0 || q.ti >= topicCount);
     expect(invalid.length, `${invalid.length} questions have out-of-range ti`).toBe(0);
   });
+
+  it("syllabus_data.json totals match the live question bank (v10.64.19)", () => {
+    // Catches the staleness problem flagged in v10.64.17 audit (3833 vs 3743).
+    // Per-topic n_questions + total_questions_analyzed must match the actual ti
+    // distribution in questions.json. If they drift, study-plan analytics and
+    // topic-weight dashboards silently use the wrong denominator.
+    const syllabus = loadJSON("data/syllabus_data.json");
+    const geri = syllabus.Geri;
+    expect(geri.total_questions_analyzed, "total_questions_analyzed").toBe(questions.length);
+    const tiCounts = new Map();
+    for (const q of questions) tiCounts.set(q.ti, (tiCounts.get(q.ti) || 0) + 1);
+    const drift = [];
+    for (const t of geri.topics) {
+      const real = tiCounts.get(t.id) || 0;
+      if (real !== t.n_questions) drift.push({ id: t.id, en: t.en, syllabus: t.n_questions, real });
+    }
+    expect(drift, `syllabus topic n_questions drift: ${JSON.stringify(drift.slice(0, 5))}`).toEqual([]);
+  });
 });
