@@ -143,6 +143,29 @@ async function runWorker(browser, workerId, stopAt, report) {
     timezoneId: 'Asia/Jerusalem',
   });
   context.setDefaultTimeout(CONFIG.actionTimeoutMs);
+  // Instrument JSON.parse + Response.prototype.json to attribute parse errors
+  // to a real stack — Playwright's `pageerror` handler returns null `stack` for
+  // these because the error is rethrown at the V8 internal layer.
+  await context.addInitScript(() => {
+    const origJsonParse = JSON.parse;
+    JSON.parse = function (...args) {
+      try { return origJsonParse.apply(JSON, args); }
+      catch (e) {
+        const stack = new Error('JSON.parse failure attribution').stack;
+        console.error('[chaos-instrument] JSON.parse error:', e.message, 'inputPreview=', String(args[0] ?? '').slice(0, 60), 'stack=', stack);
+        throw e;
+      }
+    };
+    const origRespJson = Response.prototype.json;
+    Response.prototype.json = function (...args) {
+      const url = this.url, status = this.status;
+      return origRespJson.apply(this, args).catch((e) => {
+        const stack = new Error('Response.json failure attribution').stack;
+        console.error('[chaos-instrument] Response.json error:', e.message, 'url=', url, 'status=', status, 'stack=', stack);
+        throw e;
+      });
+    };
+  });
   const page = await context.newPage();
   const log = { workerId, actions: [], bugs: [], timings: [] };
 
@@ -152,7 +175,13 @@ async function runWorker(browser, workerId, stopAt, report) {
     }
   });
   page.on('pageerror', async (error) => {
-    log.bugs.push({ at: nowIso(), type: 'pageerror', message: error.message, screenshot: await screenshot(page, workerId, 'pageerror') });
+    log.bugs.push({
+      at: nowIso(),
+      type: 'pageerror',
+      message: error.message,
+      stack: error.stack ? String(error.stack).split('\n').slice(0, 8).join('\n') : null,
+      screenshot: await screenshot(page, workerId, 'pageerror'),
+    });
   });
   page.on('requestfailed', (request) => {
     log.bugs.push({
@@ -197,6 +226,16 @@ async function runWorker(browser, workerId, stopAt, report) {
       await sleep(rand(CONFIG.minDelayMs, CONFIG.maxDelayMs));
     }
   } finally {
+    // Snapshot the app's in-page debug buffer (window.__debug.buffer) before
+    // closing — it captures unhandledrejection stacks the Playwright pageerror
+    // event drops as null. See shlav-a-mega.html line 725.
+    try {
+      const buffer = await page.evaluate(() => {
+        const b = window.__debug && window.__debug.buffer;
+        return b ? { errors: b.errors.slice(-50), network: b.network.slice(-50) } : null;
+      });
+      if (buffer) log.appDebugBuffer = buffer;
+    } catch (_) { /* page may already be closed */ }
     report.workers.push(log);
     await context.close().catch(() => {});
   }
