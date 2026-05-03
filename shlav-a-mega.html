@@ -6,10 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f172a">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://*.supabase.co https://ima-contentfiles.s3.amazonaws.com https://ima-files.s3.amazonaws.com; connect-src 'self' https://*.supabase.co https://api.anthropic.com https://toranot.netlify.app; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://krmlzwwelqvlfslwltol.supabase.co https://ima-contentfiles.s3.amazonaws.com https://ima-files.s3.amazonaws.com; connect-src 'self' https://krmlzwwelqvlfslwltol.supabase.co https://api.anthropic.com https://toranot.netlify.app; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩺</text></svg>">
 <link rel="manifest" href="manifest.json">
 <!-- v10.63.7 LCP fix: kick off the 7MB questions.json fetch at HTML-parse time
@@ -6625,8 +6623,15 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.16';
+const APP_VERSION='10.64.17';
 const CHANGELOG={
+'10.64.17':[
+'🖼️ Image rendering fix — 16 questions had `imgs:[url]` (Supabase-hosted exam figures) but no `q.img`, and the render path only checked `q.img`. They displayed text-only — diagnose-the-invisible-lesion. Normalized: all 16 now have `q.img` set. Affects subspecialty image questions: wounds, X-rays, neuro images, ECGs.',
+'🛡️ Service worker robustness — `cache.addAll(ALL_URLS)` was all-or-nothing; one missing optional asset (font/icon/JSON) aborted the entire SW install. Split into CRITICAL_URLS (app shell — must succeed) + best-effort `Promise.allSettled` for optional assets. Plus the IDB open in background-sync no longer pins version=1 (would `VersionError` on schema migration), and there\'s an objectStore guard.',
+'🔒 Supabase origin pinning — both CSP (`img-src` + `connect-src`) and the SW background-sync allowlist now require the exact project origin `krmlzwwelqvlfslwltol.supabase.co`, not the wildcard `*.supabase.co`. Closes a potential exfiltration path: a compromised same-origin script could have queued a POST to an attacker-controlled Supabase project (still has the apikey header attached).',
+'💾 Corrupt-LS quarantine — `lsGet()` previously deleted any key whose JSON failed to parse, which meant one bad write could permanently destroy user study progress (`samega`, `samega_ex`, `shlav_q_images`). Now copies the corrupt value to `<key>.corrupt.<ts>` before clearing — recoverable.',
+'🧹 Mobile meta cleanup — `apple-mobile-web-app-capable` and `mobile-web-app-capable` were each declared twice. Dedup\'d.',
+],
 '10.64.16':[
 '✨ Ref readability finishing pass — 91 of the 93 multi-pipe refs left from v10.64.15 (the complex multi-chapter / Tab-Fig-trailer / glued-Hebrew cases) beautified. Patterns added: multi-chapter `+`/comma forms (e.g. "הזארד58 + 15 | 884 + 211" → "הזארד פרק 58 עמ\' 884 + פרק 15 עמ\' 211"), trailing Tab/Fig/p./תמונה/גרף segments preserved as parenthetical (e.g. "Tab 60-9"), context tags ("גריאטריה בסיס/על"), pages glued to Hebrew law names ("151חוק..." → "עמ\' 151 (חוק...)"). Only 2 truly hand-clean cases left (idx=2694 = 59-pipe nightmare, idx=2758 = parser-bracket artifact). Total beautified across v10.64.15+16: 482/484 multi-pipe refs.',
 ],
