@@ -438,7 +438,7 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 
 1. Read `data/questions.json` to understand existing format
 2. Check topic index from the TOPICS list above — pick the most specific `ti`
-3. Validate: exactly 4 options, `c` index in 0–3, valid `t` year string
+3. Validate: 4 options is standard for IMA exam Qs (`c` index in 0–3); GRS8 imports may have 5 options (`c` index in 0–4). The hard rule is `0 ≤ c < q.o.length` — `expandedDataIntegrity.test.js` enforces this.
 4. Fuzzy-check for near-duplicates (first 80 chars)
 5. Append to the JSON array (do not sort or reorder existing entries)
 6. Run `npm test` to validate schema and detect duplicates
