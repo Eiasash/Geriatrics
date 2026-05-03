@@ -1,5 +1,9 @@
-const CACHE='shlav-a-v10.64.16';
+const CACHE='shlav-a-v10.64.17';
 const HTML_URLS=['shlav-a-mega.html','manifest.json','shared/fsrs.js','shared/tokens.css','shared/install-promo.js','src/storage.js','src/sw-update.js','src/study_plan_algorithm.js','src/study_plan.js','icons/icon-192.png','icons/icon-512.png'];
+// CRITICAL_URLS = the bare-minimum app shell required for offline boot.
+// Anything else (data/*.json, fonts, icons, study-plan helpers) is best-effort
+// in the install handler — a missing optional asset must not abort install.
+const CRITICAL_URLS=['shlav-a-mega.html','manifest.json','shared/fsrs.js','src/storage.js','src/sw-update.js'];
 const FONT_URLS=['fonts/heebo-hebrew-400-normal.woff2','fonts/heebo-hebrew-500-normal.woff2','fonts/heebo-hebrew-600-normal.woff2','fonts/heebo-hebrew-700-normal.woff2','fonts/heebo-latin-400-normal.woff2','fonts/heebo-latin-500-normal.woff2','fonts/heebo-latin-600-normal.woff2','fonts/heebo-latin-700-normal.woff2','fonts/inter-latin-400-normal.woff2','fonts/inter-latin-500-normal.woff2','fonts/inter-latin-600-normal.woff2','fonts/inter-latin-700-normal.woff2'];
 const JSON_DATA_URLS=['data/questions.json','data/topics.json','data/notes.json','data/drugs.json','data/flashcards.json','harrison_chapters.json','data/hazzard_chapters.json','data/grs8_chapters.json','data/grs8_question_pages.json','data/tabs.json','data/question_chapters.json','data/distractors.json','data/regulatory.json','data/syllabus_data.json'];
 const ALL_URLS=[...HTML_URLS,...JSON_DATA_URLS,...FONT_URLS];
@@ -22,7 +26,18 @@ function trimCache(cacheName,max){
   }));
 }
 
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ALL_URLS)).then(()=>self.skipWaiting())));
+// Install: critical shell must succeed; everything else is best-effort.
+// Previously a single missing icon/font/data file aborted the whole install
+// (cache.addAll is all-or-nothing per spec).
+const OPTIONAL_URLS=ALL_URLS.filter(u=>!CRITICAL_URLS.includes(u));
+self.addEventListener('install',e=>e.waitUntil(
+  caches.open(CACHE).then(async cache=>{
+    await cache.addAll(CRITICAL_URLS);
+    await Promise.allSettled(OPTIONAL_URLS.map(async url=>{
+      try{const res=await fetch(url);if(res.ok)await cache.put(url,res);}catch(_){}
+    }));
+  }).then(()=>self.skipWaiting())
+));
 self.addEventListener('activate',e=>e.waitUntil(
   caches.keys().then(ks=>Promise.all(
     // Preserve IMG_CACHE + PDF_CACHE across version bumps (on-demand LRU caches,
@@ -120,19 +135,24 @@ if(e.tag==='supabase-backup'){
 e.waitUntil(
 (async()=>{
 try{
+// Open IDB without a version — the SW shouldn't trigger an upgrade and
+// shouldn't fail with VersionError if the main thread bumps schema version.
 const db=await new Promise((resolve,reject)=>{
-const req=indexedDB.open('shlav_mega_db',1);
+const req=indexedDB.open('shlav_mega_db');
 req.onsuccess=ev=>resolve(ev.target.result);
 req.onerror=ev=>reject(ev.target.error);
 });
+if(!db.objectStoreNames.contains('state')){db.close();return;}
 const tx=db.transaction('state','readonly');
 const req=tx.objectStore('state').get('pending_sync');
 const data=await new Promise(r=>{req.onsuccess=()=>r(req.result);req.onerror=()=>r(null);});
 if(data&&data.url&&data.body){
-// Whitelist Supabase REST hosts — IDB is writable by any same-origin script,
-// so a compromised tab could otherwise redirect the queued POST (with the
-// apikey header attached) to an attacker-controlled URL.
-const _supaOk=/^https:\/\/[a-z0-9-]+\.supabase\.co\/rest\/v1\//i.test(data.url);
+// Pin to the actual project origin — wildcard *.supabase.co would still allow
+// exfiltration to an attacker-controlled Supabase project if a compromised
+// same-origin script poisoned pending_sync.
+const SUPABASE_ORIGIN='https://krmlzwwelqvlfslwltol.supabase.co';
+let _supaOk=false;
+try{const u=new URL(data.url);_supaOk=(u.origin===SUPABASE_ORIGIN&&u.pathname.startsWith('/rest/v1/'));}catch(_){}
 if(!_supaOk){console.warn('Background sync: refusing non-Supabase url',data.url);return;}
 const res=await fetch(data.url,{method:'POST',headers:{'Content-Type':'application/json','apikey':data.apikey||''},body:JSON.stringify(data.body)});
 if(res.ok){

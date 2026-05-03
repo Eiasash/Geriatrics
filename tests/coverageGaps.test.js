@@ -158,8 +158,11 @@ describe('SRS / FSRS Edge Cases', () => {
 });
 
 describe('Content Security Policy', () => {
-  it('CSP allows Supabase connections', () => {
-    expect(html).toContain('https://*.supabase.co');
+  it('CSP allows Supabase connections (origin-pinned to project, v10.64.17)', () => {
+    // Was wildcard `*.supabase.co` until v10.64.17; pinned to the actual project
+    // origin to close exfiltration paths via attacker-controlled Supabase projects.
+    expect(html).toContain('https://krmlzwwelqvlfslwltol.supabase.co');
+    expect(html).not.toContain('https://*.supabase.co');
   });
 
   it('CSP allows Anthropic API', () => {
