@@ -356,6 +356,9 @@ describe("questions/image_map.json — integrity", () => {
 
   it("every physical image file on disk is tracked in image_map.json", () => {
     if (!imageMap) return;
+    // Skip in lean audit bundles that ship image_map.json without the actual image files —
+    // the bundle correctly reflects production but doesn't carry the 17 MB of PNGs.
+    if (process.env.AUDIT_BUNDLE === "1") return;
     const imgDir = resolve(ROOT, "questions/images");
     if (!existsSync(imgDir)) return;
     const { readdirSync } = require("fs");
@@ -367,6 +370,7 @@ describe("questions/image_map.json — integrity", () => {
 
   it("no phantom entries in image_map.json (every entry has a file on disk)", () => {
     if (!imageMap) return;
+    if (process.env.AUDIT_BUNDLE === "1") return; // lean bundle excludes image binaries
     const phantom = [];
     imageMap.forEach((entry, i) => {
       if (!existsSync(resolve(ROOT, entry.fpath))) {
@@ -381,6 +385,32 @@ describe("questions/image_map.json — integrity", () => {
 
 describe("questions.json — image field (img) validation", () => {
   const SUPA_IMG_PREFIX = "https://krmlzwwelqvlfslwltol.supabase.co/storage/v1/object/public/question-images/";
+
+  it("no question contains the Unicode replacement char U+FFFD in any text field (v10.64.19)", () => {
+    // 63 questions had U+FFFD (`�`) corruption inside `e` (AI explanation) caused by
+    // a UTF-8 byte-boundary truncation somewhere upstream. Cleared in v10.64.19.
+    // This test prevents the regression: any new content added with corrupted Hebrew
+    // (most common cause: piping Hebrew through a tool that doesn't preserve UTF-8)
+    // will fail CI before it ships.
+    const offenders = [];
+    questions.forEach((q, i) => {
+      for (const field of ["q", "e", "ref"]) {
+        const v = q[field];
+        if (typeof v === "string" && v.includes("�")) {
+          offenders.push({ index: i, field, sample: v.slice(Math.max(0, v.indexOf("�") - 10), v.indexOf("�") + 10) });
+          break; // one finding per question
+        }
+      }
+      if (Array.isArray(q.o)) {
+        q.o.forEach((opt) => {
+          if (typeof opt === "string" && opt.includes("�")) {
+            offenders.push({ index: i, field: "o[]", sample: opt.slice(0, 40) });
+          }
+        });
+      }
+    });
+    expect(offenders, `Questions with U+FFFD replacement char: ${JSON.stringify(offenders.slice(0, 5))}`).toEqual([]);
+  });
 
   it("no question has q.imgs[] without q.img (renderer reads q.img only — v10.64.17)", () => {
     const offenders = [];
