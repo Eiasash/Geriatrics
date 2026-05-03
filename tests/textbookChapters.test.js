@@ -299,6 +299,45 @@ describe('Question ref/e chapter citations resolve to real chapters', () => {
     }
     expect(bad, JSON.stringify(bad.slice(0, 5))).toEqual([]);
   });
+
+  // Catches chapter-number transpositions like "Harrison Ch 311 — Acute Kidney
+  // Injury" when Ch 311 is actually Critical Care Medicine (real AKI is Ch 321).
+  // For the 69-chapter subset present in harrison_chapters.json we have a
+  // canonical title — if a citation's title shares zero significant tokens with
+  // the canonical title, it's a likely transposition. Strong-token threshold
+  // (len ≥ 4) avoids stop-word false positives ("the", "and", "of").
+  const HR_TITLED_CITE_RE = /Harrison\s*Ch\s*(\d+)\s*(?:[—–\-]|\()\s*([^·\n)]{3,150}?)\s*(?:[·\n)]|$)/gi;
+  function strongTokens(s) {
+    return new Set((s || '').toLowerCase().match(/[a-z]{4,}/g) || []);
+  }
+
+  it('Harrison cited title matches canonical title where chapter is in harrison_chapters.json', () => {
+    const STOPWORDS = new Set(['with', 'this', 'that', 'from', 'have', 'been', 'more', 'most', 'when', 'what', 'some', 'than', 'only', 'also', 'each', 'about', 'into', 'over', 'such', 'very', 'other', 'their', 'these', 'those', 'which', 'where', 'will', 'shall']);
+    const bad = [];
+    for (let i = 0; i < questions.length; i++) {
+      for (const field of ['ref', 'e']) {
+        const v = questions[i][field] || '';
+        let m;
+        const re = new RegExp(HR_TITLED_CITE_RE);
+        while ((m = re.exec(v))) {
+          const ch = String(Number(m[1]));
+          const cited = m[2].trim().replace(/^\*+|\*+$/g, '');
+          if (!harrison[ch]) continue; // outside curated subset, can't validate
+          const canonical = harrison[ch].title || '';
+          // Skip generic stub titles (e.g., "Chapter 311") — no info to compare
+          if (/^chapter\s+\d+\b/i.test(canonical.trim())) continue;
+          const citedTok = [...strongTokens(cited)].filter((t) => !STOPWORDS.has(t));
+          const canTok = [...strongTokens(canonical)].filter((t) => !STOPWORDS.has(t));
+          if (citedTok.length === 0 || canTok.length === 0) continue;
+          const shared = citedTok.filter((t) => canTok.includes(t));
+          if (shared.length === 0) {
+            bad.push({ i, field, ch: m[1], cited: cited.slice(0, 60), canonical: canonical.slice(0, 60) });
+          }
+        }
+      }
+    }
+    expect(bad, JSON.stringify(bad.slice(0, 5))).toEqual([]);
+  });
 });
 
 describe('Exam-year tag consistency', () => {
