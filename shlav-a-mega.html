@@ -6285,9 +6285,13 @@ async function cloudBackup(){
       ok=true;
       S._lastCloudSync=new Date().toISOString();save();
       toast('✅ Progress backed up to cloud!\nDevice ID: '+_sbDeviceId().slice(0,12)+'...','success');
+    } else if(res.status===401||res.status===403){
+      toast('❌ נדרשת התחברות לחשבון לגיבוי לענן\nLogin required','info');
+      tab='more';moreSub='settings';renderTabs();render();
+      setTimeout(function(){var el=document.getElementById('auth-li-user');if(el)el.focus();},150);
     } else {
       const err=await res.text();
-      toast('❌ Backup failed: '+res.status+'\n'+err.slice(0,200,'info'));
+      toast('❌ Backup failed: '+res.status+'\n'+err.slice(0,200),'info');
     }
   }catch(e){toast('❌ Backup failed: '+e.message,'info');}
   _syncState=ok?'init':'failed';updateSyncPill();
@@ -6639,8 +6643,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.30';
+const APP_VERSION='10.64.31';
 const CHANGELOG={
+'10.64.31':[
+'☁️ Cloud backup 401/403 now actionable — when Supabase rejects the upsert because the caller isn\'t logged in, surface a Hebrew login-required toast and route to More → Settings with the auth username field focused, instead of toast-less silence (or a generic English "Backup failed: 401" with no path forward). Mirror of IM v10.4.12 / FM v1.21.10. Also fixes a stale `slice(0,200,\'info\')` typo in the generic error branch so the toast tone is now passed correctly.',
+],
 '10.64.23':[
 '🔤 remapExplanationLetters lookahead generalized — v10.64.22 used a narrower char class `[\\s.,;:!?)]` for the post-letter context, missing "תשובה אcorrect" (Hebrew letter directly followed by ASCII letter, no separator). FM\'s existing utilsExtras tests caught this; backporting the broader `(?=[^א-ת]|$)` lookahead here. Same semantic intent — accept anything-not-Hebrew (or EOL) — just covers more cases. 2 new tests added.',
 ],
