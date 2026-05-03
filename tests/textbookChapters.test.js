@@ -203,6 +203,50 @@ describe('Topic distribution balance — quantitative', () => {
   });
 });
 
+describe('Question ref/e chapter citations resolve to real chapters', () => {
+  // Audit 2026-05-03 caught 3 questions citing Hazzard Ch 109/121/124 — none exist
+  // (Hazzard 8e maxes at Ch 108). Hallucinated chapter numbers slip through silently
+  // because the medical content of the explanation is usually fine; only the
+  // attribution is wrong. This guard pins every Hazzard chapter cited in q.ref or
+  // q.e to an existing entry in hazzard_chapters.json.
+  //
+  // Harrison side intentionally not bounded — Harrison 22e has ~480 chapters and
+  // our hazzard_chapters.json holds only a sparse 69 of them, so absence !== bogus.
+  const HZ_CITE_RE = /(?:Hazzard\s*Ch|הזארד\s*(?:פרק\s*)?)\s*(\d+)/gi;
+
+  it('every Hazzard chapter cited in q.ref exists in hazzard_chapters.json', () => {
+    const bad = [];
+    for (let i = 0; i < questions.length; i++) {
+      const ref = questions[i].ref || '';
+      let m;
+      const re = new RegExp(HZ_CITE_RE);
+      while ((m = re.exec(ref))) {
+        const id = String(Number(m[1]));
+        if (!hazzard[id]) bad.push({ i, cited: m[1], ref: ref.slice(0, 80) });
+      }
+    }
+    expect(bad, JSON.stringify(bad.slice(0, 5))).toEqual([]);
+  });
+
+  it('every Hazzard chapter cited in q.e exists in hazzard_chapters.json', () => {
+    const bad = [];
+    for (let i = 0; i < questions.length; i++) {
+      const e = questions[i].e || '';
+      let m;
+      const re = new RegExp(HZ_CITE_RE);
+      while ((m = re.exec(e))) {
+        const id = String(Number(m[1]));
+        if (!hazzard[id]) {
+          // Snippet around the match for triage
+          const snippet = e.slice(Math.max(0, m.index - 30), m.index + 50);
+          bad.push({ i, cited: m[1], snippet });
+        }
+      }
+    }
+    expect(bad, JSON.stringify(bad.slice(0, 5))).toEqual([]);
+  });
+});
+
 describe('Exam-year tag consistency', () => {
   // CLAUDE.md priority 4. `t` is a year-like tag — most are 4-digit years
   // (e.g. "2022"), some are dual-session ("2022-א"/"2022-ב"), some carry
