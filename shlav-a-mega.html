@@ -6625,8 +6625,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.15';
+const APP_VERSION='10.64.16';
 const CHANGELOG={
+'10.64.16':[
+'✨ Ref readability finishing pass — 91 of the 93 multi-pipe refs left from v10.64.15 (the complex multi-chapter / Tab-Fig-trailer / glued-Hebrew cases) beautified. Patterns added: multi-chapter `+`/comma forms (e.g. "הזארד58 + 15 | 884 + 211" → "הזארד פרק 58 עמ\' 884 + פרק 15 עמ\' 211"), trailing Tab/Fig/p./תמונה/גרף segments preserved as parenthetical (e.g. "Tab 60-9"), context tags ("גריאטריה בסיס/על"), pages glued to Hebrew law names ("151חוק..." → "עמ\' 151 (חוק...)"). Only 2 truly hand-clean cases left (idx=2694 = 59-pipe nightmare, idx=2758 = parser-bracket artifact). Total beautified across v10.64.15+16: 482/484 multi-pipe refs.',
+],
 '10.64.15':[
 '✨ Ref readability — 391 questions had pipe-delimited canonical refs (e.g. "הזארד88 | 1263, 1391") that displayed as cryptic strings to users. Beautified to natural Hebrew form: "הזארד פרק 88, עמ\' 1263, 1391". Patterns covered: הזארד<N> | <pages>, הריסון<N> | <pages>, with optional source-extractor index dropped (e.g. "| 49-3"), and image refs preserved as "(תמונה X-Y)" suffix. 93 complex multi-chapter forms (e.g. "הזארד58 + 15 | 884 + 211") left as-is to preserve cross-chapter info. No content changes — only display formatting of the existing canonical refs.',
 ],
