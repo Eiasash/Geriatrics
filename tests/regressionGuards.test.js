@@ -522,22 +522,32 @@ describe('multi-select exam-year filter — Task 3 contract', () => {
 });
 
 // ─────────────────────────────────────────────────────────────
-// Broken-question filter (v10.64.33 regression guard)
+// Broken-question filter (v10.64.33 / v10.64.35 regression guard)
 // ─────────────────────────────────────────────────────────────
 //
-// Track D (chaos-audit 2026-05-03): 22 questions tagged 2023-Sep are
-// problematic — 6 are tag-collision duplicates of 2023-Jun-Basic, 16 are
-// multi-part stem fragments that lost their parent context during ingestion.
-// All 22 are flagged with `broken: true` and `broken_reason`.
+// Track D (chaos-audit 2026-05-03): 22 questions tagged 2023-Sep flagged
+// broken — initially classified as 6 tag-duplicates + 16 stem-fragments.
 //
-// The buildPool wrapper at line 1857 of shlav-a-mega.html filters them out
-// of every pool path. This guard locks both the data-side flag and the
-// filter wrapper.
-describe('broken-question filter — v10.64.33', () => {
+// Track H (v10.64.35, 2026-05-03): cross-PDF search against the 56-PDF
+// IMA exam corpus discovered that 13 of the 22 are EXACT DUPLICATES of
+// existing dataset entries already correctly tagged (2020 / 2021-Dec /
+// 2021-Jun / 2023-Jun-Basic). The original "stem-fragment with missing
+// parent" classification was wrong — the parent context exists in the
+// dataset at the canonical idx. broken_reason now points each one at
+// its canonical match. The 9 unmatched (idx 63, 66, 81, 85, 126, 128,
+// 139, 140, 179, 183 minus matched) keep their stem-fragment reason.
+//
+// Net effect: same 22 questions broken-flagged (filtered from pool), but
+// reasons are now medically accurate. Floor stays at 22.
+//
+// The buildPool wrapper at line 1857 of shlav-a-mega.html filters them
+// out of every pool path. This guard locks both the data-side flag and
+// the filter wrapper.
+describe('broken-question filter — v10.64.33 / v10.64.35', () => {
   let questions;
   beforeAll(() => { questions = loadJSON('data/questions.json'); });
 
-  test('there are at least 22 questions flagged broken (Track D D-1 baseline)', () => {
+  test('there are at least 22 questions flagged broken (Track D baseline)', () => {
     const broken = questions.filter(q => q.broken === true);
     expect(broken.length).toBeGreaterThanOrEqual(22);
   });
