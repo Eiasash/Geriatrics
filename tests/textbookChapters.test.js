@@ -245,6 +245,60 @@ describe('Question ref/e chapter citations resolve to real chapters', () => {
     }
     expect(bad, JSON.stringify(bad.slice(0, 5))).toEqual([]);
   });
+
+  // Harrison 22e has 484 chapters in the published edition. Our in-app
+  // harrison_chapters.json carries only a curated 69-chapter subset, so
+  // dict-membership produces false positives — but a hard upper bound at 485
+  // catches hallucinated chapter numbers (e.g., "Harrison Ch 600"). Same
+  // pattern as the Hazzard guard, just bound-only.
+  const HR_CITE_RE = /(?:Harrison\s*Ch|הריסון\s*(?:פרק\s*)?)\s*(\d+)/gi;
+  const HR_MAX = 485;
+
+  it(`no question cites Harrison chapter > ${HR_MAX} (published edition has 484)`, () => {
+    const bad = [];
+    for (let i = 0; i < questions.length; i++) {
+      for (const field of ['ref', 'e']) {
+        const v = questions[i][field] || '';
+        let m;
+        const re = new RegExp(HR_CITE_RE);
+        while ((m = re.exec(v))) {
+          const n = Number(m[1]);
+          if (n > HR_MAX) {
+            const snippet = v.slice(Math.max(0, m.index - 30), m.index + 50);
+            bad.push({ i, field, cited: m[1], snippet });
+          }
+        }
+      }
+    }
+    expect(bad, JSON.stringify(bad.slice(0, 5))).toEqual([]);
+  });
+
+  // GRS8 has 67 chapters, all present in grs8_chapters.json. Strong dict-
+  // membership check is appropriate here.
+  const GR_CITE_RE = /(?:GRS\s*-?\s*8?\s*Ch|GRS8\s*Ch)\s*(\d+)/gi;
+  let grs8;
+  beforeAll(() => {
+    grs8 = load('data/grs8_chapters.json');
+  });
+
+  it('every GRS8 chapter cited in q.ref or q.e exists in grs8_chapters.json', () => {
+    const bad = [];
+    for (let i = 0; i < questions.length; i++) {
+      for (const field of ['ref', 'e']) {
+        const v = questions[i][field] || '';
+        let m;
+        const re = new RegExp(GR_CITE_RE);
+        while ((m = re.exec(v))) {
+          const id = String(Number(m[1]));
+          if (!grs8[id]) {
+            const snippet = v.slice(Math.max(0, m.index - 30), m.index + 50);
+            bad.push({ i, field, cited: m[1], snippet });
+          }
+        }
+      }
+    }
+    expect(bad, JSON.stringify(bad.slice(0, 5))).toEqual([]);
+  });
 });
 
 describe('Exam-year tag consistency', () => {
