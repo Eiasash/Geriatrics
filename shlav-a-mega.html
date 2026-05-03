@@ -2742,18 +2742,30 @@ function isMetaOption(text){
 function remapExplanationLetters(text,shuf){
   // shuf[displayPos]=origIdx → build inverse: origIdx→displayPos
   const inv={};shuf.forEach((orig,disp)=>{inv[orig]=disp;});
-  const letters=['A','B','C','D','E'];
+  const latin=['A','B','C','D','E'];
   const heb=['א','ב','ג','ד','ה'];
-  // Replace patterns like "התשובה הנכונה היא C" or "תשובה A" or "Answer B"
-  return text.replace(/\b([A-E])\b/g,(m,letter)=>{
-    const origIdx=letters.indexOf(letter);
-    if(origIdx===-1||inv[origIdx]===undefined)return m;
-    return letters[inv[origIdx]];
-  }).replace(/(תשובה\s*)([א-ה])\b/g,(m,prefix,letter)=>{
-    const origIdx=heb.indexOf(letter);
-    if(origIdx===-1||inv[origIdx]===undefined)return m;
-    return prefix+heb[inv[origIdx]];
-  });
+  const remap=(orig,arr)=>{
+    const i=arr.indexOf(orig);
+    if(i===-1||inv[i]===undefined)return orig;
+    return arr[inv[i]];
+  };
+  // (1) Latin "B"/"Answer C" — ASCII word boundaries work fine here.
+  // (2) Hebrew "תשובה ב'" form — letter directly after "תשובה" + optional whitespace.
+  // (3) Hebrew bare label "א'/ג'/ד' שגויה" — letter+geresh used as bullet label.
+  //     Lookbehind (?<![א-ת]) excludes mid-word gershayim like "מג'ורי" (Major)
+  //     where Hebrew letters precede the apostrophe. Lookahead requires geresh
+  //     followed by whitespace/punct/EOL so foreign-sound markers like
+  //     "ג'נטיקה" (genetics — letter+geresh+more Hebrew) are also rejected.
+  // Single regex with alternation prevents double-remap of the same letter.
+  // v10.64.22 — was missing form (3), making explanations show wrong letter
+  //   refs whenever the option-shuffle moved labels (e.g., "אקו (תשובה ב')"
+  //   stayed as ב' even after echo got shuffled to display position ד').
+  return text
+    .replace(/\b([A-E])\b/g,(m,l)=>remap(l,latin))
+    .replace(
+      /(?:(תשובה\s*)([א-ה])(?=['׳’]|[\s.,;:!?)]|$)|(?<![א-ת])([א-ה])(['׳’])(?=[\s.,;:!?)]|$))/g,
+      (m,p,l1,l2,ger)=>p?p+remap(l1,heb):remap(l2,heb)+ger
+    );
 }
 function getOptShuffle(qIdx,q){
   // Return stable shuffle for this question in this session
@@ -6629,8 +6641,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.21';
+const APP_VERSION='10.64.22';
 const CHANGELOG={
+'10.64.22':[
+'🔤 Major fix — `remapExplanationLetters` now remaps BARE label forms ("**א\' שגויה**", "ב\' נכונה") in addition to the "תשובה X\'" form. Before this, when option-shuffle moved the correct answer to a different display position (e.g. orig ב=echo → display ד=echo), the explanation still said "תשובה ב\'" and "א\'/ג\'/ד\' שגויה" referring to ORIGINAL positions — users saw wrong letter cross-references everywhere. Repro: 2024-May-Basic Q1 (idx=2841 stroke / MCA / cardio-embolic). Affected ~1779 explanations using bare label form across the bank. Lookbehind excludes mid-word gershayim ("מג\'ורי", "ג\'נטיקה") so foreign-sound markers are untouched. 8 new regression tests in tests/remapExplanationLetters.test.js. Same bug exists in IM + FM (porting separately).',
+],
 '10.64.21':[
 '🧹 Final 2 multi-pipe ref hand-cleans — idx=2694 (DKA vs HHS in elderly, the 59-pipe parser nightmare): set to `הזארד פרק 99 (Diabetes Mellitus)`. idx=2758 (COVID-19): cleaned `הזארד108 | 1737-1738 | גריאטריה בסיס( | )` → `הזארד פרק 108, עמ\' 1737-1738 (גריאטריה בסיס)`. Multi-pipe ref count now 0 (was 484 at session start).',
 ],
