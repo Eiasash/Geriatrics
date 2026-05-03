@@ -382,6 +382,16 @@ describe("questions/image_map.json — integrity", () => {
 describe("questions.json — image field (img) validation", () => {
   const SUPA_IMG_PREFIX = "https://krmlzwwelqvlfslwltol.supabase.co/storage/v1/object/public/question-images/";
 
+  it("no question has q.imgs[] without q.img (renderer reads q.img only — v10.64.17)", () => {
+    const offenders = [];
+    questions.forEach((q, i) => {
+      if (Array.isArray(q.imgs) && q.imgs.length > 0 && !q.img) {
+        offenders.push({ index: i, imgs0: String(q.imgs[0]).slice(0, 80) });
+      }
+    });
+    expect(offenders, `Questions with imgs[] but no img — renderer will skip image: ${JSON.stringify(offenders.slice(0, 5))}`).toEqual([]);
+  });
+
   it("img field, when present, is a valid URL string (https or data:image/svg+xml)", () => {
     const invalid = [];
     questions.forEach((q, i) => {
