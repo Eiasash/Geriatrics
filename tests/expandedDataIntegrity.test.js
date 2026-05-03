@@ -432,7 +432,10 @@ describe("questions.json — image field (img) validation", () => {
       }
       const isHttps = q.img.startsWith("https://");
       const isSvgData = q.img.startsWith("data:image/svg+xml");
-      if (!isHttps && !isSvgData) {
+      // v10.64.33: relative `questions/images/*` allowed for one-off Pages-served
+      // fallback (idx=2377 broken-Supabase-image rescue from chaos-audit 2026-05-03)
+      const isRelativeQimg = q.img.startsWith("questions/images/");
+      if (!isHttps && !isSvgData && !isRelativeQimg) {
         invalid.push({ index: i, img: q.img.slice(0, 60) });
       }
     });
@@ -444,6 +447,7 @@ describe("questions.json — image field (img) validation", () => {
     questions.forEach((q, i) => {
       if (!q.img) return;
       if (q.img.startsWith("data:image/svg+xml")) return; // AI-generated schematics OK
+      if (q.img.startsWith("questions/images/")) return; // v10.64.33: Pages-served relative fallback (idx=2377)
       if (!q.img.startsWith(SUPA_IMG_PREFIX)) {
         wrong.push({ index: i, img: q.img.slice(0, 80) });
       }
