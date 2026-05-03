@@ -6625,8 +6625,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.14';
+const APP_VERSION='10.64.15';
 const CHANGELOG={
+'10.64.15':[
+'✨ Ref readability — 391 questions had pipe-delimited canonical refs (e.g. "הזארד88 | 1263, 1391") that displayed as cryptic strings to users. Beautified to natural Hebrew form: "הזארד פרק 88, עמ\' 1263, 1391". Patterns covered: הזארד<N> | <pages>, הריסון<N> | <pages>, with optional source-extractor index dropped (e.g. "| 49-3"), and image refs preserved as "(תמונה X-Y)" suffix. 93 complex multi-chapter forms (e.g. "הזארד58 + 15 | 884 + 211") left as-is to preserve cross-chapter info. No content changes — only display formatting of the existing canonical refs.',
+],
 '10.64.14':[
 '🧹 Q-bleed ref cleanup — 6 questions had `ref` fields polluted with PDF table-cell merge artifacts (e.g., "הזארד עמ \' | 695-696 | 24 | GRS- SYNCOPE | 25 | ..."). Cleaned to the per-question portion only ("הזארד עמ \' | 695-696"). Idxs: 2484, 2495, 2929, 3161, 3172, 3490. 1 case (idx=2694) deferred — too many embedded valid pages mixed with bleed.',
 '🗺️ Mapping v3 — augmented v2 dataset→IMA-PDF mapping with 16 new high-confidence entries from the 2026-05-03 cross-specialty bundle parser (which reads 2021-Dec PDF text far better than v2\'s PyMuPDF pass). Net: 1245→1261 mapped, 89→73 unmapped (v3 mapping at .audit_logs/dataset_to_qnum_mapping_v3.json). Cross-check: 13 AGREE with IMA, 1 already-known multi-accept (idx=361 c_accept=[2,3]), 1 medical disagreement flagged for review (idx=346), 1 NO_KEY.',
