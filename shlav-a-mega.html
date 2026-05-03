@@ -6629,8 +6629,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.20';
+const APP_VERSION='10.64.21';
 const CHANGELOG={
+'10.64.21':[
+'🧹 Final 2 multi-pipe ref hand-cleans — idx=2694 (DKA vs HHS in elderly, the 59-pipe parser nightmare): set to `הזארד פרק 99 (Diabetes Mellitus)`. idx=2758 (COVID-19): cleaned `הזארד108 | 1737-1738 | גריאטריה בסיס( | )` → `הזארד פרק 108, עמ\' 1737-1738 (גריאטריה בסיס)`. Multi-pipe ref count now 0 (was 484 at session start).',
+],
 '10.64.20':[
 '🧹 lsSet migration completion — 3 remaining bare `localStorage.setItem` calls on sacred keys (samega_ex line 2152, samega_mock_hist + samega_sessions in cloud-restore path lines 6340-6341) migrated to lsSet(). The migration started in v10.64.17 (helper) → v10.64.19 (6 main paths) is now 100% complete; no sacred-key write swallows iOS Safari quota errors silently.',
 ],
