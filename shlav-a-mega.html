@@ -6646,7 +6646,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.25';
+const APP_VERSION='10.64.26';
 const CHANGELOG={
 '10.64.23':[
 '🔤 remapExplanationLetters lookahead generalized — v10.64.22 used a narrower char class `[\\s.,;:!?)]` for the post-letter context, missing "תשובה אcorrect" (Hebrew letter directly followed by ASCII letter, no separator). FM\'s existing utilsExtras tests caught this; backporting the broader `(?=[^א-ת]|$)` lookahead here. Same semantic intent — accept anything-not-Hebrew (or EOL) — just covers more cases. 2 new tests added.',
