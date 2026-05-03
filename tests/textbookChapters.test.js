@@ -31,11 +31,16 @@ function load(file) {
   return JSON.parse(readFileSync(resolve(ROOT, file), 'utf-8'));
 }
 
-let hazzard, harrison, qchaps, notes, questions;
+let hazzard, harrison, harrisonToc, qchaps, notes, questions;
 
 beforeAll(() => {
   hazzard = load('data/hazzard_chapters.json');
   harrison = load('harrison_chapters.json');
+  // harrison_22e_toc.json — canonical 505-chapter TOC extracted from the
+  // Harrison 22e PDF. Distinct from harrison_chapters.json which is the in-
+  // app reader's curated 69-chapter subset. The canonical TOC is the gold
+  // standard for citation correctness across the whole question bank.
+  harrisonToc = load('data/harrison_22e_toc.json');
   qchaps = load('data/question_chapters.json');
   notes = load('data/notes.json');
   questions = load('data/questions.json');
@@ -246,15 +251,13 @@ describe('Question ref/e chapter citations resolve to real chapters', () => {
     expect(bad, JSON.stringify(bad.slice(0, 5))).toEqual([]);
   });
 
-  // Harrison 22e has 484 chapters in the published edition. Our in-app
-  // harrison_chapters.json carries only a curated 69-chapter subset, so
-  // dict-membership produces false positives — but a hard upper bound at 485
-  // catches hallucinated chapter numbers (e.g., "Harrison Ch 600"). Same
-  // pattern as the Hazzard guard, just bound-only.
+  // Harrison 22e has 505 chapters per data/harrison_22e_toc.json (extracted
+  // from the published 4273-page PDF outline). Citation > 505 is structurally
+  // impossible. We dict-check against the canonical TOC for full coverage —
+  // any cited chapter must exist as a key in harrison_22e_toc.json.
   const HR_CITE_RE = /(?:Harrison\s*Ch|הריסון\s*(?:פרק\s*)?)\s*(\d+)/gi;
-  const HR_MAX = 485;
 
-  it(`no question cites Harrison chapter > ${HR_MAX} (published edition has 484)`, () => {
+  it('every Harrison chapter cited in q.ref or q.e exists in harrison_22e_toc.json', () => {
     const bad = [];
     for (let i = 0; i < questions.length; i++) {
       for (const field of ['ref', 'e']) {
@@ -262,8 +265,8 @@ describe('Question ref/e chapter citations resolve to real chapters', () => {
         let m;
         const re = new RegExp(HR_CITE_RE);
         while ((m = re.exec(v))) {
-          const n = Number(m[1]);
-          if (n > HR_MAX) {
+          const id = String(Number(m[1]));
+          if (!harrisonToc[id]) {
             const snippet = v.slice(Math.max(0, m.index - 30), m.index + 50);
             bad.push({ i, field, cited: m[1], snippet });
           }
@@ -293,6 +296,46 @@ describe('Question ref/e chapter citations resolve to real chapters', () => {
           if (!grs8[id]) {
             const snippet = v.slice(Math.max(0, m.index - 30), m.index + 50);
             bad.push({ i, field, cited: m[1], snippet });
+          }
+        }
+      }
+    }
+    expect(bad, JSON.stringify(bad.slice(0, 5))).toEqual([]);
+  });
+
+  // Catches chapter-number transpositions like "Harrison Ch 311 — Acute Kidney
+  // Injury" when Ch 311 is actually Critical Care Medicine (real AKI is Ch 321).
+  // For the 69-chapter subset present in harrison_chapters.json we have a
+  // canonical title — if a citation's title shares zero significant tokens with
+  // the canonical title, it's a likely transposition. Strong-token threshold
+  // (len ≥ 4) avoids stop-word false positives ("the", "and", "of").
+  const HR_TITLED_CITE_RE = /Harrison\s*Ch\s*(\d+)\s*(?:[—–\-]|\()\s*([^·\n)]{3,150}?)\s*(?:[·\n)]|$)/gi;
+  function strongTokens(s) {
+    return new Set((s || '').toLowerCase().match(/[a-z]{4,}/g) || []);
+  }
+
+  it('Harrison cited title matches canonical title for all 505 chapters', () => {
+    // Now validates against harrison_22e_toc.json (full PDF outline) — catches
+    // transpositions like Ch 311↔321, Ch 365→384, Ch 126→131, Ch 24→23 across
+    // the WHOLE chapter range, not just the 69-chapter in-app reader subset.
+    const STOPWORDS = new Set(['with', 'this', 'that', 'from', 'have', 'been', 'more', 'most', 'when', 'what', 'some', 'than', 'only', 'also', 'each', 'about', 'into', 'over', 'such', 'very', 'other', 'their', 'these', 'those', 'which', 'where', 'will', 'shall', 'disease', 'approach', 'patient']);
+    const bad = [];
+    for (let i = 0; i < questions.length; i++) {
+      for (const field of ['ref', 'e']) {
+        const v = questions[i][field] || '';
+        let m;
+        const re = new RegExp(HR_TITLED_CITE_RE);
+        while ((m = re.exec(v))) {
+          const ch = String(Number(m[1]));
+          const cited = m[2].trim().replace(/^\*+|\*+$/g, '');
+          if (!harrisonToc[ch]) continue; // already caught by bound check
+          const canonical = harrisonToc[ch].title || '';
+          const citedTok = [...strongTokens(cited)].filter((t) => !STOPWORDS.has(t));
+          const canTok = [...strongTokens(canonical)].filter((t) => !STOPWORDS.has(t));
+          if (citedTok.length === 0 || canTok.length === 0) continue;
+          const shared = citedTok.filter((t) => canTok.includes(t));
+          if (shared.length === 0) {
+            bad.push({ i, field, ch: m[1], cited: cited.slice(0, 60), canonical: canonical.slice(0, 60) });
           }
         }
       }
