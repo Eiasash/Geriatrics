@@ -2870,7 +2870,7 @@ if(ans){cls+=' lk';if(!examMode){if(isOk(q,origI))cls+=' ok';else if(origI===sel
 else if(origI===sel)cls+=' sel';
 const blurCls=blindRecall&&!ans&&origI!==sel?' qo-blur':'';
 const autopsyCls=(autopsyMode&&ans&&!examMode&&!isOk(q,origI)&&origI===autopsyDistractor)?' distractor-highlight':'';
-h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\"qo-blur\");':''}pick(${origI})" aria-label="Option ${origI+1}" dir="${heDir(o)}"><span>${sanitize(o)}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
+h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\'qo-blur\');':''}pick(${origI})" aria-label="Option ${origI+1}" dir="${heDir(o)}"><span>${sanitize(o)}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
 });
 return h;
 }
@@ -6643,7 +6643,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.31';
+const APP_VERSION='10.64.32';
 const CHANGELOG={
 '10.64.31':[
 '☁️ Cloud backup 401/403 now actionable — when Supabase rejects the upsert because the caller isn\'t logged in, surface a Hebrew login-required toast and route to More → Settings with the auth username field focused, instead of toast-less silence (or a generic English "Backup failed: 401" with no path forward). Mirror of IM v10.4.12 / FM v1.21.10. Also fixes a stale `slice(0,200,\'info\')` typo in the generic error branch so the toast tone is now passed correctly.',
