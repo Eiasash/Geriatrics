@@ -38,7 +38,10 @@ regs.forEach(function(r){if(r.waiting)r.waiting.postMessage({type:'SKIP_WAITING'
 caches.keys().then(function(ks){
   ks.filter(function(k){return k.startsWith('shlav-a-');}).forEach(function(k){caches.delete(k);});
 });
-setTimeout(function(){window.location.reload(true);},500);
+// reload(true) was the legacy "force from server" arg; modern browsers ignore it.
+// Cache-bust here is already handled above by deleting all `shlav-a-*` caches
+// before reload, so a plain reload() picks up fresh assets via the SW fetch path.
+setTimeout(function(){window.location.reload();},500);
 }
 
 /**

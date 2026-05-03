@@ -160,7 +160,7 @@ All runtime data lives in `data/`. The app and service worker load exclusively f
 {
   "id": 0,
   "topic": "Biology of Aging",
-  "ch": "Hazzard's Ch 3 (Biology of Aging)",  // MUST cite Hazzard's 8e or Harrison's 22e chapter — NO GRS
+  "ch": "Hazzard's Ch 3 (Biology of Aging)",  // MUST cite Hazzard's 8e or Harrison's 22e chapter — NO GRS. EXCEPTION: legal topics (ids 29-35: Ethics, Elder Abuse, Driving, Guardianship, Patient Rights, Advance Directives, Community/LTC) may cite Israeli law sources (e.g. חוק זכויות החולה 1996, חוק החולה הנוטה למות 2005). See tests/dataIntegrity.test.js:124 for the exemption rule.
   "notes": "Dense board-pearl text with key facts, numbers, mechanisms, exam traps"
 }
 ```
@@ -400,7 +400,7 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 
 ### Content Integrity
 - **NO GRS-1/legacy GRS references** — but GRS8 imports are explicitly allowed (see v10.25/v10.37 imports; CI exempts ti=43–45 buckets)
-- `notes.ch` must cite actual Hazzard's 8e chapter or Harrison's 22e chapter
+- `notes.ch` must cite actual Hazzard's 8e chapter or Harrison's 22e chapter (legal-topic notes ids 29-35 may cite Israeli law sources instead)
 - Hazzard's chapters **excluded** from syllabus: Ch 2–6, 34, 62
 - Question `ti` must be an integer 0–45 from the topic list above
 - `c` (correct answer index) must be 0-based and valid (< length of `o` array)
