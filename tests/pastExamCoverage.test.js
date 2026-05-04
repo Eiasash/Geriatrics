@@ -67,31 +67,15 @@ beforeAll(() => {
   pkg = JSON.parse(readFileSync(resolve(ROOT, 'package.json'), 'utf-8'));
 });
 
-describe('past-exam directory layout', () => {
-  it('exams/ root directory exists', () => {
-    expect(existsSync(resolve(ROOT, 'exams'))).toBe(true);
-  });
-
+// v10.64.43: PDFs externalized to GitHub Releases (release tag v10.64-textbooks).
+// The on-disk directory layout is no longer authoritative — assets live at
+// https://github.com/Eiasash/Geriatrics/releases/download/v10.64-textbooks/<encoded>
+// where subdirs are encoded as __ (exams/2020_al/exam.pdf → exams__2020_al__exam.pdf).
+// Skipped — the data-integrity checks below (tag taxonomy, Q-count, forbidden-tag
+// detection) remain authoritative and continue to enforce exam coverage.
+describe.skip('past-exam directory layout (DEPRECATED post-v10.64.43 — PDFs at Release URL)', () => {
   EXAM_DIRS.forEach((dir) => {
-    describe(`exams/${dir}/`, () => {
-      const dirPath = resolve(ROOT, 'exams', dir);
-      it('exists as a directory', () => {
-        expect(existsSync(dirPath)).toBe(true);
-        expect(statSync(dirPath).isDirectory()).toBe(true);
-      });
-      it('contains at least one exam PDF', () => {
-        if (!existsSync(dirPath)) return;
-        const files = readdirSync(dirPath);
-        const hasExam = files.some((f) => /^exam(_basic|_subspec)?\.pdf$/i.test(f));
-        expect(hasExam).toBe(true);
-      });
-      it('contains at least one answer-key PDF', () => {
-        if (!existsSync(dirPath)) return;
-        const files = readdirSync(dirPath);
-        const hasKey = files.some((f) => /answer.*key.*\.pdf$/i.test(f));
-        expect(hasKey).toBe(true);
-      });
-    });
+    it(`exams/${dir}/ existed pre-externalization`, () => {});
   });
 });
 
