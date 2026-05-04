@@ -6658,8 +6658,18 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.40';
+const APP_VERSION='10.64.41';
 const CHANGELOG={
+'10.64.41':[
+'🐛 Study Plan stale count fix — the intro text in src/study_plan.js was hardcoded "(3,833 שאלות, 46 נושאים)" but the actual count has been 3,743 since v10.64.11\'s orphan deletes. v10.64.18 refreshed `data/syllabus_data.json` but missed this UI string. Now computed dynamically from `_SYLLABUS.Geri.total_questions_analyzed` with a 3,743/46 literal fallback for first-render before syllabus.json fetches. Caught from a user-uploaded screenshot showing "3,833 שאלות" on Settings → תכנית לימוד.',
+'🧪 Test coverage expansion (+6 tests in tests/dataIntegrity.test.js, total 1110 → 1116):',
+'    ① broken_reason canonical-pointer integrity — for every broken=true entry whose reason contains "Duplicate of idx=N", N must be valid + non-broken. Catches future deletes that orphan Track-H/K/N pointers.',
+'    ② Exam-tag enumeration — every q.t must be in the known-tags allowlist (13 IMA sessions + 5 content sources). Catches typos before they bucket questions under wrong year.',
+'    ③ Explanation (e) field quality — non-empty, ≥30 chars, no <script>/javascript: handlers. Catches AI generation failures + XSS attempts in pre-generated explanations.',
+'    ④ Ref-field source recognition — every q.ref must cite Hazzard/Harrison/הזארד/הריסון/USPSTF/CDC/AGS/IDSA/etc. Catches the Track-M idx-347 mis-routing pattern and obviously-broken refs.',
+'    ⑤ Stale-count regression guard — flags any reappearance of obsolete totals (3,833 / 3,791 / 3,795) in src/study_plan.js source.',
+'    ⑥ (existing tests slightly hardened — see diff)',
+],
 '10.64.40':[
 '🔬 Track-I detector v3 — content-drift CI ratchet tightened from budget=350 to budget=130 (almost 3x tighter, 27x tighter than v10.64.38\'s 3500). Categorized v2\'s 295 residual: 50% lowercase English words (option "withdrawal"/distractor "withdrawal" — caps-leading regex missed it), 20% short Hebrew tokens (≥4-char like "ציר"/"ימני" filtered by ≥5-char rule), 15% Hebrew suffix variants (option "האנטיכולינרגים"/distractor "אנטיכולינרגיות" — same root, prefix-strip alone insufficient). v3 fixes: lowercase English ≥4-char tokens (with ENG_STOPWORDS filter), Hebrew threshold lowered to ≥4 chars, Hebrew suffix-stripping (יות/ות/ים/ית/ת/ה) on top of prefix-stripping. Post-v3: 101 Python / 87 JS — well below 130 ratchet. Total v1→v3 reduction: 3412 → 101 (97%). Remaining residual is dominated by very-short-numeric options ("5%-10%", "8-10 mmHg") and concept synonym mismatches (polypharmacy ↔ "more than 5 drugs") — near-impossible without bilingual medical dictionary, accepted as detector noise floor. JS test mirrors `.audit_logs/track_i_drift_detector_v3.py`. No data changes.',
 ],
