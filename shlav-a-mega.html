@@ -2641,6 +2641,17 @@ function fmtT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;re
 // modules loaded as type=module; this comment is the drift contract.
 const SUPA_URL='https://krmlzwwelqvlfslwltol.supabase.co';
 const SUPA_ANON='sb_publishable_tUuqQQ8RKMvLDwTz5cKkOg_o_y-rHtw';
+// v10.64.43: textbook PDFs externalized to GitHub Releases to keep repo clone size <80MB.
+// SW PDF_CACHE caches them on first fetch. Asset names encode subdirs as __ to avoid
+// basename collisions (e.g. exams/2020_al/exam.pdf → exams__2020_al__exam.pdf).
+const PDF_BASE_URL='https://github.com/Eiasash/Geriatrics/releases/download/v10.64-textbooks/';
+function pdfUrl(rel){
+  if(!rel) return '';
+  if(/^https?:\/\//i.test(rel)) return rel; // already absolute
+  // Sanitize and encode: replace / with __, # with _ (matches staging script)
+  const encoded=String(rel).replace(/^\.?\//,'').replace(/#/g,'_').replace(/\//g,'__');
+  return PDF_BASE_URL+encoded;
+}
 async function uploadQImage(qIdx){
 const input=document.createElement('input');
 input.type='file';input.accept='image/*';input.capture='environment';
@@ -4175,7 +4186,7 @@ h+=`<div class="card" style="padding:14px;margin-top:8px">
 </div>
 <div id="haz-annotated" style="display:none;margin-top:10px">`;
 HAZZARD_MARKED_PARTS.forEach((p,i)=>{
-h+=`<a href="${p.file}" target="_blank" style="text-decoration:none;display:block;padding:8px 0;border-bottom:1px solid rgb(var(--brd))">
+h+=`<a href="${pdfUrl(p.file)}" target="_blank" style="text-decoration:none;display:block;padding:8px 0;border-bottom:1px solid rgb(var(--brd))">
 <div style="display:flex;align-items:center;gap:8px">
 <span style="background:${p.color};color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px">${i+1}</span>
 <div style="flex:1;font-size:11px;font-weight:600">${p.ch} \u2014 ${p.desc}</div>
@@ -4951,7 +4962,7 @@ function calcEstScore(){
 // ===== HAZZARD'S 8e CHAPTER → PDF PAGE MAPPING =====
 // Maps topic names to {ch: 'Chapter(s)', p: PDF page number}
 // PDF: https://drive.google.com/file/d/1sW0asEfszQJvbeAqd8Lzcf6Q20JPq77r/view
-function getHazPdf(chStr){
+function getHazPdfRel(chStr){
 const ch=parseInt(chStr);
 if(ch<=6)return 'hazzard_part01.pdf';
 if(ch<=13)return 'hazzard_part02.pdf';
@@ -4963,6 +4974,9 @@ if(ch<=87)return 'hazzard_part07a1.pdf';
 if(ch<=96)return 'hazzard_part07a2.pdf';
 if(ch<=108)return 'hazzard_part07b.pdf';
 return 'hazzard_part01.pdf';
+}
+// Public wrapper used by the in-app reader: returns the absolute Release URL.
+function getHazPdf(chStr){return pdfUrl(getHazPdfRel(chStr));
 }
 const HAZ_CHAPTERS = {
   'Delirium': {ch:'58',p:914},
@@ -6661,8 +6675,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.42';
+const APP_VERSION='10.64.43';
 const CHANGELOG={
+'10.64.43':[
+'📦 Textbook PDFs externalized to GitHub Releases — repo working tree shrunk from 431 MB to 44.6 MB (90% reduction). 187 PDFs (Hazzard 8e parts + marked, Harrison 22e chapters, GRS8, articles, past exam booklets, MoH law PDFs) now hosted as release assets on tag v10.64-textbooks. Asset names encode subdirs as __ to avoid basename collisions (exams/2020_al/exam.pdf → exams__2020_al__exam.pdf). New PDF_BASE_URL constant + pdfUrl(rel) helper at the top of the script handle the path translation. The 2 live in-app PDF links (HAZZARD_MARKED_PARTS list at line 4178, getHazPdf() at line 4954) now route through the helper. SW PDF_CACHE pattern-based caching (no list to maintain) caches each PDF on first fetch — users re-download once on next view, then offline-ready. Existing localStorage / IndexedDB / Supabase backups completely untouched. .git history NOT rewritten (Phase 4 deferred — anyone with a clone keeps it working until they pull).',
+],
 '10.64.42':[
 '☁️ Cloud backup write path fixed (Track-Q) — Sync was failing with "Login required" toast even when the user was logged in. Root cause: Phase 2 (2026-04-29) migrated reads to a SECURITY DEFINER RPC (backup_get) but left writes on direct PostgREST POST /rest/v1/samega_backups. The new sb_publishable_* key format interacts differently with RLS than the legacy anon JWT, so direct table inserts return 401/PG-42501 ("violates RLS policy") despite the policies being permissive (with_check=true). The IM v10.4.12 CHANGELOG entry misdiagnosed this as "user-scoped ids require auth session" — actually a key-format / role-context regression. Fix: added backup_set(p_app, p_id, p_data) SECURITY DEFINER RPC in Supabase project krmlzwwelqvlfslwltol that handles the upsert for all three sibling apps (geri/samega + pnimit + mishpacha). Client now POSTs to /rest/v1/rpc/backup_set instead. Server-side now() eliminates client clock-skew back-dates. Tested end-to-end: 200 OK + correct round-trip read. Sibling apps (Pnimit, Mishpacha, ward-helper) have the same bug — they share the same Supabase project, so the RPC is already available; they just need their cloudBackup client code migrated in their own sessions.',
 ],

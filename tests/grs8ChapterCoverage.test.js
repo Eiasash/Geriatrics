@@ -134,11 +134,18 @@ describe('GRS8 question refs (lock C)', () => {
   });
 });
 
-describe('GRS8 part files on disk (lock D)', () => {
-  it('every chapter.part references a file that exists in the repo root', () => {
+describe('GRS8 part filename schema (lock D, post-v10.64.43)', () => {
+  // v10.64.43 externalized PDFs to GitHub Releases. The on-disk existence
+  // check no longer applies — files live at the Release URL, not in the repo.
+  // We replace it with a filename-schema check: each chapter.part must be a
+  // non-empty .pdf basename (no path traversal, no embedded URLs).
+  it('every chapter.part is a valid pdf filename', () => {
     const parts = new Set(Object.values(grs).map(ch => ch.part));
     for (const part of parts) {
-      expect(existsSync(resolve(rootDir, part)), `${part} must exist on disk`).toBe(true);
+      expect(typeof part, `${part} must be a string`).toBe('string');
+      expect(part.length, `${part} must not be empty`).toBeGreaterThan(0);
+      expect(part.toLowerCase(), `${part} must end in .pdf`).toMatch(/\.pdf$/);
+      expect(part, `${part} must not contain path traversal`).not.toMatch(/\.\.|\/\.\.|^\//);
     }
   });
 });
