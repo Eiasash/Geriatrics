@@ -6658,8 +6658,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.39';
+const APP_VERSION='10.64.40';
 const CHANGELOG={
+'10.64.40':[
+'🔬 Track-I detector v3 — content-drift CI ratchet tightened from budget=350 to budget=130 (almost 3x tighter, 27x tighter than v10.64.38\'s 3500). Categorized v2\'s 295 residual: 50% lowercase English words (option "withdrawal"/distractor "withdrawal" — caps-leading regex missed it), 20% short Hebrew tokens (≥4-char like "ציר"/"ימני" filtered by ≥5-char rule), 15% Hebrew suffix variants (option "האנטיכולינרגים"/distractor "אנטיכולינרגיות" — same root, prefix-strip alone insufficient). v3 fixes: lowercase English ≥4-char tokens (with ENG_STOPWORDS filter), Hebrew threshold lowered to ≥4 chars, Hebrew suffix-stripping (יות/ות/ים/ית/ת/ה) on top of prefix-stripping. Post-v3: 101 Python / 87 JS — well below 130 ratchet. Total v1→v3 reduction: 3412 → 101 (97%). Remaining residual is dominated by very-short-numeric options ("5%-10%", "8-10 mmHg") and concept synonym mismatches (polypharmacy ↔ "more than 5 drugs") — near-impossible without bilingual medical dictionary, accepted as detector noise floor. JS test mirrors `.audit_logs/track_i_drift_detector_v3.py`. No data changes.',
+],
 '10.64.39':[
 '🔬 Track-I detector v2 — tightened content-drift CI guard from budget=3500 to budget=350 (10x tighter). v1 detector flagged 3412 post-regen "drifts" but sampling showed 89.7% were cross-language false positives (option in English/bilingual, distractor in Hebrew with translated terms — `Anterior communicating artery` in option, `העורק המתקשר הקדמי (AComA)` in distractor). v2 adds: cross-language trust for English-option-Hebrew-distractor, ≥3-char English tokens (catches MRI/RA/BP), full parens-content matching, first-letter acronym detection, numeric-token matching (catches `25%` / `2035` / dose values), and Hebrew prefix stripping (ה/ב/מ/ל/ו/ש/כ + 2-letter combos for inflection variants). Post-v2 count: 295 Python / 279 JS — well below the 350 ratchet. JS test mirrors `.audit_logs/track_i_drift_detector_v2.py`. No data changes; this is a CI-tightening release that converts the v10.64.38 ratchet into a real defense.',
 ],
