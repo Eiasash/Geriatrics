@@ -110,50 +110,47 @@ describe("data/distractors.json — drift guard", () => {
   });
 
   /**
-   * CONTENT-DRIFT GUARD (added post-Track-I regen, v10.64.38).
+   * CONTENT-DRIFT GUARD (Track-I, v2 detector — v10.64.39).
    *
-   * Structural alignment alone doesn't catch the case where distractors[i][j]
-   * discusses option text from a DIFFERENT slot or different question entirely.
-   * That happens after question deletions: distractors keep original numbering
-   * but indexes shift, so a perfectly structurally-valid entry may carry
-   * rationale text about a totally unrelated option.
+   * Catches the case where distractors[i][j] discusses option text from a
+   * DIFFERENT slot or different question entirely — happens after question
+   * deletions because distractors keep original numbering but indices shift,
+   * so a structurally-valid entry can carry rationale about an unrelated
+   * option.
    *
-   * Detection: for each non-empty distractor[i][j], extract distinctive tokens
-   * from questions[i].o[j] (drug names, English caps words, Hebrew nouns ≥5
-   * chars minus stopwords). If the option has extractable tokens but ZERO of
-   * them appear in the distractor text, flag as drift.
+   * v2 detector (mirrors `.audit_logs/track_i_drift_detector_v2.py`):
+   *   - English caps-leading tokens (≥3 chars) — catches MRI, RA, BP, etc.
+   *   - Parens content (case-insensitive substring) — catches "(intramedullary nails)"
+   *   - First-letter acronyms from multi-word capitalized phrases — catches
+   *     "AComA" matching "Anterior communicating artery"
+   *   - Numeric tokens (2-4 digits) — catches "25%" / "2035" / "180" doses
+   *   - Hebrew stem matching (strip ה/ב/מ/ל/ו/ש/כ + 2-letter combos) —
+   *     handles "המטופלת" / "מטופלת" inflection variants
+   *   - Cross-language trust: if option has English caps tokens AND distractor
+   *     is mostly Hebrew with ≥80 chars, accept it (the regen prompt explicitly
+   *     produces same-language-as-question output; bilingual translation is a
+   *     known pattern, not drift)
    *
    * Baseline history:
-   *   2026-05-03 (pre-regen):  4401 drift suspects (mostly TRUE drift —
-   *                            cerebral-artery option ↔ kidney-drug rationale,
-   *                            from index shifts after ~90 question deletions).
-   *   2026-05-04 (post-regen): 3412 drift suspects (mostly FALSE POSITIVES —
-   *                            detector doesn't recognize Hebrew translations
-   *                            of English option tokens, e.g. option
-   *                            "Anterior communicating artery" with distractor
-   *                            "העורק המתקשר הקדמי (AComA)" — content matches
-   *                            but English-token-overlap is zero).
+   *   2026-05-03 (pre-regen, v1 detector):       4401 drift suspects (TRUE drift)
+   *   2026-05-04 (post-regen, v1 detector):      3412 (mostly cross-language FPs)
+   *   2026-05-04 (post-regen, v2 detector):       295 (after FP fixes)
    *
-   * The ratchet PRESENT_DRIFT_BUDGET below guards against another bulk-drift
-   * event (would push count well past 3500). It does not catch one-off
-   * single-question drift because the orthographic-mismatch noise floor
-   * masks it. A future detector improvement (stemming, cross-language
-   * normalization, embedding similarity) would let us tighten the budget
-   * substantially.
-   *
-   * If this fails: a recent deletion or regen-pass desynced distractors from
-   * questions. Re-run `node scripts/generate_distractors.cjs --force` for
-   * affected entries (or use the strip-drifted-then-regen pattern from
-   * .audit_logs/track_i_strip_drifted.py for selective regeneration).
+   * If this fails: a recent deletion or regen pass desynced distractors from
+   * questions. Re-run via the strip-drifted-then-regen pattern from
+   * .audit_logs/track_i_strip_drifted.py + scripts/generate_distractors.cjs.
    */
-  it("content drift: distractor mentions option-specific tokens", () => {
-    // Ratchet — current orthographic-noise floor + 3% buffer.
-    // Tighten when the detector gets cross-language awareness.
-    const PRESENT_DRIFT_BUDGET = 3500;
+  it("content drift v2: option signals appear in distractor text", () => {
+    // Ratchet: 295 v2 detections + ~18% buffer.
+    // Tighten as content gets edited and FP rate drops further.
+    const PRESENT_DRIFT_BUDGET = 350;
 
-    const ENG_RE = /\b[A-Z][A-Za-z]{3,}\b/g;
+    const ENG_RE = /\b[A-Z][A-Za-z]{2,}\b/g; // ≥3 chars (caps-leading)
     const PARENS_RE = /\(([^)]{2,40})\)/g;
-    const HEB_RE = /[֐-׿][֐-׿֑-ׇ]{4,}/g;
+    const HEB_RE = /[֐-׿][֐-׿֑-ׇ]{3,}/g; // ≥4 chars Hebrew
+    const NUM_RE = /\b\d{2,4}\b/g;
+    const ACRONYM_PHRASE_RE = /(?:\b[A-Z][A-Za-z]+\b\s*){2,}/g;
+
     const HEB_STOPWORDS = new Set([
       "הינו","הינה","אינו","אינה","בכל","אחת","מהן","אחד","מהם","אשר",
       "הזה","הזאת","אלו","אלה","יותר","פחות","ביותר","הבאות","הבאים",
@@ -161,36 +158,99 @@ describe("data/distractors.json — drift guard", () => {
       "חולה","מטופל","הטיפול","הסיכון","תרופות","רופא","בדיקה","מעבדה",
       "ההסבר","התשובה","השכיח","השכיחה","הוא","היא","הם","הן",
     ]);
+    const HEB_PREFIXES = ["מה","בה","לה","וה","כה","שה","ה","ב","מ","ל","ו","ש","כ"];
 
-    function extractTokens(text) {
+    function hebStem(word) {
+      // Strip the longest matching prefix that leaves ≥3 chars
+      const sorted = HEB_PREFIXES.slice().sort((a, b) => b.length - a.length);
+      for (const p of sorted) {
+        if (word.startsWith(p) && word.length >= p.length + 3) {
+          return word.slice(p.length);
+        }
+      }
+      return word;
+    }
+
+    function isMostlyHebrew(text, threshold = 0.4) {
+      if (!text) return false;
+      let hebrew = 0, alpha = 0;
+      for (const ch of text) {
+        const code = ch.charCodeAt(0);
+        if (code >= 0x0590 && code <= 0x05FF) hebrew++;
+        if (/\p{L}/u.test(ch)) alpha++;
+      }
+      return alpha > 0 && hebrew / alpha >= threshold;
+    }
+
+    function extractEngTokens(text) {
       const out = new Set();
       if (!text) return out;
       for (const m of text.match(ENG_RE) || []) {
-        if (m.length >= 4) out.add(m.toUpperCase());
+        if (m.length >= 3) out.add(m.toUpperCase());
       }
       for (const pm of text.matchAll(PARENS_RE)) {
         const inner = pm[1].trim();
-        const words = inner.match(/\b[A-Z][A-Za-z]{2,}\b/g) || [];
-        for (const w of words) out.add(w.toUpperCase());
-      }
-      for (const m of text.match(HEB_RE) || []) {
-        if (m.length >= 5 && !HEB_STOPWORDS.has(m)) out.add(m);
+        if (inner.length >= 3 && inner.length <= 40) out.add(inner.toUpperCase());
       }
       return out;
     }
 
-    function hasOverlap(tokens, text) {
-      if (tokens.size === 0 || !text) return false;
-      const upper = text.toUpperCase();
-      for (const t of tokens) {
-        // ASCII tokens — case-insensitive
-        if (/^[A-Z]/.test(t)) {
-          if (upper.includes(t)) return true;
-        } else {
-          if (text.includes(t)) return true;
+    function extractHebStems(text) {
+      const out = new Set();
+      if (!text) return out;
+      for (const m of text.match(HEB_RE) || []) {
+        if (m.length < 5) continue;
+        if (HEB_STOPWORDS.has(m)) continue;
+        out.add(hebStem(m));
+      }
+      return out;
+    }
+
+    function buildAcronyms(option) {
+      const out = new Set();
+      if (!option) return out;
+      for (const pm of option.matchAll(ACRONYM_PHRASE_RE)) {
+        const words = pm[0].match(/\b[A-Z][A-Za-z]+\b/g) || [];
+        if (words.length < 2) continue;
+        for (let n = 2; n <= Math.min(words.length, 5); n++) {
+          out.add(words.slice(0, n).map((w) => w[0]).join("").toUpperCase());
         }
       }
-      return false;
+      return out;
+    }
+
+    function extractNumbers(text) {
+      const out = new Set();
+      if (!text) return out;
+      for (const m of text.match(NUM_RE) || []) out.add(m);
+      return out;
+    }
+
+    function detectDrift(option, distractor) {
+      if (!option || !distractor) return { drift: false, signal: false };
+      const eng = extractEngTokens(option);
+      const stems = extractHebStems(option);
+      const acros = buildAcronyms(option);
+      const nums = extractNumbers(option);
+      if (eng.size === 0 && stems.size === 0 && acros.size === 0 && nums.size === 0) {
+        return { drift: false, signal: false };
+      }
+      const upper = distractor.toUpperCase();
+      for (const t of eng) if (upper.includes(t)) return { drift: false, signal: true };
+      for (const a of acros) if (upper.includes(a)) return { drift: false, signal: true };
+      if (nums.size > 0) {
+        const distNums = extractNumbers(distractor);
+        for (const n of nums) if (distNums.has(n)) return { drift: false, signal: true };
+      }
+      if (stems.size > 0) {
+        const distStems = extractHebStems(distractor);
+        for (const s of stems) if (distStems.has(s)) return { drift: false, signal: true };
+      }
+      // Cross-language trust
+      if (eng.size > 0 && isMostlyHebrew(distractor) && distractor.length >= 80) {
+        return { drift: false, signal: true };
+      }
+      return { drift: true, signal: true };
     }
 
     const drifts = [];
@@ -203,30 +263,26 @@ describe("data/distractors.json — drift guard", () => {
         const dist = v[j];
         if (!dist || !String(dist).trim()) continue;
         const opt = q.o[j];
-        if (!opt) continue;
-        const tokens = extractTokens(opt);
-        if (tokens.size === 0) continue; // no extractable tokens — skip
+        const { drift, signal } = detectDrift(opt, dist);
+        if (!signal) continue;
         checked++;
-        if (!hasOverlap(tokens, dist)) {
-          drifts.push({ k, j });
-        }
+        if (drift) drifts.push({ k, j });
       }
     }
 
     if (drifts.length > PRESENT_DRIFT_BUDGET) {
       const sample = drifts.slice(0, 5);
       throw new Error(
-        `Content drift: ${drifts.length} of ${checked} (idx, slot) pairs have ` +
-          `zero token overlap between option text and distractor (budget: ${PRESENT_DRIFT_BUDGET}). ` +
-          `Re-run scripts/generate_distractors.cjs --force for affected entries. ` +
-          `See .audit_logs/track_i_distractors_content_drift.py for the equivalent Python scanner. ` +
+        `Content drift v2: ${drifts.length} of ${checked} (idx, slot) pairs have ` +
+          `zero signal overlap between option text and distractor (budget: ${PRESENT_DRIFT_BUDGET}). ` +
+          `Strip drifted entries via .audit_logs/track_i_strip_drifted.py + ` +
+          `re-run scripts/generate_distractors.cjs. ` +
           `Sample: ${JSON.stringify(sample)}`,
       );
     }
 
-    // Soft signal — log the current count so we can tighten the budget over time.
     if (process.env.VERBOSE_TESTS) {
-      console.log(`[content-drift] ${drifts.length} / ${checked} drifts (budget: ${PRESENT_DRIFT_BUDGET})`);
+      console.log(`[content-drift v2] ${drifts.length} / ${checked} drifts (budget: ${PRESENT_DRIFT_BUDGET})`);
     }
   });
 });
