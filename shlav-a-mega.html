@@ -6658,8 +6658,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.37';
+const APP_VERSION='10.64.38';
 const CHANGELOG={
+'10.64.38':[
+'🧹 Track I — distractors.json content-drift regeneration (THE BIG ONE). Pre-fix: 55.4% of questions (2,074/3,743) had at least 1 distractor referencing wrong content (e.g. cerebral-arteries question paired with kidney-drug rationale). Root cause: ~90 question deletions across v10.64.2/4/7/8/11 shifted indices but distractors.json kept original numbering, so the late half of the dataset was systematically misaligned. The structural test passed because empty-slot position transposes alongside c, but content stayed behind. Fix: stripped the 2,074 drifted entries via Track-I option-token-overlap detector, regenerated all 2,074 via Toranot proxy on claude-sonnet-4-6 (with claude-haiku-4-5 cleanup pass for 9 stubborn JSON-format holdouts). Now 3,743/3,743 entries, all content-aligned to current question indices. Added content-drift CI guard in tests/distractorsDrift.test.js (PRESENT_DRIFT_BUDGET=3500, ratchets at the orthographic-noise floor — detector currently doesn\'t recognize Hebrew translations of English option tokens, so the budget is set above that ceiling rather than at zero; future smarter detector would tighten it). 1110→1111 tests. See `.audit_logs/TRACK_I_FINDINGS.md` + `track_i_strip_drifted.py`.',
+],
 '10.64.37':[
 '🔗 Track M — fixed mis-routed ref on idx=347 (clozapine-induced agranulocytosis question, ti=8). Was `Hazzard Ch 44 — SLEEP DISORDERS` (clearly wrong — sleep is not the topic). Aligned with its 2021-Jun sibling (idx=2408): `Hazzard Ch 22 — MEDICATION PRESCRIBING AND DE-PRESCRIBING`. Found while investigating the Track K side-finding: 4 condensed 2021-Dec entries (idx 285, 287, 299, 347) are intentional curator-written second-editions of 2021-Jun originals (idx 2402, 2403, 2405, 2408), not parser by-products. Three have defensible refs; only idx 347 had this clear mis-routing. See `.audit_logs/TRACK_M_FINDINGS.md`.',
 ],
