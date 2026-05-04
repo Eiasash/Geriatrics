@@ -6288,13 +6288,16 @@ async function cloudBackup(){
     try{_mockHist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');}catch(e){}
     try{_sessions=JSON.parse(localStorage.getItem('samega_sessions')||'[]');}catch(e){}
     const _bundled={...S,_mockHist,_sessions};
-    const payload={id:_sbDeviceId(),data:_bundled,updated_at:new Date().toISOString()};
-    // Native upsert via PostgREST Prefer header — single round-trip, no 409 noise
-    // on duplicate-PK retries (vs prior POST→409→PATCH dance).
-    const res=await fetch(SUPA_URL+'/rest/v1/samega_backups',{
+    // v10.64.42 (Track-Q): write path migrated to SECURITY DEFINER RPC backup_set,
+    // mirroring the Phase-2 read path (backup_get). Direct PostgREST INSERT was
+    // returning 401/42501 under the new sb_publishable_* key format even though
+    // RLS policies are permissive; the RPC bypasses RLS via SECURITY DEFINER and
+    // uses server-side now() (no client clock skew). Backwards-compatible —
+    // legacy rows keyed by id continue to work.
+    const res=await fetch(SUPA_URL+'/rest/v1/rpc/backup_set',{
       method:'POST',
-      headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
-      body:JSON.stringify(payload)
+      headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_app:'geri',p_id:_sbDeviceId(),p_data:_bundled})
     });
     if(res.ok){
       ok=true;
@@ -6658,8 +6661,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.41';
+const APP_VERSION='10.64.42';
 const CHANGELOG={
+'10.64.42':[
+'☁️ Cloud backup write path fixed (Track-Q) — Sync was failing with "Login required" toast even when the user was logged in. Root cause: Phase 2 (2026-04-29) migrated reads to a SECURITY DEFINER RPC (backup_get) but left writes on direct PostgREST POST /rest/v1/samega_backups. The new sb_publishable_* key format interacts differently with RLS than the legacy anon JWT, so direct table inserts return 401/PG-42501 ("violates RLS policy") despite the policies being permissive (with_check=true). The IM v10.4.12 CHANGELOG entry misdiagnosed this as "user-scoped ids require auth session" — actually a key-format / role-context regression. Fix: added backup_set(p_app, p_id, p_data) SECURITY DEFINER RPC in Supabase project krmlzwwelqvlfslwltol that handles the upsert for all three sibling apps (geri/samega + pnimit + mishpacha). Client now POSTs to /rest/v1/rpc/backup_set instead. Server-side now() eliminates client clock-skew back-dates. Tested end-to-end: 200 OK + correct round-trip read. Sibling apps (Pnimit, Mishpacha, ward-helper) have the same bug — they share the same Supabase project, so the RPC is already available; they just need their cloudBackup client code migrated in their own sessions.',
+],
 '10.64.41':[
 '🐛 Study Plan stale count fix — the intro text in src/study_plan.js was hardcoded "(3,833 שאלות, 46 נושאים)" but the actual count has been 3,743 since v10.64.11\'s orphan deletes. v10.64.18 refreshed `data/syllabus_data.json` but missed this UI string. Now computed dynamically from `_SYLLABUS.Geri.total_questions_analyzed` with a 3,743/46 literal fallback for first-render before syllabus.json fetches. Caught from a user-uploaded screenshot showing "3,833 שאלות" on Settings → תכנית לימוד.',
 '🧪 Test coverage expansion (+6 tests in tests/dataIntegrity.test.js, total 1110 → 1116):',
