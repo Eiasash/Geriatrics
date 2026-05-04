@@ -1,0 +1,74 @@
+[
+  {
+    "idx": 332,
+    "qnum": 68,
+    "hits": 10,
+    "dataset_c": 1,
+    "ima_ans": "ב",
+    "agree": "AGREE"
+  },
+  {
+    "idx": 338,
+    "qnum": 74,
+    "hits": 8,
+    "dataset_c": 3,
+    "ima_ans": "ד",
+    "agree": "AGREE"
+  },
+  {
+    "idx": 339,
+    "qnum": 75,
+    "hits": 7,
+    "dataset_c": 0,
+    "ima_ans": "א",
+    "agree": "AGREE"
+  },
+  {
+    "idx": 341,
+    "qnum": 30,
+    "hits": 5,
+    "dataset_c": 3,
+    "ima_ans": "ג",
+    "agree": "disagree"
+  },
+  {
+    "idx": 345,
+    "qnum": 81,
+    "hits": 7,
+    "dataset_c": 2,
+    "ima_ans": "ג",
+    "agree": "AGREE"
+  },
+  {
+    "idx": 349,
+    "qnum": 85,
+    "hits": 5,
+    "dataset_c": 2,
+    "ima_ans": "ג",
+    "agree": "AGREE"
+  },
+  {
+    "idx": 354,
+    "qnum": 90,
+    "hits": 11,
+    "dataset_c": 0,
+    "ima_ans": "א",
+    "agree": "AGREE"
+  },
+  {
+    "idx": 360,
+    "qnum": 96,
+    "hits": 8,
+    "dataset_c": 2,
+    "ima_ans": "ג",
+    "agree": "AGREE"
+  },
+  {
+    "idx": 2515,
+    "qnum": 5,
+    "hits": 5,
+    "dataset_c": 2,
+    "ima_ans": "ד",
+    "agree": "disagree"
+  }
+]
