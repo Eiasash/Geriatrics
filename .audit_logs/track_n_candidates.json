@@ -1,0 +1,1046 @@
+[
+  {
+    "idx": 47,
+    "tag": "2024-May-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "DEPRESSION",
+      "MAJOR"
+    ],
+    "candidates": [
+      {
+        "qnum": 16,
+        "hits": 2,
+        "eng": 2,
+        "heb": 0,
+        "tokens": [
+          "DEPRESSION",
+          "MAJOR"
+        ],
+        "preview": ". \n בן74\n . מזה כחודשיים תסמיני דיכאון המשפיעים על התפקוד היומיומי. נבדק במרפאה\n ובוצעPHQ9\n . מצ\"ב תמונת\nהתוצאה של המבחן"
+      },
+      {
+        "qnum": 88,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "MAJOR"
+        ],
+        "preview": ". \n ?מה נכון לגבי טיפול בנוגדי טסיות כטיפול מניעתי באירוע קרדיווסקולרי \n \nא.\n טיפול ב-\nASPIRIN \n \n במינון נמוך למניעה רא"
+      }
+    ]
+  },
+  {
+    "idx": 104,
+    "tag": "2020",
+    "status": "ok",
+    "tokens_searched": [
+      "תרופות",
+      "דיכאון",
+      "לרפואה",
+      "ושוחרר",
+      "הגורמים",
+      "לטיפול",
+      "כקשורים",
+      "במבוגרים",
+      "תפקודית",
+      "לירידה"
+    ],
+    "candidates": [
+      {
+        "qnum": 97,
+        "hits": 8,
+        "eng": 0,
+        "heb": 8,
+        "tokens": [
+          "דיכאון",
+          "לרפואה",
+          "ושוחרר",
+          "הגורמים",
+          "כקשורים"
+        ],
+        "preview": ".\n בן94\n., נבדק במחלקה לרפואה דחופה ושוחרר לביתו \nכל הגורמים הבאים \n הוכחו\nכקשורים לירידה תפקודית במבוגרים לאחר ביקור \n "
+      },
+      {
+        "qnum": 84,
+        "hits": 3,
+        "eng": 0,
+        "heb": 3,
+        "tokens": [
+          "תרופות",
+          "לטיפול",
+          "תפקודית"
+        ],
+        "preview": ".\n בת89\n, \n מאושפזת במחלקה פנימית בבית חולים כללי בשל דלקת ריאות. עד האשפוז הנוכחי  גרה\n ,בביתה בגפה\nנעזרה במטפלת מ חוק "
+      },
+      {
+        "qnum": 8,
+        "hits": 2,
+        "eng": 0,
+        "heb": 2,
+        "tokens": [
+          "תרופות",
+          "ושוחרר"
+        ],
+        "preview": ". \n בן75, מעשן כבד, אובחן כסובל מ- \nCOPD\n \nCHRONIC OBSTRUCTIVE PULMONARY) DISEASE\n .)\n ברקע- \n יתר לחץ דם וסוכרת. מטופל "
+      }
+    ]
+  },
+  {
+    "idx": 154,
+    "tag": "2020",
+    "status": "ok",
+    "tokens_searched": [
+      "RAMIPRIL",
+      "LERCANDIPINE",
+      "DETRUSITOL",
+      "TOLTERODINE",
+      "VESICARE",
+      "SOLIFENACIN",
+      "VASODIP",
+      "TRITACE"
+    ],
+    "candidates": [
+      {
+        "qnum": 58,
+        "hits": 3,
+        "eng": 3,
+        "heb": 0,
+        "tokens": [
+          "RAMIPRIL",
+          "VASODIP",
+          "TRITACE"
+        ],
+        "preview": ".\n \nבשחרור הומלץ על טיפול ב- \nASPIRIN\n( ,\nCLOPIDOGREL\n \nPLAVIX  (\n ו- \nATORVASTATIN\n \n(LIPITOR)\n .\n \nאיזו מבין רשימות תר"
+      },
+      {
+        "qnum": 82,
+        "hits": 3,
+        "eng": 3,
+        "heb": 0,
+        "tokens": [
+          "RAMIPRIL",
+          "VASODIP",
+          "TRITACE"
+        ],
+        "preview": ",פנה לרופא המשפחה עקב אירועים חוזרים של התעלפות .ברקע - סובל מיתר ל\"ד ,\nהשמנת יתר ,סוכרת \n.ודמנציה \n \n :תרופות קבועות \nR"
+      },
+      {
+        "qnum": 51,
+        "hits": 2,
+        "eng": 2,
+        "heb": 0,
+        "tokens": [
+          "RAMIPRIL",
+          "TRITACE"
+        ],
+        "preview": ".\n בת94\n , גרה לבדה עד האשפוז, לא ידוע על ירידה קוגניטיבית. מאושפזת במחלקה פנימית\nבשל \n( אלח דםSEPSIS\n )\n ממקור של .דלקת"
+      }
+    ]
+  },
+  {
+    "idx": 2442,
+    "tag": "2020",
+    "status": "ok",
+    "tokens_searched": [
+      "שתתמוטט",
+      "ההחלטה",
+      "סוציאלי",
+      "מהצוות",
+      "האבחנה",
+      "המוחלטת",
+      "להעביר",
+      "מאושפזת",
+      "לחלוטין",
+      "זכויות"
+    ],
+    "candidates": [
+      {
+        "qnum": 84,
+        "hits": 2,
+        "eng": 0,
+        "heb": 2,
+        "tokens": [
+          "להעביר",
+          "מאושפזת"
+        ],
+        "preview": ".\n בת89\n, \n מאושפזת במחלקה פנימית בבית חולים כללי בשל דלקת ריאות. עד האשפוז הנוכחי  גרה\n ,בביתה בגפה\nנעזרה במטפלת מ חוק "
+      },
+      {
+        "qnum": 78,
+        "hits": 1,
+        "eng": 0,
+        "heb": 1,
+        "tokens": [
+          "להעביר"
+        ],
+        "preview": ",סובלת מסוכרת לא מאוזנת ,ירידה בשמיעה ,ופרפור עליות .היא מתגוררת בביתה לבדה ,\nולאחרונה אובחנה כסובלת מדמנציה .\n :לאחרונה"
+      },
+      {
+        "qnum": 92,
+        "hits": 1,
+        "eng": 0,
+        "heb": 1,
+        "tokens": [
+          "האבחנה"
+        ],
+        "preview": ",התקבל במרפאה הגריאטרית בשל תלונות על שינויים קוגניטיביים .\n הוא אדם פעיל, עצמאי\nב- \nADL\n ו- \nIADL. לדבריו ,מזה כשנתיים "
+      }
+    ]
+  },
+  {
+    "idx": 2518,
+    "tag": "2022-Jun-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "ברוקדייל",
+      "אוכלוסיית",
+      "בישראל",
+      "נזקקים",
+      "בהליכה",
+      "מדרגות",
+      "במוסדות",
+      "נמצאים",
+      "בעליית",
+      "מתקשים"
+    ],
+    "candidates": [
+      {
+        "qnum": 85,
+        "hits": 10,
+        "eng": 0,
+        "heb": 10,
+        "tokens": [
+          "ברוקדייל",
+          "בישראל",
+          "נזקקים",
+          "בהליכה",
+          "מדרגות"
+        ],
+        "preview": "?בישראל לפי לקט הנתונים של מכון ברוקדייל \n \nא.\n \n מעל50%\n \n \"מהם מקבלים עזרה מ\"חוק סיעוד \nב.\n \n20%\n מתוכם  נמצאים במוסדו"
+      },
+      {
+        "qnum": 38,
+        "hits": 1,
+        "eng": 0,
+        "heb": 1,
+        "tokens": [
+          "בהליכה"
+        ],
+        "preview": ". בן68 \n , מזה מספר חודשים מתלונן על כאבי גב תחתון שמופיעים בעמידה ממושכת\n .ובהליכה, מוקלים בישיבה ובכיפוף קדימה \n במסגר"
+      },
+      {
+        "qnum": 63,
+        "hits": 1,
+        "eng": 0,
+        "heb": 1,
+        "tokens": [
+          "אוכלוסיית"
+        ],
+        "preview": ". מה\nנכון לגבי אוכלוסיית בני ה- "
+      }
+    ]
+  },
+  {
+    "idx": 2525,
+    "tag": "2022-Jun-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "CRITERIA",
+      "CLASSIFICATION",
+      "ARTERITIS",
+      "GIANT",
+      "CELL"
+    ],
+    "candidates": [
+      {
+        "qnum": 72,
+        "hits": 5,
+        "eng": 5,
+        "heb": 0,
+        "tokens": [
+          "CRITERIA",
+          "CLASSIFICATION",
+          "ARTERITIS",
+          "GIANT",
+          "CELL"
+        ],
+        "preview": ". מה מהבאים מהווה קריטריון לאבחנה/ קלסיפיקציה של-\nGIANT CELL ARTERITIS \n \n לפי–\n  \nACR CLASSIFICATION CRITERIA – 1990\n ?"
+      },
+      {
+        "qnum": 21,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "CRITERIA"
+        ],
+        "preview": ". איזה טיפול תרופתי\nאינו מומלץ \n בקשישים על פי2019\n \nAGS BEERS CRITERIA\n \n ?\n \n \n .אAmiodarone\n \n כקו שני לטיפול בפרפור "
+      },
+      {
+        "qnum": 31,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "CELL"
+        ],
+        "preview": ". בן85\n \n התקבל למחלקה פנימית גריאטרית מאשפוז יום אונקולוגי עקב ירידה במצב\n ההכרה. ברקעTRANSITIONAL CELL CARCINOMA\n  \n מ"
+      }
+    ]
+  },
+  {
+    "idx": 2594,
+    "tag": "2022-Jun-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "ENALAPRIL",
+      "METFORMIN"
+    ],
+    "candidates": [
+      {
+        "qnum": 14,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "ENALAPRIL"
+        ],
+        "preview": ". בת76, הסובלת מיתר לחץ דם. מטופלת ב- \nENALAPRIL\n \n ,)( אנלדקס \nBISOPROLOL\n \n , )(קרדילוקVALSARTAN \n ( דיובן)   ו- \nDOXA"
+      },
+      {
+        "qnum": 24,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "METFORMIN"
+        ],
+        "preview": ". בת76\n  , עצמאית וללא ירידה קוגניטיבית, ברקע סוכרת, יתר לחץ דם\nואוסטאוארטריטיס. תרופות- \nMETFORMIN\n ,\nAMLODIPINE\n ו- \nI"
+      },
+      {
+        "qnum": 66,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "METFORMIN"
+        ],
+        "preview": ". בת75\n \n התאשפזה לאחרונה עקב בצקת ריאה על רקע אי ספיקת לב עםEF\n- \n30%\n ,\n משנית למחלת לב איסכמית. גורמי סיכון: סוכרת, ה"
+      }
+    ]
+  },
+  {
+    "idx": 2641,
+    "tag": "2023-Jun-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "בטיטר גבוה סגוליותSPECIFICITY",
+      "Erythematosus",
+      "Systemic Lupus Erythematosus",
+      "Lupus",
+      "Systemic"
+    ],
+    "candidates": [
+      {
+        "qnum": 57,
+        "hits": 5,
+        "eng": 5,
+        "heb": 0,
+        "tokens": [
+          "בטיטר גבוה סגוליותSPECIFICITY",
+          "Erythematosus",
+          "Systemic Lupus Erythematosus",
+          "Lupus",
+          "Systemic"
+        ],
+        "preview": "מה \n מאפייןSLE\n (\nSystemic Lupus Erythematosus\n) \n ?בקשישים לעומת צעירים \n \nא. \n השכיחות בגברים קשישים דומה לשכיחות בנשי"
+      }
+    ]
+  },
+  {
+    "idx": 2642,
+    "tag": "2023-Jun-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "פתולוגית",
+      "פשוטים",
+      "משפטים",
+      "מדמנציה",
+      "פתולוגיה",
+      "אפרקסיה",
+      "בתפקוד",
+      "מפושטת",
+      "מורכבים",
+      "וסקולרית"
+    ],
+    "candidates": [
+      {
+        "qnum": 58,
+        "hits": 10,
+        "eng": 0,
+        "heb": 10,
+        "tokens": [
+          "פתולוגית",
+          "פשוטים",
+          "משפטים",
+          "מדמנציה",
+          "פתולוגיה"
+        ],
+        "preview": ". מטופל הסובל מדמנציה עם קושי ניכר\nבתפקוד השפתי . המטופל מסוגל להבין משפטים\n פשוטים, אך לא משפטים מורכבים. קיימת אפרקסיה"
+      },
+      {
+        "qnum": 16,
+        "hits": 2,
+        "eng": 0,
+        "heb": 2,
+        "tokens": [
+          "פתולוגיה",
+          "בתפקוד"
+        ],
+        "preview": ". איזה מההיגדים הבאים מתאר נכונה את השינויים?בתפקוד הכלייתי בזקנים \nא. פרוטאינוריה מהווה שינוי פיזיולוגי צפוי בזקנים בשל"
+      },
+      {
+        "qnum": 81,
+        "hits": 2,
+        "eng": 0,
+        "heb": 2,
+        "tokens": [
+          "בתפקוד",
+          "וסקולרית"
+        ],
+        "preview": ". בן84, הופנה להערכ\nה \n .בחשד לדמנציה \n המשפחה מדווחת על ירידה בזיכרון ., קשיים בתפקוד יומיומי, הליכה איטית והפרעות בשינ"
+      }
+    ]
+  },
+  {
+    "idx": 2643,
+    "tag": "2023-Jun-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "CHOLIESTERASE",
+      "BODIES",
+      "MMSE",
+      "DEMENTIA",
+      "WITH",
+      "LEWY"
+    ],
+    "candidates": [
+      {
+        "qnum": 59,
+        "hits": 6,
+        "eng": 6,
+        "heb": 0,
+        "tokens": [
+          "CHOLIESTERASE",
+          "BODIES",
+          "MMSE",
+          "DEMENTIA",
+          "WITH"
+        ],
+        "preview": "במי מ המטופלים הבאים יש מקום לטיפול במעכבי \nCHOLIESTERASE\n ?\n \nא. \n ,מטופל עם תלונות על ירידה בזיכרוןMMSE\n \n24/30\n ,ללא "
+      },
+      {
+        "qnum": 7,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "MMSE"
+        ],
+        "preview": ". בן84\n ,\n .סובל מדמנציה מסוג אלצהיימר מזה שנתיים פנה למרפאה עקב ירידה .תפקודית\n לדברי המשפחה הוא ממעט לצאת מהבית ומסתוב"
+      },
+      {
+        "qnum": 9,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "WITH"
+        ],
+        "preview": ". \n על פי המאמרTime to Clinical Benefit of Intensive Blood Pressure Lowering in \nPatients 60 Years and Older With Hypert"
+      }
+    ]
+  },
+  {
+    "idx": 2646,
+    "tag": "2023-Jun-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "BETMIGA",
+      "MIRABEGRON"
+    ],
+    "candidates": [
+      {
+        "qnum": 62,
+        "hits": 2,
+        "eng": 2,
+        "heb": 0,
+        "tokens": [
+          "BETMIGA",
+          "MIRABEGRON"
+        ],
+        "preview": ".\n \n בן80\n ., לוקה בדמנציה מסוג אלצהיימר, מתגורר בבית אבות\nתפקודית \n–\n \n מתהלך עם\nהליכון, משתתף בפעילות יומיומית בבית אב"
+      },
+      {
+        "qnum": 79,
+        "hits": 2,
+        "eng": 2,
+        "heb": 0,
+        "tokens": [
+          "BETMIGA",
+          "MIRABEGRON"
+        ],
+        "preview": ".מטופל הסובל מדמנציה ומטופל ב- \nRIVASTIGMINE\n (\nEXELON\n )  החל לאחרונה\n לסבול מבעיות בשליטה במתן שתן. מה מומלץ\nבמצב זה?\n"
+      }
+    ]
+  },
+  {
+    "idx": 2884,
+    "tag": "2024-May-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "Frontotemporal",
+      "Alzheimer",
+      "Dementia",
+      "Bodies",
+      "Vascular"
+    ],
+    "candidates": [
+      {
+        "qnum": 25,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "Dementia"
+        ],
+        "preview": ". מה מאפיין את ה- \nBEHAVIORAL VARIANT\n \n שלFRONTO-TEMPORAL DEMENTIA \n \n בש?לבים מוקדמים \n                \n \nא.\n \nFLUENT "
+      },
+      {
+        "qnum": 33,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "Dementia"
+        ],
+        "preview": ". \n לפי מאמרה שלMITCHELL \n \n בנושאADVANCED DEMENTIA\n , מי מהטופלים הבאים\n ?הסובלים מדמנציה, נכנס להגדרה של תוחלת חיים צפ"
+      },
+      {
+        "qnum": 63,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "Alzheimer"
+        ],
+        "preview": ". לאיזה מהבאים \n יש קורלציה גבוהה עם \nTRAUMATIC BRAIN INJURY\n ?\n \n \nא.\n \nALZHEIMER’S DISEASE\n \nב.\n \nNORMAL PRESSURE HYDR"
+      }
+    ]
+  },
+  {
+    "idx": 2900,
+    "tag": "2024-May-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "CPAP"
+    ],
+    "candidates": [
+      {
+        "qnum": 103,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "CPAP"
+        ],
+        "preview": ". \n בן78\n , ברקע יתר לחץ דם, דיכאון וסוכרת עבר בירור להפרעות שינה ואובחן כסובל מ - \nObstructive Sleep Apnea\n ברמה חמורה."
+      }
+    ]
+  },
+  {
+    "idx": 2949,
+    "tag": "2024-Sep-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "Valsartan",
+      "Sacubitril",
+      "Entresto"
+    ],
+    "candidates": [
+      {
+        "qnum": 85,
+        "hits": 3,
+        "eng": 3,
+        "heb": 0,
+        "tokens": [
+          "Valsartan",
+          "Sacubitril",
+          "Entresto"
+        ],
+        "preview": ". \n מה נכון לגבי הטיפול ב- (\nEntresto\n )\nSacubitril-Valsartan\n \n ביחס למעכביACE\n ?\n \nא .\n \n גורם לפחות עליה בקריאטינין \n"
+      }
+    ]
+  },
+  {
+    "idx": 3012,
+    "tag": "2025-Jun-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "NSAIDS",
+      "PARACETAMOL"
+    ],
+    "candidates": [
+      {
+        "qnum": 1,
+        "hits": 2,
+        "eng": 2,
+        "heb": 0,
+        "tokens": [
+          "NSAIDS",
+          "PARACETAMOL"
+        ],
+        "preview": "גרם של\nPARACETAMOL\n \n תוך ורידי4\n \n?פעמים ביום. מה נכון לגבי איזון כאב במטופל זה בעת האשפוז \nא.\n אין לתת טיפול ממשפחת ה-"
+      }
+    ]
+  },
+  {
+    "idx": 3034,
+    "tag": "2025-Jun-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "בסוכרת",
+      "באינסולין",
+      "מתקדמת",
+      "דמנציה",
+      "המוגלובין",
+      "סיעודי",
+      "מסוכרר"
+    ],
+    "candidates": [
+      {
+        "qnum": 73,
+        "hits": 7,
+        "eng": 0,
+        "heb": 7,
+        "tokens": [
+          "בסוכרת",
+          "באינסולין",
+          "מתקדמת",
+          "דמנציה",
+          "המוגלובין"
+        ],
+        "preview": ".\n ?מה הוא יעד הטיפול בסוכרת לקשיש סיעודי עם דמנציה מתקדמת שלא מקבל טיפול באינסולין \nא.\n \n סוכר בצום בין90-130\n \nב.\n \n ס"
+      },
+      {
+        "qnum": 34,
+        "hits": 3,
+        "eng": 0,
+        "heb": 3,
+        "tokens": [
+          "דמנציה",
+          "המוגלובין",
+          "מסוכרר"
+        ],
+        "preview": ".\n בן91\n מתגורר בגפו. ברקע: \n( סוכרת, יתר לחץ דם, אוסטיאוארטריטיס, ניוון רשתיתAMD\n) \n ,קטרקט ואנמיה על רקע תלסמיה מיינור"
+      },
+      {
+        "qnum": 22,
+        "hits": 2,
+        "eng": 0,
+        "heb": 2,
+        "tokens": [
+          "מתקדמת",
+          "דמנציה"
+        ],
+        "preview": ".\n בן75\n , לוקה בדמנציה מתקדמת, אובחן עםAortic Stenosis\n \n .במסגרת בירור כאבים בחזה\nבאקו לב שטח מסת ם2\n0.6 cm\n , מפל לחצ"
+      }
+    ]
+  },
+  {
+    "idx": 3182,
+    "tag": "2024-Sep-Basic",
+    "status": "ok",
+    "tokens_searched": [
+      "Dopicar",
+      "Dyskinesias"
+    ],
+    "candidates": [
+      {
+        "qnum": 9,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "Dopicar"
+        ],
+        "preview": "שנים. מטופל ב -\n Dopicar \n \n כדור אחד4\n \n .פעמים ביום \n .לאחרונה הופיעו תנועות שרירים לא רצוניות דמויות ריקוד \n ?מה ההמל"
+      }
+    ]
+  },
+  {
+    "idx": 3188,
+    "tag": "2022-Jun-Subspec",
+    "status": "ok",
+    "tokens_searched": [
+      "ESCITALOPRAM",
+      "MIRTAZAPINE",
+      "QUETIAPINE"
+    ],
+    "candidates": [
+      {
+        "qnum": 52,
+        "hits": 3,
+        "eng": 3,
+        "heb": 0,
+        "tokens": [
+          "ESCITALOPRAM",
+          "MIRTAZAPINE",
+          "QUETIAPINE"
+        ],
+        "preview": ". בן75\n , מאובחן עם דיכאון. מזה שבועיים מקבל טיפול שלESCITALOPRAM\n \n במינון5\n \n .מ\"ג. מדווח על שיפור מסוים במצב הרוח, אך"
+      },
+      {
+        "qnum": 88,
+        "hits": 2,
+        "eng": 2,
+        "heb": 0,
+        "tokens": [
+          "ESCITALOPRAM",
+          "MIRTAZAPINE"
+        ],
+        "preview": ". בן78, אובחן עם דיכאון מג'ורי \n( לראשונה בחייו. ברקע אי ספיקת לבNYHA II\n ,)\nMild \nCognitive Impairment\n  (\nMCI\n .), יתר"
+      },
+      {
+        "qnum": 42,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "QUETIAPINE"
+        ],
+        "preview": "?. לאיזו מהתרופות הבאות יש השפעה אנטיכולינרגית חזקה ביותר \n \nא.\n \nOLANZAPINE\n   \n )( זיפרקסה \nב.\n \nRISPERIDONE \n   \n)( ר"
+      }
+    ]
+  },
+  {
+    "idx": 3197,
+    "tag": "2022-Jun-Subspec",
+    "status": "ok",
+    "tokens_searched": [
+      "Regurgitation",
+      "Pressure"
+    ],
+    "candidates": [
+      {
+        "qnum": 62,
+        "hits": 2,
+        "eng": 2,
+        "heb": 0,
+        "tokens": [
+          "Regurgitation",
+          "Pressure"
+        ],
+        "preview": ". מהם שינוים הנחשבים\nבגבולות הנורמה במערכת קרדיו-\n ?ווסקולרית בקשישים \n \nא.\n \n  התפתחות שלValvular Regurgitation \n \nב.\n "
+      }
+    ]
+  },
+  {
+    "idx": 3284,
+    "tag": "2023-Jun-Subspec",
+    "status": "ok",
+    "tokens_searched": [
+      "ROTATION",
+      "INTERNAL"
+    ],
+    "candidates": [
+      {
+        "qnum": 51,
+        "hits": 2,
+        "eng": 2,
+        "heb": 0,
+        "tokens": [
+          "ROTATION",
+          "INTERNAL"
+        ],
+        "preview": ". \n ?איזה מהמשפטים הבאים מתאר בצורה נכונה ביותר שינוים בתבנית הליכה בגיל מבוגר \nא. נטייה ל-\nINTERNAL ROTATION \n \n של כף "
+      },
+      {
+        "qnum": 8,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "INTERNAL"
+        ],
+        "preview": ". בת78\n ., תשושה בתפקודה, ללא חסר קוגניטיבי. ברקע: סוכרת עם נפרופתיה ויתר לחץ דם\n עקב אירוע שלTIA\n \n עברה בדיקת דופלר קר"
+      }
+    ]
+  },
+  {
+    "idx": 3285,
+    "tag": "2023-Jun-Subspec",
+    "status": "ok",
+    "tokens_searched": [
+      "היפרליפידימיה",
+      "בירידה",
+      "בהליכה",
+      "בישיבה",
+      "לרגליים",
+      "באנמנזה",
+      "רדימות",
+      "מתחילה",
+      "הספינאלית",
+      "לפתולוגיה"
+    ],
+    "candidates": [
+      {
+        "qnum": 52,
+        "hits": 24,
+        "eng": 0,
+        "heb": 24,
+        "tokens": [
+          "היפרליפידימיה",
+          "בירידה",
+          "בהליכה",
+          "בישיבה",
+          "לרגליים"
+        ],
+        "preview": ".\n בת78\n ,\n ברקע סוכרת, יל\"ד, היפרליפידימיה . בחצי שנה האחרונה, מתחילה לסבול מכאבי\n .גב, ללא עדות לפתולוגיה במעבדה או שב"
+      },
+      {
+        "qnum": 1,
+        "hits": 2,
+        "eng": 0,
+        "heb": 2,
+        "tokens": [
+          "האחרונה",
+          "ברגליים"
+        ],
+        "preview": ". בן83\n, בשנה האחרונה סובל \n .מקוצר נשימה במאמץ ומדווח על בצקת ברגליים \n איזה שינוי של\nהזדקנות המערכת הקרדיוו\nס ?קולארית"
+      },
+      {
+        "qnum": 8,
+        "hits": 1,
+        "eng": 0,
+        "heb": 1,
+        "tokens": [
+          "היצרות"
+        ],
+        "preview": ". בת78\n ., תשושה בתפקודה, ללא חסר קוגניטיבי. ברקע: סוכרת עם נפרופתיה ויתר לחץ דם\n עקב אירוע שלTIA\n \n עברה בדיקת דופלר קר"
+      }
+    ]
+  },
+  {
+    "idx": 3286,
+    "tag": "2023-Jun-Subspec",
+    "status": "ok",
+    "tokens_searched": [
+      "Hormone",
+      "SCORE",
+      "CREATININE",
+      "TERIPARATIDE",
+      "BISPHOSPHONATES",
+      "HRT",
+      "Replacement",
+      "Therapy",
+      "Vitamin",
+      "FORTEO"
+    ],
+    "candidates": [
+      {
+        "qnum": 52,
+        "hits": 7,
+        "eng": 7,
+        "heb": 0,
+        "tokens": [
+          "Hormone",
+          "TERIPARATIDE",
+          "BISPHOSPHONATES",
+          "HRT",
+          "Replacement"
+        ],
+        "preview": "> 50 \n \n ?מה הטיפול המומלץ במקרה זה \nא. \n המשך מתן סידן וויטמין עם הקפדה על היענות לטיפול \nב. \nBISPHOSPHONATES \n \nג. \nTE"
+      },
+      {
+        "qnum": 134,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "CREATININE"
+        ],
+        "preview": "135-146 \nK          mmol/L \n5.1 \n3.5-5.3 \nCREATININE    mg/dL \n0.9 \n0.7-1.3 \nBUN  mg/dL "
+      },
+      {
+        "qnum": 30,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "Replacement"
+        ],
+        "preview": ".\n בן88\n , לאחר שבר בצוואר הירך וניתוחTOTAL HIP REPLACEMENT\n , מתלונן על עצירות\n .וכאב בטן. בבדיקה גופנית: בטן תפוחה ורג"
+      }
+    ]
+  },
+  {
+    "idx": 3289,
+    "tag": "2023-Jun-Subspec",
+    "status": "ok",
+    "tokens_searched": [
+      "פתולוגית",
+      "פשוטים",
+      "משפטים",
+      "מדמנציה",
+      "פתולוגיה",
+      "אפרקסיה",
+      "בתפקוד",
+      "מפושטת",
+      "מורכבים",
+      "וסקולרית"
+    ],
+    "candidates": [
+      {
+        "qnum": 58,
+        "hits": 10,
+        "eng": 0,
+        "heb": 10,
+        "tokens": [
+          "פתולוגית",
+          "פשוטים",
+          "משפטים",
+          "מדמנציה",
+          "פתולוגיה"
+        ],
+        "preview": ". מטופל הסובל מדמנציה עם קושי ניכר\nבתפקוד השפתי . המטופל מסוגל להבין משפטים\n פשוטים, אך לא משפטים מורכבים. קיימת אפרקסיה"
+      },
+      {
+        "qnum": 16,
+        "hits": 2,
+        "eng": 0,
+        "heb": 2,
+        "tokens": [
+          "פתולוגיה",
+          "בתפקוד"
+        ],
+        "preview": ". איזה מההיגדים הבאים מתאר נכונה את השינויים?בתפקוד הכלייתי בזקנים \nא. פרוטאינוריה מהווה שינוי פיזיולוגי צפוי בזקנים בשל"
+      },
+      {
+        "qnum": 81,
+        "hits": 2,
+        "eng": 0,
+        "heb": 2,
+        "tokens": [
+          "בתפקוד",
+          "וסקולרית"
+        ],
+        "preview": ". בן84, הופנה להערכ\nה \n .בחשד לדמנציה \n המשפחה מדווחת על ירידה בזיכרון ., קשיים בתפקוד יומיומי, הליכה איטית והפרעות בשינ"
+      }
+    ]
+  },
+  {
+    "idx": 3497,
+    "tag": "2024-Sep-Subspec",
+    "status": "ok",
+    "tokens_searched": [
+      "ARHTRITIS",
+      "ANTI",
+      "ARTHRITIS"
+    ],
+    "candidates": [
+      {
+        "qnum": 72,
+        "hits": 3,
+        "eng": 3,
+        "heb": 0,
+        "tokens": [
+          "ARHTRITIS",
+          "ANTI",
+          "ARTHRITIS"
+        ],
+        "preview": ".  \n איזה מהבאים נכון בנוגע לשימוש ב-\nANTI CCP\n \n לאבחנה שלRHEUMATOID ARTHRITIS\n?\n \nא .\n \nANTI CCP\n בעל רגישות זהה ל - \n"
+      },
+      {
+        "qnum": 22,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "ANTI"
+        ],
+        "preview": ".  \n בן67\n , חזר לביקורת לאחר חצי שנה של \n( טיפול תרופתי לדחיפות במתן שתןURGENCY \nINCONTINENCE\n ). \n ברקע הגדלה שפירה של"
+      },
+      {
+        "qnum": 61,
+        "hits": 1,
+        "eng": 1,
+        "heb": 0,
+        "tokens": [
+          "ANTI"
+        ],
+        "preview": ". \n?באיזה מהבאים מתואר שילוב נכון של תרופה לטיפול באלצהיימר עם תופעת הלוואי שלה \nא .\n \nDonepazil\n - \n טכיקרדיה \nב .\n \nGa"
+      }
+    ]
+  },
+  {
+    "idx": 3509,
+    "tag": "2024-Sep-Subspec",
+    "status": "ok",
+    "tokens_searched": [
+      "סימנים",
+      "התמותה",
+      "תפקודי",
+      "לרפואה",
+      "לאשפוז",
+      "הפרוגנוזה",
+      "חיוניים",
+      "קוגניטיבית",
+      "נשימות",
+      "בטיפול"
+    ],
+    "candidates": [
+      {
+        "qnum": 20,
+        "hits": 12,
+        "eng": 0,
+        "heb": 12,
+        "tokens": [
+          "התמותה",
+          "תפקודי",
+          "לאשפוז",
+          "הפרוגנוזה",
+          "בטיפול"
+        ],
+        "preview": "לדקה .\n במעבדה  - \n18,000\n לויקוציטים ,\n תפקודי \n כליה תקינים .\n \n על פי \n מדד \nCURB65\n מה י \n הפרוגנוזה \n והמשך הטיפול "
+      },
+      {
+        "qnum": 88,
+        "hits": 7,
+        "eng": 0,
+        "heb": 7,
+        "tokens": [
+          "סימנים",
+          "לרפואה",
+          "חיוניים",
+          "קוגניטיבית",
+          "מתלונן"
+        ],
+        "preview": "עצמאי ושמור קוגניטיבית ,\n נבדק \n במחלקה לרפואה דחופה \n עקב \n דלקת \n ריאות .\n הוא \n מתלונן על \n שיעול פרודוקטיבי עם \n ליח"
+      },
+      {
+        "qnum": 25,
+        "hits": 2,
+        "eng": 0,
+        "heb": 2,
+        "tokens": [
+          "תפקודי",
+          "לאשפוז"
+        ],
+        "preview": ". \n מי מהבאים סובל מדליריום לע \n פי \n הקריטריונים של \nCAM -Confusion Assessment Method\n \n ?\n \nא .\n \n בן91\n \n עם דמנציה מ"
+      }
+    ]
+  }
+]
