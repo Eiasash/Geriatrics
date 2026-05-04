@@ -54,33 +54,18 @@ Cumulative state:
 
 After v3 augmentation, 24 of original 29 non-2021-Dec unmapped remain. These are hard cases — image-only Qs, very short stems, or curator-rewrites with no token overlap. Estimated 10-15 are recoverable via manual visual matching against `exam_pdfs/`. Marginal vs time cost.
 
-### Workstream C — auto-audit `syllabus_data.json` drift (cross-repo)
+### Optional — verify auto-audit ↔ Geri-repo syllabus parity
 
-**Verified 2026-05-04:** Python `allocate_hours` produces byte-identical output to the JS test fixture **when given the same syllabus** — cross-language algorithm alignment is preserved.
+**Verified 2026-05-04:** No drift. Cross-language algorithm alignment is preserved (Python `allocate_hours` byte-identical to JS test fixture when given same syllabus). All 3 PWA slices (Geri/Pnimit/Mishpacha) in `auto-audit/scripts/syllabus_data.json` match their respective live `data/questions.json` `ti` distributions exactly.
 
-**However:** `auto-audit/scripts/syllabus_data.json` has drifted from `Geriatrics/data/syllabus_data.json`. v10.64.18's syllabus refresh updated Geri-repo locally but didn't propagate to auto-audit. Sample drifts:
-
-| Topic | Geri-repo n | auto-audit n | Δ |
-|---|---|---|---|
-| 27 (Infections) | 174 | 175 | -1 |
-| 5 (Delirium) | 175 | 174 | +1 |
-| 34 (Advance Directives) | 101 | 102 | -1 |
-| 38 (Periop) | 102 | 101 | +1 |
-| 24 (Kidney) | 93 | 95 | -2 |
-
-User-impact: anyone running `python auto-audit/scripts/generate_study_plan.py --app geri ...` gets a slightly different plan than the in-app JS plan. Drift is tiny (≤0.1 hours per topic) — minor, not catastrophic.
-
-**Fix paths:**
-- Run `auto-audit/scripts/refresh_syllabus_data.py` (needs `GITHUB_PAT` env var) — canonical
-- Or copy Geri-repo's Geri slice into auto-audit's syllabus_data.json — manual, only updates Geri
-
-Skipped this session because it's a cross-repo change requiring user approval.
+An earlier finding in this brief claimed drift; that was a methodology error (position-zipped two arrays sorted slightly differently — looked like value swaps but was just sort-order). Nothing to fix.
 
 ### CLOSED workstreams (do not reopen unless reason changed)
 
 - **Workstream 1 — OCR for 2021-Dec PDF.** SUPERSEDED by v3 bundle parser (already used; 13 of original 60 picked up via augmentation). 47 still unmapped, low ROI.
 - **Workstream 2 — Source CSV re-extraction.** **CLOSED** (482/484 done in v10.64.15+16; final 2 done in v10.64.21).
 - **Workstream 3 (formerly "Workstream 4") — `syllabus_data.json` refresh.** **CLOSED** (done in v10.64.18 with CI guard; per-topic n_questions match live `ti` distribution exactly with broken=true counted in dataset analytics; user-pool delta of 22 is the broken=true count). The brief's "Cross-repo dependency on auto-audit" framing was wrong — this was a local-only fix.
+- **Workstream — auto-audit syllabus parity.** **NO ACTION NEEDED.** Verified 2026-05-04 that all 3 PWA slices in auto-audit's syllabus match their live questions.json data. Earlier "drift" finding in this brief was a position-zip diff false-positive (real-data drift was zero; arrays were just sorted differently).
 - **broken=true investigation thread (Tracks D/H/J/K/L/M).** Fully closed as of v10.64.37.
 
 ## What NOT to do
