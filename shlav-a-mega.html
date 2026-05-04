@@ -6658,8 +6658,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.35';
+const APP_VERSION='10.64.36';
 const CHANGELOG={
+'10.64.36':[
+'🔗 Track K — paired the remaining 9 broken=true 2023-Sep duplicates with their canonical entries via option-text-overlap matching. Track H (v10.64.35) used q-stem n-grams; these 9 entries had truncated q-stems (parser dropped multi-part case body), so q-stem matching had nothing to bite on. Option-text overlap is the natural fallback when one column is truncated. All 9 have canonical matches found in 2020 / 2021-Jun exams (idx 2395, 2396, 2399, 2402, 2403, 2405, 2406, 2408, 2409). Updated `broken_reason` metadata to point at canonical idx; broken=true unchanged so canonicals remain authoritative in user pool. 4 of 9 surface c-conflicts (idx 63/126/128/139) for follow-up audit using the same triangulation rule (clinical reasoning + IMA cross-check + Track-A AI validator) before any flips. See `.audit_logs/TRACK_K_FINDINGS.md`.',
+],
 '10.64.31':[
 '☁️ Cloud backup 401/403 now actionable — when Supabase rejects the upsert because the caller isn\'t logged in, surface a Hebrew login-required toast and route to More → Settings with the auth username field focused, instead of toast-less silence (or a generic English "Backup failed: 401" with no path forward). Mirror of IM v10.4.12 / FM v1.21.10. Also fixes a stale `slice(0,200,\'info\')` typo in the generic error branch so the toast tone is now passed correctly.',
 ],
