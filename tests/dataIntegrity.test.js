@@ -247,4 +247,178 @@ describe("cross-file referential integrity", () => {
     }
     expect(drift, `syllabus topic n_questions drift: ${JSON.stringify(drift.slice(0, 5))}`).toEqual([]);
   });
+
+  /**
+   * BROKEN-POINTER INTEGRITY (Track-H/K/N pattern).
+   *
+   * Tracks H/K/N introduced the convention that broken=true entries with
+   * `broken_reason` containing "Duplicate of idx=N" point at a canonical
+   * idx N. If a future deletion removes the canonical or makes it broken
+   * itself, the pointer is orphaned and the audit metadata becomes stale.
+   * This test catches that.
+   *
+   * If this fails: the canonical idx referenced by a broken_reason has
+   * been deleted or itself flagged broken. Re-pair via Track-H/K/N method
+   * (option-text overlap matching) and update broken_reason.
+   */
+  it("broken_reason 'Duplicate of idx=N' pointers reference valid non-broken canonicals", () => {
+    const orphans = [];
+    const POINTER_RE = /Duplicate of idx=(\d+)/i;
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (!q.broken) continue;
+      const reason = q.broken_reason || "";
+      const m = reason.match(POINTER_RE);
+      if (!m) continue; // broken without pointer is allowed (legitimate gaps)
+      const canonicalIdx = Number(m[1]);
+      if (!Number.isInteger(canonicalIdx) || canonicalIdx < 0 || canonicalIdx >= questions.length) {
+        orphans.push({ broken: i, points_at: canonicalIdx, status: "out_of_range" });
+        continue;
+      }
+      const canonical = questions[canonicalIdx];
+      if (canonical.broken) {
+        orphans.push({ broken: i, points_at: canonicalIdx, status: "canonical_also_broken" });
+      }
+    }
+    expect(orphans, `${orphans.length} broken_reason pointers orphaned: ${JSON.stringify(orphans.slice(0, 5))}`).toEqual([]);
+  });
+
+  /**
+   * EXAM-TAG ENUMERATION (catches typos and undocumented new tags).
+   *
+   * Every question's `t` must be one of the known tag values. If a curator
+   * adds a typo (e.g. "2025-Jun-Basc") or coins a new tag without updating
+   * EXAM_YEARS in shlav-a-mega.html, the per-tag analytics break silently
+   * (questions get bucketed under the wrong tag in the Browse-by-Year view).
+   *
+   * If this fails: either fix the typo, or add the new tag to both this
+   * test's allowlist AND shlav-a-mega.html's EXAM_YEARS array.
+   */
+  it("every q.t is in the known-tags allowlist", () => {
+    const KNOWN_TAGS = new Set([
+      // IMA exam sessions (must match shlav-a-mega.html EXAM_YEARS)
+      "2020", "2021-Jun", "2021-Dec",
+      "2022-Jun-Basic", "2022-Jun-Subspec",
+      "2023-Jun-Basic", "2023-Jun-Subspec", "2023-Sep",
+      "2024-May-Basic", "2024-May-Subspec",
+      "2024-Sep-Basic", "2024-Sep-Subspec",
+      "2025-Jun-Basic",
+      // Non-exam content sources
+      "Hazzard", "Harrison", "Hazzard-suppl", "GRS8", "Exam",
+    ]);
+    const unknowns = new Set();
+    for (const q of questions) {
+      if (q.t && !KNOWN_TAGS.has(q.t)) unknowns.add(q.t);
+    }
+    expect([...unknowns], `unknown q.t values: ${[...unknowns].join(", ")}`).toEqual([]);
+  });
+
+  /**
+   * EXPLANATION (e) FIELD QUALITY.
+   *
+   * All 3,743 questions ship with `e` (pre-generated AI explanation). Catches:
+   *   - empty e (AI generation failure)
+   *   - very short e (<30 chars — likely truncation or boilerplate)
+   *   - script-tag injection (XSS surface — explanations render via innerHTML
+   *     in some places per appIntegrity.test.js, but with sanitization)
+   *
+   * If this fails: re-run scripts/generate_explanations.cjs for affected idxs
+   * (it skips entries with existing e by default, so delete the bad ones first).
+   */
+  it("explanations are present, substantive, and free of script injection", () => {
+    const empty = [];
+    const tooShort = [];
+    const xss = [];
+    const SCRIPT_RE = /<script\b/i;
+    const ON_HANDLER_RE = /\bon\w+\s*=\s*["']?javascript:/i;
+    for (let i = 0; i < questions.length; i++) {
+      const e = String(questions[i].e || "").trim();
+      if (!e) {
+        empty.push(i);
+      } else if (e.length < 30) {
+        tooShort.push({ idx: i, len: e.length, preview: e.slice(0, 40) });
+      } else if (SCRIPT_RE.test(e) || ON_HANDLER_RE.test(e)) {
+        xss.push(i);
+      }
+    }
+    expect(empty.length, `${empty.length} questions have empty e: ${empty.slice(0, 5).join(", ")}`).toBe(0);
+    expect(tooShort, `${tooShort.length} questions have e <30 chars: ${JSON.stringify(tooShort.slice(0, 3))}`).toEqual([]);
+    expect(xss, `${xss.length} questions have <script> or javascript: handlers in e: ${xss.slice(0, 5).join(", ")}`).toEqual([]);
+  });
+
+  /**
+   * REF FIELD CONSISTENCY (Track-M motivation).
+   *
+   * Track M (v10.64.37) caught a mis-routed ref where idx 347 had
+   * "Hazzard Ch 44 — SLEEP DISORDERS" on a clozapine-agranulocytosis
+   * question. Refs should always cite Hazzard or Harrison (English) or
+   * use Hebrew "הזארד" / "פרק" / "עמ'" patterns.
+   *
+   * This test catches refs that contain *only* unrelated text (e.g. an
+   * empty Beers reference, a stray TODO, a bare topic name with no source
+   * citation). It does NOT detect mis-routing within Hazzard chapters —
+   * that requires content audit, not pattern matching.
+   *
+   * If this fails: rebuild the ref using question_chapters.json or the
+   * topic_analysis_2026-05-03 sources_extracted.csv.
+   */
+  /**
+   * STALE-COUNT REGRESSION GUARD (v10.64.41 / bug screenshot 2026-05-04).
+   *
+   * Catches hardcoded total-question-count strings going stale. The bug was:
+   * src/study_plan.js had "(3,833 שאלות, 46 נושאים)" literal in the Study
+   * Plan intro, but the live count is 3,743. v10.64.18 refreshed
+   * data/syllabus_data.json but missed this string. Now the value is
+   * computed dynamically from `_SYLLABUS.Geri.total_questions_analyzed` —
+   * this test asserts no stale literal is left in src/study_plan.js.
+   *
+   * If this fails: someone re-introduced a hardcoded count. Replace with
+   * dynamic lookup from _SYLLABUS or from the topics array.
+   */
+  it("src/study_plan.js has no stale hardcoded total-question count", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const src = fs.readFileSync(
+      path.resolve(import.meta.dirname, "..", "src", "study_plan.js"),
+      "utf-8",
+    );
+    // Stale counts that have been the live total at some prior point.
+    // The current literal-fallback "3743" is allowed; only flag obsolete ones.
+    const STALE_COUNTS = ["3,833", "3833", "3,791", "3791", "3,795", "3795"];
+    const found = STALE_COUNTS.filter((s) => src.includes(s));
+    expect(found, `stale count strings in src/study_plan.js: ${found.join(", ")}`).toEqual([]);
+  });
+
+  it("ref field cites a recognizable textbook source where present", () => {
+    // Allowlist of legitimate clinical citation patterns. Add new ones as
+    // sources expand; the goal is to catch obviously-broken refs (typos,
+    // half-strings, unintended placeholders), not to gatekeep new sources.
+    const REF_PATTERN = new RegExp(
+      [
+        // Textbooks (English + Hebrew)
+        "Hazzard", "Harrison", "הזארד", "הריסון",
+        "פרק", "עמ['׳]", "article", "article_",
+        // Educational reference series
+        "GRS", "Bhandari",
+        // Major guideline organizations
+        "IDSA", "ACR", "ACG", "KDIGO", "USPSTF", "AGS", "NICE",
+        "AAN", "AAFP", "AAPM", "AAOS", "ACC", "AHA", "ESC", "ESH",
+        "CDC", "ACIP", "STEADI", "WHO",
+        // Trial / cohort name patterns
+        "Trial", "Study", "Cohort",
+        // Israeli MOH / clinical guidance
+        "חוזר", "חוק",
+      ].join("|"),
+      "i",
+    );
+    const bad = [];
+    for (let i = 0; i < questions.length; i++) {
+      const ref = String(questions[i].ref || "").trim();
+      if (!ref) continue; // empty ref allowed (some legacy entries)
+      if (!REF_PATTERN.test(ref)) {
+        bad.push({ idx: i, ref: ref.slice(0, 80) });
+      }
+    }
+    expect(bad, `${bad.length} questions have unrecognizable ref: ${JSON.stringify(bad.slice(0, 5))}`).toEqual([]);
+  });
 });

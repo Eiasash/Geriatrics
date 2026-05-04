@@ -190,12 +190,19 @@
     const defaultExam = _state.examDateISO || _readExamDateFromTrack() || _addDaysISO(_todayISO(), 19 * 7);
     const minExam = _addDaysISO(_todayISO(), 7 * 7);
 
+    // Dynamic counts from cached syllabus (falls back to literals if syllabus
+    // hasn't loaded yet on first render — pre-warm at line 185 makes this rare).
+    const _gs = _SYLLABUS && _SYLLABUS.Geri;
+    const _qCount = (_gs && _gs.total_questions_analyzed) || 3743;
+    const _tCount = (_gs && Array.isArray(_gs.topics) && _gs.topics.length) || 46;
+    const _qFmt = _qCount.toLocaleString('en-US');
+
     let h = `
 <div class="card" style="padding:14px;margin-top:12px" dir="rtl">
   <div style="font-weight:700;font-size:12px;margin-bottom:6px">📅 תכנית לימוד</div>
   <div style="font-size:11px;color:rgb(var(--fg2));margin-bottom:12px;line-height:1.6">
-    תכנית לימוד שבועית משוקללת לפי תדירות הופעת נושאים בבחינות שלב א׳ גריאטריה קודמות (3,833 שאלות,
-    46 נושאים). הנתונים אמפיריים — מבוססים על מאגר השאלות של האפליקציה, לא על ניחוש.
+    תכנית לימוד שבועית משוקללת לפי תדירות הופעת נושאים בבחינות שלב א׳ גריאטריה קודמות (${_qFmt} שאלות,
+    ${_tCount} נושאים). הנתונים אמפיריים — מבוססים על מאגר השאלות של האפליקציה, לא על ניחוש.
   </div>`;
 
     if (!user) {
