@@ -1,0 +1,252 @@
+[
+  {
+    "idx": 47,
+    "tag": "2024-May-Basic",
+    "qnum": 16,
+    "hits": 2,
+    "dataset_c": 0,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 104,
+    "tag": "2020",
+    "qnum": 97,
+    "hits": 8,
+    "dataset_c": 3,
+    "ima_ans": "א ב ג ד",
+    "ima_idx": 0,
+    "agree": "disagree"
+  },
+  {
+    "idx": 154,
+    "tag": "2020",
+    "qnum": 58,
+    "hits": 3,
+    "dataset_c": 2,
+    "ima_ans": "ב",
+    "ima_idx": 1,
+    "agree": "disagree"
+  },
+  {
+    "idx": 2442,
+    "tag": "2020",
+    "qnum": 84,
+    "hits": 2,
+    "dataset_c": 1,
+    "ima_ans": "א",
+    "ima_idx": 0,
+    "agree": "disagree"
+  },
+  {
+    "idx": 2518,
+    "tag": "2022-Jun-Basic",
+    "qnum": 85,
+    "hits": 10,
+    "dataset_c": 0,
+    "ima_ans": "ד",
+    "ima_idx": 3,
+    "agree": "disagree"
+  },
+  {
+    "idx": 2525,
+    "tag": "2022-Jun-Basic",
+    "qnum": 72,
+    "hits": 5,
+    "dataset_c": 0,
+    "ima_ans": "א ב ג ד",
+    "ima_idx": 0,
+    "agree": "AGREE"
+  },
+  {
+    "idx": 2594,
+    "tag": "2022-Jun-Basic",
+    "qnum": 14,
+    "hits": 1,
+    "dataset_c": 0,
+    "ima_ans": "ב",
+    "ima_idx": 1,
+    "agree": "disagree"
+  },
+  {
+    "idx": 2641,
+    "tag": "2023-Jun-Basic",
+    "qnum": 57,
+    "hits": 5,
+    "dataset_c": 3,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 2642,
+    "tag": "2023-Jun-Basic",
+    "qnum": 58,
+    "hits": 10,
+    "dataset_c": 0,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 2643,
+    "tag": "2023-Jun-Basic",
+    "qnum": 59,
+    "hits": 6,
+    "dataset_c": 1,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 2646,
+    "tag": "2023-Jun-Basic",
+    "qnum": 62,
+    "hits": 2,
+    "dataset_c": 3,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 2884,
+    "tag": "2024-May-Basic",
+    "qnum": 25,
+    "hits": 1,
+    "dataset_c": 3,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 2900,
+    "tag": "2024-May-Basic",
+    "qnum": 103,
+    "hits": 1,
+    "dataset_c": 2,
+    "ima_ans": "א ד",
+    "ima_idx": 0,
+    "agree": "disagree"
+  },
+  {
+    "idx": 2949,
+    "tag": "2024-Sep-Basic",
+    "qnum": 85,
+    "hits": 3,
+    "dataset_c": 0,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 3012,
+    "tag": "2025-Jun-Basic",
+    "qnum": 1,
+    "hits": 2,
+    "dataset_c": 3,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 3034,
+    "tag": "2025-Jun-Basic",
+    "qnum": 73,
+    "hits": 7,
+    "dataset_c": 3,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 3182,
+    "tag": "2024-Sep-Basic",
+    "qnum": 9,
+    "hits": 1,
+    "dataset_c": 3,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 3188,
+    "tag": "2022-Jun-Subspec",
+    "qnum": 52,
+    "hits": 3,
+    "dataset_c": 3,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 3197,
+    "tag": "2022-Jun-Subspec",
+    "qnum": 62,
+    "hits": 2,
+    "dataset_c": 0,
+    "ima_ans": "?",
+    "ima_idx": null,
+    "agree": "no_ima"
+  },
+  {
+    "idx": 3284,
+    "tag": "2023-Jun-Subspec",
+    "qnum": 51,
+    "hits": 2,
+    "dataset_c": 2,
+    "ima_ans": "ג",
+    "ima_idx": 2,
+    "agree": "AGREE"
+  },
+  {
+    "idx": 3285,
+    "tag": "2023-Jun-Subspec",
+    "qnum": 52,
+    "hits": 24,
+    "dataset_c": 3,
+    "ima_ans": "ד",
+    "ima_idx": 3,
+    "agree": "AGREE"
+  },
+  {
+    "idx": 3286,
+    "tag": "2023-Jun-Subspec",
+    "qnum": 52,
+    "hits": 7,
+    "dataset_c": 1,
+    "ima_ans": "ד",
+    "ima_idx": 3,
+    "agree": "disagree"
+  },
+  {
+    "idx": 3289,
+    "tag": "2023-Jun-Subspec",
+    "qnum": 58,
+    "hits": 10,
+    "dataset_c": 0,
+    "ima_ans": "א ד",
+    "ima_idx": 0,
+    "agree": "AGREE"
+  },
+  {
+    "idx": 3497,
+    "tag": "2024-Sep-Subspec",
+    "qnum": 72,
+    "hits": 3,
+    "dataset_c": 0,
+    "ima_ans": "א",
+    "ima_idx": 0,
+    "agree": "AGREE"
+  },
+  {
+    "idx": 3509,
+    "tag": "2024-Sep-Subspec",
+    "qnum": 20,
+    "hits": 12,
+    "dataset_c": 0,
+    "ima_ans": "ג",
+    "ima_idx": 2,
+    "agree": "disagree"
+  }
+]
