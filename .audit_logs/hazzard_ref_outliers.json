@@ -1,0 +1,3618 @@
+[
+  {
+    "idx": 109,
+    "ti": 0,
+    "topic": "Biology of Aging",
+    "ch": 46,
+    "title": "PRESSURE INJURIES",
+    "pct": 0.012345679012345678
+  },
+  {
+    "idx": 2752,
+    "ti": 0,
+    "topic": "Biology of Aging",
+    "ch": 55,
+    "title": "REHABILITATION",
+    "pct": 0.012345679012345678
+  },
+  {
+    "idx": 2820,
+    "ti": 0,
+    "topic": "Biology of Aging",
+    "ch": 57,
+    "title": "COGNITIVE CHANGES IN NORMAL AND PATHOLOG",
+    "pct": 0.012345679012345678
+  },
+  {
+    "idx": 2380,
+    "ti": 0,
+    "topic": "Biology of Aging",
+    "ch": 68,
+    "title": "PAIN MANAGEMENT",
+    "pct": 0.012345679012345678
+  },
+  {
+    "idx": 3113,
+    "ti": 0,
+    "topic": "Biology of Aging",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.012345679012345678
+  },
+  {
+    "idx": 2270,
+    "ti": 3,
+    "topic": "Frailty",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 1062,
+    "ti": 3,
+    "topic": "Frailty",
+    "ch": 17,
+    "title": "COMMUNITY-BASED LONG-TERM SERVICES AND S",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 30,
+    "ti": 3,
+    "topic": "Frailty",
+    "ch": 40,
+    "title": "APPLIED CLINICAL GEROSCIENCE",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 1440,
+    "ti": 3,
+    "topic": "Frailty",
+    "ch": 43,
+    "title": "FALLS",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 2336,
+    "ti": 3,
+    "topic": "Frailty",
+    "ch": 52,
+    "title": "OSTEOARTHRITIS",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 1488,
+    "ti": 3,
+    "topic": "Frailty",
+    "ch": 55,
+    "title": "REHABILITATION",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 3382,
+    "ti": 3,
+    "topic": "Frailty",
+    "ch": 59,
+    "title": "DEMENTIA INCLUDING ALZHEIMER DISEASE",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 2165,
+    "ti": 3,
+    "topic": "Frailty",
+    "ch": 61,
+    "title": "PARKINSON DISEASE AND RELATED DISORDERS",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 2247,
+    "ti": 3,
+    "topic": "Frailty",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 2059,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 2060,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 3237,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 26,
+    "title": "LEGAL ISSUES",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 1281,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 38,
+    "title": "BENIGN PROSTATE DISORDERS",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 1324,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 1354,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 44,
+    "title": "SLEEP DISORDERS",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 3162,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 48,
+    "title": "ELDER MISTREATMENT",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 1418,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 49,
+    "title": "MUSCLE AGING AND SARCOPENIA",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 43,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 53,
+    "title": "HIP FRACTURES",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 1432,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 53,
+    "title": "HIP FRACTURES",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 1477,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 55,
+    "title": "REHABILITATION",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 3112,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 56,
+    "title": "THE AGING BRAIN",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 2358,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 62,
+    "title": "CEREBROVASCULAR DISEASE",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 1344,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 64,
+    "title": "TRAUMATIC BRAIN INJURY AND CHRONIC TRAUM",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 1626,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 65,
+    "title": "MAJOR DEPRESSION",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 3419,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 65,
+    "title": "MAJOR DEPRESSION",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 1687,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 67,
+    "title": "PALLIATIVE CARE AND SPECIAL MANAGEMENT I",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 1700,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 67,
+    "title": "PALLIATIVE CARE AND SPECIAL MANAGEMENT I",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 1715,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 72,
+    "title": "ETHICAL ISSUES",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 1744,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 1778,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 1804,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 1815,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 2148,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 83,
+    "title": "KIDNEY DISEASES",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 2153,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 83,
+    "title": "KIDNEY DISEASES",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 1905,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 87,
+    "title": "CONSTIPATION",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 782,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 2022,
+    "ti": 4,
+    "topic": "Falls",
+    "ch": 94,
+    "title": "AGING OF THE HEMATOPOIETIC SYSTEM AND AN",
+    "pct": 0.007246376811594203
+  },
+  {
+    "idx": 3674,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 13,
+    "title": "GERIATRICS AROUND THE WORLD",
+    "pct": 0.005747126436781609
+  },
+  {
+    "idx": 3189,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 26,
+    "title": "LEGAL ISSUES",
+    "pct": 0.005747126436781609
+  },
+  {
+    "idx": 1162,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 1164,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 3343,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 1240,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 34,
+    "title": "HEARING LOSS: ASSESSMENT AND MANAGEMENT",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 1244,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 34,
+    "title": "HEARING LOSS: ASSESSMENT AND MANAGEMENT",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 1417,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 1421,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 1274,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 1289,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 1460,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 51,
+    "title": "OSTEOPOROSIS",
+    "pct": 0.005747126436781609
+  },
+  {
+    "idx": 1455,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 52,
+    "title": "OSTEOARTHRITIS",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 2328,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 52,
+    "title": "OSTEOARTHRITIS",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 1475,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 55,
+    "title": "REHABILITATION",
+    "pct": 0.005747126436781609
+  },
+  {
+    "idx": 2995,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 57,
+    "title": "COGNITIVE CHANGES IN NORMAL AND PATHOLOG",
+    "pct": 0.005747126436781609
+  },
+  {
+    "idx": 1600,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 64,
+    "title": "TRAUMATIC BRAIN INJURY AND CHRONIC TRAUM",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 1607,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 64,
+    "title": "TRAUMATIC BRAIN INJURY AND CHRONIC TRAUM",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 95,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 65,
+    "title": "MAJOR DEPRESSION",
+    "pct": 0.005747126436781609
+  },
+  {
+    "idx": 897,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 1187,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 2099,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 2419,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.005747126436781609
+  },
+  {
+    "idx": 2281,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 83,
+    "title": "KIDNEY DISEASES",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 2293,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 83,
+    "title": "KIDNEY DISEASES",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 2310,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 87,
+    "title": "CONSTIPATION",
+    "pct": 0.005747126436781609
+  },
+  {
+    "idx": 1999,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 94,
+    "title": "AGING OF THE HEMATOPOIETIC SYSTEM AND AN",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 2016,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 94,
+    "title": "AGING OF THE HEMATOPOIETIC SYSTEM AND AN",
+    "pct": 0.011494252873563218
+  },
+  {
+    "idx": 2021,
+    "ti": 5,
+    "topic": "Delirium",
+    "ch": 95,
+    "title": "HEMATOLOGIC MALIGNANCIES (LEUKEMIA/LYMPH",
+    "pct": 0.005747126436781609
+  },
+  {
+    "idx": 353,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 2978,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 9,
+    "title": "MENTAL STATUS AND NEUROLOGIC EXAMINATION",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 3680,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 13,
+    "title": "GERIATRICS AROUND THE WORLD",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 1595,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 15,
+    "title": "EMERGENCY DEPARTMENT CARE",
+    "pct": 0.017045454545454544
+  },
+  {
+    "idx": 1601,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 15,
+    "title": "EMERGENCY DEPARTMENT CARE",
+    "pct": 0.017045454545454544
+  },
+  {
+    "idx": 3360,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 15,
+    "title": "EMERGENCY DEPARTMENT CARE",
+    "pct": 0.017045454545454544
+  },
+  {
+    "idx": 3160,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 26,
+    "title": "LEGAL ISSUES",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 3289,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 2604,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 43,
+    "title": "FALLS",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 1365,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 44,
+    "title": "SLEEP DISORDERS",
+    "pct": 0.017045454545454544
+  },
+  {
+    "idx": 2682,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 44,
+    "title": "SLEEP DISORDERS",
+    "pct": 0.017045454545454544
+  },
+  {
+    "idx": 3330,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 44,
+    "title": "SLEEP DISORDERS",
+    "pct": 0.017045454545454544
+  },
+  {
+    "idx": 729,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 1537,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 3610,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 3267,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 72,
+    "title": "ETHICAL ISSUES",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 129,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 288,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 3173,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 166,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 332,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 3394,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 87,
+    "title": "CONSTIPATION",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 251,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 2896,
+    "ti": 6,
+    "topic": "Dementia",
+    "ch": 99,
+    "title": "criteria for diabetes mellitus or for im",
+    "pct": 0.005681818181818182
+  },
+  {
+    "idx": 3178,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 2,
+    "title": "DEMOGRAPHY AND EPIDEMIOLOGY",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 3561,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 11,
+    "title": "PREVENTION AND SCREENING",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 1217,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 31,
+    "title": "DISORDERS OF SWALLOWING",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 3296,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 40,
+    "title": "APPLIED CLINICAL GEROSCIENCE",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 2649,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 44,
+    "title": "SLEEP DISORDERS",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 2993,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 1461,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 51,
+    "title": "OSTEOPOROSIS",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 2105,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 2780,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 63,
+    "title": "OTHER NEURODEGENERATIVE DISORDERS",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 1675,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 67,
+    "title": "PALLIATIVE CARE AND SPECIAL MANAGEMENT I",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 2125,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 3129,
+    "ti": 7,
+    "topic": "Depression",
+    "ch": 97,
+    "title": "Understanding centrally mediated neuroen",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 3675,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 13,
+    "title": "GERIATRICS AROUND THE WORLD",
+    "pct": 0.003257328990228013
+  },
+  {
+    "idx": 1196,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 30,
+    "title": "NUTRITION DISORDERS, OBESITY , AND ENTER",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1227,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 30,
+    "title": "NUTRITION DISORDERS, OBESITY , AND ENTER",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1229,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 30,
+    "title": "NUTRITION DISORDERS, OBESITY , AND ENTER",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 3340,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 30,
+    "title": "NUTRITION DISORDERS, OBESITY , AND ENTER",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 3344,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 30,
+    "title": "NUTRITION DISORDERS, OBESITY , AND ENTER",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 3590,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 30,
+    "title": "NUTRITION DISORDERS, OBESITY , AND ENTER",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1214,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 31,
+    "title": "DISORDERS OF SWALLOWING",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 1224,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 31,
+    "title": "DISORDERS OF SWALLOWING",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 1910,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 31,
+    "title": "DISORDERS OF SWALLOWING",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 1241,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 34,
+    "title": "HEARING LOSS: ASSESSMENT AND MANAGEMENT",
+    "pct": 0.003257328990228013
+  },
+  {
+    "idx": 3558,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 37,
+    "title": "SEXUALITY , SEXUAL FUNCTION, AND THE AGI",
+    "pct": 0.003257328990228013
+  },
+  {
+    "idx": 1916,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 38,
+    "title": "BENIGN PROSTATE DISORDERS",
+    "pct": 0.003257328990228013
+  },
+  {
+    "idx": 1332,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 1336,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 1416,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 1352,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 43,
+    "title": "FALLS",
+    "pct": 0.006514657980456026
+  },
+  {
+    "idx": 1353,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 43,
+    "title": "FALLS",
+    "pct": 0.006514657980456026
+  },
+  {
+    "idx": 179,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 44,
+    "title": "SLEEP DISORDERS",
+    "pct": 0.013029315960912053
+  },
+  {
+    "idx": 212,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 44,
+    "title": "SLEEP DISORDERS",
+    "pct": 0.013029315960912053
+  },
+  {
+    "idx": 546,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 44,
+    "title": "SLEEP DISORDERS",
+    "pct": 0.013029315960912053
+  },
+  {
+    "idx": 2478,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 44,
+    "title": "SLEEP DISORDERS",
+    "pct": 0.013029315960912053
+  },
+  {
+    "idx": 1025,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 45,
+    "title": "SYNCOPE AND DIZZINESS",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 1370,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 45,
+    "title": "SYNCOPE AND DIZZINESS",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 2262,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 45,
+    "title": "SYNCOPE AND DIZZINESS",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 733,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1261,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1265,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1290,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1398,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 3402,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 2332,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 52,
+    "title": "OSTEOARTHRITIS",
+    "pct": 0.006514657980456026
+  },
+  {
+    "idx": 2740,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 52,
+    "title": "OSTEOARTHRITIS",
+    "pct": 0.006514657980456026
+  },
+  {
+    "idx": 2580,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 55,
+    "title": "REHABILITATION",
+    "pct": 0.003257328990228013
+  },
+  {
+    "idx": 1546,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.006514657980456026
+  },
+  {
+    "idx": 2736,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.006514657980456026
+  },
+  {
+    "idx": 2801,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 60,
+    "title": "BEHAVIORAL SYMPTOMS OF DEMENTIA AND PSYC",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 2970,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 60,
+    "title": "BEHAVIORAL SYMPTOMS OF DEMENTIA AND PSYC",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 3432,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 60,
+    "title": "BEHAVIORAL SYMPTOMS OF DEMENTIA AND PSYC",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 1603,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 64,
+    "title": "TRAUMATIC BRAIN INJURY AND CHRONIC TRAUM",
+    "pct": 0.003257328990228013
+  },
+  {
+    "idx": 1673,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 67,
+    "title": "PALLIATIVE CARE AND SPECIAL MANAGEMENT I",
+    "pct": 0.006514657980456026
+  },
+  {
+    "idx": 1706,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 67,
+    "title": "PALLIATIVE CARE AND SPECIAL MANAGEMENT I",
+    "pct": 0.006514657980456026
+  },
+  {
+    "idx": 194,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 68,
+    "title": "PAIN MANAGEMENT",
+    "pct": 0.013029315960912053
+  },
+  {
+    "idx": 2497,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 68,
+    "title": "PAIN MANAGEMENT",
+    "pct": 0.013029315960912053
+  },
+  {
+    "idx": 2967,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 68,
+    "title": "PAIN MANAGEMENT",
+    "pct": 0.013029315960912053
+  },
+  {
+    "idx": 3040,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 68,
+    "title": "PAIN MANAGEMENT",
+    "pct": 0.013029315960912053
+  },
+  {
+    "idx": 352,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 1760,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 1764,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.009771986970684038
+  },
+  {
+    "idx": 1827,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1828,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1841,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 2127,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 2132,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 2533,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 2930,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 82,
+    "title": "AGING OF THE KIDNEY",
+    "pct": 0.006514657980456026
+  },
+  {
+    "idx": 3491,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 82,
+    "title": "AGING OF THE KIDNEY",
+    "pct": 0.006514657980456026
+  },
+  {
+    "idx": 2796,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 85,
+    "title": "UPPER GASTROINTESTINAL DISORDERS",
+    "pct": 0.003257328990228013
+  },
+  {
+    "idx": 29,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1917,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1920,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1958,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 1960,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 2179,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.019543973941368076
+  },
+  {
+    "idx": 2188,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 95,
+    "title": "HEMATOLOGIC MALIGNANCIES (LEUKEMIA/LYMPH",
+    "pct": 0.003257328990228013
+  },
+  {
+    "idx": 3030,
+    "ti": 8,
+    "topic": "Polypharmacy",
+    "ch": 97,
+    "title": "Understanding centrally mediated neuroen",
+    "pct": 0.003257328990228013
+  },
+  {
+    "idx": 87,
+    "ti": 10,
+    "topic": "Pressure Injuries",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 75,
+    "ti": 10,
+    "topic": "Pressure Injuries",
+    "ch": 17,
+    "title": "COMMUNITY-BASED LONG-TERM SERVICES AND S",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 3423,
+    "ti": 10,
+    "topic": "Pressure Injuries",
+    "ch": 83,
+    "title": "KIDNEY DISEASES",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 3048,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 16,
+    "title": "INSTITUTIONAL LONG-TERM AND POST-ACUTE C",
+    "pct": 0.008620689655172414
+  },
+  {
+    "idx": 312,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 51,
+    "title": "OSTEOPOROSIS",
+    "pct": 0.008620689655172414
+  },
+  {
+    "idx": 1490,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 55,
+    "title": "REHABILITATION",
+    "pct": 0.008620689655172414
+  },
+  {
+    "idx": 25,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 59,
+    "title": "DEMENTIA INCLUDING ALZHEIMER DISEASE",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 2646,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 59,
+    "title": "DEMENTIA INCLUDING ALZHEIMER DISEASE",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 1276,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 61,
+    "title": "PARKINSON DISEASE AND RELATED DISORDERS",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 1386,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 61,
+    "title": "PARKINSON DISEASE AND RELATED DISORDERS",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 1690,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 67,
+    "title": "PALLIATIVE CARE AND SPECIAL MANAGEMENT I",
+    "pct": 0.008620689655172414
+  },
+  {
+    "idx": 3396,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 68,
+    "title": "PAIN MANAGEMENT",
+    "pct": 0.008620689655172414
+  },
+  {
+    "idx": 145,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 307,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.017241379310344827
+  },
+  {
+    "idx": 766,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.008620689655172414
+  },
+  {
+    "idx": 1952,
+    "ti": 11,
+    "topic": "Incontinence",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.008620689655172414
+  },
+  {
+    "idx": 23,
+    "ti": 12,
+    "topic": "Constipation",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.01282051282051282
+  },
+  {
+    "idx": 1932,
+    "ti": 12,
+    "topic": "Constipation",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.01282051282051282
+  },
+  {
+    "idx": 2410,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 1,
+    "title": "BIOLOGY OF AGING AND LONGEVITY",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 2271,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 925,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 1138,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 1038,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 15,
+    "title": "EMERGENCY DEPARTMENT CARE",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 2612,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 26,
+    "title": "LEGAL ISSUES",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 3211,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 26,
+    "title": "LEGAL ISSUES",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 2377,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 1197,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 30,
+    "title": "NUTRITION DISORDERS, OBESITY , AND ENTER",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 2989,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 34,
+    "title": "HEARING LOSS: ASSESSMENT AND MANAGEMENT",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 3285,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 40,
+    "title": "APPLIED CLINICAL GEROSCIENCE",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 1420,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 67,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 43,
+    "title": "FALLS",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 3257,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 46,
+    "title": "PRESSURE INJURIES",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 1465,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 51,
+    "title": "OSTEOPOROSIS",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 3553,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 51,
+    "title": "OSTEOPOROSIS",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 2625,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 3272,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 1510,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 59,
+    "title": "DEMENTIA INCLUDING ALZHEIMER DISEASE",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 3635,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 59,
+    "title": "DEMENTIA INCLUDING ALZHEIMER DISEASE",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 1602,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 64,
+    "title": "TRAUMATIC BRAIN INJURY AND CHRONIC TRAUM",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 1617,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 65,
+    "title": "MAJOR DEPRESSION",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 1637,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 65,
+    "title": "MAJOR DEPRESSION",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 1802,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 1842,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 2156,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 83,
+    "title": "KIDNEY DISEASES",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 2159,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 83,
+    "title": "KIDNEY DISEASES",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 2320,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 87,
+    "title": "CONSTIPATION",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 2531,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 87,
+    "title": "CONSTIPATION",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 1930,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 2182,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 2025,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 95,
+    "title": "HEMATOLOGIC MALIGNANCIES (LEUKEMIA/LYMPH",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 3102,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 100,
+    "title": "Giant Cell Arteritis / 1589",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 2920,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 101,
+    "title": "Chapter 101",
+    "pct": 0.009345794392523364
+  },
+  {
+    "idx": 2961,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 102,
+    "title": "Chapter 102",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 3523,
+    "ti": 14,
+    "topic": "Pain",
+    "ch": 102,
+    "title": "Chapter 102",
+    "pct": 0.018691588785046728
+  },
+  {
+    "idx": 202,
+    "ti": 15,
+    "topic": "Osteoporosis",
+    "ch": 30,
+    "title": "NUTRITION DISORDERS, OBESITY , AND ENTER",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 3559,
+    "ti": 15,
+    "topic": "Osteoporosis",
+    "ch": 37,
+    "title": "SEXUALITY , SEXUAL FUNCTION, AND THE AGI",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 2421,
+    "ti": 15,
+    "topic": "Osteoporosis",
+    "ch": 43,
+    "title": "FALLS",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 671,
+    "ti": 15,
+    "topic": "Osteoporosis",
+    "ch": 49,
+    "title": "MUSCLE AGING AND SARCOPENIA",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 2639,
+    "ti": 15,
+    "topic": "Osteoporosis",
+    "ch": 59,
+    "title": "DEMENTIA INCLUDING ALZHEIMER DISEASE",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 3233,
+    "ti": 15,
+    "topic": "Osteoporosis",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 324,
+    "ti": 15,
+    "topic": "Osteoporosis",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 1846,
+    "ti": 15,
+    "topic": "Osteoporosis",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 1944,
+    "ti": 15,
+    "topic": "Osteoporosis",
+    "ch": 88,
+    "title": "CANCER AND AGING: GENERAL PRINCIPLES",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 3655,
+    "ti": 15,
+    "topic": "Osteoporosis",
+    "ch": 99,
+    "title": "criteria for diabetes mellitus or for im",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 2405,
+    "ti": 16,
+    "topic": "OA",
+    "ch": 1,
+    "title": "BIOLOGY OF AGING AND LONGEVITY",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 3586,
+    "ti": 16,
+    "topic": "OA",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 2537,
+    "ti": 16,
+    "topic": "OA",
+    "ch": 43,
+    "title": "FALLS",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 2571,
+    "ti": 16,
+    "topic": "OA",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 102,
+    "ti": 16,
+    "topic": "OA",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 299,
+    "ti": 16,
+    "topic": "OA",
+    "ch": 94,
+    "title": "AGING OF THE HEMATOPOIETIC SYSTEM AND AN",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 2525,
+    "ti": 17,
+    "topic": "CV Disease",
+    "ch": 1,
+    "title": "BIOLOGY OF AGING AND LONGEVITY",
+    "pct": 0.010526315789473684
+  },
+  {
+    "idx": 725,
+    "ti": 17,
+    "topic": "CV Disease",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.010526315789473684
+  },
+  {
+    "idx": 348,
+    "ti": 17,
+    "topic": "CV Disease",
+    "ch": 62,
+    "title": "CEREBROVASCULAR DISEASE",
+    "pct": 0.010526315789473684
+  },
+  {
+    "idx": 2522,
+    "ti": 17,
+    "topic": "CV Disease",
+    "ch": 78,
+    "title": "PERIPHERAL VASCULAR DISEASE",
+    "pct": 0.010526315789473684
+  },
+  {
+    "idx": 2778,
+    "ti": 17,
+    "topic": "CV Disease",
+    "ch": 82,
+    "title": "AGING OF THE KIDNEY",
+    "pct": 0.010526315789473684
+  },
+  {
+    "idx": 3387,
+    "ti": 17,
+    "topic": "CV Disease",
+    "ch": 83,
+    "title": "KIDNEY DISEASES",
+    "pct": 0.010526315789473684
+  },
+  {
+    "idx": 3095,
+    "ti": 17,
+    "topic": "CV Disease",
+    "ch": 95,
+    "title": "HEMATOLOGIC MALIGNANCIES (LEUKEMIA/LYMPH",
+    "pct": 0.010526315789473684
+  },
+  {
+    "idx": 3060,
+    "ti": 17,
+    "topic": "CV Disease",
+    "ch": 96,
+    "title": "SECTION G  ENDOCRINOLOGY AND METABOLISM",
+    "pct": 0.010526315789473684
+  },
+  {
+    "idx": 1140,
+    "ti": 18,
+    "topic": "Heart Failure",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 2556,
+    "ti": 18,
+    "topic": "Heart Failure",
+    "ch": 30,
+    "title": "NUTRITION DISORDERS, OBESITY , AND ENTER",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 2044,
+    "ti": 18,
+    "topic": "Heart Failure",
+    "ch": 40,
+    "title": "APPLIED CLINICAL GEROSCIENCE",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 1381,
+    "ti": 18,
+    "topic": "Heart Failure",
+    "ch": 43,
+    "title": "FALLS",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 1497,
+    "ti": 18,
+    "topic": "Heart Failure",
+    "ch": 55,
+    "title": "REHABILITATION",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 2631,
+    "ti": 18,
+    "topic": "Heart Failure",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 1668,
+    "ti": 18,
+    "topic": "Heart Failure",
+    "ch": 67,
+    "title": "PALLIATIVE CARE AND SPECIAL MANAGEMENT I",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 2376,
+    "ti": 18,
+    "topic": "Heart Failure",
+    "ch": 68,
+    "title": "PAIN MANAGEMENT",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 3053,
+    "ti": 18,
+    "topic": "Heart Failure",
+    "ch": 75,
+    "title": "VALVULAR HEART DISEASE",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 3384,
+    "ti": 18,
+    "topic": "Heart Failure",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.011363636363636364
+  },
+  {
+    "idx": 3409,
+    "ti": 20,
+    "topic": "Stroke",
+    "ch": 34,
+    "title": "HEARING LOSS: ASSESSMENT AND MANAGEMENT",
+    "pct": 0.019230769230769232
+  },
+  {
+    "idx": 2503,
+    "ti": 20,
+    "topic": "Stroke",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.019230769230769232
+  },
+  {
+    "idx": 2363,
+    "ti": 20,
+    "topic": "Stroke",
+    "ch": 61,
+    "title": "PARKINSON DISEASE AND RELATED DISORDERS",
+    "pct": 0.019230769230769232
+  },
+  {
+    "idx": 36,
+    "ti": 20,
+    "topic": "Stroke",
+    "ch": 65,
+    "title": "MAJOR DEPRESSION",
+    "pct": 0.019230769230769232
+  },
+  {
+    "idx": 3242,
+    "ti": 20,
+    "topic": "Stroke",
+    "ch": 72,
+    "title": "ETHICAL ISSUES",
+    "pct": 0.019230769230769232
+  },
+  {
+    "idx": 2069,
+    "ti": 21,
+    "topic": "COPD",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 1366,
+    "ti": 21,
+    "topic": "COPD",
+    "ch": 44,
+    "title": "SLEEP DISORDERS",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 3550,
+    "ti": 21,
+    "topic": "COPD",
+    "ch": 51,
+    "title": "OSTEOPOROSIS",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 1681,
+    "ti": 21,
+    "topic": "COPD",
+    "ch": 67,
+    "title": "PALLIATIVE CARE AND SPECIAL MANAGEMENT I",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 2375,
+    "ti": 21,
+    "topic": "COPD",
+    "ch": 68,
+    "title": "PAIN MANAGEMENT",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 2557,
+    "ti": 21,
+    "topic": "COPD",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 2729,
+    "ti": 21,
+    "topic": "COPD",
+    "ch": 105,
+    "title": "Chapter 105",
+    "pct": 0.0196078431372549
+  },
+  {
+    "idx": 233,
+    "ti": 22,
+    "topic": "Diabetes",
+    "ch": 2,
+    "title": "DEMOGRAPHY AND EPIDEMIOLOGY",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 1245,
+    "ti": 22,
+    "topic": "Diabetes",
+    "ch": 34,
+    "title": "HEARING LOSS: ASSESSMENT AND MANAGEMENT",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 3104,
+    "ti": 22,
+    "topic": "Diabetes",
+    "ch": 39,
+    "title": "orders in the older adults is presented ",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 1419,
+    "ti": 22,
+    "topic": "Diabetes",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 1500,
+    "ti": 22,
+    "topic": "Diabetes",
+    "ch": 55,
+    "title": "REHABILITATION",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 2712,
+    "ti": 22,
+    "topic": "Diabetes",
+    "ch": 62,
+    "title": "CEREBROVASCULAR DISEASE",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 1605,
+    "ti": 22,
+    "topic": "Diabetes",
+    "ch": 64,
+    "title": "TRAUMATIC BRAIN INJURY AND CHRONIC TRAUM",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 2246,
+    "ti": 22,
+    "topic": "Diabetes",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 3336,
+    "ti": 22,
+    "topic": "Diabetes",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 136,
+    "ti": 22,
+    "topic": "Diabetes",
+    "ch": 94,
+    "title": "AGING OF THE HEMATOPOIETIC SYSTEM AND AN",
+    "pct": 0.015384615384615385
+  },
+  {
+    "idx": 2519,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 2,
+    "title": "DEMOGRAPHY AND EPIDEMIOLOGY",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 2216,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 941,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 1088,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 17,
+    "title": "COMMUNITY-BASED LONG-TERM SERVICES AND S",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 3142,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 26,
+    "title": "LEGAL ISSUES",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 1182,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 2567,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 3373,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 68,
+    "title": "PAIN MANAGEMENT",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 285,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 75,
+    "title": "VALVULAR HEART DISEASE",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 3352,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 1985,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 98,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 2966,
+    "ti": 24,
+    "topic": "CKD",
+    "ch": 82,
+    "title": "AGING OF THE KIDNEY",
+    "pct": 0.013333333333333334
+  },
+  {
+    "idx": 52,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 2589,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 3562,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 11,
+    "title": "PREVENTION AND SCREENING",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 3253,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 3291,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 1926,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 38,
+    "title": "BENIGN PROSTATE DISORDERS",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 1942,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 38,
+    "title": "BENIGN PROSTATE DISORDERS",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 3377,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 40,
+    "title": "APPLIED CLINICAL GEROSCIENCE",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 1426,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 49,
+    "title": "MUSCLE AGING AND SARCOPENIA",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 287,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 51,
+    "title": "OSTEOPOROSIS",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 3398,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 51,
+    "title": "OSTEOPOROSIS",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 2693,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 55,
+    "title": "REHABILITATION",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 3342,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 55,
+    "title": "REHABILITATION",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 2528,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 59,
+    "title": "DEMENTIA INCLUDING ALZHEIMER DISEASE",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 3208,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 59,
+    "title": "DEMENTIA INCLUDING ALZHEIMER DISEASE",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 1674,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 67,
+    "title": "PALLIATIVE CARE AND SPECIAL MANAGEMENT I",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 1678,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 67,
+    "title": "PALLIATIVE CARE AND SPECIAL MANAGEMENT I",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 2807,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 70,
+    "title": "PALLIATIVE CARE ACROSS CARE SETTINGS",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 2579,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 2588,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 2703,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 2474,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 3146,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 793,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 131,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 3263,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 79,
+    "title": "HYPERTENSION",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 2569,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 83,
+    "title": "KIDNEY DISEASES",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 2787,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 84,
+    "title": "AGING OF THE GASTROINTESTINAL SYSTEM AND",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 2550,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 87,
+    "title": "CONSTIPATION",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 2907,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 89,
+    "title": "BREAST DISEASE",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 3029,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 89,
+    "title": "BREAST DISEASE",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 3467,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 89,
+    "title": "BREAST DISEASE",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 2793,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 90,
+    "title": "PROSTATE CANCER",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 2767,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 92,
+    "title": "GASTROINTESTINAL MALIGNANCIES",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 3047,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 92,
+    "title": "GASTROINTESTINAL MALIGNANCIES",
+    "pct": 0.010869565217391304
+  },
+  {
+    "idx": 2878,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 93,
+    "title": "SKIN CANCER",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 2991,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 93,
+    "title": "SKIN CANCER",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 3435,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 93,
+    "title": "SKIN CANCER",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 2010,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 94,
+    "title": "AGING OF THE HEMATOPOIETIC SYSTEM AND AN",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 2015,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 94,
+    "title": "AGING OF THE HEMATOPOIETIC SYSTEM AND AN",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 2027,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 94,
+    "title": "AGING OF THE HEMATOPOIETIC SYSTEM AND AN",
+    "pct": 0.016304347826086956
+  },
+  {
+    "idx": 2772,
+    "ti": 26,
+    "topic": "Cancer",
+    "ch": 97,
+    "title": "Understanding centrally mediated neuroen",
+    "pct": 0.005434782608695652
+  },
+  {
+    "idx": 1132,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 3741,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 1222,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 31,
+    "title": "DISORDERS OF SWALLOWING",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 2129,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 31,
+    "title": "DISORDERS OF SWALLOWING",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 2048,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 40,
+    "title": "APPLIED CLINICAL GEROSCIENCE",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 3225,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 40,
+    "title": "APPLIED CLINICAL GEROSCIENCE",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 1427,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 3427,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 3126,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 44,
+    "title": "SLEEP DISORDERS",
+    "pct": 0.006756756756756757
+  },
+  {
+    "idx": 2585,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 2677,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 1077,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 61,
+    "title": "PARKINSON DISEASE AND RELATED DISORDERS",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 1212,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 61,
+    "title": "PARKINSON DISEASE AND RELATED DISORDERS",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 2544,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.006756756756756757
+  },
+  {
+    "idx": 3131,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 75,
+    "title": "VALVULAR HEART DISEASE",
+    "pct": 0.006756756756756757
+  },
+  {
+    "idx": 2492,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 2695,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 2193,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 2400,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 2006,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 94,
+    "title": "AGING OF THE HEMATOPOIETIC SYSTEM AND AN",
+    "pct": 0.006756756756756757
+  },
+  {
+    "idx": 2019,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 95,
+    "title": "HEMATOLOGIC MALIGNANCIES (LEUKEMIA/LYMPH",
+    "pct": 0.006756756756756757
+  },
+  {
+    "idx": 3084,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 97,
+    "title": "Understanding centrally mediated neuroen",
+    "pct": 0.006756756756756757
+  },
+  {
+    "idx": 2745,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 106,
+    "title": "Chapter 106",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 3130,
+    "ti": 27,
+    "topic": "Infections",
+    "ch": 106,
+    "title": "Chapter 106",
+    "pct": 0.013513513513513514
+  },
+  {
+    "idx": 2203,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 78,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 7,
+    "title": "DECISION MAKING AND ADVANCE CARE PLANNIN",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 1137,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 2261,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 15,
+    "title": "EMERGENCY DEPARTMENT CARE",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 1218,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 30,
+    "title": "NUTRITION DISORDERS, OBESITY , AND ENTER",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 1248,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 34,
+    "title": "HEARING LOSS: ASSESSMENT AND MANAGEMENT",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 1325,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 1609,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 65,
+    "title": "MAJOR DEPRESSION",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 3025,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 68,
+    "title": "PAIN MANAGEMENT",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 2806,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 70,
+    "title": "PALLIATIVE CARE ACROSS CARE SETTINGS",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 1739,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.01694915254237288
+  },
+  {
+    "idx": 1792,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.01694915254237288
+  },
+  {
+    "idx": 1775,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 75,
+    "title": "VALVULAR HEART DISEASE",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 3405,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 1771,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.01694915254237288
+  },
+  {
+    "idx": 1974,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.01694915254237288
+  },
+  {
+    "idx": 1853,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 83,
+    "title": "KIDNEY DISEASES",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 3046,
+    "ti": 28,
+    "topic": "Palliative",
+    "ch": 99,
+    "title": "criteria for diabetes mellitus or for im",
+    "pct": 0.00847457627118644
+  },
+  {
+    "idx": 928,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.01818181818181818
+  },
+  {
+    "idx": 945,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.01818181818181818
+  },
+  {
+    "idx": 3502,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 10,
+    "title": "ASSESSMENT OF DECISIONAL CAPACITY AND CO",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 3566,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 11,
+    "title": "PREVENTION AND SCREENING",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 248,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 15,
+    "title": "EMERGENCY DEPARTMENT CARE",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 999,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 17,
+    "title": "COMMUNITY-BASED LONG-TERM SERVICES AND S",
+    "pct": 0.01818181818181818
+  },
+  {
+    "idx": 1056,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 17,
+    "title": "COMMUNITY-BASED LONG-TERM SERVICES AND S",
+    "pct": 0.01818181818181818
+  },
+  {
+    "idx": 1170,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.01818181818181818
+  },
+  {
+    "idx": 1173,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.01818181818181818
+  },
+  {
+    "idx": 3395,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 34,
+    "title": "HEARING LOSS: ASSESSMENT AND MANAGEMENT",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 1283,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 38,
+    "title": "BENIGN PROSTATE DISORDERS",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 82,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 2331,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 52,
+    "title": "OSTEOARTHRITIS",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 2113,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 2344,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 62,
+    "title": "CEREBROVASCULAR DISEASE",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 2626,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 65,
+    "title": "MAJOR DEPRESSION",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 2239,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 74,
+    "title": "CORONARY HEART DISEASE AND DYSLIPIDEMIA",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 2687,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 1783,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.01818181818181818
+  },
+  {
+    "idx": 2360,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.01818181818181818
+  },
+  {
+    "idx": 1840,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.01818181818181818
+  },
+  {
+    "idx": 2126,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.01818181818181818
+  },
+  {
+    "idx": 1915,
+    "ti": 29,
+    "topic": "Ethics",
+    "ch": 95,
+    "title": "HEMATOLOGIC MALIGNANCIES (LEUKEMIA/LYMPH",
+    "pct": 0.00909090909090909
+  },
+  {
+    "idx": 2516,
+    "ti": 30,
+    "topic": "Elder Abuse",
+    "ch": 15,
+    "title": "EMERGENCY DEPARTMENT CARE",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 732,
+    "ti": 30,
+    "topic": "Elder Abuse",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.017543859649122806
+  },
+  {
+    "idx": 258,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.019801980198019802
+  },
+  {
+    "idx": 2207,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.019801980198019802
+  },
+  {
+    "idx": 1174,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.009900990099009901
+  },
+  {
+    "idx": 1415,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.009900990099009901
+  },
+  {
+    "idx": 1287,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.019801980198019802
+  },
+  {
+    "idx": 2667,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 47,
+    "title": "INCONTINENCE",
+    "pct": 0.019801980198019802
+  },
+  {
+    "idx": 1456,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 52,
+    "title": "OSTEOARTHRITIS",
+    "pct": 0.019801980198019802
+  },
+  {
+    "idx": 2330,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 52,
+    "title": "OSTEOARTHRITIS",
+    "pct": 0.019801980198019802
+  },
+  {
+    "idx": 2115,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 58,
+    "title": "DELIRIUM",
+    "pct": 0.009900990099009901
+  },
+  {
+    "idx": 2355,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 62,
+    "title": "CEREBROVASCULAR DISEASE",
+    "pct": 0.009900990099009901
+  },
+  {
+    "idx": 297,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.019801980198019802
+  },
+  {
+    "idx": 1766,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.019801980198019802
+  },
+  {
+    "idx": 1821,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.019801980198019802
+  },
+  {
+    "idx": 1835,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 81,
+    "title": "CHRONIC OBSTRUCTIVE PULMONARY DISEASE",
+    "pct": 0.019801980198019802
+  },
+  {
+    "idx": 2169,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 94,
+    "title": "AGING OF THE HEMATOPOIETIC SYSTEM AND AN",
+    "pct": 0.009900990099009901
+  },
+  {
+    "idx": 2020,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 95,
+    "title": "HEMATOLOGIC MALIGNANCIES (LEUKEMIA/LYMPH",
+    "pct": 0.009900990099009901
+  },
+  {
+    "idx": 2999,
+    "ti": 34,
+    "topic": "Advance Directives",
+    "ch": 104,
+    "title": "Selection / 1667",
+    "pct": 0.009900990099009901
+  },
+  {
+    "idx": 3569,
+    "ti": 35,
+    "topic": "Community/LTC",
+    "ch": 12,
+    "title": "AGE-FRIENDLY CARE",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 260,
+    "ti": 35,
+    "topic": "Community/LTC",
+    "ch": 15,
+    "title": "EMERGENCY DEPARTMENT CARE",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 3193,
+    "ti": 35,
+    "topic": "Community/LTC",
+    "ch": 27,
+    "title": "PERIOPERATIVE CARE: EVALUATION AND MANAG",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 2514,
+    "ti": 35,
+    "topic": "Community/LTC",
+    "ch": 34,
+    "title": "HEARING LOSS: ASSESSMENT AND MANAGEMENT",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 3484,
+    "ti": 35,
+    "topic": "Community/LTC",
+    "ch": 55,
+    "title": "REHABILITATION",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 372,
+    "ti": 35,
+    "topic": "Community/LTC",
+    "ch": 59,
+    "title": "DEMENTIA INCLUDING ALZHEIMER DISEASE",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 1710,
+    "ti": 35,
+    "topic": "Community/LTC",
+    "ch": 67,
+    "title": "PALLIATIVE CARE AND SPECIAL MANAGEMENT I",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 2975,
+    "ti": 35,
+    "topic": "Community/LTC",
+    "ch": 76,
+    "title": "HEART FAILURE",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 37,
+    "ti": 35,
+    "topic": "Community/LTC",
+    "ch": 77,
+    "title": "CARDIAC ARRHYTHMIAS",
+    "pct": 0.014492753623188406
+  },
+  {
+    "idx": 2274,
+    "ti": 36,
+    "topic": "Rehab",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.010638297872340425
+  },
+  {
+    "idx": 3358,
+    "ti": 36,
+    "topic": "Rehab",
+    "ch": 15,
+    "title": "EMERGENCY DEPARTMENT CARE",
+    "pct": 0.010638297872340425
+  },
+  {
+    "idx": 1081,
+    "ti": 36,
+    "topic": "Rehab",
+    "ch": 31,
+    "title": "DISORDERS OF SWALLOWING",
+    "pct": 0.010638297872340425
+  },
+  {
+    "idx": 1425,
+    "ti": 36,
+    "topic": "Rehab",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.010638297872340425
+  },
+  {
+    "idx": 1604,
+    "ti": 36,
+    "topic": "Rehab",
+    "ch": 64,
+    "title": "TRAUMATIC BRAIN INJURY AND CHRONIC TRAUM",
+    "pct": 0.010638297872340425
+  },
+  {
+    "idx": 58,
+    "ti": 36,
+    "topic": "Rehab",
+    "ch": 68,
+    "title": "PAIN MANAGEMENT",
+    "pct": 0.010638297872340425
+  },
+  {
+    "idx": 3170,
+    "ti": 36,
+    "topic": "Rehab",
+    "ch": 72,
+    "title": "ETHICAL ISSUES",
+    "pct": 0.010638297872340425
+  },
+  {
+    "idx": 3518,
+    "ti": 36,
+    "topic": "Rehab",
+    "ch": 87,
+    "title": "CONSTIPATION",
+    "pct": 0.010638297872340425
+  },
+  {
+    "idx": 2202,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 3,
+    "title": "IMMUNOLOGY AND INFLAMMATION",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 929,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 8,
+    "title": "PRINCIPLES OF GERIATRIC ASSESSMENT",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 1052,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 17,
+    "title": "COMMUNITY-BASED LONG-TERM SERVICES AND S",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 265,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 30,
+    "title": "NUTRITION DISORDERS, OBESITY , AND ENTER",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 1286,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 38,
+    "title": "BENIGN PROSTATE DISORDERS",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 3601,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 39,
+    "title": "orders in the older adults is presented ",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 1330,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 42,
+    "title": "FRAIL TY",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 2228,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 45,
+    "title": "SYNCOPE AND DIZZINESS",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 1459,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 51,
+    "title": "OSTEOPOROSIS",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 3022,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 57,
+    "title": "COGNITIVE CHANGES IN NORMAL AND PATHOLOG",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 1291,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 61,
+    "title": "PARKINSON DISEASE AND RELATED DISORDERS",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 2011,
+    "ti": 38,
+    "topic": "Periop",
+    "ch": 94,
+    "title": "AGING OF THE HEMATOPOIETIC SYSTEM AND AN",
+    "pct": 0.010101010101010102
+  },
+  {
+    "idx": 3027,
+    "ti": 40,
+    "topic": "Parkinson",
+    "ch": 57,
+    "title": "COGNITIVE CHANGES IN NORMAL AND PATHOLOG",
+    "pct": 0.010869565217391304
+  }
+]
