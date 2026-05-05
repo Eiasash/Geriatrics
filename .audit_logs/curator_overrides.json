@@ -5,10 +5,19 @@
     "source_docs": [
       ".audit_logs/TRACK_J_FINDINGS.md",
       ".audit_logs/TRACK_L_FINDINGS.md",
-      ".audit_logs/TRACK_O_P_FINDINGS.md"
+      ".audit_logs/TRACK_O_P_FINDINGS.md",
+      ".audit_logs/review/2020.md",
+      ".audit_logs/review/2021-Dec.md",
+      ".audit_logs/review/2022-Jun-Basic.md",
+      ".audit_logs/review/2022-Jun-Subspec.md",
+      ".audit_logs/review/2023-Jun-Basic.md",
+      ".audit_logs/review/2023-Jun-Subspec.md",
+      ".audit_logs/review/2024-May-Basic.md",
+      ".audit_logs/review/2024-May-Subspec.md",
+      ".audit_logs/review/2025-Jun-Basic.md"
     ],
     "appendable": true,
-    "note_94_prior": "94 prior overrides documented in .audit_logs/review/{tag}.md evidence sheets (per-tag Markdown narratives). Not yet machine-extracted. This file currently pins the 16 fresh overrides from Tracks J+L+O (2026-05-04). Append further entries as they're audited."
+    "note_94_prior": "94 prior overrides extracted from .audit_logs/review/{tag}.md evidence sheets on 2026-05-05 by extract_review_overrides.py. Combined with the 16 from Tracks J+L+O, registry now pins all 110 documented curator overrides."
   },
   "overrides": [
     {
@@ -175,6 +184,946 @@
       "qnum": 5,
       "topic_short": "CKD anemia management threshold",
       "rationale": "KDIGO threshold Hgb 10 — at 11.1, no treatment. 3-way split; canonical is best-defensible.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 45,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 34,
+      "topic_short": "אם יש ספק בעניין חיסון קודם מותר לתת חיסון חוזר",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 49,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 38,
+      "topic_short": "ממצא של ירידת לחץ דם אורתוסטטית",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 54,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 44,
+      "topic_short": "טיפול ב-SSRI's",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 55,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 44,
+      "topic_short": "NITROFURANTOIN ( מקרודנטין) למשך 5 ימים",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 56,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 44,
+      "topic_short": "Citralopam (Cipramil )",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 2424,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 44,
+      "topic_short": "בן 82 , מזה 3 חודשים תעוקת חזה במאמץ 0.9 סמ \"ר 4.5 מ/ש 20 ממ \"כ",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 67,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 57,
+      "topic_short": "הכאב מחמיר בשכיבה על הגב",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 68,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 57,
+      "topic_short": "ניתוח VENTRICULO-PRITONEAL SHANT",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 89,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 81,
+      "topic_short": "היווצרות של אטרומה בדופן כלי הדם הקורונריים",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 94,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 86,
+      "topic_short": "DONEPEZIL ( MEMORIT)",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 96,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 88,
+      "topic_short": "30% מהקשישים בישראל רשומים במחלקות לשירותים חברתיים",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 98,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 90,
+      "topic_short": "עלייה בהתנגדות של כלי הדם בכליות וירידה בזרימת הדם לכליות",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 100,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 92,
+      "topic_short": "אי נקיטת שתן מסוג overflow",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 101,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2020",
+      "qnum": 92,
+      "topic_short": "ירידה בחדות הראיה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2459,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2021-Dec",
+      "qnum": 3,
+      "topic_short": "בן 83 הסובל מדיסקינזיות, מצבי On-off ותפקוד קוגניטיבי שמור",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 284,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2021-Dec",
+      "qnum": 19,
+      "topic_short": "כימוטקסיס של נויטרופילים יורד",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 312,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2021-Dec",
+      "qnum": 30,
+      "topic_short": "אי שליטה על שתן",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 317,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2021-Dec",
+      "qnum": 52,
+      "topic_short": "איבוד קולגן משמעותי ב-5 שנים לאחר מנופאוזה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 336,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2021-Dec",
+      "qnum": 71,
+      "topic_short": "בת 78, מאבדת חפצים, שוטטות, MMSE 23/30",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 340,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2021-Dec",
+      "qnum": 75,
+      "topic_short": "עליה בשברי צוואר ירך",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 342,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2021-Dec",
+      "qnum": 77,
+      "topic_short": "מרבית חווים עצירה/האטה של ירידה קוגניטיבית",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 359,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2021-Dec",
+      "qnum": 95,
+      "topic_short": "הרופא בהתייעצות עם האפוטרופוס",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 3684,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2022-Jun-Basic",
+      "qnum": 1,
+      "topic_short": "יש להפסיק טיפול ב CLOPIDOGREL 5-7 ימים לפני הניתוח למניעת דמם",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 2545,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2022-Jun-Basic",
+      "qnum": 10,
+      "topic_short": "מבחןMOCA יראה פגיעה בחשיבה מופשטת",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 0,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2022-Jun-Basic",
+      "qnum": 53,
+      "topic_short": "Basilar artery",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3123,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2022-Jun-Basic",
+      "qnum": 98,
+      "topic_short": "אוסטאונקרוזיס של הלסת",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3124,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2022-Jun-Basic",
+      "qnum": 98,
+      "topic_short": "פגיעה בריריות של הפה והעיניים",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3138,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2022-Jun-Basic",
+      "qnum": 137,
+      "topic_short": "lung emphysema",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3150,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2022-Jun-Subspec",
+      "qnum": 1,
+      "topic_short": "יש להפסיק טיפול ב CLOPIDOGREL 5-7 ימים לפני הניתוח למניעת דמם",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 3226,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2022-Jun-Subspec",
+      "qnum": 10,
+      "topic_short": "מבחןMOCA יראה פגיעה בחשיבה מופשטת",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3171,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2022-Jun-Subspec",
+      "qnum": 33,
+      "topic_short": "חולה הסובל מהמיפרזיס ברגל ימין – קוודריפוד ביד שמאל",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 3233,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2022-Jun-Subspec",
+      "qnum": 98,
+      "topic_short": "אוסטאונקרוזיס של הלסת",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3234,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2022-Jun-Subspec",
+      "qnum": 98,
+      "topic_short": "פגיעה בריריות של הפה והעיניים",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 2613,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 2,
+      "topic_short": "יותר מ- 30% מהאנשים בגיל 75 ומעלה מתקשים בהליכה או בעליית מדרגות",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2616,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 2,
+      "topic_short": "כאבי שרירים",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2617,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 2,
+      "topic_short": "ב- EMG - שינויים מיופתים בשרירים פרוקסימלים",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2618,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 2,
+      "topic_short": "היפוקלמיה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2619,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 2,
+      "topic_short": "רוע יא מוחי בעבר הוא גורם סיכון ל- MACE",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2620,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 2,
+      "topic_short": "שימוש בחבישה בעלת כושר ספיגה גדול",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2621,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 2,
+      "topic_short": "דמנציה פרונטו- ( טמפורליתFTD ) – הפרעה בשפה עם זיכרון שמור יחסית",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2623,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 2,
+      "topic_short": "טיפול ב- MEMANTINE יכול להינתן לאנשים עם אי סבילות למעכבי CHOLINEST...",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2624,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 3,
+      "topic_short": "היענות ירודה של מטופלים לנטילת תרופות ו ל דיאטה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2625,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 3,
+      "topic_short": "להוסיף לטיפולsyr. OXYCOD",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2627,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 3,
+      "topic_short": "MULTIPLE SYSTEM ATROPHY - CERBELLAR",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2629,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 3,
+      "topic_short": "בת 75 עםBCC המערב עפעף תחתון משמאל",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2631,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 3,
+      "topic_short": "פעילות גופנית יכולה לשפר איכות חיים ולהוריד תמותה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2632,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 4,
+      "topic_short": "חסר של פקטור קרישהXI",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 2633,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 4,
+      "topic_short": "שבר אינטרקפסולרי",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 2634,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 4,
+      "topic_short": "PONTINE INFARCTION",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 2635,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 4,
+      "topic_short": "תכנית אימונים/ התעמלות",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 2597,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 5,
+      "topic_short": "( ירידה ברגישות לניגודיותcontrast )",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 2654,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 70,
+      "topic_short": "רמת אלבומין נמוכה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 2662,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2023-Jun-Basic",
+      "qnum": 78,
+      "topic_short": "ל שקול ל הפסיק את הטיפול ב- RIVASTIGMINE",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 3259,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 2,
+      "topic_short": "יותר מ- 30% מהאנשים בגיל 75 ומעלה מתקשים בהליכה או בעליית מדרגות",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3262,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 2,
+      "topic_short": "כאבי שרירים",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3263,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 2,
+      "topic_short": "ב- EMG - שינויים מיופתים בשרירים פרוקסימלים",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3264,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 2,
+      "topic_short": "היפוקלמיה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3265,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 2,
+      "topic_short": "רוע יא מוחי בעבר הוא גורם סיכון ל- MACE",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3266,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 2,
+      "topic_short": "שימוש בחבישה בעלת כושר ספיגה גדול",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3267,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 2,
+      "topic_short": "דמנציה פרונטו- ( טמפורליתFTD ) – הפרעה בשפה עם זיכרון שמור יחסית",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3269,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 2,
+      "topic_short": "טיפול ב- MEMANTINE יכול להינתן לאנשים עם אי סבילות למעכבי CHOLINEST...",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3271,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 3,
+      "topic_short": "היענות ירודה של מטופלים לנטילת תרופות ו ל דיאטה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3272,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 3,
+      "topic_short": "להוסיף לטיפולsyr. OXYCOD",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3274,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 3,
+      "topic_short": "MULTIPLE SYSTEM ATROPHY - CERBELLAR",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3276,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 3,
+      "topic_short": "בת 75 עםBCC המערב עפעף תחתון משמאל",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3278,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 3,
+      "topic_short": "פעילות גופנית יכולה לשפר איכות חיים ולהוריד תמותה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 1,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 4,
+      "topic_short": "מוביליזציה מוקדמת ככל הניתן, עם דריכה לפי יכולת על הרגל המנותחת",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3279,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 4,
+      "topic_short": "חסר של פקטור קרישהXI",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3280,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 4,
+      "topic_short": "שבר אינטרקפסולרי",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3281,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 4,
+      "topic_short": "PONTINE INFARCTION",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3282,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 4,
+      "topic_short": "תכנית אימונים/ התעמלות",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3240,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 5,
+      "topic_short": "( ירידה ברגישות לניגודיותcontrast )",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 3526,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 53,
+      "topic_short": "טיפול ביתר לחץ דם",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 3527,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 55,
+      "topic_short": "ירידה בשמיעה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3302,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 70,
+      "topic_short": "רמת אלבומין נמוכה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3310,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2023-Jun-Subspec",
+      "qnum": 78,
+      "topic_short": "ל שקול ל הפסיק את הטיפול ב- RIVASTIGMINE",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 2753,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2024-May-Basic",
+      "qnum": 20,
+      "topic_short": "לאור VASc - CHA2DS2 פחות מ- 3 מומלץ לא לתת טיפול אנטיקואגולנטי",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 2810,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2024-May-Basic",
+      "qnum": 28,
+      "topic_short": "זריקת גלוקו-קורטיקואידים לברך יכול ה לתת הקלה בכאב עד חודשיים",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 2752,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2024-May-Basic",
+      "qnum": 29,
+      "topic_short": "יחסFEV1/FVC יורד עם הגיל",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3415,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2024-May-Subspec",
+      "qnum": 28,
+      "topic_short": "זריקת גלוקו-קורטיקואידים לברך יכול ה לתת הקלה בכאב עד חודשיים",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 3357,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2024-May-Subspec",
+      "qnum": 29,
+      "topic_short": "יחסFEV1/FVC יורד עם הגיל",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 2968,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 4,
+      "topic_short": "שכיחות גבוהה שלMDS ברקע",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2989,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 26,
+      "topic_short": "ישיבה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 2993,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 30,
+      "topic_short": "טיפול ב- ECT בטוח עם מעט תופעות לוואי",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 2995,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 32,
+      "topic_short": "הפעלת ה מערכת הדופמינרגית",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 2999,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 36,
+      "topic_short": "אדם בעל קרבה משפחתית או רגשית לחולה ומסור לו",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3000,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 36,
+      "topic_short": "מגבירה את הסיכון להתפתחות פצעי לחץ",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3006,
+      "expected_c": 0,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 43,
+      "topic_short": "מומלץ לבצע שינוי אורח חיים לצורך דחיית ההתקדמות לסוכרת",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 3013,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 50,
+      "topic_short": "מבחןTIME GET UP & GO במשך 25 שניות",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 3129,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 68,
+      "topic_short": "לטיפול נוגד דיכאון יש אפקט פלסבו גבוה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3084,
+      "expected_c": 3,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 122,
+      "topic_short": "לבצע רחצה יומית של חולים בטיפול נמרץ /מוגבר ב- CHLOROHEXIDINE",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 3087,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 125,
+      "topic_short": "חוסר ב- Anti Thrombin III",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 3095,
+      "expected_c": 1,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 133,
+      "topic_short": "CLINDAMYCIN במינון 600 מ\"ג",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 3101,
+      "expected_c": 2,
+      "track": "registry-94",
+      "tag": "2025-Jun-Basic",
+      "qnum": 139,
+      "topic_short": "התגברות האוושה בזמן ולסלבה",
+      "rationale": "Bulk import from .audit_logs/review/{tag}.md (2026-05-04 audit). Per session memory: dataset is medically correct where IMA's key is textbook-wrong; spot-check confirmed override pattern. DO NOT auto-flip.",
       "ima_published_c": 3
     }
   ]
