@@ -16,7 +16,7 @@ These four rules are the floor. They override any conflicting guidance later in 
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (~524 KB, ~7,150 lines, 210 named functions)
+- **Main file**: `shlav-a-mega.html` (~580 KB, ~7,631 lines, 225 named functions)
 - **App version**: v10.64.47 (as of 05/05/26) — 3,743 Qs across 46 topics. All 3,743 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.64.47 loading-skeleton stale count fix + STALE_COUNTS guard at `const CHANGELOG=` boundary; v10.64.46 Track-I distractor regen — 75 drifted Qs regenerated (0 fail); v10.64.45 Track-R 1547 Hazzard refs realigned to question_chapters.json authority; v10.64.42–44 Track-Q `backup_set` SECURITY DEFINER RPC + TDZ regression test + PDF externalization to GitHub Releases (-85% repo size); v10.64.30s–40 Tracks D/H/I/J/K/L/M/N/O/P — distractor regen + detector v3 + 110 curator overrides triangulated; v10.64.10–16 Q-num matcher v2/v3, 6 c_accept, 48 deletes, 501 canonical refs, 482 ref beautifications.
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
@@ -27,7 +27,7 @@ These four rules are the floor. They override any conflicting guidance later in 
 
 ### Single-File PWA
 
-All application logic lives in `shlav-a-mega.html` (~7,150 lines, ~270 named functions) — no bundler, no framework, no build step. The file contains:
+All application logic lives in `shlav-a-mega.html` (~7,631 lines, 225 named functions) — no bundler, no framework, no build step. The file contains:
 - All CSS (1,000+ lines, responsive, RTL-aware, dark/light/study modes)
 - All JavaScript (ES6+, vanilla)
 - HTML structure
@@ -73,7 +73,7 @@ the full decomposition ledger and safe-next-steps list.
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.46.0)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.64.47)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
@@ -482,8 +482,8 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 
 | Metric | Value |
 |---|---|
-| Main file | `shlav-a-mega.html` (~7,150 lines, ~524 KB) |
-| Named functions | 210 (213 incl. shared/*.js, the integrity-guard counting basis) |
+| Main file | `shlav-a-mega.html` (~7,631 lines, ~580 KB) |
+| Named functions | 225 (228 incl. shared/*.js, the integrity-guard counting basis) |
 | Questions | 3,743 (IMA past exams + Hazzard/Harrison AI-generated + GRS8 imports; all carry `ref` + `e`) |
 | Topics | 46 |
 | Drugs | 113 |
@@ -491,7 +491,7 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Study notes | 46 |
 | Hazzard chapters | 108 (in-app reader) |
 | Harrison chapters | 69 (in-app reader) |
-| Test suite | 1,047 tests across 45 files (vitest) |
+| Test suite | 1,104 tests across 48 files (vitest) |
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — see workspace CLAUDE.md for shared invariants |
 | CI workflows | 7 (ci.yml, claude.yml, claude-code-review.yml, distractor-autopsy.yml, distractor-merge-pr.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=214, onchange=25, oninput=6 |
