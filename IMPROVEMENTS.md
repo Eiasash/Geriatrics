@@ -12,7 +12,7 @@ This file is appended to by every `audit-fix-deploy` pipeline run. Each entry re
 |---|---|---|
 | Branch | `main` | clean after `git pull --rebase` |
 | `APP_VERSION` | 10.63.1 | trinity aligned (HTML / sw.js / package.json) |
-| Q corpus | 3833 | data/questions.json |
+| Q corpus | 3743 | data/questions.json |
 | Topics | 46 | ti 0..45 |
 | Function count | 210 | `shlav-a-mega.html` (was ~270 in stale CLAUDE.md, was ~219 in audit-fix-deploy skill text — both pre-decomposition figures; current actual is 210) |
 | Helper prefixes | 27 distinct | `_rl*`, `_rt*`, `_rqm*`, `_rq*`, `_restore*`, `_run*`, `_rpc` |
@@ -27,7 +27,7 @@ This file is appended to by every `audit-fix-deploy` pipeline run. Each entry re
 | Severity | Finding | Action |
 |---|---|---|
 | Info | All 7 verify checks green pre-audit (version sync, brace balance, two innerHTML audits, Harrison Hebrew baseline, vitest, sw-update.js syntax). No active issue. | None — pipeline confirmed healthy. |
-| Info | Skill-text Q-count drift: skill says 3326 / 4 exam dirs / 219 functions / 693 tests. Repo is at 3833 Qs / 7 exam dirs / 210 functions / 938 tests. | Recorded — central skill is reference text, not enforced. The geriatrics-dev local skill mirror should reflect real numbers (see "skill update" below). |
+| Info | Skill-text Q-count drift: skill says 3326 / 4 exam dirs / 219 functions / 693 tests. Repo is at 3743 Qs / 7 exam dirs / 210 functions / 938 tests. | Recorded — central skill is reference text, not enforced. The geriatrics-dev local skill mirror should reflect real numbers (see "skill update" below). |
 | Low | 2 ungated `console.log` lines at `shlav-a-mega.html:1254-1255` (data-load logs). | Pre-existing, intentional load-time diagnostics. No action; recorded. |
 | Low | Within-session stem duplicates in past-exam corpus (2 known cases — v10.63.1 baseline): `2025-Jun-Basic` paired vignette, `2023-Jun-Subspec` paper-cited Q×2. | New `pastExamCoverage` test pins ceiling at 10 / max 3 per stem — bumps an alarm if a future ingest doubles the corpus. |
 | Info | RLS sanity pass NOT executed this session — Supabase MCP requires interactive OAuth. `progress_state` schema-known-good per CLAUDE.md (lives in `public`, RLS on). | **Open follow-up**: run the 4 RLS queries on `krmlzwwelqvlfslwltol` next time the OAuth flow is alive. Schema has been stable since v10.59 (RPC-mediated reads, public SELECT dropped). |
@@ -91,7 +91,7 @@ Topics under 5 Qs are weak — flagged for next content pass.
 |---|---|---|
 | Topic coverage | All 46 topics have ≥9 Qs. Weakest: ti=45 (Interdisciplinary Care, n=9), ti=43 (Andropause, n=21). **Zero topics under the 5-Q threshold.** | None — content team can target ti=43-45 next, but no audit gap. |
 | Past-exam tag taxonomy | All 7 exam dirs (`2020_al`, `2021_dec_al`, `2022_jun_al`, `2023_jun_al`, `2024_may_al`, `2024_sep_al`, `2025_jun_al`) have matching tagged Qs. 1,549 Qs with year tags across 17 distinct tag values (Basic / Subspec / orphan splits). | None. |
-| Harrison/Hazzard chapter mapping | `data/question_chapters.json` has **3,833 entries** mapping every Q-index → `{haz: N, grs: N}`. **0 orphaned haz refs** (haz keys all in 1-108) and **0 orphaned har refs**. Hazzard 108 chapters / Harrison 69 chapters available. | None — clean. |
+| Harrison/Hazzard chapter mapping | `data/question_chapters.json` has **3,743 entries** mapping every Q-index → `{haz: N, grs: N}`. **0 orphaned haz refs** (haz keys all in 1-108) and **0 orphaned har refs**. Hazzard 108 chapters / Harrison 69 chapters available. | None — clean. |
 | Function-count trajectory | Current 210. History: ~270 (early v9.x) → 219 (v10.46+ decomposition) → 210 (v10.62.0 dropped renderDrugs + renderCalc shim). The drop is intentional. | Documented here so future auditors don't panic at the delta. |
 | Coverage gaps (uncalled functions) | Cross-ref `tests/*.test.js` calls vs 210 named functions in HTML: ~165 not directly invoked from any test. Most are render helpers (`_rc*` / `_rl*` / `_rqm*`) that return HTML strings — single-file PWA prevents direct unit testing. Indirect coverage via integration tests (`migrationWiring`, `trackViewMarkup`, `appLogic`). | No action — known architectural limit. |
 | `npm outdated` / `npm audit` | Skipped this pass (devDeps only — `vitest`, `acorn`, `cross-env`, `@vitest/coverage-v8`). Last audit pass cleared all known vulns. | Recheck at R3. |
@@ -134,7 +134,7 @@ Last updated: 2026-05-01 (Round 2 audit, v10.63.2).
 
 ## Codebase metrics
 - shlav-a-mega.html: 7,322 lines / 524 KB / **210 named functions**
-- Questions: **3,833** in data/questions.json (all carry ref + e)
+- Questions: **3,743** in data/questions.json (all carry ref + e)
 - Topics: 46 (ti 0..45)
 - Tests: **1,077** across **46** files
 - Brace pairs: 3,386
