@@ -196,7 +196,7 @@ describe('cross-file integrity — package.json vs questions corpus', () => {
   });
 
   it('Q count is in the announced ballpark (no >10% drop without intent)', () => {
-    // CLAUDE.md announces ~3,833 Qs. Tolerate growth, block large drop.
+    // CLAUDE.md announces ~3,743 Qs (was ~3,833 pre-v10.64.11 deletes). Tolerate growth, block large drop.
     // If the count drifts down, this test asks for an intentional bump.
     expect(questions.length).toBeGreaterThanOrEqual(3500);
   });

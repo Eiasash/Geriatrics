@@ -16,7 +16,7 @@ cost.
 # Shlav A Mega — Israeli Geriatrics Board Exam PWA
 
 Single-file PWA at https://eiasash.github.io/Geriatrics/ — `shlav-a-mega.html`,
-no build. Hebrew-RTL, 3,833 questions, currently v10.64.47.
+no build. Hebrew-RTL, 3,743 questions, currently v10.64.47.
 
 ## Working rules (non-negotiable)
 1. Don't assume. Don't hide confusion. Surface tradeoffs.
