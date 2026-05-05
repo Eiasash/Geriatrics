@@ -434,6 +434,46 @@ describe("cross-file referential integrity", () => {
     expect(found, `stale count strings in src/study_plan.js: ${found.join(", ")}`).toEqual([]);
   });
 
+  /**
+   * STALE-COUNT GUARD — shlav-a-mega.html pre-CHANGELOG range (v10.64.47).
+   *
+   * The same staleness class can appear in the main HTML monolith (e.g. the
+   * loading-skeleton string at ~line 3271 that read "3,833 שאלות" until
+   * v10.64.47 surgically fixed it to "3,743"). Scanning the full file would
+   * fire on every CHANGELOG entry that legitimately *quotes* the historical
+   * stale numbers. So we slice off the CHANGELOG section (`const CHANGELOG=`
+   * marker) and scan only the live code+UI range.
+   *
+   * If this fails: someone re-introduced a hardcoded total in the main HTML.
+   * Either swap to a dynamic source (`_SYLLABUS.Geri.total_questions_analyzed`,
+   * exposed in src/study_plan.js — note it's module-private; for main-scope
+   * UI use the current literal "3,743" as a fallback and add it to the
+   * allowed-current-totals list when it next changes) or update the literal.
+   */
+  it("shlav-a-mega.html (pre-CHANGELOG) has no stale hardcoded total-question count", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const full = fs.readFileSync(
+      path.resolve(import.meta.dirname, "..", "shlav-a-mega.html"),
+      "utf-8",
+    );
+    // Slice off CHANGELOG and everything after — those entries quote
+    // historical stale numbers as part of the audit trail and must not
+    // trigger this guard.
+    const changelogIdx = full.indexOf("const CHANGELOG=");
+    expect(
+      changelogIdx,
+      "Could not locate `const CHANGELOG=` marker — guard slice would scan the whole file and false-positive on history.",
+    ).toBeGreaterThan(0);
+    const liveSrc = full.slice(0, changelogIdx);
+    const STALE_COUNTS = ["3,833", "3833", "3,791", "3791", "3,795", "3795"];
+    const found = STALE_COUNTS.filter((s) => liveSrc.includes(s));
+    expect(
+      found,
+      `stale count strings in shlav-a-mega.html (pre-CHANGELOG): ${found.join(", ")}`,
+    ).toEqual([]);
+  });
+
   it("ref field cites a recognizable textbook source where present", () => {
     // Allowlist of legitimate clinical citation patterns. Add new ones as
     // sources expand; the goal is to catch obviously-broken refs (typos,

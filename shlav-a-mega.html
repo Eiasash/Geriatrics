@@ -3268,7 +3268,7 @@ return `<div class="card" style="padding:14px">
 <div style="display:flex;gap:4px;flex-wrap:wrap"><span class="tag-year" style="background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;opacity:.6">📝 ····</span></div>
 <span style="color:rgb(var(--fg3));font-size:10px">·/·</span>
 </div>
-<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px;color:rgb(var(--fg2))" dir="rtl">⏳ טוען מאגר שאלות... מאגר 3,833 שאלות בעברית, נטען ברקע לשיפור מהירות הטעינה הראשונית</p>
+<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:16px;color:rgb(var(--fg2))" dir="rtl">⏳ טוען מאגר שאלות... מאגר 3,743 שאלות בעברית, נטען ברקע לשיפור מהירות הטעינה הראשונית</p>
 <div class="qo" style="opacity:.45">⠀⠀⠀⠀⠀⠀⠀⠀</div>
 <div class="qo" style="opacity:.4;margin-top:6px">⠀⠀⠀⠀⠀⠀⠀⠀</div>
 <div class="qo" style="opacity:.35;margin-top:6px">⠀⠀⠀⠀⠀⠀⠀⠀</div>
@@ -6684,8 +6684,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.46';
+const APP_VERSION='10.64.47';
 const CHANGELOG={
+'10.64.47':[
+'🐛 Loading-skeleton stale count fix — the `if(!QZ||!QZ.length)` skeleton at shlav-a-mega.html line ~3271 still read "מאגר 3,833 שאלות" while the live total has been 3,743 since v10.64.11. v10.64.41 fixed the same staleness class in src/study_plan.js but missed this surface (the skeleton renders before _SYLLABUS is fetched, and _SYLLABUS itself is module-private inside src/study_plan.js, so swapped to literal "3,743" matching the established v10.64.41 fallback pattern). Total visible occurrences in shlav-a-mega.html: 13 → 12 (the 12 remaining are all CHANGELOG audit-trail quotes at lines ≥6688, which legitimately reference the historical number).',
+'🛡️ STALE_COUNTS guard extended to scan shlav-a-mega.html (pre-CHANGELOG range only). The existing dataIntegrity.test.js guard caught regressions in src/study_plan.js but had no coverage for the main HTML monolith. New `it(...)` block locates the `const CHANGELOG=` marker, slices the file at that boundary, and scans only the live code+UI prefix — CHANGELOG entries that quote historical stale numbers as part of the audit record are immune. If the marker disappears the guard fails loud rather than silently scanning the whole file (avoids false-positives on history).',
+],
 '10.64.46':[
 '🤖 Track-I — distractor regen on the v3-detected drift cohort. Re-ran .audit_logs/track_i_drift_detector_v3.py against the post-Track-R distractors.json — 75 unique question indices (101 idx-slot pairs) flagged as content-drifted. Stripped those 75 entries (with timestamped backup), re-ran scripts/generate_distractors.cjs against haiku, batch=3, delay=400ms. 75/75 succeeded, 0 failures. Total entries 3743 → restripped to 3668 → regenerated to 3743. Sample-verified output quality: distractors now tightly tied to option text, clinical mechanisms named (SOFA, BUN/Cr ratio, Beers, etc.), "Would be correct if" rationales reasonable. Post-regen v3 detector flags 32 residuals — all sampled are conceptual matches with no token overlap (e.g., option "תוספת ויטמינים A,E,D ו-K" vs distractor "ויטמינים A, E, D ו-K אינם מהותיים"; option "טיפול ביותר מ-5 תרופות" vs distractor "פוליפרמקיה (יותר מ-5 תרופות)"). Detector noise, not real drift. Real drift count: 0. Note: the auto-audit "Workstream A" $40-200 estimate was stale — based on v2 detector finding 870 all-3-wrong-slot Qs; v3 ratchet (v10.64.40, 27x tighter) brought that to 7 all-3-slot Qs and 75 any-drift total. Actual cost this run: ~$0.40 / ~5 minutes.',
 ],
