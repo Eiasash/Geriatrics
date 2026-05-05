@@ -6684,8 +6684,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.44';
+const APP_VERSION='10.64.45';
 const CHANGELOG={
+'10.64.45':[
+'📚 Track-R — Hazzard ref↔question_chapters.json mismatch fix. Scan revealed 1554 questions where the `ref` field cited a different Hazzard chapter than question_chapters.json (the curated authority). Examples: idx 1 ref→Ch 79 (HYPERTENSION) but qc→Ch 27 (PERIOPERATIVE CARE); idx 16 ref→Ch 74 (CHD) but qc→Ch 58 (DELIRIUM); idx 25 ref→Ch 59 (DEMENTIA) but qc→Ch 47 (INCONTINENCE). The ref field is freer-form generated text; question_chapters.json has been audited (chapterLinking.test.js + question_chapters guards). Fix: rebuilt 1547 refs to match qc.haz, preserving Harrison/Hebrew sub-segments. 7 edge cases skipped (no parseable Hazzard chapter pattern in source ref). Apply script at .audit_logs/track_r_apply_ref_fix.py. Post-fix mismatch count: 0. 1102 tests pass. Spot-check sample: idx 2619 → Ch 27 PERIOPERATIVE; idx 456 → Ch 26 LEGAL ISSUES; idx 102 → Ch 52 OSTEOARTHRITIS.',
+],
 '10.64.44':[
 '🧹 HARRISON_PDF_MAP wrapped with pdfUrl() for consistency with getHazPdf(). The original 66-chapter map at line 1738 was renamed HARRISON_PDF_MAP_REL (preserves relative paths as source of truth for auto-audit/scripts/probe.py and any disk-layout tools); the public HARRISON_PDF_MAP is now derived via Object.fromEntries(...).map([k,v] → [k, pdfUrl(v)]) so callers get the absolute Release URL. Added getHarPdf(ch) helper alongside getHazPdf(ch). Also moved the PDF_BASE_URL + pdfUrl() definitions ABOVE HARRISON_PDF_MAP_REL (they were below at line 2653, but the map\'s derivation evaluates at module-load time and would have crashed with TDZ on const in browser — tests don\'t catch this because they don\'t execute the HTML\'s JS).',
 '🧨 Force-pushed history rewrite — purged 187 PDFs from .git history via `git filter-repo --invert-paths`. .git directory dropped 449 MB → 92 MB (-80%). Total clone size now ~136 MB (was 879 MB). 777 commits rewritten in 7 seconds. Backup tag `pre-filter-repo-backup-2026-05-04` preserved on origin (points at pre-rewrite cd3e153) for any unforeseen recovery. Anyone with an existing clone needs to delete and re-clone. The deployed app on github.io is unaffected. Sibling-repo CI runners will re-clone on next run.',
