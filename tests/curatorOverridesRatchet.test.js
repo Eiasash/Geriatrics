@@ -39,10 +39,10 @@ beforeAll(() => {
 });
 
 describe("Curator-override ratchet", () => {
-  it("registry exists and is non-empty", () => {
+  it("registry exists and pins at least the 110 documented overrides", () => {
     expect(registry).toBeTruthy();
     expect(registry.overrides).toBeInstanceOf(Array);
-    expect(registry.overrides.length).toBeGreaterThanOrEqual(16);
+    expect(registry.overrides.length).toBeGreaterThanOrEqual(110);
   });
 
   it("registry meta documents purpose + appendability", () => {
@@ -104,8 +104,8 @@ describe("Curator-override ratchet", () => {
     }
   });
 
-  it("track tags are J / L / O (Tracks H+J+K+L+O+P narrative)", () => {
-    const allowed = new Set(["J", "L", "N", "O", "P"]);
+  it("track tags are recognized (J/L/N/O/P from fresh audit, registry-94 from bulk import)", () => {
+    const allowed = new Set(["J", "L", "N", "O", "P", "registry-94"]);
     for (const entry of registry.overrides) {
       expect(allowed, `idx=${entry.idx} unexpected track ${entry.track}`).toContain(entry.track);
     }
