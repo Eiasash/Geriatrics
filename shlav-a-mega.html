@@ -6310,7 +6310,12 @@ async function cloudBackup(){
     let _mockHist=[],_sessions=[];
     try{_mockHist=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');}catch(e){}
     try{_sessions=JSON.parse(localStorage.getItem('samega_sessions')||'[]');}catch(e){}
-    const _bundled={...S,_mockHist,_sessions};
+    // v10.64.48: include the user's Anthropic API key in the cloud backup so it
+    // travels with their account across devices — explicit user request 2026-05-05.
+    // Plaintext-in-jsonb (RLS keeps it user-private). Same threat model as the
+    // rest of the bundle. Restored client-side via applyRestorePayload below.
+    const _apikey=getApiKey();
+    const _bundled={...S,_mockHist,_sessions,_apikey};
     // v10.64.42 (Track-Q): write path migrated to SECURITY DEFINER RPC backup_set,
     // mirroring the Phase-2 read path (backup_get). Direct PostgREST INSERT was
     // returning 401/42501 under the new sb_publishable_* key format even though
@@ -6394,6 +6399,10 @@ function applyRestorePayload(rowData){
   // Pull sibling localStorage bundles out of the payload before S whitelist
   if(Array.isArray(rowData._mockHist))lsSet('samega_mock_hist',rowData._mockHist.slice(-20));
   if(Array.isArray(rowData._sessions))lsSet('samega_sessions',rowData._sessions.slice(-30));
+  // v10.64.48: restore the user's Anthropic API key from the bundle.
+  // typeof check keeps backward compat with legacy backups that don't have _apikey.
+  // Empty string explicitly clears (parity with setApiKey('')).
+  if(typeof rowData._apikey==='string')setApiKey(rowData._apikey);
   const allowed=Object.keys(S);
   const validated={};
   for(const k of allowed){
@@ -6684,7 +6693,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.47';
+const APP_VERSION='10.64.48';
 const CHANGELOG={
 '10.64.47':[
 '🐛 Loading-skeleton stale count fix — the `if(!QZ||!QZ.length)` skeleton at shlav-a-mega.html line ~3271 still read "מאגר 3,833 שאלות" while the live total has been 3,743 since v10.64.11. v10.64.41 fixed the same staleness class in src/study_plan.js but missed this surface (the skeleton renders before _SYLLABUS is fetched, and _SYLLABUS itself is module-private inside src/study_plan.js, so swapped to literal "3,743" matching the established v10.64.41 fallback pattern). Total visible occurrences in shlav-a-mega.html: 13 → 12 (the 12 remaining are all CHANGELOG audit-trail quotes at lines ≥6688, which legitimately reference the historical number).',
