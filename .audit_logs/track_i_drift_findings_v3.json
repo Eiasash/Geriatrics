@@ -1,0 +1,271 @@
+{
+  "total_checked": 11197,
+  "findings": [
+    {
+      "idx": 75,
+      "slot": 0,
+      "t": "2020",
+      "option_text": "תוספת טיפול בויטמינים A,E,D ו-K",
+      "distractor_text": "Wrong because: ויטמינים A, E, D ו-K אינם מהותיים לריפוי פצעי לחץ בהיעדר חסר ספציפי. השפעתם על ריפוי פצע היא זניחה בהשוואה להשפעת אנרגיה וחלבון במצבי תזונה חסרים. Would be correct if: אם הנוגדת עקבה אחר מחקרים המוכיחים יתרון למחלות דרכזתיות "
+    },
+    {
+      "idx": 104,
+      "slot": 2,
+      "t": "2020",
+      "option_text": "טיפול ביותר מ- 5 תרופות",
+      "distractor_text": "Wrong because: פוליפרמקיה (יותר מ-5 תרופות) היא גורם קנוני וברור לירידה תפקודית בקשישים לאחר ביקור בחירום, דרך תופעות לוואי, אינטראקציות תרופתיות, וירידה בנאותות קוגניטיבית. Would be correct if: אפשרות זו הייתה נכונה אם המחקרים הראו שמספר ה"
+    },
+    {
+      "idx": 599,
+      "slot": 2,
+      "t": "Hazzard",
+      "option_text": "רק להזהיר בע\"פ",
+      "distractor_text": "Wrong because: התעדות בע\"פ בלבד אינה מספיקה בחוק הרשלנות רפואית וחוק זכויות החולה. כאשר קיימת סכנה משמעותית לציבור, דרושה תעדות בכתב בתיק ודיווח רשמי למשרדים המוסמכים. Would be correct if: הזהרה בע\"פ בלבד עשויה להיות מספיקה בסכנה קלה או בטו"
+    },
+    {
+      "idx": 600,
+      "slot": 2,
+      "t": "Hazzard",
+      "option_text": "לעולם לא",
+      "distractor_text": "Wrong because: האיסור המוחלט על נהיגה ללא קשר לאופי או חומרת הפגיעה אינו משקף את המציאות הקלינית — מטופלים אחרים יחלימו מספיק כדי לנהוג בבטחה בתוך התקופה המומלצת. Would be correct if: זה יהיה נכון רק אם ה-CVA גרם נזק קשה וקבוע עם היעדר עיזו"
+    },
+    {
+      "idx": 608,
+      "slot": 1,
+      "t": "Hazzard",
+      "option_text": "רק מיופה כוח אחד",
+      "distractor_text": "Wrong because: בדין ייפוי כוח מתמשך מותר למנות מספר מיופי כוח, לא רק אחד. הגבלה זו אינה קיימת בחוק. Would be correct if: הגבלה למיופה כוח יחיד הייתה נכונה רק אם היה חוק מפורש האוסר מינוי של יותר ממיופה אחד, דבר שאינו קיים בחקיקה הישראלית."
+    },
+    {
+      "idx": 614,
+      "slot": 1,
+      "t": "Hazzard",
+      "option_text": "כשהמשפחה מבקשת",
+      "distractor_text": "Wrong because: בקשת המשפחה לא משמשת כבסיס חוקי לטיפול ללא הסכמה מדעת. המשפחה אינה יכולה להעביר זכויות חוקיות של המטופל ללא הסמכה משפטית מפורשת (כמו שמירות או מינוי כנציג). Would be correct if: זו היתה הבחירה הנכונה אם היתה קיימת הסמכה משפטי"
+    },
+    {
+      "idx": 629,
+      "slot": 1,
+      "t": "Hazzard",
+      "option_text": "אותו דבר",
+      "distractor_text": "Wrong because: בתרגול קליני בישראל וברחבי העולם, Home Care ו-Home Health הם תחומים שונים בעקרון: Home Care עוסק בסיוע ב-ADL/IADL בעלי אופי אישי-טיפולי, בעוד Home Health כולל הערכה רפואית, טיפול סיעודי מקצוע, ניטור חיוני ותרופות. ההבחנה זו ק"
+    },
+    {
+      "idx": 630,
+      "slot": 1,
+      "t": "Hazzard",
+      "option_text": "כשהקשיש מבקש",
+      "distractor_text": "Wrong because: בקשת הקשיש לבדה אינה מבסיס מספיק להמסדה - יש להעריך את יכולתו לקבל החלטה (decision-making capacity), את האלטרנטיבות הזמינות בקהילה, ואת הסיכונים של הישארות בבית. קשיש עם דמנציה מתקדמת או דיליריום לא יכול לתת הסכמה מעוררת שיפו"
+    },
+    {
+      "idx": 2146,
+      "slot": 3,
+      "t": "Harrison",
+      "option_text": "Pulmonary embolism",
+      "distractor_text": "Wrong because: PE typically presents with acute dyspnea, tachycardia, and pleuritic chest pain over hours to days. Bilateral interstitial infiltrates and eosinophilia (28%) are not typical PE findings. CXR in PE is usually normal or shows H"
+    },
+    {
+      "idx": 2149,
+      "slot": 1,
+      "t": "Harrison",
+      "option_text": "We should intubate now given his hypercapnia",
+      "distractor_text": "Wrong because: Intubation now is premature. Although his pH is 7.28 and PCO2 is 68 (Type II respiratory acidosis), he is currently arousable and maintaining adequate oxygenation (PO2 58 on 2L). Immediate intubation without first attempting "
+    },
+    {
+      "idx": 2442,
+      "slot": 0,
+      "t": "Hazzard",
+      "option_text": "להיענות לבקשת הבת — זכותה המשפחתית",
+      "distractor_text": "Wrong because: חוק זכויות החולה 1996 קובע כי זכות הגישה לרופואה וקבלת מידע עומדת לחולה עצמה, לא למשפחה. בקשת הבת אינה שוללת את זכות המטופלת לדעת על מצבה הרפואי כל עוד היא בעלת יכולת שיקול דעת. Would be correct if: אפשרות זו הייתה נכונה אם ל"
+    },
+    {
+      "idx": 2442,
+      "slot": 3,
+      "t": "Hazzard",
+      "option_text": "לא ליידע לעת עתה ולבחון שוב בעוד שבוע",
+      "distractor_text": "Wrong because: עיכוב מכוון של מידע רפואי למטופלת בעלת יכולת שיפוט תקינה מהווה הפרה של זכות הגישה לרופואה. 'דינאי אבחול' (שיקול דעת קליני לעיכוב) חל רק בנסיבות חריגות מאוד בהן חשיפה מיידית עלולה לגרום נזק פיזיולוגי ישיר, וזה לא המקרה כאן. Wo"
+    },
+    {
+      "idx": 2463,
+      "slot": 3,
+      "t": "2021-Dec",
+      "option_text": "פתולוגיה בבדיקת אק\"ג",
+      "distractor_text": "Wrong because: RBBB לבדו ללא סימנים של ACS או block דו-מערכתי אינו מנבא עיקרי לסיבוכים קרדיאליים לאחר ניתוח. RBBB לא משפיע על מוציא דם או תפקוד קרדיאלי מערכתי במיוחד בניתוח אלקטיבי. Would be correct if: ST elevation ברוחב, סימנים של ischemi"
+    },
+    {
+      "idx": 2516,
+      "slot": 0,
+      "t": "2022-Jun-Basic",
+      "option_text": "במעבר על גיליונות קודמים מסתבר שזו הפעם השלישית שמגיעה בעקבות שבר למיון",
+      "distractor_text": "Wrong because: שברים חוזרים יכולים להעיד על הזנחה או התעמרות פיזית, אך באותו אופן יכולים להשקף סיכון נפילה גבוה בגלל עיוורון, דמנציה, תרופות או רעילות עצמית. בנתון זה לבדו אין ספציפיות להתעמרות נפשית. Would be correct if: אם היו ראיות נוספו"
+    },
+    {
+      "idx": 2516,
+      "slot": 2,
+      "t": "2022-Jun-Basic",
+      "option_text": "בבדיקות המעבדה קר י אטנין וBUN- מוגברים באופן אקוטי",
+      "distractor_text": "Wrong because: עלייה אקוטית בקריאטינין ו-BUN משקפת ירידה בתפוקת כלייה או דלדול תוך-וסקולרי (לדוגמה: דיהידרציה, זיהום, השפעה של תרופות). אלו מצביעים על זניחה רפואית אך לא בהכרח על התעמרות נפשית, וקשה להבדיל מסיבות רפואיות אחרות. Would be cor"
+    },
+    {
+      "idx": 2625,
+      "slot": 1,
+      "t": "2023-Jun-Basic",
+      "option_text": "להוסיף לטיפולLYRICA T.",
+      "distractor_text": "Wrong because: LYRICA (pregabalin) היא תרופה לכאבים נוירופתיים/עצבים, לא לכאבי סרטן סומטיים עז מגרורות עצםם. המטופלת סובלת מכאב מטסטאטי ישיר בעצם הדורש אופיואידים, לא תרופה אנטי-קונוולסנט. Would be correct if: LYRICA תהיה מדויקת אם הכאב היה"
+    },
+    {
+      "idx": 2625,
+      "slot": 2,
+      "t": "2023-Jun-Basic",
+      "option_text": "להוסיף לטיפולPERCOCET T.",
+      "distractor_text": "Wrong because: PERCOCET (אוקסיקודון + אצטמינופן) הוא אופיואיד חלש שאינו מעגן מספיק לכאב סרטן עז בגיל מתקדם. בנוסף, המטופלת כבר לוקחת ACAMOL ו-OPTALGIN (שניהם מכילים acetaminophen/paracetamol) ב-6 גרם ליום, ותוספת PERCOCET תחרוג מהמינון היומ"
+    },
+    {
+      "idx": 2629,
+      "slot": 2,
+      "t": "2023-Jun-Basic",
+      "option_text": "בת 92 עםSCC על גשר האף",
+      "distractor_text": "Wrong because: SCC (carcinoma תאים squamous) אינו תלוי בהשפעה של Hedgehog pathway - זהו סוג גרגרי שונה מחלוטין מ-BCC שנוצר בדרך כלל מקרינת UV ללא קישור לHH signaling. Would be correct if: Vismodegib היה מתאים ל-SCC אם היתה מוטציה תיעדית בגנ"
+    },
+    {
+      "idx": 2688,
+      "slot": 1,
+      "t": "2023-Jun-Basic",
+      "option_text": "היפ ו נתרמיה",
+      "distractor_text": "Wrong because: היפונתרמיה לא משנה משמעותית את משך QT ואינה גורמת להארכתו הטיפוסית שנראית באק\"ג. היפונתרמיה עלולה לגרום לברדיקרדיה וגלים של אוסבורן אך לא להארכת QT כמו בתמונה. Would be correct if: היפונתרמיה הייתה הנכונה אם היו בתמונה גלים א"
+    },
+    {
+      "idx": 2688,
+      "slot": 2,
+      "t": "2023-Jun-Basic",
+      "option_text": "ר היפ מגנזמיה",
+      "distractor_text": "Wrong because: היפומגנזמיה אמנם גורמת להארכת QT וחשובה בחומרים אנטיאריתמיים כמו אמיודרון, אך בנוכחות היפוקלמיה (שמוליד גם היפומגנזמיה שנייתית לעיתים), היפוקלמיה היא ההפרעה הראשונית והקריטית ביותר הגורמת להארכת QT. Would be correct if: היפומ"
+    },
+    {
+      "idx": 2742,
+      "slot": 2,
+      "t": "2024-May-Basic",
+      "option_text": "דיס ת ימיה",
+      "distractor_text": "Wrong because: דיסתימיה (Persistent Depressive Disorder) דורשת תסמינים הנמשכים לפחות 2 שנים בבוגרים, ולא רק חודשיים כבמקרה זה. בנוסף, דיסתימיה בדרך כלל קלה יותר מMajor Depression. Would be correct if: אם המטופל היה מדווח על תסמיני דיכאון על"
+    },
+    {
+      "idx": 2857,
+      "slot": 0,
+      "t": "2024-May-Basic",
+      "option_text": "הופעת גליU",
+      "distractor_text": "Wrong because: גל U אינו שינוי אופייני של היפוקלצמיה. גל U מופיע בעיקר בחסרון אשלגן (hypokalemia) ולא בהיפוקלצמיה המעוררת spasm כרפלי בנוכחות קלצמיום נמוך בסרום. Would be correct if: גל U היה בוחר במטופל עם hypokalemia משנית (למשל מחoleuret"
+    },
+    {
+      "idx": 2927,
+      "slot": 1,
+      "t": "2024-Sep-Basic",
+      "option_text": "בת 82 עםUTI ., שבלילות ממלמלת ומדברת. שכניה מתלוננים שקשה להם לישון עמה",
+      "distractor_text": "Wrong because: ב-UTI עם ממלמול בלילות וקושי בשינת השכנות, מדובר בדליריום אקוטי על רקע זיהום שדורש טיפול בנימודיה/אנטיביוטיקה, לא באנטי-פסיכוטיים; הממלמול יתפזר עם טיפול בסיבוך. Would be correct if: אם למטופלת היו הלוצינציות ויזואליות או אוד"
+    },
+    {
+      "idx": 3034,
+      "slot": 2,
+      "t": "2025-Jun-Basic",
+      "option_text": "ערך המוגלובין מסוכרר פחות מ- 7%",
+      "distractor_text": "Wrong because: HbA1c פחות מ-7% הוא יעד שדורש כנראה עיגון יותר קשדי (סוכרת טוב מדי לקשיש סיעודי עם דמנציה). זה מעלה סיכון יתר של היפוגליקמיה בלא תועלת קלינית משמעותית בקשיש זה. Would be correct if: HbA1c פחות מ-7% יהיה מטרה נכונה עבור חולה צ"
+    },
+    {
+      "idx": 3056,
+      "slot": 1,
+      "t": "2025-Jun-Basic",
+      "option_text": "מין– אישה",
+      "distractor_text": "Wrong because: מין נקבי הוא גורם סיכון לאוסטיאופורוזיס ראשוני (postmenopausal) ולא שניוני. אוסטיאופורוזיס שניוני מוגדרת כנובעת מתנאים רפואיים או תרופות ספציפיות, לא מגורמים דמוגרפיים. Would be correct if: אם השאלה הייתה על גורמי סיכון לאוסט"
+    },
+    {
+      "idx": 3093,
+      "slot": 0,
+      "t": "2025-Jun-Basic",
+      "option_text": "מתןAMIODARONE IV במינון 150 מ״ג תוך 10 דקות",
+      "distractor_text": "Wrong because: אמיודרון IV אינו המטפל של בחירה בחולה עם ST elevation MI ו-short runs של VT - הוא משמש לעיתים קרובות להדכאת הפעילות החשמלית אך לא מטפל בגורם השורש (אוקלוזיה עורקית). החולה מוצביע אינדיקציה דחופה לרה-פרפוזיה מכנית. Would be co"
+    },
+    {
+      "idx": 3272,
+      "slot": 1,
+      "t": "2023-Jun-Subspec",
+      "option_text": "להוסיף לטיפולLYRICA T.",
+      "distractor_text": "Wrong because: LYRICA (pregabalin) היא תרופה אנטי-נוירופתית המיועדת לכאבים נוירופתיים כמו neuropathy או neuropathic pain. כאבי גב מגרורות עצמיות הם כאבים סומטיים/אונקולוגיים, לא נוירופתיים, ולכן LYRICA לא יעילה בהקשר קליני זה. Would be corr"
+    },
+    {
+      "idx": 3272,
+      "slot": 2,
+      "t": "2023-Jun-Subspec",
+      "option_text": "להוסיף לטיפולPERCOCET T.",
+      "distractor_text": "Wrong because: PERCOCET (אוקסיקודון + אצטמינופן) היא כדור שילוב קבוע בעל יחס קבוע, שמגביל את גמישות המינון. בחולה בת 78 עם תשוש כללי, יש סיכון גבוה לתחמוצת אופיואידית. בנוסף, היא כבר על 6 גרם אצטמינופן יומי - הוספת PERCOCET (המכיל עוד אצטמי"
+    },
+    {
+      "idx": 3276,
+      "slot": 2,
+      "t": "2023-Jun-Subspec",
+      "option_text": "בת 92 עםSCC על גשר האף",
+      "distractor_text": "Wrong because: SCC (carcinoma של תאים דלוקים) אינו מהווה אינדיקציה לוויסמודג'יב; התרופה מיועדת לעיכול Hedgehog pathway המופעל דווקא ב-BCC, לא ב-SCC. Would be correct if: וויסמודג'יב היה מתאים אם היה מדובר ב-BCC בגשר האף (במקום SCC) שלא ניתן"
+    },
+    {
+      "idx": 3346,
+      "slot": 2,
+      "t": "2024-May-Subspec",
+      "option_text": "דיס ת ימיה",
+      "distractor_text": "Wrong because: דיסתימיה (Persistent Depressive Disorder) דורשה משך של 2+ שנים בבחורים ו-3+ שנים בנשים עם סימפטומים קלים יחסית. התסמינים כאן התחילו לפני כחודשיים בלבד, זו רק התחלה של תקופה זו. Would be correct if: אם התסמינים היו קיימים באופ"
+    },
+    {
+      "idx": 3379,
+      "slot": 1,
+      "t": "2024-May-Subspec",
+      "option_text": "אי ספיקת לב מסוגHFpEF בחומרתNYHA IV",
+      "distractor_text": "Wrong because: HFpEF (EF >50%) אינו מצביע ל-CRT. CRT מיועד לחולי HFrEF בלבד. סימפטומים קשים (NYHA IV) אינם משנים זאת; ההפניה נעשית לממסדי אחרים כמו diuretics או vasodilators. Would be correct if: היה נכון אם היה מדובר בHFrEF (EF ≤35%) עם או"
+    },
+    {
+      "idx": 3483,
+      "slot": 2,
+      "t": "2024-Sep-Subspec",
+      "option_text": "מבחןMMSE פחות מ - 5",
+      "distractor_text": "Wrong because: ניקוד MMSE נמוך מ-5 עצמו אינו קריטריון חזק של Mitchell לפרוגנוזה לטווח זה בדמנציה מתקדמת; בשלב FAST 7C המטופל כבר במצב תקשורת אובדנית, והדגש על סימנים פיזיולוגיים (אלבומין) ולא קוגניטיביים. Would be correct if: היה זה נכון אם"
+    },
+    {
+      "idx": 3488,
+      "slot": 1,
+      "t": "2024-Sep-Subspec",
+      "option_text": "בת 82 עםUTI ., שבלילות ממלמלת ומדברת. שכניה מתלוננים שקשה להם לישון עמה",
+      "distractor_text": "Wrong because: UTI בגריאטרית עם הלמללת ודיבור בלילות מהווה דליריום היפואקטיבי משניוני. הטיפול הראשון הוא לטיפול בדלקת דרכי השתן (אנטיביוטיקה, הידרציה) ותוקדו סביבתי, לא אנטי-פסיכוטיים. Would be correct if: אם לאחר טיפול מוצלח ב-UTI הפרעות ה"
+    },
+    {
+      "idx": 3520,
+      "slot": 1,
+      "t": "2024-Sep-Subspec",
+      "option_text": "בדיקתCT מח",
+      "distractor_text": "Wrong because: CT מח אינו בדיקה ראשונית למיסתניה גראויס. סימפטומים אלו אופייניים למחלה ניורוממברנלית ולא לתהליך CNS, ו-CT מח לא יגיד לנו דבר על תפקוד הצומת העצבית-שריר. Would be correct if: CT מח יהיה הבדיקה הראשונה אם היו סימנים של מחלה CN"
+    },
+    {
+      "idx": 3520,
+      "slot": 2,
+      "t": "2024-Sep-Subspec",
+      "option_text": "בדיקתCT חזה",
+      "distractor_text": "Wrong because: CT חזה אינה בדיקה דיאגנוסטית ראשונית למיסתניה גראויס. אמנם בעלי מיסתניה גראויס חיוביים לנוגדנים anti-AChR עלולים להיות בעלי תימומה (10-15% של חולים), אך CT חזה משמש רק לאחר אישור האבחנה האימונולוגית. Would be correct if: CT ח"
+    },
+    {
+      "idx": 3589,
+      "slot": 0,
+      "t": "GRS8",
+      "option_text": "Dehydroepiandrosterone",
+      "distractor_text": "Wrong because: DHEA has been shown in multiple randomized controlled trials to improve lean body mass and muscle strength in older adults, particularly in those with documented DHEA deficiency. It is one of the established anabolic suppleme"
+    },
+    {
+      "idx": 3667,
+      "slot": 2,
+      "t": "Hazzard",
+      "option_text": "PCV13 ולאחר שנה PPSV23",
+      "distractor_text": "Wrong because: PCV13 ואחריו PPSV23 אחרי שנה הייתה ההנחיה הישנה (לפני 2024), אך כיום היא מיושנת. PCV13 כיסוי סרוטיפים מוגבל יותר מ-PCV20, וההנחיות המעודכנות מעדיפות PCV20 כחיסון ראשוני לחולים שלא קיבלו PCV בעבר. Would be correct if: PCV13 וא"
+    },
+    {
+      "idx": 3689,
+      "slot": 0,
+      "t": "2023-Jun-Basic",
+      "option_text": "מקל 4 נק )ודות (קוודריפוד",
+      "distractor_text": "Wrong because: מקל 4 נקודות מספק תמיכה בשלושת הכיוונים בלבד (קדמי וצדדי) אך לא מספק מספיק יציבות כדי למנוע נפילות לאחור בחולה עם FREEZE של פרקינסון, שכן הוא לא מונע תנועה לאחור ולא מעניק תמיכה עצמאית מספקת. Would be correct if: מקל 4 נקודות"
+    }
+  ]
+}
