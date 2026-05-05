@@ -1374,7 +1374,13 @@ renderTabs();render();
 // surfaces a one-tap restore modal when a user logs in on a fresh device.
 // Must be initialized AFTER the first render so S is fully hydrated.
 if(typeof initPostLoginRestore==='function')initPostLoginRestore();
-if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_help','1');setTimeout(showHelp,500);}}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();if(typeof initPostLoginRestore==='function')initPostLoginRestore();});
+if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_help','1');
+// v10.64.49: defer the first-time help-overlay autoshow if any other modal is
+// already on screen (e.g. postLoginRstModal during a fresh-device login).
+// Surfaced by the 1h chaos run which captured 2 transient modal-recovery-failed
+// cases caused by the help-overlay racing in over an existing modal.
+const _showHelpWhenClear=()=>{const _blocking=document.querySelector('#feModal,#sdModal,#miModal,#mockPicker,#examModal,#mexModal,#postLoginRstModal,#rstModal');if(_blocking)setTimeout(_showHelpWhenClear,400);else showHelp();};
+setTimeout(_showHelpWhenClear,500);}}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();if(typeof initPostLoginRestore==='function')initPostLoginRestore();});
 
 // ===== SCREEN WAKE LOCK =====
 let wakeLock=null;
@@ -6693,7 +6699,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.48';
+const APP_VERSION='10.64.49';
 const CHANGELOG={
 '10.64.47':[
 '🐛 Loading-skeleton stale count fix — the `if(!QZ||!QZ.length)` skeleton at shlav-a-mega.html line ~3271 still read "מאגר 3,833 שאלות" while the live total has been 3,743 since v10.64.11. v10.64.41 fixed the same staleness class in src/study_plan.js but missed this surface (the skeleton renders before _SYLLABUS is fetched, and _SYLLABUS itself is module-private inside src/study_plan.js, so swapped to literal "3,743" matching the established v10.64.41 fallback pattern). Total visible occurrences in shlav-a-mega.html: 13 → 12 (the 12 remaining are all CHANGELOG audit-trail quotes at lines ≥6688, which legitimately reference the historical number).',
