@@ -17,7 +17,7 @@ These four rules are the floor. They override any conflicting guidance later in 
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~524 KB, ~7,150 lines, 210 named functions)
-- **App version**: v10.63.1 (as of 01/05/26) — 3,833 Qs across 46 topics. All 3,833 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.63.1 light-theme default (defends against `shared/tokens.css` `prefers-color-scheme:dark` leak); v10.63.0 auto-restore-on-login + auth events (mirror of FM v1.18.0 / Pnimit v10.4.0); v10.62.1 kill renderCalc shim; v10.62.0 drop renderDrugs+renderCalc from integrity-guard CRITICAL_FUNCTIONS; v10.61 Topic Mastery Heatmap accuracy fix; v10.60 Track tab class-driven rebuild; v10.59 backups RLS Phase 2 — RPC-mediated reads.
+- **App version**: v10.64.47 (as of 05/05/26) — 3,833 Qs across 46 topics. All 3,833 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.64.47 loading-skeleton stale count fix + STALE_COUNTS guard at `const CHANGELOG=` boundary; v10.64.46 Track-I distractor regen — 75 drifted Qs regenerated (0 fail); v10.64.45 Track-R 1547 Hazzard refs realigned to question_chapters.json authority; v10.64.42–44 Track-Q `backup_set` SECURITY DEFINER RPC + TDZ regression test + PDF externalization to GitHub Releases (-85% repo size); v10.64.30s–40 Tracks D/H/I/J/K/L/M/N/O/P — distractor regen + detector v3 + 110 curator overrides triangulated; v10.64.10–16 Q-num matcher v2/v3, 6 c_accept, 48 deletes, 501 canonical refs, 482 ref beautifications.
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -227,7 +227,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js` and `package.json` `version`
-- Currently all three at `10.60.0` (sw.js cache key: `shlav-a-v10.60.0`)
+- Currently all three at `10.64.47` (sw.js cache key: `shlav-a-v10.64.47`)
 - Update all three when making changes to ensure users get cache-busted (see workspace CLAUDE.md "version-trinity invariant")
 - The trinity guard lives in two places: strict pairwise alignment in `tests/appIntegrity.test.js`, and a version-agnostic re-derivation from `package.json` in `tests/visualOverhaul2026.test.js` (refactored v10.60 — used to hard-code the literal version string and went stale every release)
 
@@ -495,8 +495,8 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — see workspace CLAUDE.md for shared invariants |
 | CI workflows | 7 (ci.yml, claude.yml, claude-code-review.yml, distractor-autopsy.yml, distractor-merge-pr.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=214, onchange=25, oninput=6 |
-| App version | v10.63.1 |
-| SW cache key | `shlav-a-v10.63.1` |
+| App version | v10.64.47 |
+| SW cache key | `shlav-a-v10.64.47` |
 
 
 ## Test Coverage Recommendations
