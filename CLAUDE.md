@@ -17,7 +17,7 @@ These four rules are the floor. They override any conflicting guidance later in 
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~524 KB, ~7,150 lines, 210 named functions)
-- **App version**: v10.64.47 (as of 05/05/26) — 3,833 Qs across 46 topics. All 3,833 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.64.47 loading-skeleton stale count fix + STALE_COUNTS guard at `const CHANGELOG=` boundary; v10.64.46 Track-I distractor regen — 75 drifted Qs regenerated (0 fail); v10.64.45 Track-R 1547 Hazzard refs realigned to question_chapters.json authority; v10.64.42–44 Track-Q `backup_set` SECURITY DEFINER RPC + TDZ regression test + PDF externalization to GitHub Releases (-85% repo size); v10.64.30s–40 Tracks D/H/I/J/K/L/M/N/O/P — distractor regen + detector v3 + 110 curator overrides triangulated; v10.64.10–16 Q-num matcher v2/v3, 6 c_accept, 48 deletes, 501 canonical refs, 482 ref beautifications.
+- **App version**: v10.64.47 (as of 05/05/26) — 3,743 Qs across 46 topics. All 3,743 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.64.47 loading-skeleton stale count fix + STALE_COUNTS guard at `const CHANGELOG=` boundary; v10.64.46 Track-I distractor regen — 75 drifted Qs regenerated (0 fail); v10.64.45 Track-R 1547 Hazzard refs realigned to question_chapters.json authority; v10.64.42–44 Track-Q `backup_set` SECURITY DEFINER RPC + TDZ regression test + PDF externalization to GitHub Releases (-85% repo size); v10.64.30s–40 Tracks D/H/I/J/K/L/M/N/O/P — distractor regen + detector v3 + 110 curator overrides triangulated; v10.64.10–16 Q-num matcher v2/v3, 6 c_accept, 48 deletes, 501 canonical refs, 482 ref beautifications.
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -79,7 +79,7 @@ the full decomposition ledger and safe-next-steps list.
 ├── manifest.json            # PWA manifest
 │
 ├── data/                    # Lazy-loaded JSON data — single source of truth
-│   ├── questions.json       # 3,833 MCQs (primary runtime source, all carry `ref` + `e`)
+│   ├── questions.json       # 3,743 MCQs (primary runtime source, all carry `ref` + `e`)
 │   ├── notes.json           # 46 study topic notes
 │   ├── drugs.json           # 113 Beers/ACB drugs database
 │   ├── flashcards.json      # 159 high-yield flashcards
@@ -150,7 +150,7 @@ All runtime data lives in `data/`. The app and service worker load exclusively f
   "t": "2022",  // exam year string
   "ti": 18,     // primary topic index (0–45, see TOPICS below)
   "tis": [18, 19],  // multi-tag topic indices (v10.41+)
-  "e": "...",   // pre-generated AI explanation (populated on all 3,833 Qs)
+  "e": "...",   // pre-generated AI explanation (populated on all 3,743 Qs)
   "ref": "..."  // Hazzard / Harrison chapter + title citation
 }
 ```
@@ -484,7 +484,7 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 |---|---|
 | Main file | `shlav-a-mega.html` (~7,150 lines, ~524 KB) |
 | Named functions | 210 (213 incl. shared/*.js, the integrity-guard counting basis) |
-| Questions | 3,833 (IMA past exams + Hazzard/Harrison AI-generated + GRS8 imports; all carry `ref` + `e`) |
+| Questions | 3,743 (IMA past exams + Hazzard/Harrison AI-generated + GRS8 imports; all carry `ref` + `e`) |
 | Topics | 46 |
 | Drugs | 113 |
 | Flashcards | 159 |
@@ -519,7 +519,7 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 ### Recommended Additions (Priority Order)
 
 1. **OSCE station validation** — Currently no OSCE data file; if reintroduced, validate scenario completeness, task arrays, tip arrays, and cross-reference with topic index
-2. **Explanation quality checks** — Test that all 3,833 `e` fields are non-empty, >= 50 chars, contain no HTML injection, and are valid Hebrew/English text
+2. **Explanation quality checks** — Test that all 3,743 `e` fields are non-empty, >= 50 chars, contain no HTML injection, and are valid Hebrew/English text
 3. **Hazzard chapter JSON** — Validate `hazzard_chapters.json` structure, chapter numbering, and cross-reference with notes.json `ch` field
 4. **Exam year tag consistency** — Validate that each `t` field matches known exam sessions, test distribution balance across years
 5. **Topic distribution balance** — Add quantitative tests: no single topic should have >15% or <1% of total questions
@@ -560,8 +560,8 @@ Reach **1,000+ tests** with coverage of every data file, every engine function, 
 - ~~TOPICS expanded 40→46~~ — v10.41 (added Parkinson's, Arrhythmia, Dysphagia, Andropause, Prevention, Interdisciplinary Care)
 - ~~Built-in debug console~~ — v10.38 (5-tap top-right corner activation)
 - ~~GRS8 Book 3 selective import~~ — v10.37 (+77 Qs across 14 high-yield chapters)
-- ~~`ref` field on every Q~~ — Hazzard/Harrison citation populated on all 3,833 Qs
-- ~~Pre-generated `e` explanations~~ — present on all 3,833 Qs
+- ~~`ref` field on every Q~~ — Hazzard/Harrison citation populated on all 3,743 Qs
+- ~~Pre-generated `e` explanations~~ — present on all 3,743 Qs
 - ~~Hazzard chapter JSON tests~~ — `textbookChapters.test.js` covers schemas
 - ~~Add flashcard spaced repetition~~ — FSRS-4.5 wired with Due/Browse mode
 

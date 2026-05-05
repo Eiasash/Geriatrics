@@ -474,6 +474,72 @@ describe("cross-file referential integrity", () => {
     ).toEqual([]);
   });
 
+  /**
+   * STALE-COUNT GUARD — repo-root documentation (v10.64.48 / 2026-05-05).
+   *
+   * The same staleness class hit CLAUDE.md, IMPROVEMENTS.md, and
+   * .claude/web-project-instructions.md when terminal Claude refreshed
+   * versions to v10.64.47 but missed the `3,833 → 3,743` count drift in
+   * docs. Existing guards (above) only scan src/study_plan.js + the live
+   * prefix of shlav-a-mega.html, so docs went unprotected.
+   *
+   * Per-line allow-list: a line containing a stale number is permitted ONLY
+   * when it ALSO contains an explicit historical-context marker (`stale`,
+   * `obsolete`, `legacy`, `historical`, `pre-v10`, `(was`, `was ~`, `was 88`,
+   * `CHANGELOG`). Anything else is flagged.
+   *
+   * To add a legitimate new historical reference: include one of those
+   * markers in the same line. To declare a new "current" total: update
+   * STALE_COUNTS below to leave only obsolete numbers.
+   */
+  it("repo docs have no current-state stale count claims", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const repoRoot = path.resolve(import.meta.dirname, "..");
+    const DOC_FILES = [
+      "CLAUDE.md",
+      "IMPROVEMENTS.md",
+      ".claude/web-project-instructions.md",
+    ];
+    const STALE_COUNTS = ["3,833", "3833", "3,791", "3791", "3,795", "3795"];
+    const HISTORICAL_MARKERS = [
+      "stale",
+      "Stale",
+      "STALE",
+      "obsolete",
+      "legacy",
+      "historical",
+      "pre-v10",
+      "(was",
+      "was ~",
+      "was 88",
+      "CHANGELOG",
+      "v10.64.18",
+      "v10.64.41",
+      "v10.64.47",
+    ];
+    const violations = [];
+    for (const rel of DOC_FILES) {
+      const abs = path.join(repoRoot, rel);
+      if (!fs.existsSync(abs)) continue;
+      const lines = fs.readFileSync(abs, "utf-8").split("\n");
+      lines.forEach((line, i) => {
+        const hits = STALE_COUNTS.filter((s) => line.includes(s));
+        if (hits.length === 0) return;
+        const exempt = HISTORICAL_MARKERS.some((m) => line.includes(m));
+        if (!exempt) {
+          violations.push(
+            `${rel}:${i + 1}: stale count [${hits.join(", ")}] without historical marker — line: ${line.trim().slice(0, 120)}`,
+          );
+        }
+      });
+    }
+    expect(
+      violations,
+      `Stale count claims found in docs without historical marker:\n${violations.join("\n")}`,
+    ).toEqual([]);
+  });
+
   it("ref field cites a recognizable textbook source where present", () => {
     // Allowlist of legitimate clinical citation patterns. Add new ones as
     // sources expand; the goal is to catch obviously-broken refs (typos,
