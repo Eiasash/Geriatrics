@@ -1,0 +1,181 @@
+{
+  "_meta": {
+    "purpose": "Machine-readable registry of curator overrides where dataset's q.c is medically correct but disagrees with IMA's published answer key. Pinned by tests/curatorOverridesRatchet.test.js — flips will fail loud.",
+    "created": "2026-05-05",
+    "source_docs": [
+      ".audit_logs/TRACK_J_FINDINGS.md",
+      ".audit_logs/TRACK_L_FINDINGS.md",
+      ".audit_logs/TRACK_O_P_FINDINGS.md"
+    ],
+    "appendable": true,
+    "note_94_prior": "94 prior overrides documented in .audit_logs/review/{tag}.md evidence sheets (per-tag Markdown narratives). Not yet machine-extracted. This file currently pins the 16 fresh overrides from Tracks J+L+O (2026-05-04). Append further entries as they're audited."
+  },
+  "overrides": [
+    {
+      "idx": 2391,
+      "expected_c": 3,
+      "track": "J",
+      "tag": "2020",
+      "qnum": 10,
+      "topic_short": "stage-4 pressure ulcer + sepsis abx",
+      "rationale": "Polymicrobial infection requires broad-spectrum; cefazolin (IMA pick) insufficient. Hazzard Ch 46.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 2393,
+      "expected_c": 3,
+      "track": "J",
+      "tag": "2020",
+      "qnum": 25,
+      "topic_short": "anemia in MRSA sepsis (ACD pattern)",
+      "rationale": "Low transferrin rules out IDA; iron+transferrin+ferritin pattern is textbook ACD. Treat infection.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 2400,
+      "expected_c": 3,
+      "track": "J",
+      "tag": "2020",
+      "qnum": 27,
+      "topic_short": "fulminant CDI antibiotic choice",
+      "rationale": "IDSA 2017+ guidelines: fulminant CDI requires PO vanco + IV metronidazole. IMA's PO metronidazole predates update.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2404,
+      "expected_c": 1,
+      "track": "J",
+      "tag": "2021-Jun",
+      "qnum": 23,
+      "topic_short": "early amiodarone thyroid pattern",
+      "rationale": "Elevated TSH + Wolff-Chaikoff pattern is expected, not pathologic. Beta-blockers inappropriate.",
+      "ima_published_c": null
+    },
+    {
+      "idx": 2726,
+      "expected_c": 0,
+      "expected_c_accept": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "track": "J",
+      "tag": "2023-Jun-Basic",
+      "qnum": 24,
+      "topic_short": "multi-cause AKI on rehab",
+      "rationale": "IMA appeal accepted all four answers — multi-accept question.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2395,
+      "expected_c": 2,
+      "track": "L",
+      "tag": "2020",
+      "qnum": 17,
+      "topic_short": "post-NSTEMI discharge meds (HR 58, LVEF 45%)",
+      "rationale": "RAMIPRIL alone — HR 58 contraindicates BB, controlled BP makes lerc redundant, LVEF 45% needs ACE-I.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 2402,
+      "expected_c": 0,
+      "track": "L",
+      "tag": "2021-Jun",
+      "qnum": 24,
+      "topic_short": "urgent dialysis indication",
+      "rationale": "AEIOU + severe AS context: pulmonary edema refractory to volume = absolute indication.",
+      "ima_published_c": null
+    },
+    {
+      "idx": 2403,
+      "expected_c": 1,
+      "track": "L",
+      "tag": "2021-Jun",
+      "qnum": 15,
+      "topic_short": "MM bone-event prophylaxis",
+      "rationale": "Pamidronate is IMWG traditional first-line. Denosumab non-inferior but alternative.",
+      "ima_published_c": null
+    },
+    {
+      "idx": 2405,
+      "expected_c": 1,
+      "track": "L",
+      "tag": "2021-Jun",
+      "qnum": 16,
+      "topic_short": "PMR diagnostic feature",
+      "rationale": "ANA- is the only PMR-supportive feature among options. Microcytic anemia + RF+ argue against PMR.",
+      "ima_published_c": null
+    },
+    {
+      "idx": 154,
+      "expected_c": 2,
+      "track": "O",
+      "tag": "2020",
+      "qnum": 58,
+      "topic_short": "OSA workup",
+      "rationale": "Sleep study — classic OSA picture. AI agrees. IMA's anticholinergic pick is wrong.",
+      "ima_published_c": 1
+    },
+    {
+      "idx": 2442,
+      "expected_c": 1,
+      "track": "O",
+      "tag": "2020",
+      "qnum": 84,
+      "topic_short": "Patient Rights Law",
+      "rationale": "Inform patient — Law 1996 §13-15 is absolute. IMA's defer-to-family pick is illegal.",
+      "ima_published_c": 0
+    },
+    {
+      "idx": 2518,
+      "expected_c": 0,
+      "track": "O",
+      "tag": "2022-Jun-Basic",
+      "qnum": 85,
+      "topic_short": "Brookdale demographic statistics",
+      "rationale": "Curator override on uncertain Brookdale figure. 3-way split with no clear winner; canonical preserved.",
+      "ima_published_c": 3
+    },
+    {
+      "idx": 2900,
+      "expected_c": 2,
+      "track": "O",
+      "tag": "2024-May-Basic",
+      "qnum": 103,
+      "topic_short": "RBD precedes Parkinson's",
+      "rationale": "Textbook prodromal synucleinopathy. AI agrees. IMA multi-accept misses the correct answer.",
+      "ima_published_c": null
+    },
+    {
+      "idx": 3509,
+      "expected_c": 0,
+      "track": "O",
+      "tag": "2024-Sep-Subspec",
+      "qnum": 20,
+      "topic_short": "CURB-65 = 1 mortality",
+      "rationale": "<2% mortality at CURB-65=1 → community-treated. AI agrees. IMA's >20% pick is wrong.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 341,
+      "expected_c": 3,
+      "track": "O",
+      "tag": "2021-Dec",
+      "qnum": 30,
+      "topic_short": "Torsades de pointes culprit drug",
+      "rationale": "Rivaroxaban does not prolong QT; FQs (levofloxacin) do. AI agrees. IMA's pick is wrong.",
+      "ima_published_c": 2
+    },
+    {
+      "idx": 2515,
+      "expected_c": 2,
+      "track": "O",
+      "tag": "2021-Dec",
+      "qnum": 5,
+      "topic_short": "CKD anemia management threshold",
+      "rationale": "KDIGO threshold Hgb 10 — at 11.1, no treatment. 3-way split; canonical is best-defensible.",
+      "ima_published_c": 3
+    }
+  ]
+}
