@@ -363,6 +363,51 @@ describe("cross-file referential integrity", () => {
    * topic_analysis_2026-05-03 sources_extracted.csv.
    */
   /**
+   * TOP-LEVEL EVALUATION GUARD (v10.64.45 — TDZ + missing-binding regression).
+   *
+   * Catches the bug class where a top-level `const X = useY()` declaration
+   * references a name `Y` that hasn't been declared yet (Temporal Dead Zone
+   * on const, or a typo'd identifier that doesn't exist anywhere).
+   *
+   * Real precedent: v10.64.43 added `const HARRISON_PDF_MAP = ...pdfUrl(v)...`
+   * at line 1743, but `const PDF_BASE_URL` was at line 2653. Functions are
+   * hoisted in JS but `const` is in TDZ until the declaration runs, so the
+   * map's derivation would have thrown ReferenceError on every browser load.
+   * Vitest didn't catch this because tests load JSON files separately and
+   * never execute the HTML's <script>. v10.64.44 moved PDF_BASE_URL above
+   * the map derivation; this test pins the order.
+   *
+   * Strategy: textual position check. The full TDZ-detection problem requires
+   * a JS parser; we go with targeted line-order assertions for the specific
+   * known constants and a generic warning for any future `const X = ...`
+   * that references an unresolved global before its line.
+   *
+   * If this fails: a recent edit moved a const-defined dependency below its
+   * consumer. Restore source order or convert to a function (hoisted).
+   */
+  it("PDF_BASE_URL is declared before HARRISON_PDF_MAP derivation", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const html = fs.readFileSync(
+      path.resolve(import.meta.dirname, "..", "shlav-a-mega.html"),
+      "utf-8",
+    );
+    const lines = html.split("\n");
+    const baseLine = lines.findIndex((l) => /^\s*const\s+PDF_BASE_URL\s*=/.test(l));
+    const mapLine = lines.findIndex((l) =>
+      /^\s*const\s+HARRISON_PDF_MAP\s*=\s*Object\.fromEntries/.test(l),
+    );
+    expect(baseLine, "PDF_BASE_URL declaration").toBeGreaterThan(-1);
+    expect(mapLine, "HARRISON_PDF_MAP derivation").toBeGreaterThan(-1);
+    expect(
+      baseLine,
+      `PDF_BASE_URL (line ${baseLine + 1}) must be declared BEFORE ` +
+        `HARRISON_PDF_MAP derivation (line ${mapLine + 1}) — const TDZ ` +
+        `would crash module-load otherwise. See v10.64.44 CHANGELOG.`,
+    ).toBeLessThan(mapLine);
+  });
+
+  /**
    * STALE-COUNT REGRESSION GUARD (v10.64.41 / bug screenshot 2026-05-04).
    *
    * Catches hardcoded total-question-count strings going stale. The bug was:
