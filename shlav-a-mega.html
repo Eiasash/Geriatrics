@@ -6220,6 +6220,12 @@ function clearChat(){S.chat=[];chatLoading=false;save();render();}
       _setStatus(map[r.error]||r.message||('שגיאה: '+r.error),'error'); return;
     }
     setAuthSession(r.username,r.display_name);
+    // v10.64.50: app_users.api_key now travels in the login response (Supabase
+    // migration 2026-05-06). If the user has an api key on file, restore it
+    // directly — saves a separate cloudRestore round-trip on flaky networks.
+    // Empty string explicitly clears (parity with setApiKey('')); typeof check
+    // keeps backward compat with older auth_login_user RPC versions.
+    if(typeof r.api_key==='string') setApiKey(r.api_key);
     _dispatchAuthEvent('login');
     toast('✅ התחברת בהצלחה: '+(r.display_name||r.username),'success');
     if(typeof render==='function') render();
@@ -6699,7 +6705,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.49';
+const APP_VERSION='10.64.50';
 const CHANGELOG={
 '10.64.47':[
 '🐛 Loading-skeleton stale count fix — the `if(!QZ||!QZ.length)` skeleton at shlav-a-mega.html line ~3271 still read "מאגר 3,833 שאלות" while the live total has been 3,743 since v10.64.11. v10.64.41 fixed the same staleness class in src/study_plan.js but missed this surface (the skeleton renders before _SYLLABUS is fetched, and _SYLLABUS itself is module-private inside src/study_plan.js, so swapped to literal "3,743" matching the established v10.64.41 fallback pattern). Total visible occurrences in shlav-a-mega.html: 13 → 12 (the 12 remaining are all CHANGELOG audit-trail quotes at lines ≥6688, which legitimately reference the historical number).',
