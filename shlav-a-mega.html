@@ -1818,6 +1818,27 @@ function toggleExamYear(year){
 }
 function setAllExamYears(){selectedExamYears=new Set(EXAM_YEARS);filt='years';topicFilt=-1;saveExamYears();buildPool();render();}
 function clearExamYears(){selectedExamYears.clear();if(filt==='years')filt='all';saveExamYears();buildPool();render();}
+
+// v10.64.51: multi-select topic filter (mirrors the year-filter pattern above).
+// Replaces the single-select <select> dropdown that could only filter by one
+// topic at a time. Persisted across sessions in localStorage `samega_topic_filter`.
+// Coexists with single-select setTopicFilt(ti) for legacy callers (heatmap drill,
+// study-plan navigation) that pin to one topic.
+let selectedTopics=(function(){
+  try{const raw=localStorage.getItem('samega_topic_filter');if(!raw)return new Set();
+    const arr=JSON.parse(raw);return new Set(Array.isArray(arr)?arr.map(Number).filter(ti=>Number.isInteger(ti)&&ti>=0):[]);
+  }catch(e){return new Set();}
+})();
+function saveTopicFilter(){try{localStorage.setItem('samega_topic_filter',JSON.stringify([...selectedTopics]));}catch(e){}}
+function toggleTopic(ti){
+  ti=Number(ti);
+  if(selectedTopics.has(ti))selectedTopics.delete(ti);else selectedTopics.add(ti);
+  topicFilt=-1;filt=selectedTopics.size?'topics':'all';
+  selectedExamYears.clear();saveExamYears();
+  saveTopicFilter();buildPool();render();
+}
+function setAllTopics(){if(typeof TOPICS==='undefined')return;selectedTopics=new Set(TOPICS.map((_,i)=>i));filt='topics';topicFilt=-1;saveTopicFilter();buildPool();render();}
+function clearTopics(){selectedTopics.clear();if(filt==='topics')filt='all';saveTopicFilter();buildPool();render();}
 let onCallMode=false,flipRevealed=false;
 let timedMode=false,timedSec=90,timedInt=null,timedPaused=false;
 let _optShuffle=null; // {map:[shuffled indices], qIdx} — shuffle per question
@@ -1936,6 +1957,15 @@ const due=getDueQuestions();
 let smartShuffled=false;
 if(filt==='due'){pool=due.length?due:[];}
 else if(filt==='topic'&&topicFilt>=0){QZ.forEach((q,i)=>{const matches=(Array.isArray(q.tis)&&q.tis.length)?q.tis.includes(topicFilt):(q.ti===topicFilt);if(matches&&_topicSrcMatch(q))pool.push(i)});}
+else if(filt==='topics'&&selectedTopics.size){
+  // v10.64.51: multi-select topic filter. Q matches if any of its topic tags
+  // (q.ti or any q.tis[]) intersects the selected set. Works with the same
+  // _topicSrcMatch source-filter (exams/books/all) as single-topic mode.
+  QZ.forEach((q,i)=>{
+    const tis=(Array.isArray(q.tis)&&q.tis.length)?q.tis:[q.ti];
+    if(tis.some(ti=>selectedTopics.has(ti))&&_topicSrcMatch(q))pool.push(i);
+  });
+}
 else if(filt==='years'&&selectedExamYears.size){
   QZ.forEach((q,i)=>{if(selectedExamYears.has(q.t))pool.push(i)});
 }
@@ -1994,8 +2024,8 @@ const _miHtml=`<div style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-in
 const _miD=document.createElement('div');_miD.innerHTML=_miHtml;document.body.appendChild(_miD.firstChild);
 miniExamTopic=-1;render();
 }
-function setFilt(f){filt=f;topicFilt=-1;if(f!=='years'){selectedExamYears.clear();saveExamYears();}buildPool();render()}
-function setTopicFilt(ti){filt='topic';topicFilt=ti;selectedExamYears.clear();saveExamYears();buildPool();render()}
+function setFilt(f){filt=f;topicFilt=-1;if(f!=='years'){selectedExamYears.clear();saveExamYears();}if(f!=='topics'){selectedTopics.clear();saveTopicFilter();}buildPool();render()}
+function setTopicFilt(ti){filt='topic';topicFilt=ti;selectedExamYears.clear();saveExamYears();selectedTopics.clear();saveTopicFilter();buildPool();render()}
 
 // ===== FEATURE 4: RESCUE DRILL =====
 function getWeakTopics(n=3){
@@ -2475,10 +2505,14 @@ function _runFullExam(selectedYears, selectedSources){
   render();
 }
 function showFullExamPicker(){
-  const EXAM_TAGS=['2020','2021','2021-Jun','2022','2023-Jun','2023-Sep','2024-May','2024-Sep','2025-Jun'];
+  // v10.64.51: use canonical EXAM_YEARS list (line 1805) instead of stale local
+  // hardcoded array. The local list was missing 4 of 13 valid tags
+  // (2021-Dec, 2022-Jun-Basic/Subspec, 2023-Jun-Basic/Subspec, 2024-May-Basic/
+  // Subspec, 2024-Sep-Basic/Subspec, 2025-Jun-Basic) so 1,284 exam questions
+  // were invisible to the picker. User feedback 2026-05-06.
   const counts={};
   QZ.forEach(q=>{counts[q.t]=(counts[q.t]||0)+1;});
-  const yearsAvail=EXAM_TAGS.filter(t=>counts[t]>=10);
+  const yearsAvail=EXAM_YEARS.filter(t=>counts[t]>=10);
   const hazCount=counts['Hazzard']||0;
   const harCount=counts['Harrison']||0;
   const yearRows=yearsAvail.map(t=>`<label style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;margin-bottom:4px;cursor:pointer;font-size:12px"><input type="checkbox" class="fe-year" value="${t}" style="width:18px;height:18px;accent-color:var(--app-primary)"> ${t} <span style="color:rgb(var(--fg3));font-size:10px;margin-right:auto">${counts[t]}q</span></label>`).join('');
@@ -2505,20 +2539,48 @@ function showFullExamPicker(){
   document.body.insertAdjacentHTML('beforeend',html);
 }
 function showMockExamPicker(){
-  const EXAM_TAGS=['2020','2021','2021-Jun','2022','2023-Jun','2023-Sep','2024-May','2024-Sep','2025-Jun'];
+  // v10.64.51: use canonical EXAM_YEARS + multi-select checkboxes (was single-pick).
+  // User feedback 2026-05-06: previous picker only showed 3 of 13 valid years
+  // because the local hardcoded list was stale; now any combination of years
+  // can be picked into one mock.
   const counts={};
-  QZ.forEach(q=>{if(EXAM_TAGS.includes(q.t))counts[q.t]=(counts[q.t]||0)+1;});
-  const rows=EXAM_TAGS.filter(t=>counts[t]>=20).map(t=>`<button onclick="startMockExamByTag('${t}');document.getElementById('mockPicker').remove()" class="btn" style="display:block;width:100%;margin-bottom:6px;padding:10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;text-align:right;font-size:12px;cursor:pointer">${t} <span style="color:rgb(var(--fg3));font-size:10px">— ${counts[t]} שאלות</span></button>`).join('');
+  QZ.forEach(q=>{if(EXAM_YEARS.includes(q.t))counts[q.t]=(counts[q.t]||0)+1;});
+  const yearsAvail=EXAM_YEARS.filter(t=>counts[t]>=20);
+  const yearRows=yearsAvail.map(t=>`<label style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;margin-bottom:4px;cursor:pointer;font-size:12px"><input type="checkbox" class="me-year" value="${t}" style="width:18px;height:18px;accent-color:var(--app-primary)"> ${t} <span style="color:rgb(var(--fg3));font-size:10px;margin-right:auto">${counts[t]}q</span></label>`).join('');
   const html=`<div id="mockPicker" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;padding:16px;overflow-y:auto" onclick="if(event.target===this)this.remove()">
-  <div style="background:rgb(var(--card-bg));border-radius:16px;max-width:420px;margin:40px auto;padding:18px;unicode-bidi:plaintext" dir="auto">
-    <div style="font-weight:700;font-size:15px;margin-bottom:12px">🎯 מבחן סימולציה</div>
-    <button onclick="startMockExam();document.getElementById('mockPicker').remove()" class="btn btn-p" style="display:block;width:100%;margin-bottom:10px;padding:10px;font-size:12px;font-weight:700">🎲 100 שאלות — חלוקה מציאותית של כל הנושאים</button>
-    <div style="font-size:10px;color:rgb(var(--fg3));margin:10px 0 6px;font-weight:700">או תרגל מבחן שנתי ספציפי:</div>
-    ${rows}
-    <button onclick="document.getElementById('mockPicker').remove()" class="btn" style="display:block;width:100%;margin-top:10px;padding:8px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;font-size:11px">ביטול</button>
+  <div style="background:rgb(var(--card-bg));border-radius:16px;max-width:440px;margin:20px auto;padding:18px;unicode-bidi:plaintext;font-family:Heebo,Inter,sans-serif" dir="auto">
+    <div style="font-weight:700;font-size:15px;margin-bottom:4px">🎯 מבחן סימולציה</div>
+    <div style="font-size:10px;color:rgb(var(--fg3));margin-bottom:12px">בחר אופציה: 100 שאלות מעורבות, או סמן שנים ספציפיות (אפשר כמה)</div>
+    <button onclick="startMockExam();document.getElementById('mockPicker').remove()" class="btn btn-p" style="display:block;width:100%;margin-bottom:14px;padding:10px;font-size:12px;font-weight:700">🎲 100 שאלות — חלוקה מציאותית של כל הנושאים</button>
+    <div style="display:flex;gap:6px;margin-bottom:8px">
+      <button onclick="document.querySelectorAll('#mockPicker .me-year').forEach(c=>c.checked=true)" class="btn" style="flex:1;font-size:10px;padding:6px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px">סמן הכל</button>
+      <button onclick="document.querySelectorAll('#mockPicker .me-year').forEach(c=>c.checked=false)" class="btn" style="flex:1;font-size:10px;padding:6px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px">נקה</button>
+    </div>
+    <div style="font-weight:700;font-size:12px;margin-bottom:6px;color:rgb(var(--fg2))">שנים ספציפיות:</div>
+    ${yearRows}
+    <button onclick="const ys=[...document.querySelectorAll('#mockPicker .me-year:checked')].map(c=>c.value);if(!ys.length){toast('בחר לפחות שנה אחת','warn');return;}document.getElementById('mockPicker').remove();if(ys.length===1){startMockExamByTag(ys[0]);}else{startMockExamByTags(ys);}" class="btn btn-p" style="display:block;width:100%;margin-top:14px;padding:12px;font-size:13px;font-weight:700;min-height:48px">התחל מבחן ←</button>
+    <button onclick="document.getElementById('mockPicker').remove()" class="btn" style="display:block;width:100%;margin-top:8px;padding:8px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;font-size:11px">ביטול</button>
   </div>
 </div>`;
   document.body.insertAdjacentHTML('beforeend',html);
+}
+// v10.64.51: multi-year mock — pool from any of the selected years.
+function startMockExamByTags(tags){
+  if(!Array.isArray(tags)||!tags.length){return startMockExam();}
+  if(tags.length===1)return startMockExamByTag(tags[0]);
+  examMode=true;
+  const set=new Set(tags);
+  const ixs=[];QZ.forEach((q,i)=>{if(set.has(q.t))ixs.push(i);});
+  for(let i=ixs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ixs[i],ixs[j]]=[ixs[j],ixs[i]];}
+  pool=ixs.slice(0,100);
+  _sessAnsw={};
+  qi=0;sel=null;ans=false;autopsyDistractor=-1;teachBackState=null;_optShuffle=null;_confidence=null;
+  mockExamResults={byTopic:{},start:Date.now(),tag:tags.join('+')};
+  EXAM_FREQ.forEach((_,ti)=>{mockExamResults.byTopic[ti]={ok:0,no:0};});
+  _examStartOk=S.qOk;_examStartNo=S.qNo;examSec=10800;save();
+  examTimer=setInterval(()=>{examSec--;if(examSec<=0)endMockExam();
+  const el=document.getElementById('etimer');if(el)el.textContent=fmtT(examSec);},1000);
+  render();
 }
 function startMockExamByTag(tag){
   examMode=true;
@@ -3233,16 +3295,32 @@ h+=`<div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;font-s
 <span class="pill ${topicSrc==='exams'?'on':''}" onclick="setTopicSrc('exams')" style="padding:4px 10px;font-size:10px;min-height:30px" title="שאלות ממבחני מועצה בלבד">ממבחנים בלבד (${_tsEx})</span>
 <span class="pill ${topicSrc==='books'?'on':''}" onclick="setTopicSrc('books')" style="padding:4px 10px;font-size:10px;min-height:30px" title="שחזורים מ-Hazzard/Harrison בלבד">ספרי לימוד (${_tsBk})</span>
 </div>`;
-h+=`<div style="display:flex;gap:6px;margin-bottom:10px"><select class="calc-in" style="font-size:11px;padding:6px 10px;flex:1" onchange="this.value===-1?setFilt('all'):setTopicFilt(parseInt(this.value))">
-<option value="-1"${filt!=='topic'?' selected':''}>📂 Filter by topic${topicSrc==='exams'?' (ממבחנים)':topicSrc==='books'?' (ספרי לימוד)':''}…</option>`;
-TOPICS.forEach((t,i)=>{const _tc=QZ.filter(q=>q.ti===i&&_topicSrcMatch(q)).length;h+=`<option value="${i}"${filt==='topic'&&topicFilt===i?' selected':''}${_tc===0?' disabled':''}>${t}${topicSrc!=='all'?' ('+_tc+')':''}</option>`;});
-h+=`</select>`;
-// Feature 2: Topic mini-exam button — respects topicSrc
-if(filt==='topic'&&topicFilt>=0){
-const _tqCount=QZ.filter(q=>q.ti===topicFilt&&_topicSrcMatch(q)).length;
-h+=`<button class="btn btn-d" style="font-size:10px;padding:6px 12px;white-space:nowrap" onclick="startTopicMiniExam(${topicFilt})" aria-label="Start topic mini-exam"${_tqCount===0?' disabled':''}>🎯 Mini Exam (${Math.min(_tqCount,20)}q)</button>`;
-}
+// v10.64.51: multi-select topic pills (replaces the single-select <select>
+// that only let users pick one topic at a time — user feedback 2026-05-06).
+// Tap pills to add/remove topics from the active filter; tap "Clear" to wipe.
+// Source filter (exams/books/all) still applies — counts shown reflect it.
+// Single-topic mode (filt==='topic', driven by setTopicFilt) still works for
+// legacy callers (heatmap drill, study plan navigation).
+h+=`<div role="group" aria-label="Topic multi-select" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">`;
+h+=`<span class="pill ${filt==='topics'&&selectedTopics.size===TOPICS.length?'on':''}" onclick="setAllTopics()" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap" title="בחר את כל הנושאים">📋 All topics</span>`;
+if(selectedTopics.size){h+=`<span class="pill" onclick="clearTopics()" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;background:#fef2f2;color:#991b1b;white-space:nowrap" title="נקה בחירה">✕ Clear (${selectedTopics.size})</span>`;}
+const _topicCounts={};QZ.forEach(q=>{if(!_topicSrcMatch(q))return;const _tis=(Array.isArray(q.tis)&&q.tis.length)?q.tis:[q.ti];_tis.forEach(ti=>{if(typeof ti==='number')_topicCounts[ti]=(_topicCounts[ti]||0)+1;});});
+TOPICS.forEach((name,ti)=>{
+  const _n=_topicCounts[ti]||0;if(!_n)return;
+  const _on=selectedTopics.has(ti);
+  h+=`<span class="pill ${_on?'on':''}" onclick="toggleTopic(${ti})" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap" aria-pressed="${_on}" title="${sanitize(name)}">${sanitize(name)} (${_n})${_on?' ✓':''}</span>`;
+});
 h+=`</div>`;
+// Mini Exam button — surfaces when exactly one topic is in focus (single-select
+// legacy mode OR multi-select with size===1).
+if(filt==='topic'&&topicFilt>=0){
+  const _tqCount=QZ.filter(q=>q.ti===topicFilt&&_topicSrcMatch(q)).length;
+  h+=`<div style="margin-bottom:10px"><button class="btn btn-d" style="font-size:10px;padding:6px 12px;white-space:nowrap" onclick="startTopicMiniExam(${topicFilt})" aria-label="Start topic mini-exam"${_tqCount===0?' disabled':''}>🎯 Mini Exam (${Math.min(_tqCount,20)}q)</button></div>`;
+}else if(filt==='topics'&&selectedTopics.size===1){
+  const _onlyTi=[...selectedTopics][0];
+  const _tqCount=_topicCounts[_onlyTi]||0;
+  h+=`<div style="margin-bottom:10px"><button class="btn btn-d" style="font-size:10px;padding:6px 12px;white-space:nowrap" onclick="startTopicMiniExam(${_onlyTi})" aria-label="Start topic mini-exam"${_tqCount===0?' disabled':''}>🎯 Mini Exam (${Math.min(_tqCount,20)}q)</button></div>`;
+}
 }
 if(!pool.length){
 const _emptyDueToSrc=filt==='topic'&&topicFilt>=0&&topicSrc!=='all'&&QZ.some(q=>q.ti===topicFilt);
@@ -6705,7 +6783,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.50';
+const APP_VERSION='10.64.51';
 const CHANGELOG={
 '10.64.47':[
 '🐛 Loading-skeleton stale count fix — the `if(!QZ||!QZ.length)` skeleton at shlav-a-mega.html line ~3271 still read "מאגר 3,833 שאלות" while the live total has been 3,743 since v10.64.11. v10.64.41 fixed the same staleness class in src/study_plan.js but missed this surface (the skeleton renders before _SYLLABUS is fetched, and _SYLLABUS itself is module-private inside src/study_plan.js, so swapped to literal "3,743" matching the established v10.64.41 fallback pattern). Total visible occurrences in shlav-a-mega.html: 13 → 12 (the 12 remaining are all CHANGELOG audit-trail quotes at lines ≥6688, which legitimately reference the historical number).',
