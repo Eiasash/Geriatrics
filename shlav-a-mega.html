@@ -154,6 +154,10 @@ input,textarea,select{font:inherit}
 .hdr{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;position:sticky;top:0;z-index:40}
 .hdr h1{font-size:16px;font-weight:700;letter-spacing:-.5px}
 .hdr p{font-size:10px;color:rgb(var(--fg2));margin-top:1px}
+/* v10.64.62 UI tidy: fade both edges of horizontally-scrollable pill rows so users see "more this way" */
+.scroll-fade-x{-webkit-mask-image:linear-gradient(to left,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);mask-image:linear-gradient(to left,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%)}
+/* v10.64.62 UI tidy: hide inline version badge on phones — version is in More tab and crowds the absolute-positioned header buttons */
+@media(max-width:480px){#headerVer{display:none}}
 .tabs{position:fixed;bottom:0;left:0;right:0;background:rgb(var(--card-bg));border-top:1px solid #e2e8f0;display:flex;z-index:50;box-shadow:0 -2px 10px rgba(0,0,0,.06);padding-bottom:max(4px,env(safe-area-inset-bottom));overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tabs button{flex:0 0 auto;min-width:52px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px 6px;transition:.15s;font-size:10px;font-weight:600}
@@ -3348,7 +3352,7 @@ EXAM_YEARS.forEach(yr=>{
 });
 h+=`</div>`;
 // Non-year filters row (single-select)
-h+=`<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:10px;padding-bottom:4px;-webkit-overflow-scrolling:touch">`;
+h+=`<div class="scroll-fade-x" style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:10px;padding-bottom:4px;-webkit-overflow-scrolling:touch">`;
 const _trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
 const _slowCount=slowQuestionCount();
 const _regCount=Array.isArray(REG)?REG.length:0;
@@ -6945,8 +6949,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.61';
+const APP_VERSION='10.64.62';
 const CHANGELOG={
+'10.64.62':[
+'✨ UI tidy — quiz screen on phones. (1) Filter pill row (🤖 AI / 📖 Suppl / 📘 Harrison / 🔥 Hard / ⏱ Slow / 🎯 Weak / 🔄 Due / 🪤 Traps / 🎯 Next Best Step / 🏛️ תקנות) was already horizontally scrollable but had no visual cue — last pill clipped at right edge with no gradient, no arrow, no shadow. Users were not discovering items past viewport edge. Added new utility class `.scroll-fade-x` using CSS mask-image gradient that fades both edges (24px taper) so users see content exists past the cut. CSS-only, no JS, no scroll-state tracking. Applied to the filts row only (the years row above it uses flex-wrap and does not need it). (2) Inline version badge (`#headerVer`) on the h1 was getting visually crowded by the absolute-positioned dm-btn cluster (☀ 🌙 EN ? 👤, 220px reserved on right) on phones — version overlapped the avatar circle. Hidden on viewports ≤480px via media query; version is still visible in More tab and in the bottom-of-app build line. No HTML structure changes — single class addition + 2 CSS rules.',
+],
 '10.64.61':[
 '🔍 Search now matches across both Hebrew and English variants. Companion to the v10.64.60 bilingual schema — typing "diabetes" in renderSearch now finds AI-translated questions whose English source mentions diabetes (not just questions whose Hebrew translation happened to retain the word "diabetes" inline). Typing "סוכרת" still finds the Hebrew variants. The 1,867 questions with q_en/o_en bilingual fields participate in both directions; the 1,876 IMA-source Qs without _en variants search Hebrew-only via spread of optional arrays. Implementation: renderSearch QZ filter now composes a haystack of [item.q, item.q_en, ...item.o, ...item.o_en] and applies the existing (s||\'\').toLowerCase().includes(q) defensive predicate to each. Notes and drugs unchanged — they don\'t carry bilingual fields. Test pin in tests/bilingualToggle.test.js asserts the haystack composition and that q_en/o_en are consulted.',
 ],
