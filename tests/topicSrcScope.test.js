@@ -173,8 +173,14 @@ describe('v10.9 — topic source scope', () => {
       expect(html).toContain("setTopicSrc('books')");
     });
 
-    it('topic dropdown disables topics with 0 Qs in the selected source', () => {
-      expect(html).toMatch(/_tc===0\?'\s*disabled'\s*:\s*''/);
+    it('topic multi-select pills hide topics with 0 Qs in the selected source', () => {
+      // v10.64.51: replaced single-select <select> with multi-pill UI. The
+      // equivalent behavior to "disabled when count===0" is now "skip render
+      // entirely" via `if(!_n)return;` inside the pills loop. Verify both:
+      //   1. _topicCounts is built from QZ filtered by _topicSrcMatch
+      //   2. pills loop skips topics with zero count for the active source
+      expect(html).toContain('_topicCounts={};QZ.forEach(q=>{if(!_topicSrcMatch(q))return;');
+      expect(html).toMatch(/const\s+_n=_topicCounts\[ti\]\|\|0;\s*if\(!_n\)return;/);
     });
 
     it('buildPool topic branch gates by _topicSrcMatch', () => {
