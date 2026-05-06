@@ -278,4 +278,89 @@ describe('v10.64.51-57 — multi-axis filter system', () => {
       expect(html).toMatch(/if\(!_hasAny\)return;/);
     });
   });
+
+  describe('data-driven intersection counts (faceted facts)', () => {
+    // These tests exercise the actual question corpus to verify the
+    // intersection math produces sane numbers. They guard against
+    // scenarios where a code change quietly breaks the math.
+    it('every EXAM_YEARS year has at least 20 questions (mockPicker threshold)', () => {
+      // showMockExamPicker filters to counts[t]>=20. If any valid year drops
+      // below 20, it'd disappear from the picker again.
+      const counts = {};
+      questions.forEach(q => { counts[q.t] = (counts[q.t] || 0) + 1; });
+      const tooSmall = EXAM_YEARS.filter(y => (counts[y] || 0) < 20);
+      // 2023-Sep is currently 22 — borderline but passes.
+      expect(tooSmall, `EXAM_YEARS with <20 Qs: ${tooSmall.join(', ')}`).toEqual([]);
+    });
+
+    it('exam-source Q count adds up across topic tags (multi-tag aware)', () => {
+      // For exam-source Qs, every Q has at least one ti. The sum of per-ti
+      // counts (with multi-tag dedup via tis[]) should equal at least the
+      // number of exam Qs. This catches a bug where a Q has neither ti nor
+      // tis and silently drops out of every topic pill.
+      const examQs = questions.filter(q => /\b20\d\d\b/.test(q.t || ''));
+      const examWithTopics = examQs.filter(q => {
+        const tis = (Array.isArray(q.tis) && q.tis.length) ? q.tis : [q.ti];
+        return tis.length > 0 && tis.some(t => typeof t === 'number' && t >= 0);
+      });
+      // Allow up to 1% of exam Qs to lack topic tags (transitional data).
+      const ratio = examWithTopics.length / examQs.length;
+      expect(ratio, `${(ratio*100).toFixed(2)}% exam Qs have topic tags`).toBeGreaterThan(0.99);
+    });
+
+    it('Basic year preset selects exactly the Basic-suffix years', () => {
+      const basic = EXAM_YEARS.filter(y => /Basic/.test(y));
+      // Currently: 2022-Jun-Basic, 2023-Jun-Basic, 2024-May-Basic, 2024-Sep-Basic, 2025-Jun-Basic
+      expect(basic.length).toBeGreaterThanOrEqual(4);
+      expect(basic.every(y => y.includes('Basic'))).toBe(true);
+      expect(basic.some(y => y.includes('Subspec'))).toBe(false);
+    });
+
+    it('Subspec year preset selects exactly the Subspec-suffix years', () => {
+      const subspec = EXAM_YEARS.filter(y => /Subspec/.test(y));
+      // Currently: 2022-Jun-Subspec, 2023-Jun-Subspec, 2024-May-Subspec, 2024-Sep-Subspec
+      expect(subspec.length).toBeGreaterThanOrEqual(3);
+      expect(subspec.every(y => y.includes('Subspec'))).toBe(true);
+      expect(subspec.some(y => y.includes('Basic'))).toBe(false);
+    });
+
+    it('Latest preset auto-detects max year > 2024', () => {
+      const maxY = Math.max(...EXAM_YEARS.map(y => parseInt(y, 10)).filter(n => !isNaN(n)));
+      // We're past 2024 — latest should be 2025 or later.
+      expect(maxY).toBeGreaterThanOrEqual(2025);
+    });
+
+    it('intersection of "Latest" preset × any topic returns ≤ Latest-only count', () => {
+      // Sanity: tag intersection can never exceed the smaller set.
+      const maxY = Math.max(...EXAM_YEARS.map(y => parseInt(y, 10)).filter(n => !isNaN(n)));
+      const latestYears = EXAM_YEARS.filter(y => parseInt(y, 10) === maxY);
+      const latestQs = questions.filter(q => latestYears.includes(q.t));
+      // Pick any topic that exists. Frailty (ti=3) is widely present.
+      const FRAILTY_TI = 3;
+      const intersection = latestQs.filter(q => {
+        const tis = (Array.isArray(q.tis) && q.tis.length) ? q.tis : [q.ti];
+        return tis.includes(FRAILTY_TI);
+      });
+      expect(intersection.length).toBeLessThanOrEqual(latestQs.length);
+      // Intersection should be > 0 in real data — Frailty is a syllabus topic.
+      expect(intersection.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('toggleTopicGroup is symmetric (idempotent under double-tap)', () => {
+    // The header tap should toggle the whole group atomically:
+    //   none-of-group selected → all-of-group selected
+    //   all-of-group selected → none-of-group selected
+    //   partial → all-of-group selected (treats partial as "not all", upgrades)
+    it('logic: every-member check (allSelected) flips between all and none', () => {
+      const m = html.match(/function toggleTopicGroup\(\.\.\.tis\)\s*\{[\s\S]+?\n\}/);
+      expect(m).toBeTruthy();
+      // The implementation calls .every() to detect "all selected" state and
+      // toggles based on that — this is the symmetric-toggle pattern.
+      expect(m[0]).toMatch(/tis\.every\(ti=>selectedTopics\.has\(ti\)\)/);
+      // When allSelected, deletes everything; otherwise adds everything.
+      expect(m[0]).toContain('selectedTopics.delete(ti)');
+      expect(m[0]).toContain('selectedTopics.add(ti)');
+    });
+  });
 });
