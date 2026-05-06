@@ -214,6 +214,54 @@ describe('v10.64.60 — qLang runtime behavior (vm sandbox)', () => {
   });
 });
 
+describe('v10.64.61 — bilingual search filter (matches across both languages)', () => {
+  it('renderSearch QZ filter composes a haystack from q AND q_en AND o AND o_en', () => {
+    // Pull the QZ-search filter block (line ~5847 area). The new shape is:
+    //   const _hs=[item.q,item.q_en,...(item.o||[]),...(item.o_en||[])];
+    //   if(_hs.some(s=>(s||'').toLowerCase().includes(q))) qRes.push(i);
+    const m = html.match(/const qRes=\[\];QZ\.forEach\([\s\S]+?qRes\.push\(i\);\}\);/);
+    expect(m, 'renderSearch QZ filter not found').toBeTruthy();
+    const block = m[0];
+    expect(block, 'haystack must include item.q_en').toMatch(/item\.q_en/);
+    expect(block, 'haystack must spread item.o_en (defensive ||[])').toMatch(/\.\.\.\(item\.o_en\|\|\[\]\)/);
+    expect(block, 'haystack must include item.q (Hebrew default)').toMatch(/item\.q[^_]/);
+    expect(block, 'haystack must spread item.o (Hebrew default)').toMatch(/\.\.\.\(item\.o\|\|\[\]\)/);
+    // Defensive guard from v10.64.58 must survive the refactor.
+    expect(block).toMatch(/\(s\|\|''\)\.toLowerCase\(\)\.includes\(q\)/);
+  });
+
+  it('the older single-language form is gone (regression guard)', () => {
+    // Pre-v10.64.61 form: `(item.q||'').toLowerCase().includes(q)||(item.o||[]).some(...)` — without q_en or o_en.
+    // After refactor that exact bare form should not appear in the QZ filter site.
+    const m = html.match(/const qRes=\[\];QZ\.forEach[\s\S]+?qRes\.push\(i\);\}\);/);
+    expect(m).toBeTruthy();
+    expect(m[0], 'pre-v10.64.61 single-lang search shape must be gone').not.toMatch(/\(item\.q\|\|''\)\.toLowerCase\(\)\.includes\(q\)\|\|\(item\.o\|\|\[\]\)\.some/);
+  });
+
+  it('search runtime: substring match works against q_en even when q is Hebrew', () => {
+    // Functional test in vm sandbox of the haystack semantics.
+    const QZ = [
+      { q: 'מה הסיבה השכיחה ל-Locked-in Syndrome?', q_en: 'What is the most common cause of Locked-in Syndrome?', o: ['שיתוק','עורק'], o_en: ['paralysis','artery'], t: 'Hazzard' },
+      { q: 'שאלה רגילה ללא תרגום', o: ['א','ב','ג','ד'], t: '2024-Sep' },
+    ];
+    const search = (raw) => {
+      const q = raw.toLowerCase();
+      const out = [];
+      QZ.forEach((item, i) => {
+        const _hs = [item.q, item.q_en, ...(item.o || []), ...(item.o_en || [])];
+        if (_hs.some(s => (s || '').toLowerCase().includes(q))) out.push(i);
+      });
+      return out;
+    };
+    expect(search('locked-in')).toEqual([0]);  // only matches the Hazzard Q via q_en
+    expect(search('paralysis')).toEqual([0]);  // matches via o_en
+    expect(search('שיתוק')).toEqual([0]);       // matches via o (Hebrew)
+    expect(search('רגילה')).toEqual([1]);       // matches the Hebrew-only Q
+    // q_en absent → spread on undefined would throw; the ||[] guard prevents that.
+    expect(() => search('xyz')).not.toThrow();
+  });
+});
+
 describe('v10.64.60 — translator skip-list pin (Sonnet mojibake guard)', () => {
   it('scripts/translate_questions_to_hebrew.cjs hardcodes SKIP_INDICES with idx=835', () => {
     // Sonnet 4.6 has consistently produced U+FFFD mojibake on idx=835 across

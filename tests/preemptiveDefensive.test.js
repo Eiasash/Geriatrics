@@ -24,16 +24,20 @@ const ROOT = resolve(import.meta.dirname, '..');
 const html = readFileSync(resolve(ROOT, 'shlav-a-mega.html'), 'utf-8');
 
 describe('v10.64.58 (a) — search-filter (field||\'\').toLowerCase() defensive', () => {
-  it('renderSearch QZ filter wraps item.q and item.o with (field||\'\').toLowerCase()', () => {
-    // Locate the search-filter block. Marker: "// Search questions" comment.
+  it('renderSearch QZ filter has defensive guards against undefined item fields', () => {
+    // Two valid shapes are accepted here:
+    //   v10.64.58 (single-lang): (item.q||'').toLowerCase() + (item.o||[]).some(o=>(o||'').toLowerCase())
+    //   v10.64.61 (bilingual):   const _hs=[item.q,item.q_en,...(item.o||[]),...(item.o_en||[])];
+    //                            _hs.some(s=>(s||'').toLowerCase()...)
+    // Both share the same defensive intent: never crash on undefined fields.
     const m = html.match(/const q=srchQ\.toLowerCase\(\);[\s\S]+?const dRes=DRUGS\.filter[\s\S]+?\}\)\s*;/);
     expect(m, 'search filter block not found').toBeTruthy();
     const block = m[0];
-    // QZ filter: item.q and item.o must be defensive-wrapped.
-    expect(block).toMatch(/\(item\.q\|\|''\)\.toLowerCase\(\)/);
-    expect(block).toMatch(/\(item\.o\|\|\[\]\)\.some/);
-    expect(block).toMatch(/\(o\|\|''\)\.toLowerCase\(\)/);
-    // Bare forms must NOT survive (regression guard).
+    // Defensive empty-array fallback for item.o (works in both shapes).
+    expect(block).toMatch(/\(item\.o\|\|\[\]\)/);
+    // Per-item defensive (whether iterator var is named `o` or `s`).
+    expect(block).toMatch(/\((?:o|s)\|\|''\)\.toLowerCase\(\)/);
+    // Bare unguarded forms must NOT survive (regression guard).
     expect(block).not.toMatch(/[^|]item\.q\.toLowerCase/);
     expect(block).not.toMatch(/item\.o\.some\(o=>o\.toLowerCase/);
   });
