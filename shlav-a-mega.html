@@ -3301,7 +3301,21 @@ ${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10
 // Exam-year multi-select row — pills are toggleable, "All" / "Clear" quick actions.
 // Chronologically sorted. Unresolved bare years (2020/2021/2022) display faded with tooltip.
 h+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;padding-bottom:4px" role="group" aria-label="Exam-year multi-select">`;
-const _yearCounts={};QZ.forEach(q=>{if(EXAM_YEARS.includes(q.t))_yearCounts[q.t]=(_yearCounts[q.t]||0)+1;});
+// v10.64.57: year-pill counts respect topic + source filters (faceted-search
+// pattern). User feedback 2026-05-06: pill counts should reflect every other
+// active filter so the user can see the intersection size live before tapping.
+const _yearCounts={};QZ.forEach(q=>{
+  if(!EXAM_YEARS.includes(q.t))return;
+  if(!_topicSrcMatch(q))return;
+  if(filt==='topic'&&topicFilt>=0){
+    const m=(Array.isArray(q.tis)&&q.tis.length)?q.tis.includes(topicFilt):(q.ti===topicFilt);
+    if(!m)return;
+  }else if(selectedTopics.size){
+    const tis=(Array.isArray(q.tis)&&q.tis.length)?q.tis:[q.ti];
+    if(!tis.some(ti=>selectedTopics.has(ti)))return;
+  }
+  _yearCounts[q.t]=(_yearCounts[q.t]||0)+1;
+});
 const _yearsMode=filt==='years'&&selectedExamYears.size>0;
 h+=`<span class="pill ${filt==='all'&&!_yearsMode?'on':''}" onclick="setFilt('all')" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 14px">הכל (${QZ.length})</span>`;
 h+=`<span class="pill" onclick="setAllExamYears()" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 14px" title="בחר את כל שנות המבחן">📋 All years</span>`;
@@ -3376,7 +3390,15 @@ h+=`<div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;font-s
 // legacy callers (heatmap drill, study plan navigation).
 // v10.64.55: clinical-category grouping (user feedback 2026-05-06).
 // Top action row + per-group sections instead of one flat 46-pill flex-wrap.
-const _topicCounts={};QZ.forEach(q=>{if(!_topicSrcMatch(q))return;const _tis=(Array.isArray(q.tis)&&q.tis.length)?q.tis:[q.ti];_tis.forEach(ti=>{if(typeof ti==='number')_topicCounts[ti]=(_topicCounts[ti]||0)+1;});});
+// v10.64.57: topic-pill counts respect year + source filters. With years
+// active the count next to each topic shows "Qs IN those years" so you can
+// see the intersection before tapping.
+const _topicCounts={};QZ.forEach(q=>{
+  if(!_topicSrcMatch(q))return;
+  if(selectedExamYears.size&&!selectedExamYears.has(q.t))return;
+  const _tis=(Array.isArray(q.tis)&&q.tis.length)?q.tis:[q.ti];
+  _tis.forEach(ti=>{if(typeof ti==='number')_topicCounts[ti]=(_topicCounts[ti]||0)+1;});
+});
 // Top action row — All / Clear / preset count badge
 h+=`<div role="group" aria-label="Topic actions" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px">`;
 h+=`<span class="pill ${filt==='topics'&&selectedTopics.size===TOPICS.length?'on':''}" onclick="setAllTopics()" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap" title="בחר את כל הנושאים">📋 All topics</span>`;
@@ -6894,7 +6916,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.56';
+const APP_VERSION='10.64.57';
 const CHANGELOG={
 '10.64.47':[
 '🐛 Loading-skeleton stale count fix — the `if(!QZ||!QZ.length)` skeleton at shlav-a-mega.html line ~3271 still read "מאגר 3,833 שאלות" while the live total has been 3,743 since v10.64.11. v10.64.41 fixed the same staleness class in src/study_plan.js but missed this surface (the skeleton renders before _SYLLABUS is fetched, and _SYLLABUS itself is module-private inside src/study_plan.js, so swapped to literal "3,743" matching the established v10.64.41 fallback pattern). Total visible occurrences in shlav-a-mega.html: 13 → 12 (the 12 remaining are all CHANGELOG audit-trail quotes at lines ≥6688, which legitimately reference the historical number).',
