@@ -17,7 +17,7 @@ These four rules are the floor. They override any conflicting guidance later in 
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~580 KB, ~7,631 lines, 225 named functions)
-- **App version**: v10.64.47 (as of 05/05/26) — 3,743 Qs across 46 topics. All 3,743 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.64.47 loading-skeleton stale count fix + STALE_COUNTS guard at `const CHANGELOG=` boundary; v10.64.46 Track-I distractor regen — 75 drifted Qs regenerated (0 fail); v10.64.45 Track-R 1547 Hazzard refs realigned to question_chapters.json authority; v10.64.42–44 Track-Q `backup_set` SECURITY DEFINER RPC + TDZ regression test + PDF externalization to GitHub Releases (-85% repo size); v10.64.30s–40 Tracks D/H/I/J/K/L/M/N/O/P — distractor regen + detector v3 + 110 curator overrides triangulated; v10.64.10–16 Q-num matcher v2/v3, 6 c_accept, 48 deletes, 501 canonical refs, 482 ref beautifications.
+- **App version**: v10.64.57 (as of 06/05/26) — 3,743 Qs across 46 topics. All 3,743 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.64.57 faceted pill counts (cross-axis filter narrowing); v10.64.56 year + topic INTERSECT (was mutually exclusive); v10.64.55 topic groups (12 clinical categories) + year presets; v10.64.54 622 AI Qs translated to Hebrew (Sonnet 4.6); v10.64.51 multi-select topic filter + dynamic year picker (was hiding 1,284 Qs); v10.64.48–50 cloud-sync API key with user account (cloudBackup _apikey + auth_login_user.api_key restore); v10.64.47 loading-skeleton stale count fix + STALE_COUNTS guard; v10.64.46 Track-I distractor regen — 75 drifted Qs regenerated; v10.64.45 Track-R 1547 Hazzard refs realigned; v10.64.42–44 Track-Q backup_set SECURITY DEFINER RPC + PDF externalization to GitHub Releases (-85% repo size); v10.64.30s–40 Tracks D/H/I/J/K/L/M/N/O/P — distractor regen + detector v3 + 110 curator overrides triangulated.
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -73,7 +73,7 @@ the full decomposition ledger and safe-next-steps list.
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.64.47)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.64.57)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
@@ -122,7 +122,7 @@ the full decomposition ledger and safe-next-steps list.
 ├── .github/
 │   └── workflows/ci.yml     # Validation CI — JSON schema, duplicates, version sync, etc.
 │
-├── tests/                          # 38 vitest files, ~756 tests (see Testing section)
+├── tests/                          # 50 vitest files, 1,156 tests + 7 skipped (see Testing section)
 │
 ├── supabase-setup.sql        # Supabase RLS schema
 ├── .mcp.json                 # MCP server config (Supabase)
@@ -227,7 +227,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js` and `package.json` `version`
-- Currently all three at `10.64.47` (sw.js cache key: `shlav-a-v10.64.47`)
+- Currently all three at `10.64.57` (sw.js cache key: `shlav-a-v10.64.57`)
 - Update all three when making changes to ensure users get cache-busted (see workspace CLAUDE.md "version-trinity invariant")
 - The trinity guard lives in two places: strict pairwise alignment in `tests/appIntegrity.test.js`, and a version-agnostic re-derivation from `package.json` in `tests/visualOverhaul2026.test.js` (refactored v10.60 — used to hard-code the literal version string and went stale every release)
 
@@ -239,10 +239,10 @@ No build step needed. Edit and refresh.
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, 1,047 tests across 45 files)
+npm test             # Run all tests (vitest, 1,156 tests across 50 files + 7 skipped)
 ```
 
-**1,047 tests across 45 files (~22 tests per file avg)** — run `npm test` to see current count.
+**1,156 tests across 50 files (~23 tests per file avg)** — run `npm test` to see current count.
 
 **Auto-expand rule:** Every feature, improvement, or bug fix MUST include new or updated tests:
 - New data file or field → schema validation test
@@ -295,6 +295,9 @@ npm test             # Run all tests (vitest, 1,047 tests across 45 files)
 | `tests/fsrsDeadline.test.js` | 18 | FSRS deadline logic |
 | `tests/trackViewMarkup.test.js` | 51 | Track tab class taxonomy + zero-inline-style guard on outer shells (v10.60+, mirrors FM Quiz markup test) |
 | `tests/visualOverhaul2026.test.js` | varies | Editorial-overhaul markup pins + version-trinity guard (auto-derived from package.json) |
+| `tests/multiSelectFilters.test.js` | 41 | Multi-axis filter system (v10.64.51-57): TOPIC_GROUPS, year presets, INTERSECT semantics, faceted pill counts, toggleTopicGroup symmetry |
+| `tests/apiKeyLoginRestore.test.js` | 11 | API key cloud sync (v10.64.48-50): cloudBackup _apikey payload, applyRestorePayload typeof guard, _doLogin reads r.api_key after setAuthSession, samega_apikey localStorage parity |
+| `tests/postLoginRestore.test.js` | 19 | v10.63.0 auto-restore-on-login feature: suppress-key namespace, fresh-state heuristic, prototype-pollution guards, IIFE wiring |
 
 **Test coverage by area:**
 
@@ -491,12 +494,12 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Study notes | 46 |
 | Hazzard chapters | 108 (in-app reader) |
 | Harrison chapters | 69 (in-app reader) |
-| Test suite | 1,104 tests across 48 files (vitest) |
+| Test suite | 1,156 tests across 50 files + 7 skipped (vitest) |
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — see workspace CLAUDE.md for shared invariants |
 | CI workflows | 7 (ci.yml, claude.yml, claude-code-review.yml, distractor-autopsy.yml, distractor-merge-pr.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=214, onchange=25, oninput=6 |
-| App version | v10.64.47 |
-| SW cache key | `shlav-a-v10.64.47` |
+| App version | v10.64.57 |
+| SW cache key | `shlav-a-v10.64.57` |
 
 
 ## Test Coverage Recommendations
