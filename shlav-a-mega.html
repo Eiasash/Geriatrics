@@ -1839,6 +1839,36 @@ function toggleTopic(ti){
 }
 function setAllTopics(){if(typeof TOPICS==='undefined')return;selectedTopics=new Set(TOPICS.map((_,i)=>i));filt='topics';topicFilt=-1;saveTopicFilter();buildPool();render();}
 function clearTopics(){selectedTopics.clear();if(filt==='topics')filt='all';saveTopicFilter();buildPool();render();}
+// v10.64.55: toggle an entire clinical group (TOPIC_GROUPS). If all members
+// of the group are already selected, deselect them all; otherwise select all.
+function toggleTopicGroup(...tis){
+  if(!tis.length)return;
+  const allSelected=tis.every(ti=>selectedTopics.has(ti));
+  if(allSelected){tis.forEach(ti=>selectedTopics.delete(ti));}
+  else{tis.forEach(ti=>selectedTopics.add(ti));}
+  topicFilt=-1;filt=selectedTopics.size?'topics':'all';
+  selectedExamYears.clear();saveExamYears();
+  saveTopicFilter();buildPool();render();
+}
+// v10.64.55: year preset helpers — let users grab whole exam-type slices in
+// one tap (Basic vs Subspec, or just the most recent year). Replaces having to
+// click through 13 individual year pills.
+function setExamYearsPreset(preset){
+  let years=[];
+  if(preset==='basic')years=EXAM_YEARS.filter(y=>/Basic/.test(y));
+  else if(preset==='subspec')years=EXAM_YEARS.filter(y=>/Subspec/.test(y));
+  else if(preset==='latest'){
+    // Latest year = numeric max year prefix
+    const maxYear=Math.max(...EXAM_YEARS.map(y=>parseInt(y,10)).filter(n=>!isNaN(n)));
+    years=EXAM_YEARS.filter(y=>parseInt(y,10)===maxYear);
+  }else if(preset==='2024')years=EXAM_YEARS.filter(y=>y.startsWith('2024'));
+  else if(preset==='2023')years=EXAM_YEARS.filter(y=>y.startsWith('2023'));
+  else if(preset==='2022')years=EXAM_YEARS.filter(y=>y.startsWith('2022'));
+  selectedExamYears=new Set(years);
+  filt=selectedExamYears.size?'years':'all';topicFilt=-1;
+  selectedTopics.clear();saveTopicFilter();
+  saveExamYears();buildPool();render();
+}
 let onCallMode=false,flipRevealed=false;
 let timedMode=false,timedSec=90,timedInt=null,timedPaused=false;
 let _optShuffle=null; // {map:[shuffled indices], qIdx} — shuffle per question
@@ -3244,6 +3274,18 @@ const _yearCounts={};QZ.forEach(q=>{if(EXAM_YEARS.includes(q.t))_yearCounts[q.t]
 const _yearsMode=filt==='years'&&selectedExamYears.size>0;
 h+=`<span class="pill ${filt==='all'&&!_yearsMode?'on':''}" onclick="setFilt('all')" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 14px">הכל (${QZ.length})</span>`;
 h+=`<span class="pill" onclick="setAllExamYears()" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 14px" title="בחר את כל שנות המבחן">📋 All years</span>`;
+// v10.64.55: year preset pills (user feedback 2026-05-06: "choose specific
+// exams not just all in general"). Tap once to grab whole exam-type slices.
+const _basicYears=EXAM_YEARS.filter(y=>/Basic/.test(y));
+const _subspecYears=EXAM_YEARS.filter(y=>/Subspec/.test(y));
+const _basicSelected=_basicYears.length>0&&_basicYears.every(y=>selectedExamYears.has(y))&&selectedExamYears.size===_basicYears.length;
+const _subspecSelected=_subspecYears.length>0&&_subspecYears.every(y=>selectedExamYears.has(y))&&selectedExamYears.size===_subspecYears.length;
+const _maxY=Math.max(...EXAM_YEARS.map(y=>parseInt(y,10)).filter(n=>!isNaN(n)));
+const _latestYears=EXAM_YEARS.filter(y=>parseInt(y,10)===_maxY);
+const _latestSelected=_latestYears.length>0&&_latestYears.every(y=>selectedExamYears.has(y))&&selectedExamYears.size===_latestYears.length;
+h+=`<span class="pill ${_basicSelected?'on':''}" onclick="setExamYearsPreset('basic')" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 12px;font-size:11px" title="כל מבחני Basic">📘 Basic (${_basicYears.length})</span>`;
+h+=`<span class="pill ${_subspecSelected?'on':''}" onclick="setExamYearsPreset('subspec')" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 12px;font-size:11px" title="כל מבחני Subspec">📕 Subspec (${_subspecYears.length})</span>`;
+h+=`<span class="pill ${_latestSelected?'on':''}" onclick="setExamYearsPreset('latest')" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 12px;font-size:11px" title="המבחנים האחרונים בלבד (${_maxY})">🆕 ${_maxY}</span>`;
 if(selectedExamYears.size)h+=`<span class="pill" onclick="clearExamYears()" style="min-height:36px;display:inline-flex;align-items:center;padding:6px 14px;background:#fef2f2;color:#991b1b" title="נקה בחירה">✕ Clear (${selectedExamYears.size})</span>`;
 EXAM_YEARS.forEach(yr=>{
   const _n=_yearCounts[yr]||0;if(!_n)return;
@@ -3301,16 +3343,33 @@ h+=`<div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;font-s
 // Source filter (exams/books/all) still applies — counts shown reflect it.
 // Single-topic mode (filt==='topic', driven by setTopicFilt) still works for
 // legacy callers (heatmap drill, study plan navigation).
-h+=`<div role="group" aria-label="Topic multi-select" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">`;
+// v10.64.55: clinical-category grouping (user feedback 2026-05-06).
+// Top action row + per-group sections instead of one flat 46-pill flex-wrap.
+const _topicCounts={};QZ.forEach(q=>{if(!_topicSrcMatch(q))return;const _tis=(Array.isArray(q.tis)&&q.tis.length)?q.tis:[q.ti];_tis.forEach(ti=>{if(typeof ti==='number')_topicCounts[ti]=(_topicCounts[ti]||0)+1;});});
+// Top action row — All / Clear / preset count badge
+h+=`<div role="group" aria-label="Topic actions" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px">`;
 h+=`<span class="pill ${filt==='topics'&&selectedTopics.size===TOPICS.length?'on':''}" onclick="setAllTopics()" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap" title="בחר את כל הנושאים">📋 All topics</span>`;
 if(selectedTopics.size){h+=`<span class="pill" onclick="clearTopics()" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;background:#fef2f2;color:#991b1b;white-space:nowrap" title="נקה בחירה">✕ Clear (${selectedTopics.size})</span>`;}
-const _topicCounts={};QZ.forEach(q=>{if(!_topicSrcMatch(q))return;const _tis=(Array.isArray(q.tis)&&q.tis.length)?q.tis:[q.ti];_tis.forEach(ti=>{if(typeof ti==='number')_topicCounts[ti]=(_topicCounts[ti]||0)+1;});});
-TOPICS.forEach((name,ti)=>{
-  const _n=_topicCounts[ti]||0;if(!_n)return;
-  const _on=selectedTopics.has(ti);
-  h+=`<span class="pill ${_on?'on':''}" onclick="toggleTopic(${ti})" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap" aria-pressed="${_on}" title="${sanitize(name)}">${sanitize(name)} (${_n})${_on?' ✓':''}</span>`;
-});
 h+=`</div>`;
+// Per-category groups
+TOPIC_GROUPS.forEach(grp=>{
+  // Skip the group entirely if no member has any matching Qs in current source
+  const _hasAny=grp.tis.some(ti=>(_topicCounts[ti]||0)>0);
+  if(!_hasAny)return;
+  const _grpSelected=grp.tis.filter(ti=>selectedTopics.has(ti)).length;
+  const _grpTotal=grp.tis.length;
+  // Group header — clickable to toggle the entire category
+  h+=`<div style="margin-top:6px;margin-bottom:3px;display:flex;align-items:center;gap:6px;font-size:10px;color:rgb(var(--fg3));font-weight:700">`;
+  h+=`<span style="cursor:pointer;user-select:none" onclick="toggleTopicGroup(${grp.tis.join(',')})" title="הפעל / כבה את כל הקטגוריה">${grp.emoji} ${grp.title}${_grpSelected?` <span style="background:rgb(var(--sl8));color:#fff;padding:1px 6px;border-radius:8px;font-size:9px;font-weight:700">${_grpSelected}/${_grpTotal}</span>`:''}</span>`;
+  h+=`</div>`;
+  h+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px">`;
+  grp.tis.forEach(ti=>{
+    const _n=_topicCounts[ti]||0;if(!_n)return;
+    const name=TOPICS[ti];const _on=selectedTopics.has(ti);
+    h+=`<span class="pill ${_on?'on':''}" onclick="toggleTopic(${ti})" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap" aria-pressed="${_on}" title="${sanitize(name)}">${sanitize(name)} (${_n})${_on?' ✓':''}</span>`;
+  });
+  h+=`</div>`;
+});
 // Mini Exam button — surfaces when exactly one topic is in focus (single-select
 // legacy mode OR multi-select with size===1).
 if(filt==='topic'&&topicFilt>=0){
@@ -4764,6 +4823,27 @@ function fcSetMode(mode){S.fcDueMode=(mode==='due');S.fcFlip=false;if(S.fcDueMod
 
 // ===== TRACKER =====
 const TOPICS=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM","Parkinson's","Arrhythmia","Dysphagia","Andropause","Prevention","Interdisciplinary Care"];
+// v10.64.55: clinical-category grouping for the topic multi-select pills
+// (user feedback 2026-05-06: "reorder the topics make it tidier"). The flat
+// 0-45 ti-index order reflected when topics were added to the app, not their
+// clinical relationship. Grouping makes the 46-pill list scannable in seconds
+// instead of requiring a scroll-and-search.
+// Group order is roughly: foundations → cognition → syndromes → organ systems →
+// pain/MSK → care boundaries (legal/settings).
+const TOPIC_GROUPS=[
+  {title:'יסודות',          emoji:'📋', tis:[0,1,2,44,45]},                  // Biology, Demography, CGA, Prevention, Interdisciplinary
+  {title:'קוגניציה ומצב רוח', emoji:'🧠', tis:[6,5,7]},                       // Dementia, Delirium, Depression
+  {title:'תסמונות גריאטריות',  emoji:'🦴', tis:[3,4,8,10,11,13,42]},           // Frailty, Falls, Polypharmacy, Pressure Injuries, Incontinence, Sleep, Dysphagia
+  {title:'תזונה ומערכת עיכול',emoji:'🍽️', tis:[9,12]},                        // Nutrition, Constipation
+  {title:'לב וכלי דם',         emoji:'❤️', tis:[17,18,19,41]},                 // CV Disease, Heart Failure, HTN, Arrhythmia
+  {title:'ריאות / כליות / אנדוקרין', emoji:'🫁', tis:[21,24,22,23,43]},        // COPD, CKD, Diabetes, Thyroid, Andropause
+  {title:'המטולוגיה / אונקולוגיה / זיהומים', emoji:'🩸', tis:[25,26,27]},      // Anemia, Cancer, Infections
+  {title:'שריר-שלד וכאב',     emoji:'🦵', tis:[15,16,14,28]},                  // Osteoporosis, OA, Pain, Palliative
+  {title:'נוירולוגיה',         emoji:'⚡', tis:[20,40]},                        // Stroke, Parkinson's
+  {title:'חושים וניתוחים',    emoji:'👁️', tis:[37,38,39]},                    // Vision/Hearing, Periop, Geri EM
+  {title:'משפט ואתיקה',       emoji:'⚖️', tis:[29,30,31,32,33,34]},           // Ethics, Elder Abuse, Driving, Guardianship, Patient Rights, Advance Directives
+  {title:'מסגרות טיפול',      emoji:'🏥', tis:[35,36]},                        // Community/LTC, Rehab
+];
 
 // ===== PER-TOPIC HUB DATA MAPS (v10.43.0) =====
 // Maps a topic index → list of drug-category regex source strings to match
@@ -6783,7 +6863,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.54';
+const APP_VERSION='10.64.55';
 const CHANGELOG={
 '10.64.47':[
 '🐛 Loading-skeleton stale count fix — the `if(!QZ||!QZ.length)` skeleton at shlav-a-mega.html line ~3271 still read "מאגר 3,833 שאלות" while the live total has been 3,743 since v10.64.11. v10.64.41 fixed the same staleness class in src/study_plan.js but missed this surface (the skeleton renders before _SYLLABUS is fetched, and _SYLLABUS itself is module-private inside src/study_plan.js, so swapped to literal "3,743" matching the established v10.64.41 fallback pattern). Total visible occurrences in shlav-a-mega.html: 13 → 12 (the 12 remaining are all CHANGELOG audit-trail quotes at lines ≥6688, which legitimately reference the historical number).',
