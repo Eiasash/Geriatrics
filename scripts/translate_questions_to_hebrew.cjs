@@ -240,9 +240,15 @@ async function main() {
     return heb / s.length < 0.3;
   };
 
+  // Indices Sonnet 4.6 has consistently produced U+FFFD mojibake on. Hand-translate
+  // these instead — the model's failure mode appears triggered by specific source
+  // text patterns we haven't isolated. Caught by the existing U+FFFD guard in
+  // tests/expandedDataIntegrity.test.js and reverted manually each time.
+  const SKIP_INDICES = new Set([835]);
+
   const candidates = allQs
     .map((q, i) => ({ q, i }))
-    .filter(({ q }) => q.t === TAG && isEnglish(q))
+    .filter(({ q, i }) => q.t === TAG && isEnglish(q) && !SKIP_INDICES.has(i))
     .filter(({ q }) => MODE === 'in-place' || !q.qHe);
 
   console.log(`tag=${TAG} mode=${MODE} candidates=${candidates.length} limit=${LIMIT} dry-run=${DRY_RUN}`);

@@ -6928,8 +6928,14 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.58';
+const APP_VERSION='10.64.59';
 const CHANGELOG={
+'10.64.59':[
+'🌐 1,255 AI questions translated to clinical Israeli Hebrew via Sonnet 4.6 — second large translation batch (after v10.64.54\'s 622 Qs). Three sequential runs covering all remaining English candidates: Hazzard 996 / 1005 candidates, Harrison 200 / 206 candidates, GRS8 59 / 65 candidates. Total: 1255 questions actually mutated (a few model translations matched existing text bytes). Failures: GRS8 5 (model-JSON-malformation, recoverable on re-run; failed Qs still hold their English text). Total Hebrew coverage now: Hazzard ~99%, Harrison ~99%, GRS8 ~93% — only the 5 GRS8 JSON-failures + idx=835 (skip-listed in scripts/translate_questions_to_hebrew.cjs because Sonnet 4.6 consistently produces U+FFFD mojibake on its source content) remain English. Cost ~$17 on Sonnet 4.6.',
+'🧹 Distractor invariant — 1247 entries stripped from data/distractors.json (the ones whose questions just got translated; option text changed → cached distractor signals stale). Next distractor-autopsy run regenerates them. distractorsDrift.test.js + curatorOverridesRatchet.test.js still green.',
+'🛡️ Translator script skip-list — scripts/translate_questions_to_hebrew.cjs now hardcodes SKIP_INDICES=Set([835]) in the candidate filter. Sonnet 4.6 has consistently produced Korean-character mojibake on idx=835 across two batches (v10.64.54 + this one); skipping prevents re-discovery of the failure mode and burning API calls on a known-broken case. Hand-translation pending. The U+FFFD test in tests/expandedDataIntegrity.test.js remains the safety net.',
+'🔑 Anthropic API key trailing-period gotcha — diagnostic memory saved (feedback_anthropic_key_trailing_chars.md). Future API key set-up should pre-flight a single /v1/messages smoke-test before launching any long-running translation; cost ~$0.0001 prevents runaway 401-spam.',
+],
 '10.64.58':[
 '🛡️ Pre-emptive defensive guards mirroring FM v1.21.13 chaos-tested patterns. Two patches against future data drift / partial-load / parser-bleed conditions; Geri data integrity tests guarantee these can\'t crash today, but the wraps make Geri categorically chaos-resilient like FM became after the 7h chaos run on 2026-05-05 reduced 5,135 pageerrors → 0. (a) Search filter (renderSearch ~line 5829-5835): wrapped item.q/o[]/n.topic/n.notes/d.name/d.risk with (field||\'\').toLowerCase() — same shape as the FM more-view.js fix that ended 4,890 chaos pageerrors. (b) Flashcard render (renderFlash ~line 4814-4827): bail to placeholder when FLASH is empty/missing rather than letting S.fci%0 produce NaN → FLASH[NaN] → undefined.f throw (the FM v1.21.13 (b) crash class — 245 chaos pageerrors). Plus FLASH[activeIdx]||FLASH[0] fallback for activeIdx out-of-bounds. New tests/preemptiveDefensive.test.js pins both patterns.',
 ],
