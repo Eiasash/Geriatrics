@@ -43,7 +43,7 @@ const path  = require('path');
 const QUESTIONS_PATH = path.resolve(__dirname, '..', 'data', 'questions.json');
 const CONFIG_PATH    = path.resolve(__dirname, '..', 'config.json');
 
-const MODEL          = 'claude-opus-4-7';
+const MODEL          = 'claude-sonnet-4-6';
 const MAX_TOKENS     = 1500;
 const BATCH_SIZE     = 5;
 const SAVE_EVERY     = 25;
