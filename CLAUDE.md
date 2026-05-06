@@ -23,6 +23,39 @@ These four rules are the floor. They override any conflicting guidance later in 
 
 ---
 
+## Authority Sources (do not invert)
+
+These five fields/files are load-bearing truths. The arrows mark dependency direction
+— never auto-flip the right side to match the left, even if they appear to disagree.
+
+| Source | Authority | Anti-pattern |
+|---|---|---|
+| `q.c` (correct-answer index) | IMA published key + 110 curator overrides | Auto-correct from a textbook search-hit |
+| `q.ref` (free-form text) | Free-form, may be vague | Rebuild toward `question_chapters.json`, not vice versa |
+| `data/question_chapters.json` (`.haz` / `.har`) | Audited truth, schema-guarded | Hand-edit in flight; only the audit pipeline writes this |
+| `data/distractors.json` `DIS[k]` empty slot | Must equal `Q[k].c` (3-layer guard: UI render + `tests/distractorsDrift.test.js` + auto-audit probe) | Auto-pad an empty slot at index ≠ c |
+| `data/notes.json` `notes[i].ch` | Hazzard 8e or Harrison 22e (legal ids 29-35 may cite Israeli law); NO legacy GRS, GRS8 fine | Cite a paper, blog, or legacy GRS edition |
+
+### 110 Curator Overrides — DO NOT AUTO-FIX
+
+Tracks J/L/N/O/P triangulated 110 questions where IMA's published answer key is
+medically wrong but our dataset (`q.c`) is right. Evidence is filed at
+`.audit_logs/review/{tag}.md`. In spot-checks, ~70% of IMA-vs-textbook conflicts
+favor the textbook — IMA's key is not infallible.
+
+`tests/curatorOverridesRatchet.test.js` (7 tests) pins the registry. Never
+suggest "fixing" a c-disagreement before checking the registry; if a question
+is in there, the disagreement is **intentional** and an auto-flip would
+re-introduce the bug.
+
+### Content edits (mandatory rule)
+
+Any change to `o[]`, `c`, or `e` MUST quote the source PDF (Hazzard 8e / Harrison
+22e / GRS8) verbatim in chat or commit message. Never paraphrase. The v9.81 idx
+510 incident — fabricated option, required v9.82 hotfix — is the cautionary tale.
+
+---
+
 ## Architecture
 
 ### Single-File PWA
@@ -43,6 +76,11 @@ Data is loaded at runtime from `data/*.json` files. The service worker (`sw.js`)
 | Supabase PostgreSQL | `progress_state` (RLS) | Optional cloud sync across devices |
 
 **Important**: localStorage keys `samega`, `samega_ex`, `samega_apikey`, `shlav_q_images` must not be renamed — they are stored in users' browsers.
+
+`samega_apikey` is cloud-synced (v10.64.48-50): the value is round-tripped via
+`cloudBackup._apikey` and restored from `auth_login_user.api_key` on login.
+Pinned by `tests/apiKeyLoginRestore.test.js` (11 tests). Don't add a fifth key
+without a sync-path plan.
 
 ---
 
@@ -155,6 +193,37 @@ All runtime data lives in `data/`. The app and service worker load exclusively f
 }
 ```
 
+#### Bilingual schema (v10.64.59-61)
+
+1,255 of 3,743 Qs are AI-generated from English textbooks (Hazzard 1852,
+Harrison 294, GRS8 90). They now carry paired Hebrew↔English variants:
+
+```json
+{
+  "q": "...",          // primary Hebrew text (after translation)
+  "o": ["...", ...],   // primary Hebrew options
+  "q_en": "...",       // paired English variant (v10.64.60+)
+  "o_en": ["...", ...],// paired English options — SAME ORDER AS o[]
+  "c": 0               // single index, valid for BOTH o[] and o_en[]
+}
+```
+
+**Edit rules:**
+- Both `o[]` and `o_en[]` must preserve order — `c` is one index for both
+- Search matches across both variants (v10.64.61)
+- Never reorder one without the other; never translate on the fly
+- Use `scripts/translate_questions_to_hebrew.cjs` to add/regenerate Hebrew
+  variants — preserves `c`, keeps drug names + lab abbreviations + scoring
+  tools in English per Israeli clinical convention, supports
+  `--dry-run/--tag/--limit/--mode (in-place|bilingual)/--delay` flags,
+  auto-backups `questions.json`, periodic checkpointing every 25 translations
+- Cost ≈ $20 Sonnet / $60 Opus for full Hazzard batch (Sonnet quality is fine
+  — edit `MODEL` constant to switch)
+- Run: `ANTHROPIC_API_KEY=sk-ant-... node scripts/translate_questions_to_hebrew.cjs --tag Hazzard --limit 9999 --mode in-place`
+
+`tests/bilingualToggle.test.js` (25 tests) and `tests/renderSiteAudit.test.js`
+(6 tests) enforce these invariants.
+
 ### notes.json
 ```json
 {
@@ -240,9 +309,26 @@ No build step needed. Edit and refresh.
 ### Testing
 ```bash
 npm test             # Run all tests (vitest, 1,199 tests across 55 files + 7 skipped)
+npm run verify       # Pre-push gate (see below) — runs 7 checks in series
 ```
 
 **1,199 tests across 55 files (~22 tests per file avg)** — run `npm test` to see current count.
+
+#### Pre-push gate: `npm run verify`
+
+Runs 7 checks in series. Failure of any blocks the deploy:
+
+1. `node --check src/sw-update.js` — JS syntax check on the SW bridge module
+2. `python3 scripts/check-version-sync.py` — trinity (HTML APP_VERSION + sw.js CACHE + package.json `version` all match)
+3. `python3 scripts/check-brace-balance.py` — `{}` matching in shlav-a-mega.html (catches accidental block truncation)
+4. `python3 scripts/check-innerhtml.py` — unsanitized innerHTML audit
+5. `python3 scripts/check-innerhtml-pieces.py` — fragment-level innerHTML audit (catches concatenation patterns)
+6. `cross-env HARRISON_HEBREW_BASELINE=0 node scripts/harrison-hebrew-baseline.cjs --strict` — Harrison Hebrew baseline ratchet (chapter-coverage regression guard)
+7. `vitest run` — full test suite (1,199 tests, ~19s)
+
+Run before every push. Step 7 dominates runtime. **Always run `npm run verify`,
+not just `npm test`** — the 6 non-vitest checks catch deploy-time bugs that the
+test suite alone misses.
 
 **Auto-expand rule:** Every feature, improvement, or bug fix MUST include new or updated tests:
 - New data file or field → schema validation test
@@ -251,7 +337,7 @@ npm test             # Run all tests (vitest, 1,199 tests across 55 files + 7 sk
 - Modified data processing → edge case + boundary tests
 - After adding tests, update the test count in this section
 
-**Test file inventory (40 files, ~905 tests):**
+**Test file inventory (55 files, 1,199 tests + 7 skipped):**
 
 | File | Tests | Description |
 |------|-------|-------------|
@@ -474,6 +560,77 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 
 ---
 
+## Known Traps (live-bug classes)
+
+Recurring failure modes worth checking before declaring a fix complete.
+
+### Stale-count trap
+
+The pre-load skeleton at `shlav-a-mega.html:3271` hardcodes the question count
+because `_SYLLABUS` is module-private inside `src/study_plan.js` and the
+skeleton renders before the JSON fetch. Currently `'3,743'` per the v10.64.41
+fallback.
+
+The 12 occurrences of `3,833` at lines ≥6688 are CHANGELOG audit-trail quotes
+referencing the historical number — DO NOT touch them. The STALE_COUNTS guard
+in `tests/dataIntegrity.test.js` slices at `const CHANGELOG=` and scans only
+the live prefix, which is why both numbers can coexist without test failure.
+
+### Trinity drift
+
+Three places must always match: `package.json` `version`, `APP_VERSION` constant
+in `shlav-a-mega.html`, `CACHE` in `sw.js`. The trinity guard
+(`tests/visualOverhaul2026.test.js`) is version-agnostic since v10.60 — derives
+from `package.json` at test time. Bumping any one without the other two will
+fail `check-version-sync.py` before push.
+
+### Curator-override re-flip
+
+Running an automated "fix wrong answers" pass over `data/questions.json` will
+re-flip the 110 curator overrides back to IMA's wrong key. Always check
+`tests/curatorOverridesRatchet.test.js` and `.audit_logs/review/{tag}.md`
+before touching `c` values.
+
+### Bilingual `o[]` desync
+
+Editing `o[]` or `o_en[]` independently silently breaks `c`. The bilingual
+toggle test catches schema mismatch but not order-only reorders. Edit both
+arrays together or use `scripts/translate_questions_to_hebrew.cjs` (which
+preserves `c`).
+
+### Distractor-alignment drift
+
+`data/distractors.json` `DIS[k]` empty slot must equal `Q[k].c`. Drift is
+caught by three layers — UI render, `tests/distractorsDrift.test.js`, and the
+auto-audit probe. v10.45 was a 72%-misalignment regression caught by the test
+layer; v10.64.46 regenerated 75 drifted Qs after detector v3.
+
+### Two-Claude race
+
+The user runs Claude Code (terminal) and claude.ai (web) in parallel. Both
+lanes can push to main. Lane discipline:
+
+- **Both lanes active**: branch first — `claude/web-<slug>` for web Claude,
+  `claude/term-<slug>` for terminal Claude — and PR to main. Avoid touching
+  the other lane's known files mid-session.
+- **Solo lane**: direct push to main is the release path (CI gates, Pages
+  deploys ~60s). No PR ceremony needed.
+- **Session start**: `git log --all --since="1 day ago" --oneline` to detect
+  parallel work before editing shared surfaces (`questions.json`, `sw.js`,
+  version files, `shared/fsrs.js`, `harrison_chapters.json`).
+- **Detection**: SW `CACHE` version drifting mid-session = the other lane just
+  shipped — pull before pushing.
+
+### Hebrew bidi corruption
+
+Editing Hebrew `.html` / `.tsx` files via `str_replace` can silently fail when
+U+200F LRM marks are present in the haystack. Workaround: drop to a Python
+subprocess for Hebrew-heavy edits. Drug names + lab abbreviations should stay
+in English per Israeli clinical convention; mixing in option text increases
+bidi flip risk.
+
+---
+
 ## Deployment
 
 ```bash
@@ -585,6 +742,8 @@ Reach **1,000+ tests** with coverage of every data file, every engine function, 
 ## Branch Policy
 
 - `main` — production branch, auto-deployed to GitHub Pages
-- Feature branches: `claude/<description>-<id>` convention
+- Feature branches: `claude/web-<slug>` (web Claude), `claude/term-<slug>` (terminal Claude), `claude/<description>-<id>` (other)
+- Solo lane: direct push to `main` is the release path (CI gates, Pages deploys ~60s)
+- Both lanes active: branch first + PR — see "Two-Claude race" under Known Traps
 - All PRs target `main`
 - CI must pass before merging
