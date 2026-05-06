@@ -4811,12 +4811,20 @@ S.fcQueue=due;S.fcQueuePos=0;
 }
 function renderFlash(){
 const dueMode=!!S.fcDueMode;
+// v10.64.58: defensive bounds-check — pre-empts the FM v1.21.13 (b) chaos crash
+// class. When G.FLASH is empty/missing, S.fci % 0 = NaN → FLASH[NaN] → undefined,
+// then f.f / f.b access throws (245 pageerrors over 7h FM chaos run). Geri loads
+// 159 cards from data/flashcards.json and tests guarantee non-empty, but a fetch
+// failure or partial load could trip this — bail to placeholder rather than crash.
+if(!FLASH||FLASH.length===0){
+return `<div class="sec-t">🃏 Flashcards</div><div class="sec-s">לא נטענו (data/flashcards.json בעיה)</div>`;
+}
 if(dueMode){
   if(!Array.isArray(S.fcQueue)||S.fcQueue.length===0||S.fcQueuePos>=S.fcQueue.length){fcRebuildQueue();}
 }
 const queueEmpty=dueMode&&(!S.fcQueue||S.fcQueue.length===0);
 const activeIdx=dueMode?(S.fcQueue[S.fcQueuePos]??0):(S.fci%FLASH.length);
-const f=FLASH[activeIdx];
+const f=FLASH[activeIdx]||FLASH[0];
 const fcsr=S.fcsr||{};
 let fcKnown=0,fcLearning=0,fcNew=0,fcDue=0;
 const now=Date.now();
@@ -5825,12 +5833,16 @@ h+=`<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
 if(voiceTranscript&&srchQ){h+=`<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:8px;padding:6px 10px;background:rgb(var(--bg2));border-radius:8px" dir="${heDir(voiceTranscript)}">🎤 "${voiceTranscript}"</div>`;}
 if(srchQ.length>=2){
 const q=srchQ.toLowerCase();
-// Search questions
-const qRes=[];QZ.forEach((item,i)=>{if(item.q.toLowerCase().includes(q)||item.o.some(o=>o.toLowerCase().includes(q)))qRes.push(i);});
+// Search questions — v10.64.58 defensive (field||'').toLowerCase() pattern.
+// Pre-empts the FM v1.21.13 (a) chaos crash class: one bad data record (missing
+// q/o text) poisoned every keystroke (4,890 pageerrors over 7h chaos run on FM).
+// Geri's data integrity tests guarantee this can't crash today, but the wrap is
+// future-proofing against data drift / partial loads / parser-bleed edge cases.
+const qRes=[];QZ.forEach((item,i)=>{if((item.q||'').toLowerCase().includes(q)||(item.o||[]).some(o=>(o||'').toLowerCase().includes(q)))qRes.push(i);});
 // Search notes
-const nRes=NOTES.filter(n=>n.topic.toLowerCase().includes(q)||n.notes.toLowerCase().includes(q));
+const nRes=NOTES.filter(n=>(n.topic||'').toLowerCase().includes(q)||(n.notes||'').toLowerCase().includes(q));
 // Search drugs
-const dRes=DRUGS.filter(d=>d.name.toLowerCase().includes(q)||d.heb.includes(q)||d.risk.toLowerCase().includes(q));
+const dRes=DRUGS.filter(d=>(d.name||'').toLowerCase().includes(q)||(d.heb||'').includes(q)||(d.risk||'').toLowerCase().includes(q));
 
 h+=`<div style="font-size:11px;color:rgb(var(--fg2));margin-bottom:10px">${qRes.length} questions · ${nRes.length} topics · ${dRes.length} drugs</div>`;
 
@@ -6916,8 +6928,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.57';
+const APP_VERSION='10.64.58';
 const CHANGELOG={
+'10.64.58':[
+'🛡️ Pre-emptive defensive guards mirroring FM v1.21.13 chaos-tested patterns. Two patches against future data drift / partial-load / parser-bleed conditions; Geri data integrity tests guarantee these can\'t crash today, but the wraps make Geri categorically chaos-resilient like FM became after the 7h chaos run on 2026-05-05 reduced 5,135 pageerrors → 0. (a) Search filter (renderSearch ~line 5829-5835): wrapped item.q/o[]/n.topic/n.notes/d.name/d.risk with (field||\'\').toLowerCase() — same shape as the FM more-view.js fix that ended 4,890 chaos pageerrors. (b) Flashcard render (renderFlash ~line 4814-4827): bail to placeholder when FLASH is empty/missing rather than letting S.fci%0 produce NaN → FLASH[NaN] → undefined.f throw (the FM v1.21.13 (b) crash class — 245 chaos pageerrors). Plus FLASH[activeIdx]||FLASH[0] fallback for activeIdx out-of-bounds. New tests/preemptiveDefensive.test.js pins both patterns.',
+],
 '10.64.57':[
 '🎯 Faceted pill counts — topic pills now narrow with selectedExamYears, year pills now narrow with selectedTopics. Effect: tap "🆕 2025" preset and topic pill counts re-compute to "Delirium (N within 2025)" rather than total-across-years. Tap "Cardiology" group and year pills re-compute to "2024-May-Basic (N within Cardiology)". User report 2026-05-06 (screenshot showed year=2023-Jun-Subspec + topics={Delirium, Interdisciplinary Care} + source=ממבחנים בלבד giving topic counts as totals across years). _topicCounts now respects selectedExamYears + topicSrc; _yearCounts now respects selectedTopics + topicSrc + tis[] multi-tag. No data-shape change; pure compute layer. Faceted-search pattern.',
 ],
