@@ -5844,7 +5844,12 @@ const q=srchQ.toLowerCase();
 // q/o text) poisoned every keystroke (4,890 pageerrors over 7h chaos run on FM).
 // Geri's data integrity tests guarantee this can't crash today, but the wrap is
 // future-proofing against data drift / partial loads / parser-bleed edge cases.
-const qRes=[];QZ.forEach((item,i)=>{if((item.q||'').toLowerCase().includes(q)||(item.o||[]).some(o=>(o||'').toLowerCase().includes(q)))qRes.push(i);});
+// v10.64.61: search now matches across both languages so results respect
+// the bilingual schema regardless of toggle state. Typing "diabetes" finds
+// AI-translated Qs whose English source mentions diabetes; typing "סוכרת"
+// finds the Hebrew variants. q_en/o_en are present on 1,867 AI-translated
+// Qs and missing on IMA Qs (graceful fallback via spread of optional arrays).
+const qRes=[];QZ.forEach((item,i)=>{const _hs=[item.q,item.q_en,...(item.o||[]),...(item.o_en||[])];if(_hs.some(s=>(s||'').toLowerCase().includes(q))) qRes.push(i);});
 // Search notes
 const nRes=NOTES.filter(n=>(n.topic||'').toLowerCase().includes(q)||(n.notes||'').toLowerCase().includes(q));
 // Search drugs
@@ -6940,8 +6945,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.60';
+const APP_VERSION='10.64.61';
 const CHANGELOG={
+'10.64.61':[
+'🔍 Search now matches across both Hebrew and English variants. Companion to the v10.64.60 bilingual schema — typing "diabetes" in renderSearch now finds AI-translated questions whose English source mentions diabetes (not just questions whose Hebrew translation happened to retain the word "diabetes" inline). Typing "סוכרת" still finds the Hebrew variants. The 1,867 questions with q_en/o_en bilingual fields participate in both directions; the 1,876 IMA-source Qs without _en variants search Hebrew-only via spread of optional arrays. Implementation: renderSearch QZ filter now composes a haystack of [item.q, item.q_en, ...item.o, ...item.o_en] and applies the existing (s||\'\').toLowerCase().includes(q) defensive predicate to each. Notes and drugs unchanged — they don\'t carry bilingual fields. Test pin in tests/bilingualToggle.test.js asserts the haystack composition and that q_en/o_en are consulted.',
+],
 '10.64.60':[
 '🔀 Bilingual schema + Hebrew↔English toggle for AI-translated questions. Companion to the v10.64.54 + v10.64.59 translation batches (1,877 questions translated to Hebrew); the original English text was previously only retrievable from git history. This release restores access to both languages on a per-user-preference basis. SCHEMA: 1,867 AI-tagged questions now carry q/o/e (Hebrew, default) AND q_en/o_en/e_en (original English) side-by-side. UI: new header toggle button (right:100px in the dm-btn row) shows "EN" when current is Hebrew (click to switch) or "עב" when current is English. Persisted via existing S save mechanism (localStorage key samega). HELPER: qLang(q,field) at line ~2387 returns the user-preferred variant with graceful fallback — questions without an _en variant (IMA exam Qs, the 6 still-English Qs from translation failures) silently render in their authoritative language regardless of the toggle. RENDER: 6 primary sites in renderQuiz refactored to use qLang — Sudden Death + main quiz Q text + options + explanation. Other render surfaces (track view, library, share text) deferred to v10.64.61 to keep the diff focused. New tests/bilingualToggle.test.js (7 tests) pins the schema, helper, button wiring, and render-site bytes.',
 ],
