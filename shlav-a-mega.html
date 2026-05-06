@@ -1813,11 +1813,15 @@ function saveExamYears(){try{localStorage.setItem('samega_exam_filter',JSON.stri
 function toggleExamYear(year){
   if(!EXAM_YEARS.includes(year))return;
   if(selectedExamYears.has(year))selectedExamYears.delete(year);else selectedExamYears.add(year);
-  topicFilt=-1;filt=selectedExamYears.size?'years':'all';
+  // v10.64.56: don't clear single-select topicFilt — but if user has multi-select
+  // topics OR no topics, keep them; the buildPool branches now intersect the two.
+  if(filt==='topic')topicFilt=-1; // exit single-select; multi-select topics survive
+  if(selectedTopics.size)filt='topics';
+  else filt=selectedExamYears.size?'years':'all';
   saveExamYears();buildPool();render();
 }
-function setAllExamYears(){selectedExamYears=new Set(EXAM_YEARS);filt='years';topicFilt=-1;saveExamYears();buildPool();render();}
-function clearExamYears(){selectedExamYears.clear();if(filt==='years')filt='all';saveExamYears();buildPool();render();}
+function setAllExamYears(){selectedExamYears=new Set(EXAM_YEARS);if(filt!=='topics')filt='years';if(filt==='topic')topicFilt=-1;saveExamYears();buildPool();render();}
+function clearExamYears(){selectedExamYears.clear();if(filt==='years')filt=selectedTopics.size?'topics':'all';saveExamYears();buildPool();render();}
 
 // v10.64.51: multi-select topic filter (mirrors the year-filter pattern above).
 // Replaces the single-select <select> dropdown that could only filter by one
@@ -1833,21 +1837,25 @@ function saveTopicFilter(){try{localStorage.setItem('samega_topic_filter',JSON.s
 function toggleTopic(ti){
   ti=Number(ti);
   if(selectedTopics.has(ti))selectedTopics.delete(ti);else selectedTopics.add(ti);
-  topicFilt=-1;filt=selectedTopics.size?'topics':'all';
-  selectedExamYears.clear();saveExamYears();
+  // v10.64.56: don't auto-clear year selection — buildPool now intersects year + topic.
+  topicFilt=-1;
+  if(selectedTopics.size)filt='topics';
+  else filt=selectedExamYears.size?'years':'all';
   saveTopicFilter();buildPool();render();
 }
 function setAllTopics(){if(typeof TOPICS==='undefined')return;selectedTopics=new Set(TOPICS.map((_,i)=>i));filt='topics';topicFilt=-1;saveTopicFilter();buildPool();render();}
-function clearTopics(){selectedTopics.clear();if(filt==='topics')filt='all';saveTopicFilter();buildPool();render();}
+function clearTopics(){selectedTopics.clear();if(filt==='topics')filt=selectedExamYears.size?'years':'all';saveTopicFilter();buildPool();render();}
 // v10.64.55: toggle an entire clinical group (TOPIC_GROUPS). If all members
 // of the group are already selected, deselect them all; otherwise select all.
+// v10.64.56: keep year selection intact — buildPool intersects year + topic.
 function toggleTopicGroup(...tis){
   if(!tis.length)return;
   const allSelected=tis.every(ti=>selectedTopics.has(ti));
   if(allSelected){tis.forEach(ti=>selectedTopics.delete(ti));}
   else{tis.forEach(ti=>selectedTopics.add(ti));}
-  topicFilt=-1;filt=selectedTopics.size?'topics':'all';
-  selectedExamYears.clear();saveExamYears();
+  topicFilt=-1;
+  if(selectedTopics.size)filt='topics';
+  else filt=selectedExamYears.size?'years':'all';
   saveTopicFilter();buildPool();render();
 }
 // v10.64.55: year preset helpers — let users grab whole exam-type slices in
@@ -1858,15 +1866,16 @@ function setExamYearsPreset(preset){
   if(preset==='basic')years=EXAM_YEARS.filter(y=>/Basic/.test(y));
   else if(preset==='subspec')years=EXAM_YEARS.filter(y=>/Subspec/.test(y));
   else if(preset==='latest'){
-    // Latest year = numeric max year prefix
     const maxYear=Math.max(...EXAM_YEARS.map(y=>parseInt(y,10)).filter(n=>!isNaN(n)));
     years=EXAM_YEARS.filter(y=>parseInt(y,10)===maxYear);
   }else if(preset==='2024')years=EXAM_YEARS.filter(y=>y.startsWith('2024'));
   else if(preset==='2023')years=EXAM_YEARS.filter(y=>y.startsWith('2023'));
   else if(preset==='2022')years=EXAM_YEARS.filter(y=>y.startsWith('2022'));
   selectedExamYears=new Set(years);
-  filt=selectedExamYears.size?'years':'all';topicFilt=-1;
-  selectedTopics.clear();saveTopicFilter();
+  // v10.64.56: keep topic selection intact — buildPool intersects year + topic.
+  if(selectedTopics.size)filt='topics';
+  else filt=selectedExamYears.size?'years':'all';
+  if(filt==='topic')topicFilt=-1;
   saveExamYears();buildPool();render();
 }
 let onCallMode=false,flipRevealed=false;
@@ -1986,18 +1995,40 @@ pool=[];
 const due=getDueQuestions();
 let smartShuffled=false;
 if(filt==='due'){pool=due.length?due:[];}
-else if(filt==='topic'&&topicFilt>=0){QZ.forEach((q,i)=>{const matches=(Array.isArray(q.tis)&&q.tis.length)?q.tis.includes(topicFilt):(q.ti===topicFilt);if(matches&&_topicSrcMatch(q))pool.push(i)});}
+else if(filt==='topic'&&topicFilt>=0){
+  // v10.64.56: intersect with year selection if also active.
+  QZ.forEach((q,i)=>{
+    const matches=(Array.isArray(q.tis)&&q.tis.length)?q.tis.includes(topicFilt):(q.ti===topicFilt);
+    if(!matches)return;
+    if(selectedExamYears.size&&!selectedExamYears.has(q.t))return;
+    if(_topicSrcMatch(q))pool.push(i);
+  });
+}
 else if(filt==='topics'&&selectedTopics.size){
   // v10.64.51: multi-select topic filter. Q matches if any of its topic tags
-  // (q.ti or any q.tis[]) intersects the selected set. Works with the same
-  // _topicSrcMatch source-filter (exams/books/all) as single-topic mode.
+  // (q.ti or any q.tis[]) intersects the selected set.
+  // v10.64.56: ALSO intersect with year selection if both are active. User
+  // feedback 2026-05-06: "I select may 2025 for example or whatever but it
+  // gives me all exams if I choose multi topics" — fix is to AND the two
+  // filters instead of having year-toggle clear topics and vice versa.
   QZ.forEach((q,i)=>{
+    if(selectedExamYears.size&&!selectedExamYears.has(q.t))return;
     const tis=(Array.isArray(q.tis)&&q.tis.length)?q.tis:[q.ti];
     if(tis.some(ti=>selectedTopics.has(ti))&&_topicSrcMatch(q))pool.push(i);
   });
 }
 else if(filt==='years'&&selectedExamYears.size){
-  QZ.forEach((q,i)=>{if(selectedExamYears.has(q.t))pool.push(i)});
+  // v10.64.56: years mode also respects topic selection if set (rare path
+  // since toggleTopic flips filt to 'topics', but defensive in case state
+  // is set externally).
+  QZ.forEach((q,i)=>{
+    if(!selectedExamYears.has(q.t))return;
+    if(selectedTopics.size){
+      const tis=(Array.isArray(q.tis)&&q.tis.length)?q.tis:[q.ti];
+      if(!tis.some(ti=>selectedTopics.has(ti)))return;
+    }
+    pool.push(i);
+  });
 }
 else{
   QZ.forEach((q,i)=>{if(filt==='all'||q.t.includes(filt))pool.push(i)});
@@ -6863,7 +6894,7 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.55';
+const APP_VERSION='10.64.56';
 const CHANGELOG={
 '10.64.47':[
 '🐛 Loading-skeleton stale count fix — the `if(!QZ||!QZ.length)` skeleton at shlav-a-mega.html line ~3271 still read "מאגר 3,833 שאלות" while the live total has been 3,743 since v10.64.11. v10.64.41 fixed the same staleness class in src/study_plan.js but missed this surface (the skeleton renders before _SYLLABUS is fetched, and _SYLLABUS itself is module-private inside src/study_plan.js, so swapped to literal "3,743" matching the established v10.64.41 fallback pattern). Total visible occurrences in shlav-a-mega.html: 13 → 12 (the 12 remaining are all CHANGELOG audit-trail quotes at lines ≥6688, which legitimately reference the historical number).',
