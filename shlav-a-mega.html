@@ -845,7 +845,7 @@ upd();setInterval(upd,30000);
 <a href="#ct" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
 <h1 style="font-size:22px;font-weight:800;letter-spacing:-.01em">Shlav A Mega <span style="font-size:11px;font-weight:600;color:#0D7377;vertical-align:middle;letter-spacing:0">Geriatrics</span> <span id="headerVer" style="font-size:11px;font-weight:700;color:#047857;background:#ecfdf5;padding:2px 7px;border-radius:8px;vertical-align:middle;letter-spacing:.02em;border:1px solid rgb(var(--green-brd))"></span></h1>
-<button class="dm-btn" data-action="toggle-study" title="Sepia / Study Mode (warm light)" aria-label="Toggle sepia study mode" style="right:12px">☀</button><button class="dm-btn" data-action="toggle-dark" title="Dark Mode" aria-label="Toggle dark mode" style="right:56px">🌙</button><button class="dm-btn" data-action="show-help" title="Help" aria-label="Help" style="right:100px;font-size:15px;font-weight:700">?</button><button class="dm-btn" data-action="goto-account" id="hdr-account-btn" title="Account" aria-label="Account / Login" style="right:144px;font-size:14px;font-weight:700">👤</button>
+<button class="dm-btn" data-action="toggle-study" title="Sepia / Study Mode (warm light)" aria-label="Toggle sepia study mode" style="right:12px">☀</button><button class="dm-btn" data-action="toggle-dark" title="Dark Mode" aria-label="Toggle dark mode" style="right:56px">🌙</button><button class="dm-btn" data-action="toggle-lang" id="hdr-lang-btn" title="Toggle Hebrew / English (translated AI questions only)" aria-label="Toggle question language" style="right:100px;font-size:11px;font-weight:700">EN</button><button class="dm-btn" data-action="show-help" title="Help" aria-label="Help" style="right:144px;font-size:15px;font-weight:700">?</button><button class="dm-btn" data-action="goto-account" id="hdr-account-btn" title="Account" aria-label="Account / Login" style="right:188px;font-size:14px;font-weight:700">👤</button>
 <p id="hdr-sub">Loading...</p>
 <div id="syncPill" class="sync-pill" role="status" aria-live="polite" style="position:absolute;top:4px;left:6px;font-size:9px;padding:2px 7px;border-radius:10px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));cursor:pointer;user-select:none;display:none" title="Sync status — click for details" onclick="showSyncStatus()"></div>
 </div>
@@ -2384,6 +2384,12 @@ function markEIssueVerified(qIdx){
 }
 function getApiKey(){return localStorage.getItem('samega_apikey')||'';}
 function setApiKey(k){try{if(k)localStorage.setItem('samega_apikey',k.trim());else localStorage.removeItem('samega_apikey');}catch(e){}}
+// v10.64.60: bilingual schema. AI-translated Hazzard/Harrison/GRS8 questions
+// carry both q/o/e (Hebrew) and q_en/o_en/e_en (original English). qLang
+// returns the user-preferred language with graceful fallback to default.
+// Questions without an _en variant (IMA exam Qs, etc.) silently render
+// in their authoritative language regardless of S.langPref.
+function qLang(q,field){if(S&&S.langPref==='en'){const en=q[field+'_en'];if(en!==undefined&&en!==null)return en;}return q[field];}
 // ===== TEACH-BACK =====
 let teachBackState=null;
 // ===== AI EXPLAIN =====
@@ -2966,12 +2972,12 @@ if(timedMode&&!ans){
 </div>`;
 }
 const _isFlagQ=(S.flagged||{})[pool[qi]];
-h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="${heDir(q.q)}">${_isFlagQ?'<span style="color:#dc2626;font-size:11px" title="Explanation flagged — verify">⚑ </span>':''  }${q.q}</p>`;
+h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="${heDir(qLang(q,'q'))}">${_isFlagQ?'<span style="color:#dc2626;font-size:11px" title="Explanation flagged — verify">⚑ </span>':''  }${qLang(q,'q')}</p>`;
 if(q.eFlag&&ans){h+=`<div style="margin:6px 0;padding:6px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:10px;color:#991b1b;text-align:start;line-height:1.4;unicode-bidi:plaintext" dir="auto">⚠️ AI flagged: ההסבר עשוי לא להתאים לתשובה הנכונה (<bdi>${sanitize(q.eFlag)}</bdi>) <button onclick="event.stopPropagation();clearEFlag(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#991b1b;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-inline-start:6px">✓ אמת</button></div>`;}
 if(q.eFlag&&ans){h+=`<div style="margin:6px 0;padding:6px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:10px;color:#991b1b;text-align:start;line-height:1.4;display:flex;align-items:center;gap:6px;justify-content:space-between;unicode-bidi:plaintext" dir="auto"><span style="flex:1">⚠️ AI flagged: ההסבר עשוי לא להתאים לתשובה הנכונה (<bdi>${sanitize(q.eFlag)}</bdi>)</span><button onclick="event.stopPropagation();clearEFlag(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#991b1b;color:#fff;border:none;border-radius:6px;cursor:pointer;flex:0 0 auto">✓ אמת</button></div>`;}
 if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy" onerror="if(this._f)return;this._f=1;this.style.display='none';this.insertAdjacentHTML('afterend','<div class=&quot;img-fail-ph&quot; style=&quot;padding:14px;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;font-size:11px;color:#92400e;text-align:center&quot;>📷 תמונה זו טרם הועלתה למערכת</div>')"><button onclick="event.stopPropagation();removeQImage(${pool[qi]})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer">✕</button>${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:start;line-height:1.4;unicode-bidi:plaintext" dir="auto" title="Stem relies entirely on the image — explanation was auto-generated without image context and may be incorrect">⚠️ שאלה תלוית-תמונה: ההסבר נוצר ללא ראיית התמונה ועלול להיות שגוי. אמת מול מקור. <button onclick="event.stopPropagation();markImgDepVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#d97706;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-inline-start:6px">✓ מאומת</button></div>':''}</div>`;}
 if(!q.img&&!examMode){h+=`<div style="margin-bottom:10px"><button onclick="uploadQImage(${pool[qi]})" style="font-size:10px;padding:4px 12px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">📷 Attach Image</button><span id="img-status-${pool[qi]}" style="font-size:10px;color:rgb(var(--fg3));margin-left:6px"></span></div>`;}
-q.o.forEach((o,i)=>{
+qLang(q,'o').forEach((o,i)=>{
 let cls='qo';
 if(ans){cls+=' lk';if(isOk(q,i))cls+=' ok';else if(i===sel)cls+=' no';else cls+=' dim';}
 else if(i===sel)cls+=' sel';
@@ -3013,12 +3019,12 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <button onclick="shareQ()" id="shbtn" class="share-btn" title="Share" aria-label="Share question">📋</button><button onclick="toggleQNote()" style="font-size:14px;width:34px;height:34px;min-height:34px;background:${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-bg))':'rgb(var(--bg2))'};color:${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-fg))':'rgb(var(--fg2))'};border:1px solid ${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-fg))':'rgb(var(--brd))'};border-radius:50%;cursor:pointer;display:inline-flex;align-items:center;justify-content:center" title="Note for this question" aria-label="Note for this question">✎</button><button onclick="toggleBk()" style="font-size:14px;width:34px;height:34px;min-height:34px;background:${bk?'rgb(var(--yellow-bg))':'rgb(var(--bg2))'};color:${bk?'rgb(var(--yellow-fg))':'rgb(var(--fg2))'};border:1px solid ${bk?'rgb(var(--yellow-fg))':'rgb(var(--brd))'};border-radius:50%;cursor:pointer;display:inline-flex;align-items:center;justify-content:center" title="Bookmark" aria-label="${bk?'Remove bookmark':'Bookmark question'}">${bk?'★':'☆'}</button>
 <span style="color:rgb(var(--fg3));font-size:10px">${qi+1}/${pool.length}</span>
 </div></div>`;
-h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="${heDir(q.q)}">${q.q}</p>`;
+h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="${heDir(qLang(q,'q'))}">${qLang(q,'q')}</p>`;
 if(S.qnotes&&S.qnotes[pool[qi]]){h+=`<div style="margin:0 0 12px;padding:8px 10px;background:rgb(var(--yellow-bg));border-right:3px solid rgb(var(--yellow-fg));border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg));text-align:right;cursor:pointer" dir="${heDir(S.qnotes[pool[qi]])}" onclick="toggleQNote()" title="Click to edit">📝 ${sanitize(S.qnotes[pool[qi]])}</div>`;}
 if(q.img){h+=`<div style="margin-bottom:14px;text-align:center"><img src="${q.img}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy" onerror="if(this._f)return;this._f=1;this.style.display='none';this.insertAdjacentHTML('afterend','<div class=&quot;img-fail-ph&quot; style=&quot;padding:14px;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;font-size:11px;color:#92400e;text-align:center&quot;>📷 תמונה זו טרם הועלתה למערכת</div>')">${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:right;line-height:1.4">⚠️ שאלה תלוית-תמונה: ההסבר עלול להיות שגוי. <button onclick="event.stopPropagation();markImgDepVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#d97706;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-right:6px">✓ מאומת</button></div>':''}</div>`;}
 const _shuf=getOptShuffle(pool[qi],q);
 _shuf.forEach((origI,dispJ)=>{
-const o=q.o[origI];
+const o=qLang(q,'o')[origI];
 let cls='qo';
 if(ans){cls+=' lk';if(!examMode){if(isOk(q,origI))cls+=' ok';else if(origI===sel)cls+=' no';else cls+=' dim';}else if(origI===sel)cls+=' sel';}
 else if(origI===sel)cls+=' sel';
@@ -3173,10 +3179,10 @@ h+=`</div>`;
 }
 // Built-in explanation (every question has one)
 if(ans&&!examMode&&q.e){
-h+=`<div style="margin-top:8px;padding:10px 12px;background:${q.e_issue?"#fffbeb":"rgb(var(--blue-bg))"};border:1px solid ${q.e_issue?"#fcd34d":"rgb(var(--blue-brd))"};border-radius:10px;font-size:11px;line-height:1.7;color:${q.e_issue?"#92400e":"rgb(var(--blue-fg))"};text-align:right" dir="${heDir(q.e)}">${q.e_issue?`<div style="font-size:10px;font-weight:700;margin-bottom:6px;padding:4px 8px;background:#fef3c7;border-radius:6px;display:flex;align-items:center;gap:6px;justify-content:space-between"><span>⚠️ ההסבר הזה עלול להיות שגוי — AI איתר חוסר עקביות מול התשובה הנכונה</span><button onclick="event.stopPropagation();markEIssueVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#d97706;color:#fff;border:none;border-radius:6px;cursor:pointer;flex:0 0 auto">✓ מאומת</button></div>`:""}`;
+h+=`<div style="margin-top:8px;padding:10px 12px;background:${q.e_issue?"#fffbeb":"rgb(var(--blue-bg))"};border:1px solid ${q.e_issue?"#fcd34d":"rgb(var(--blue-brd))"};border-radius:10px;font-size:11px;line-height:1.7;color:${q.e_issue?"#92400e":"rgb(var(--blue-fg))"};text-align:right" dir="${heDir(qLang(q,'e'))}">${q.e_issue?`<div style="font-size:10px;font-weight:700;margin-bottom:6px;padding:4px 8px;background:#fef3c7;border-radius:6px;display:flex;align-items:center;gap:6px;justify-content:space-between"><span>⚠️ ההסבר הזה עלול להיות שגוי — AI איתר חוסר עקביות מול התשובה הנכונה</span><button onclick="event.stopPropagation();markEIssueVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#d97706;color:#fff;border:none;border-radius:6px;cursor:pointer;flex:0 0 auto">✓ מאומת</button></div>`:""}`;
 h+=`<div style="font-weight:700;margin-bottom:4px;font-size:10px">📝 הסבר</div>`;
 const _shuf=getOptShuffle(pool[qi],q);
-h+=`<div dir="${heDir(q.e)}" style="unicode-bidi:plaintext">${sanitize(remapExplanationLetters(q.e,_shuf)).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
+h+=`<div dir="${heDir(qLang(q,'e'))}" style="unicode-bidi:plaintext">${sanitize(remapExplanationLetters(qLang(q,'e'),_shuf)).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
 // v10.51.0: source-link row — render every parsed ref citation as a deep-link
 // button into the in-app Hazzard/Harrison reader at the right chapter.
 if(q.ref){
@@ -6847,8 +6853,14 @@ window.updateAccountChip=updateAccountChip;
 // ===== DARK MODE =====
 function toggleDark(){document.body.classList.toggle('dark');S.dark=document.body.classList.contains('dark');if(S.dark&&document.body.classList.contains('study')){document.body.classList.remove('study');S.studyMode=false;}save();}
 function toggleStudyMode(){document.body.classList.toggle('study');S.studyMode=document.body.classList.contains('study');if(S.studyMode&&document.body.classList.contains('dark')){document.body.classList.remove('dark');S.dark=false;}save();}
+// v10.64.60: language preference toggle (Hebrew ↔ English source). Only affects
+// AI-translated questions that carry both q/q_en variants — IMA exam Qs render
+// in their authoritative language regardless of this setting.
+function toggleLang(){S.langPref=(S.langPref==='en')?'he':'en';const _lb=document.getElementById('hdr-lang-btn');if(_lb)_lb.textContent=(S.langPref==='en')?'עב':'EN';save();render();}
 if(S.dark)document.body.classList.add('dark');
 if(S.studyMode)document.body.classList.add('study');
+// v10.64.60: sync header lang-toggle button text with stored preference.
+(function(){const _lb=document.getElementById('hdr-lang-btn');if(_lb)_lb.textContent=(S.langPref==='en')?'עב':'EN';})();
 
 // ===== FLASHCARD SPACED REP =====
 // FSRS-4.5 scoring for flashcards (rating 1=Again, 2=Hard, 3=Good, 4=Easy).
@@ -6928,8 +6940,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.59';
+const APP_VERSION='10.64.60';
 const CHANGELOG={
+'10.64.60':[
+'🔀 Bilingual schema + Hebrew↔English toggle for AI-translated questions. Companion to the v10.64.54 + v10.64.59 translation batches (1,877 questions translated to Hebrew); the original English text was previously only retrievable from git history. This release restores access to both languages on a per-user-preference basis. SCHEMA: 1,867 AI-tagged questions now carry q/o/e (Hebrew, default) AND q_en/o_en/e_en (original English) side-by-side. UI: new header toggle button (right:100px in the dm-btn row) shows "EN" when current is Hebrew (click to switch) or "עב" when current is English. Persisted via existing S save mechanism (localStorage key samega). HELPER: qLang(q,field) at line ~2387 returns the user-preferred variant with graceful fallback — questions without an _en variant (IMA exam Qs, the 6 still-English Qs from translation failures) silently render in their authoritative language regardless of the toggle. RENDER: 6 primary sites in renderQuiz refactored to use qLang — Sudden Death + main quiz Q text + options + explanation. Other render surfaces (track view, library, share text) deferred to v10.64.61 to keep the diff focused. New tests/bilingualToggle.test.js (7 tests) pins the schema, helper, button wiring, and render-site bytes.',
+],
 '10.64.59':[
 '🌐 1,255 AI questions translated to clinical Israeli Hebrew via Sonnet 4.6 — second large translation batch (after v10.64.54\'s 622 Qs). Three sequential runs covering all remaining English candidates: Hazzard 996 / 1005 candidates, Harrison 200 / 206 candidates, GRS8 59 / 65 candidates. Total: 1255 questions actually mutated (a few model translations matched existing text bytes). Failures: GRS8 5 (model-JSON-malformation, recoverable on re-run; failed Qs still hold their English text). Total Hebrew coverage now: Hazzard ~99%, Harrison ~99%, GRS8 ~93% — only the 5 GRS8 JSON-failures + idx=835 (skip-listed in scripts/translate_questions_to_hebrew.cjs because Sonnet 4.6 consistently produces U+FFFD mojibake on its source content) remain English. Cost ~$17 on Sonnet 4.6.',
 '🧹 Distractor invariant — 1247 entries stripped from data/distractors.json (the ones whose questions just got translated; option text changed → cached distractor signals stale). Next distractor-autopsy run regenerates them. distractorsDrift.test.js + curatorOverridesRatchet.test.js still green.',
@@ -7893,6 +7908,7 @@ if(!btn)return;
 switch(btn.dataset.action){
 case 'toggle-study':toggleStudyMode();break;
 case 'toggle-dark':toggleDark();break;
+case 'toggle-lang':toggleLang();break;
 case 'show-help':showHelp();break;
 case 'goto-account':
   // v10.49.0: jump to More → Settings, where renderAuthSection now lives
