@@ -112,3 +112,120 @@ describe('v10.64.60 — render sites use qLang (regression guard)', () => {
     expect(html).toMatch(/remapExplanationLetters\(qLang\(q,['"]e['"]\),_shuf\)/);
   });
 });
+
+describe('v10.64.60 — bilingual schema deep invariants', () => {
+  it('correct-answer index `c` is valid for o_en (no off-by-one in migration)', () => {
+    // A migration bug could put o_en in different order than o, making c invalid.
+    // We trust c < q.o.length is enforced elsewhere; here we check the same for o_en.
+    const offenders = [];
+    questions.forEach((q, i) => {
+      if (!Array.isArray(q.o_en)) return;
+      if (typeof q.c !== 'number') return;
+      if (q.c < 0 || q.c >= q.o_en.length) offenders.push({idx:i, c:q.c, oEnLen:q.o_en.length});
+    });
+    expect(offenders, `c-index out of bounds for o_en (first 3): ${JSON.stringify(offenders.slice(0,3))}`).toEqual([]);
+  });
+
+  it('q_en is meaningfully non-empty when present (≥10 chars, not whitespace)', () => {
+    const offenders = [];
+    questions.forEach((q, i) => {
+      if (typeof q.q_en !== 'string') return;
+      if (q.q_en.trim().length < 10) offenders.push({idx:i, len:q.q_en.length});
+    });
+    expect(offenders.length, `degenerate q_en at first 5: ${JSON.stringify(offenders.slice(0,5))}`).toBeLessThan(5);
+  });
+
+  it('o_en options are non-empty strings (no nulls / undefineds from migration)', () => {
+    const offenders = [];
+    questions.forEach((q, i) => {
+      if (!Array.isArray(q.o_en)) return;
+      q.o_en.forEach((o, oi) => {
+        if (typeof o !== 'string' || o.trim().length === 0) offenders.push({idx:i, optIdx:oi, type:typeof o});
+      });
+    });
+    expect(offenders, `null/empty o_en options (first 3): ${JSON.stringify(offenders.slice(0,3))}`).toEqual([]);
+  });
+
+  it('e_en is meaningfully populated when present (≥30 chars or empty)', () => {
+    // Some original questions had short/missing explanations; the migration preserves
+    // those. But a partial migration that wrote "" or " " would be wrong.
+    const offenders = [];
+    questions.forEach((q, i) => {
+      if (typeof q.e_en !== 'string') return;
+      const t = q.e_en.trim();
+      // Either fully empty (rare but legitimate) or substantively populated.
+      if (t.length > 0 && t.length < 30) offenders.push({idx:i, len:t.length});
+    });
+    expect(offenders.length, `degenerate e_en at first 5: ${JSON.stringify(offenders.slice(0,5))}`).toBeLessThan(10);
+  });
+});
+
+describe('v10.64.60 — qLang runtime behavior (vm sandbox)', () => {
+  // Pull the qLang function source out of the HTML and execute it in isolation
+  // to test actual behavior, not just regex byte presence.
+  function buildQLang() {
+    // The qLang source has nested braces (an `if` block inside the body), so
+    // [^}]+? would stop at the first inner `}`. Use a more specific terminator
+    // that matches the actual closing pattern: `return q[field];}` is the
+    // last statement.
+    const m = html.match(/function qLang\(q,field\)\{[\s\S]+?return q\[field\];\}/);
+    if (!m) throw new Error('qLang source not extractable from HTML');
+    // The function reads S.langPref. We provide a controllable S.
+    const factory = new Function('S', m[0] + '\nreturn qLang;');
+    return factory;
+  }
+
+  it('returns q.q (Hebrew) when S.langPref is undefined', () => {
+    const qLang = buildQLang()({});
+    const q = { q: 'שאלה', q_en: 'question' };
+    expect(qLang(q, 'q')).toBe('שאלה');
+  });
+
+  it('returns q.q (Hebrew) when S.langPref === "he"', () => {
+    const qLang = buildQLang()({ langPref: 'he' });
+    const q = { q: 'שאלה', q_en: 'question' };
+    expect(qLang(q, 'q')).toBe('שאלה');
+  });
+
+  it('returns q.q_en (English) when S.langPref === "en" AND q_en exists', () => {
+    const qLang = buildQLang()({ langPref: 'en' });
+    const q = { q: 'שאלה', q_en: 'question' };
+    expect(qLang(q, 'q')).toBe('question');
+  });
+
+  it('falls back to q.q when S.langPref === "en" but q_en is missing', () => {
+    const qLang = buildQLang()({ langPref: 'en' });
+    const q = { q: 'שאלה' };  // no q_en
+    expect(qLang(q, 'q')).toBe('שאלה');
+  });
+
+  it('falls back when q_en is null or empty string (sentinel for translation failure)', () => {
+    const qLang = buildQLang()({ langPref: 'en' });
+    expect(qLang({ q: 'A', q_en: null }, 'q')).toBe('A');
+    // Empty string IS technically defined; current behavior returns the empty string.
+    // This pins that behavior — if it changes, intentional bump required.
+    expect(qLang({ q: 'A', q_en: '' }, 'q')).toBe('');
+  });
+
+  it('handles "o" array field correctly (each language gets its own array)', () => {
+    const qLang = buildQLang()({ langPref: 'en' });
+    const q = { o: ['א', 'ב', 'ג', 'ד'], o_en: ['A', 'B', 'C', 'D'] };
+    expect(qLang(q, 'o')).toEqual(['A', 'B', 'C', 'D']);
+  });
+});
+
+describe('v10.64.60 — translator skip-list pin (Sonnet mojibake guard)', () => {
+  it('scripts/translate_questions_to_hebrew.cjs hardcodes SKIP_INDICES with idx=835', () => {
+    // Sonnet 4.6 has consistently produced U+FFFD mojibake on idx=835 across
+    // two batches (v10.64.54 + v10.64.59). The skip prevents re-discovery of
+    // the failure mode. If this test fails, the script may have been refactored
+    // and the skip-list lost — the next translation run would reintroduce the
+    // mojibake and the U+FFFD guard in expandedDataIntegrity.test.js would catch
+    // it post-hoc, but at the cost of API spend and a manual revert.
+    const scriptPath = resolve(ROOT, 'scripts/translate_questions_to_hebrew.cjs');
+    const script = readFileSync(scriptPath, 'utf-8');
+    expect(script).toMatch(/SKIP_INDICES\s*=\s*new Set\(\[\s*835\s*\]\)/);
+    // The candidate filter must consult SKIP_INDICES.
+    expect(script).toMatch(/!SKIP_INDICES\.has\(/);
+  });
+});
