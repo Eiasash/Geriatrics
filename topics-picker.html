@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0D7377" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0e14" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="נושאים">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<title>בחירת נושאים · Shlav A Mega</title>
+<link rel="manifest" href='data:application/manifest+json,{"name":"Shlav A Mega · נושאים","short_name":"נושאים","start_url":".","display":"standalone","orientation":"portrait","background_color":"%230a0e14","theme_color":"%230D7377","dir":"rtl","lang":"he","icons":[{"src":"data:image/svg%2Bxml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Crect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%230D7377%22/%3E%3Ctext x=%2296%22 y=%22130%22 font-size=%22120%22 font-family=%22sans-serif%22 fill=%22white%22 text-anchor=%22middle%22 font-weight=%22700%22%3Eש%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"}]}'>
+<link rel="apple-touch-icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="%230D7377"/><text x="96" y="130" font-size="120" font-family="sans-serif" fill="white" text-anchor="middle" font-weight="700">ש</text></svg>'>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#fff; --fg:#0f172a; --fg2:#475569; --fg3:#94a3b8;
+  --border:#e2e8f0; --border2:#cbd5e1; --shade:#f1f5f9;
+  --accent:#0D7377; --accent2:#14919B; --accent-bg:#E8F4F5; --accent-fg:#08494c;
+  --danger:#dc2626; --danger-bg:#fef2f2;
+  --shadow: 0 1px 2px rgba(15,23,42,.04), 0 1px 0 rgba(15,23,42,.02);
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0a0e14; --card:#0f172a; --fg:#f1f5f9; --fg2:#cbd5e1; --fg3:#64748b;
+    --border:#1e293b; --border2:#334155; --shade:#0b1220;
+    --accent:#14919B; --accent2:#5DCAA5; --accent-bg:#0a3d3f; --accent-fg:#9FE1CB;
+    --danger:#f87171; --danger-bg:#3a0d0d;
+    --shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI Variable","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:16px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overscroll-behavior:none}
+body{display:flex;flex-direction:column;height:100dvh;height:100vh}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none;padding:0}
+input{font:inherit;color:inherit}
+.app{display:flex;flex-direction:column;height:100%;max-width:520px;margin:0 auto;width:100%;background:var(--card);border-inline:0.5px solid var(--border)}
+@media (max-width:520px){.app{border:none}}
+
+/* Header */
+.hdr{position:sticky;top:0;z-index:10;background:var(--card);
+  padding:calc(12px + var(--safe-t)) calc(16px + var(--safe-r)) 10px calc(16px + var(--safe-l));
+  border-bottom:0.5px solid var(--border)}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.hdr-title{font-size:19px;font-weight:600;letter-spacing:-0.01em}
+.hdr-count{font-size:12px;color:var(--fg2);font-variant-numeric:tabular-nums}
+.search{position:relative;margin-bottom:8px}
+.search input{width:100%;height:38px;padding:0 38px 0 12px;border:0.5px solid var(--border);border-radius:10px;
+  background:var(--shade);font-size:15px;outline:none;text-align:right;
+  -webkit-appearance:none;appearance:none;transition:.15s}
+.search input:focus{border-color:var(--accent);background:var(--card);box-shadow:0 0 0 3px var(--accent-bg)}
+.search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--fg3);pointer-events:none}
+.actions{display:flex;gap:6px}
+.act-btn{flex:1;height:34px;border:0.5px solid var(--border);border-radius:8px;background:transparent;
+  font-size:13px;font-weight:500;color:var(--fg);transition:.1s;display:flex;align-items:center;justify-content:center;gap:4px}
+.act-btn:active{background:var(--shade);transform:scale(0.98)}
+.act-btn.danger{color:var(--danger)}
+.act-btn.danger:active{background:var(--danger-bg)}
+.act-seg{display:flex;background:var(--shade);border-radius:8px;padding:2px;flex:1.2}
+.act-seg button{flex:1;height:30px;border-radius:6px;font-size:11px;font-weight:500;color:var(--fg2)}
+.act-seg button.on{background:var(--card);color:var(--fg);box-shadow:var(--shadow)}
+
+/* List */
+.list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+
+/* Group */
+.grp{border-bottom:0.5px solid var(--border)}
+.grp-hdr{display:flex;align-items:center;gap:10px;padding:14px 16px;min-height:54px;
+  user-select:none;-webkit-user-select:none}
+.grp-hdr:active{background:var(--shade)}
+.grp-chev{font-size:13px;color:var(--fg3);transition:transform .2s;display:inline-block;width:14px;text-align:center}
+.grp.open .grp-chev{transform:rotate(-180deg)}
+.grp-emoji{font-size:20px;width:24px;text-align:center;line-height:1}
+.grp-title{flex:1;font-size:15px;font-weight:600;letter-spacing:-0.005em}
+.grp-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:10px;font-variant-numeric:tabular-nums}
+.grp-badge.has{background:var(--accent-bg);color:var(--accent-fg)}
+.grp-badge.empty{background:var(--shade);color:var(--fg3)}
+.grp-cb{width:30px;height:30px;border:1.5px solid var(--border2);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.12s}
+.grp-cb:active{transform:scale(0.92)}
+.grp-cb.full{background:var(--accent);border-color:var(--accent)}
+.grp-cb.full::before{content:"✓";color:white;font-size:16px;font-weight:700;line-height:1}
+.grp-cb.partial::before{content:"";display:block;width:12px;height:2.5px;background:var(--accent);border-radius:2px}
+
+.grp-body{display:none;background:var(--shade)}
+.grp.open .grp-body{display:block}
+
+/* Topic row */
+.tr{display:flex;align-items:center;gap:12px;padding:12px 16px 12px 38px;min-height:52px;
+  border-top:0.5px solid var(--border);user-select:none;-webkit-user-select:none;transition:.08s}
+.tr:active{background:var(--shade)}
+.tr.on{background:var(--accent-bg)}
+.tr-radio{width:24px;height:24px;border-radius:50%;border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.12s}
+.tr.on .tr-radio{background:var(--accent);border-color:var(--accent)}
+.tr.on .tr-radio::before{content:"✓";color:white;font-size:14px;font-weight:700;line-height:1}
+.tr-body{flex:1;min-width:0}
+.tr-name{font-size:15px;font-weight:500;line-height:1.25}
+.tr.on .tr-name{color:var(--accent-fg);font-weight:600}
+.tr-en{font-size:11px;color:var(--fg3);margin-top:2px;letter-spacing:0;direction:ltr;text-align:right}
+.tr-count{font-size:12px;color:var(--fg2);font-variant-numeric:tabular-nums;flex-shrink:0;font-weight:500}
+
+.empty{padding:48px 24px;text-align:center;color:var(--fg3);font-size:14px}
+
+/* Footer CTA */
+.cta-wrap{position:sticky;bottom:0;z-index:10;background:var(--card);
+  padding:10px calc(16px + var(--safe-r)) calc(10px + var(--safe-b)) calc(16px + var(--safe-l));
+  border-top:0.5px solid var(--border)}
+.cta{width:100%;height:52px;background:var(--accent);color:white;border-radius:12px;
+  font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:.12s;letter-spacing:-0.005em}
+.cta:active:not(:disabled){transform:scale(0.985);background:var(--accent2)}
+.cta:disabled{background:var(--border2);color:var(--fg3);cursor:not-allowed}
+.cta-count{font-variant-numeric:tabular-nums;font-weight:700}
+.cta-sub{font-size:11px;color:var(--fg3);text-align:center;margin-top:6px}
+.cta-sub a{color:var(--accent);text-decoration:none}
+
+/* Toast */
+.toast{position:fixed;bottom:calc(80px + var(--safe-b));left:50%;transform:translateX(-50%);
+  background:var(--fg);color:var(--card);padding:10px 18px;border-radius:24px;font-size:13px;
+  font-weight:500;opacity:0;pointer-events:none;transition:.2s;z-index:100;white-space:nowrap;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+
+/* Skeleton — visible during streaming before JS runs */
+.skel{padding:24px;color:var(--fg3);text-align:center;font-size:13px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-row">
+      <div class="hdr-title">בחירת נושאים</div>
+      <div class="hdr-count" id="hdrCount">0 נבחרו</div>
+    </div>
+    <div class="search">
+      <input id="srch" type="search" placeholder="חיפוש נושא…" aria-label="חיפוש נושא" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <span class="search-icon">⌕</span>
+    </div>
+    <div class="actions">
+      <button class="act-btn" onclick="selectAll()" aria-label="בחר את כל הנושאים">📋 הכל</button>
+      <button class="act-btn danger" onclick="clearAll()" aria-label="נקה בחירה">✕ נקה</button>
+      <div class="act-seg" role="radiogroup" aria-label="מקור שאלות">
+        <button data-src="all" class="on" onclick="setSrc('all')">הכל</button>
+        <button data-src="exams" onclick="setSrc('exams')">מבחנים</button>
+        <button data-src="books" onclick="setSrc('books')">ספרים</button>
+      </div>
+    </div>
+  </div>
+  <div class="list" id="list"><div class="skel">טוען…</div></div>
+  <div class="cta-wrap">
+    <button class="cta" id="cta" onclick="startQuiz()" disabled>
+      <span>התחל מבחן</span>
+      <span class="cta-count" id="ctaCount">0</span>
+      <span>שאלות</span>
+    </button>
+    <div class="cta-sub">הבחירה נשמרת לאפליקציה הראשית · <a href="https://eiasash.github.io/Geriatrics/" rel="noopener">פתח Shlav A Mega</a></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const TOPICS=["Biology of Aging","Demography","CGA","Frailty","Falls","Delirium","Dementia","Depression","Polypharmacy","Nutrition","Pressure Injuries","Incontinence","Constipation","Sleep","Pain","Osteoporosis","OA","CV Disease","Heart Failure","HTN","Stroke","COPD","Diabetes","Thyroid","CKD","Anemia","Cancer","Infections","Palliative","Ethics","Elder Abuse","Driving","Guardianship","Patient Rights","Advance Directives","Community/LTC","Rehab","Vision/Hearing","Periop","Geri EM","Parkinson's","Arrhythmia","Dysphagia","Andropause","Prevention","Interdisciplinary Care"];
+
+const HEB={0:"ביולוגיה של הזדקנות",1:"דמוגרפיה",2:"הערכה גריאטרית מקיפה (CGA)",3:"שבריריות",4:"נפילות",5:"דליריום",6:"דמנציה",7:"דיכאון",8:"ריבוי תרופות",9:"תזונה",10:"פצעי לחץ",11:"אי-נקיטה",12:"עצירות",13:"שינה",14:"כאב",15:"אוסטיאופורוזיס",16:"אוסטאוארתריטיס",17:"מחלות לב",18:"אי-ספיקת לב",19:"יתר לחץ דם",20:"שבץ",21:"COPD",22:"סוכרת",23:"בלוטת התריס",24:"אי-ספיקת כליות",25:"אנמיה",26:"סרטן",27:"זיהומים",28:"טיפול פליאטיבי",29:"אתיקה",30:"התעללות בקשישים",31:"כשירות נהיגה",32:"אפוטרופסות",33:"זכויות החולה",34:"הנחיות מקדימות",35:"קהילה / סיעודי",36:"שיקום",37:"ראייה ושמיעה",38:"פריאופ",39:"מיון גריאטרי",40:"פרקינסון",41:"הפרעות קצב",42:"דיספגיה",43:"אנדרופאוזה",44:"מניעה",45:"צוות רב-מקצועי"};
+
+// Real counts from data/questions.json (3,743 Qs total)
+const COUNTS={0:163,1:44,2:163,3:164,4:319,5:311,6:552,7:123,8:1069,9:168,10:92,11:183,12:120,13:91,14:234,15:120,16:96,17:323,18:203,19:75,20:120,21:136,22:153,23:57,24:440,25:115,26:340,27:309,28:351,29:347,30:59,31:36,32:90,33:117,34:224,35:193,36:285,37:85,38:232,39:169,40:192,41:126,42:77,43:45,44:172,45:49};
+
+const GROUPS=[
+  {t:"יסודות",e:"📋",tis:[0,1,2,44,45]},
+  {t:"קוגניציה ומצב רוח",e:"🧠",tis:[6,5,7]},
+  {t:"תסמונות גריאטריות",e:"🦴",tis:[3,4,8,10,11,13,42]},
+  {t:"תזונה ומערכת עיכול",e:"🍽️",tis:[9,12]},
+  {t:"לב וכלי דם",e:"❤️",tis:[17,18,19,41]},
+  {t:"ריאות / כליות / אנדוקרין",e:"🫁",tis:[21,24,22,23,43]},
+  {t:"המטולוגיה / אונקולוגיה / זיהומים",e:"🩸",tis:[25,26,27]},
+  {t:"שריר-שלד וכאב",e:"🦵",tis:[15,16,14,28]},
+  {t:"נוירולוגיה",e:"⚡",tis:[20,40]},
+  {t:"חושים וניתוחים",e:"👁️",tis:[37,38,39]},
+  {t:"משפט ואתיקה",e:"⚖️",tis:[29,30,31,32,33,34]},
+  {t:"מסגרות טיפול",e:"🏥",tis:[35,36]}
+];
+
+const PWA_URL="https://eiasash.github.io/Geriatrics/";
+const LS_TOPICS="samega_topic_filter";
+const LS_SRC="samega_topic_src";
+const LS_PICK_OPEN="picker_open_groups";
+
+// State
+let sel=loadSel();
+let openGroups=loadOpen();
+let q="";
+let src=localStorage.getItem(LS_SRC)||"all";
+if(!["all","exams","books"].includes(src))src="all";
+
+function loadSel(){
+  try{const raw=localStorage.getItem(LS_TOPICS);if(!raw)return new Set();
+    const a=JSON.parse(raw);return new Set(Array.isArray(a)?a.filter(x=>typeof x==="number"):[]);
+  }catch(e){return new Set();}
+}
+function saveSel(){
+  try{localStorage.setItem(LS_TOPICS,JSON.stringify([...sel]));}catch(e){}
+}
+function loadOpen(){
+  try{const raw=localStorage.getItem(LS_PICK_OPEN);if(!raw)return new Set();
+    const a=JSON.parse(raw);return new Set(Array.isArray(a)?a.filter(x=>typeof x==="number"):[]);
+  }catch(e){return new Set();}
+}
+function saveOpen(){
+  try{localStorage.setItem(LS_PICK_OPEN,JSON.stringify([...openGroups]));}catch(e){}
+}
+
+// Computed
+function totalQ(){let s=0;sel.forEach(ti=>s+=COUNTS[ti]||0);return s;}
+function groupSelCount(g){return g.tis.filter(ti=>sel.has(ti)).length;}
+function topicMatches(ti){
+  if(!q)return true;
+  const t=q.toLowerCase();
+  return (HEB[ti]||"").toLowerCase().includes(t)||(TOPICS[ti]||"").toLowerCase().includes(t);
+}
+function fmt(n){return n.toLocaleString("he-IL");}
+
+// Render
+const $list=document.getElementById("list");
+const $cta=document.getElementById("cta");
+const $ctaCount=document.getElementById("ctaCount");
+const $hdrCount=document.getElementById("hdrCount");
+const $srch=document.getElementById("srch");
+
+function render(){
+  let h="";
+  let renderedAny=false;
+  GROUPS.forEach((g,gi)=>{
+    const visTis=g.tis.filter(topicMatches);
+    if(!visTis.length&&q)return;
+    renderedAny=true;
+    const isOpen=openGroups.has(gi)||(q.length>0&&visTis.length>0);
+    const sc=groupSelCount(g),tot=g.tis.length;
+    const cbCls=sc===tot?"full":sc>0?"partial":"";
+    h+=`<div class="grp${isOpen?" open":""}">
+      <div class="grp-hdr" onclick="toggleGroup(${gi})" role="button" aria-expanded="${isOpen}" aria-label="${g.t}">
+        <span class="grp-chev">▾</span>
+        <span class="grp-emoji" aria-hidden="true">${g.e}</span>
+        <span class="grp-title">${g.t}</span>
+        <span class="grp-badge ${sc?'has':'empty'}">${sc?sc+'/'+tot:tot}</span>
+        <button class="grp-cb ${cbCls}" onclick="event.stopPropagation();toggleGroupAll(${gi})" aria-label="בחר את כל הקטגוריה" aria-pressed="${sc===tot}"></button>
+      </div>
+      <div class="grp-body">`;
+    visTis.forEach(ti=>{
+      const on=sel.has(ti);
+      const c=COUNTS[ti]||0;
+      h+=`<div class="tr${on?' on':''}" onclick="toggleTopic(${ti})" role="checkbox" aria-checked="${on}" tabindex="0">
+        <div class="tr-radio" aria-hidden="true"></div>
+        <div class="tr-body">
+          <div class="tr-name">${HEB[ti]||TOPICS[ti]}</div>
+          <div class="tr-en">${TOPICS[ti]}</div>
+        </div>
+        <div class="tr-count">${fmt(c)}</div>
+      </div>`;
+    });
+    h+=`</div></div>`;
+  });
+  if(!renderedAny){
+    h=`<div class="empty">לא נמצאו תוצאות עבור "${q}"</div>`;
+  }
+  $list.innerHTML=h;
+
+  const tq=totalQ();
+  const ts=sel.size;
+  $hdrCount.textContent=ts?`${ts} נבחרו · ${fmt(tq)} שאלות`:"לא נבחרו נושאים";
+  $ctaCount.textContent=fmt(tq);
+  $cta.disabled=ts===0;
+}
+
+// Actions
+function toggleGroup(gi){
+  if(openGroups.has(gi))openGroups.delete(gi);else openGroups.add(gi);
+  saveOpen();render();
+}
+function toggleGroupAll(gi){
+  const g=GROUPS[gi];
+  const all=g.tis.every(ti=>sel.has(ti));
+  if(all)g.tis.forEach(ti=>sel.delete(ti));
+  else g.tis.forEach(ti=>sel.add(ti));
+  saveSel();render();
+}
+function toggleTopic(ti){
+  if(sel.has(ti))sel.delete(ti);else sel.add(ti);
+  saveSel();render();
+}
+function selectAll(){
+  TOPICS.forEach((_,ti)=>sel.add(ti));
+  saveSel();render();toast(`נבחרו ${TOPICS.length} נושאים`);
+}
+function clearAll(){
+  if(sel.size===0)return;
+  sel.clear();saveSel();render();toast("הבחירה נוקתה");
+}
+function setSrc(s){
+  src=s;try{localStorage.setItem(LS_SRC,s);}catch(e){}
+  document.querySelectorAll(".act-seg button").forEach(b=>b.classList.toggle("on",b.dataset.src===s));
+}
+function startQuiz(){
+  if(sel.size===0)return;
+  saveSel();
+  // Hand-off to main PWA — same origin shares localStorage; cross-origin uses URL hash fallback.
+  const hash="#topics="+[...sel].join(",")+"&src="+src;
+  window.location.href=PWA_URL+hash;
+}
+
+let _toastTimer=null;
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.classList.add("show");
+  if(_toastTimer)clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>t.classList.remove("show"),1500);
+}
+
+// Search
+let _searchTimer=null;
+$srch.addEventListener("input",e=>{
+  if(_searchTimer)clearTimeout(_searchTimer);
+  _searchTimer=setTimeout(()=>{q=e.target.value.trim();render();},80);
+});
+// Dismiss keyboard on iOS when scrolling
+$list.addEventListener("touchstart",()=>{if(document.activeElement===$srch)$srch.blur();},{passive:true});
+
+// Restore segmented control state
+document.querySelectorAll(".act-seg button").forEach(b=>b.classList.toggle("on",b.dataset.src===src));
+
+// Initial render
+render();
+
+// PWA install + storage sync
+if("serviceWorker" in navigator){
+  // No-op SW registration — manifest enables A2HS without offline cache.
+  // If user wants offline, deploy with sibling sw.js.
+}
+
+// Sync from main PWA on focus (in case user toggled topics there too)
+window.addEventListener("focus",()=>{
+  const fresh=loadSel();
+  if(fresh.size!==sel.size||[...fresh].some(x=>!sel.has(x))){sel=fresh;render();}
+});
+</script>
+</body>
+</html>

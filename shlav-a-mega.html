@@ -1838,6 +1838,21 @@ let selectedTopics=(function(){
   }catch(e){return new Set();}
 })();
 function saveTopicFilter(){try{localStorage.setItem('samega_topic_filter',JSON.stringify([...selectedTopics]));}catch(e){}}
+// v10.64.63: URL-hash hand-off reader for the standalone topics-picker app.
+// Format: #topics=0,5,12&src=all   (src ∈ all|exams|books)
+// Same-origin localStorage is the primary channel; this is the cross-origin /
+// private-mode fallback. Drains hash so reload does not re-apply.
+(function(){try{
+  const h=location.hash||'';if(!h.includes('topics='))return;
+  const p=new URLSearchParams(h.slice(1));
+  const tis=(p.get('topics')||'').split(',').map(s=>parseInt(s,10)).filter(n=>!isNaN(n)&&n>=0&&n<46);
+  if(!tis.length)return;
+  selectedTopics=new Set(tis);
+  saveTopicFilter();
+  const s=p.get('src');if(['all','exams','books'].includes(s)){topicSrc=s;try{localStorage.setItem('samega_topic_src',s);}catch(e){}}
+  filt='topics';topicFilt=-1;
+  history.replaceState(null,'',location.pathname+location.search);
+}catch(e){}})();
 function toggleTopic(ti){
   ti=Number(ti);
   if(selectedTopics.has(ti))selectedTopics.delete(ti);else selectedTopics.add(ti);
@@ -6949,8 +6964,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.62';
+const APP_VERSION='10.64.63';
 const CHANGELOG={
+'10.64.63':[
+'📱 Standalone mobile-first topic picker app (`topics-picker.html`) — compact, Hebrew-RTL, iOS+Android safe-area-aware, installable via inline manifest. Replaces the wall-of-46-pills interaction with collapsible accordion groups (12 categories from TOPIC_GROUPS), sticky search filter, sticky bottom CTA showing live total-question count, segmented source control (הכל/מבחנים/ספרים), 48–54px touch targets (vs 32px in main quiz). Same-origin localStorage hand-off via `samega_topic_filter` (drop-in compatible with existing reader at line ~1835). Live at `/Geriatrics/topics-picker.html`. 19KB single file, no build, no deps.',
+'🔗 URL-hash hand-off reader (10 lines after `let selectedTopics=…` block) — accepts `#topics=0,5,12&src=all` and applies the selection on init, then `history.replaceState` to drain the hash so reload does not re-apply. Cross-origin / private-mode / cookie-blocked fallback when localStorage propagation fails. Format mirrors the picker app\'s startQuiz() URL builder. Defensive: clamps ti values to 0..45, ignores malformed inputs silently.',
+],
 '10.64.62':[
 '✨ UI tidy — quiz screen on phones. (1) Filter pill row (🤖 AI / 📖 Suppl / 📘 Harrison / 🔥 Hard / ⏱ Slow / 🎯 Weak / 🔄 Due / 🪤 Traps / 🎯 Next Best Step / 🏛️ תקנות) was already horizontally scrollable but had no visual cue — last pill clipped at right edge with no gradient, no arrow, no shadow. Users were not discovering items past viewport edge. Added new utility class `.scroll-fade-x` using CSS mask-image gradient that fades both edges (24px taper) so users see content exists past the cut. CSS-only, no JS, no scroll-state tracking. Applied to the filts row only (the years row above it uses flex-wrap and does not need it). (2) Inline version badge (`#headerVer`) on the h1 was getting visually crowded by the absolute-positioned dm-btn cluster (☀ 🌙 EN ? 👤, 220px reserved on right) on phones — version overlapped the avatar circle. Hidden on viewports ≤480px via media query; version is still visible in More tab and in the bottom-of-app build line. No HTML structure changes — single class addition + 2 CSS rules.',
 ],
