@@ -6503,9 +6503,35 @@ function clearChat(){S.chat=[];chatLoading=false;save();render();}
     const u=getCurrentUser(); if(!u) return;
     const oldP=window.prompt('הקלד את הסיסמה הנוכחית:'); if(!oldP) return;
     const newP=window.prompt('הקלד סיסמה חדשה (לפחות 6 תווים):'); if(!newP) return;
+    console.info('[changePassword.start]',{username:u.username});
     const r=await authChangePassword(u.username,oldP,newP);
-    if(r.ok){ _dispatchAuthEvent('change-password'); toast('✅ הסיסמה שונתה','success'); }
-    else{const map={invalid_credentials:'הסיסמה הנוכחית שגויה',weak_password:'הסיסמה החדשה קצרה מדי'}; toast('❌ '+(map[r.error]||r.message||r.error),'info');}
+    if(r.ok){
+      _dispatchAuthEvent('change-password');
+      toast('✅ הסיסמה שונתה','success');
+      console.info('[changePassword.ok]');
+    } else {
+      // Cross-port from ward-helper PR #100: never bare 'שגיאה' — always
+      // surface res.error (and res.message when present) so the user has
+      // something diagnosable. Pattern in feedback_auth_error_specificity.md.
+      let msg;
+      if (r.error==='invalid_password' || r.error==='invalid_credentials') {
+        msg = 'הסיסמה הנוכחית שגויה';
+      } else if (r.error==='weak_password') {
+        msg = 'סיסמה חדשה חלשה — לפחות 6 תווים, לא רק ספרות.';
+      } else if (r.error==='network') {
+        msg = 'בעיית רשת. בדוק חיבור ונסה שוב.'+(r.message?' ('+r.message+')':'');
+      } else if (r.error && r.message) {
+        msg = 'שגיאה ('+r.error+'): '+r.message;
+      } else if (r.error) {
+        msg = 'שגיאה: '+r.error;
+      } else if (r.message) {
+        msg = 'שגיאת שרת: '+r.message;
+      } else {
+        msg = 'שגיאה לא ידועה. נסה שוב או דווח על הבעיה.';
+      }
+      toast('❌ '+msg,'info');
+      console.info('[changePassword.err]',{error:r.error||'unknown',message:r.message||null});
+    }
   }
   function _doLogout(){
     if(!window.confirm('להתנתק? ההתקדמות שלך נשמרת בענן ותחזור בהתחברות הבאה.')) return;
@@ -6964,8 +6990,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.63';
+const APP_VERSION='10.64.64';
 const CHANGELOG={
+'10.64.64':[
+'🔐 Auth-error UX — change-password failures now always include the error code in the user-facing string (mapped to friendly Hebrew for known codes, raw `(code): message` for unmapped). Cross-port from ward-helper PR #100 (v1.39.13). Previously a server-side `r.error` with no `r.message` could fall through to a bare `שגיאה` toast — now it shows e.g. `שגיאה: weak_password`. Also adds `[changePassword.start/.ok/.err]` console breadcrumbs for the in-app debug console (5-tap top-right corner) so support has a diagnostic trail across login → change-password sessions.',
+],
 '10.64.63':[
 '📱 Standalone mobile-first topic picker app (`topics-picker.html`) — compact, Hebrew-RTL, iOS+Android safe-area-aware, installable via inline manifest. Replaces the wall-of-46-pills interaction with collapsible accordion groups (12 categories from TOPIC_GROUPS), sticky search filter, sticky bottom CTA showing live total-question count, segmented source control (הכל/מבחנים/ספרים), 48–54px touch targets (vs 32px in main quiz). Same-origin localStorage hand-off via `samega_topic_filter` (drop-in compatible with existing reader at line ~1835). Live at `/Geriatrics/topics-picker.html`. 19KB single file, no build, no deps.',
 '🔗 URL-hash hand-off reader (10 lines after `let selectedTopics=…` block) — accepts `#topics=0,5,12&src=all` and applies the selection on init, then `history.replaceState` to drain the hash so reload does not re-apply. Cross-origin / private-mode / cookie-blocked fallback when localStorage propagation fails. Format mirrors the picker app\'s startQuiz() URL builder. Defensive: clamps ti values to 0..45, ignores malformed inputs silently.',
