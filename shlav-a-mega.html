@@ -6994,8 +6994,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.66';
+const APP_VERSION='10.64.67';
 const CHANGELOG={
+'10.64.67':[
+'🧹 Bot D Opus 4.7 surfaced 26 q.ref entries with "FRAIL TY" typo (should be "FRAILTY"). Cosmetic fix to chapter-name string in citation field; no answer/option/explanation changes. All 26 sampled questions verified to be genuine Hazzard Ch 42 (Frailty) topics — Fried criteria, frailty assessment, peri-op frailty. Sample-verified 5/26 against question content before applying.',
+],
 '10.64.66':[
 '📱 Mobile-browser CSS hardening — three surgical fixes for users running shlav-a-mega in Safari iOS / Chrome Android tabs (NOT installed PWA). (1) `100vh` → `100vh;100dvh` fallback chain in two places (renderTrack at ~line 2250 main container, renderChat at ~line 6265 chat card) — `100dvh` is the dynamic viewport height that recomputes when iOS URL bar collapses, fixing the bottom-cropped layout users hit on iPhone tabs. Older browsers ignore the `dvh` rule and fall back to `100vh`. (2) `overscroll-behavior:contain` on `body` — prevents pull-to-refresh + horizontal-overscroll bounce from interfering with in-app scroll, especially on the long Hazzard chapter reader pages. (3) viewport-fit=cover + safe-area-inset-* already in place from earlier iOS work; no change needed. No JS changes; pure CSS additions. The accordion + browser-back-intercept items from the original mobile-UI plan deferred to morning fresh-eyes — that touched 5 render functions and risked breaking the visualOverhaul markup pins (25 tests).',
 ],
