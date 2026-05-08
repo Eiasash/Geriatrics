@@ -6994,8 +6994,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.69';
+const APP_VERSION='10.64.70';
 const CHANGELOG={
+'10.64.70':[
+'🧹 Atomic 5 batch — drains carry-forward edge cases from vision_eye (PR #170) and manual-triage holdouts from Israeli-source batch (PR #171). idx 101 (vision Q double-wrong: cited Ch 34 HEARING + Harrison 52 Jaundice for a vision question — fixed to Hazzard 8e Ch 33 LOW VISION + Harrison 22e visual loss). idx 2589 (vision Q wrongly cited Ch 88 CANCER — same fix). idx 454 (epilepsy + driving fitness — repointed to MOH Director-General Circular 6/2023, not Min. of Transport). idx 955 (MCI + driving evaluation — same MOH 6/2023 circular, MCI section, not Hazzard Ch 28 Geriatric Assessment which doesn\'t carry the regulatory threshold). idx 456 (sleep meds + driving — Hazzard 8e sleep chapter, generic). Pre-condition guard verified all 5 idx held distinct expected old refs. Test changes: REF_PATTERN allowlist extended with "MOH" for the Director-General Circular citation format. idx 608 still held out — user surfacing Q text for the legal_capacity ref decision.',
+],
 '10.64.69':[
 '⚖️ Bot D Opus 4.7 Israeli-source cluster batch (terminal-only, no PDF prestage — Israeli statutes/reports are well-known canonical citations). 38 questions had q.ref incorrectly citing a Hazzard chapter when the actual source is an Israeli statute, MOH circular, or Israeli statistical report. Repointed to: 4 Dying Patient Law (התשס"ו-2005), 8 Patient Rights Law (התשנ"ו-1996), 6 Legal Capacity & Guardianship Law (תיקון 18 / 2016 — ייפוי כוח מתמשך / מקבל החלטות נתמך), 4 חוזר מנכ"ל 6/2023 (driving fitness), 1 NHI Law (התשנ"ד-1994), 1 Equal Rights for PWD Law (התשנ"ח-1998), 13 JDC-Brookdale "65+ בישראל" statistical compendium, 1 Ministry of Justice General Custodian. Pre-condition guard verified all 38 idx held expected old refs (Ch 7: 15, Ch 26: 10, Ch 2: 13). Manual triage held out: idx 454 (epilepsy/driving — Min. of Transport vs MOH unclear), idx 456 (sleep meds + driving — bot suggested Hazzard not statute), idx 608 (carry-forward from vision_eye batch — qid follows ids 29-35 legal-exception pattern), idx 955 (MCI driving — bot suggested Hazzard Ch 28 not MOH circular).',
 ],
