@@ -438,6 +438,20 @@ Validate the APP's claimed answer ${appLetter} against board-level family-medici
     log.actions.push({ at: nowIso(), type: 'next' });
   }
   await sleep(rand(800, 1700));
+  // Leaderboard hook — Geri's submitLeaderboardScore + showLeaderboard are
+  // global functions in the monolith. Fire every 25th answered.
+  log._lbCount = (log._lbCount || 0) + 1;
+  if (log._lbCount % 25 === 0) {
+    try {
+      const fired = await page.evaluate(() => {
+        if (typeof submitLeaderboardScore === 'function') { submitLeaderboardScore(); return 'submit'; }
+        if (typeof showLeaderboard === 'function') { showLeaderboard(); return 'show'; }
+        return null;
+      });
+      if (fired) log.actions.push({ at: nowIso(), type: 'leaderboard-submit', via: fired, after: log._lbCount });
+    } catch (_) { /* swallow */ }
+    await sleep(rand(800, 1500));
+  }
   return { advanced: true, stemHash };
 }
 
