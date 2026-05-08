@@ -49,7 +49,7 @@ import { extractJson } from './lib/extractJson.mjs';
 
 const DEFAULT_URL = 'https://eiasash.github.io/Geriatrics/';
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
-const MODEL = process.env.CHAOS_MODEL || 'claude-sonnet-4-6';
+const MODEL = process.env.CHAOS_MODEL || 'claude-opus-4-7';
 
 const CONFIG = {
   url: process.env.CHAOS_URL || DEFAULT_URL,
