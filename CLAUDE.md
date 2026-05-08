@@ -23,6 +23,16 @@ These four rules are the floor. They override any conflicting guidance later in 
 
 ---
 
+## Leaderboard RPC (v10.64.65)
+
+`shlav_leaderboard_upsert(p_uid,p_answered,p_correct,p_streak,p_readiness,p_ts)` — SECURITY DEFINER RPC at `/rest/v1/rpc/shlav_leaderboard_upsert`. Replaces the prior direct `/rest/v1/shlav_leaderboard` POST. The 4 historical rows still exist in `public.shlav_leaderboard` (the schema-split migration `20260421120000_split_app_schema.sql` was apparently never applied to leaderboards — they remain in `public`). Migration: `supabase/migrations/20260508000000_leaderboard_upsert.sql`. RPC bypasses RLS via SECURITY DEFINER, future-proof against the sb_publishable_* key class. `accuracy` is GENERATED ALWAYS in the table — RPC must NOT assign it. Sibling-aligned with mishpacha/pnimit RPCs.
+
+## Chaos bot infrastructure (2026-05-08)
+
+Geri's `scripts/chaos-live-bot.mjs` (existing) drives the live shlav-a-mega.html. The FM/IM v4 bot port to Geri is **deferred**: Geri's monolith uses `class="qo"` + `onclick=` handlers, NOT `data-action` selectors. A dedicated Geri-native v4 (or rewrite of chaos-live-bot to add the v4 judge contract) is morning-fresh-eyes work. Existing chaos-live-bot remains the production overnight-run choice for Geri.
+
+---
+
 ## Authority Sources (do not invert)
 
 These five fields/files are load-bearing truths. The arrows mark dependency direction
