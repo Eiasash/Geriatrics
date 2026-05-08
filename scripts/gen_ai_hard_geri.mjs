@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { extractJson } from './lib/extractJson.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -85,8 +86,26 @@ async function callAnthropic(userPrompt, maxTokens = 1800) {
 
 function parseQs(text, expectedTag) {
   const cleaned = text.replace(/```json|```/g, '').trim();
-  const arr = JSON.parse(cleaned);
-  if (!Array.isArray(arr)) throw new Error('LLM response was not an array');
+  // Try strict parse first (handles well-formed array responses)
+  let arr;
+  try { arr = JSON.parse(cleaned); }
+  catch (_) {
+    // Fallback 1: find first array boundary [...] manually
+    const start = cleaned.indexOf('[');
+    if (start !== -1) {
+      try {
+        const end = cleaned.lastIndexOf(']');
+        if (end > start) arr = JSON.parse(cleaned.slice(start, end + 1));
+      } catch (_) { /* fall through */ }
+    }
+  }
+  if (!Array.isArray(arr)) {
+    // Fallback 2: pull a single balanced {...} via extractJson, wrap as array.
+    // Handles models that return one Q as a bare object instead of [{...}].
+    const obj = extractJson(cleaned);
+    if (obj && typeof obj === 'object') arr = [obj];
+  }
+  if (!Array.isArray(arr)) throw new Error(`LLM response not parseable as array: ${cleaned.slice(0, 100)}`);
   return arr.map((q) => {
     q.t = expectedTag;
     if (!Array.isArray(q.c_accept)) q.c_accept = [q.c];
@@ -105,9 +124,13 @@ function shuffle(a) {
 
 async function genFromHazzard(n) {
   const haz = JSON.parse(readFileSync(join(ROOT, 'data/hazzard_chapters.json'), 'utf8'));
-  // Hazzard chapters excluded from the syllabus (per Geri CLAUDE.md): 2-6, 34, 62
-  const usable = (Array.isArray(haz) ? haz : Object.values(haz))
-    .filter((ch) => ch && ch.num && ![2, 3, 4, 5, 6, 34, 62].includes(ch.num));
+  // Hazzard chapters excluded from the syllabus (per Geri CLAUDE.md): 2-6, 34, 62.
+  // Chapter file structure: dict keyed by chapter number string. Values have
+  // {title, sections, wordCount} but no `num` property — use the key.
+  const excluded = new Set([2, 3, 4, 5, 6, 34, 62]);
+  const usable = Object.entries(haz)
+    .map(([k, v]) => ({ num: Number(k), ...v }))
+    .filter((ch) => Number.isFinite(ch.num) && !excluded.has(ch.num));
   const picks = shuffle(usable).slice(0, Math.min(n, usable.length));
   const out = [];
   for (const ch of picks) {
@@ -130,7 +153,10 @@ async function genFromHarrison(n) {
   const harPath = join(ROOT, 'harrison_chapters.json');
   if (!existsSync(harPath)) { console.error('harrison_chapters.json missing — skipping Harrison generation'); return []; }
   const har = JSON.parse(readFileSync(harPath, 'utf8'));
-  const usable = (Array.isArray(har) ? har : Object.values(har)).filter((ch) => ch && ch.num);
+  // Same dict-keyed-by-number-string shape as hazzard_chapters.json.
+  const usable = Object.entries(har)
+    .map(([k, v]) => ({ num: Number(k), ...v }))
+    .filter((ch) => Number.isFinite(ch.num));
   const picks = shuffle(usable).slice(0, Math.min(n, usable.length));
   const out = [];
   for (const ch of picks) {
