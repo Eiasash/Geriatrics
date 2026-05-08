@@ -38,3 +38,9 @@ chaos-reports/*.md
 # Auto-audit / triage snapshots — local-only working state
 .audit_logs/
 *.local-backup.json
+
+# Bot D / Bot C generated review queues — output of source-scanner.mjs +
+# gen_ai_hard_geri.mjs. Reviewer pulls accepted Qs into source files;
+# the raw generated dump itself is regenerable.
+source_completeness_audit_*.json
+data/ai_hard_seed.geri.generated.json
