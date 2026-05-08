@@ -41,7 +41,7 @@ const API_KEY = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
 if (!API_KEY) { console.error('ANTHROPIC_API_KEY (or CLAUDE_API_KEY) env var not set.'); process.exit(2); }
 if (API_KEY.length !== 108) { console.error(`API key length=${API_KEY.length}, expected 108`); process.exit(2); }
 
-const MODEL = process.env.AI_MODEL || 'claude-sonnet-4-6';
+const MODEL = process.env.AI_MODEL || 'claude-opus-4-7';
 const COST_CAP_USD = Number(process.env.CHAOS_COST_CAP_USD || 25);
 const COST = { calls: 0, inTok: 0, outTok: 0 };
 const priceUsd = () => (COST.inTok / 1e6) * 3 + (COST.outTok / 1e6) * 15;
