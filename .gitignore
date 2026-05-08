@@ -15,3 +15,26 @@ __pycache__/
 
 # Untriaged IMA exam PDFs dumped at repo root with hash filenames
 /[0-9][0-9][0-9][0-9][0-9][0-9]_*.pdf
+
+# Local pre-edit snapshots of questions.json + sibling data files
+data/questions.json.bak*
+data/distractors.json.bak*
+data/question_chapters.json.bak*
+data/regulatory.json.bak*
+data/syllabus_data.json.bak*
+
+# Chaos bot run artifacts — large per-run jsonl + screenshots, regenerable
+chaos-reports/v4-overnight-*/
+chaos-reports/audit*/
+chaos-reports/instrumented/
+chaos-reports/long*/
+chaos-reports/stacks/
+chaos-reports/validate*/
+chaos-reports/*.log
+chaos-reports/*.jsonl
+chaos-reports/*.json
+chaos-reports/*.md
+
+# Auto-audit / triage snapshots — local-only working state
+.audit_logs/
+*.local-backup.json
