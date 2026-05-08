@@ -559,6 +559,7 @@ describe("cross-file referential integrity", () => {
         "Trial", "Study", "Cohort",
         // Israeli MOH / clinical guidance + Israeli statutes / government / statistical sources
         "חוזר", "חוק", "מכון", "משרד", "אפוטרופוס", "הלשכה", "הר\"י", "למ\"ס",
+        "MOH", "Circular", "Director-General",
       ].join("|"),
       "i",
     );
