@@ -557,8 +557,8 @@ describe("cross-file referential integrity", () => {
         "CDC", "ACIP", "STEADI", "WHO",
         // Trial / cohort name patterns
         "Trial", "Study", "Cohort",
-        // Israeli MOH / clinical guidance
-        "חוזר", "חוק",
+        // Israeli MOH / clinical guidance + Israeli statutes / government / statistical sources
+        "חוזר", "חוק", "מכון", "משרד", "אפוטרופוס", "הלשכה", "הר\"י", "למ\"ס",
       ].join("|"),
       "i",
     );

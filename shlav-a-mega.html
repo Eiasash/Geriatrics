@@ -6994,8 +6994,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.68';
+const APP_VERSION='10.64.69';
 const CHANGELOG={
+'10.64.69':[
+'⚖️ Bot D Opus 4.7 Israeli-source cluster batch (terminal-only, no PDF prestage — Israeli statutes/reports are well-known canonical citations). 38 questions had q.ref incorrectly citing a Hazzard chapter when the actual source is an Israeli statute, MOH circular, or Israeli statistical report. Repointed to: 4 Dying Patient Law (התשס"ו-2005), 8 Patient Rights Law (התשנ"ו-1996), 6 Legal Capacity & Guardianship Law (תיקון 18 / 2016 — ייפוי כוח מתמשך / מקבל החלטות נתמך), 4 חוזר מנכ"ל 6/2023 (driving fitness), 1 NHI Law (התשנ"ד-1994), 1 Equal Rights for PWD Law (התשנ"ח-1998), 13 JDC-Brookdale "65+ בישראל" statistical compendium, 1 Ministry of Justice General Custodian. Pre-condition guard verified all 38 idx held expected old refs (Ch 7: 15, Ch 26: 10, Ch 2: 13). Manual triage held out: idx 454 (epilepsy/driving — Min. of Transport vs MOH unclear), idx 456 (sleep meds + driving — bot suggested Hazzard not statute), idx 608 (carry-forward from vision_eye batch — qid follows ids 29-35 legal-exception pattern), idx 955 (MCI driving — bot suggested Hazzard Ch 28 not MOH circular).',
+],
 '10.64.68':[
 '🔭 Bot D Opus 4.7 vision_eye cluster batch (web Claude pre-staged Hazzard 8e PDF verification): 18 questions about AMD/cataract/glaucoma/visual impairment had q.ref incorrectly citing "Hazzard Ch 34 — HEARING LOSS: ASSESSMENT AND MANAGEMENT" (literally the wrong sense). Repointed to "Hazzard Ch 33 — LOW VISION: ASSESSMENT AND REHABILITATION". Source verified against Hazzard 8e Ch 33 PDF passages on AMD (p ~473), cataract (p 474), glaucoma. Affected idx: 263, 264, 412, 445, 449, 463, 466, 633, 634, 635, 636, 640, 1236, 1238, 1239, 1242, 1243, 1247. Edge cases held out for separate triage: idx 101 (compound ref with Harrison suffix), idx 608 (legal-citation exception per CLAUDE.md ids 29-35), idx 2589 (different wrong ref Ch 88). 12 actual hearing-loss questions retain their correct Ch 34 ref.',
 ],
