@@ -35,7 +35,7 @@ import process from 'node:process';
 import { extractJson } from './lib/extractJson.mjs';
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
-const MODEL = process.env.SCAN_MODEL || 'claude-sonnet-4-6';
+const MODEL = process.env.SCAN_MODEL || 'claude-opus-4-7';
 const KEY = process.env.CLAUDE_API_KEY;
 if (!KEY) { console.error('CLAUDE_API_KEY not set'); process.exit(2); }
 if (KEY.length !== 108) { console.error(`CLAUDE_API_KEY length=${KEY.length}, expected 108`); process.exit(2); }
