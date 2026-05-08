@@ -6994,8 +6994,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.67';
+const APP_VERSION='10.64.68';
 const CHANGELOG={
+'10.64.68':[
+'🔭 Bot D Opus 4.7 vision_eye cluster batch (web Claude pre-staged Hazzard 8e PDF verification): 18 questions about AMD/cataract/glaucoma/visual impairment had q.ref incorrectly citing "Hazzard Ch 34 — HEARING LOSS: ASSESSMENT AND MANAGEMENT" (literally the wrong sense). Repointed to "Hazzard Ch 33 — LOW VISION: ASSESSMENT AND REHABILITATION". Source verified against Hazzard 8e Ch 33 PDF passages on AMD (p ~473), cataract (p 474), glaucoma. Affected idx: 263, 264, 412, 445, 449, 463, 466, 633, 634, 635, 636, 640, 1236, 1238, 1239, 1242, 1243, 1247. Edge cases held out for separate triage: idx 101 (compound ref with Harrison suffix), idx 608 (legal-citation exception per CLAUDE.md ids 29-35), idx 2589 (different wrong ref Ch 88). 12 actual hearing-loss questions retain their correct Ch 34 ref.',
+],
 '10.64.67':[
 '🧹 Bot D Opus 4.7 surfaced 26 q.ref entries with "FRAIL TY" typo (should be "FRAILTY"). Cosmetic fix to chapter-name string in citation field; no answer/option/explanation changes. All 26 sampled questions verified to be genuine Hazzard Ch 42 (Frailty) topics — Fried criteria, frailty assessment, peri-op frailty. Sample-verified 5/26 against question content before applying.',
 ],
