@@ -14,7 +14,7 @@ b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:li
 b.innerHTML='<div><b>🆕 עדכון זמין!</b> גרסה חדשה מוכנה</div>'+
 '<div style="display:flex;gap:6px;flex-shrink:0">'+
 '<button data-action="apply-update" style="background:rgb(var(--card-bg));color:#0D7377;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer">🔄 עדכן עכשיו</button>'+
-'<button data-action="dismiss-update" style="background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">✕</button>'+
+'<button data-action="dismiss-update" aria-label="Dismiss update banner" title="Dismiss update banner" style="background:rgba(0,0,0,.25);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">✕</button>'+
 '</div>';
 document.body.prepend(b);
 }
