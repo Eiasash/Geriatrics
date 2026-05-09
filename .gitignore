@@ -34,6 +34,14 @@ chaos-reports/*.log
 chaos-reports/*.jsonl
 chaos-reports/*.json
 chaos-reports/*.md
+chaos-reports/*.png
+chaos-reports/v4-leaderboard-*/
+
+# FM-flavored chaos bot scripts — sibling experimentation, not Geri runtime.
+# Drop from Geri tracking; these belong in FamilyMedicine if anywhere.
+scripts/chaos-doctor-bot-fm.mjs
+scripts/chaos-live-bot-v2-fm.mjs
+scripts/fm-state-probe.mjs
 
 # Auto-audit / triage snapshots — local-only working state
 .audit_logs/
