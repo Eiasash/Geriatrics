@@ -124,3 +124,111 @@ describe('parser-bleed guard (v10.34) — past-exam option hygiene', () => {
     expect(violations.length, `${violations.length} options exceed 250 char cap`).toBe(0);
   });
 });
+
+/**
+ * v10.64.79 tier-2 extension — q-stem-truncation signature.
+ *
+ * Complementary to the v10.34 BLEED_RE guard above. The v10.34 regex
+ * looks for `<digit><whitespace><Hebrew Q-stem keyword>` inside an option,
+ * which catches cases where the next Q's NUMBER MARKER ("1.", "2.")
+ * survived in the bleed. But the v10.64.77 + v10.64.79 cleanup batch
+ * caught 7 records where the digit marker was LOST and the parser only
+ * preserved the option marker ("א."). The signature is different:
+ *
+ *   q.q   — truncates mid-sentence, no terminal punctuation
+ *   q.o[0] — anomalously longer than its siblings, contains the stem
+ *            continuation + question mark + the bare option text
+ *
+ * After v10.64.79 the disk is clean. This guard locks the cleaning in.
+ *
+ * Reconstruction protocol when this fires:
+ *   1. Read q.q and q.o[0] together. The boundary is at "?" or option
+ *      marker ("א.", "1.", etc).
+ *   2. Move continuation back into q.q, terminating with "?".
+ *   3. Strip everything before/including the option marker from o[0];
+ *      bare option remains. Verify length matches sibling option lengths.
+ *   4. q.c MUST NOT change — c is authoritative per system-prompt rule
+ *      "Authority sources (do not invert): q.c is IMA published key +
+ *      curator overrides — NEVER auto-flip".
+ */
+
+const TIER2_TERMINAL_PUNCT = new Set([
+  '?', '.', ':', '!', '"', "'", ')', ']',
+  '\u05F4', // gershayim ״
+  '\u05F3', // geresh ׳
+  '\u201D', // right double quote ”
+  '\u2019', // right single quote ’
+  '\u2026', // ellipsis …
+]);
+
+function tier2EndsWithTerminalPunct(s) {
+  if (!s) return false;
+  const trimmed = s.trimEnd();
+  if (!trimmed) return false;
+  return TIER2_TERMINAL_PUNCT.has(trimmed[trimmed.length - 1]);
+}
+
+describe('parser-bleed guard tier-2 (v10.64.79) — q-stem-truncation signature', () => {
+  let questions;
+  beforeAll(() => { questions = loadJSON('data/questions.json'); });
+
+  test('no question has a truncated stem with anomalously-long o[0]', () => {
+    const suspects = [];
+
+    questions.forEach((q, i) => {
+      if (!q || typeof q.q !== 'string' || !Array.isArray(q.o)) return;
+      if (q.o.length < 2) return;
+      if (q.q.length <= 30) return;
+      if (LEGIT_LONG_OPTION_INDICES.has(i)) return;
+      if (tier2EndsWithTerminalPunct(q.q)) return;
+
+      const o0Len = (q.o[0] || '').length;
+      const siblingLens = q.o.slice(1).map((o) => (o || '').length);
+      const maxSibling = siblingLens.length ? Math.max(...siblingLens) : 0;
+
+      // Anomalously long: >60 chars absolute AND >3× max sibling.
+      // Tuned against v10.64.79 baseline: catches all 5 fixed records when
+      // reverted, fires zero false-positives on clean disk.
+      if (o0Len <= 60) return;
+      if (o0Len <= 3 * maxSibling) return;
+
+      suspects.push({
+        idx: i, tag: q.t || '?',
+        qTail: q.q.slice(-50),
+        o0Head: (q.o[0] || '').slice(0, 100),
+        o0Len, maxSibling,
+      });
+    });
+
+    if (suspects.length) {
+      console.error(
+        `Tier-2 parser-bleed (${suspects.length} record(s)). ` +
+        `Reconstruct: move continuation back into q.q (terminate with "?"), ` +
+        `reduce o[0] to bare option. q.c MUST NOT change. ` +
+        `See header of tests/parserBleedGuard.test.js for protocol.`,
+        suspects.slice(0, 10),
+      );
+    }
+    expect(suspects.length, `tier-2 parser-bleed in ${suspects.length} records`).toBe(0);
+  });
+
+  test('synthetic regression — heuristic locks against silent weakening', () => {
+    // If a future refactor weakens the predicates, this synthetic case
+    // will stop firing and surface the regression. Mirrors idx 3727
+    // pre-v10.64.79.
+    const synthetic = {
+      q: 'בן 70, ברקע סוכרת, מתאשפז לבירור השתנה מרובה. כמות שתן ביממה 3.5 ליטר',
+      o: [
+        'אוסמולריות השתן 200 mosm/L. מה הסיבה המתאימה לממצאים אלו? א. Resolving Acute Tubular Necrosis',
+        'Uncontrolled Diabetes Mellitus',
+        'Hypercalcemia',
+        'High dose Furosemide',
+      ],
+    };
+    const endsClean = tier2EndsWithTerminalPunct(synthetic.q);
+    const o0Len = synthetic.o[0].length;
+    const maxSibling = Math.max(...synthetic.o.slice(1).map((o) => o.length));
+    const fires = !endsClean && o0Len > 60 && o0Len > 3 * maxSibling;
+    expect(fires, 'tier-2 heuristic must fire on synthetic v10.64.79 case').toBe(true);
+  });
+});
