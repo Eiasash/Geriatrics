@@ -109,3 +109,31 @@ describe("a11y issue #125 — v10.64.83 contrast follow-up", () => {
     expect(h1Match[0]).toContain("color:rgb(var(--fg))");
   });
 });
+
+describe("a11y issue #125 — v10.64.84 account-button JS override fix", () => {
+  it("updateAccountChip logged-out branch clears inline overrides instead of setting white", () => {
+    // The function's `else` branch (no logged-in user) previously set
+    // btn.style.background='rgba(255,255,255,0.08)' + btn.style.color='#fff'
+    // unconditionally, defeating the v10.64.83 .dm-btn CSS rule for the 👤
+    // button specifically. Fix: clear the inline styles so the cascade applies.
+    const fnMatch = html.match(/function updateAccountChip\([^]*?^\}/m);
+    expect(fnMatch).toBeTruthy();
+    const fn = fnMatch[0];
+    const elseBlockMatch = fn.match(/\}\s*else\s*\{[^]*?\}/);
+    expect(elseBlockMatch).toBeTruthy();
+    const elseBlock = elseBlockMatch[0];
+    expect(elseBlock).toContain("btn.style.background=''");
+    expect(elseBlock).toContain("btn.style.color=''");
+    expect(elseBlock).not.toContain("rgba(255,255,255,0.08)");
+    expect(elseBlock).not.toMatch(/btn\.style\.color\s*=\s*['"]#fff['"]/);
+  });
+
+  it("logged-in branch still sets the teal account chip (intentional override preserved)", () => {
+    // Don't accidentally regress the logged-in visual — teal background +
+    // white initial letter is the intended logged-in indicator.
+    const fnMatch = html.match(/function updateAccountChip\([^]*?^\}/m);
+    expect(fnMatch).toBeTruthy();
+    const fn = fnMatch[0];
+    expect(fn).toContain("'#0D7377'");
+  });
+});
