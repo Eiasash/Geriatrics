@@ -163,6 +163,9 @@ input,textarea,select{font:inherit}
 .tabs button{flex:0 0 auto;min-width:52px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px 6px;transition:.15s;font-size:10px;font-weight:600}
 .tabs button.on{color:var(--app-primary)}
 .tabs button:not(.on){color:rgb(var(--fg3))}
+/* v10.64.85 a11y fix #4: geriatrics skin's --app-primary (amber-500 #f59e0b) is 2.15:1 against white — fails WCAG AA. Override TEXT-on-light usage with amber-700 (#b45309 = 5.42:1) without touching the background-color usages of --app-primary (.pill.on / .btn-p still want amber-500 since they pair with dark on-primary text). */
+html[data-skin="geriatrics"] .tabs button.on{color:#b45309}
+body.dark[data-skin="geriatrics"] .tabs button.on,html[data-skin="geriatrics"] body.dark .tabs button.on{color:var(--app-primary)}
 .tabs .ic{font-size:18px}
 .ct{max-width:640px;margin:0 auto;padding:12px 12px 80px}
 .card{background:rgb(var(--card-bg));border-radius:16px;border:1px solid rgb(var(--brd));box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:10px}
@@ -3322,7 +3325,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <button data-testid="full-exam-trigger" onclick="startExam()" class="btn" style="font-size:11px;padding:7px 14px;background:#0f172a;color:#fff;border:none;border-radius:8px;font-weight:600" aria-label="Start full exam">📋 Full 150q</button>
 <button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:#dc2626;border:1px solid rgb(var(--red-brd));border-radius:8px" aria-label="Sudden death" title="Sudden Death — one wrong = game over">💀 SD</button>
 <button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px" aria-label="On-call flip cards" title="On-Call flip cards — rapid review">🏥 On-Call</button>
-${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:#059669;border:1px solid #a7f3d0;border-radius:8px" aria-label="Pomodoro timer" title="Pomodoro 25-min study timer">⏱ Pomo</button>':''}
+${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:#047857;border:1px solid #a7f3d0;border-radius:8px" aria-label="Pomodoro timer" title="Pomodoro 25-min study timer">⏱ Pomo</button>':''}
 </div>
 </div>`;
 // Exam-year multi-select row — pills are toggleable, "All" / "Clear" quick actions.
@@ -3389,7 +3392,7 @@ h+=`</div>`;
   const _wrongDisabled=_wrongCount===0;
   const _wrongActive=filt==='wrong';
   h+=`<div style="display:flex;gap:6px;margin-bottom:10px;align-items:center">
-<button class="btn" onclick="setFilt('wrong')" ${_wrongDisabled?'disabled aria-disabled="true"':''} aria-label="Review wrong answers" title="${_wrongDisabled?'Get a question wrong to start a review set':'Drill the questions you got wrong, sorted by recency × topic weight. Marked solved after 2 correct in a row.'}" style="flex:1;min-height:40px;font-size:12px;font-weight:700;border-radius:10px;border:1px solid ${_wrongActive?'#dc2626':'rgb(var(--red-brd))'};background:${_wrongDisabled?'rgb(var(--bg2))':_wrongActive?'#dc2626':'rgb(var(--red-bg))'};color:${_wrongDisabled?'rgb(var(--fg3))':_wrongActive?'#fff':'rgb(var(--red-fg))'};cursor:${_wrongDisabled?'not-allowed':'pointer'};opacity:${_wrongDisabled?0.6:1}">⚠️ Review wrong (${_wrongCount})</button>`;
+<button class="btn" onclick="setFilt('wrong')" ${_wrongDisabled?'disabled aria-disabled="true"':''} aria-label="Review wrong answers" title="${_wrongDisabled?'Get a question wrong to start a review set':'Drill the questions you got wrong, sorted by recency × topic weight. Marked solved after 2 correct in a row.'}" style="flex:1;min-height:40px;font-size:12px;font-weight:700;border-radius:10px;border:1px solid ${_wrongActive?'#dc2626':'rgb(var(--red-brd))'};background:${_wrongDisabled?'rgb(var(--bg2))':_wrongActive?'#dc2626':'rgb(var(--red-bg))'};color:${_wrongDisabled?'rgb(var(--fg2))':_wrongActive?'#fff':'rgb(var(--red-fg))'};cursor:${_wrongDisabled?'not-allowed':'pointer'};opacity:${_wrongDisabled?0.6:1}">⚠️ Review wrong (${_wrongCount})</button>`;
   if(_wrongActive&&_wrongCount>0){
     h+=`<button class="btn" onclick="if(confirm('Clear all '+${_wrongCount}+' wrong-answer entries?')){S.wrongQs={};save();if(filt==='wrong'){filt='all';buildPool();}render();}" aria-label="Clear wrong-answer set" title="Clear the wrong-answer review set" style="font-size:11px;padding:6px 12px;min-height:40px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:10px;cursor:pointer">🗑 Clear</button>`;
   }
@@ -7000,8 +7003,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.84';
+const APP_VERSION='10.64.85';
 const CHANGELOG={
+'10.64.85':[
+'♿ Accessibility — issue #125 residual contrast violations cleared. v10.64.84 live re-audit (playwright) found 4 remaining sub-AA elements: ⏱ Pomo button (3.6:1), 📤 Share with Friends (3.77:1), ⚠️ Review-wrong DISABLED state (4.34:1), and Quiz tab .on selected indicator (2.15:1). Four targeted edits, minimum-code: (1) Pomo button color #059669 (emerald-600) → #047857 (emerald-700) — 3.6:1→5.5:1 against the transparent-on-card-bg combo. (2) Share button background #059669 → #047857 — same emerald-600→700 shift, white text against new bg = 5.5:1. (3) Review-wrong DISABLED state color: rgb(var(--fg3)) → rgb(var(--fg2)). WCAG 2.1 1.4.3 technically exempts inactive UI components from contrast minimums, but the disabled state at 4.34:1 base + opacity:0.6 was effectively ~2.6:1 — better UX to make even disabled labels legible. Slate-700 base * 0.6 opacity ≈ 4.5:1 effective. (4) Quiz tab .on indicator: geriatrics skin uses --app-primary (amber-500 #f59e0b) which is 2.15:1 against white — fails AA badly. Root cause: --app-primary does double duty as both background (where dark on-primary text passes at 7.3:1) and as text on light surfaces (where it fails). Cleanest fix: scoped CSS override `html[data-skin="geriatrics"] .tabs button.on{color:#b45309}` (amber-700, 5.42:1) without touching --app-primary itself, so .pill.on / .btn-p / other bg-of-amber-500 surfaces stay unchanged. Dark mode preserved via `body.dark[data-skin="geriatrics"] .tabs button.on{color:var(--app-primary)}` — dark canvas pairs fine with amber-500 (#fbbf24 in dark, even more luminous against dark slate). Final live count post-merge: 0 contrast violations expected (38 → 0, 100% from v10.64.82 baseline). Trinity bumped 10.64.84 → 10.64.85.',
+],
 '10.64.84':[
 '♿ Account button (👤) — clear inline style overrides in updateAccountChip logged-out branch. v10.64.83 fixed the .dm-btn CSS rule to be theme-aware, but updateAccountChip() was unconditionally setting white inline styles (background:rgba(255,255,255,0.08) + color:#fff) on the 👤 button at runtime, defeating the CSS fix specifically for that one button. Now the else branch sets style.background/color/fontWeight to empty strings so the .dm-btn cascade applies correctly. Live re-audit confirmed: 4 → 3 contrast violations (38 → 3 from v82 baseline = 92% reduction). Residual 3 are unrelated: ⏱ Pomo emerald-on-near-white (3.6:1, pre-existing color choice), ⚠️ Review wrong slate-500 on slate-100 bg (4.34:1, hairline AA fail; would need slate-600 to pass on bg2), and selected-tab Quiz amber-on-white (2.15:1, separate issue, deferred). Trinity bumped 10.64.83 → 10.64.84.',
 ],
@@ -7983,7 +7989,7 @@ ${sec('Progress Tracking','📊','#f59e0b',
 </div>
 <div style="text-align:center;font-size:9px;color:rgb(var(--fg3));line-height:1.5">
 صدقة جارية الى من نحب<br>Ceaseless Charity — To the People That We Love<br><br>
-<button onclick="shareApp()" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:6px 16px;font-size:10px;font-weight:600;cursor:pointer" aria-label="Share app with friends">📤 Share with Friends</button>
+<button onclick="shareApp()" style="background:#047857;color:#fff;border:none;border-radius:8px;padding:6px 16px;font-size:10px;font-weight:600;cursor:pointer" aria-label="Share app with friends">📤 Share with Friends</button>
 </div>
 </div>`;
 document.body.appendChild(ov);
