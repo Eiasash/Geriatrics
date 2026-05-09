@@ -6897,9 +6897,13 @@ function updateAccountChip(){
     btn.title=name+' — Account';
   }else{
     btn.textContent='👤';
-    btn.style.background='rgba(255,255,255,0.08)';
-    btn.style.color='#fff';
-    btn.style.fontWeight='400';
+    // v10.64.84 a11y fix: clear inline styles instead of setting white-on-white.
+    // The base .dm-btn rule (light: dark fg + dark-tint bg; dark: white fg +
+    // white-tint bg via body.dark override) handles both themes correctly when
+    // the inline overrides aren't fighting it.
+    btn.style.background='';
+    btn.style.color='';
+    btn.style.fontWeight='';
     btn.title='Log in / Register';
   }
 }
@@ -6996,8 +7000,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.83';
+const APP_VERSION='10.64.84';
 const CHANGELOG={
+'10.64.84':[
+'♿ Account button (👤) — clear inline style overrides in updateAccountChip logged-out branch. v10.64.83 fixed the .dm-btn CSS rule to be theme-aware, but updateAccountChip() was unconditionally setting white inline styles (background:rgba(255,255,255,0.08) + color:#fff) on the 👤 button at runtime, defeating the CSS fix specifically for that one button. Now the else branch sets style.background/color/fontWeight to empty strings so the .dm-btn cascade applies correctly. Live re-audit confirmed: 4 → 3 contrast violations (38 → 3 from v82 baseline = 92% reduction). Residual 3 are unrelated: ⏱ Pomo emerald-on-near-white (3.6:1, pre-existing color choice), ⚠️ Review wrong slate-500 on slate-100 bg (4.34:1, hairline AA fail; would need slate-600 to pass on bg2), and selected-tab Quiz amber-on-white (2.15:1, separate issue, deferred). Trinity bumped 10.64.83 → 10.64.84.',
+],
 '10.64.83':[
 '♿ Accessibility — issue #125 contrast follow-up. Closes the Lighthouse-flagged 38 contrast violations from v10.64.82 deploy. Three root-cause edits, one line each. (1) Light-mode `--fg2` slate-500 (100,116,139) → slate-700 (71,85,105) and `--fg3` slate-400 (148,163,184) → slate-500 (100,116,139). The slate-400 vs near-white-bg combo was 2.45:1, well below WCAG AA 4.5:1 — affected ~21 muted-text instances (topic group labels, source pickers, helper text). New values pass AA: slate-500 on `--bg` is 4.50:1 (hairline AA), slate-700 is 9.7:1 (AAA). Dark mode `--fg2`/`--fg3` unchanged (already pass against dark bg). (2) `.dm-btn` was hardcoded `background:rgba(255,255,255,0.08); color:#fff` — designed for dark mode only. In light mode, the 8%-white tint is invisible against near-white body, and the white text is invisible against the body. Made theme-aware: light-mode default is `rgba(0,0,0,0.06)` background + `rgb(var(--fg))` text; `body.dark .dm-btn` retains the original white-on-tint pattern. Affects 5 header icon buttons (☀ 🌙 EN ? 👤). (3) Header `<h1>Shlav A Mega</h1>` had no inline color — was inheriting white from a parent rule meant for dark mode. Added `color:rgb(var(--fg))` to the inline style so the title is theme-aware. Trinity: package.json + sw.js CACHE + APP_VERSION all bumped 10.64.82 → 10.64.83. Sibling-aligned: dark mode and study mode unchanged.',
 ],
