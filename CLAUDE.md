@@ -16,8 +16,8 @@ These four rules are the floor. They override any conflicting guidance later in 
 **Shlav A Mega** is a Progressive Web App (PWA) for Israeli geriatrics board exam preparation (שלב א גריאטריה, P005-2026). It is a single-file, no-build-step application deployed via GitHub Pages.
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
-- **Main file**: `shlav-a-mega.html` (~580 KB, ~7,631 lines, 225 named functions)
-- **App version**: v10.64.61 (as of 06/05/26) — 3,743 Qs across 46 topics. All 3,743 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.64.61 search matches across Hebrew + English variants; v10.64.60 bilingual schema + Hebrew↔English toggle for AI-translated Qs (paired Heb/Eng `o[]` arrays — `c` index valid for both); v10.64.59 1,255 AI Qs translated to Hebrew (Sonnet 4.6 batch 2); v10.64.58 pre-emptive defensive guards (FM v1.21.13 chaos-pattern parity); v10.64.57 faceted pill counts (cross-axis filter narrowing); v10.64.56 year + topic INTERSECT (was mutually exclusive); v10.64.55 topic groups (12 clinical categories) + year presets; v10.64.54 622 AI Qs translated to Hebrew (Sonnet 4.6); v10.64.51 multi-select topic filter + dynamic year picker (was hiding 1,284 Qs); v10.64.48–50 cloud-sync API key with user account (cloudBackup _apikey + auth_login_user.api_key restore); v10.64.47 loading-skeleton stale count fix + STALE_COUNTS guard; v10.64.46 Track-I distractor regen — 75 drifted Qs regenerated; v10.64.45 Track-R 1547 Hazzard refs realigned; v10.64.42–44 Track-Q backup_set SECURITY DEFINER RPC + PDF externalization to GitHub Releases (-85% repo size); v10.64.30s–40 Tracks D/H/I/J/K/L/M/N/O/P — distractor regen + detector v3 + 110 curator overrides triangulated.
+- **Main file**: `shlav-a-mega.html` (~636 KB, ~7,634 lines, 224 named functions)
+- **App version**: v10.64.86 (as of 10/05/26) — 3,743 Qs across 46 topics. All 3,743 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.64.86 a11y issue #125 final close (4 amber-600 → amber-800 button fixes, white-on-amber 3.19:1 → 7.39:1 AAA) + 6 new integrity ratchet tests (`tests/integrityRatchet.test.js`); v10.64.82–85 a11y dir=rtl + skip-link + theme-aware dm-btn + slate hierarchy + 4 residual contrast clears; v10.64.81 cancer cluster wrong_textbook drain CLOSED (record-not-queue going forward); v10.64.61 search matches across Hebrew + English variants; v10.64.60 bilingual schema + Hebrew↔English toggle for AI-translated Qs (paired Heb/Eng `o[]` arrays — `c` index valid for both); v10.64.59 1,255 AI Qs translated to Hebrew (Sonnet 4.6 batch 2); v10.64.58 pre-emptive defensive guards (FM v1.21.13 chaos-pattern parity); v10.64.57 faceted pill counts (cross-axis filter narrowing); v10.64.56 year + topic INTERSECT (was mutually exclusive); v10.64.55 topic groups (12 clinical categories) + year presets; v10.64.54 622 AI Qs translated to Hebrew (Sonnet 4.6); v10.64.51 multi-select topic filter + dynamic year picker (was hiding 1,284 Qs); v10.64.48–50 cloud-sync API key with user account (cloudBackup _apikey + auth_login_user.api_key restore); v10.64.47 loading-skeleton stale count fix + STALE_COUNTS guard; v10.64.46 Track-I distractor regen — 75 drifted Qs regenerated; v10.64.45 Track-R 1547 Hazzard refs realigned; v10.64.42–44 Track-Q backup_set SECURITY DEFINER RPC + PDF externalization to GitHub Releases (-85% repo size); v10.64.30s–40 Tracks D/H/I/J/K/L/M/N/O/P — distractor regen + detector v3 + 110 curator overrides triangulated.
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -70,7 +70,7 @@ Any change to `o[]`, `c`, or `e` MUST quote the source PDF (Hazzard 8e / Harriso
 
 ### Single-File PWA
 
-All application logic lives in `shlav-a-mega.html` (~7,631 lines, 225 named functions) — no bundler, no framework, no build step. The file contains:
+All application logic lives in `shlav-a-mega.html` (~7,634 lines, 224 named functions) — no bundler, no framework, no build step. The file contains:
 - All CSS (1,000+ lines, responsive, RTL-aware, dark/light/study modes)
 - All JavaScript (ES6+, vanilla)
 - HTML structure
@@ -121,7 +121,7 @@ the full decomposition ledger and safe-next-steps list.
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.64.61)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.64.86)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
@@ -170,7 +170,7 @@ the full decomposition ledger and safe-next-steps list.
 ├── .github/
 │   └── workflows/ci.yml     # Validation CI — JSON schema, duplicates, version sync, etc.
 │
-├── tests/                          # 55 vitest files, 1,199 tests + 7 skipped (see Testing section)
+├── tests/                          # 61 vitest files, 1,270 tests + 7 skipped (see Testing section)
 │
 ├── supabase-setup.sql        # Supabase RLS schema
 ├── .mcp.json                 # MCP server config (Supabase)
@@ -306,7 +306,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js` and `package.json` `version`
-- Currently all three at `10.64.61` (sw.js cache key: `shlav-a-v10.64.61`)
+- Currently all three at `10.64.86` (sw.js cache key: `shlav-a-v10.64.86`)
 - Update all three when making changes to ensure users get cache-busted (see workspace CLAUDE.md "version-trinity invariant")
 - The trinity guard lives in two places: strict pairwise alignment in `tests/appIntegrity.test.js`, and a version-agnostic re-derivation from `package.json` in `tests/visualOverhaul2026.test.js` (refactored v10.60 — used to hard-code the literal version string and went stale every release)
 
@@ -318,11 +318,11 @@ No build step needed. Edit and refresh.
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, 1,199 tests across 55 files + 7 skipped)
+npm test             # Run all tests (vitest, 1,270 tests across 61 files + 7 skipped)
 npm run verify       # Pre-push gate (see below) — runs 7 checks in series
 ```
 
-**1,199 tests across 55 files (~22 tests per file avg)** — run `npm test` to see current count.
+**1,270 tests across 61 files (~21 tests per file avg)** — run `npm test` to see current count.
 
 #### Pre-push gate: `npm run verify`
 
@@ -334,7 +334,7 @@ Runs 7 checks in series. Failure of any blocks the deploy:
 4. `python3 scripts/check-innerhtml.py` — unsanitized innerHTML audit
 5. `python3 scripts/check-innerhtml-pieces.py` — fragment-level innerHTML audit (catches concatenation patterns)
 6. `cross-env HARRISON_HEBREW_BASELINE=0 node scripts/harrison-hebrew-baseline.cjs --strict` — Harrison Hebrew baseline ratchet (chapter-coverage regression guard)
-7. `vitest run` — full test suite (1,199 tests, ~19s)
+7. `vitest run` — full test suite (1,270 tests, ~19s)
 
 Run before every push. Step 7 dominates runtime. **Always run `npm run verify`,
 not just `npm test`** — the 6 non-vitest checks catch deploy-time bugs that the
@@ -347,7 +347,7 @@ test suite alone misses.
 - Modified data processing → edge case + boundary tests
 - After adding tests, update the test count in this section
 
-**Test file inventory (55 files, 1,199 tests + 7 skipped):**
+**Test file inventory (61 files, 1,270 tests + 7 skipped — 2026-05-10 added `integrityRatchet.test.js` +6 tests + a11y v10.64.86 sub-suite +4 tests):**
 
 | File | Tests | Description |
 |------|-------|-------------|
@@ -665,7 +665,7 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Metric | Value |
 |---|---|
 | Main file | `shlav-a-mega.html` (~7,631 lines, ~580 KB) |
-| Named functions | 225 (228 incl. shared/*.js, the integrity-guard counting basis) |
+| Named functions | 224 (228 incl. shared/*.js, the integrity-guard counting basis) |
 | Questions | 3,743 (IMA past exams + Hazzard/Harrison AI-generated + GRS8 imports; all carry `ref` + `e`) |
 | Topics | 46 |
 | Drugs | 113 |
@@ -673,12 +673,12 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Study notes | 46 |
 | Hazzard chapters | 108 (in-app reader) |
 | Harrison chapters | 69 (in-app reader) |
-| Test suite | 1,199 tests across 55 files + 7 skipped (vitest) |
+| Test suite | 1,270 tests across 61 files + 7 skipped (vitest) |
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — see workspace CLAUDE.md for shared invariants |
 | CI workflows | 7 (ci.yml, claude.yml, claude-code-review.yml, distractor-autopsy.yml, distractor-merge-pr.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=214, onchange=25, oninput=6 |
-| App version | v10.64.61 |
-| SW cache key | `shlav-a-v10.64.61` |
+| App version | v10.64.86 |
+| SW cache key | `shlav-a-v10.64.86` |
 
 
 ## Test Coverage Recommendations
