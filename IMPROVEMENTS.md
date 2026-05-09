@@ -4,6 +4,62 @@ This file is appended to by every `audit-fix-deploy` pipeline run. Each entry re
 
 ---
 
+## 2026-05-10 — v10.64.86 audit pass (§ D)
+
+### Pre-audit state
+
+| Metric | Value | Notes |
+|---|---|---|
+| Branch | `claude/term-a11y-v10-64-86-amber-buttons` | adopted in-flight; eace615 was already shipped by prior session before this audit started |
+| `APP_VERSION` | 10.64.86 | trinity aligned (HTML / sw.js / package.json), check-version-sync.py PASS |
+| Q corpus | 3,743 | data/questions.json (110 curator overrides, registry pinned) |
+| Topics | 46 | all ≥5 Qs (no weak topics) |
+| Function count | 224 | (CLAUDE.md said 225 — 1-fn drift, likely a11y refactor side-effect; unchanged this pass) |
+| HTML size | 636 KB | over the 500 KB warn — 9 KB grew since 2026-05-01 audit (was 524 KB); monitor |
+| Test count (pre) | 1260 / 7 skipped across 60 files | per `npm run verify` |
+| Test count (post) | 1270 / 7 skipped across 61 files | +10 tests / +1 file from new `tests/integrityRatchet.test.js` |
+| fsrs.js content hash | `89aa3940a942c03201d9d89db02a90665b2910a8` | sibling-clean (matches IM + FM canonical) |
+| Two-Claude check | no `claude/web-*` branches in last 24h | safe to push |
+| Bot D queue | CLOSED at v10.64.81 | 723 remaining flags = record-not-queue per memory; not engaged this pass |
+
+### Audit findings
+
+1. **Stale CLAUDE.md (low-risk doc drift)** — repo `CLAUDE.md` said v10.64.61 / 1199 tests / 55 files / function count 225 / HTML "~580 KB ~7,631 lines". Reality at session start: v10.64.85 → 86 / 1260 → 1270 tests / 60 → 61 files / 224 functions / 636 KB. **Fixed in this pass**: top-of-file metrics block + test inventory line refreshed.
+2. **No structural defects.** All 7 verify-suite checks GREEN at start; brace-balance 3513 pairs; 0 unsanitized innerHTML; 11 annotated interpolation sites; Harrison Hebrew baseline 0 ≤ baseline 0; no version trinity drift.
+3. **No weak topics.** All 46 buckets carry ≥5 Qs.
+4. **1 stale TODO ref** at `shlav-a-mega.html:3370` — UI title hint for legacy unresolved exam years (`'שנה לא מזוהה — ראה TODO'`). Functional placeholder, not a bug — left in place; clearing it would require resolving the underlying year-routing question first.
+5. **2 `onchange=...render()` antipattern sites** at lines 3403, 3404 (Cover Options + Timed Mode toggles). Per memory note `render() detach antipattern`, this can drop click events mid-render. Low-frequency UI controls — deferred to a focused refactor rather than touching here.
+6. **No content edits proposed.** Source-citation rule not engaged.
+7. **No RLS / schema changes.**
+
+### What shipped this pass
+
+- **`tests/integrityRatchet.test.js`** — 6 new ratchet tests pinning:
+  - Function-count envelope (200..260) with current 224 baseline
+  - 3 critical render orchestrators (`renderQuiz` / `renderTrack` / `renderLibrary`) must remain top-level decls
+  - innerHTML interpolation site count (≤25 envelope, current 11)
+  - Bare `.innerHTML = identifier;` count (≤60 envelope)
+  - All 4 protected localStorage keys (`samega`, `samega_ex`, `samega_apikey`, `shlav_q_images`) still present in source
+  - `APP_VERSION` syntactic shape (`N.N.N` regex)
+- **CLAUDE.md** — top-of-file currency refresh: version, Q count, function count, file size, test count, sibling-link.
+- **IMPROVEMENTS.md** — this entry.
+- (Pre-existing on branch, NOT this pass) `eace615` v10.64.86 a11y close — 4 amber-600 → amber-800 button bg-color fixes for issue #125 final close, ratchet test added in `tests/a11yIssue125.test.js` (+4 tests).
+
+### Verification
+
+- `npm run verify` GREEN (1270/1277 tests, 0 unsanitized innerHTML, version-sync OK).
+- `git hash-object shared/fsrs.js` = `89aa3940a942c03201d9d89db02a90665b2910a8` — sibling-canonical.
+- `bash scripts/verify-deploy.sh` — TBD on push (will be run after PR merge).
+
+### Open follow-ups (deferred this pass)
+
+- **Render-detach antipattern in 2 onchange sites (lines 3403, 3404)** — focused refactor with focus-restoration wrapper; not blocking.
+- **HTML size 636 KB** (was 524 KB on 2026-05-01) — +112 KB in 9 days, mostly from CHANGELOG entries + a11y fixes. Still no action; revisit if it crosses 700 KB.
+- **Function-count drift -1** (CLAUDE.md ledger said 225, actual 224) — likely from one of the v10.64.82–86 a11y refactors removing a helper. Now pinned by ratchet.
+- **OCR for 2021-Dec PDF**, **CSV re-extract for 92 refs**, **hand-map 24 unmapped** — still in `.audit_logs/NEXT_SESSION_BRIEF.md`. Low ROI per prior triage.
+
+---
+
 ## 2026-05-01 — v10.63.1 audit pass
 
 ### Pre-audit state
