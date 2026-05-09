@@ -1,0 +1,5061 @@
+{
+  "config": {
+    "url": "https://eiasash.github.io/Geriatrics/",
+    "durationMs": 21600000,
+    "users": 10,
+    "navigationTimeoutMs": 30000,
+    "actionTimeoutMs": 5000,
+    "headless": true,
+    "reportDir": "chaos-reports/v4-leaderboard-20260508T110916",
+    "screenshotOnBug": true,
+    "feedbackRate": 0.1,
+    "reportRate": 0.08,
+    "stuckThreshold": 3,
+    "costCapUsd": 2
+  },
+  "startedAt": "2026-05-08T11:09:16.453Z",
+  "finishedAt": "2026-05-08T11:17:37.804Z",
+  "workers": [
+    {
+      "workerId": 6,
+      "actions": [
+        {
+          "at": "2026-05-08T11:09:29.993Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:09:50.349Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:10:11.934Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:10:33.162Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:10:57.366Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:11:03.975Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:11:04.001Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:14.013Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:11:20.871Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:11:20.898Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:31.920Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:11:35.400Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:11:35.413Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:43.995Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:11:50.841Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:11:50.864Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:02.522Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:12:13.519Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:12:13.545Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:22.296Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:12:28.284Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:28.310Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:39.031Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:45.573Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:45.593Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:57.999Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:03.840Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:13:03.858Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:14.877Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:13:21.297Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:21.307Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:32.998Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:13:36.079Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:13:36.091Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:48.881Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:14:02.899Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:14:09.129Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:14:09.156Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:17.065Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:29.152Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:14:29.169Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:40.249Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:14:55.747Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:09.716Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:25.259Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:37.243Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:15:49.301Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:15:49.315Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:01.365Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:16:06.965Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:16:06.981Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:17.270Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:20.950Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:16:20.961Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:30.805Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:16:36.523Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:16:36.544Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:45.756Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:16:56.784Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:16:56.811Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:06.870Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:17:10.834Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:17:10.858Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:22.803Z",
+          "type": "ai-pick",
+          "letter": ""
+        }
+      ],
+      "bugs": [
+        {
+          "at": "2026-05-08T11:09:17.353Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:09:41.502Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "1970104230"
+        },
+        {
+          "at": "2026-05-08T11:10:02.402Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "1970104230"
+        },
+        {
+          "at": "2026-05-08T11:10:23.609Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "1970104230"
+        },
+        {
+          "at": "2026-05-08T11:10:45.160Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "1970104230"
+        },
+        {
+          "at": "2026-05-08T11:10:46.164Z",
+          "type": "stuck-refresh",
+          "stemHash": "1970104230",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:10:46.220Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:13:48.881Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this case carefully to identify the most significant intervention to reduce fall risk.\n\n**Patient profile:**\n- 76-year-old woman\n- Diabetes, CKD stage 3b (eGFR 36), peripheral neurop"
+        },
+        {
+          "at": "2026-05-08T11:14:40.249Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to determine the appropriate anticoagulation therapy for this 75-year-old patient with AF who converted to sinus rhythm.\n\n**Patient profile:**\n- Age: 75\n- Ischemic heart disease, MI ~5 years ag"
+        },
+        {
+          "at": "2026-05-08T11:14:55.747Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to determine the appropriate antithrombotic therapy for this 75-year-old patient with:\n- Ischemic heart disease, cardiac event 5 years ago\n- Currently on Aspirin\n- Admitted for pneumonia\n- Duri"
+        },
+        {
+          "at": "2026-05-08T11:15:09.716Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to determine the appropriate antithrombotic therapy at discharge for this 75-year-old patient with:\n- Ischemic heart disease, cardiac event 5 years ago\n- Currently on Aspirin\n- Hospitalized for"
+        },
+        {
+          "at": "2026-05-08T11:15:25.259Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to determine the appropriate anticoagulation therapy for this 75-year-old patient with new-onset atrial fibrillation.\n\n**Patient profile:**\n- Age: 75\n- Ischemic heart disease, MI ~5 years ago\n-"
+        },
+        {
+          "at": "2026-05-08T11:15:25.259Z",
+          "type": "stuck-refresh",
+          "stemHash": "-1979290128",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:15:25.476Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:17:22.803Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this complex falls case systematically.\n\n**Patient profile:**\n- 76-year-old woman, diabetes, CKD 3b (eGFR 36), peripheral neuropathy\n- 3 falls in 2 months\n- Medications: metformin 50"
+        },
+        {
+          "at": "2026-05-08T11:17:26.034Z",
+          "type": "cost-cap",
+          "usd": 2.010885
+        }
+      ],
+      "qsAnswered": 22,
+      "_lbCount": 18
+    },
+    {
+      "workerId": 4,
+      "actions": [
+        {
+          "at": "2026-05-08T11:09:32.957Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:09:56.608Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:10:18.733Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:10:39.652Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:11:03.840Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:11:09.753Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:11:09.767Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:18.613Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:24.112Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:24.133Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:32.786Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:36.128Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:11:36.146Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:47.676Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:54.595Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:11:54.613Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:04.894Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:12:08.896Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:12:08.912Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:18.197Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:12:21.364Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:12:21.377Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:33.348Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:12:39.100Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:39.126Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:49.021Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:12:54.158Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:54.176Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:04.248Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:13:07.903Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:13:07.925Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:16.166Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:13:19.812Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:13:19.823Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:30.956Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:13:42.142Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:13:42.158Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:51.534Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:13:57.538Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:57.556Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:07.909Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:14:19.247Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:14:19.270Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:27.340Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:33.610Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:14:33.636Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:46.556Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:00.306Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:15:04.115Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:15:04.136Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:15.432Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:15:22.226Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:15:22.249Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:33.143Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:15:39.173Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:15:39.199Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:52.275Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:16:04.889Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:16:18.749Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:16:34.052Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:16:51.485Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:17:02.698Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:17:02.709Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:14.220Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:17:24.843Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:17:24.858Z",
+          "type": "next"
+        }
+      ],
+      "bugs": [
+        {
+          "at": "2026-05-08T11:09:17.353Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:09:45.064Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "394866953"
+        },
+        {
+          "at": "2026-05-08T11:10:08.532Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "394866953"
+        },
+        {
+          "at": "2026-05-08T11:10:30.490Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "394866953"
+        },
+        {
+          "at": "2026-05-08T11:10:51.595Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "394866953"
+        },
+        {
+          "at": "2026-05-08T11:10:53.155Z",
+          "type": "stuck-refresh",
+          "stemHash": "394866953",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:10:53.212Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:14:46.556Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to identify which patient meets CAM criteria for delirium.\n\nCAM criteria require:\n1. **Acute onset and fluctuating course** (required)\n2. **Inattention** (required)\n3. **Disorganized thinking**"
+        },
+        {
+          "at": "2026-05-08T11:15:52.275Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this complex case carefully.\n\n**Clinical situation:**\n- 76-year-old woman, post-PCI with 2 drug-eluting stents (DES)\n- Now developed Type B aortic dissection (inter-scapular back pai"
+        },
+        {
+          "at": "2026-05-08T11:16:04.889Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this complex case carefully.\n\n**Clinical scenario:**\n- 76F with NSTEMI, just underwent PCI with 2 drug-eluting stents (DES)\n- Post-procedure: severe inter-scapular back pain\n- PMH: H"
+        },
+        {
+          "at": "2026-05-08T11:16:18.749Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to reason through this complex case carefully.\n\n**Clinical scenario:**\n- 76-year-old woman post-NSTEMI, received PCI with 2 drug-eluting stents (DES)\n- Now develops severe inter-scapular back p"
+        },
+        {
+          "at": "2026-05-08T11:16:34.052Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this complex case:\n\n**Patient:** 76F, NSTEMI s/p PCI with 2 DES, now develops severe interscapular back pain → Type B aortic dissection on CT.\n\n**Current meds:** Aspirin 81mg, Clopid"
+        },
+        {
+          "at": "2026-05-08T11:16:34.052Z",
+          "type": "stuck-refresh",
+          "stemHash": "1482190023",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:16:34.107Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:17:26.115Z",
+          "type": "cost-cap",
+          "usd": 2.010885
+        }
+      ],
+      "qsAnswered": 23,
+      "_lbCount": 19
+    },
+    {
+      "workerId": 2,
+      "actions": [
+        {
+          "at": "2026-05-08T11:09:30.787Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:09:51.449Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:10:15.648Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:10:39.337Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:03.141Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:06.952Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:11:06.967Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:15.721Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:11:22.260Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:11:22.280Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:32.932Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:11:36.628Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:11:36.648Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:47.644Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:11:56.631Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:11:56.647Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:07.647Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:12:14.356Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:12:14.380Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:22.889Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:12:26.693Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:12:26.711Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:35.185Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:12:41.973Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:12:44.435Z",
+          "type": "ai-source",
+          "plausible": false,
+          "citation": "Harrison Ch 286",
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:12:44.459Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:53.915Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:12:58.692Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:58.710Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:06.067Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:13:11.731Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:13:11.743Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:20.664Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:26.765Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:13:26.790Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:36.397Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:13:39.362Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:13:39.373Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:48.398Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:54.116Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:13:54.140Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:02.412Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:14:07.042Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:14:07.055Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:17.690Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:23.817Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:14:23.836Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:36.052Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:14:41.478Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:14:41.503Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:53.701Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:15:01.539Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:15:01.552Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:09.655Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:15:13.927Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:15:13.952Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:24.685Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:15:28.313Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:15:28.332Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:39.717Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:15:43.286Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:15:43.298Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:53.125Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:15:59.552Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 35
+        },
+        {
+          "at": "2026-05-08T11:15:59.565Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:09.956Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:16:17.523Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:16:17.546Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:27.392Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:31.358Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:16:31.377Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:40.073Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:16:45.972Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:45.993Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:59.254Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:17:09.727Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:17:09.742Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:19.506Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:17:26.029Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:17:26.043Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:27.516Z",
+          "type": "leaderboard-submit",
+          "via": "submit",
+          "after": 25
+        }
+      ],
+      "bugs": [
+        {
+          "at": "2026-05-08T11:09:17.350Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:09:42.885Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-537766977"
+        },
+        {
+          "at": "2026-05-08T11:10:03.227Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-537766977"
+        },
+        {
+          "at": "2026-05-08T11:10:27.756Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-537766977"
+        },
+        {
+          "at": "2026-05-08T11:10:51.189Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-537766977"
+        },
+        {
+          "at": "2026-05-08T11:10:52.083Z",
+          "type": "stuck-refresh",
+          "stemHash": "-537766977",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:10:52.143Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:17:28.360Z",
+          "type": "cost-cap",
+          "usd": 2.017995
+        }
+      ],
+      "qsAnswered": 29,
+      "_lbCount": 25
+    },
+    {
+      "workerId": 1,
+      "actions": [
+        {
+          "at": "2026-05-08T11:09:30.810Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:09:52.461Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:10:17.159Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:10:38.487Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:11:03.555Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:11:08.808Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:11:08.833Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:18.150Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:11:27.476Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:11:27.498Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:37.294Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:11:47.927Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:11:47.947Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:58.656Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:12:05.037Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:12:05.062Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:13.545Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:12:19.001Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:12:19.026Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:29.058Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:12:33.171Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:12:33.193Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:43.143Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:12:46.962Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:12:46.976Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:59.442Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:13:05.483Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:05.508Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:16.742Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:13:30.222Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:13:43.394Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:13:56.237Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:14:12.442Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:14:24.485Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:14:24.503Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:38.983Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:14:44.548Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:14:44.568Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:52.311Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:15:02.773Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:15:02.785Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:14.752Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:15:20.685Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:15:20.699Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:32.054Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:15:37.451Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:15:37.465Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:47.541Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:15:52.929Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:15:52.948Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:04.685Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:16:08.631Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:16:08.646Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:17.089Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:16:21.286Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:16:21.311Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:32.062Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:36.246Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:16:36.260Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:45.208Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:16:49.104Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:49.127Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:01.963Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:17:08.731Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:17:08.741Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:18.851Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:17:29.807Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:17:29.823Z",
+          "type": "next"
+        }
+      ],
+      "bugs": [
+        {
+          "at": "2026-05-08T11:09:17.349Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:09:42.744Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-938014351"
+        },
+        {
+          "at": "2026-05-08T11:10:04.594Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-938014351"
+        },
+        {
+          "at": "2026-05-08T11:10:29.384Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-938014351"
+        },
+        {
+          "at": "2026-05-08T11:10:50.845Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-938014351"
+        },
+        {
+          "at": "2026-05-08T11:10:52.052Z",
+          "type": "stuck-refresh",
+          "stemHash": "-938014351",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:10:52.107Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:13:16.742Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to identify the most likely pharmacological cause of her delirium and the best intervention.\n\n**Clinical analysis:**\n\nThe patient has:\n- New confusion + agitation (delirium)\n- Recent falls\n- Hy"
+        },
+        {
+          "at": "2026-05-08T11:13:30.222Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to identify the most likely pharmacological cause of her delirium and address it.\n\n**Clinical analysis:**\n- 82-year-old with frailty, COPD GOLD 3, now with pneumonia\n- New confusion + agitation"
+        },
+        {
+          "at": "2026-05-08T11:13:43.394Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to identify the most likely pharmacological cause of her delirium and address it.\n\n**Clinical analysis:**\n- 82-year-old with frailty, COPD GOLD 3, admitted for pneumonia\n- New confusion and agi"
+        },
+        {
+          "at": "2026-05-08T11:13:56.237Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to identify the most likely pharmacological cause of delirium in this 82-year-old woman.\n\n**Clinical context:**\n- Frailty (CFS 6), COPD GOLD 3, pneumonia\n- New confusion + agitation on day 3\n- "
+        },
+        {
+          "at": "2026-05-08T11:13:56.237Z",
+          "type": "stuck-refresh",
+          "stemHash": "1763983291",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:13:56.409Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:17:30.770Z",
+          "type": "cost-cap",
+          "usd": 2.042925
+        }
+      ],
+      "qsAnswered": 24,
+      "_lbCount": 20
+    },
+    {
+      "workerId": 5,
+      "actions": [
+        {
+          "at": "2026-05-08T11:09:29.346Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 90
+        },
+        {
+          "at": "2026-05-08T11:09:52.430Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:10:14.222Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:10:37.083Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 90
+        },
+        {
+          "at": "2026-05-08T11:11:04.576Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:11:10.098Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:11:10.117Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:18.911Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:11:24.874Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:11:24.898Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:34.093Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:37.570Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:11:37.597Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:48.814Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:12:02.647Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:12:15.644Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:12:29.219Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:12:43.317Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:46.632Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 98
+        },
+        {
+          "at": "2026-05-08T11:12:46.643Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:55.411Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:13:02.162Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:13:02.259Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:11.526Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:17.284Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:17.309Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:28.529Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:13:33.302Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:13:33.323Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:45.884Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:13:59.062Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:13:59.155Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:06.791Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:12.771Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:12.788Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:20.251Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:14:24.824Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:14:24.837Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:37.801Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:14:44.133Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:14:44.152Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:54.483Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:59.264Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:14:59.285Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:10.035Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:15:16.275Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:15:16.300Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:29.290Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:15:36.990Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:15:37.015Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:45.595Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:15:49.001Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 98
+        },
+        {
+          "at": "2026-05-08T11:15:49.015Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:58.765Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:16:04.091Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:04.113Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:14.278Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:16:20.298Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:16:20.313Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:30.373Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:16:36.226Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:16:36.243Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:46.820Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:16:53.992Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:16:54.009Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:05.855Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:17:11.367Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:17:11.392Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:23.976Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:17:30.672Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:17:30.691Z",
+          "type": "next"
+        }
+      ],
+      "bugs": [
+        {
+          "at": "2026-05-08T11:09:17.349Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:09:41.627Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-1493853582"
+        },
+        {
+          "at": "2026-05-08T11:10:04.298Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-1493853582"
+        },
+        {
+          "at": "2026-05-08T11:10:26.672Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-1493853582"
+        },
+        {
+          "at": "2026-05-08T11:10:49.176Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-1493853582"
+        },
+        {
+          "at": "2026-05-08T11:10:50.811Z",
+          "type": "stuck-refresh",
+          "stemHash": "-1493853582",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:10:50.866Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:11:48.814Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to identify what's happening with this patient.\n\n**Clinical picture:**\n- 75-year-old woman, 6 hours post-ORIF\n- Agitation, tremulousness, diaphoresis, mydriasis (dilated pupils)\n- HR 105, BP 15"
+        },
+        {
+          "at": "2026-05-08T11:12:02.647Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "Looking at this case:\n\n- 75-year-old woman post-ORIF (6 hours ago)\n- Medications: metformin, sertraline 100mg, gabapentin 300mg TID\n- Symptoms: agitation, tremulousness, diaphoresis, mydriasis (dilate"
+        },
+        {
+          "at": "2026-05-08T11:12:15.644Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to identify what's happening with this patient.\n\n**Clinical picture:**\n- 75-year-old woman, 6 hours post-ORIF\n- Agitation, tremulousness, diaphoresis, mydriasis (dilated pupils)\n- HR 105, BP 15"
+        },
+        {
+          "at": "2026-05-08T11:12:29.219Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to identify what's happening with this patient.\n\n**Clinical picture:**\n- 75-year-old woman, 6 hours post-ORIF\n- Agitation, tremulousness, diaphoresis, mydriasis (dilated pupils)\n- HR 105, BP 15"
+        },
+        {
+          "at": "2026-05-08T11:12:29.219Z",
+          "type": "stuck-refresh",
+          "stemHash": "-890753348",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:12:29.276Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:17:32.079Z",
+          "type": "cost-cap",
+          "usd": 2.042925
+        }
+      ],
+      "qsAnswered": 25,
+      "_lbCount": 21
+    },
+    {
+      "workerId": 10,
+      "actions": [
+        {
+          "at": "2026-05-08T11:09:31.503Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:09:53.708Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:10:18.603Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:10:41.776Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:11:09.082Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:14.576Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:11:14.600Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:24.526Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:11:30.254Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:30.282Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:39.097Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 90
+        },
+        {
+          "at": "2026-05-08T11:11:44.038Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:44.063Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:52.685Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:11:56.550Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 98
+        },
+        {
+          "at": "2026-05-08T11:11:56.565Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:07.851Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:14.769Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:12:14.795Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:23.337Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:26.871Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:12:26.894Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:39.083Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:12:49.398Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:12:49.409Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:59.432Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:13:10.830Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:13:10.841Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:18.843Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:13:23.124Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:13:23.140Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:30.452Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:13:34.039Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:13:34.056Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:41.470Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:13:46.660Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:46.673Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:59.507Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:10.610Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:14:10.622Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:20.555Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:14:30.385Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:14:30.402Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:41.091Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 90
+        },
+        {
+          "at": "2026-05-08T11:14:43.899Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 98
+        },
+        {
+          "at": "2026-05-08T11:14:43.921Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:52.498Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:14:56.401Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:14:56.418Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:07.934Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:21.459Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:36.897Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:51.345Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:16:07.869Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:16:19.093Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:16:19.114Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:32.434Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:16:42.472Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:16:42.493Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:50.738Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:54.390Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 98
+        },
+        {
+          "at": "2026-05-08T11:16:54.410Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:02.248Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:17:08.774Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:17:08.792Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:17.602Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:17:21.041Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 98
+        },
+        {
+          "at": "2026-05-08T11:17:21.057Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:29.755Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:17:33.285Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:17:33.307Z",
+          "type": "next"
+        }
+      ],
+      "bugs": [
+        {
+          "at": "2026-05-08T11:09:17.349Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:09:43.216Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-1688801196"
+        },
+        {
+          "at": "2026-05-08T11:10:05.710Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-1688801196"
+        },
+        {
+          "at": "2026-05-08T11:10:30.458Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-1688801196"
+        },
+        {
+          "at": "2026-05-08T11:10:54.117Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-1688801196"
+        },
+        {
+          "at": "2026-05-08T11:10:55.217Z",
+          "type": "stuck-refresh",
+          "stemHash": "-1688801196",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:10:55.272Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:15:07.934Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this case of an 81-year-old man scheduled for total hip replacement.\n\n**Key information:**\n- Age 81, male\n- Total hip replacement for severe osteoarthritis\n- Functional decline - can"
+        },
+        {
+          "at": "2026-05-08T11:15:21.459Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this pre-operative cardiac evaluation for an 81-year-old man undergoing total hip replacement.\n\n**Key clinical information:**\n- Age 81, elective total hip replacement (intermediate-r"
+        },
+        {
+          "at": "2026-05-08T11:15:36.897Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this pre-operative cardiac evaluation for an 81-year-old patient undergoing total hip replacement.\n\n**Patient profile:**\n- 81 years old\n- Total hip replacement (elective, intermediat"
+        },
+        {
+          "at": "2026-05-08T11:15:51.345Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this pre-operative cardiac evaluation for an 81-year-old man undergoing total hip replacement.\n\n**Key clinical features:**\n- Age 81, male\n- Total hip replacement (elective, intermedi"
+        },
+        {
+          "at": "2026-05-08T11:15:51.345Z",
+          "type": "stuck-refresh",
+          "stemHash": "1907001623",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:15:51.399Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:17:34.206Z",
+          "type": "cost-cap",
+          "usd": 2.0533919999999997
+        }
+      ],
+      "qsAnswered": 25,
+      "_lbCount": 21
+    },
+    {
+      "workerId": 8,
+      "actions": [
+        {
+          "at": "2026-05-08T11:09:31.741Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:09:55.548Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:10:15.066Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:10:36.211Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:04.264Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:11:10.419Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:11:10.433Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:20.876Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:11:28.794Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:11:28.814Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:38.292Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:11:41.399Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:11:41.413Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:50.714Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:11:56.957Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:56.979Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:07.595Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:12:17.777Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:12:17.795Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:30.649Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:12:41.202Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:12:41.226Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:53.372Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:13:05.829Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:13:19.944Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:13:33.803Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:13:50.301Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:00.617Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:14:00.638Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:14.573Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:14:21.105Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:14:21.119Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:30.312Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:14:34.959Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:14:34.969Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:45.307Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:14:56.805Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:14:56.818Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:07.420Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:15:13.780Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:15:13.801Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:25.460Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:15:30.556Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:15:30.581Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:41.054Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:55.391Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:16:08.563Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:16:21.698Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:16:27.532Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:30.008Z",
+          "type": "ai-source",
+          "plausible": true,
+          "citation": "Harrison Ch 286",
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:16:30.027Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:51.986Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:17:03.969Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:17:03.993Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:12.970Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:17:19.274Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:17:19.292Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:29.898Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:17:33.245Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:17:33.258Z",
+          "type": "next"
+        }
+      ],
+      "bugs": [
+        {
+          "at": "2026-05-08T11:09:17.349Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:09:44.056Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "1916701823"
+        },
+        {
+          "at": "2026-05-08T11:10:07.345Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "1916701823"
+        },
+        {
+          "at": "2026-05-08T11:10:27.047Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "1916701823"
+        },
+        {
+          "at": "2026-05-08T11:10:48.101Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "1916701823"
+        },
+        {
+          "at": "2026-05-08T11:10:48.967Z",
+          "type": "stuck-refresh",
+          "stemHash": "1916701823",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:10:49.025Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:12:53.372Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to apply the Duke criteria for infective endocarditis.\n\n**Duke Criteria:**\n- **Major criteria:**\n  1. Positive blood cultures (typical organisms ≥2, or persistently positive, or single positive"
+        },
+        {
+          "at": "2026-05-08T11:13:05.829Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to apply the Duke criteria for infective endocarditis.\n\n**Duke Criteria:**\n- **Definite IE**: 2 major, OR 1 major + 3 minor, OR 5 minor criteria\n- **Possible IE**: 1 major + 1 minor, OR 3 minor"
+        },
+        {
+          "at": "2026-05-08T11:13:19.944Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to apply the Duke criteria for infective endocarditis.\n\n**Duke Criteria:**\n- **Definite IE**: 2 major, OR 1 major + 3 minor, OR 5 minor\n- **Possible IE**: 1 major + 1 minor, OR 3 minor\n\n**Major"
+        },
+        {
+          "at": "2026-05-08T11:13:33.803Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "Let me apply the Duke criteria systematically.\n\n**Duke Criteria:**\n- Major: positive blood cultures (typical organisms ×2, or persistent bacteremia, or single Coxiella), echocardiographic evidence (ve"
+        },
+        {
+          "at": "2026-05-08T11:13:33.803Z",
+          "type": "stuck-refresh",
+          "stemHash": "1586751181",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:13:34.011Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:15:41.054Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to reason through anticoagulation management for acute PE in this frail elderly patient.\n\n**Patient profile:**\n- 78-year-old woman, CFS 6 (moderate frailty)\n- Weight: 52 kg, Creatinine: 1.1 mg/"
+        },
+        {
+          "at": "2026-05-08T11:15:55.391Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to reason through this carefully.\n\n**Patient profile:**\n- 78-year-old woman, CFS 6 (moderate frailty)\n- Acute PE (segmental, on CTA)\n- Currently on apixaban 2.5mg BID (for AFib)\n- Weight 52kg, "
+        },
+        {
+          "at": "2026-05-08T11:16:08.563Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to work through this carefully.\n\n**Patient details:**\n- 78-year-old woman, CFS 6 (moderate frailty)\n- Acute PE (segmental, confirmed by CTA)\n- Currently on apixaban 2.5mg BID for AFib\n- Weight "
+        },
+        {
+          "at": "2026-05-08T11:16:30.899Z",
+          "type": "stuck-refresh",
+          "stemHash": "-119938919",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:16:31.124Z",
+          "type": "requestfailed",
+          "url": "https://toranot.netlify.app/api/claude",
+          "method": "POST",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "at": "2026-05-08T11:16:31.124Z",
+          "type": "console:warning",
+          "text": "Proxy: Failed to fetch"
+        },
+        {
+          "at": "2026-05-08T11:16:31.127Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:17:34.397Z",
+          "type": "cost-cap",
+          "usd": 2.0533919999999997
+        }
+      ],
+      "qsAnswered": 20,
+      "_lbCount": 16
+    },
+    {
+      "workerId": 7,
+      "actions": [
+        {
+          "at": "2026-05-08T11:09:32.781Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:09:56.027Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:10:17.473Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:10:40.004Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:11:07.094Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:10.101Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:11:10.117Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:21.539Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:11:36.480Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:11:51.666Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:12:05.191Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:12:22.004Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:25.141Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:12:25.162Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:34.055Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:12:39.482Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:12:39.494Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:49.304Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:54.359Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:54.376Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:03.286Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:13:07.994Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:09.988Z",
+          "type": "ai-source",
+          "plausible": true,
+          "citation": "Harrison Ch 322",
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:13:10.009Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:21.097Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:13:26.830Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:13:26.841Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:37.648Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 52
+        },
+        {
+          "at": "2026-05-08T11:13:43.693Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:13:43.707Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:55.854Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:14:01.489Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:14:01.505Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:15.050Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:14:18.342Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 98
+        },
+        {
+          "at": "2026-05-08T11:14:20.979Z",
+          "type": "ai-source",
+          "plausible": false,
+          "citation": "Harrison Ch 79",
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:14:21.002Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:31.463Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:37.341Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:14:37.354Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:50.782Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:06.131Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:20.969Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:35.383Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:50.501Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 52
+        },
+        {
+          "at": "2026-05-08T11:15:57.670Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:15:57.682Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:09.978Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:16:15.041Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:16:17.291Z",
+          "type": "ai-source",
+          "plausible": true,
+          "citation": "Harrison Ch 322",
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:16:17.314Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:26.382Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:16:31.574Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:16:31.593Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:39.932Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:44.894Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:16:44.909Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:54.707Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:16:58.446Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 98
+        },
+        {
+          "at": "2026-05-08T11:17:01.066Z",
+          "type": "ai-source",
+          "plausible": false,
+          "citation": "Harrison Ch 79",
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:17:01.092Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:10.754Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:17:17.083Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:17:17.109Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:27.048Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:17:33.658Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:17:33.674Z",
+          "type": "next"
+        }
+      ],
+      "bugs": [
+        {
+          "at": "2026-05-08T11:09:17.340Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:09:45.126Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-707740405"
+        },
+        {
+          "at": "2026-05-08T11:10:08.368Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-707740405"
+        },
+        {
+          "at": "2026-05-08T11:10:29.731Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-707740405"
+        },
+        {
+          "at": "2026-05-08T11:10:52.008Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-707740405"
+        },
+        {
+          "at": "2026-05-08T11:10:53.060Z",
+          "type": "stuck-refresh",
+          "stemHash": "-707740405",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:10:53.116Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:11:21.539Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this case carefully.\n\n**Patient summary:**\n- 79-year-old woman\n- Stage III colon cancer, completed adjuvant FOLFOX\n- Stopped after 4/6 cycles due to Grade 3 peripheral neuropathy\n- C"
+        },
+        {
+          "at": "2026-05-08T11:11:36.480Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this case carefully:\n\n**Patient:** 79-year-old woman, stage III colon cancer, completed adjuvant FOLFOX (4/6 cycles stopped due to grade 3 peripheral neuropathy)\n\n**Current status:**"
+        },
+        {
+          "at": "2026-05-08T11:11:51.666Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to analyze this case carefully.\n\n**Patient summary:**\n- 79-year-old woman\n- Stage III colon cancer, completed adjuvant FOLFOX\n- Stopped after 4/6 cycles due to Grade 3 peripheral neuropathy\n- C"
+        },
+        {
+          "at": "2026-05-08T11:12:05.191Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to reason through this carefully.\n\n**Clinical scenario:**\n- 79-year-old woman, stage III colon cancer\n- Completed 4/6 FOLFOX cycles, stopped due to Grade 3 peripheral neuropathy\n- Current funct"
+        },
+        {
+          "at": "2026-05-08T11:12:05.191Z",
+          "type": "stuck-refresh",
+          "stemHash": "-1561315434",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:12:05.381Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:14:50.782Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to evaluate the pre-operative cardiac workup needed for this 81-year-old patient undergoing elective total hip replacement.\n\n**Patient profile:**\n- 81 years old\n- Elective total hip arthroplast"
+        },
+        {
+          "at": "2026-05-08T11:15:06.131Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to evaluate pre-operative cardiac workup for an 81-year-old with hypertension, diabetes, hyperlipidemia, CKD, osteoarthritis, scheduled for total hip replacement.\n\nKey considerations using ACC/"
+        },
+        {
+          "at": "2026-05-08T11:15:20.969Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to reason through this pre-operative cardiac evaluation for an 81-year-old man undergoing elective total hip replacement.\n\n**Patient profile:**\n- 81 years old\n- Hypertension, diabetes, hyperlip"
+        },
+        {
+          "at": "2026-05-08T11:15:35.383Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to reason through this pre-operative cardiac evaluation for an 81-year-old man scheduled for total hip replacement.\n\n**Patient profile:**\n- 81 years old\n- Total hip replacement (elective orthop"
+        },
+        {
+          "at": "2026-05-08T11:15:35.383Z",
+          "type": "stuck-refresh",
+          "stemHash": "1907001623",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:15:35.568Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:17:34.538Z",
+          "type": "cost-cap",
+          "usd": 2.0533919999999997
+        }
+      ],
+      "qsAnswered": 21,
+      "_lbCount": 17
+    },
+    {
+      "workerId": 9,
+      "actions": [
+        {
+          "at": "2026-05-08T11:09:30.100Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:09:53.259Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:10:17.971Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:10:39.296Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:11:05.521Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 78
+        },
+        {
+          "at": "2026-05-08T11:11:12.318Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:11:12.333Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:24.728Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:11:28.528Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:11:28.549Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:38.718Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 90
+        },
+        {
+          "at": "2026-05-08T11:11:44.273Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:11:44.296Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:55.971Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:12:02.178Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 78
+        },
+        {
+          "at": "2026-05-08T11:12:02.195Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:12.597Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:12:18.410Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:18.427Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:30.965Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:12:36.820Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:12:36.843Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:48.505Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:12:53.943Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:53.959Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:03.026Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:09.253Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:13:09.275Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:18.988Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:25.484Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:25.507Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:33.357Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:13:38.851Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:13:38.873Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:48.713Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:13:53.428Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:13:53.439Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:01.832Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:14:04.796Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:14:04.822Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:15.100Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:20.596Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:14:20.618Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:29.378Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:14:36.938Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:14:36.953Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:47.895Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:14:54.427Z",
+          "type": "ai-judge",
+          "app_answer_correct": false,
+          "explanation_sound": false,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:54.453Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:04.028Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:15:13.543Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:15:13.568Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:22.937Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:15:33.040Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:15:33.066Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:42.392Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:15:46.443Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:15:46.465Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:57.074Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:16:00.605Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:16:00.630Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:10.135Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:16.951Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:16.963Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:26.623Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:16:29.814Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:16:29.827Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:39.595Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:16:43.178Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 98
+        },
+        {
+          "at": "2026-05-08T11:16:43.194Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:54.812Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:17:04.024Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:17:04.044Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:11.704Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:17:15.386Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:17:15.408Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:28.734Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:17:34.758Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:17:34.774Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:36.022Z",
+          "type": "leaderboard-submit",
+          "via": "submit",
+          "after": 25
+        }
+      ],
+      "bugs": [
+        {
+          "at": "2026-05-08T11:09:17.346Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:09:41.783Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-2072302341"
+        },
+        {
+          "at": "2026-05-08T11:10:04.955Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-2072302341"
+        },
+        {
+          "at": "2026-05-08T11:10:29.619Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-2072302341"
+        },
+        {
+          "at": "2026-05-08T11:10:51.095Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-2072302341"
+        },
+        {
+          "at": "2026-05-08T11:10:52.005Z",
+          "type": "stuck-refresh",
+          "stemHash": "-2072302341",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:10:52.060Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:17:37.370Z",
+          "type": "cost-cap",
+          "usd": 2.063961
+        }
+      ],
+      "qsAnswered": 29,
+      "_lbCount": 25
+    },
+    {
+      "workerId": 3,
+      "actions": [
+        {
+          "at": "2026-05-08T11:09:29.361Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:09:50.008Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:10:10.377Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:10:31.567Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:11:00.071Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:11:03.676Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 98
+        },
+        {
+          "at": "2026-05-08T11:11:03.701Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:14.592Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:11:19.779Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:19.797Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:30.105Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:11:34.478Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:11:34.497Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:11:45.795Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:11:49.669Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:11:49.681Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:02.098Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:12:08.871Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:12:11.916Z",
+          "type": "ai-source",
+          "plausible": false,
+          "citation": "Harrison Ch 285",
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:12:11.930Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:21.445Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:12:25.230Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:12:25.244Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:35.725Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:12:38.888Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:12:38.911Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:12:50.721Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:13:01.565Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:13:01.592Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:10.610Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:16.507Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:13:16.525Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:24.289Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:13:29.444Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:13:29.456Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:39.618Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:13:45.134Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:13:47.539Z",
+          "type": "ai-source",
+          "plausible": false,
+          "citation": "Harrison Ch 14",
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:13:47.557Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:13:55.960Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:14:07.403Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:14:07.422Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:14.624Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 97
+        },
+        {
+          "at": "2026-05-08T11:14:17.458Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 99
+        },
+        {
+          "at": "2026-05-08T11:14:17.471Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:25.744Z",
+          "type": "ai-pick",
+          "letter": "D",
+          "idx": 3,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:14:32.016Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:14:32.036Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:41.855Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:14:44.644Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:14:44.668Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:14:54.874Z",
+          "type": "ai-pick",
+          "letter": "A",
+          "idx": 0,
+          "conf": 82
+        },
+        {
+          "at": "2026-05-08T11:15:05.327Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:15:05.352Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:14.768Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 85
+        },
+        {
+          "at": "2026-05-08T11:15:20.637Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": false,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:15:20.649Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:15:33.315Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:44.841Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:15:57.931Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:16:10.823Z",
+          "type": "ai-pick",
+          "letter": ""
+        },
+        {
+          "at": "2026-05-08T11:16:25.027Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 72
+        },
+        {
+          "at": "2026-05-08T11:16:36.135Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:16:36.161Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:16:47.858Z",
+          "type": "ai-pick",
+          "letter": "B",
+          "idx": 1,
+          "conf": 62
+        },
+        {
+          "at": "2026-05-08T11:16:58.791Z",
+          "type": "ai-judge"
+        },
+        {
+          "at": "2026-05-08T11:16:58.809Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:07.940Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:17:13.987Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 92
+        },
+        {
+          "at": "2026-05-08T11:17:16.028Z",
+          "type": "ai-source",
+          "plausible": false,
+          "citation": "Harrison Ch 14",
+          "conf": 75
+        },
+        {
+          "at": "2026-05-08T11:17:16.042Z",
+          "type": "next"
+        },
+        {
+          "at": "2026-05-08T11:17:27.026Z",
+          "type": "ai-pick",
+          "letter": "C",
+          "idx": 2,
+          "conf": 88
+        },
+        {
+          "at": "2026-05-08T11:17:36.116Z",
+          "type": "ai-judge",
+          "app_answer_correct": true,
+          "explanation_sound": true,
+          "conf": 95
+        },
+        {
+          "at": "2026-05-08T11:17:36.142Z",
+          "type": "next"
+        }
+      ],
+      "bugs": [
+        {
+          "at": "2026-05-08T11:09:17.346Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:09:41.720Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-181589565"
+        },
+        {
+          "at": "2026-05-08T11:10:02.146Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-181589565"
+        },
+        {
+          "at": "2026-05-08T11:10:22.118Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-181589565"
+        },
+        {
+          "at": "2026-05-08T11:10:43.512Z",
+          "type": "methodology",
+          "context": "appIdx-null-post-check",
+          "stemHash": "-181589565"
+        },
+        {
+          "at": "2026-05-08T11:10:44.734Z",
+          "type": "stuck-refresh",
+          "stemHash": "-181589565",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:10:44.899Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:15:33.315Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to determine the appropriate anticoagulation for a 75-year-old woman with CKD stage 4 (eGFR 24, Cr 2.3), new AF, and CHA2DS2-VASc score of 5.\n\n**Key considerations:**\n\n1. **CHA2DS2-VASc = 5**: "
+        },
+        {
+          "at": "2026-05-08T11:15:44.841Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to determine the appropriate anticoagulation for a 75-year-old woman with CKD stage 4 (eGFR 24, Cr 2.3), new AF, CHA2DS2-VASc score of 5.\n\n**Apixaban dose reduction criteria:**\nApixaban require"
+        },
+        {
+          "at": "2026-05-08T11:15:57.931Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to determine the appropriate anticoagulation for a 75-year-old woman with CKD stage 4 (eGFR 24, Cr 2.3), new AF, and CHA2DS2-VASc score of 5.\n\n**Apixaban dose reduction criteria (requires 2 of "
+        },
+        {
+          "at": "2026-05-08T11:16:10.823Z",
+          "type": "ai-parse-error",
+          "context": "pick",
+          "text": "I need to determine the appropriate anticoagulation for a 75-year-old woman with CKD stage 4 (eGFR 24, Cr 2.3), new AF, CHA2DS2-VASc of 5.\n\n**Apixaban dosing criteria for dose reduction to 2.5mg BID:*"
+        },
+        {
+          "at": "2026-05-08T11:16:10.823Z",
+          "type": "stuck-refresh",
+          "stemHash": "-398479718",
+          "stuckCount": 3
+        },
+        {
+          "at": "2026-05-08T11:16:11.030Z",
+          "type": "console:error",
+          "text": "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."
+        },
+        {
+          "at": "2026-05-08T11:17:37.764Z",
+          "type": "cost-cap",
+          "usd": 2.063961
+        }
+      ],
+      "qsAnswered": 25,
+      "_lbCount": 21
+    }
+  ],
+  "cost": {
+    "totalCalls": 497,
+    "totalInTokens": 313827,
+    "totalOutTokens": 74832,
+    "failures": 0,
+    "usd": 2.063961
+  }
+}
