@@ -46,6 +46,7 @@ import { createWriteStream } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { extractJson } from './lib/extractJson.mjs';
+import { resolveAppVerdict } from './lib/optionResolver.mjs';
 
 const DEFAULT_URL = 'https://eiasash.github.io/Geriatrics/';
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
@@ -335,10 +336,21 @@ async function doctorOneQuestion(page, workerId, log) {
   }
   await sleep(rand(900, 1700));
 
-  // Detect app's correct idx + explanation + source
+  // Detect app's correct idx + explanation + source.
+  // Geri's monolith uses `<button onclick="pick(canonicalIdx)">` rendered in
+  // shuffled DOM order. There is no `data-i` attribute — the bot reads the
+  // .ok button's DOM position via `all.indexOf(ok)`, which is the DISPLAY
+  // position (matching the AI's letter space). Both `aiIdx` and `appIdx`
+  // are therefore display-frame here, and `resolveAppVerdict` collapses to
+  // identity for Geri. We still funnel through the resolver so that any
+  // future port to a `data-i` rendering (e.g. a Geri rewrite mirroring
+  // FM/IM) cannot silently re-introduce the served↔canonical drift bug
+  // that produced ~240/241 false positives in the 2026-05-08 triage.
   const appIdx = await detectAppCorrectIdx(page);
   const { explanation, source } = await extractExplanationAndSource(page);
-  const disagrees = appIdx != null && appIdx !== aiIdx;
+  const appVerdict = resolveAppVerdict(q.options, appIdx);
+  const appDisplayIdx = appVerdict ? appVerdict.displayIdx : null;
+  const disagrees = appDisplayIdx != null && appDisplayIdx !== aiIdx;
 
   // v4: methodology guard. If appIdx is null after a check click in practice
   // mode, our entry path probably fell back to exam mode. Log it so we can
@@ -361,22 +373,27 @@ async function doctorOneQuestion(page, workerId, log) {
     return { advanced: true, stemHash };
   }
 
-  // 2) Judge — v4 prompt validates the APP, not blends with AI's pick
-  const appLetter = 'ABCD'[appIdx];
+  // 2) Judge — v4 prompt validates the APP, not blends with AI's pick.
+  // Use the resolver output so the judge sentence quotes the option TEXT
+  // (not just a letter), matching the FM/IM siblings. For Geri this is
+  // mechanically identical to `'ABCD'[appIdx]` + `q.options[appIdx].text`,
+  // but adopting the same shape sibling-wide keeps the contract uniform.
+  const appLetter = appVerdict ? appVerdict.displayLetter : '?';
+  const appText = appVerdict ? appVerdict.canonicalText : '(unresolved)';
   const userPrompt2 = `Question (Hebrew):
 ${q.stem}
 
 Options:
 ${q.options.map((o, i) => `${'ABCD'[i]}. ${o.text}`).join('\n')}
 
-App's claimed correct answer: ${appLetter}
+App's claimed correct answer: ${appLetter} (${appText})
 App's explanation:
 ${(explanation || '(no explanation rendered)').slice(0, 1500)}
 ${source ? `\nApp's cited source: ${source}` : ''}
 
 (Context — NOT for adjudication: AI prior pick was ${aiLetter}: ${pickJson.why || 'no rationale'})
 
-Validate the APP's claimed answer ${appLetter} against board-level family-medicine evidence.`;
+Validate the APP's claimed answer ${appLetter} (${appText}) against board-level geriatric-medicine evidence.`;
   let judgeResp = null;
   try { judgeResp = await callClaude(SYS_DOCTOR_JUDGE, userPrompt2, { maxTokens: 400 }); }
   catch (e) { log.bugs.push({ at: nowIso(), type: 'ai-error', context: 'judge', message: e.message }); }
@@ -408,13 +425,16 @@ Validate the APP's claimed answer ${appLetter} against board-level family-medici
     log.actions.push({ at: nowIso(), type: 'ai-source', plausible: sourceJson.citation_plausible, citation: cite, conf: sourceJson.confidence });
   }
 
-  // Record finding
+  // Record finding.
+  // For Geri, `appIdx` and `appDisplayIdx` are the same value (display
+  // frame), but persist both fields for sibling-aligned record shape.
   const finding = {
     workerId,
     stem: q.stem.slice(0, 300),
     options: q.options.map((o) => o.text.slice(0, 120)),
+    optionCanonicalIdx: q.options.map((o) => Number(o.idx)),
     aiLetter, aiIdx, aiWhy: pickJson.why || null, aiConf: pickJson.confidence,
-    appIdx, appLetter,
+    appIdx, appDisplayIdx, appLetter, appText,
     disagrees,
     judge: judgeJson,
     source: sourceJson,
