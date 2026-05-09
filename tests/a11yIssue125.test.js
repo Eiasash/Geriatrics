@@ -63,3 +63,49 @@ describe("a11y issue #125 — v10.64.82 fixes", () => {
     expect(matches.length).toBeLessThanOrEqual(1);
   });
 });
+
+describe("a11y issue #125 — v10.64.83 contrast follow-up", () => {
+  it("light-mode --fg3 is slate-500 (100 116 139), not slate-400 (148 163 184)", () => {
+    // Match the light-mode :root declaration (line ~144). The previous
+    // slate-400 value rendered ~2.45:1 against the near-white --bg, well
+    // below WCAG AA 4.5:1 for normal text. Slate-500 hits 4.50:1 (hairline AA).
+    const m = html.match(/--bg:248 250 252;--bg2:241 245 249;--bg3:255 255 255;--fg:30 41 59;--fg2:[^;]+;--fg3:([^;]+);/);
+    expect(m).toBeTruthy();
+    expect(m[1].trim()).toBe("100 116 139");
+    expect(m[1]).not.toContain("148 163 184");
+  });
+
+  it("light-mode --fg2 is slate-700 (71 85 105), not slate-500 (100 116 139)", () => {
+    // After --fg3 bumped to slate-500, --fg2 must move to slate-700 to
+    // preserve the 3-level hierarchy (--fg → --fg2 → --fg3) AND to pass
+    // WCAG AA on borderline surfaces (slate-200 cards). slate-700 vs --bg
+    // is 9.7:1 (AAA).
+    const m = html.match(/--bg:248 250 252;--bg2:241 245 249;--bg3:255 255 255;--fg:30 41 59;--fg2:([^;]+);/);
+    expect(m).toBeTruthy();
+    expect(m[1].trim()).toBe("71 85 105");
+  });
+
+  it(".dm-btn light-mode default uses theme fg, not hardcoded white", () => {
+    // The base rule should now use rgb(var(--fg)). The original hardcoded
+    // color:#fff is preserved only inside body.dark override.
+    const baseRuleMatch = html.match(/\.dm-btn\s*\{[^}]+\}/);
+    expect(baseRuleMatch).toBeTruthy();
+    expect(baseRuleMatch[0]).toContain("color:rgb(var(--fg))");
+    expect(baseRuleMatch[0]).not.toMatch(/color:#fff(?!\s*[}])/);
+  });
+
+  it(".dm-btn has a body.dark override that restores white text", () => {
+    // The dark-mode visual must be preserved — white-on-tint pattern.
+    expect(html).toMatch(/body\.dark\s+\.dm-btn\s*\{[^}]*color:#fff/);
+    expect(html).toMatch(/body\.dark\s+\.dm-btn\s*\{[^}]*background:rgba\(255,255,255,0\.08\)/);
+  });
+
+  it("header h1 has color:rgb(var(--fg)) inline style (theme-aware)", () => {
+    // The "Shlav A Mega" h1 was inheriting white from a parent rule meant
+    // for dark mode. Inline color uses the theme variable so the title is
+    // dark-on-light AND light-on-dark.
+    const h1Match = html.match(/<h1[^>]*>Shlav A Mega/);
+    expect(h1Match).toBeTruthy();
+    expect(h1Match[0]).toContain("color:rgb(var(--fg))");
+  });
+});
