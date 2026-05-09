@@ -137,3 +137,43 @@ describe("a11y issue #125 — v10.64.84 account-button JS override fix", () => {
     expect(fn).toContain("'#0D7377'");
   });
 });
+
+describe("a11y issue #125 — v10.64.85 residual contrast clears", () => {
+  it("Pomo button uses emerald-700 (#047857), not emerald-600 (#059669) — 3.6:1 → 5.5:1", () => {
+    const pomoMatch = html.match(/<button[^>]*onclick="startPomodoro\(\)"[^>]*>⏱ Pomo<\/button>/);
+    expect(pomoMatch).toBeTruthy();
+    expect(pomoMatch[0]).toContain("color:#047857");
+    expect(pomoMatch[0]).not.toContain("color:#059669");
+  });
+
+  it("Share with Friends button uses emerald-700 background — 3.77:1 → 5.5:1 (white text)", () => {
+    const shareMatch = html.match(/<button[^>]*onclick="shareApp\(\)"[^>]*>📤 Share with Friends<\/button>/);
+    expect(shareMatch).toBeTruthy();
+    expect(shareMatch[0]).toContain("background:#047857");
+    expect(shareMatch[0]).not.toContain("background:#059669");
+  });
+
+  it("Review-wrong DISABLED state uses --fg2 (slate-700), not --fg3 (slate-500)", () => {
+    // The _wrongDisabled branch in the inline ternary was rendering text at
+    // 4.34:1 base + opacity:0.6 — effectively ~2.6:1. Bumping to --fg2 keeps
+    // the disabled visual muted but legible.
+    const reviewMatch = html.match(/<button[^>]*aria-label="Review wrong answers"[^>]*>⚠️ Review wrong[^<]*<\/button>/);
+    expect(reviewMatch).toBeTruthy();
+    expect(reviewMatch[0]).toMatch(/color:\$\{_wrongDisabled\?'rgb\(var\(--fg2\)\)'/);
+    expect(reviewMatch[0]).not.toMatch(/color:\$\{_wrongDisabled\?'rgb\(var\(--fg3\)\)'/);
+  });
+
+  it("geriatrics-skin .tabs button.on uses amber-700 override (#b45309), preserves --app-primary in dark mode", () => {
+    // amber-500 #f59e0b at 2.15:1 was the worst residual. Override to amber-700
+    // for the text-on-light case only; dark mode falls back to --app-primary
+    // (#fbbf24) which is fine on dark slate canvas.
+    expect(html).toMatch(/html\[data-skin="geriatrics"\] \.tabs button\.on\{color:#b45309\}/);
+    expect(html).toMatch(/body\.dark\[data-skin="geriatrics"\] \.tabs button\.on[^{]*\{color:var\(--app-primary\)\}/);
+  });
+
+  it("base .tabs button.on rule is unchanged (still uses --app-primary for non-geri skins)", () => {
+    // Pnimit (sky-500 #3b82f6 = 4.71:1) and Toranot (slate-800 = 14.2:1) skins
+    // already pass on white — the override is geriatrics-only.
+    expect(html).toMatch(/\.tabs button\.on\{color:var\(--app-primary\)\}/);
+  });
+});
