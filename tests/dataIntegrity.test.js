@@ -552,7 +552,7 @@ describe("cross-file referential integrity", () => {
         // Educational reference series
         "GRS", "Bhandari",
         // Major guideline organizations
-        "IDSA", "ACR", "ACG", "KDIGO", "USPSTF", "AGS", "NICE",
+        "IDSA", "ACR", "ACG", "KDIGO", "USPSTF", "AGS", "ADA", "NICE",
         "AAN", "AAFP", "AAPM", "AAOS", "ACC", "AHA", "ESC", "ESH",
         "CDC", "ACIP", "STEADI", "WHO",
         // Trial / cohort name patterns
