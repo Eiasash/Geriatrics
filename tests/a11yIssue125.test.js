@@ -177,3 +177,34 @@ describe("a11y issue #125 — v10.64.85 residual contrast clears", () => {
     expect(html).toMatch(/\.tabs button\.on\{color:var\(--app-primary\)\}/);
   });
 });
+
+describe("a11y issue #125 — v10.64.86 final close (amber buttons)", () => {
+  // Helper: slice off CHANGELOG entries to scan only live render code.
+  // Mirrors the STALE_COUNTS guard pattern in tests/dataIntegrity.test.js —
+  // CHANGELOG text legitimately quotes old patterns as documentation.
+  // Computed inside each test (not at describe-body eval) because `html`
+  // is loaded by beforeAll and is undefined at module-eval time.
+
+  it("no white-on-amber-600 buttons remain in live render code (was 3.19:1)", () => {
+    const liveCode = html.split("const CHANGELOG=")[0];
+    expect(liveCode).not.toContain("background:#d97706;color:#fff");
+  });
+
+  it("the 4 amber-button render sites use amber-800 #92400e (7.39:1 white text, AAA)", () => {
+    const liveCode = html.split("const CHANGELOG=")[0];
+    const count = (liveCode.match(/background:#92400e;color:#fff/g) || []).length;
+    expect(count).toBe(4);
+  });
+
+  it("imgDep '✓ מאומת' verify buttons render with amber-800 (both render paths)", () => {
+    // Two separate render sites (lines ~3002 and ~3048) both produce the
+    // imgDep-verify button. They must share the same fixed bg.
+    const matches = html.match(/markImgDepVerified[^"']*[^>]*style="[^"]*background:#92400e/g);
+    expect(matches).toBeTruthy();
+    expect(matches.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("e_issue '✓ מאומת' verify button uses amber-800", () => {
+    expect(html).toMatch(/markEIssueVerified[^"']*[^>]*style="[^"]*background:#92400e/);
+  });
+});
