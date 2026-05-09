@@ -7003,8 +7003,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.86';
+const APP_VERSION='10.64.87';
 const CHANGELOG={
+'10.64.87':[
+'♿ Accessibility — SW update banner dismiss button (the ✕ that appears when a new version is queued for activation). v10.64.86 live re-audit (playwright, fired right after the v86 SW deploy queued a fresh update banner) found this button at 3.86:1: white text on a `rgba(255,255,255,0.2)` tint over the teal-700 (#0D7377→#14919B) gradient. Fails WCAG AA. Two minimum-code edits in src/sw-update.js: (1) bg `rgba(255,255,255,.2)` → `rgba(0,0,0,.25)` — flips the tint from "lighter than banner" to "darker than banner". White text on the resulting darker teal (~rgb(9,80,83)) computes to 8.27:1 (AAA). (2) Added `aria-label="Dismiss update banner"` + matching `title` — the ✕ glyph is not an accessible name on its own, screen readers announced the button as "button" with no purpose. Trinity bumped 10.64.86 → 10.64.87. Conditional surface — only visible to users who already have v85 (or earlier) cached when v87 deploys, so it self-resolves the next time the SW completes its update cycle.',
+],
 '10.64.86':[
 '♿ Accessibility — issue #125 final close. v10.64.85 live re-audit (playwright) found 1 residual: amber-600 (#d97706) buttons with white text rendering at 3.19:1 — fails WCAG AA. The pattern appeared 4× in source: 3 "✓ מאומת" verification buttons (imgDep on 2 render paths + e_issue) and 1 "שלח לבדיקת AI" submit-for-AI-review button. All four shared the identical inline pattern `background:#d97706;color:#fff`. Single replace_all bumped amber-600 → amber-800 (#92400e), pushing white-on-amber from 3.19:1 to 7.39:1 (AAA). Surrounding container styling (yellow-100 #fef3c7 boxes with amber-800 #92400e text at 6.89:1) is unchanged — those passed AA already. The amber-800 button bg now matches the box-text color, which actually improves visual cohesion. Trinity bumped 10.64.85 → 10.64.86. With this, issue #125 closes at 38 → 0 contrast violations: 100% reduction across v10.64.82 (dir=rtl + skip-link + dead ids) → v10.64.83 (theme-aware dm-btn + slate hierarchy) → v10.64.84 (👤 JS-override clear) → v10.64.85 (4 residuals: pomo + share + review-disabled + quiz-on) → v10.64.86 (final amber-button class).',
 ],
