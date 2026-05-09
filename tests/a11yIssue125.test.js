@@ -208,3 +208,21 @@ describe("a11y issue #125 — v10.64.86 final close (amber buttons)", () => {
     expect(html).toMatch(/markEIssueVerified[^"']*[^>]*style="[^"]*background:#92400e/);
   });
 });
+
+describe("a11y issue #125 — v10.64.87 SW update banner dismiss button", () => {
+  let swUpdateSrc = '';
+  beforeAll(() => {
+    swUpdateSrc = readFileSync(resolve(__dirname, '../src/sw-update.js'), 'utf-8');
+  });
+
+  it("dismiss button background is rgba(0,0,0,.25), not rgba(255,255,255,.2)", () => {
+    // v10.64.87 fix: dark tint over teal gradient (white text → ~8.27:1 AAA)
+    // vs the prior light tint which gave white-on-light-teal at ~3.86:1.
+    expect(swUpdateSrc).toMatch(/data-action="dismiss-update"[^>]*background:rgba\(0,0,0,\.25\)/);
+    expect(swUpdateSrc).not.toMatch(/data-action="dismiss-update"[^>]*background:rgba\(255,255,255,\.2\)/);
+  });
+
+  it("dismiss button has aria-label (✕ alone is not an accessible name)", () => {
+    expect(swUpdateSrc).toMatch(/data-action="dismiss-update"[^>]*aria-label="Dismiss update banner"/);
+  });
+});
