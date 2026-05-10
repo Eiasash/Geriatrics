@@ -15,6 +15,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 import { execSync } from 'child_process';
+import { loadQuestionsHydrated } from './_helpers/loadQuestionsHydrated.js';
 
 const ROOT = resolve(import.meta.dirname, '..');
 
@@ -32,7 +33,7 @@ describe('regulatory.json artifact', () => {
   });
 
   it('contains only valid question indices', () => {
-    const qs = JSON.parse(readFileSync(Q_PATH, 'utf-8'));
+    const qs = loadQuestionsHydrated(ROOT);
     const reg = JSON.parse(readFileSync(REG_PATH, 'utf-8'));
     for (const idx of reg) {
       expect(Number.isInteger(idx)).toBe(true);
@@ -42,7 +43,7 @@ describe('regulatory.json artifact', () => {
   });
 
   it('tagged questions actually match at least one regulatory keyword', () => {
-    const qs = JSON.parse(readFileSync(Q_PATH, 'utf-8'));
+    const qs = loadQuestionsHydrated(ROOT);
     const reg = JSON.parse(readFileSync(REG_PATH, 'utf-8'));
     // Sample 20 random tagged questions; each must match a strong keyword
     const strongKeywords = [

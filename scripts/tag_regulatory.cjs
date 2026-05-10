@@ -22,7 +22,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const QUESTIONS = path.resolve(__dirname, '..', 'data', 'questions.json');
 const OUT = path.resolve(__dirname, '..', 'data', 'regulatory.json');
 
 // Strong keywords (1 match = tag) — highly specific to Israeli regulatory context
@@ -76,7 +75,10 @@ function scoreQuestion(q) {
 }
 
 function main() {
-  const qs = JSON.parse(fs.readFileSync(QUESTIONS, 'utf-8'));
+  // v10.64.93: e was split into data/explanations.json. Use the shared
+  // hydrator so regex scoring still sees the explanation text.
+  const { loadQuestionsHydrated } = require('./_helpers/load_questions_hydrated.cjs');
+  const qs = loadQuestionsHydrated(path.resolve(__dirname, '..'));
   const tagged = [];
   const samples = [];
 

@@ -876,6 +876,10 @@ upd();setInterval(upd,30000);
 let QZ=[];
 // Pre-generated distractor autopsy map (qIdx → 4-element array of rationales, "" at correct index)
 let DIS={};
+// Pre-generated AI explanations, indexed by Q position; lazy-loaded via _exPromise
+// to drop questions.json first-load by ~43% (v10.64.93 mobile-perf split). Read at
+// _rqmExplain() with `q.e || EX[pool[qi]]` fallback — backfills onto q on first read.
+let EX=[];
 
 // ===== AUTO TOPIC TAGGING =====
 let TK=[];
@@ -1246,6 +1250,23 @@ const _disPromise = (async () => {
     console.warn('distractors.json deferred load failed:', err.message);
   } finally {
     _disReady = true;
+  }
+})();
+// Mirrors _disPromise: idle-defer the explanations payload (~4.6 MB) so the boot
+// path doesn't pay for it. The first 1-2 questions answered cold may render
+// without the 💡 panel until idle fires (acceptable degradation per
+// IMPROVEMENTS.md "EX-not-loaded-yet" decision). Subsequent answers backfill
+// onto QZ[i].e on first read inside _rqmExplain.
+const _exPromise = (async () => {
+  try {
+    if (typeof requestIdleCallback === 'function') {
+      await new Promise(res => requestIdleCallback(res, { timeout: 3000 }));
+    }
+    const r = await fetch('./data/explanations.json');
+    if (r.ok) EX = await r.json();
+    else console.warn('explanations.json unavailable:', r.status);
+  } catch (err) {
+    console.warn('explanations.json deferred load failed:', err.message);
   }
 })();
 const _dataPromise = (async function loadDataArrays() {
@@ -3225,7 +3246,10 @@ h+=`<div style="font-size:9px;color:#059669;border-top:1px solid #bbf7d0;padding
 h+=`</div>`;
 }
 }
-// Built-in explanation (every question has one)
+// Built-in explanation (every question has one).
+// v10.64.93: e-field is split out of questions.json into explanations.json,
+// idle-loaded into EX[]. Backfill onto q so qLang(q,'e') downstream just works.
+if(ans&&!examMode&&!q.e&&Array.isArray(EX)&&EX[pool[qi]])q.e=EX[pool[qi]];
 if(ans&&!examMode&&q.e){
 h+=`<div style="margin-top:8px;padding:10px 12px;background:${q.e_issue?"#fffbeb":"rgb(var(--blue-bg))"};border:1px solid ${q.e_issue?"#fcd34d":"rgb(var(--blue-brd))"};border-radius:10px;font-size:11px;line-height:1.7;color:${q.e_issue?"#92400e":"rgb(var(--blue-fg))"};text-align:right" dir="${heDir(qLang(q,'e'))}">${q.e_issue?`<div style="font-size:10px;font-weight:700;margin-bottom:6px;padding:4px 8px;background:#fef3c7;border-radius:6px;display:flex;align-items:center;gap:6px;justify-content:space-between"><span>⚠️ ההסבר הזה עלול להיות שגוי — AI איתר חוסר עקביות מול התשובה הנכונה</span><button onclick="event.stopPropagation();markEIssueVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#92400e;color:#fff;border:none;border-radius:6px;cursor:pointer;flex:0 0 auto">✓ מאומת</button></div>`:""}`;
 h+=`<div style="font-weight:700;margin-bottom:4px;font-size:10px">📝 הסבר</div>`;
@@ -7049,8 +7073,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.92';
+const APP_VERSION='10.64.93';
 const CHANGELOG={
+'10.64.93':[
+'⚡ Mobile first-load split — `e` field moved out of data/questions.json into data/explanations.json, idle-loaded via `_exPromise` (mirrors existing `_disPromise` distractor pattern). Closes the 79s Slow-3G first-load finding from the doctor-on-mobile chaos bot (IMPROVEMENTS.md 2026-05-10). On-disk: questions.json 10.80 MB → 6.12 MB (-43.3%), explanations.json 4.56 MB stays out of the boot critical path. Runtime: `let EX=[]` declared next to `let QZ=[]`; on-demand backfill `if(!q.e&&EX[pool[qi]])q.e=EX[pool[qi]]` inside _rqmExplain hydrates each Q on first render (downstream qLang(q,"e") + q.e_issue ternary keep working unchanged). 1867 paired e_en bilingual fields stay in questions.json (English-mode unchanged). Splitter at scripts/split_explanations.py is idempotent + hash-checks the joined e-array pre/post for content-preserving guarantee. Hash: da13d248f1a61103f5953f71112c760ae3cdb0536cc660d50127a5ccedda8792 (SHA-256 of NUL-joined e-strings, identical pre/post split). Regulatory tagger updated to read both files. SW JSON_DATA_URLS gains data/explanations.json (best-effort install). 6 impacted tests switched to a shared `tests/_helpers/loadQuestionsHydrated.js` that re-merges e on read; 1 new test `tests/explanationsSplit.test.js` (10 tests) pins the split contracts. Trinity bumped 10.64.92 → 10.64.93. Bot rerun TBD post-deploy — target ≤50000ms vs 79384ms baseline.',
+],
 '10.64.92':[
 '🧹 Console-noise cleanup (C3 + C4 from 2026-05-10 mobile review). (1) Removed `frame-ancestors \'none\';` from the Content-Security-Policy meta tag — per CSP3 spec, frame-ancestors is silently ignored when delivered via `<meta>` (HTTP-header-only directive). The console warned every page load: "The Content Security Policy directive `frame-ancestors` is ignored when delivered via a <meta> element." Since the directive provided zero actual protection (clickjacking via iframe is not blocked unless this lands in HTTP headers, which GitHub Pages does not support), removing the unenforceable directive is honest. If iframe-embed protection is later required, options are: (a) move to a Cloudflare-proxied origin that adds X-Frame-Options/CSP headers, or (b) JS frame-busting in the head script. (2) Added `<link rel="shortcut icon" href="data:," sizes="any">` BEFORE the existing SVG-data-URI rel="icon" link — the browser\'s baseline `/favicon.ico` probe at the eiasash.github.io domain root was 404\'ing in console (the actual favicon is rendered correctly via the SVG link below). The empty data URI explicitly tells the browser "no further favicon request needed", suppressing the 404. Both edits are HTML-only console cleanups; no behavioral or security regression. Trinity bumped 10.64.91 → 10.64.92.',
 ],
