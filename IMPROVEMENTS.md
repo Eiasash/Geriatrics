@@ -4,6 +4,106 @@ This file is appended to by every `audit-fix-deploy` pipeline run. Each entry re
 
 ---
 
+## 2026-05-10 — render() detach antipattern: architectural options memo
+
+**Audit-only pass. No code change to `shlav-a-mega.html`.** This memo enumerates three architectural options for the render-during-event antipattern documented in `feedback_render_detach_antipattern.md`. The user picks one; a follow-up PR implements.
+
+### Inventory (against `shlav-a-mega.html` @ v10.64.87, 2026-05-10)
+
+| Handler | Count |
+|---|---|
+| `onclick="…render()…"` | 53 |
+| `onchange="…render()…"` | 2 |
+| `oninput="…render()…"` | 1 |
+| `onkeydown="…render()…"` | 1 |
+| **Total render-callers** | **57** |
+
+By bearing tag: `<button>` 33, `<div>` 18, `<span>` 3, `<input>` 3.
+
+**Idless** (no `id=` on the bearing element when the handler fires): **56 of 57**. The single id-bearing site is the search box at line 5864 (`id="srchi"`, oninput); render() already restores its focus + value via the `sv.srchi` capture path at line 6880.
+
+The 56 idless sites are dominated by buttons/divs (transient nav, drill targets, modal toggles, drawer accordions) and 2 idless checkboxes (`blindRecall` line 3403, `timedMode` line 3404). Once a button is clicked, "focus restoration" is moot — the user has moved on. The real failure mode is the **click-event-during-rebuild race** (Playwright `Timeout 3000ms exceeded`), not focus loss. The chaos run dominator was 953 click timeouts/h on these 56 sites.
+
+### Tests at risk under "render becomes async"
+
+Searched `tests/` for `render(); expect(...DOM...)` patterns: **zero matches**. The only `render()` references in tests are:
+- `tests/flashcardFsrs.test.js:51` — defines a stub `function render(){}` for module isolation. Unaffected.
+- `tests/regressionGuards.test.js:597` — a static-source grep, not a runtime call. Unaffected.
+- `tests/studyPlanAlgorithm.test.js:148-149` — calls `SP_ALGO.render(...)`, the **study-plan generator**, NOT the DOM render. Unaffected.
+
+**Net risk to the 1,270-test suite from making `render()` async via `setTimeout(render, 0)`: 0 known assertions.** No `vi.useFakeTimers()`-without-flush patterns observed either.
+
+### Render() function structure (line 6808-6884)
+
+Already captures `focused = document.activeElement?.id` (line 6810) and search-box / nfilt values (line 6811), then after rebuild restores via id-lookup + `setSelectionRange` try/catch (lines 6880-6882). Wrapper exists. The 56 idless sites can't be helped by the existing wrapper because there's no id to look up — but they also don't *need* focus restoration; they need the click event to finish propagating before the DOM is destroyed.
+
+---
+
+### Option A — microtask defer in `render()` (1-line change)
+
+**Change**: wrap the body of `render()` in `setTimeout(() => { … }, 0)`. Every caller's click-handler returns to the event loop *before* the DOM is rebuilt, giving the click event time to propagate, the focus event to fire, and the haptic vibrate() to dispatch.
+
+```js
+function render(){
+  setTimeout(() => {
+    const el = document.getElementById('ct');
+    // … existing body unchanged
+  }, 0);
+}
+```
+
+- **Surface area**: 1 file, 1 function, ~3 lines of edit (open `setTimeout(`, indent body, close `)`).
+- **Test blast radius**: 0 known assertions (verified above).
+- **Behavioral risk**: any non-test code that does `render(); doSomethingThatReadsDOM()` in the same synchronous block would now read **stale** DOM. Searched `shlav-a-mega.html` — there are 36 `;render();` patterns; spot-check confirms most are `state=X;render()` (terminal) or `el.innerHTML='';render();break;` (line 6872-6874, intentional re-dispatch). None observed reading DOM immediately after.
+- **Subtle pitfall**: `render()` called recursively (lines 6872-6874 do `tab='quiz';render();break;` inside the switch) will now schedule **two** microtasks if the inner one isn't `await`ed. Currently those recursive calls are inside the same render's switch — if the body becomes async, the inner `render()` would fire while the outer one is still queued. Easy fix: have the inner cases just set state + `el.innerHTML=''` and let the next tick's outer render handle it. But that's a re-architect, not a wrap.
+- **Effort**: 30 min including manual smoke test of the 6 recursive call sites.
+- **Reversibility**: trivial (revert one commit).
+
+### Option B — event-delegation rewrite (architectural)
+
+**Change**: replace 56 inline handlers with a single delegated handler on the root container `#ct`. Each element gets `data-action="setTopicFilt:5;tab=quiz"` style attributes; the delegated handler parses + dispatches + calls render once at the end of the microtask queue.
+
+- **Surface area**: 56 handler sites in HTML strings + 1 new dispatcher (~80 lines) + a small action registry (~50 actions to map). Estimated **2-3 days** of work.
+- **Test blast radius**: requires rewriting any test that asserts on inline `onclick=` markup (none currently do — the suite tests data integrity, not DOM markup). New tests needed for the action registry + dispatcher. Estimated **+15 to +30 new tests**.
+- **Behavioral risk**: medium-high. The 56 sites have non-uniform shapes — some call multiple statements, some use `event.stopPropagation()`, some have ternary expressions inline. A registry-based parser will need ~10 micro-features (`event.stopPropagation`, ternary fallback, JSON-encoded array args for `pool=[1,2,3]`). Each is a place to drop a regression.
+- **Wins beyond the antipattern**: removes the entire class of `\s*onclick="…"` HTML-injection risk surface, eliminates closure-leak vectors (the v10.38.4 `onclickClosureLeakGuard.test.js` bug class), shrinks `shlav-a-mega.html` by ~5-8 KB, opens path to CSP `script-src 'self'` (drops inline-handler allowance — currently CSP is permissive on this).
+- **Effort**: 2-3 days, higher if any of the 56 sites has a subtle quirk we don't notice until live.
+- **Reversibility**: hard (would require a full revert PR).
+
+### Option C — per-handler `setTimeout(render, 0)` annotation (surface-level)
+
+**Change**: rewrite each of the 56 inline handler call-sites from `…;render()` to `…;setTimeout(render,0)`. No change to `render()` itself.
+
+- **Surface area**: 56 surface edits in `shlav-a-mega.html`, mechanical — ~30 min with a careful sed.
+- **Test blast radius**: 0 known assertions (same as A — the test suite doesn't run inline handlers).
+- **Behavioral risk**: 56 individual edits = 56 places to typo. The 6 internal `render();break;` recursive sites in the switch (lines 6872-6874, etc.) MUST NOT be touched — they fire inside `render()` itself, not from a click. Easy to misclassify with a regex.
+- **Wins**: same effective fix as A for the click-race symptom; preserves backward synchronous behavior for any internal `render()` caller (recursive switch dispatch, post-login redirect, etc.).
+- **Versus A**: A is 1 line touching all 57 sites uniformly. C is 56 lines touching only the 56 user-event sites. C surface area is **larger** but blast radius is **identical**. A is strictly preferable unless a specific internal caller is found to depend on synchronous DOM rebuild — the search above found none.
+- **Effort**: 1h including the careful regex + manual verify of each touched line.
+- **Reversibility**: medium (single revert undoes all 56 edits).
+
+---
+
+### Recommendation: **Option A**
+
+Rationale:
+1. **Smallest blast radius for largest behavioral change.** 1-line wrap fixes 56 antipattern sites + the 1 id-bearing site uniformly. Option C does the same fix at 56× the surface.
+2. **Zero test risk verified.** No assertion in the 1,270-test suite reads DOM immediately after a synchronous `render()`. The grep for `render();.*expect.*getElementById` returned empty.
+3. **One known follow-up** before commit: the 6 internal recursive `render()` calls in the switch dispatch (lines 6872-6874) need to be converted from `tab='X';render();break;` to `tab='X';el.innerHTML='';break;` so the inevitable next tick's render runs once, not twice. ~10 minutes of edit + smoke-test on the 6 affected tabs (search/chat/book/syl reroutes).
+4. **Option B is the right *eventual* fix** — it removes the antipattern class, not just the symptom — but it's 2-3 days of work and 15-30 new tests for marginal additional benefit over A. Defer until a concrete second motivator appears (CSP tightening, closure-leak class re-emerging, or HTML-size pressure).
+5. **Option C is dominated by A** — same fix, larger surface, more places to typo. No reason to prefer C unless an internal DOM-read-after-render caller is discovered.
+
+If A is chosen, the implementation PR should include:
+- 1 vitest test asserting the wrapped behavior (mock `setTimeout`, fire `render()`, assert it didn't run synchronously).
+- 1 manual chaos-bot rerun against the 56 sites with the same scenario that produced 953 timeouts/h on 2026-05-05; expected delta: timeouts → near-zero.
+- An entry in `Known Traps` of `CLAUDE.md` documenting the new "render is async" invariant for future contributors.
+
+If B is chosen instead, scope it as a 4-PR series: (1) action registry + dispatcher + tests, (2) migrate buttons (33 sites), (3) migrate divs/spans (21 sites), (4) migrate inputs (3 sites) + drop inline-handler CSP allowance.
+
+If C is chosen instead, a single PR with the 56 surface edits is fine; just exclude the 6 internal switch-recursive sites by line-range, not regex.
+
+---
+
 ## 2026-05-10 — v10.64.86 audit pass (§ D)
 
 ### Pre-audit state
