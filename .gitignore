@@ -52,3 +52,7 @@ scripts/fm-state-probe.mjs
 # the raw generated dump itself is regenerable.
 source_completeness_audit_*.json
 data/ai_hard_seed.geri.generated.json
+
+# 2026-05-10: chaos-bot output + test coverage (prevent git add -A near-misses)
+chaos-reports/
+coverage/
