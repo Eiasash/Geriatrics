@@ -85,13 +85,16 @@ describe("a11y issue #125 — v10.64.83 contrast follow-up", () => {
     expect(m[1].trim()).toBe("71 85 105");
   });
 
-  it(".dm-btn light-mode default uses theme fg, not hardcoded white", () => {
-    // The base rule should now use rgb(var(--fg)). The original hardcoded
-    // color:#fff is preserved only inside body.dark override.
+  it(".dm-btn base rule uses white text + white-tint bg (v10.64.90 dark-on-dark fix)", () => {
+    // v10.64.83 made this "theme-aware" via rgb(var(--fg)), but that put
+    // slate-800 (#1e293b) text on the .hdr dark navy gradient (#1e293b end-stop)
+    // — contrast ratio ~1.0:1, buttons effectively invisible in light mode.
+    // v10.64.90 reverts to white-on-white-tint since .hdr is dark in BOTH
+    // modes (light-mode gradient: #0f172a→#1e293b; dark-mode: #000→#0f172a).
     const baseRuleMatch = html.match(/\.dm-btn\s*\{[^}]+\}/);
     expect(baseRuleMatch).toBeTruthy();
-    expect(baseRuleMatch[0]).toContain("color:rgb(var(--fg))");
-    expect(baseRuleMatch[0]).not.toMatch(/color:#fff(?!\s*[}])/);
+    expect(baseRuleMatch[0]).toContain("color:#fff");
+    expect(baseRuleMatch[0]).toContain("background:rgba(255,255,255,0.12)");
   });
 
   it(".dm-btn has a body.dark override that restores white text", () => {
@@ -100,13 +103,15 @@ describe("a11y issue #125 — v10.64.83 contrast follow-up", () => {
     expect(html).toMatch(/body\.dark\s+\.dm-btn\s*\{[^}]*background:rgba\(255,255,255,0\.08\)/);
   });
 
-  it("header h1 has color:rgb(var(--fg)) inline style (theme-aware)", () => {
-    // The "Shlav A Mega" h1 was inheriting white from a parent rule meant
-    // for dark mode. Inline color uses the theme variable so the title is
-    // dark-on-light AND light-on-dark.
+  it("header h1 has color:#fff inline style (v10.64.90 dark-on-dark fix)", () => {
+    // v10.64.83 set this to rgb(var(--fg)) thinking the .hdr was theme-aware,
+    // but the gradient is dark in both modes — slate-800 text on slate-800
+    // gradient end-stop = invisible. v10.64.90 hardcodes white so the title
+    // is always legible against the consistent dark navy header.
     const h1Match = html.match(/<h1[^>]*>Shlav A Mega/);
     expect(h1Match).toBeTruthy();
-    expect(h1Match[0]).toContain("color:rgb(var(--fg))");
+    expect(h1Match[0]).toContain("color:#fff");
+    expect(h1Match[0]).not.toContain("color:rgb(var(--fg))");
   });
 });
 
