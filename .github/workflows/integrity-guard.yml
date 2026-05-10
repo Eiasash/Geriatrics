@@ -10,7 +10,7 @@ jobs:
   js-integrity:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # ── GATE 1: JS Syntax Check (node --check) ──
       # This would have caught the getWeakTopics truncation instantly
