@@ -135,8 +135,14 @@ describe("Phase 4 — CSP hardening", () => {
     expect(html).toMatch(/base-uri\s+'self'/);
   });
 
-  it("includes frame-ancestors 'none'", () => {
-    expect(html).toMatch(/frame-ancestors\s+'none'/);
+  it("does NOT include frame-ancestors directive in CSP meta (v10.64.92 — meta-only is silently ignored)", () => {
+    // Per CSP3 spec, frame-ancestors is silently ignored when delivered via
+    // <meta>. The directive provided zero actual protection. Removed in
+    // v10.64.92 to clear the console warning. Note: scope check to the
+    // CSP meta tag only — the CHANGELOG body legitimately quotes the term.
+    const cspMatch = html.match(/<meta\s+http-equiv="Content-Security-Policy"\s+content="([^"]+)"/);
+    expect(cspMatch, "CSP meta tag must exist").not.toBeNull();
+    expect(cspMatch[1]).not.toMatch(/frame-ancestors/);
   });
 
   it("includes form-action 'self'", () => {
