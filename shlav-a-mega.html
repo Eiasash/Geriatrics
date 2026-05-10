@@ -6806,7 +6806,15 @@ function initPostLoginRestore(){
 Object.assign(window,{ _restoreSuppressKey, _restoreIsFreshState, _restoreShouldPrompt, peekCloudBackup, applyRestorePayload, initPostLoginRestore });
 
 function render(){
+// v10.64.88: microtask defer (Option A from PR #195 audit). Defers DOM rebuild
+// to the next tick so click events finish propagating before element detachment.
+// Fixes the click-event-during-rebuild race that produced 953 timeouts/h in the
+// 2026-05-05 chaos run. Capture focus + input values BEFORE the wrap fires so
+// they reflect pre-rebuild state. Internal recursive render() calls (lines
+// 6848-6874 switch dispatch) self-defer through the same wrapper.
+setTimeout(()=>{
 const el=document.getElementById('ct');
+if(!el)return; // defensive: container could be detached if app teardown raced render
 const focused=document.activeElement?.id;
 const sv={srchi:document.getElementById('srchi')?.value,nfilt:document.getElementById('nfilt')?.value};
 if(tab!==lastTab){el.classList.remove('fade-in');void el.offsetWidth;el.classList.add('fade-in');window.scrollTo({top:0});lastTab=tab;}
@@ -6881,6 +6889,7 @@ if(sv.srchi!==undefined&&document.getElementById('srchi'))document.getElementByI
 if(sv.nfilt!==undefined&&document.getElementById('nfilt'))document.getElementById('nfilt').value=sv.nfilt;
 if(focused){const fe=document.getElementById(focused);if(fe){fe.focus();if(fe.value){try{fe.setSelectionRange(fe.value.length,fe.value.length);}catch(_){/* range/date/etc inputs reject setSelectionRange */}}}}
 updateAccountChip();
+},0);
 }
 
 // v10.49.0: Header account chip — shows initial when logged in, 👤 when guest.
@@ -7003,8 +7012,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.87';
+const APP_VERSION='10.64.88';
 const CHANGELOG={
+'10.64.88':[
+'🔧 render() microtask defer (Option A from PR #195 audit). Wraps the body of `render()` in `setTimeout(()=>{...},0)` so click events finish propagating BEFORE the DOM is rebuilt. Fixes the click-event-during-rebuild race the chaos-bot ran into 2026-05-05 (953 timeouts/h dominated by inline-handler `onclick=";...;render()"` sites — 56 of 57 idless, can\'t be helped by id-keyed focus restoration). Surface area: 1 file, 1 function, ~5 lines of edit (open setTimeout, indent body, close, plus a defensive `if(!el)return` guard since the deferred callback could in theory fire after `#ct` was detached). Test risk verified zero pre-ship (PR #195 inventory: no sync DOM-reads after render() across 1,270 tests / 61 files; no sync DOM-reads after render() in production code either — line 1148 scroll already wraps in setTimeout(...,100); line 8072 updateSyncPill reads `#syncPill` which is static HTML at line 859 not inside `#ct`). The 6 internal recursive render() calls in switch dispatch (lines 6848-6874 for #study/#flash/#meds/#calc/#search/#chat/#book/#syl deep-link reroutes) self-defer through the same wrapper — adds one extra tick of delay but no functional break (the inner case sets state then clears the container, and the next-tick render handles the rebuild). Trinity bumped 10.64.87 → 10.64.88. New regression test `tests/renderMicrotaskDefer.test.js` (5 tests) pins the wrapper + a forward-looking ratchet that fails any future sync DOM-read after render() in shlav-a-mega.html (which would silently read stale DOM under the async wrap). The audit memo at PR #195 enumerates Option B (event-delegation rewrite, 2-3 days) and Option C (per-handler annotation, 56 surface edits) — both deferred; A was the 1-line change with smallest blast radius.',
+],
 '10.64.87':[
 '♿ Accessibility — SW update banner dismiss button (the ✕ that appears when a new version is queued for activation). v10.64.86 live re-audit (playwright, fired right after the v86 SW deploy queued a fresh update banner) found this button at 3.86:1: white text on a `rgba(255,255,255,0.2)` tint over the teal-700 (#0D7377→#14919B) gradient. Fails WCAG AA. Two minimum-code edits in src/sw-update.js: (1) bg `rgba(255,255,255,.2)` → `rgba(0,0,0,.25)` — flips the tint from "lighter than banner" to "darker than banner". White text on the resulting darker teal (~rgb(9,80,83)) computes to 8.27:1 (AAA). (2) Added `aria-label="Dismiss update banner"` + matching `title` — the ✕ glyph is not an accessible name on its own, screen readers announced the button as "button" with no purpose. Trinity bumped 10.64.86 → 10.64.87. Conditional surface — only visible to users who already have v85 (or earlier) cached when v87 deploys, so it self-resolves the next time the SW completes its update cycle.',
 ],
