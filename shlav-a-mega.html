@@ -6031,7 +6031,23 @@ h+=`<div style="padding:8px 10px;border-radius:10px;border:1px solid ${clr}30;ba
 });
 h+=`</div>`;}
 }else{
-h+=`<div style="text-align:center;padding:24px;color:rgb(var(--fg3));font-size:12px">Add drugs above to analyze interactions</div>`;
+// v10.64.99 empty-state demo: replace the dead 700px-of-empty-space below
+// "Add drugs above..." with 3 sample-patient regimens that demonstrate the
+// engine. Each preset is a real geriatrics teaching scenario triggering a
+// different STOPP/Beers warning pattern (anticholinergic burden cascade /
+// anticoag + antiplatelet bleed risk / serotonin syndrome stack).
+h+=`<div style="text-align:center;padding:6px 8px 12px;color:rgb(var(--fg2));font-size:11px">Add drugs above — or load a sample regimen:</div>`;
+const _samp=[
+{l:'🛌 Falls + sleep + bladder',s:'High anticholinergic burden',d:'Oxybutynin,Diphenhydramine,Amitriptyline,Lorazepam'},
+{l:'❤️ HFrEF + AFib + DM',s:'Cardiometabolic polypharmacy',d:'Furosemide,Spironolactone,Metoprolol,Apixaban,Atorvastatin,Metformin,Aspirin'},
+{l:'🧠 Depression + pain + insomnia',s:'Serotonergic + sedation stack',d:'Sertraline,Mirtazapine,Tramadol,Amitriptyline,Lorazepam'},
+];
+_samp.forEach(s=>{
+h+=`<button type="button" onclick="medBasket='${s.d}'.split(',');render()" style="display:block;width:100%;text-align:start;padding:11px 14px;margin-bottom:8px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:12px;cursor:pointer;font:inherit">
+<div style="font-weight:700;font-size:12px;color:rgb(var(--fg))">${s.l}</div>
+<div style="font-size:10px;color:rgb(var(--fg2));margin-top:2px">${s.s} · ${s.d.split(',').length} drugs</div>
+</button>`;
+});
 }
 h+=`<!-- med list filter handled by filterMedList() -->`;
 return h;
@@ -7098,8 +7114,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.98';
+const APP_VERSION='10.64.99';
 const CHANGELOG={
+'10.64.99':[
+'🧺 Med Basket empty-state demo — was 700px of dead space below "Add drugs above to analyze interactions". Replaced the static placeholder with 3 sample-patient regimens that load the basket on tap, each triggering a different STOPP/Beers warning pattern: (1) Falls + sleep + bladder = Oxybutynin + Diphenhydramine + Amitriptyline + Lorazepam → ACB ≥10, dual-anticholinergic warning, falls-risk warning, anticholinergic-vs-cholinesterase-inhibitor warning if combined with donepezil. (2) HFrEF + AFib + DM = Furosemide + Spironolactone + Metoprolol + Apixaban + Atorvastatin + Metformin + Aspirin → triggers anticoag-+-antiplatelet bleed warning, hyperK risk if combined with ACEi. (3) Depression + pain + insomnia = Sertraline + Mirtazapine + Tramadol + Amitriptyline + Lorazepam → triggers serotonin-syndrome warning, falls-risk warning, dual-anticholinergic. All 14 drug names verified present in data/drugs.json before shipping. The buttons use plain `medBasket=\\'comma,separated\\'.split(",")` onclick handlers (no JSON.stringify, no escaping risk — drug names are alphanumeric only). User can edit individual chips after loading via the existing × button. Real teaching value for a board-prep tool — turns the empty page into an immediate engine demo. No data changes, no test impact. Trinity bumped 10.64.98 → 10.64.99.',
+],
 '10.64.98':[
 '🔤 Hebrew RTL bidi fix — explanation + autopsy. User-reported: image 3 showed the static explanation with line-wrap bug — first line ended "I.V CEFTRIAXONE-" and second line started ".pyelonephritis/urosepsis בקשישה..." with the period at the visual line-START (RTL = right edge). Root cause: the explanation div used `unicode-bidi:plaintext` on the whole multi-paragraph block. Plaintext resolves base direction from the FIRST-strong character of the entire block. AI explanations frequently begin with an English drug name ("**I.V CEFTRIAXONE (ב) הוא הטיפול..."), so first-strong-char = "I" → base direction LTR → entire Hebrew explanation rendered as if it were an English paragraph with embedded Hebrew. Periods, parens, and line-wraps then resolved at wrong positions. Fix at line 3274: split by `\\n+` into per-paragraph divs, each with `dir="${heDir(line)}"` (mostly-Hebrew lines get rtl even if they start with an English drug name) and `unicode-bidi:isolate` (each line is its own bidi paragraph, no cross-line bleed). Also at line 3325 (Distractor Autopsy option div): had `dir="${heDir(...)}"` but no `unicode-bidi` declaration — default is `normal`, meaning the dir is just a hint and not a real bidi context. Added `unicode-bidi:isolate` so the rationale text (mostly Hebrew with English drug terms) gets a proper RTL paragraph context. No data changes, no regex test impact (bilingualToggle.test.js still matches the `remapExplanationLetters(qLang(q,_shuf))` call). Trinity bumped 10.64.97 → 10.64.98.',
 ],
