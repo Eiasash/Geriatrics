@@ -17,6 +17,15 @@
  * all three siblings. Drift in any one would break the round-trip
  * optimization on flaky 4G — users would have to re-enter their API key
  * after every login on a fresh device.
+ *
+ * Runtime sibling: scripts/smoke-api-key-restore.mjs asserts the runtime
+ * data flow (real RPC fires → real response shape → real localStorage
+ * write) against the live URL + a SQL-seeded burner. The two layers are
+ * complementary per feedback_invariant_triad.md — this file pins the
+ * source-side wiring at PR-review time; the runtime smoke catches drift
+ * the static check cannot reach (RPC body refactor, middleware mangle,
+ * setApiKey side-effects). Operate via `npm run smoke:api-key` with
+ * TEST_USER / TEST_PASS / EXPECTED_API_KEY env vars.
  */
 
 import { describe, it, expect } from 'vitest';
