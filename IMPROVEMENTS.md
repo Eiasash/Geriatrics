@@ -4,6 +4,71 @@ This file is appended to by every `audit-fix-deploy` pipeline run. Each entry re
 
 ---
 
+## 2026-05-10 — Doctor-on-mobile chaos bot finding: 79s first-load on Slow 3G (NEEDS FOLLOW-UP)
+
+`scripts/chaos-doctor-mobile.mjs` (PR #204, merged 2026-05-10) ran against live Geri at fixed 390×844 viewport with CDP throttling = Slow 3G (400 Kbps DL, 400 ms RTT) + 4× CPU.
+
+### Measurements (2 sessions × 8 questions each)
+
+| Scenario | Quiz UI render time | c2f p50 | c2f p95 | Bugs |
+|---|---:|---:|---:|---:|
+| No throttle (baseline) | <2s | 8 ms | 10 ms | 0 |
+| Slow 3G + 4× CPU | **79 s** ⚠️ | 55 ms | 128 ms | 0 (once loaded) |
+
+Once the quiz UI renders, Geri is fast and responsive — 16 questions answered cleanly across 2 sessions, 0 layout/interaction bugs. The single dominant mobile UX problem is the cold-start time on slow networks.
+
+### Root cause
+
+`data/questions.json` is **10.80 MB on disk**. Field-by-field byte budget (raw serialized):
+
+| Field | Size | % of total |
+|---|---:|---:|
+| `e` (AI explanation) | 2.84 MB | **34%** |
+| `q_en` + `o_en` (English bilingual) | 1.05 MB | 13% |
+| `q` (Hebrew question text) | 0.89 MB | 11% |
+| `o` (options) | 0.53 MB | 6% |
+| `ref` (Hazzard/Harrison citation) | 0.26 MB | 3% |
+| (other fields + JSON delimiters) | ~2.66 MB | ~33% |
+
+On 400 Kbps Slow 3G, a 10.8 MB file takes ~3.5 minutes to download in worst case (gzip drops it to ~6 min total → ~60 s observed). 4× CPU JSON.parse adds another 10-15 s. Total ≈ 79 s observed.
+
+### Already-shipped optimizations (no further wins available here)
+
+- **SW pre-cache split** (Geri sw.js install handler at line 38) — CRITICAL_URLS atomic + OPTIONAL_URLS via `Promise.allSettled`. Already correctly avoids the FM v1.21.15 anti-pattern.
+- **questions.json preload hint** (line 20) — `<link rel="preload" href="./data/questions.json" as="fetch" type="application/json" crossorigin>` since v10.63.7. Browser starts the fetch at HTML-parse time.
+- **requestIdleCallback boot deferral** (line 1212) — questions.json fetch yields to critical render path first.
+- **Compact JSON encoding** — measured savings of compact rewrite: 1.1%. Already minimally formatted.
+
+### Recommended next-pass refactor (NOT shipped this session)
+
+Split `e` field into a separate `data/explanations.json` file, lazy-loaded after quiz UI renders.
+
+**Expected impact**: questions.json drops 10.8 MB → ~7.0 MB (35% smaller). On Slow 3G that's 25-30 s saved on first load. By the time user clicks Check on the first question, explanations.json (2.84 MB) has prefetched in background via idle-callback (matches existing `_disPromise` pattern for distractors.json).
+
+**Why deferred**: 6+ test files depend on `q.e` being present:
+- `tests/regressionGuards.test.js:248` requires `q.e.trim().length >= 10` on every Q (hard gate)
+- `tests/expandedDataIntegrity.test.js:126,134` measures `q.e` length distribution
+- `tests/regulatoryTags.test.js:58`, `tests/contentQuality.test.js:42`, `tests/renderSiteAudit.test.js:88+` audit `q.e` access patterns
+- `tests/bilingualToggle.test.js:43,154,155` audits paired `q.e_en`
+
+Updating these tests to assert against an `EX[idx]` lookup instead of bare `q.e` is mechanical but invasive. Should be tackled in a fresh session with clean context, not pushed through under fatigue.
+
+### Actionable plan for next session
+
+1. **Build script**: `scripts/split_explanations.py` — read `data/questions.json`, build `data/explanations.json` as `[explanation0, explanation1, ...]` indexed by Q position, strip `e` from questions.json. Idempotent (skip if `e` already missing).
+2. **Runtime**: add `EX = []` global + `_exPromise` (mirrors existing `_disPromise` pattern at line 1238). Modify the 2 main `q.e` read sites — line 3229 (if-check) and line 4306 (render the 💡 explanation div) — to read `q.e || EX[idx] || ''`.
+3. **Service worker**: add `data/explanations.json` to `JSON_DATA_URLS`. Stays in OPTIONAL_URLS (best-effort install).
+4. **Tests**:
+   - Update `regressionGuards.test.js:248` invariant: every Q must have an explanation in `q.e || EX[idx]`
+   - Update `expandedDataIntegrity.test.js:126,134` similarly
+   - New test: `tests/explanationsSplit.test.js` — assert `data/explanations.json` length === questions.json length, every entry is a string, length distribution unchanged
+5. **Bot validation**: after merge + verify-deploy, re-run `CHAOS_NETWORK=slow3g CHAOS_CPU=4 CHAOS_SESSIONS=2 CHAOS_QS=8 node scripts/chaos-doctor-mobile.mjs`. Compare quiz UI render time to the 79 s baseline. Target: ≤50 s.
+6. **Sibling carry-over**: FM v1.21.27 measured 180 s+ first-load (worse than Geri). Same `e`-split pattern applies; FM has the same field structure. Plan separate FM PR after Geri ship validates.
+
+This document is the durable handoff. The bot script is committed to `scripts/chaos-doctor-mobile.mjs` and reruns cheaply.
+
+---
+
 ## 2026-05-10 — Option A SHIPPED (v10.64.88, render() microtask defer)
 
 Implements the recommendation from the audit memo below. **Wrapper-only** — switch-dispatch refactor was deferred per memo line 92 + advisor consult (the recursive `render()` calls inside the switch self-defer through the same wrapper, adding 1 tick of delay but no functional break; the memo's prescribed transformation `tab='X';el.innerHTML='';break;` would leave the visual UI empty until next user input).
