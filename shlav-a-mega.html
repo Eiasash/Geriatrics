@@ -477,6 +477,9 @@ body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg))
 .track-heatmap__cell--b3{background:#a59c74;color:#0f172a}
 .track-heatmap__cell--b4{background:#fee838;color:#0f172a}
 .track-heatmap__cell--neutral{background:#cbd5e1;color:#0f172a}
+/* v10.64.97: 46 cells of "·" placeholder dots on first load promised data and delivered nothing. Hide the pct line entirely on neutral (no-data) cells and center the topic name so untouched cells look like clean topic chips, not half-filled data slots. CSS-only — no template change. Data-bearing cells (--b0..--b4) keep showing the percentage. */
+.track-heatmap__cell--neutral{justify-content:center}
+.track-heatmap__cell--neutral .track-heatmap__pct{display:none}
 .track-heatmap__swatch--b0{background:#00224e}
 .track-heatmap__swatch--b1{background:#3b496c}
 .track-heatmap__swatch--b2{background:#707173}
@@ -999,7 +1002,7 @@ function renderTopicHeatmap(){
   let h=`<div class="card track-heatmap">
 <div class="track-heatmap__head">
 <div class="track-heatmap__title">🗺️ Topic Heatmap <span class="track-heatmap__sub">· FSRS retention · ${TOPICS.length} topics</span></div>
-<div class="track-heatmap__count">${reviewedTotal} review${reviewedTotal===1?'':'s'} aggregated</div>
+<div class="track-heatmap__count">${reviewedTotal===0?'Tap any topic to start':`${reviewedTotal} review${reviewedTotal===1?'':'s'} aggregated`}</div>
 </div>
 <div role="grid" aria-label="Topic mastery heatmap" class="track-heatmap__grid">`;
   TOPICS.forEach((name,ti)=>{
@@ -7087,8 +7090,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.96';
+const APP_VERSION='10.64.97';
 const CHANGELOG={
+'10.64.97':[
+'🗺️ Topic Heatmap empty-state cleanup — Track-tab first-load showed 46 cells each with a "·" placeholder dot at the bottom edge. The "·" promised "data goes here" but delivered nothing until the user answered ≥3 Qs in that topic (the FSRS-mastery aggregation threshold for `_heatBucket` to color the cell). Cumulative effect: a 5-column × 9-row grid of half-filled grey tiles dominating the Track view above-the-fold. Two pure-CSS additions on the existing `--neutral` modifier (which is already applied when `mastery[ti].r === null`): (1) `justify-content:center` to center the topic name vertically (was `space-between` which pushed it to the top while the empty pct sat at the bottom — visually unbalanced), (2) `.track-heatmap__cell--neutral .track-heatmap__pct{display:none}` to hide the dot line entirely. Untouched cells now look like clean topic chips. Data-bearing cells (--b0..--b4) unchanged — they keep showing the percentage. Plus a one-line copy fix: when `reviewedTotal === 0`, the head count line now reads "Tap any topic to start" instead of "0 reviews aggregated" (actionable, not status-only). No template restructure, no JS state change, no test impact. Trinity bumped 10.64.96 → 10.64.97.',
+],
 '10.64.96':[
 '🔧 RTL writing-mode bug fix in v95 phone header. v95 used `padding-inline-end:172px` thinking it would reserve space on the right side of h1 where the icon strip lives. But in RTL writing-mode, inline-end = LEFT (the end of right-to-left text flow), so the padding landed on the wrong side. Live Playwright geometry inspection after v95 deploy confirmed: h1 text rendered at left 224→344, icons at left 176→352, still 120px of overlap. Switched to physical `padding-right:172px` (also `padding-inline-end:0` to defuse the v95 attempt) so the reserved space is always on the physical right edge regardless of writing direction. Lesson: when reserving space for absolutely-positioned elements that use physical `right:` offsets, use physical `padding-right:` to match — mixing logical (`padding-inline-end`) with physical (`right:`) breaks under RTL. Trinity bumped 10.64.95 → 10.64.96.',
 ],
