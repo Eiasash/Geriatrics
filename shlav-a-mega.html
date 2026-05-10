@@ -7114,8 +7114,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.100';
+const APP_VERSION='10.64.101';
 const CHANGELOG={
+'10.64.101':[
+'🔒 Verify-chain hardening — closes the gap that let v99 ship broken. New scripts/check-inline-js.py extracts every inline script tag from shlav-a-mega.html (those without src=) and runs node --check on each one. Catches JS syntax errors hidden inside string literals (e.g. broken backslash-quote escapes inside CHANGELOG entries) that brace-balance.py and vitest both miss. Wired into the npm-run-verify chain immediately after check-brace-balance and before the slower harrison-hebrew-baseline so syntax errors fail fast. Verified the new check correctly catches a synthetic v99-style injection: a CHANGELOG entry with raw backslash-quote-escape produces "FAIL: script has a JS syntax error" with the offending line number. No app behavior change. Trinity bumped 10.64.100 → 10.64.101.',
+],
 '10.64.100':[
 '🚨 HOTFIX of v99 — JS syntax error broke entire app (zero render). v99 CHANGELOG entry contained the literal string `medBasket=\\\\\'comma,separated\\\\\'` describing the onclick code, but inside a single-quoted JS string literal the four backslashes resolved to two real backslashes followed by an UN-escaped single quote, terminating the string mid-way. Browser console showed "Unexpected identifier comma" and #ct + #tb stayed empty. The verify gauntlet has a hole here: `check-brace-balance.py` checks brace counts (still balanced after the broken escape) and vitest reads the HTML as text (not as JS), so the bug shipped. Live for ~3 minutes before detection via Playwright probe (#tb buttons = 0 was the smoking gun). Fix: rewrote the v99 CHANGELOG entry to paraphrase the technical detail without quoting the actual JS syntax. Trinity bumped 10.64.99 → 10.64.100. Should add `node --check` on extracted inline scripts to npm-run-verify so future syntax-in-string bugs catch pre-push (currently a manual-only check). Tracking that as a follow-up.',
 ],
