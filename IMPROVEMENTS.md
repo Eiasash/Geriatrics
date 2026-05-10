@@ -4,6 +4,49 @@ This file is appended to by every `audit-fix-deploy` pipeline run. Each entry re
 
 ---
 
+## 2026-05-10 — Option A SHIPPED (v10.64.88, render() microtask defer)
+
+Implements the recommendation from the audit memo below. **Wrapper-only** — switch-dispatch refactor was deferred per memo line 92 + advisor consult (the recursive `render()` calls inside the switch self-defer through the same wrapper, adding 1 tick of delay but no functional break; the memo's prescribed transformation `tab='X';el.innerHTML='';break;` would leave the visual UI empty until next user input).
+
+### Pre-check (mandatory)
+
+Per memo §A "Behavioral risk", searched `shlav-a-mega.html` for sync-after-render patterns. Findings:
+
+| Pattern | Sites | Verdict |
+|---|---|---|
+| `render(); document.getElementById/querySelector` (sync DOM read) | 0 unsafe | safe |
+| Line 1148 (post-render scroll) | wrapped in `setTimeout(...,100)` | already deferred — safe |
+| Line 8072 (`renderTabs();render();updateSyncPill();` at boot) | `updateSyncPill` reads `#syncPill` which is **static HTML at line 859**, not inside `#ct` | independent of render output — safe |
+| Line 6883 (`updateAccountChip()` inside render body) | reads `#hdr-account-btn` static HTML | safe (also inside the wrap so timing is preserved) |
+| 36 `;render();` patterns spot-checked | All terminal (state mutation then end of handler) or recursive switch dispatch with `el.innerHTML=''` already cleared | safe |
+
+**Decision: SHIP.** Zero unsafe sync-after-render patterns. The advisor reviewed the same evidence and concurred.
+
+### What shipped
+
+- **`shlav-a-mega.html` line 6808-6886** — `render()` body wrapped in `setTimeout(()=>{...},0)`. Added defensive `if(!el)return;` guard inside the wrapper since the deferred callback could in theory fire after `#ct` is detached (app teardown, hot reload, test harness). Kept the existing focus-capture (line 6810) and input-value-capture (line 6811) inside the wrapper — they now run after the click event has propagated, but for the 56 idless click-targets focus restoration is moot (memo §3) and for the one id-bearing oninput site (`#srchi`), focus is preserved because the user is still on the search box when setTimeout(0) fires.
+- **Trinity bump** v10.64.87 → v10.64.88 (HTML APP_VERSION + sw.js CACHE + package.json). Behavioral change → trinity required.
+- **`tests/renderMicrotaskDefer.test.js`** — 5-test regression guard: (1) `setTimeout(()=>{` opens the body, (2) `},0);` closes before fn brace, (3) `if(!el)return;` defensive guard present, (4) **forward-looking** ratchet — fails any future `render(); document.getElementById(...)` in `shlav-a-mega.html` (which would silently read stale DOM under the async wrap), (5) trinity APP_VERSION shape pin.
+- **`CLAUDE.md` § Known Traps** — new "render() is async (v10.64.88+)" entry documenting the new invariant.
+- **`shlav-a-mega.html` CHANGELOG** — v10.64.88 entry added (changelogDrift test gate).
+
+### Verification
+
+- `npm run verify` GREEN: 1276/1283 tests pass + 7 skipped (1270 prior + 5 new render tests + 1 a11y test that prior session added). 0 brace-balance violations, 0 unsanitized innerHTML, version-sync OK, Harrison Hebrew baseline 0.
+- The 5 new render tests all pass.
+- `bash scripts/verify-deploy.sh` — TBD on push.
+
+### Deferred (intentional)
+
+- **6 internal recursive `render()` calls in switch dispatch** (lines 6848-6874) — left as-is per memo line 92 + advisor consult. They self-defer through the wrapper, adding 1 tick of latency per recursion but no functional break. The memo's prescribed cleaner pattern (`tab='X';el.innerHTML='';break;` without the recursive `render()`) would leave the deep-link target tab visually empty until next user input — strictly worse than the 1-tick overhead.
+- **Option B (event-delegation rewrite)** and **Option C (per-handler annotation)** — A renders both unnecessary; the audit memo below has the full reasoning.
+
+### Risk surface for next pass
+
+If the chaos-bot still shows click-timeouts after this lands, the cause is NOT the render race (this fix closes it). Look at: (1) heavy synchronous work in renderQuiz/renderTrack/renderLibrary, (2) main-thread layout thrashing from very large innerHTML strings, (3) the 6 recursive switch sites if a new deep-link target is added that depends on the recursion path.
+
+---
+
 ## 2026-05-10 — render() detach antipattern: architectural options memo
 
 **Audit-only pass. No code change to `shlav-a-mega.html`.** This memo enumerates three architectural options for the render-during-event antipattern documented in `feedback_render_detach_antipattern.md`. The user picks one; a follow-up PR implements.

@@ -631,6 +631,28 @@ lanes can push to main. Lane discipline:
 - **Detection**: SW `CACHE` version drifting mid-session = the other lane just
   shipped — pull before pushing.
 
+### `render()` is async (v10.64.88+)
+
+The body of `render()` (line 6808 in `shlav-a-mega.html`) is wrapped in
+`setTimeout(()=>{...},0)` to defer DOM rebuild past the current event loop
+tick (Option A from PR #195 audit, fixes the chaos-bot's 953 click-timeouts/h
+on idless `onclick="…render()"` sites). This means:
+
+- **Any code that does `render(); document.getElementById(...)` synchronously
+  reads stale DOM** — capture before render, or chain via setTimeout/
+  queueMicrotask. `tests/renderMicrotaskDefer.test.js` ratchets against this
+  pattern in `shlav-a-mega.html`.
+- The 6 internal recursive `render()` calls in switch dispatch (lines
+  6848-6874 for #study/#flash/#meds/#calc/#search/#chat/#book/#syl deep-link
+  reroutes) self-defer through the same wrapper — adds one extra tick but
+  works correctly.
+- Focus capture (`document.activeElement?.id`) and input-value capture
+  (`#srchi`/`#nfilt`) now run inside the deferred callback. For idless click
+  targets this is moot (memo §3); for the one id-bearing oninput site
+  (`#srchi`), focus is preserved because the user is still on the search box
+  when setTimeout(0) fires.
+- Reverting the wrap re-introduces the click-event-during-rebuild race.
+
 ### Hebrew bidi corruption
 
 Editing Hebrew `.html` / `.tsx` files via `str_replace` can silently fail when
