@@ -226,3 +226,30 @@ describe("a11y issue #125 — v10.64.87 SW update banner dismiss button", () => 
     expect(swUpdateSrc).toMatch(/data-action="dismiss-update"[^>]*aria-label="Dismiss update banner"/);
   });
 });
+
+describe("a11y skip-link mobile overflow guard (v10.64.89)", () => {
+  // Browser-tested 2026-05-10: legacy `left:-9999px` skip-link inflated
+  // documentElement.scrollWidth to 10385px on 390-wide mobile viewports.
+  // Switched to WCAG visually-hidden clip pattern. These guards prevent
+  // drive-by reintroduction during future a11y edits.
+
+  it(".skip-link rule does NOT use left:-9999 (or other large negative)", () => {
+    const m = html.match(/\.skip-link\s*\{[^}]+\}/);
+    expect(m, ".skip-link CSS rule must exist").not.toBeNull();
+    expect(m[0]).not.toMatch(/left:\s*-\d{3,}/);
+  });
+
+  it(".skip-link rule uses the visually-hidden clip pattern", () => {
+    const m = html.match(/\.skip-link\s*\{[^}]+\}/);
+    expect(m).not.toBeNull();
+    expect(m[0]).toMatch(/clip:\s*rect\(\s*0(?:px)?\s*,\s*0(?:px)?\s*,\s*0(?:px)?\s*,\s*0(?:px)?\s*\)/);
+  });
+
+  it(".skip-link:focus restores width/height for visible focus state", () => {
+    const m = html.match(/\.skip-link:focus\s*\{[^}]+\}/);
+    expect(m, ".skip-link:focus rule must exist").not.toBeNull();
+    expect(m[0]).toMatch(/width:\s*auto/);
+    expect(m[0]).toMatch(/height:\s*auto/);
+    expect(m[0]).toMatch(/clip:\s*auto/);
+  });
+});
