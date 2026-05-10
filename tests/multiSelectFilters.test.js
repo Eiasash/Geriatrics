@@ -265,10 +265,16 @@ describe('v10.64.51-57 — multi-axis filter system', () => {
   describe('UI integrity — group rendering iterates TOPIC_GROUPS', () => {
     it('topic pill render block uses TOPIC_GROUPS.forEach', () => {
       // The grouped pill rendering replaced the flat TOPICS.forEach.
-      expect(html).toMatch(/TOPIC_GROUPS\.forEach\(grp=>\{/);
+      // v10.64.91: forEach signature became (grp,_gi)=>{ to support per-group
+      // expand/collapse state via window._grpExpanded.
+      expect(html).toMatch(/TOPIC_GROUPS\.forEach\(\(grp,_gi\)=>\{/);
     });
 
-    it('group header has clickable toggleTopicGroup wiring', () => {
+    it('group header has clickable toggle wiring (collapse + select-all)', () => {
+      // v10.64.91: header click was relocated from toggleTopicGroup(...) →
+      // toggleGroupExpanded(${_gi}). The toggleTopicGroup helper is now wired
+      // to a "Select all / Clear group" pill INSIDE the expanded pills div.
+      expect(html).toContain('toggleGroupExpanded(${_gi})');
       expect(html).toContain('toggleTopicGroup(${grp.tis.join(\',\')})');
     });
 
