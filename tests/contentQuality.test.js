@@ -20,6 +20,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { loadQuestionsHydrated } from './_helpers/loadQuestionsHydrated.js';
 
 const ROOT = resolve(import.meta.dirname, '..');
 
@@ -30,7 +31,7 @@ function loadJSON(rel) {
 let questions, flashcards, notes;
 
 beforeAll(() => {
-  questions = loadJSON('data/questions.json');
+  questions = loadQuestionsHydrated(ROOT);
   flashcards = loadJSON('data/flashcards.json');
   notes = loadJSON('data/notes.json');
 });
