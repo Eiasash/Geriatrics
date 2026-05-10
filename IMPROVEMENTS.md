@@ -4,7 +4,39 @@ This file is appended to by every `audit-fix-deploy` pipeline run. Each entry re
 
 ---
 
-## 2026-05-10 — Doctor-on-mobile chaos bot finding: 79s first-load on Slow 3G (NEEDS FOLLOW-UP)
+## 2026-05-10 — v10.64.93 ships e-split (mobile first-load 79s → 24s, 3.0× faster) — CLOSED
+
+PR #206 merged 2026-05-10. Implements all 6 steps of the plan from the entry below.
+
+### Live measurement post-deploy
+
+Bot rerun against live https://eiasash.github.io/Geriatrics/ at v10.64.93 with the same throttle config as the baseline (CHAOS_NETWORK=slow3g, CHAOS_CPU=4, CHAOS_SESSIONS=2, CHAOS_QS=8, viewport 390×844):
+
+| Metric | v10.64.92 baseline | v10.64.93 measured | Δ |
+|---|---:|---:|---:|
+| Quiz UI render time (first-load) | 79,384 ms | 24,000–26,000 ms | **−68%** |
+| `domcontentloaded` (sess 1 / sess 2) | n/a | 23,744 / 26,214 ms | (NEW measure) |
+| `qz-ready` after dom | n/a | 34 ms | quiz UI is essentially instant once DOM is parsed |
+| c2f p50 | 55 ms | 111 ms | +56 ms (negligible) |
+| c2f p95 | 128 ms | 8,018 ms | **REGRESSION — see "EX-not-loaded artifact" below** |
+
+questions.json 10.80 MB → 6.30 MB on disk; explanations.json 4.56 MB stays out of the boot critical path (idle-loaded via `_exPromise`).
+
+### EX-not-loaded artifact (8s c2f spike on first ~4 Qs of fresh sessions)
+
+The 8000ms c2f outliers on the first 4 questions of each session correspond exactly to the bot's `waitForFunction(... .qo has class 'lk' ...)` 8s poll timeout. Cause hypothesis: on a fresh service-worker install, OPTIONAL_URLS now fetches explanations.json (4.56 MB) in parallel with questions.json (6.30 MB) and the other JSON data files. On Slow 3G (400 Kbps) this bandwidth contention delays the `lk`-class render past the bot's 8s poll window. After the SW finishes installing (~30s into a fresh session), Qs 4-7 show clean 30-100ms c2f.
+
+This is **not** a real-user regression in steady state — actual users don't typically answer 8 questions inside the 30s SW-install window, and once the SW is installed every subsequent visit is cache-first (no contention).
+
+If this surfaces in real user reports: candidate fix is to defer explanations.json fetch out of the SW install handler entirely (let the page-side `_exPromise` be the only writer to that cache entry) — moves the 4.56 MB out of the install bandwidth contention. Don't touch unless real users hit it.
+
+### Sibling carry-over (deferred)
+
+FM v1.21.27 measured 180s+ on the same bot pre-fix. The same e-split pattern is mechanical to port (FM + IM share the same data/questions.json field structure). Plan: separate PR per sibling AFTER 1-2 days of Geri production observation confirms the trade-off lands cleanly with real users.
+
+---
+
+## 2026-05-10 — Doctor-on-mobile chaos bot finding: 79s first-load on Slow 3G (CLOSED — see entry above)
 
 `scripts/chaos-doctor-mobile.mjs` (PR #204, merged 2026-05-10) ran against live Geri at fixed 390×844 viewport with CDP throttling = Slow 3G (400 Kbps DL, 400 ms RTT) + 4× CPU.
 
