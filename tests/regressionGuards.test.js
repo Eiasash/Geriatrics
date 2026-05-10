@@ -16,11 +16,16 @@
 import { describe, test, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { loadQuestionsHydrated } from './_helpers/loadQuestionsHydrated.js';
 
 const rootDir = resolve(import.meta.dirname, '..');
 
 function loadJSON(relPath) {
   return JSON.parse(readFileSync(resolve(rootDir, relPath), 'utf-8'));
+}
+
+function loadQuestions() {
+  return loadQuestionsHydrated(rootDir);
 }
 
 function readFile(relPath) {
@@ -32,7 +37,7 @@ function readFile(relPath) {
 // ─────────────────────────────────────────────────────────────
 describe('questions.json — encoding integrity', () => {
   let questions;
-  beforeAll(() => { questions = loadJSON('data/questions.json'); });
+  beforeAll(() => { questions = loadQuestions(); });
 
   // `ð` (U+00F0) appears when Hebrew `נ` (CP1255 0xF0) is misinterpreted as Latin-1.
   test('no question contains the ð mojibake character anywhere', () => {
@@ -80,7 +85,7 @@ describe('questions.json — formatting quality', () => {
   // Only past-exam sessions suffer PDF-extraction artifacts.
   // Hazzard/Harrison/Hazzard-suppl are AI-generated and immune.
   const PAST_EXAM_TAGS = ['2020', '2021-Dec', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun-Basic'];
-  beforeAll(() => { questions = loadJSON('data/questions.json'); });
+  beforeAll(() => { questions = loadQuestions(); });
 
   // Catches "בן58" → should be "בן 58". Geriatrics has a legacy backlog
   // in past-exam PDFs — exact ratchet at current count so cleanup PRs are
@@ -156,7 +161,7 @@ describe('questions.json — formatting quality', () => {
 // ─────────────────────────────────────────────────────────────
 describe('questions.json — duplicates', () => {
   let questions;
-  beforeAll(() => { questions = loadJSON('data/questions.json'); });
+  beforeAll(() => { questions = loadQuestions(); });
 
   // Normalizes a string for near-duplicate detection: strips whitespace, punctuation,
   // digits, and Hebrew maqaf. Catches near-dupes that differ only by extra "44" on an
@@ -211,7 +216,7 @@ describe('questions.json — duplicates', () => {
 // ─────────────────────────────────────────────────────────────
 describe('questions.json — structural invariants', () => {
   let questions;
-  beforeAll(() => { questions = loadJSON('data/questions.json'); });
+  beforeAll(() => { questions = loadQuestions(); });
 
   test('every question has 4 options (GRS8 source allows 5; v10.37 imports)', () => {
     // Israeli IMA exam questions are always 4-option. GRS8 (AGS, US source)
@@ -323,7 +328,7 @@ describe('questions.json — structural invariants', () => {
 // ─────────────────────────────────────────────────────────────
 describe('questions.json — per-session counts locked', () => {
   let questions;
-  beforeAll(() => { questions = loadJSON('data/questions.json'); });
+  beforeAll(() => { questions = loadQuestions(); });
 
   const EXPECTED = {
     '2020': 100,
@@ -369,7 +374,7 @@ describe('questions.json — per-session counts locked', () => {
 // ─────────────────────────────────────────────────────────────
 describe('questions.json — no within-tag stem duplicates (per past-exam tag)', () => {
   let questions;
-  beforeAll(() => { questions = loadJSON('data/questions.json'); });
+  beforeAll(() => { questions = loadQuestions(); });
 
   // Past-exam tags only — Hazzard / Harrison / GRS8 / Exam are content
   // sources where the same conceptual Q can legitimately appear twice.
@@ -468,7 +473,7 @@ describe('monolith — shlav-a-mega.html invariants', () => {
 // ─────────────────────────────────────────────────────────────
 describe('multi-select exam-year filter — Task 3 contract', () => {
   let questions;
-  beforeAll(() => { questions = loadJSON('data/questions.json'); });
+  beforeAll(() => { questions = loadQuestions(); });
 
   // v10.64.11: orphan tags removed (all 48 deleted as fragment-dups)
   const EXAM_YEARS = ['2020', '2021-Dec', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2025-Jun-Basic'];
@@ -545,7 +550,7 @@ describe('multi-select exam-year filter — Task 3 contract', () => {
 // the filter wrapper.
 describe('broken-question filter — v10.64.33 / v10.64.35', () => {
   let questions;
-  beforeAll(() => { questions = loadJSON('data/questions.json'); });
+  beforeAll(() => { questions = loadQuestions(); });
 
   test('there are at least 22 questions flagged broken (Track D baseline)', () => {
     const broken = questions.filter(q => q.broken === true);

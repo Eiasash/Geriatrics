@@ -25,6 +25,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { loadQuestionsHydrated } from './_helpers/loadQuestionsHydrated.js';
 
 const ROOT = resolve(import.meta.dirname, '..');
 function load(file) {
@@ -43,7 +44,7 @@ beforeAll(() => {
   harrisonToc = load('data/harrison_22e_toc.json');
   qchaps = load('data/question_chapters.json');
   notes = load('data/notes.json');
-  questions = load('data/questions.json');
+  questions = loadQuestionsHydrated(ROOT);
 });
 
 function describeBook(label, getter, opts) {

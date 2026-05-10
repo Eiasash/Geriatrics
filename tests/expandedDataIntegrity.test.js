@@ -8,6 +8,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
+import { loadQuestionsHydrated } from "./_helpers/loadQuestionsHydrated.js";
 
 const ROOT = resolve(import.meta.dirname, "..");
 
@@ -18,7 +19,7 @@ function loadJSON(filename) {
 let questions, notes, drugs, flashcards, topics, tabs;
 
 beforeAll(() => {
-  questions = loadJSON("data/questions.json");
+  questions = loadQuestionsHydrated(ROOT);
   notes = loadJSON("data/notes.json");
   drugs = loadJSON("data/drugs.json");
   flashcards = loadJSON("data/flashcards.json");

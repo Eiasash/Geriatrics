@@ -192,7 +192,10 @@ function buildGrsTiMap(grs) {
 }
 
 function main() {
-  const questions = JSON.parse(fs.readFileSync(QUESTIONS_PATH, 'utf8'));
+  // v10.64.93: e was split into data/explanations.json. Use the shared
+  // hydrator so chapter-tagging keyword scans still see the explanation text.
+  const { loadQuestionsHydrated } = require('./_helpers/load_questions_hydrated.cjs');
+  const questions = loadQuestionsHydrated(path.resolve(__dirname, '..'));
   const topics = JSON.parse(fs.readFileSync(TOPICS_PATH, 'utf8'));
   const haz = JSON.parse(fs.readFileSync(HAZ_PATH, 'utf8'));
   const har = JSON.parse(fs.readFileSync(HAR_PATH, 'utf8'));
