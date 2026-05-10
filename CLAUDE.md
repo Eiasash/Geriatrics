@@ -740,15 +740,10 @@ Reach **1,000+ tests** with coverage of every data file, every engine function, 
 
 ## TODO / Improvement Roadmap
 
-### Medium Priority
-- [ ] **Port features from sibling InternalMedicine/FamilyMedicine** — periodically sync rescue-drill, activity-tracking, and other fixes
-- [ ] **Reinstate OSCE content** — `data/osce.json` was removed; if returning, recreate schema and stations covering all 46 topics
+> Last audited: 2026-05-10 against v10.64.88. Five entries were dropped here because they were already shipped — see "Recently completed" below for the receipts. OSCE reinstate was dropped by user direction. Verify against live code before re-adding any.
 
 ### Low Priority
-- [ ] **PWA install prompt** — Add beforeinstallprompt handler for mobile install
-- [ ] **Wire push-notification UI** — SW already implements `push` / `notificationclick`; add user-facing opt-in + daily-review scheduler
-- [ ] **Supabase cloud sync UI** — Add user-facing sync status indicator and manual sync button
-- [ ] **Performance monitoring** — Add basic performance metrics (load time, data fetch time) to help optimize
+- [ ] **Surface perf metrics in UI** — fetch instrumentation already captures `{url, status, ms}` into `buffer.network` (`shlav-a-mega.html:736`); gap is a user-facing surface (slow-fetch banner, debug-console panel, or perf row in Settings). Raw instrumentation is done; only the surface is missing.
 
 ### Content Roadmap
 - [ ] **2026-א exam questions** — Parse and add when the next IMA session releases
@@ -757,6 +752,10 @@ Reach **1,000+ tests** with coverage of every data file, every engine function, 
 - [ ] **Image coverage** — Add question images for newer exam sessions
 
 ### Recently completed (kept here briefly for changelog context)
+- ~~Sibling rescue-drill / activity-tracking port~~ — already shipped before 2026-05-10 audit. `buildRescuePool` at `shlav-a-mega.html:2123`; `.track-rescue` panel + `GO` CTA at `:5581-5587` (`onclick="buildRescuePool();tab='quiz';render()"`); `.track-activity*` CSS at `:624-633`. The "port from siblings" framing was misleading — the work was already done in the monolith.
+- ~~PWA install prompt~~ — `shared/install-promo.js` (canonical from `.shared/install-promo.js`) wired at `shlav-a-mega.html:8086-8087` with inline `PWA_INSTALL_CONFIG = { appName: 'Shlav A Mega', minSessions: 2, minEngagedSec: 60 }`. Captures `beforeinstallprompt` inside the shared module.
+- ~~Wire push-notification UI~~ — `Notification.requestPermission()` at `:6153`; `reg.active.postMessage({type:'schedule-notification', dueCount})` at `:8053`; SW listener at `sw.js:184-198` showing local "Daily Review" notification when `dueCount > 0`. Local-notification path only (not server push); no VAPID required.
+- ~~Supabase cloud sync UI~~ — `#syncPill` status indicator at `:859`; sync modal with Backup-now / Restore-from-cloud CTAs at `:1146-1147`; standalone Backup/Restore buttons at `:6121-6122`; `cloudBackup()` and `cloudRestore()` at `:6602` / `:6646`. Covered by `tests/syncIndicator.test.js` (19 tests).
 - ~~In-app Study Plan generator~~ — v10.46.0 (sibling-mirrored)
 - ~~Distractor autopsy data~~ — `data/distractors.json` shipped, 4029/4029 entries; v10.45 fixed 72% misalignment
 - ~~Username/password accounts~~ — v10.44.0
