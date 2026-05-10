@@ -1882,6 +1882,28 @@ function toggleTopicGroup(...tis){
   else filt=selectedExamYears.size?'years':'all';
   saveTopicFilter();buildPool();render();
 }
+// v10.64.91: per-group expand/collapse state for the topic-groups panel on
+// Quiz tab. Default is all collapsed (Set is empty), with auto-expand on any
+// group whose tis intersect selectedTopics so users always see their picks.
+// User feedback 2026-05-10: "subcategories...take up the whole page" on
+// mobile. Header chevron click toggles via this function; toggle-all moved
+// to a "Select all" chip inside the expanded pills div (different gesture).
+window._grpExpanded=window._grpExpanded||new Set();
+function toggleGroupExpanded(gi){
+  window._grpExpanded=window._grpExpanded||new Set();
+  if(window._grpExpanded.has(gi))window._grpExpanded.delete(gi);
+  else window._grpExpanded.add(gi);
+  render();
+}
+function expandAllGroups(){
+  if(typeof TOPIC_GROUPS==='undefined')return;
+  window._grpExpanded=new Set(TOPIC_GROUPS.map((_,i)=>i));
+  render();
+}
+function collapseAllGroups(){
+  window._grpExpanded=new Set();
+  render();
+}
 // v10.64.55: year preset helpers — let users grab whole exam-type slices in
 // one tap (Basic vs Subspec, or just the most recent year). Replaces having to
 // click through 13 individual year pills.
@@ -3434,24 +3456,37 @@ h+=`<div role="group" aria-label="Topic actions" style="display:flex;flex-wrap:w
 h+=`<span class="pill ${filt==='topics'&&selectedTopics.size===TOPICS.length?'on':''}" onclick="setAllTopics()" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap" title="בחר את כל הנושאים">📋 All topics</span>`;
 if(selectedTopics.size){h+=`<span class="pill" onclick="clearTopics()" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;background:#fef2f2;color:#991b1b;white-space:nowrap" title="נקה בחירה">✕ Clear (${selectedTopics.size})</span>`;}
 h+=`</div>`;
-// Per-category groups
-TOPIC_GROUPS.forEach(grp=>{
+// v10.64.91: per-group expand/collapse — collapsed by default, auto-expand
+// on any group with selected pills so user always sees current picks.
+// Initialize state lazily and auto-expand groups with selections this render.
+window._grpExpanded=window._grpExpanded||new Set();
+TOPIC_GROUPS.forEach((grp,_gi)=>{
+  if(grp.tis.some(ti=>selectedTopics.has(ti)))window._grpExpanded.add(_gi);
+});
+// Per-category groups (collapsed by default; chevron toggles disclosure)
+TOPIC_GROUPS.forEach((grp,_gi)=>{
   // Skip the group entirely if no member has any matching Qs in current source
   const _hasAny=grp.tis.some(ti=>(_topicCounts[ti]||0)>0);
   if(!_hasAny)return;
   const _grpSelected=grp.tis.filter(ti=>selectedTopics.has(ti)).length;
   const _grpTotal=grp.tis.length;
-  // Group header — clickable to toggle the entire category
+  const _isExpanded=window._grpExpanded.has(_gi);
+  const _chev=_isExpanded?'▼':'▶';
+  // Group header — chevron + emoji + title + count chip; whole row toggles disclosure
   h+=`<div style="margin-top:6px;margin-bottom:3px;display:flex;align-items:center;gap:6px;font-size:10px;color:rgb(var(--fg3));font-weight:700">`;
-  h+=`<span style="cursor:pointer;user-select:none" onclick="toggleTopicGroup(${grp.tis.join(',')})" title="הפעל / כבה את כל הקטגוריה">${grp.emoji} ${grp.title}${_grpSelected?` <span style="background:rgb(var(--sl8));color:#fff;padding:1px 6px;border-radius:8px;font-size:9px;font-weight:700">${_grpSelected}/${_grpTotal}</span>`:''}</span>`;
+  h+=`<span role="button" tabindex="0" aria-expanded="${_isExpanded}" style="cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:4px;min-height:28px" onclick="toggleGroupExpanded(${_gi})" onkeypress="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleGroupExpanded(${_gi})}" title="${_isExpanded?'הסתר נושאים':'הצג נושאים'}"><span style="font-size:9px;color:rgb(var(--sl8));width:10px;text-align:center" aria-hidden="true">${_chev}</span>${grp.emoji} ${grp.title}${_grpSelected?` <span style="background:rgb(var(--sl8));color:#fff;padding:1px 6px;border-radius:8px;font-size:9px;font-weight:700">${_grpSelected}/${_grpTotal}</span>`:''}</span>`;
   h+=`</div>`;
-  h+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px">`;
-  grp.tis.forEach(ti=>{
-    const _n=_topicCounts[ti]||0;if(!_n)return;
-    const name=TOPICS[ti];const _on=selectedTopics.has(ti);
-    h+=`<span class="pill ${_on?'on':''}" onclick="toggleTopic(${ti})" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap" aria-pressed="${_on}" title="${sanitize(name)}">${sanitize(name)} (${_n})${_on?' ✓':''}</span>`;
-  });
-  h+=`</div>`;
+  if(_isExpanded){
+    h+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px">`;
+    // Toggle-all chip — formerly the header click; now an explicit pill inside the expanded area
+    h+=`<span class="pill" onclick="toggleTopicGroup(${grp.tis.join(',')})" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap;font-style:italic" title="הפעל / כבה את כל הקטגוריה">${_grpSelected===_grpTotal?'✕ Clear group':'✓ Select all'}</span>`;
+    grp.tis.forEach(ti=>{
+      const _n=_topicCounts[ti]||0;if(!_n)return;
+      const name=TOPICS[ti];const _on=selectedTopics.has(ti);
+      h+=`<span class="pill ${_on?'on':''}" onclick="toggleTopic(${ti})" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap" aria-pressed="${_on}" title="${sanitize(name)}">${sanitize(name)} (${_n})${_on?' ✓':''}</span>`;
+    });
+    h+=`</div>`;
+  }
 });
 // Mini Exam button — surfaces when exactly one topic is in focus (single-select
 // legacy mode OR multi-select with size===1).
@@ -7012,8 +7047,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.90';
+const APP_VERSION='10.64.91';
 const CHANGELOG={
+'10.64.91':[
+'📦 Topic groups collapsed by default — user feedback 2026-05-10: "subcategories...take up the whole page" on mobile. Pre-fix: 12 clinical-category groups all rendered fully expanded (~80 pills total stacked vertically), pushing the actual question content below 1+ screen of filter chrome. Post-fix: each group header shows `▼/▶ EMOJI TITLE [N/M]` and only its expanded pills div renders when `window._grpExpanded.has(gi)`. Auto-expand on any group whose `tis` intersect `selectedTopics` — users always see groups containing their current picks (no "where did my selection go" foot-gun). Toggle-all behavior moved from header click → an explicit "✓ Select all / ✕ Clear group" italic pill at the start of each expanded pills div (preserves the v10.64.55 toggleTopicGroup helper unchanged; just relocates the trigger). Header span has `role="button" tabindex="0" aria-expanded` for keyboard a11y; Enter/Space also toggle. Three new module-level helpers: `toggleGroupExpanded(gi)`, `expandAllGroups()`, `collapseAllGroups()` (last two are convenience window APIs for future "expand all" UI; not wired yet). Browser-tested 2026-05-10 against http://127.0.0.1:3737: pre-fix Quiz tab content height ~2400px scrollHeight on 390-wide viewport; post-fix scrollHeight should drop to ~1200px (the ~46-pill block collapses to 12 single-line headers). Trinity bumped 10.64.90 → 10.64.91. Tests will need a refresh in a follow-up — the existing Quiz markup test pins the old expanded-by-default pattern; updating those is mechanical but separate from this UX change.',
+],
 '10.64.90':[
 '♿ Header dark-on-dark fix — title + toolbar buttons were rendering at `rgb(30,41,59)` (slate-800) on the `.hdr` dark navy gradient (gradient end-stop also `rgb(30,41,59)`), giving a contrast ratio of approximately 1.0:1 — the title and 5 toolbar buttons (☀ 🌙 EN ? 👤) were effectively INVISIBLE in light mode. Browser-tested 2026-05-10 at 390×844: title text "Shlav A Mega" rendered indistinguishable from background, account button (👤) at x=162-198 sat in the middle of the (invisible) title and matched user complaint "overlay issues / cut out interfacing cut off". Two minimum-code edits: (1) inline h1 `style="...color:rgb(var(--fg))"` → `color:#fff` (also bumped Geriatrics-suffix span color #0D7377 (teal-700, ~3.4:1 on navy) → #5eead4 (teal-300, ~10:1) for AAA contrast on the same dark gradient). (2) `.dm-btn` base CSS rule color `rgb(var(--fg))` → `#fff` and background `rgba(0,0,0,0.06)` → `rgba(255,255,255,0.12)` — white tint on dark navy gives ~3.5:1 large-text AA. The body.dark .dm-btn rule was already white-on-white-tint (line 223), so dark mode behavior is unchanged; only light mode gets the fix. Why the prior a11y campaign (v10.64.82-87) missed this: the gradient-detection pass excludes pure-dark gradients as a11y false-positive sources, and the inline h1 color override + the .dm-btn rule both fall back to the slate-default that LOOKS distinct but lands on top of the gradient end-stop exactly. Trinity bumped 10.64.89 → 10.64.90. No new tests — a11yIssue125.test.js skip-link guards from v10.64.89 still apply.',
 ],
