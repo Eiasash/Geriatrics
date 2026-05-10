@@ -411,8 +411,8 @@ body.dark .chat-msg-user{background:#1e3a5f;color:#e2e8f0}
 body.dark .chat-starter{background:#1e293b;border-color:#334155;color:#e2e8f0}
 body.dark .chat-input-row{border-color:#334155}
 body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg));color:#fcd34d}
-.skip-link{position:absolute;left:-9999px;top:4px;z-index:9999;padding:6px 12px;background:#2563eb;color:#fff;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none}
-.skip-link:focus{left:4px}
+.skip-link{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;top:4px;z-index:9999;background:#2563eb;color:#fff;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none}
+.skip-link:focus{width:auto;height:auto;padding:6px 12px;margin:0;overflow:visible;clip:auto;white-space:normal;left:4px;right:auto}
 :focus-visible{outline:2px solid #3b82f6;outline-offset:2px}
 
 /* ===== TOOLTIPS ===== */
@@ -7012,8 +7012,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.88';
+const APP_VERSION='10.64.89';
 const CHANGELOG={
+'10.64.89':[
+'♿ Mobile out-of-bounds fix — `.skip-link` no longer uses `left:-9999px` to hide off-screen. Browser-tested 2026-05-10 at 390×844 viewport: legacy positioning inflated `documentElement.scrollWidth` to 10385px (= 9999 + 386 body width, exact). Body had `overflow-x:hidden` so users did not see lateral scroll, but `<html>` had `overflow-x:visible` so the phantom width affected Lighthouse audits, pinch-zoom math, and any JS reading `scrollWidth`. Switched to the WCAG canonical visually-hidden pattern (`position:absolute; width:1px; height:1px; clip:rect(0,0,0,0); overflow:hidden; white-space:nowrap`). Local validation against http://127.0.0.1:3737: scrollWidth dropped 10385 → 386 cleanly. Added 3 regression guards in tests/a11yIssue125.test.js asserting (a) `.skip-link` rule contains no `left:-\\d{3,}` literal, (b) uses `clip:rect(0,0,0,0)`, (c) `:focus` restores `width:auto`+`height:auto`+`clip:auto` for visible focus state. Sibling-aligned: identical fix lands in FM/IM utilities.css separately. Trinity bumped 10.64.88 → 10.64.89.',
+],
 '10.64.88':[
 '🔧 render() microtask defer (Option A from PR #195 audit). Wraps the body of `render()` in `setTimeout(()=>{...},0)` so click events finish propagating BEFORE the DOM is rebuilt. Fixes the click-event-during-rebuild race the chaos-bot ran into 2026-05-05 (953 timeouts/h dominated by inline-handler `onclick=";...;render()"` sites — 56 of 57 idless, can\'t be helped by id-keyed focus restoration). Surface area: 1 file, 1 function, ~5 lines of edit (open setTimeout, indent body, close, plus a defensive `if(!el)return` guard since the deferred callback could in theory fire after `#ct` was detached). Test risk verified zero pre-ship (PR #195 inventory: no sync DOM-reads after render() across 1,270 tests / 61 files; no sync DOM-reads after render() in production code either — line 1148 scroll already wraps in setTimeout(...,100); line 8072 updateSyncPill reads `#syncPill` which is static HTML at line 859 not inside `#ct`). The 6 internal recursive render() calls in switch dispatch (lines 6848-6874 for #study/#flash/#meds/#calc/#search/#chat/#book/#syl deep-link reroutes) self-defer through the same wrapper — adds one extra tick of delay but no functional break (the inner case sets state then clears the container, and the next-tick render handles the rebuild). Trinity bumped 10.64.87 → 10.64.88. New regression test `tests/renderMicrotaskDefer.test.js` (5 tests) pins the wrapper + a forward-looking ratchet that fails any future sync DOM-read after render() in shlav-a-mega.html (which would silently read stale DOM under the async wrap). The audit memo at PR #195 enumerates Option B (event-delegation rewrite, 2-3 days) and Option C (per-handler annotation, 56 surface edits) — both deferred; A was the 1-line change with smallest blast radius.',
 ],
