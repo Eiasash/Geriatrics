@@ -3271,7 +3271,15 @@ if(ans&&!examMode&&q.e){
 h+=`<div style="margin-top:8px;padding:10px 12px;background:${q.e_issue?"#fffbeb":"rgb(var(--blue-bg))"};border:1px solid ${q.e_issue?"#fcd34d":"rgb(var(--blue-brd))"};border-radius:10px;font-size:11px;line-height:1.7;color:${q.e_issue?"#92400e":"rgb(var(--blue-fg))"};text-align:right" dir="${heDir(qLang(q,'e'))}">${q.e_issue?`<div style="font-size:10px;font-weight:700;margin-bottom:6px;padding:4px 8px;background:#fef3c7;border-radius:6px;display:flex;align-items:center;gap:6px;justify-content:space-between"><span>⚠️ ההסבר הזה עלול להיות שגוי — AI איתר חוסר עקביות מול התשובה הנכונה</span><button onclick="event.stopPropagation();markEIssueVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#92400e;color:#fff;border:none;border-radius:6px;cursor:pointer;flex:0 0 auto">✓ מאומת</button></div>`:""}`;
 h+=`<div style="font-weight:700;margin-bottom:4px;font-size:10px">📝 הסבר</div>`;
 const _shuf=getOptShuffle(pool[qi],q);
-h+=`<div dir="${heDir(qLang(q,'e'))}" style="unicode-bidi:plaintext">${sanitize(remapExplanationLetters(qLang(q,'e'),_shuf)).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
+// v10.64.98 bidi fix: was a single block with unicode-bidi:plaintext. Plaintext
+// uses the FIRST-strong-char of the whole block as base direction. When the AI
+// text starts with an English drug name ("I.V CEFTRIAXONE..."), base resolves
+// to LTR and the Hebrew rest of the paragraph renders with wrong line wrapping
+// — periods+parens migrate to wrong line ends. Split by \n+ into per-line divs
+// so each paragraph gets its own bidi context (heDir-determined dir + isolate).
+const _expText=sanitize(remapExplanationLetters(qLang(q,'e'),_shuf));
+const _expHtml=_expText.split(/\n+/).filter(_l=>_l.trim()).map(_l=>`<div dir="${heDir(_l)}" style="unicode-bidi:isolate;margin-bottom:.5em">${_l.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`).join('');
+h+=_expHtml;
 // v10.51.0: source-link row — render every parsed ref citation as a deep-link
 // button into the in-app Hazzard/Harrison reader at the right chapter.
 if(q.ref){
@@ -3322,7 +3330,7 @@ if(_dist){
     const _brd=_isCorrect?'#86efac':(_isUserPick?'#fca5a5':'rgb(var(--brd))');
     const _mark=_isCorrect?'<b style="color:#059669">✓</b>':'<b style="color:#dc2626">✗</b>';
     const _pickTag=(_isUserPick&&!_isCorrect)?' <span style="color:rgb(var(--fg3));font-size:9px">(הבחירה שלך)</span>':'';
-    h+=`<div style="margin-bottom:6px;padding:8px 10px;background:${_bg};border:1px solid ${_brd};border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg))" dir="${heDir((_rationale||'')+opt)}">`;
+    h+=`<div style="margin-bottom:6px;padding:8px 10px;background:${_bg};border:1px solid ${_brd};border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg));unicode-bidi:isolate" dir="${heDir((_rationale||'')+opt)}">`;
     h+=`<div style="font-weight:700;margin-bottom:3px">${_mark} <bdi>${sanitize(opt)}</bdi>${_pickTag}</div>`;
     // Defensive: NEVER render "Wrong because" on the correct answer, even if DIS data is misaligned.
     // If DIS[qIdx] is stale (e.g. questions reordered without regen), the slot that's now q.c may
@@ -7090,8 +7098,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.97';
+const APP_VERSION='10.64.98';
 const CHANGELOG={
+'10.64.98':[
+'🔤 Hebrew RTL bidi fix — explanation + autopsy. User-reported: image 3 showed the static explanation with line-wrap bug — first line ended "I.V CEFTRIAXONE-" and second line started ".pyelonephritis/urosepsis בקשישה..." with the period at the visual line-START (RTL = right edge). Root cause: the explanation div used `unicode-bidi:plaintext` on the whole multi-paragraph block. Plaintext resolves base direction from the FIRST-strong character of the entire block. AI explanations frequently begin with an English drug name ("**I.V CEFTRIAXONE (ב) הוא הטיפול..."), so first-strong-char = "I" → base direction LTR → entire Hebrew explanation rendered as if it were an English paragraph with embedded Hebrew. Periods, parens, and line-wraps then resolved at wrong positions. Fix at line 3274: split by `\\n+` into per-paragraph divs, each with `dir="${heDir(line)}"` (mostly-Hebrew lines get rtl even if they start with an English drug name) and `unicode-bidi:isolate` (each line is its own bidi paragraph, no cross-line bleed). Also at line 3325 (Distractor Autopsy option div): had `dir="${heDir(...)}"` but no `unicode-bidi` declaration — default is `normal`, meaning the dir is just a hint and not a real bidi context. Added `unicode-bidi:isolate` so the rationale text (mostly Hebrew with English drug terms) gets a proper RTL paragraph context. No data changes, no regex test impact (bilingualToggle.test.js still matches the `remapExplanationLetters(qLang(q,_shuf))` call). Trinity bumped 10.64.97 → 10.64.98.',
+],
 '10.64.97':[
 '🗺️ Topic Heatmap empty-state cleanup — Track-tab first-load showed 46 cells each with a "·" placeholder dot at the bottom edge. The "·" promised "data goes here" but delivered nothing until the user answered ≥3 Qs in that topic (the FSRS-mastery aggregation threshold for `_heatBucket` to color the cell). Cumulative effect: a 5-column × 9-row grid of half-filled grey tiles dominating the Track view above-the-fold. Two pure-CSS additions on the existing `--neutral` modifier (which is already applied when `mastery[ti].r === null`): (1) `justify-content:center` to center the topic name vertically (was `space-between` which pushed it to the top while the empty pct sat at the bottom — visually unbalanced), (2) `.track-heatmap__cell--neutral .track-heatmap__pct{display:none}` to hide the dot line entirely. Untouched cells now look like clean topic chips. Data-bearing cells (--b0..--b4) unchanged — they keep showing the percentage. Plus a one-line copy fix: when `reviewedTotal === 0`, the head count line now reads "Tap any topic to start" instead of "0 reviews aggregated" (actionable, not status-only). No template restructure, no JS state change, no test impact. Trinity bumped 10.64.96 → 10.64.97.',
 ],
