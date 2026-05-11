@@ -2355,11 +2355,26 @@ async function runExplainOnCall(qIdx){
   if(!btn||!box)return;
   btn.textContent='⏳ ...';btn.disabled=true;
   const q=QZ[qIdx];const correct=q.o[q.c];
+  // v10.64.102: respect c_accept when length>1 — the dataset already knows
+  // multiple answers are valid; don't command the AI to defend ONE answer
+  // "DEFINITIVELY" when grading accepts several. 143 questions (3.8% of deck)
+  // hit this, 33 of them with all-4 options accepted. Pre-fix, students saw
+  // explanations like "the correct answer is B" with weak hedging on A/C/D —
+  // exactly the user complaint on the FeNa question (idx 4, c_accept=[0,1,2,3]).
+  const _acc=(Array.isArray(q.c_accept)&&q.c_accept.length>1)?q.c_accept:null;
+  const _keyLine=_acc
+    ?`ANSWER KEY: This question accepts multiple valid answers: ${_acc.map(i=>'"'+q.o[i]+'"').join(', ')}. IMA's published key is "${correct}". Lead the explanation by acknowledging the multi-valid stem; explain why each accepted answer is defensible and why IMA picked "${correct}".`
+    :`ANSWER KEY: The correct answer is DEFINITIVELY "${correct}".`;
   try{
-    const txt=await callAI([{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה. עגן בתשובה הנכונה. שאלה: '+q.q+'\nתשובה נכונה: '+correct}],400,'sonnet');
+    const txt=await callAI([{role:'user',content:_keyLine+'\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה. עגן בתשובה הנכונה. שאלה: '+q.q+'\nתשובה נכונה: '+correct}],400,'sonnet');
     _exCache[qIdx]=txt;lsSet('samega_ex',_exCache);
-    // safe-innerhtml: heDir returns fixed 'auto'|'rtl'|'ltr'; txt is sanitize()'d
-    box.innerHTML='<div style="font-size:12px;color:rgb(var(--fg2));line-height:1.7;text-align:right;margin-top:8px;unicode-bidi:plaintext" dir="'+heDir(txt)+'">'+sanitize(txt)+'</div>';
+    // v10.64.102: per-line dir+isolate (same pattern as v98 fix for the static
+    // explanation and Distractor Autopsy). Missed this site in v98. Hebrew
+    // explanations that start with an English drug name would render wrong.
+    const _ocLines=txt.split(/\n+/).filter(_l=>_l.trim());
+    const _ocHtml=_ocLines.map(_l=>'<div dir="'+heDir(_l)+'" style="unicode-bidi:isolate;margin-bottom:.4em">'+sanitize(_l)+'</div>').join('');
+    // safe-innerhtml: heDir returns fixed 'auto'|'rtl'|'ltr'; each _l is sanitize()'d in the .map above
+    box.innerHTML='<div style="font-size:12px;color:rgb(var(--fg2));line-height:1.7;text-align:right;margin-top:8px">'+_ocHtml+'</div>';
     btn.remove();
   }catch(e){btn.textContent='🤖 הסבר AI';btn.disabled=false;}
 }
@@ -2509,8 +2524,17 @@ function renderExplainBox(qIdx){
   if(!ex)return;
   if(ex.err){container.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px 0">⚠️ '+sanitize(ex.err)+'</div>';return;}
   const _isFlagged=(S.flagged||{})[qIdx];
-  // safe-innerhtml: heDir returns fixed 'auto'|'rtl'|'ltr'; ex.text is sanitize()'d
-  container.innerHTML='<div class="explain-box" style="margin-top:8px;padding:10px 12px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--green-fg));text-align:right;unicode-bidi:plaintext" dir="'+heDir(ex.text)+'"><div style="font-weight:700;margin-bottom:4px">🤖 הסבר AI</div><div dir="'+heDir(ex.text)+'">'+sanitize(ex.text)+'</div></div>'+
+  // v10.64.102: per-line dir+isolate (same pattern as v98 for static explain,
+  // v98 for autopsy outer, v102 for runExplainOnCall renderer). This is the
+  // FOURTH site of the same bug class — sweep complete for AI-text renderers.
+  // The outer block keeps text-align:right for visual continuity; per-line
+  // inner divs get dir=heDir(line) + unicode-bidi:isolate so each paragraph
+  // resolves bidi independently regardless of whether it starts in English
+  // or Hebrew.
+  const _exLines=String(ex.text||'').split(/\n+/).filter(_l=>_l.trim());
+  const _exHtml=_exLines.map(_l=>'<div dir="'+heDir(_l)+'" style="unicode-bidi:isolate;margin-bottom:.45em">'+sanitize(_l)+'</div>').join('');
+  // safe-innerhtml: heDir returns fixed 'auto'|'rtl'|'ltr'; each _l is sanitize()'d in the .map above; qIdx is a number coerced via String() for the onclick
+  container.innerHTML='<div class="explain-box" style="margin-top:8px;padding:10px 12px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--green-fg));text-align:right"><div style="font-weight:700;margin-bottom:4px">🤖 הסבר AI</div>'+_exHtml+'</div>'+
     '<button onclick="toggleFlagExplain('+sanitize(String(qIdx))+')" style="font-size:9px;padding:2px 8px;margin-top:3px;background:rgb(var('+(_isFlagged?'--red-bg':'--bg2')+'));color:rgb(var('+(_isFlagged?'--red-fg':'--fg3')+'));border:1px solid rgb(var('+(_isFlagged?'--red-brd':'--brd')+'));border-radius:6px;cursor:pointer">'+(_isFlagged?'⚑ Flagged — verify':'⚐ Flag as unreliable')+'</button>';
 }
 async function explainWithAI(qIdx){
@@ -2522,7 +2546,12 @@ async function explainWithAI(qIdx){
     // Feature 8: Detect language — bilingual if question has English terms
     var _qLang=(q.q.match(/[a-zA-Z]/g)||[]).length/q.q.length>0.25?'en':'he';
     var _langInstr=_qLang==='en'?'Explain in English (3-4 sentences) why this is the correct answer. Be concise and exam-focused.':'הסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה לשאלה הבאה מתחום הגריאטריה. עגן תמיד בתשובה הנכונה הנל.';
-    var txt=await callAI([{role:'user',content:'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".\n\n'+_langInstr+'\n\nשאלה: '+q.q+'\nאפשרויות: '+q.o.join(' / ')+'\nתשובה נכונה: '+correct}],400,'sonnet');
+    // v10.64.102: respect c_accept multi-valid; see runExplainOnCall comment
+    var _acc=(Array.isArray(q.c_accept)&&q.c_accept.length>1)?q.c_accept:null;
+    var _keyLine=_acc
+      ?'ANSWER KEY: This question accepts multiple valid answers: '+_acc.map(function(i){return'"'+q.o[i]+'"';}).join(', ')+'. IMA\'s published key is "'+correct+'". Lead the explanation by acknowledging the multi-valid stem; explain why each accepted answer is defensible and why IMA picked "'+correct+'".'
+      :'ANSWER KEY: The correct answer is DEFINITIVELY "'+correct+'".';
+    var txt=await callAI([{role:'user',content:_keyLine+'\n\n'+_langInstr+'\n\nשאלה: '+q.q+'\nאפשרויות: '+q.o.join(' / ')+'\nתשובה נכונה: '+correct}],400,'sonnet');
     _exCache[qIdx]={text:txt};
     lsSet('samega_ex',_exCache);
   }catch(e){
@@ -7114,8 +7143,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.101';
+const APP_VERSION='10.64.102';
 const CHANGELOG={
+'10.64.102':[
+'🧠 AI-explanation prompt respects c_accept multi-valid stems + sweep of remaining v98 bidi bug sites. Triggered by real study-session observation: user hit q4 (2024-Sep-Basic, idx 4) — "באיזה מהמקרים הבאים צפוי FeNa < 1%?" with options [Rhabdomyolysis, Sepsis, Contrast Nephropathy, Pre-Renal Azotemia]. Dataset has c_accept=[0,1,2,3] (all four accepted as defensible) and c=2 (IMA published key). AI explanation asserted "the correct answer is DEFINITIVELY B" with weak hedging on A/C/D — exactly what a board student would experience as misleading after picking A by textbook reflex. Audit found 143 of 3743 questions (3.8%) have c_accept length > 1 — ZERO have static explanations, so all 143 fall through to AI generation with the broken prompt. Distribution: 101 with length 2, 9 with length 3, 33 with length 4 (all-options-valid). Fixed at two prompt sites (line 2359 runExplainOnCall, line 2525 explainWithAI): when c_accept.length > 1, the prompt now names all accepted answers and identifies IMA\'s key as one of them, instructing the AI to "lead by acknowledging the multi-valid stem; explain why each accepted answer is defensible and why IMA picked X." Single answer questions unchanged. Same bug-class sweep also caught two more unicode-bidi:plaintext-on-whole-block sites missed in v98: line 2362 (runExplainOnCall renderer) and line 2527 (renderExplainBox — the AI explanation card visible in the user\'s screenshot). Both now use the per-line dir+isolate pattern from v98. No data changes, no test impact, no UI changes beyond the bidi rendering quality on AI explanations starting with English. Trinity bumped 10.64.101 → 10.64.102.',
+],
 '10.64.101':[
 '🔒 Verify-chain hardening — closes the gap that let v99 ship broken. New scripts/check-inline-js.py extracts every inline script tag from shlav-a-mega.html (those without src=) and runs node --check on each one. Catches JS syntax errors hidden inside string literals (e.g. broken backslash-quote escapes inside CHANGELOG entries) that brace-balance.py and vitest both miss. Wired into the npm-run-verify chain immediately after check-brace-balance and before the slower harrison-hebrew-baseline so syntax errors fail fast. Verified the new check correctly catches a synthetic v99-style injection: a CHANGELOG entry with raw backslash-quote-escape produces "FAIL: script has a JS syntax error" with the offending line number. No app behavior change. Trinity bumped 10.64.100 → 10.64.101.',
 ],
