@@ -7143,8 +7143,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.107';
+const APP_VERSION='10.64.108';
 const CHANGELOG={
+'10.64.108':[
+'🔄 Lane sync — one additional Opus reframe (idx=3289, Primary Progressive Aphasia non-fluent variant) landed locally from the terminal-lane Claude\'s parallel scripts/reframe_failed_retries.py after the v107 push closed. Same fix class as v107: Opus-reframed + Opus-validated. Net effect: 24 total Opus rescues across the two parallel scripts (23 web-lane + 1 terminal-lane). Final multi-accept count: 49. Trinity 10.64.107 → 10.64.108.',
+],
 '10.64.107':[
 '🎯 Opus rescue pass on the 39 v106-reverted reframes — 23 saved. v106 reverted 39 Sonnet-generated reframes that failed cross-model validation. Following the diagnosis that Sonnet is at its competence boundary on this task, scripts/opus_retry_failed_reframes.py runs Opus (the stronger model) on the same 39 with: (a) a tighter prompt that drops the REFRAME/KEEP classifier (already-decided REFRAME) and supplies the previous failure reason as input, (b) the same cold-validator from v106 also run on Opus. Results: 23 PASS (Opus produces a reframe + Opus cold-answer agrees with IMA-key, HIGH confidence, no other defensible options) + 16 FAIL. 59% rescue rate where Sonnet hit a wall. The 16 remaining FAILs are questions where even Opus cannot produce a clean single-answer reframe — these are degenerate IMA stems where the wrong options are ALSO genuinely correct given the topic (e.g., TIMI Risk Score criteria, where all 4 listed items legitimately are risk factors; reframing into a vignette can\'t fix a "name one criterion from a list of valid criteria" question type). Final dataset state across the v102→v107 chain: 143 original multi-accept questions → 93 cleanly-reframed single-answer (69 Sonnet-validated + 1 hand-edit + 23 Opus-rescued) + 50 still multi-accept (34 genuinely clinically-ambiguous + 16 hard-resistant-to-reframe). Multi-accept count: 143 → 50, a 65% reduction in structurally-flawed questions. Cost summary: ~$11-14 across all batches. The 16 hard-resistant ones retain c_accept + v103 multi-accept-aware explanations, so students still get appropriate framing on them. Trinity 10.64.106 → 10.64.107.',
 ],
