@@ -22,7 +22,13 @@ HTML = ROOT / "shlav-a-mega.html"
 if not HTML.exists():
     print(f"FAIL: {HTML} not found", file=sys.stderr); sys.exit(2)
 
-source = HTML.read_text()
+# Explicit utf-8 on read AND write below — shlav-a-mega.html contains
+# Hebrew + LRM/RLM marks, and inline <script> bodies carry the same content
+# into the temp .mjs files we feed to `node --check`. Without explicit
+# encoding, Python's default on Windows is cp1252 and read_text/write each
+# fail with UnicodeDecodeError/UnicodeEncodeError on the first non-Latin-1
+# byte. Workspace global CLAUDE.md documents this as a standing trap.
+source = HTML.read_text(encoding="utf-8")
 # Inline script = <script ...>...</script> WITHOUT src= attribute
 pattern = re.compile(r"<script(?:(?!\bsrc=)[^>])*?>([\s\S]*?)</script>", re.IGNORECASE)
 scripts = pattern.findall(source)
@@ -34,7 +40,7 @@ failed = 0
 for i, body in enumerate(scripts):
     if body.count("\n") < 5:
         continue  # tiny scripts (configs, install probes); not worth the overhead
-    with tempfile.NamedTemporaryFile(suffix=".mjs", mode="w", delete=False) as f:
+    with tempfile.NamedTemporaryFile(suffix=".mjs", mode="w", delete=False, encoding="utf-8") as f:
         f.write(body)
         fname = f.name
     res = subprocess.run(["node", "--check", fname], capture_output=True, text=True)
