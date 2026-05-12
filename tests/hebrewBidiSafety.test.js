@@ -204,22 +204,24 @@ describe('Distractor Autopsy — bidi correctness (v10.64.110 regression pins)',
     expect(fn[0]).toMatch(/dir="\$\{heDir\(/);
   });
 
-  it('English autopsy labels ("Wrong because:" / "Would be correct if:") are <bdi>-isolated', () => {
+  it('English autopsy labels ("Wrong because:" / "Would be correct if:" / "Correct because:") are <bdi>-isolated', () => {
     // English labels embedded in mixed Hebrew/English runs must be wrapped
     // in <bdi> so they cannot pull adjacent Hebrew text to LTR. Both the
     // pre-generated DIS render path AND the AI on-demand path must isolate.
+    // v10.64.111: "Correct because:" added alongside the existing two labels.
     const wrongBecauseSites = html.match(/Wrong because:<\/b>/g) || [];
     const wouldBeSites = html.match(/Would be correct if:<\/b>/g) || [];
-    // Each colored-label site should be preceded by <bdi> (the open tag may
-    // be on the same line or wrap a <b>). Simplest pin: every "Wrong because:</b>"
-    // and "Would be correct if:</b>" must be followed by a closing </bdi>.
+    const correctBecauseSites = html.match(/Correct because:<\/b>/g) || [];
     expect(wrongBecauseSites.length, 'at least one Wrong because: label expected').toBeGreaterThan(0);
     expect(wouldBeSites.length, 'at least one Would be correct if: label expected').toBeGreaterThan(0);
+    expect(correctBecauseSites.length, 'at least one Correct because: label expected').toBeGreaterThan(0);
     // The whole label including </b></bdi> must appear at every site.
     const wrongBecauseWrapped = (html.match(/Wrong because:<\/b><\/bdi>/g) || []).length;
     const wouldBeWrapped = (html.match(/Would be correct if:<\/b><\/bdi>/g) || []).length;
+    const correctBecauseWrapped = (html.match(/Correct because:<\/b><\/bdi>/g) || []).length;
     expect(wrongBecauseWrapped).toBe(wrongBecauseSites.length);
     expect(wouldBeWrapped).toBe(wouldBeSites.length);
+    expect(correctBecauseWrapped).toBe(correctBecauseSites.length);
   });
 
   it('the DIS-render forEach uses heDir(line) per-line, not heDir(rationale+opt) on outer', () => {

@@ -2568,27 +2568,34 @@ _exCache[_apKey]='<div style="color:rgb(var(--fg2))">⏳ AI analyzing each optio
 render();
 try{
 const wrongOpts=q.o.filter((_,i)=>!isOk(q,i));
-const txt=await callAI([{role:'user',content:`Geriatric board exam question. For EACH wrong option, explain in 1-2 sentences why it's wrong HERE and when it WOULD be correct.
+const txt=await callAI([{role:'user',content:`Geriatric board exam question. First, explain in 1-2 sentences WHY the correct answer is correct. Then, for EACH wrong option, explain in 1-2 sentences why it's wrong HERE and when it WOULD be correct.
 
 Question: ${q.q}
 Correct: ${q.o[q.c]}
 Wrong options: ${wrongOpts.join(' | ')}
 
-Format each as:
-✗ [option] — Wrong because: [reason]. Would be correct if: [scenario].
+Format as:
+✓ [correct option] — Correct because: [reason].
+✗ [wrong option] — Wrong because: [reason]. Would be correct if: [scenario].
+✗ [wrong option] — Wrong because: [reason]. Would be correct if: [scenario].
+...
 
-Be concise. Use English for medical terms, Hebrew for context if relevant.`}],500);
+Be concise. Use English for medical terms, Hebrew for context if relevant.`}],600);
 // Sanitize AI output first, then format.
 // v10.64.110: split-by-line, each line is its own bidi context with own dir.
 // Previously the formatter collapsed newlines into <br> tags, which flattened
 // paragraphs into one bidi context — English labels (Wrong because:, Would be
 // correct if:) pulled adjacent Hebrew lines to LTR. Mirrors the canonical
 // pattern at lines 2375 (alt main render) and 2535 (renderExplainBox).
+// v10.64.111: added ✓ + "Correct because:" tags for the new correct-answer
+// rationale line that the updated prompt elicits.
 const safeTxt=sanitize(txt);
 const _lines=safeTxt.split('\n');
 const formatted=_lines.map(_l=>{
   const _styled=_l
+    .replace(/✓/g,'<bdi><b style="color:#059669">✓</b></bdi>')
     .replace(/✗/g,'<bdi><b style="color:#dc2626">✗</b></bdi>')
+    .replace(/Correct because:/g,'<bdi><b style="color:#059669">Correct because:</b></bdi>')
     .replace(/Wrong because:/g,'<bdi><b style="color:#b91c1c">Wrong because:</b></bdi>')
     .replace(/Would be correct if:/g,'<bdi><b style="color:#059669">Would be correct if:</b></bdi>');
   return `<div dir="${heDir(_l)}" style="unicode-bidi:isolate;margin-bottom:.35em">${_styled}</div>`;
@@ -3378,7 +3385,21 @@ if(_dist){
     // If DIS[qIdx] is stale (e.g. questions reordered without regen), the slot that's now q.c may
     // hold a leftover rationale from a different option. Always show the green-label instead.
     if(_isCorrect){
-      h+=`<div style="color:#059669;font-size:10px" dir="rtl">התשובה הנכונה</div>`;
+      h+=`<div style="color:#059669;font-size:10px;font-weight:700;margin-bottom:4px" dir="rtl">✓ התשובה הנכונה</div>`;
+      // v10.64.111: render the question's full explanation inline so the
+      // autopsy block answers "why is this one correct" right next to the
+      // option, not just in the separate explanation panel below. Uses
+      // qLang() so the EN/HE toggle takes effect. Guarded — EX[] is idle-
+      // loaded, so q.e can still be empty for a few hundred ms after answer.
+      const _expl=qLang(q,'e');
+      if(_expl){
+        const _explLines=String(_expl).split('\n').map(_l=>{
+          const _safe=sanitize(_l);
+          return `<div dir="${heDir(_l)}" style="unicode-bidi:isolate;margin-bottom:.3em">${_safe}</div>`;
+        }).join('');
+        h+=`<div style="font-size:10px;color:rgb(var(--green-fg));font-weight:700;margin:6px 0 3px" dir="rtl">📘 הסבר:</div>`;
+        h+=_explLines;
+      }
     }else if(_rationale){
       // v10.64.110: split rationale by newline; each line is its own bidi context with
       // direction chosen by its own content. English labels wrapped in <bdi> so they
@@ -7163,8 +7184,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.110';
+const APP_VERSION='10.64.111';
 const CHANGELOG={
+'10.64.111':[
+'📘 Answer autopsy now explains the correct answer too, not only the distractors. Surface A (pre-generated DIS rows): in the correct-option row, after the green התשובה הנכונה header, the question full explanation from data/explanations.json is rendered inline with the same per-line bidi-isolated divs and a 📘 הסבר: sub-header. Zero new data — leverages the 3,743-entry explanations.json that the EX idle-loader already pulls. Guarded by qLang(q,e) truthy check so the first few hundred ms after answer (before EX hydrates onto q.e) just shows the header label like before. Surface B (legacy on-demand AI autopsy via aiAutopsy()): prompt extended to ask the AI to first explain WHY the correct answer is correct in 1-2 sentences, then walk each wrong option as before. Format hint now includes a leading ✓ correct-option line with Correct because: label. Formatter adds two new bdi-isolated tags: ✓ in green (color:#059669) and Correct because: in green. max_tokens bumped 500 to 600 to absorb the extra rationale. Tests: hebrewBidiSafety bdi-isolation pin extended to require Correct because:</b></bdi> wrapping at every site. aiAutopsyXss adds two tag-inventory tests for ✓ and Correct because:. Trinity 10.64.110 → 10.64.111.',
+],
 '10.64.110':[
 '🪲 Distractor Autopsy bidi correctness fix. Two surfaces both shipped backwards Hebrew when rationales contained English (which is nearly always — Wrong because:/Would be correct if: labels). Surface A (pre-generated DIS per-option rows): outer container computed dir from heDir(rationale+opt); rationales starting with English pinned the whole row LTR and the Hebrew body rendered backwards. Now dir=auto on outer (children resolve independently), rationale split by newline, each line wrapped in its own <div dir=heDir(line)> with unicode-bidi:isolate. English labels (Wrong because:, Would be correct if:) wrapped in <bdi> so they cannot pull adjacent Hebrew runs to LTR. The הבחירה שלך pickTag is now <bdi dir=rtl> so it locks RTL regardless of option direction. Surface B (legacy on-demand AI autopsy via aiAutopsy()): killed the bulk .replace(/\n/g,<br>) that flattened paragraphs into one bidi context — the same English-label-bleeds-Hebrew bug. Now splits AI text by newline and emits per-line dir-aware divs. Both surfaces now follow the canonical pattern at lines 2375 (alt main render) and 2535 (renderExplainBox) that was proven during the v98 bidi sweep. 4 new regression pins in tests/hebrewBidiSafety.test.js: aiAutopsy must not use bulk \n→<br>; must use split+map+dir=heDir; English labels at every site must be <bdi>-wrapped; DIS-row outer dir cannot regress to heDir(rationale+opt). Trinity 10.64.109 → 10.64.110.',
 ],
