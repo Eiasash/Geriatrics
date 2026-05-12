@@ -50,7 +50,18 @@ import { resolveAppVerdict } from './lib/optionResolver.mjs';
 
 const DEFAULT_URL = 'https://eiasash.github.io/Geriatrics/';
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
+const TORANOT_URL = 'https://toranot.netlify.app/api/claude';
+// v10.64.114: documented Toranot proxy secret for Geri — same value used by
+// scripts/generate_distractors.cjs (this is the contract, not a credential).
+const TORANOT_DEFAULT_SECRET = 'shlav-a-mega-1f97f311d307-2026';
 const MODEL = process.env.CHAOS_MODEL || 'claude-opus-4-7';
+
+// v10.64.114: proxy mode lets the bot run without a personal CLAUDE_API_KEY,
+// routing through the Toranot AI proxy (same path Geri's in-app aiAutopsy uses).
+// Enable via CHAOS_USE_PROXY=1 or by setting TORANOT_API_SECRET. Direct mode
+// (CLAUDE_API_KEY) remains the default for backward compatibility.
+const USE_PROXY = process.env.CHAOS_USE_PROXY === '1' || !!process.env.TORANOT_API_SECRET;
+const API_URL = USE_PROXY ? TORANOT_URL : ANTHROPIC_URL;
 
 const CONFIG = {
   url: process.env.CHAOS_URL || DEFAULT_URL,
@@ -69,9 +80,14 @@ const CONFIG = {
   costCapUsd: Number(process.env.CHAOS_COST_CAP_USD || 25),
 };
 
-const KEY = process.env.CLAUDE_API_KEY;
-if (!KEY) { console.error('CLAUDE_API_KEY not set in environment'); process.exit(2); }
-if (KEY.length !== 108) console.warn(`WARN: CLAUDE_API_KEY length=${KEY.length}, expected 108 — may 401`);
+let KEY;
+if (USE_PROXY) {
+  KEY = process.env.TORANOT_API_SECRET || TORANOT_DEFAULT_SECRET;
+} else {
+  KEY = process.env.CLAUDE_API_KEY;
+  if (!KEY) { console.error('CLAUDE_API_KEY not set in environment (or set CHAOS_USE_PROXY=1 for proxy mode)'); process.exit(2); }
+  if (KEY.length !== 108) console.warn(`WARN: CLAUDE_API_KEY length=${KEY.length}, expected 108 — may 401`);
+}
 
 const COST = { totalCalls: 0, totalInTokens: 0, totalOutTokens: 0, failures: 0 };
 function priceUsd(inTok, outTok) {
@@ -107,13 +123,18 @@ async function callClaude(systemPrompt, userPrompt, { maxTokens = 400, retries =
   let lastErr = null;
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
-      const res = await fetch(ANTHROPIC_URL, {
+      const res = await fetch(API_URL, {
         method: 'POST',
-        headers: {
-          'anthropic-version': '2023-06-01',
-          'x-api-key': KEY,
-          'content-type': 'application/json',
-        },
+        headers: USE_PROXY
+          ? {
+              'x-api-secret': KEY,
+              'content-type': 'application/json',
+            }
+          : {
+              'anthropic-version': '2023-06-01',
+              'x-api-key': KEY,
+              'content-type': 'application/json',
+            },
         body: JSON.stringify(body),
       });
       if (res.status === 429 || res.status >= 500) {
@@ -538,6 +559,31 @@ async function ensureOnPracticeQuiz(page, log) {
     await sleep(1500);
   } catch (_) { return false; }
 
+  // Step 1.5 (v10.64.115): dismiss any auto-shown modal that would intercept
+  // pointer events on button.qo. The help-overlay autoshows on first visit
+  // (showHelp() at shlav-a-mega.html:8196, autoshow at :1431). It sits at
+  // z-index:9999 over the quiz card, so every option click times out with
+  // "intercepts pointer events" until it's gone. Same class of modals:
+  // #feModal, #sdModal, #miModal, #mockPicker, #examModal, #mexModal,
+  // #postLoginRstModal, #rstModal (per the v10.64.49 deferred-help guard).
+  // Escape closes the top-most modal via the global keydown handler.
+  const dismissed = await page.evaluate(() => {
+    const modalIds = ['help-overlay', 'feModal', 'sdModal', 'miModal', 'mockPicker', 'examModal', 'mexModal', 'postLoginRstModal', 'rstModal'];
+    const found = modalIds.filter((id) => document.getElementById(id));
+    // Use closeTopModal() if present (canonical dismissal path); fall back to
+    // direct DOM removal so the bot is robust if the helper is renamed.
+    if (typeof closeTopModal === 'function') {
+      while (typeof closeTopModal === 'function' && closeTopModal()) { /* loop */ }
+    } else {
+      found.forEach((id) => document.getElementById(id)?.remove());
+    }
+    return found;
+  }).catch(() => []);
+  if (dismissed.length) {
+    log.actions.push({ at: nowIso(), type: 'modal-dismiss', ids: dismissed });
+    await sleep(400);
+  }
+
   // Step 2: if button.qo + check button are visible, we're in practice mode.
   const optsCount = await page.locator('button.qo').count().catch(() => 0);
   const checkVisible = await page.locator('[aria-label="Check answer"]').count().catch(() => 0);
@@ -742,7 +788,7 @@ async function main() {
   await ensureDir(CONFIG.reportDir);
   openFindingsLog(CONFIG.reportDir);
   const report = { config: CONFIG, startedAt: nowIso(), finishedAt: null, workers: [] };
-  console.log(`[v4] Launching ${CONFIG.users} workers × ${(CONFIG.durationMs / 60000).toFixed(0)} min, model=${MODEL}, url=${CONFIG.url}, cost-cap $${CONFIG.costCapUsd}`);
+  console.log(`[v4] Launching ${CONFIG.users} workers × ${(CONFIG.durationMs / 60000).toFixed(0)} min, model=${MODEL}, url=${CONFIG.url}, cost-cap $${CONFIG.costCapUsd}, api=${USE_PROXY ? 'toranot-proxy' : 'anthropic-direct'}`);
   const browser = await chromium.launch({ headless: CONFIG.headless });
   const stopAt = Date.now() + CONFIG.durationMs;
   try {
