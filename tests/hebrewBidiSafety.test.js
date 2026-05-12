@@ -183,3 +183,49 @@ describe('innerHTML-safety regressions — pin sanitize is called on user-derive
     expect(html).toMatch(/unicode-bidi:\s*plaintext/);
   });
 });
+
+describe('Distractor Autopsy — bidi correctness (v10.64.110 regression pins)', () => {
+  // Catches the v10.64.109-and-earlier bug class where the autopsy block
+  // flattened multi-paragraph AI output into a single bidi context with
+  // .replace(/\n/g,'<br>'). English labels ("Wrong because:") then pulled
+  // adjacent Hebrew lines to LTR, making them render backwards.
+
+  it('aiAutopsy() never uses bulk \\n→<br> replacement (forces per-line rendering)', () => {
+    const fn = html.match(/async function aiAutopsy\([\s\S]+?\nrender\(\);\n\}/);
+    expect(fn, 'aiAutopsy function not found — has it been renamed?').not.toBeNull();
+    expect(fn[0], 'aiAutopsy regressed to bulk \\n→<br> — split by line and wrap each in <div dir="…"> instead').not.toMatch(/replace\(\/\\n\/g,\s*['"]<br>['"]\)/);
+  });
+
+  it('aiAutopsy() emits per-line dir-aware divs (split-then-map pattern)', () => {
+    const fn = html.match(/async function aiAutopsy\([\s\S]+?\nrender\(\);\n\}/);
+    expect(fn).not.toBeNull();
+    // Must split the AI text by newline AND wrap each line with its own dir attr.
+    expect(fn[0]).toMatch(/split\(['"]\\n['"]\)/);
+    expect(fn[0]).toMatch(/dir="\$\{heDir\(/);
+  });
+
+  it('English autopsy labels ("Wrong because:" / "Would be correct if:") are <bdi>-isolated', () => {
+    // English labels embedded in mixed Hebrew/English runs must be wrapped
+    // in <bdi> so they cannot pull adjacent Hebrew text to LTR. Both the
+    // pre-generated DIS render path AND the AI on-demand path must isolate.
+    const wrongBecauseSites = html.match(/Wrong because:<\/b>/g) || [];
+    const wouldBeSites = html.match(/Would be correct if:<\/b>/g) || [];
+    // Each colored-label site should be preceded by <bdi> (the open tag may
+    // be on the same line or wrap a <b>). Simplest pin: every "Wrong because:</b>"
+    // and "Would be correct if:</b>" must be followed by a closing </bdi>.
+    expect(wrongBecauseSites.length, 'at least one Wrong because: label expected').toBeGreaterThan(0);
+    expect(wouldBeSites.length, 'at least one Would be correct if: label expected').toBeGreaterThan(0);
+    // The whole label including </b></bdi> must appear at every site.
+    const wrongBecauseWrapped = (html.match(/Wrong because:<\/b><\/bdi>/g) || []).length;
+    const wouldBeWrapped = (html.match(/Would be correct if:<\/b><\/bdi>/g) || []).length;
+    expect(wrongBecauseWrapped).toBe(wrongBecauseSites.length);
+    expect(wouldBeWrapped).toBe(wouldBeSites.length);
+  });
+
+  it('the DIS-render forEach uses heDir(line) per-line, not heDir(rationale+opt) on outer', () => {
+    // Outer container must be dir="auto" so each inner line resolves its own
+    // direction. The old pattern heDir((_rationale||'')+opt) gave the whole
+    // row one direction, breaking when rationale started with English.
+    expect(html, 'DIS-render row container regressed — outer should be dir="auto"').not.toMatch(/dir="\$\{heDir\(\(_rationale\|\|''\)\+opt\)\}"/);
+  });
+});
