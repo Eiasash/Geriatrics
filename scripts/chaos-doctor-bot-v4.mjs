@@ -228,7 +228,7 @@ async function extractExplanationAndSource(page) {
 // Doctor prompts — v4 judge contract is sharper
 // ============================================================
 
-const SYS_DOCTOR_PICK = `You are an experienced board-certified family-medicine physician taking an Israeli geriatric medicine board exam (P005-2026). Questions are in Hebrew. You read carefully, reason step by step in your head, and answer with discipline.
+const SYS_DOCTOR_PICK = `You are an experienced board-certified geriatrician taking the Israeli geriatric medicine board exam (Shlav A, P005-2026). Questions are in Hebrew. Your reference frame is Hazzard 8e, Harrison 22e, GRS8, and Israeli MOH regulation. You read carefully, reason step by step in your head, and answer with discipline.
 
 Output format (strict): respond with ONLY a JSON object on a single line, no markdown, no prose. Schema:
 {"pick":"A"|"B"|"C"|"D","confidence":0..100,"why":"<=200 chars terse reasoning"}
@@ -237,7 +237,7 @@ A=index 0, B=index 1, C=index 2, D=index 3 (Hebrew labeling א/ב/ג/ד maps the
 // v4 judge prompt — explicit that we are validating the APP, not adjudicating
 // between the AI's pick and the app's pick. The AI's prior pick is supplied
 // only as context for "where you would have gone".
-const SYS_DOCTOR_JUDGE = `You are an experienced family-medicine attending grading a board-exam question and the app's answer key. The question is from an Israeli family-medicine board prep app. Your job: validate the APP's claimed correct answer against board-level family-medicine evidence (Hazzard 8e, Harrison 22e, GRS8, Israeli MOH). The AI's prior pick is context only — you are NOT adjudicating "AI vs app", you are validating the APP's stated key.
+const SYS_DOCTOR_JUDGE = `You are an experienced geriatric medicine attending grading a board-exam question and the app's answer key. The question is from an Israeli geriatric medicine board prep app (Shlav A, P005-2026). Your job: validate the APP's claimed correct answer against board-level geriatric medicine evidence (Hazzard 8e, Harrison 22e, GRS8, Israeli MOH). The AI's prior pick is context only — you are NOT adjudicating "AI vs app", you are validating the APP's stated key.
 
 Output format (strict): one JSON line, no markdown.
 Schema:
@@ -245,7 +245,7 @@ Schema:
 
 Be a strict but fair examiner — only flag app_answer_correct=false if you have a board-level reason. If you'd defer to the textbook (i.e. you're <80% confident the app is wrong), set app_answer_correct=true and explain in issue.`;
 
-const SYS_DOCTOR_SOURCE = `You are a careful clinical educator. The explanation cites a textbook source (e.g. "Goroll פרק 19", "Harrison Ch 47", "Nelson 22e"). Without access to the textbook, judge whether the citation is plausible — does the chapter/section topic align with the question's clinical content?
+const SYS_DOCTOR_SOURCE = `You are a careful clinical educator. The explanation cites a textbook source (e.g. "Hazzard's Ch 43", "Harrison 22e Ch 437", "GRS8 פרק 19", "Brookdale 2024"). Without access to the textbook, judge whether the citation is plausible — does the chapter/section topic align with the question's clinical content?
 
 Output format (strict): one JSON line.
 Schema:
@@ -410,14 +410,14 @@ Validate the APP's claimed answer ${appLetter} (${appText}) against board-level 
   // v4: try .quiz-source first (clean cite), else fall back to regex on explanation
   let cite = null;
   if (source) {
-    const m = source.match(/(Goroll|Harrison|Nelson|Lerner|הר['"]י|AFP)\s*(?:Ch\.?|Chapter|פרק)?\s*\d{1,3}/i);
+    const m = source.match(/(Hazzard|Harrison|GRS\s*8?|Brookdale|הזרד|הריסון)\s*(?:Ch\.?|Chapter|פרק)?\s*\d{1,3}/i);
     cite = m ? m[0] : (source.length < 200 ? source : null);
   } else if (explanation) {
-    const m = explanation.match(/(Goroll|Harrison|Nelson|Lerner|הר['"]י|AFP)\s*(?:Ch\.?|Chapter|פרק)?\s*\d{1,3}/i);
+    const m = explanation.match(/(Hazzard|Harrison|GRS\s*8?|Brookdale|הזרד|הריסון)\s*(?:Ch\.?|Chapter|פרק)?\s*\d{1,3}/i);
     cite = m ? m[0] : null;
   }
   if (cite) {
-    const userPrompt3 = `Explanation snippet (Hebrew family-medicine question):\n${(explanation || source).slice(0, 1500)}\n\nCited source: ${cite}.\nIs the chapter/section topic plausibly aligned with the explanation's claim?`;
+    const userPrompt3 = `Explanation snippet (Hebrew geriatric medicine question):\n${(explanation || source).slice(0, 1500)}\n\nCited source: ${cite}.\nIs the chapter/section topic plausibly aligned with the explanation's claim?`;
     let srcResp;
     try { srcResp = await callClaude(SYS_DOCTOR_SOURCE, userPrompt3, { maxTokens: 200 }); }
     catch (e) { log.bugs.push({ at: nowIso(), type: 'ai-error', context: 'source', message: e.message }); }
