@@ -2578,12 +2578,21 @@ Format each as:
 ✗ [option] — Wrong because: [reason]. Would be correct if: [scenario].
 
 Be concise. Use English for medical terms, Hebrew for context if relevant.`}],500);
-// Sanitize AI output first, then format
+// Sanitize AI output first, then format.
+// v10.64.110: split-by-line, each line is its own bidi context with own dir.
+// Previously the formatter collapsed newlines into <br> tags, which flattened
+// paragraphs into one bidi context — English labels (Wrong because:, Would be
+// correct if:) pulled adjacent Hebrew lines to LTR. Mirrors the canonical
+// pattern at lines 2375 (alt main render) and 2535 (renderExplainBox).
 const safeTxt=sanitize(txt);
-const formatted=safeTxt.replace(/✗/g,'<b style="color:#dc2626">✗</b>')
-  .replace(/Wrong because:/g,'<span style="color:#b91c1c">Wrong because:</span>')
-  .replace(/Would be correct if:/g,'<span style="color:#059669">Would be correct if:</span>')
-  .replace(/\n/g,'<br>');
+const _lines=safeTxt.split('\n');
+const formatted=_lines.map(_l=>{
+  const _styled=_l
+    .replace(/✗/g,'<bdi><b style="color:#dc2626">✗</b></bdi>')
+    .replace(/Wrong because:/g,'<bdi><b style="color:#b91c1c">Wrong because:</b></bdi>')
+    .replace(/Would be correct if:/g,'<bdi><b style="color:#059669">Would be correct if:</b></bdi>');
+  return `<div dir="${heDir(_l)}" style="unicode-bidi:isolate;margin-bottom:.35em">${_styled}</div>`;
+}).join('');
 _exCache[_apKey]=formatted;
 lsSet('samega_ex',_exCache);
 }catch(e){
@@ -3358,25 +3367,36 @@ if(_dist){
     const _bg=_isCorrect?'#dcfce7':(_isUserPick?'#fef2f2':'rgb(var(--bg3))');
     const _brd=_isCorrect?'#86efac':(_isUserPick?'#fca5a5':'rgb(var(--brd))');
     const _mark=_isCorrect?'<b style="color:#059669">✓</b>':'<b style="color:#dc2626">✗</b>';
-    const _pickTag=(_isUserPick&&!_isCorrect)?' <span style="color:rgb(var(--fg3));font-size:9px">(הבחירה שלך)</span>':'';
-    h+=`<div style="margin-bottom:6px;padding:8px 10px;background:${_bg};border:1px solid ${_brd};border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg));unicode-bidi:isolate" dir="${heDir((_rationale||'')+opt)}">`;
-    h+=`<div style="font-weight:700;margin-bottom:3px">${_mark} <bdi>${sanitize(opt)}</bdi>${_pickTag}</div>`;
+    const _pickTag=(_isUserPick&&!_isCorrect)?' <bdi dir="rtl" style="color:rgb(var(--fg3));font-size:9px">(הבחירה שלך)</bdi>':'';
+    // v10.64.110: outer is dir=auto + isolate so each inner div resolves its own
+    // bidi independently. Previously dir=heDir(rationale+opt) — when rationale
+    // started with English "Wrong because:" the whole row went LTR and Hebrew
+    // bodies rendered backwards.
+    h+=`<div style="margin-bottom:6px;padding:8px 10px;background:${_bg};border:1px solid ${_brd};border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg));unicode-bidi:isolate" dir="auto">`;
+    h+=`<div style="font-weight:700;margin-bottom:3px;unicode-bidi:plaintext" dir="auto">${_mark} <bdi>${sanitize(opt)}</bdi>${_pickTag}</div>`;
     // Defensive: NEVER render "Wrong because" on the correct answer, even if DIS data is misaligned.
     // If DIS[qIdx] is stale (e.g. questions reordered without regen), the slot that's now q.c may
     // hold a leftover rationale from a different option. Always show the green-label instead.
     if(_isCorrect){
-      h+=`<div style="color:#059669;font-size:10px">התשובה הנכונה</div>`;
+      h+=`<div style="color:#059669;font-size:10px" dir="rtl">התשובה הנכונה</div>`;
     }else if(_rationale){
-      const _formatted=sanitize(_rationale)
-        .replace(/Wrong because:/g,'<b style="color:#b91c1c">Wrong because:</b>')
-        .replace(/Would be correct if:/g,'<b style="color:#059669">Would be correct if:</b>');
-      h+=`<div>${_formatted}</div>`;
+      // v10.64.110: split rationale by newline; each line is its own bidi context with
+      // direction chosen by its own content. English labels wrapped in <bdi> so they
+      // don't pull adjacent Hebrew runs to LTR. Mirrors the canonical pattern at lines
+      // 2375 (alt main render) and 2535 (renderExplainBox).
+      const _formattedLines=String(_rationale).split('\n').map(_l=>{
+        const _safe=sanitize(_l)
+          .replace(/Wrong because:/g,'<bdi><b style="color:#b91c1c">Wrong because:</b></bdi>')
+          .replace(/Would be correct if:/g,'<bdi><b style="color:#059669">Would be correct if:</b></bdi>');
+        return `<div dir="${heDir(_l)}" style="unicode-bidi:isolate;margin-bottom:.3em">${_safe}</div>`;
+      }).join('');
+      h+=_formattedLines;
     }
     h+=`</div>`;
   });
 }else if(_aiTxt){
-  // Legacy on-demand AI autopsy cache (already sanitized+formatted by formatAutopsy)
-  h+=`<div style="font-size:11px;line-height:1.7;color:rgb(var(--fg));unicode-bidi:plaintext" dir="${heDir(_aiTxt)}">${_aiTxt}</div>`;
+  // Legacy on-demand AI autopsy cache (already sanitized + per-line dir-wrapped by aiAutopsy v10.64.110)
+  h+=`<div style="font-size:11px;line-height:1.7;color:rgb(var(--fg));unicode-bidi:plaintext" dir="auto">${_aiTxt}</div>`;
 }else{
   h+=`<div style="font-size:11px;color:rgb(var(--fg3));padding:4px 0">⏳ טוען הסבר על מסיחים...</div>`;
   setTimeout(()=>{ if(!_exCache['autopsy_'+_qIdx])aiAutopsy(_qIdx); },100);
@@ -7143,8 +7163,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.109';
+const APP_VERSION='10.64.110';
 const CHANGELOG={
+'10.64.110':[
+'🪲 Distractor Autopsy bidi correctness fix. Two surfaces both shipped backwards Hebrew when rationales contained English (which is nearly always — Wrong because:/Would be correct if: labels). Surface A (pre-generated DIS per-option rows): outer container computed dir from heDir(rationale+opt); rationales starting with English pinned the whole row LTR and the Hebrew body rendered backwards. Now dir=auto on outer (children resolve independently), rationale split by newline, each line wrapped in its own <div dir=heDir(line)> with unicode-bidi:isolate. English labels (Wrong because:, Would be correct if:) wrapped in <bdi> so they cannot pull adjacent Hebrew runs to LTR. The הבחירה שלך pickTag is now <bdi dir=rtl> so it locks RTL regardless of option direction. Surface B (legacy on-demand AI autopsy via aiAutopsy()): killed the bulk .replace(/\n/g,<br>) that flattened paragraphs into one bidi context — the same English-label-bleeds-Hebrew bug. Now splits AI text by newline and emits per-line dir-aware divs. Both surfaces now follow the canonical pattern at lines 2375 (alt main render) and 2535 (renderExplainBox) that was proven during the v98 bidi sweep. 4 new regression pins in tests/hebrewBidiSafety.test.js: aiAutopsy must not use bulk \n→<br>; must use split+map+dir=heDir; English labels at every site must be <bdi>-wrapped; DIS-row outer dir cannot regress to heDir(rationale+opt). Trinity 10.64.109 → 10.64.110.',
+],
 '10.64.109':[
 '🌐 Bilingual toggle now applies to 2 more render surfaces — flashcard reveal (on-call mode card front) and track-view bookmark snippets. Both surfaces previously accessed q.q directly, bypassing S.langPref, so a user toggled to English would still see Hebrew there. Refactored to qLang(q, "q") with matching heDir() direction. For the 1,867 bilingual Qs this means EN-toggled users now get EN on those surfaces; for the 1,876 Hebrew-only Qs the fallback returns the original Hebrew unchanged (qLang routes to q[field] when _en variant missing). Surface 3 (AI autopsy prompt at line ~2573) intentionally left bare per renderSiteAudit test docstring: AI-prompt construction operates on source data, not the user toggle. Ratchet tightening in same commit: bare q.q template-string accesses 12 to 8, qLang call floor 8 to 13, bare q.o accesses 35 to 20 (the q.o drop was already realized by prior PRs but the ratchet was not bumped). Trinity 10.64.108 to 10.64.109.',
 ],

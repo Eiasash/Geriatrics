@@ -2,19 +2,28 @@
  * XSS property test for the aiAutopsy post-sanitize formatting chain in
  * shlav-a-mega.html (monolithic).
  *
- * Pipeline: callAI() → sanitize() → replace chain → innerHTML.
+ * Pipeline: callAI() → sanitize() → split-by-line + per-line replace chain
+ * + per-line <div dir=...> wrap → innerHTML.
  *
- * The replace chain injects raw <b>/<span>/<br> on top of already-escaped
+ * The replace chain injects raw <b>/<bdi>/<div> on top of already-escaped
  * text. Invariant: any `<`/`>`/"/' originating from the AI output must
  * still be escaped after formatting. The only literal tags allowed are
- * the formatter's own.
+ * the formatter's own (and the wrapping <div dir="..."> the formatter adds
+ * around each line).
+ *
+ * v10.64.110 rewrite: formatter changed from
+ *   const formatted = safeTxt.replace(...).replace(...).replace(/\n/g,'<br>');
+ * to
+ *   const formatted = safeTxt.split('\n').map(line => {...}).join('');
+ * because the bulk newline-to-br substitution flattened bidi context and
+ * English labels pulled Hebrew lines to LTR. Tags also changed: ✗ and the
+ * Wrong because:/Would be correct if: labels now wrapped in <bdi> so they
+ * don't infect adjacent Hebrew runs.
  *
  * Because Geriatrics has no module extraction, this test pulls the REAL
- * `sanitize` + the `safeTxt.replace(...)` chain out of the HTML via
- * regex and re-runs them — so if someone edits either in the source,
- * these tests cover the exact new behaviour.
- *
- * Mirrors InternalMedicine/tests/aiAutopsyXss.test.js.
+ * `sanitize` + `heDir` + the line-by-line formatter out of the HTML and
+ * re-runs them — so if someone edits either in the source, these tests
+ * cover the exact new behaviour.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -27,64 +36,78 @@ const html = readFileSync(
   'utf-8'
 );
 
-// Pull the ACTUAL source of both sanitize() and the replace chain out of
-// shlav-a-mega.html and assemble them into a testable harness.
+// Pull the ACTUAL source of sanitize(), heDir(), and the line-by-line formatter
+// out of shlav-a-mega.html and assemble them into a testable harness.
 function buildHarness() {
   // sanitize()
   const sanMatch = html.match(/function sanitize\(s\)\{[^}]+\}/);
   if (!sanMatch) throw new Error('sanitize() not found in shlav-a-mega.html');
 
-  // The replace chain (exact formatter used by aiAutopsy).
-  // Capture from `safeTxt.replace(` through the final `.replace(/\n/g,'<br>');`
-  const chainMatch = html.match(
-    /const formatted=safeTxt\.replace\([\s\S]*?\.replace\(\/\\n\/g,'<br>'\);/
-  );
-  if (!chainMatch) throw new Error('formatAutopsy replace chain not found');
+  // heDir() — needed because the formatter uses it inside the map.
+  // Has nested braces (for-loop body), so match line-bounded — heDir is all on one line.
+  const heMatch = html.match(/function heDir\(s\)\{[^\n]+\}/);
+  if (!heMatch) throw new Error('heDir() not found in shlav-a-mega.html');
 
-  const src = `
-    ${sanMatch[0]}
-    function formatAutopsy(safeTxt){
-      ${chainMatch[0]}
-      return formatted;
-    }
-    function pipe(raw){ return formatAutopsy(sanitize(raw)); }
-  `;
+  // The line-by-line formatter inside aiAutopsy(). Capture from
+  // `const _lines=safeTxt.split('\n');` through the final `.join('');`.
+  const chainMatch = html.match(
+    /const _lines=safeTxt\.split\('\\n'\);[\s\S]*?\}\)\.join\(''\);/
+  );
+  if (!chainMatch) throw new Error('aiAutopsy line-by-line formatter not found');
+
+  const src =
+    sanMatch[0] + '\n' +
+    heMatch[0] + '\n' +
+    'function formatAutopsy(safeTxt){\n' +
+    chainMatch[0] + '\n' +
+    'return formatted;\n' +
+    '}\n' +
+    'function pipe(raw){ return formatAutopsy(sanitize(raw)); }\n';
   const ctx = {};
   vm.createContext(ctx);
   vm.runInContext(src, ctx);
-  return ctx; // exposes sanitize, formatAutopsy, pipe
+  return ctx; // exposes sanitize, heDir, formatAutopsy, pipe
 }
 
 const { sanitize, formatAutopsy, pipe } = buildHarness();
 
-describe('shlav-a-mega.html — aiAutopsy formatter tag inventory', () => {
-  it('wraps ✗ in <b style="color:#dc2626">', () => {
-    expect(formatAutopsy('✗ foo')).toContain('<b style="color:#dc2626">✗</b>');
+describe('shlav-a-mega.html — aiAutopsy formatter tag inventory (v10.64.110)', () => {
+  it('wraps ✗ in <bdi><b style="color:#dc2626"> (bdi-isolated)', () => {
+    expect(formatAutopsy('✗ foo')).toContain('<bdi><b style="color:#dc2626">✗</b></bdi>');
   });
 
-  it('wraps "Wrong because:" in a red span', () => {
+  it('wraps "Wrong because:" in <bdi><b style="color:#b91c1c"> (bdi-isolated)', () => {
     expect(formatAutopsy('Wrong because: x')).toContain(
-      '<span style="color:#b91c1c">Wrong because:</span>'
+      '<bdi><b style="color:#b91c1c">Wrong because:</b></bdi>'
     );
   });
 
-  it('wraps "Would be correct if:" in a green span', () => {
+  it('wraps "Would be correct if:" in <bdi><b style="color:#059669"> (bdi-isolated)', () => {
     expect(formatAutopsy('Would be correct if: y')).toContain(
-      '<span style="color:#059669">Would be correct if:</span>'
+      '<bdi><b style="color:#059669">Would be correct if:</b></bdi>'
     );
   });
 
-  it('converts \\n to <br>', () => {
-    expect(formatAutopsy('a\nb')).toBe('a<br>b');
+  it('emits per-line <div dir="..."> wrappers, no <br>', () => {
+    const out = formatAutopsy('a\nb');
+    // Each line gets its own div with a dir attr.
+    expect(out).toMatch(/<div dir="(?:auto|ltr|rtl)"[^>]*>a<\/div>/);
+    expect(out).toMatch(/<div dir="(?:auto|ltr|rtl)"[^>]*>b<\/div>/);
+    // No <br> in the output.
+    expect(out).not.toMatch(/<br/);
+  });
+
+  it('every emitted line has unicode-bidi:isolate (each line resolves bidi independently)', () => {
+    const out = formatAutopsy('line1\nline2\nline3');
+    const divCount = (out.match(/<div dir="/g) || []).length;
+    const isoCount = (out.match(/unicode-bidi:isolate/g) || []).length;
+    expect(divCount).toBe(3);
+    expect(isoCount).toBe(3);
   });
 });
 
-describe('shlav-a-mega.html — aiAutopsy XSS invariants', () => {
+describe('shlav-a-mega.html — aiAutopsy XSS invariants (v10.64.110)', () => {
   it('sanitize escapes <, >, &, ", \' (pre-format guarantee)', () => {
-    expect(sanitize(`<script>"'&`)).toBe('&lt;script&gt;&quot;&#39;&amp;'.replace(
-      '&amp;',
-      '&amp;'
-    ));
     // Canonical order: & first, then the rest.
     expect(sanitize('&<>"\'')).toBe('&amp;&lt;&gt;&quot;&#39;');
   });
@@ -97,11 +120,12 @@ describe('shlav-a-mega.html — aiAutopsy XSS invariants', () => {
 
   it('neutralises <img onerror=> inside autopsy bullet', () => {
     const out = pipe('✗ <img src=x onerror=alert(1)> — Wrong because: bad');
-    const literalLt = out.match(/</g) || [];
-    // Only the formatter's own tags contribute literal `<`: <b>, </b>, <span>, </span>.
-    expect(literalLt.length).toBe(4);
     expect(out).toContain('&lt;img');
     expect(out).not.toMatch(/<img/);
+    // Attacker payload must not produce any unescaped tag. Allow only the
+    // formatter's own tag names: div, bdi, b.
+    const attackerLts = (out.match(/<(?!\/?(?:div|bdi|b)[\s>])/g) || []);
+    expect(attackerLts, `unexpected raw < in: ${out}`).toEqual([]);
   });
 
   it('javascript: href is made inert (brackets escaped)', () => {
@@ -140,13 +164,18 @@ describe('shlav-a-mega.html — aiAutopsy XSS invariants', () => {
     ];
     for (const f of fixtures) {
       const out = pipe(f);
+      // Strip the formatter's own legitimate tags before scanning for attacker residue.
       const stripped = out
-        .replace(/<b style="color:#dc2626">✗<\/b>/g, '')
-        .replace(/<span style="color:#b91c1c">Wrong because:<\/span>/g, '')
-        .replace(/<span style="color:#059669">Would be correct if:<\/span>/g, '')
-        .replace(/<br>/g, '');
-      expect(stripped, `fixture: ${f}`).not.toMatch(/<[a-zA-Z/!?]/);
-      expect(stripped, `fixture: ${f}`).not.toMatch(/[a-zA-Z"'/]>/);
+        .replace(/<div dir="(?:auto|ltr|rtl)"[^>]*>/g, '')
+        .replace(/<\/div>/g, '')
+        .replace(/<bdi>/g, '')
+        .replace(/<\/bdi>/g, '')
+        .replace(/<b style="color:#dc2626">/g, '')
+        .replace(/<b style="color:#b91c1c">/g, '')
+        .replace(/<b style="color:#059669">/g, '')
+        .replace(/<\/b>/g, '');
+      expect(stripped, `fixture: ${f} — raw < remains`).not.toMatch(/<[a-zA-Z/!?]/);
+      expect(stripped, `fixture: ${f} — raw > remains`).not.toMatch(/[a-zA-Z"'/]>/);
       const rawDouble = stripped.match(/"/g) || [];
       const rawSingle = stripped.match(/'/g) || [];
       expect(rawDouble.length, `fixture: ${f} (raw ")`).toBe(0);
@@ -156,7 +185,8 @@ describe('shlav-a-mega.html — aiAutopsy XSS invariants', () => {
 
   it('sanitize-then-format contract check — formatter tags survive unescaped', () => {
     const out = pipe('✗ foo');
-    expect(out).toMatch(/<b style="color:#dc2626">/);
+    expect(out).toMatch(/<bdi><b style="color:#dc2626">/);
+    expect(out).not.toMatch(/&lt;bdi/);
     expect(out).not.toMatch(/&lt;b style=/);
   });
 });
