@@ -27,9 +27,14 @@ These four rules are the floor. They override any conflicting guidance later in 
 
 `shlav_leaderboard_upsert(p_uid,p_answered,p_correct,p_streak,p_readiness,p_ts)` — SECURITY DEFINER RPC at `/rest/v1/rpc/shlav_leaderboard_upsert`. Replaces the prior direct `/rest/v1/shlav_leaderboard` POST. The 4 historical rows still exist in `public.shlav_leaderboard` (the schema-split migration `20260421120000_split_app_schema.sql` was apparently never applied to leaderboards — they remain in `public`). Migration: `supabase/migrations/20260508000000_leaderboard_upsert.sql`. RPC bypasses RLS via SECURITY DEFINER, future-proof against the sb_publishable_* key class. `accuracy` is GENERATED ALWAYS in the table — RPC must NOT assign it. Sibling-aligned with mishpacha/pnimit RPCs.
 
-## Chaos bot infrastructure (2026-05-08)
+## Chaos bot infrastructure (2026-05-12)
 
-Geri's `scripts/chaos-live-bot.mjs` (existing) drives the live shlav-a-mega.html. The FM/IM v4 bot port to Geri is **deferred**: Geri's monolith uses `class="qo"` + `onclick=` handlers, NOT `data-action` selectors. A dedicated Geri-native v4 (or rewrite of chaos-live-bot to add the v4 judge contract) is morning-fresh-eyes work. Existing chaos-live-bot remains the production overnight-run choice for Geri.
+Two bots coexist:
+
+- **`scripts/chaos-live-bot.mjs`** (319 LOC) — lighter overnight smoke-runner against the live PWA. Production choice when you just want exercise + bug-surface, no judge contract.
+- **`scripts/chaos-doctor-bot-v4.mjs`** (768 LOC) — Geri-native v4 judge bot. Selectors confirmed against the monolith (`button.qo`, `button.qo.ok`, `[aria-label="Check answer"]`, `[aria-label="Next question"]`, `.heb`, `.explain-box`); enters via the default practice surface so `data-state="correct"` is on the actual answer key, not the user's pick (the failure mode that produced 100% appIdx=null in v3). JSONL ledger writes to `chaos-reports/v4/medical_findings_ai_v4.jsonl`. Helper libs at `scripts/lib/extractJson.mjs` + `scripts/lib/optionResolver.mjs`, pinned by `tests/chaosBotV4ExtractJson.test.js`, `tests/chaosBotV4OptionResolver.test.js`, and `tests/chaosBotV4Persona.test.js` (the persona pin was added in v10.64.113 after a sweep caught FM-leak prompts — see below).
+
+**v10.64.113 prompt re-skin:** the v4 bot was originally adapted from the FM sibling and the three `SYS_DOCTOR_*` prompts plus the citation regex were left FM-framed (`family-medicine physician`, `family-medicine attending`, citation examples `Goroll פרק 19 / Nelson 22e`, regex `(Goroll|Harrison|Nelson|Lerner|הר['"]י|AFP)`). Two consequences: (1) the FM persona was deferring on geri-board calls a geriatrician would catch; (2) the citation regex did NOT match `Hazzard`, so source-check fired zero times on Geri data — silent feature outage. Fixed in v10.64.113: persona → board-certified geriatrician + geri-medicine attending; citation examples → `Hazzard's Ch 43 / Harrison 22e Ch 437 / GRS8 פרק 19 / Brookdale 2024`; regex → `(Hazzard|Harrison|GRS\s*8?|Brookdale|הזרד|הריסון)`. `tests/chaosBotV4Persona.test.js` (12 tests) pins against future FM-leak regressions; forced-fail dry-run during the v113 PR confirmed the pin catches the regression.
 
 ---
 
