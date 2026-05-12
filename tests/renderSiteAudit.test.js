@@ -50,13 +50,11 @@ describe('v10.64.60 render-site audit (ratchets)', () => {
       /heDir\(q\.q\)/g,
     ];
     const total = patterns.reduce((sum, p) => sum + (html.match(p) || []).length, 0);
-    // 2026-05-06 baseline after v10.64.60: 12 bare q.q in template strings.
-    // Distribution at lock-in: spread across flashcard reveal, alt-main render,
-    // track view, mock review block, bookmark display, AI autopsy prompt, etc.
-    // The 6 primary renderQuiz sites already use qLang. Lowering this number
-    // is welcome; raising it requires refactoring + this bound bump in the
-    // same commit.
-    const RATCHET = 12;
+    // 2026-05-12 update (v10.64.109): refactored flashcard reveal and
+    // track-view bookmark to use qLang(q,'q'). Bare-access count dropped
+    // from 12 → 8. Remaining: 1 AI autopsy prompt (intentional — operates
+    // on source data, not user toggle) + 7 internal logic uses.
+    const RATCHET = 8;
     expect(total, `bare q.q template-string accesses; expected ≤${RATCHET}`).toBeLessThanOrEqual(RATCHET);
   });
 
@@ -78,10 +76,12 @@ describe('v10.64.60 render-site audit (ratchets)', () => {
     ];
     const total = patterns.reduce((sum, p) => sum + (html.match(p) || []).length, 0);
     // 2026-05-06 baseline after v10.64.60: 33 bare q.o accesses across the
-    // monolith. Most are AI prompt construction, voice narration, mock review,
-    // and option counting (legitimate). Render sites in renderQuiz that need
-    // qLang have already been refactored.
-    const RATCHET = 35;
+    // monolith. As of 2026-05-12 (v10.64.109) the actual count is 20 —
+    // prior PRs trimmed it without bumping the ratchet. Tightening now.
+    // Remaining are AI prompt construction, voice narration, mock review,
+    // and option counting (legitimate). Render sites in renderQuiz that
+    // need qLang have already been refactored.
+    const RATCHET = 20;
     expect(total, `bare q.o accesses; expected ≤${RATCHET}`).toBeLessThanOrEqual(RATCHET);
   });
 
@@ -106,10 +106,12 @@ describe('v10.64.60 render-site audit (ratchets)', () => {
 
   it('qLang(q, ...) adoption count (must NOT decrease; should grow over time)', () => {
     const calls = (html.match(/qLang\(q,\s*['"][a-zA-Z_]+['"]\)/g) || []).length;
-    // 2026-05-06 baseline: 8 (after the v10.64.60 renderQuiz refactor).
-    // If a refactor accidentally REMOVES a qLang call without good reason, this
-    // catches it. To intentionally remove one, lower this floor.
-    const FLOOR = 8;
+    // 2026-05-12 (v10.64.109): floor raised 8 → 13 after refactoring
+    // flashcard reveal (2 calls) and track-view bookmark (1 call). Plus
+    // 2 incidental new calls picked up during the audit. If a refactor
+    // accidentally REMOVES a qLang call without good reason, this catches
+    // it. To intentionally remove one, lower this floor.
+    const FLOOR = 13;
     expect(calls, `qLang() call count; expected ≥${FLOOR}`).toBeGreaterThanOrEqual(FLOOR);
   });
 });

@@ -2324,7 +2324,7 @@ function renderOnCall(){
   if(topic)h+=`<div style="font-size:10px;background:rgb(var(--green-bg));color:rgb(var(--green-fg));padding:3px 10px;border-radius:20px;display:inline-block;align-self:flex-start;font-weight:600">${topic}</div>`;
   // Question card - large text
   h+=`<div style="background:rgb(var(--card-bg));border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);flex:1;cursor:${flipRevealed?'default':'pointer'}" ${flipRevealed?'':'onclick="flipCard()" role="button" tabindex="0" aria-label="Flip card to reveal answer"'}>
-    <div style="font-size:16px;line-height:1.6;font-weight:500;text-align:right;margin-bottom:${flipRevealed?'16px':'0'}" dir="${heDir(q.q)}">${q.q}</div>`;
+    <div style="font-size:16px;line-height:1.6;font-weight:500;text-align:right;margin-bottom:${flipRevealed?'16px':'0'}" dir="${heDir(qLang(q,'q'))}">${qLang(q,'q')}</div>`;
   if(!flipRevealed){
     h+=`<div style="text-align:center;margin-top:20px;color:rgb(var(--fg3));font-size:13px">👆 tap to reveal answer</div>`;
   } else {
@@ -5816,7 +5816,7 @@ h+='</div>';
 }else{
 h+=`<div class="card track-bk"><div class="track-bk__title">🔖 Bookmarked (${bkCount})</div>`;
 Object.entries(S.bk).filter(([,v])=>v).slice(0,10).forEach(([k])=>{
-const q=QZ[k];if(q)h+=`<div class="track-bk__row heb" dir="${heDir(q.q)}">${q.q.substring(0,80)}...</div>`;
+const q=QZ[k];if(q){const t=qLang(q,'q');h+=`<div class="track-bk__row heb" dir="${heDir(t)}">${t.substring(0,80)}...</div>`;}
 });
 h+=`</div>`;
 }
@@ -7143,8 +7143,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.108';
+const APP_VERSION='10.64.109';
 const CHANGELOG={
+'10.64.109':[
+'🌐 Bilingual toggle now applies to 2 more render surfaces — flashcard reveal (on-call mode card front) and track-view bookmark snippets. Both surfaces previously accessed q.q directly, bypassing S.langPref, so a user toggled to English would still see Hebrew there. Refactored to qLang(q, "q") with matching heDir() direction. For the 1,867 bilingual Qs this means EN-toggled users now get EN on those surfaces; for the 1,876 Hebrew-only Qs the fallback returns the original Hebrew unchanged (qLang routes to q[field] when _en variant missing). Surface 3 (AI autopsy prompt at line ~2573) intentionally left bare per renderSiteAudit test docstring: AI-prompt construction operates on source data, not the user toggle. Ratchet tightening in same commit: bare q.q template-string accesses 12 to 8, qLang call floor 8 to 13, bare q.o accesses 35 to 20 (the q.o drop was already realized by prior PRs but the ratchet was not bumped). Trinity 10.64.108 to 10.64.109.',
+],
 '10.64.108':[
 '🔄 Lane sync — one additional Opus reframe (idx=3289, Primary Progressive Aphasia non-fluent variant) landed locally from the terminal-lane Claude\'s parallel scripts/reframe_failed_retries.py after the v107 push closed. Same fix class as v107: Opus-reframed + Opus-validated. Net effect: 24 total Opus rescues across the two parallel scripts (23 web-lane + 1 terminal-lane). Final multi-accept count: 49. Trinity 10.64.107 → 10.64.108.',
 ],
