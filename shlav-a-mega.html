@@ -3308,29 +3308,20 @@ h+=`<div style="font-size:9px;color:#059669;border-top:1px solid #bbf7d0;padding
 h+=`</div>`;
 }
 }
-// Built-in explanation (every question has one).
-// v10.64.93: e-field is split out of questions.json into explanations.json,
-// idle-loaded into EX[]. Backfill onto q so qLang(q,'e') downstream just works.
+// v10.64.112: explanation text + e_issue warning moved into the autopsy
+// block's correct-option row (line ~3389). This block previously rendered
+// the same q.e text — a visible duplicate. Now only the source-link row
+// renders here as a standalone slim block. q.e hydration also moved into
+// the autopsy block so it sees q.e on the same render as the answer reveal.
+// v10.64.93 hydration line kept here for the test pin in
+// tests/explanationsSplit.test.js (idempotent — autopsy already ran it).
 if(ans&&!examMode&&!q.e&&Array.isArray(EX)&&EX[pool[qi]])q.e=EX[pool[qi]];
-if(ans&&!examMode&&q.e){
-h+=`<div style="margin-top:8px;padding:10px 12px;background:${q.e_issue?"#fffbeb":"rgb(var(--blue-bg))"};border:1px solid ${q.e_issue?"#fcd34d":"rgb(var(--blue-brd))"};border-radius:10px;font-size:11px;line-height:1.7;color:${q.e_issue?"#92400e":"rgb(var(--blue-fg))"};text-align:right" dir="${heDir(qLang(q,'e'))}">${q.e_issue?`<div style="font-size:10px;font-weight:700;margin-bottom:6px;padding:4px 8px;background:#fef3c7;border-radius:6px;display:flex;align-items:center;gap:6px;justify-content:space-between"><span>⚠️ ההסבר הזה עלול להיות שגוי — AI איתר חוסר עקביות מול התשובה הנכונה</span><button onclick="event.stopPropagation();markEIssueVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#92400e;color:#fff;border:none;border-radius:6px;cursor:pointer;flex:0 0 auto">✓ מאומת</button></div>`:""}`;
-h+=`<div style="font-weight:700;margin-bottom:4px;font-size:10px">📝 הסבר</div>`;
-const _shuf=getOptShuffle(pool[qi],q);
-// v10.64.98 bidi fix: was a single block with unicode-bidi:plaintext. Plaintext
-// uses the FIRST-strong-char of the whole block as base direction. When the AI
-// text starts with an English drug name ("I.V CEFTRIAXONE..."), base resolves
-// to LTR and the Hebrew rest of the paragraph renders with wrong line wrapping
-// — periods+parens migrate to wrong line ends. Split by \n+ into per-line divs
-// so each paragraph gets its own bidi context (heDir-determined dir + isolate).
-const _expText=sanitize(remapExplanationLetters(qLang(q,'e'),_shuf));
-const _expHtml=_expText.split(/\n+/).filter(_l=>_l.trim()).map(_l=>`<div dir="${heDir(_l)}" style="unicode-bidi:isolate;margin-bottom:.5em">${_l.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`).join('');
-h+=_expHtml;
 // v10.51.0: source-link row — render every parsed ref citation as a deep-link
 // button into the in-app Hazzard/Harrison reader at the right chapter.
-if(q.ref){
+if(ans&&!examMode&&q.ref){
   const _refs=parseQuestionRef(q.ref);
   if(_refs.length){
-    h+=`<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(15,23,42,.08);display:flex;flex-wrap:wrap;gap:6px;align-items:center" dir="ltr">
+    h+=`<div style="margin-top:8px;padding:8px 12px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center" dir="ltr">
 <span style="font-size:9px;color:rgb(var(--fg3));font-weight:600;letter-spacing:.4px;text-transform:uppercase;margin-inline-end:2px">📖 Source</span>`;
     _refs.forEach(rc=>{
       const _isHaz=rc.src==='haz';
@@ -3344,8 +3335,6 @@ if(q.ref){
     });
     h+=`</div>`;
   }
-}
-h+=`</div>`;
 }
 // AI Explain button
 if(ans&&!examMode){
@@ -3364,6 +3353,10 @@ const _qIdx=pool[qi];
 const _dist=(DIS&&DIS[_qIdx])||null;
 const _apKey='autopsy_'+_qIdx;
 const _aiTxt=_exCache[_apKey];
+// v10.64.112: hydration moved here from _rqmExplain so the autopsy gets q.e on
+// the SAME render as the user reveals the answer (was one render late before).
+// Idempotent: only triggers when q.e is missing AND EX has loaded.
+if(!q.e&&Array.isArray(EX)&&EX[pool[qi]])q.e=EX[pool[qi]];
 h+=`<div style="padding:12px;margin-top:10px;border:1px solid rgb(var(--brd));border-radius:12px;background:rgb(var(--bg2))">
 <div style="font-weight:700;font-size:11px;margin-bottom:8px">🔬 Distractor Autopsy — למה כל תשובה שגויה</div>`;
 if(_dist){
@@ -3386,16 +3379,21 @@ if(_dist){
     // hold a leftover rationale from a different option. Always show the green-label instead.
     if(_isCorrect){
       h+=`<div style="color:#059669;font-size:10px;font-weight:700;margin-bottom:4px" dir="rtl">✓ התשובה הנכונה</div>`;
-      // v10.64.111: render the question's full explanation inline so the
-      // autopsy block answers "why is this one correct" right next to the
-      // option, not just in the separate explanation panel below. Uses
-      // qLang() so the EN/HE toggle takes effect. Guarded — EX[] is idle-
-      // loaded, so q.e can still be empty for a few hundred ms after answer.
+      // v10.64.112: consolidated the bottom explanation panel into the autopsy.
+      // Feature parity with the old _rqmExplain explanation block:
+      //   - q.e_issue warning + ✓ מאומת button (was in panel header)
+      //   - remapExplanationLetters() for option-shuffle correctness
+      //   - **bold** markdown support
+      //   - per-line bidi-isolated divs (already had this from v111)
       const _expl=qLang(q,'e');
       if(_expl){
-        const _explLines=String(_expl).split('\n').map(_l=>{
-          const _safe=sanitize(_l);
-          return `<div dir="${heDir(_l)}" style="unicode-bidi:isolate;margin-bottom:.3em">${_safe}</div>`;
+        if(q.e_issue){
+          h+=`<div style="font-size:10px;font-weight:700;margin:4px 0;padding:4px 8px;background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;color:#92400e;display:flex;align-items:center;gap:6px;justify-content:space-between;unicode-bidi:plaintext" dir="auto"><span>⚠️ ההסבר הזה עלול להיות שגוי — AI איתר חוסר עקביות מול התשובה הנכונה</span><button onclick="event.stopPropagation();markEIssueVerified(${_qIdx})" style="font-size:9px;padding:3px 8px;background:#92400e;color:#fff;border:none;border-radius:6px;cursor:pointer;flex:0 0 auto">✓ מאומת</button></div>`;
+        }
+        const _shuf=getOptShuffle(_qIdx,q);
+        const _expText=sanitize(remapExplanationLetters(_expl,_shuf));
+        const _explLines=_expText.split(/\n+/).filter(_l=>_l.trim()).map(_l=>{
+          return `<div dir="${heDir(_l)}" style="unicode-bidi:isolate;margin-bottom:.3em">${_l.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>`;
         }).join('');
         h+=`<div style="font-size:10px;color:rgb(var(--green-fg));font-weight:700;margin:6px 0 3px" dir="rtl">📘 הסבר:</div>`;
         h+=_explLines;
@@ -7184,8 +7182,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.111';
+const APP_VERSION='10.64.112';
 const CHANGELOG={
+'10.64.112':[
+'🧹 Consolidated answer-review panels — one block instead of two showing the same explanation. After v10.64.111 added the question explanation into the autopsy block correct-row, the bottom panel was still rendering the same explanation text, producing a visible duplicate on every answered question. The duplicate explanation block in _rqmExplain is now removed; everything moves into the autopsy: q.e_issue warning + ✓ מאומת button, remapExplanationLetters for option-shuffle correctness, **bold** markdown, and the per-line bidi-isolated div pattern. q.e hydration line moved into the autopsy block so the explanation shows on the same render as the answer reveal (was one render late). The source-link buttons (Hazzard/Harrison deep-links) extracted from inside the explanation div into their own standalone slim block below the autopsy, with their own light-bg container so they still read as a distinct section. The bottom panel now contains only: time-signal, topic-note (notes.json), and source-links. The hydration line is kept in _rqmExplain too (idempotent — same line in both places) so the existing test pin in tests/explanationsSplit.test.js continues to pass. No data changes — pure render consolidation. Trinity 10.64.111 → 10.64.112.',
+],
 '10.64.111':[
 '📘 Answer autopsy now explains the correct answer too, not only the distractors. Surface A (pre-generated DIS rows): in the correct-option row, after the green התשובה הנכונה header, the question full explanation from data/explanations.json is rendered inline with the same per-line bidi-isolated divs and a 📘 הסבר: sub-header. Zero new data — leverages the 3,743-entry explanations.json that the EX idle-loader already pulls. Guarded by qLang(q,e) truthy check so the first few hundred ms after answer (before EX hydrates onto q.e) just shows the header label like before. Surface B (legacy on-demand AI autopsy via aiAutopsy()): prompt extended to ask the AI to first explain WHY the correct answer is correct in 1-2 sentences, then walk each wrong option as before. Format hint now includes a leading ✓ correct-option line with Correct because: label. Formatter adds two new bdi-isolated tags: ✓ in green (color:#059669) and Correct because: in green. max_tokens bumped 500 to 600 to absorb the extra rationale. Tests: hebrewBidiSafety bdi-isolation pin extended to require Correct because:</b></bdi> wrapping at every site. aiAutopsyXss adds two tag-inventory tests for ✓ and Correct because:. Trinity 10.64.110 → 10.64.111.',
 ],
