@@ -72,8 +72,18 @@ function buildHarness() {
 const { sanitize, formatAutopsy, pipe } = buildHarness();
 
 describe('shlav-a-mega.html — aiAutopsy formatter tag inventory (v10.64.110)', () => {
+  it('wraps ✓ in <bdi><b style="color:#059669"> (bdi-isolated, v10.64.111)', () => {
+    expect(formatAutopsy('✓ foo')).toContain('<bdi><b style="color:#059669">✓</b></bdi>');
+  });
+
   it('wraps ✗ in <bdi><b style="color:#dc2626"> (bdi-isolated)', () => {
     expect(formatAutopsy('✗ foo')).toContain('<bdi><b style="color:#dc2626">✗</b></bdi>');
+  });
+
+  it('wraps "Correct because:" in <bdi><b style="color:#059669"> (bdi-isolated, v10.64.111)', () => {
+    expect(formatAutopsy('Correct because: x')).toContain(
+      '<bdi><b style="color:#059669">Correct because:</b></bdi>'
+    );
   });
 
   it('wraps "Wrong because:" in <bdi><b style="color:#b91c1c"> (bdi-isolated)', () => {
