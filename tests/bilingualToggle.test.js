@@ -107,9 +107,14 @@ describe('v10.64.60 — render sites use qLang (regression guard)', () => {
     expect(html).toMatch(/qLang\(q,['"]o['"]\)\.forEach/);
   });
 
-  it('explanation render uses qLang(q,"e") for both heDir and remap', () => {
-    expect(html).toMatch(/heDir\(qLang\(q,['"]e['"]\)\)/);
-    expect(html).toMatch(/remapExplanationLetters\(qLang\(q,['"]e['"]\),_shuf\)/);
+  it('explanation render uses qLang(q,"e") and remapExplanationLetters (v10.64.112: now lives in the autopsy correct-row, formerly in _rqmExplain)', () => {
+    // v10.64.112 consolidation: the bottom explanation panel was removed because
+    // the autopsy block already renders the explanation. The render contract
+    // moves with it. heDir is now called per-line on the line variable (not on
+    // qLang(q,'e') directly), and remap is applied once to _expl (which is
+    // qLang(q,'e')) before splitting into lines.
+    expect(html, 'qLang(q,"e") must still be the source for the explanation render').toMatch(/qLang\(q,\s*['"]e['"]\)/);
+    expect(html, 'remapExplanationLetters must still be applied to the explanation source').toMatch(/remapExplanationLetters\(_expl,_shuf\)/);
   });
 });
 

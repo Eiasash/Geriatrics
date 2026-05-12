@@ -106,12 +106,12 @@ describe('v10.64.60 render-site audit (ratchets)', () => {
 
   it('qLang(q, ...) adoption count (must NOT decrease; should grow over time)', () => {
     const calls = (html.match(/qLang\(q,\s*['"][a-zA-Z_]+['"]\)/g) || []).length;
-    // 2026-05-12 (v10.64.109): floor raised 8 → 13 after refactoring
-    // flashcard reveal (2 calls) and track-view bookmark (1 call). Plus
-    // 2 incidental new calls picked up during the audit. If a refactor
-    // accidentally REMOVES a qLang call without good reason, this catches
-    // it. To intentionally remove one, lower this floor.
-    const FLOOR = 13;
+    // 2026-05-12 (v10.64.112): floor adjusted 13 → 12 after consolidating the
+    // bottom explanation panel into the autopsy block. The duplicate panel had
+    // two qLang(q,'e') calls (heDir + remap); the autopsy adds one. Net -1.
+    // If a refactor accidentally REMOVES a qLang call without good reason, this
+    // catches it. To intentionally remove one, lower this floor.
+    const FLOOR = 12;
     expect(calls, `qLang() call count; expected ≥${FLOOR}`).toBeGreaterThanOrEqual(FLOOR);
   });
 });
