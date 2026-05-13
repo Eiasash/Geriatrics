@@ -25,6 +25,7 @@ function extractPrompt(name) {
 
 const PICK = extractPrompt('SYS_DOCTOR_PICK');
 const JUDGE = extractPrompt('SYS_DOCTOR_JUDGE');
+const EXPLAIN = extractPrompt('SYS_DOCTOR_EXPLAIN');  // v10.64.118 — audit-1 split
 const SOURCE = extractPrompt('SYS_DOCTOR_SOURCE');
 
 describe('chaos-doctor-bot v4 — Geri persona pins', () => {
@@ -41,29 +42,82 @@ describe('chaos-doctor-bot v4 — Geri persona pins', () => {
     });
   });
 
-  describe('SYS_DOCTOR_JUDGE', () => {
+  describe('SYS_DOCTOR_JUDGE (audit-3 — answer-correctness only)', () => {
     it('attending is geriatric, not family-medicine', () => {
       expect(JUDGE.toLowerCase()).toMatch(/geriatric medicine attending/);
       expect(JUDGE.toLowerCase()).not.toMatch(/family.medicine attending/);
     });
     it('app description references geriatric medicine, not family medicine', () => {
-      expect(JUDGE.toLowerCase()).toMatch(/geriatric medicine board prep/);
-      expect(JUDGE.toLowerCase()).not.toMatch(/family.medicine board prep/);
+      // v10.64.118: phrasing shifted from "board prep" to "board-exam" with the
+      // axis split. The geriatric-medicine framing remains; the family-medicine
+      // exclusion remains the load-bearing assertion.
+      expect(JUDGE.toLowerCase()).toMatch(/geriatric.medicine board.exam|geriatric medicine board prep/);
+      expect(JUDGE.toLowerCase()).not.toMatch(/family.medicine board/);
     });
     it('evidence corpus is the geri-canon (Hazzard 8e / Harrison 22e / GRS8 / MOH)', () => {
       expect(JUDGE).toMatch(/Hazzard 8e/);
       expect(JUDGE).toMatch(/Harrison 22e/);
       expect(JUDGE).toMatch(/GRS8/);
     });
+    it('axis-isolation: judge does NOT evaluate explanation prose (audit-1) or source citation (audit-2)', () => {
+      // v10.64.118 axis-split contract: JUDGE handles only answer-correctness
+      // (audit-3). The explicit "audit-1 separate / audit-2 separate" carve-out
+      // is what stops the channel from rediscovering c-correctness as
+      // "unsound explanation" (the 75% noise mode the 2026-05-13 pilot fixed).
+      expect(JUDGE.toLowerCase()).toMatch(/audit-1.{0,40}separate|that's audit-1/);
+      expect(JUDGE.toLowerCase()).toMatch(/audit-2.{0,40}separate|that's audit-2/);
+    });
   });
 
-  describe('SYS_DOCTOR_SOURCE', () => {
-    it('citation examples are Geri textbooks (no Goroll / Nelson / AFP / Lerner)', () => {
-      expect(SOURCE).toMatch(/Hazzard/);
+  describe('SYS_DOCTOR_EXPLAIN (audit-1 — explanation-text soundness, v10.64.118)', () => {
+    it('explicit axis-exclusion: assumes answer correct, judges text only', () => {
+      // The load-bearing carve-out — without it, the channel rediscovers
+      // c-correctness instead of explanation-text soundness.
+      expect(EXPLAIN).toMatch(/ASSUME THE CLAIMED CORRECT ANSWER IS CORRECT/);
+      expect(EXPLAIN.toLowerCase()).toMatch(/audit-3/);
+    });
+    it('three-axis decomposition is present', () => {
+      // Sound-reasoning / distractor-accuracy / prose-well-formed.
+      expect(EXPLAIN).toMatch(/1\..*[Ss]ound medical reasoning/);
+      expect(EXPLAIN).toMatch(/2\..*distractors/);
+      expect(EXPLAIN).toMatch(/3\..*Hebrew/);
+    });
+    it('output schema has axis_failures + sound + confidence', () => {
+      expect(EXPLAIN).toMatch(/"axis_failures"/);
+      expect(EXPLAIN).toMatch(/"sound"/);
+      expect(EXPLAIN).toMatch(/"confidence"/);
+    });
+    it('no FM-sibling persona leak', () => {
+      expect(EXPLAIN.toLowerCase()).not.toMatch(/family.medicine|goroll|nelson|\bafp\b/);
+    });
+  });
+
+  describe('SYS_DOCTOR_SOURCE (audit-2 — ref-faithfulness, v10.64.118 redesign)', () => {
+    it('Geri-canon present, no FM-textbook leak', () => {
+      // v10.64.118: the source prompt's Geri-corpus markers shifted from
+      // verbatim "Hazzard" / "Harrison" name-drops to "audit-grade chapter
+      // assignment from question_chapters.json" + concrete Geri-canon
+      // examples (Ch 88 CANCER, Ch 91 LUNG CANCER). The FM-leak guard
+      // remains load-bearing.
+      expect(SOURCE.toLowerCase()).toMatch(/hazzard|cancer|geriatric|audit-grade chapter/);
       expect(SOURCE).not.toMatch(/Goroll/);
       expect(SOURCE).not.toMatch(/Nelson/);
       expect(SOURCE).not.toMatch(/\bAFP\b/);
       expect(SOURCE).not.toMatch(/Lerner/);
+    });
+    it('axis-isolation: source does NOT evaluate explanation prose (audit-1) or answer correctness (audit-3)', () => {
+      expect(SOURCE.toLowerCase()).toMatch(/audit-1/);
+      expect(SOURCE.toLowerCase()).toMatch(/audit-3/);
+    });
+    it('peer-chapter carve-out is present (idx 1954 case)', () => {
+      // The 1954-class carve-out — Ch 91 LUNG vs Ch 88 CANCER-GEN as
+      // peer-chapter specificity, not chapter drift. Without this clause
+      // the audit-2 channel re-flags curatorially-specific refs as false
+      // positives (validated empirically 2026-05-13).
+      expect(SOURCE.toLowerCase()).toMatch(/peer chapter|peer-chapter/);
+    });
+    it('takes audit-grade chapter assignment as INPUT (per the structural redesign)', () => {
+      expect(SOURCE).toMatch(/audit-grade chapter assignment/);
     });
   });
 
