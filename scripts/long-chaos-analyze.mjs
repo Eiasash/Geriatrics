@@ -9,12 +9,20 @@
 //        Qs where source.citation_plausible=false (any conf)
 //        → wrong chapter pointers (Track-R 1547 Hazzard realign verification)
 //   3. answer_key_disagreement_review.md
-//        Qs where judge.app_answer_correct=false at conf >= 90
+//        Qs where judge.app_answer_correct=false at conf >= 85
 //        AND correct_letter_if_app_wrong is set
 //        → curator review candidates (DO NOT auto-flip — see CLAUDE.md
 //          "110 curator overrides" section; ~70% of IMA-vs-textbook
 //          conflicts in spot-checks favor textbook, but the 30% where IMA
-//          is right means the signal is a triage queue, not a fix)
+//          is right means the signal is a triage queue, not a fix).
+//        v10.64.121: threshold dropped from conf>=90 to conf>=85. The
+//        2026-05-13 calibration pilot validated this: [85,90) band
+//        Opus survival = 5/7 (71%), well above the 4/7 decision-rule
+//        ship threshold. Accepts ~28% FP rate (~3 noise items per
+//        long-run review queue) in exchange for ~3x more real-signal
+//        catches per run (from ~3 hits at conf>=90 to ~9-11 at
+//        conf>=85). See .audit_logs/benchmarks/calibration_pilot_results_2026-05-13.json
+//        for the surfacing data.
 //
 // Plus a top-level summary.md with all the rates.
 
@@ -49,9 +57,11 @@ const explUnsound = judged.filter((f) => f.judge.explanation_sound === false && 
 const citeImplausible = withSource.filter((f) => f.source.citation_plausible === false);
 
 // === Audit 3: answer-key disagreements ===
+// v10.64.121: conf>=85 (was conf>=90) — validated by 2026-05-13 calibration
+// pilot showing the [85,90) band is real signal, not Sonnet self-anchoring.
 const keyDisagree = judged.filter(
   (f) => f.judge.app_answer_correct === false
-    && (f.judge.confidence || 0) >= 90
+    && (f.judge.confidence || 0) >= 85
     && f.judge.correct_letter_if_app_wrong,
 );
 
