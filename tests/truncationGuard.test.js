@@ -37,19 +37,20 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 
-// Baseline as of v10.64.124 (infections cluster regen, PR #2 of rollout).
-// v10.64.122 dementia regen: count 766 → 706 with 2 carryovers (idx 2496,
-// 3173) failing all Toranot proxy retries. v10.64.123: those 2 stems
-// retried via direct-Anthropic-API and cleared (proxy bug was stem-specific
-// HTTP 500). v10.64.124 infections (ti=27): 51 stems regenerated cleanly,
-// 0/51 residual per detector, char dist median 1853 (unimodal 1571-2194),
-// both reason classes (ends-on-letter-no-punct, no-terminal-punct) drop
-// to 0 — the SYSTEM_PROMPT_V2 "do not end mid-sentence" clause is
-// reason-class-agnostic. Hydrator-coupling automation (auto-invoke of
-// tag_chapters.cjs + tag_regulatory.cjs at end of regen_explanations_v2.mjs)
-// eliminated the PR #218 amend cycle on first run. Net count: 704 → 653.
+// Baseline as of v10.64.125 (polypharmacy cluster regen, PR #3 of rollout).
+// Rollout history: 766 → 706 (dementia v122) → 704 (carryover-clear v123)
+// → 653 (infections v124) → 616 (polypharmacy v125). All clusters now using
+// SYSTEM_PROMPT_V2 + per-cluster TI_BUDGET=1750 + hydrator-coupling
+// automation (auto-invoke of tag_chapters.cjs + tag_regulatory.cjs at end
+// of regen_explanations_v2.mjs). v10.64.125: 37 stems regenerated cleanly,
+// 0/37 residual, char dist median 1800 (100% in 1500-2100 band), both
+// reason classes drop to 0 — confirms the SYSTEM_PROMPT_V2 prompt fix is
+// reason-class-agnostic AND stable across cohort sizes (51→37). P8 cost +
+// wall-time predictions now calibrated to infections empirical, both bands
+// hit on first try. Remaining clusters: cancer (ti=26, ~36 stems),
+// delirium (ti=5), parkinson (ti=40), then mid-tier batch.
 // Update only when a future regen batch tightens the count further.
-const TRUNCATION_BASELINE = 653;
+const TRUNCATION_BASELINE = 616;
 
 // Mirror of scripts/scan_truncated_explanations.mjs detectTruncation. Hebrew
 // chars expressed as Unicode escapes (א-ת for alef-tav, ״ for
