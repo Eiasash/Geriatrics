@@ -37,14 +37,19 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 
-// Baseline as of v10.64.123 (c-flip PR + carryover-clear).
-// v10.64.122 dementia regen brought count 766 → 706 with 2 carryovers (idx
-// 2496, 3173) failing all Toranot proxy retries. v10.64.123: those 2 stems
+// Baseline as of v10.64.124 (infections cluster regen, PR #2 of rollout).
+// v10.64.122 dementia regen: count 766 → 706 with 2 carryovers (idx 2496,
+// 3173) failing all Toranot proxy retries. v10.64.123: those 2 stems
 // retried via direct-Anthropic-API and cleared (proxy bug was stem-specific
-// HTTP 500, falsified the "deterministic transport failure" hypothesis).
-// Net count after this PR: 704.
+// HTTP 500). v10.64.124 infections (ti=27): 51 stems regenerated cleanly,
+// 0/51 residual per detector, char dist median 1853 (unimodal 1571-2194),
+// both reason classes (ends-on-letter-no-punct, no-terminal-punct) drop
+// to 0 — the SYSTEM_PROMPT_V2 "do not end mid-sentence" clause is
+// reason-class-agnostic. Hydrator-coupling automation (auto-invoke of
+// tag_chapters.cjs + tag_regulatory.cjs at end of regen_explanations_v2.mjs)
+// eliminated the PR #218 amend cycle on first run. Net count: 704 → 653.
 // Update only when a future regen batch tightens the count further.
-const TRUNCATION_BASELINE = 704;
+const TRUNCATION_BASELINE = 653;
 
 // Mirror of scripts/scan_truncated_explanations.mjs detectTruncation. Hebrew
 // chars expressed as Unicode escapes (א-ת for alef-tav, ״ for
