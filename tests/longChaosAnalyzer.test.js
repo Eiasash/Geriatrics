@@ -42,7 +42,10 @@ function makeFixture() {
       source: { citation_plausible: false, confidence: 80, note: 'chapter is about a different topic' },
       citation: 'Hazzard Ch 9000',
     },
-    // (4) key disagreement at conf>=90 with claimed correct (Audit 3 hit)
+    // (4) key disagreement at conf>=85 with claimed correct (Audit 3 hit).
+    // v10.64.121: threshold dropped from conf>=90 to conf>=85 — Q4 conf=95
+    // still flags. See (6) below for a [85,90) band canary added with the
+    // threshold drop.
     {
       stem: 'Q4 stem ' + 'd'.repeat(50),
       options: ['A', 'B', 'C', 'D'],
@@ -59,6 +62,19 @@ function makeFixture() {
       judge: null, source: null,
       methodology: 'appIdx-null-post-check',
     },
+    // (6) v10.64.121 — [85,90)-band key-disagreement canary. Pins the
+    // threshold drop from conf>=90 to conf>=85. Without the canary, a
+    // refactor that re-tightens to conf>=90 would silently regress the
+    // 2026-05-13 calibration pilot's validation that the [85,90) band is
+    // real signal (71% Opus survival). Conf=87 explicitly chosen to sit
+    // mid-band.
+    {
+      stem: 'Q6 stem ' + 'f'.repeat(50),
+      options: ['A', 'B', 'C', 'D'],
+      aiLetter: 'A', aiIdx: 0, aiConf: 80,
+      appIdx: 2, appLetter: 'C', disagrees: true,
+      judge: { app_answer_correct: false, explanation_sound: true, confidence: 87, issue: 'mid-band disagreement', correct_letter_if_app_wrong: 'A' },
+    },
   ];
   const jsonl = findings.map((f) => JSON.stringify(f)).join('\n') + '\n';
   fs.writeFileSync(path.join(dir, 'medical_findings_ai_v4.jsonl'), jsonl);
@@ -71,8 +87,10 @@ describe('long-chaos-analyze.mjs', () => {
   it('runs against a synthetic ledger without crashing', () => {
     const out = execFileSync('node', [ANALYZER, dir], { encoding: 'utf8' });
     expect(out).toMatch(/Wrote 4 files/);
-    expect(out).toMatch(/judged=4 methodology=1/);
-    expect(out).toMatch(/explanation-unsound=1 cite-implausible=1 key-disagree=1/);
+    expect(out).toMatch(/judged=5 methodology=1/);
+    // v10.64.121: key-disagree=2 (Q4 conf=95 + Q6 conf=87) under conf>=85
+    // threshold. Was key-disagree=1 under prior conf>=90 threshold.
+    expect(out).toMatch(/explanation-unsound=1 cite-implausible=1 key-disagree=2/);
   });
 
   it('writes all four expected output files', () => {
@@ -83,8 +101,8 @@ describe('long-chaos-analyze.mjs', () => {
 
   it('summary.md reports correct top-line counts', () => {
     const md = fs.readFileSync(path.join(dir, 'summary.md'), 'utf8');
-    expect(md).toMatch(/Total findings recorded: \*\*5\*\*/);
-    expect(md).toMatch(/Successfully judged: \*\*4\*\*/);
+    expect(md).toMatch(/Total findings recorded: \*\*6\*\*/);
+    expect(md).toMatch(/Successfully judged: \*\*5\*\*/);
     expect(md).toMatch(/Methodology events: 1/);
     expect(md).toMatch(/Source-checks fired: 2/);
   });
@@ -101,11 +119,30 @@ describe('long-chaos-analyze.mjs', () => {
     expect(md).toMatch(/Hazzard Ch 9000/);
   });
 
-  it('Audit 3 (key disagreement) flags Q4 only AND surfaces the "DO NOT auto-apply" guard', () => {
+  it('Audit 3 (key disagreement) flags Q4 + Q6 AND surfaces the "DO NOT auto-apply" guard', () => {
     const md = fs.readFileSync(path.join(dir, 'answer_key_disagreement_review.md'), 'utf8');
-    expect(md).toMatch(/Total flagged: \*\*1\*\*/);
+    // v10.64.121: 2 flagged under conf>=85 threshold (Q4 conf=95 + Q6 conf=87).
+    // Both must appear; Q6 specifically pins the [85,90) band catch.
+    expect(md).toMatch(/Total flagged: \*\*2\*\*/);
     expect(md).toMatch(/key is wrong/);
+    expect(md).toMatch(/mid-band disagreement/);
     expect(md).toMatch(/DO NOT auto-apply/);
     expect(md).toMatch(/curator_overrides\.json/);
+  });
+
+  it('v10.64.121 threshold ratchet: a Q at conf=84 (just below) must NOT flag', () => {
+    // Build a separate tiny fixture with only an 84-conf entry to verify
+    // the threshold isn't silently flipped further (e.g., to conf>=80).
+    const fixtureDir = fs.mkdtempSync(path.join(os.tmpdir(), 'long-chaos-canary-'));
+    const canary = [{
+      stem: 'Q-just-below ' + 'g'.repeat(50),
+      options: ['A', 'B', 'C', 'D'],
+      aiLetter: 'A', aiIdx: 0,
+      appIdx: 2, appLetter: 'C', disagrees: true,
+      judge: { app_answer_correct: false, explanation_sound: true, confidence: 84, issue: 'just below threshold', correct_letter_if_app_wrong: 'A' },
+    }];
+    fs.writeFileSync(path.join(fixtureDir, 'medical_findings_ai_v4.jsonl'), JSON.stringify(canary[0]) + '\n');
+    const out = execFileSync('node', [ANALYZER, fixtureDir], { encoding: 'utf8' });
+    expect(out).toMatch(/key-disagree=0/);  // 84 < 85, must not flag
   });
 });

@@ -11,8 +11,11 @@
 # Three audits emerge from the same JSONL ledger:
 #   1. explanation soundness  →  judge.explanation_sound = false @ conf >= 85
 #   2. citation plausibility  →  source.citation_plausible = false
-#   3. answer-key disagreements →  judge.app_answer_correct = false @ conf >= 90
-#                                  (do NOT auto-flip — triage queue, not a fix)
+#   3. answer-key disagreements →  judge.app_answer_correct = false @ conf >= 85
+#                                  (v10.64.121: was conf >= 90, dropped after
+#                                   2026-05-13 calibration pilot — [85,90) band
+#                                   71% Opus survival; do NOT auto-flip —
+#                                   triage queue, not a fix)
 #
 # Usage:
 #   bash scripts/long-chaos-run.sh                  # 4 hours, 1 worker, defaults
