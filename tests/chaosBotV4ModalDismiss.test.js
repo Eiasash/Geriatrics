@@ -16,9 +16,12 @@ const SRC = fs.readFileSync(
   'utf8',
 );
 
-// Pull just the ensureOnPracticeQuiz function body for tight grep
+// Pull just the ensureOnPracticeQuiz function body for tight grep.
+// Tolerate CRLF line endings on Windows working trees (git autocrlf renders
+// LF source as CRLF on disk; `\n` literal won't match `\r\n`). Match either
+// `\n}\n` or `\r\n}\r\n` by accepting `\r?` before each newline.
 function extractFunc(name) {
-  const re = new RegExp(`async function ${name}\\b[\\s\\S]*?\\n}\\n`, 'm');
+  const re = new RegExp(`async function ${name}\\b[\\s\\S]*?\\r?\\n}\\r?\\n`, 'm');
   const m = SRC.match(re);
   if (!m) throw new Error(`could not locate ${name}`);
   return m[0];

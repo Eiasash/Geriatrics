@@ -7182,8 +7182,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.115';
+const APP_VERSION='10.64.116';
 const CHANGELOG={
+'10.64.116':['fix(bot-v4): emit optionCanonicalIdx=null for Geri (was identity placeholder [0,1,2,3] — type-correct but semantically wrong)','feat(lib): textResolveAgainstQZ helper for Geri-frame JSONL consumers','test: 6 new optionResolver tests + drive-by CRLF tolerance for ModalDismiss regex'],
 '10.64.115':[
 '📊 Long-chaos runner + audit analyzer scripts. After v114 empirically validated the chaos-doctor-bot v4 end-to-end (100%→0% methodology rate, first-ever source-check fired at "Hazzard Ch 34" conf=85), shipped scripts/long-chaos-run.sh (4-hour overnight default, 1 worker per v114 proxy 429-rate observation, sonnet-4-6, $25 cost cap, proxy mode by default — no CLAUDE_API_KEY needed) and scripts/long-chaos-analyze.mjs (produces summary.md + 3 audit reports from medical_findings_ai_v4.jsonl). Three audits in one pass: (1) explanation soundness — Qs where judge.explanation_sound=false at conf≥85, candidates for explanation regen; (2) citation plausibility — Qs where source.citation_plausible=false, candidates for chapter-ref realignment (Track-R 1547 Hazzard realign verification); (3) answer-key disagreements — Qs where judge.app_answer_correct=false at conf≥90 AND correct_letter_if_app_wrong is set, surfaced as a triage queue not a fix per CLAUDE.md "110 curator overrides" stanza (~70% of IMA-vs-textbook conflicts favor textbook in spot-checks but the 30% means each flagged Q needs human curator review against .audit_logs/curator_overrides.json before any q.c flip — DO NOT auto-apply). Validation pass on the v114 smoke data: 6/6 judged, 0 methodology, 4/6 source-checks fired (66.7%, much higher than the 3.6% offline regex prediction because the bot reads .explain-box which catches notes.json + topic-source-links too, not just the e field). tests/longChaosAnalyzer.test.js (6 tests) pins the audit-output shape via a synthetic 5-Q ledger fixture. Trinity 10.64.114 → 10.64.115.',
 ],
