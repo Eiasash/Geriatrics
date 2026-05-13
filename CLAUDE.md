@@ -50,10 +50,43 @@ These five fields/files are load-bearing truths. The arrows mark dependency dire
 | Source | Authority | Anti-pattern |
 |---|---|---|
 | `q.c` (correct-answer index) | IMA published key + 110 curator overrides | Auto-correct from a textbook search-hit |
-| `q.ref` (free-form text) | Free-form, may be vague | Rebuild toward `question_chapters.json`, not vice versa |
+| `q.ref` (free-form text) | Free-form, may be vague | Rebuild toward `question_chapters.json`, not vice versa[*](#qref-rebuild-caveat-2026-05-13) |
 | `data/question_chapters.json` (`.haz` / `.har`) | Audited truth, schema-guarded | Hand-edit in flight; only the audit pipeline writes this |
 | `data/distractors.json` `DIS[k]` empty slot | Must equal `Q[k].c` (3-layer guard: UI render + `tests/distractorsDrift.test.js` + auto-audit probe) | Auto-pad an empty slot at index ≠ c |
 | `data/notes.json` `notes[i].ch` | Hazzard 8e or Harrison 22e (legal ids 29-35 may cite Israeli law); NO legacy GRS, GRS8 fine | Cite a paper, blog, or legacy GRS edition |
+
+### `q.ref` rebuild caveat (2026-05-13)
+
+The "rebuild toward `question_chapters.json`" arrow in the authority-sources
+table is correct as a direction but NOT safe as a one-way bulk overwrite.
+`question_chapters.json` is produced by `scripts/tag_chapters.cjs` — a
+rule-based topic-keyword-and-default mapping. It is reliable as a floor
+(every question gets a default chapter from its `ti`), but it does NOT
+carry per-Q curatorial specificity. A hand-curated `q.ref` like
+`Hazzard Ch 91 — LUNG CANCER` is legitimately more specific than the
+topic-default `Hazzard Ch 88 — CANCER AND AGING: GENERAL PRINCIPLES`
+even though `question_chapters.json` would map a `ti=26` Q to Ch 88.
+
+Two rules for `q.ref` edits in light of this:
+
+1. **Rebuild only where current ref is verifiably worse.** Verifiable
+   from the question content itself (e.g., a Harrison STEMI ref on a
+   hematologic-malignancy Q — the Q content is the witness that the
+   STEMI chapter cannot be right, regardless of source-PDF access).
+2. **ADD-not-OVERWRITE for cases where current ref has curatorial
+   specificity beyond the topic-default.** If `question_chapters.json`
+   says one chapter and current `q.ref` cites a more specific chapter
+   in the same book, the current ref wins. The audit mapping is the
+   floor, not the ceiling.
+
+Motivating finding: 2026-05-13 chaos-doctor v4 long-run produced 14
+cite-implausible flags. Per-stem triage found 1 was an unambiguous fix
+(STEMI on a heme-malig Q), 0 were ref-currency drift fixable via
+overwrite from `question_chapters.json`, and the remaining 13 were a
+mix of false positives, regen-would-regress-specificity, and Israeli-law
+refs the bot's regex couldn't match. See
+`.audit_logs/followup_chaos_audit_prompt_redesigns.md` for the audit-2
+prompt redesign that addresses the root cause at the bot layer.
 
 ### 110 Curator Overrides — DO NOT AUTO-FIX
 
