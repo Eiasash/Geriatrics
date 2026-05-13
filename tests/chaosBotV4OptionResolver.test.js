@@ -22,10 +22,12 @@
 // the full pattern. Do NOT delete these tests without first re-reading
 // that report.
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import {
   canonicalToDisplay,
   displayToCanonical,
   resolveAppVerdict,
+  textResolveAgainstQZ,
 } from '../scripts/lib/optionResolver.mjs';
 
 describe('chaos-doctor-bot v4 optionResolver — coordinate-frame translation', () => {
@@ -155,6 +157,111 @@ describe('chaos-doctor-bot v4 optionResolver — coordinate-frame translation', 
       expect(judgeSentence).toBe("App's claimed correct answer: A (Venous Insufficiency)");
       expect(judgeSentence).not.toContain('Arterial Hypertension');
       expect(judgeSentence).not.toMatch(/\(D\)|claimed correct answer: D/);
+    });
+  });
+
+  // ============================================================
+  // 2026-05-13: Geri JSONL schema contract — optionCanonicalIdx
+  // is emitted as null because Geri's DOM has no data-i, so the
+  // identity placeholder was a type-correct lie that silently
+  // mislead downstream consumers (dedup keys, audit-3 lookups).
+  // See chaos-doctor-bot-v4.mjs:456 comment + the 2026-05-13
+  // calibration pilot for the surfacing run.
+  // ============================================================
+  describe('Geri JSONL schema contract: optionCanonicalIdx is null', () => {
+    it('bot source emits null at the JSONL record site (file-level pin)', () => {
+      // Reading the source file is the most reliable contract pin —
+      // refactors that re-introduce the identity-array emission will
+      // fail this test even if the bot is never executed in CI.
+      const src = readFileSync(
+        new URL('../scripts/chaos-doctor-bot-v4.mjs', import.meta.url),
+        'utf-8'
+      );
+      // Find the record-finding block and confirm the field is null.
+      const recordBlock = src.match(/optionCanonicalIdx:[^,\n]*/);
+      expect(recordBlock).not.toBeNull();
+      expect(recordBlock[0]).toMatch(/optionCanonicalIdx:\s*null/);
+      // Anti-regression: the identity-array form must NOT reappear.
+      expect(recordBlock[0]).not.toMatch(/q\.options\.map/);
+    });
+  });
+
+  describe('textResolveAgainstQZ — sanctioned consumer-side mapping helper', () => {
+    // The use case: a JSONL post-processor (audit-3 dedup, c-flip
+    // candidate generator, threshold-tuning script) reads a Geri row
+    // where `optionCanonicalIdx: null` and needs to recover the
+    // display→canonical mapping. Substring-matching against QZ[idx].o
+    // is slow but correct; the alternative (assuming identity) silently
+    // produces wrong dedup keys and was the surfacing bug in the
+    // 2026-05-13 v4-long calibration pilot triage.
+
+    it('recovers the canonical permutation from shuffled Geri-frame options', () => {
+      // Real Geri row: NSCLC esophagitis (QZ idx 1913, c=3).
+      // Canonical order: [PEG, TPN, NG tube, speech path]
+      // Display order seen by bot: [speech path, TPN, NG tube, PEG]
+      // Expected display→canonical map: [3, 1, 2, 0]
+      const display = [
+        'טיפול אינטנסיבי בבליעה עם פתולוג תקשורת (speech pathologist)',
+        'תזונה פרנטרלית מלאה (TPN)',
+        'האכלה דרך NG tube',
+        'הנחת PEG tube',
+      ];
+      const canonical = [
+        'הנחת PEG tube',
+        'תזונה פרנטרלית מלאה (TPN)',
+        'האכלה דרך NG tube',
+        'טיפול אינטנסיבי בבליעה עם פתולוג תקשורת (speech pathologist)',
+      ];
+      expect(textResolveAgainstQZ(display, canonical)).toEqual([3, 1, 2, 0]);
+    });
+
+    it('Geri-frame and FM-frame inputs produce the same canonical mapping', () => {
+      // For an FM row (carries data-i directly), the canonical mapping is:
+      const fmCanonical = fmIdx84Served.map((o) => o.idx);
+      // For an equivalent Geri row (same options shuffled the same way
+      // but no data-i), textResolveAgainstQZ should produce the same
+      // permutation when given the QZ canonical order.
+      const displayTexts = fmIdx84Served.map((o) => o.text);
+      const canonicalOrdered = [
+        fmIdx84Served.find((o) => o.idx === 0).text, // canonical 0
+        fmIdx84Served.find((o) => o.idx === 1).text,
+        fmIdx84Served.find((o) => o.idx === 2).text,
+        fmIdx84Served.find((o) => o.idx === 3).text,
+      ];
+      const geriResolved = textResolveAgainstQZ(displayTexts, canonicalOrdered);
+      expect(geriResolved).toEqual(fmCanonical);
+    });
+
+    it('handles truncation (bot stores text.slice(0,120))', () => {
+      // The bot truncates option text in the JSONL row to 120 chars.
+      // The resolver must tolerate prefix matches when display is
+      // strictly shorter than canonical.
+      const canonical = ['Standard of care is broad-spectrum antibiotic coverage with vancomycin plus piperacillin-tazobactam'];
+      const display = ['Standard of care is broad-spectrum antibiotic coverage with']; // truncated
+      expect(textResolveAgainstQZ(display, canonical)).toEqual([0]);
+    });
+
+    it('returns null in slots where no match is found (truncation OR drift)', () => {
+      const display = ['Aleph', 'Bet', 'unknown-option'];
+      const canonical = ['Aleph', 'Bet', 'Gimel'];
+      expect(textResolveAgainstQZ(display, canonical)).toEqual([0, 1, null]);
+    });
+
+    it('handles invalid input shapes (defensive)', () => {
+      expect(textResolveAgainstQZ(null, ['a'])).toEqual([]);
+      expect(textResolveAgainstQZ(['a'], null)).toEqual([]);
+      expect(textResolveAgainstQZ(['a'], [])).toEqual([null]);
+      expect(textResolveAgainstQZ([null, 'b'], ['a', 'b'])).toEqual([null, 1]);
+    });
+
+    it('refuses spurious prefix matches under 20 chars (avoids false positives)', () => {
+      // A 3-char display string is not a safe prefix match for a 50-char
+      // canonical even if it happens to match. Threshold is min 20 chars
+      // on the shorter side.
+      const display = ['Yes'];
+      const canonical = ['Yes, with reservations about renal dosing in CKD-3a patients'];
+      // 'Yes' is 3 chars — too short for safe prefix match.
+      expect(textResolveAgainstQZ(display, canonical)).toEqual([null]);
     });
   });
 });

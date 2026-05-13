@@ -100,3 +100,55 @@ export function resolveAppVerdict(servedOptions, appIdx, letterTable) {
     canonicalText: servedOptions[displayIdx].text,
   };
 }
+
+/**
+ * Consumer-side helper for JSONL post-processing. Given a bot's served
+ * options (in display order) and the canonical question's option array
+ * (in canonical order), return the display→canonical permutation by
+ * substring-matching option text.
+ *
+ * This is the sanctioned way to recover the canonical mapping for
+ * Geri-frame JSONL rows where the bot emits `optionCanonicalIdx: null`
+ * because the source DOM has no `data-i` attributes. Hashing on text is
+ * slow but correct; the alternative (treating null-frame rows as if they
+ * carried an identity mapping) silently produces wrong dedup keys.
+ *
+ * The match is exact-string on the display option text against each
+ * canonical entry. If a display option doesn't match any canonical
+ * option, its position in the output array is `null`. This signals
+ * truncation (the bot stores `options[].text.slice(0,120)` so long
+ * options may not exact-match) or genuine corpus drift (the question
+ * was edited between bot run and consumer lookup).
+ *
+ * @param {string[]} displayOptionTexts
+ *   Bot's served option texts in display order (e.g. JSONL row's
+ *   `options` field — a string array, NOT the bot's internal
+ *   `q.options` object array).
+ * @param {string[]} canonicalOptionTexts
+ *   Canonical option texts in canonical order (e.g. `QZ[idx].o`).
+ * @returns {Array<number|null>}
+ *   For each display position, the matching canonical index (or null
+ *   if no match). The result has the same length as `displayOptionTexts`.
+ */
+export function textResolveAgainstQZ(displayOptionTexts, canonicalOptionTexts) {
+  if (!Array.isArray(displayOptionTexts) || !Array.isArray(canonicalOptionTexts)) {
+    return [];
+  }
+  return displayOptionTexts.map((displayText) => {
+    if (typeof displayText !== 'string') return null;
+    // Display text may be truncated (slice(0,120)); match by prefix when
+    // canonical is longer than display.
+    const trimmedDisplay = displayText.trim();
+    for (let i = 0; i < canonicalOptionTexts.length; i++) {
+      const canon = canonicalOptionTexts[i];
+      if (typeof canon !== 'string') continue;
+      const trimmedCanon = canon.trim();
+      if (trimmedCanon === trimmedDisplay) return i;
+      // Truncation tolerance: if display is a strict prefix of canonical
+      // (or vice versa), accept the match.
+      if (trimmedCanon.startsWith(trimmedDisplay) && trimmedDisplay.length >= 20) return i;
+      if (trimmedDisplay.startsWith(trimmedCanon) && trimmedCanon.length >= 20) return i;
+    }
+    return null;
+  });
+}

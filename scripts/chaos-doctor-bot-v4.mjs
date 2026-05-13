@@ -449,11 +449,22 @@ Validate the APP's claimed answer ${appLetter} (${appText}) against board-level 
   // Record finding.
   // For Geri, `appIdx` and `appDisplayIdx` are the same value (display
   // frame), but persist both fields for sibling-aligned record shape.
+  //
+  // `optionCanonicalIdx` is null for Geri because Geri's monolith renders
+  // options without `data-i` attributes — `option.idx` falls back to the
+  // loop counter (display position), so emitting the identity array would
+  // be type-correct but semantically wrong, silently misleading any
+  // consumer that assumes the field carries a real display→canonical
+  // mapping (as it does in FM/IM bot variants). Null fails loudly at
+  // first access. See scripts/lib/optionResolver.mjs module-header for
+  // the served↔canonical coordinate-frame doctrine and 2026-05-13
+  // .audit_logs/benchmarks/calibration_pilot_results_*.json for the
+  // pilot run that surfaced the schema-level contract mismatch.
   const finding = {
     workerId,
     stem: q.stem.slice(0, 300),
     options: q.options.map((o) => o.text.slice(0, 120)),
-    optionCanonicalIdx: q.options.map((o) => Number(o.idx)),
+    optionCanonicalIdx: null,
     aiLetter, aiIdx, aiWhy: pickJson.why || null, aiConf: pickJson.confidence,
     appIdx, appDisplayIdx, appLetter, appText,
     disagrees,
