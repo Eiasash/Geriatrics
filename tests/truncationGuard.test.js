@@ -37,12 +37,14 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 
-// Baseline as of v10.64.122 (regen PR #1, dementia cluster).
-// Pre-regen count was 766; dementia cluster regen (62 stems via ti=6) succeeded
-// on 60 stems, leaving 2 transport-retry-exhausted carryovers (idx 2496, 3173)
-// in .audit_logs/regen_carryover_idxs.json. Net count after this PR: 706.
+// Baseline as of v10.64.123 (c-flip PR + carryover-clear).
+// v10.64.122 dementia regen brought count 766 → 706 with 2 carryovers (idx
+// 2496, 3173) failing all Toranot proxy retries. v10.64.123: those 2 stems
+// retried via direct-Anthropic-API and cleared (proxy bug was stem-specific
+// HTTP 500, falsified the "deterministic transport failure" hypothesis).
+// Net count after this PR: 704.
 // Update only when a future regen batch tightens the count further.
-const TRUNCATION_BASELINE = 706;
+const TRUNCATION_BASELINE = 704;
 
 // Mirror of scripts/scan_truncated_explanations.mjs detectTruncation. Hebrew
 // chars expressed as Unicode escapes (א-ת for alef-tav, ״ for
