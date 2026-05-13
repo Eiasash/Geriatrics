@@ -7182,8 +7182,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.117';
+const APP_VERSION='10.64.118';
 const CHANGELOG={
+'10.64.118':['feat(bot-v4): split audit-1 + audit-2 channels — SYS_DOCTOR_JUDGE now audit-3-only (answer correctness), new SYS_DOCTOR_EXPLAIN for audit-1 (explanation-text soundness given correct answer), SYS_DOCTOR_SOURCE rewritten for audit-2 (ref-faithfulness given audit-grade chapter assignment as INPUT)','feat(bot-v4): load data/question_chapters.json + hazzard_chapters.json + harrison_chapters.json at bot startup; source-check now skips when audit-grade unavailable rather than falling back to old prompt','test: +7 chaosBotV4Persona tests pinning the new prompt shapes (axis-exclusion clauses, three-axis decomposition, peer-chapter carve-out, audit-grade-as-input)','perf: 4 API calls per Q (was 3) — ~33% chaos-run cost increase. Validated 2026-05-13: 75% noise reduction on audit-1, 85% on audit-2'],
 '10.64.117':["fix(data): drop wrong 'Harrison Ch 286 — STEMI' ref from 4 heme-malig Qs (idx 2579, 2588, 2703, 2716) — Q content is the witness; STEMI chapter cannot be right for hematologic malignancy / genetic mutation / blood smear Qs",'docs(CLAUDE.md): add q.ref rebuild caveat — question_chapters.json is rule-based topic-default mapping, NOT audit-grade truth source; rebuild only where current ref is verifiably worse, ADD-not-OVERWRITE for cases with curatorial specificity'],
 '10.64.116':['fix(bot-v4): emit optionCanonicalIdx=null for Geri (was identity placeholder [0,1,2,3] — type-correct but semantically wrong)','feat(lib): textResolveAgainstQZ helper for Geri-frame JSONL consumers','test: 6 new optionResolver tests + drive-by CRLF tolerance for ModalDismiss regex'],
 '10.64.115':[
