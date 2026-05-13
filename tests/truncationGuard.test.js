@@ -37,20 +37,18 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 
-// Baseline as of v10.64.125 (polypharmacy cluster regen, PR #3 of rollout).
+// Baseline as of v10.64.126 (cancer cluster regen, PR #4 of rollout).
 // Rollout history: 766 → 706 (dementia v122) → 704 (carryover-clear v123)
-// → 653 (infections v124) → 616 (polypharmacy v125). All clusters now using
-// SYSTEM_PROMPT_V2 + per-cluster TI_BUDGET=1750 + hydrator-coupling
-// automation (auto-invoke of tag_chapters.cjs + tag_regulatory.cjs at end
-// of regen_explanations_v2.mjs). v10.64.125: 37 stems regenerated cleanly,
-// 0/37 residual, char dist median 1800 (100% in 1500-2100 band), both
-// reason classes drop to 0 — confirms the SYSTEM_PROMPT_V2 prompt fix is
-// reason-class-agnostic AND stable across cohort sizes (51→37). P8 cost +
-// wall-time predictions now calibrated to infections empirical, both bands
-// hit on first try. Remaining clusters: cancer (ti=26, ~36 stems),
-// delirium (ti=5), parkinson (ti=40), then mid-tier batch.
+// → 653 (infections v124) → 616 (polypharmacy v125) → 580 (cancer v126).
+// Four consecutive clean regens (124+ stems consecutive 0-failure streak).
+// v10.64.126: cancer median 1789 chars, 100% in 1500-2100 band. Topic-
+// density char-distribution framing broke on out-of-sample data (cancer
+// predicted wider/higher than polypharmacy on narrative-density hypothesis;
+// actually landed tighter and lower). Provisional refinement: SYSTEM_PROMPT_V2
+// word-target dominates topic-density for output shape. Delirium + parkinson
+// predictions remain sealed for stress-testing.
 // Update only when a future regen batch tightens the count further.
-const TRUNCATION_BASELINE = 616;
+const TRUNCATION_BASELINE = 580;
 
 // Mirror of scripts/scan_truncated_explanations.mjs detectTruncation. Hebrew
 // chars expressed as Unicode escapes (א-ת for alef-tav, ״ for
