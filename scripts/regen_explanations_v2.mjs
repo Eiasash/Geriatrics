@@ -28,6 +28,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
 import process from 'node:process';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -182,6 +183,19 @@ async function main() {
 
   // Final write
   writeFileSync(`${ROOT}/data/explanations.json`, JSON.stringify(EXP, null, 0), 'utf-8');
+
+  // Hydrator-coupling automation (post v10.64.122 lesson): regen changes q.e,
+  // which the hydrator (_helpers/load_questions_hydrated.cjs) feeds into the
+  // taggers. If we don't re-run them, chapterLinking + regulatoryTags
+  // idempotency tests fail in CI and the PR needs an amend cycle. Bake it in.
+  if (successes > 0) {
+    console.log(`\n[regen-v2] running tag_chapters.cjs (hydrator coupling)...`);
+    const tagCh = spawnSync('node', [`${ROOT}/scripts/tag_chapters.cjs`], { stdio: 'inherit' });
+    if (tagCh.status !== 0) console.error('[regen-v2] WARN: tag_chapters.cjs exited non-zero — review before commit');
+    console.log(`[regen-v2] running tag_regulatory.cjs (hydrator coupling)...`);
+    const tagReg = spawnSync('node', [`${ROOT}/scripts/tag_regulatory.cjs`], { stdio: 'inherit' });
+    if (tagReg.status !== 0) console.error('[regen-v2] WARN: tag_regulatory.cjs exited non-zero — review before commit');
+  }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(0);
   const cost = (totalIn / 1_000_000) * 3 + (totalOut / 1_000_000) * 15;  // Sonnet pricing
