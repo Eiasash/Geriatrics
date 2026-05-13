@@ -48,11 +48,17 @@ const VERBOSE = process.argv.includes('--verbose');
 // whitespace. This handles common real-world endings like `.'` (period inside
 // quote), `.*` (period before markdown italic closer), `."` (period + close
 // quote), and `).` (parenthetical close + period).
+// Hebrew chars expressed as \u escapes (״ = ״ gershayim, ׳ = ׳ geresh,
+// א-ת = Hebrew alef through tav). Raw multi-byte chars in regex
+// literals trip vitest's esbuild transformer (works at Node level, fails in
+// vitest); \u escapes round-trip cleanly.
 const TERMINAL_PUNCT = /[.!?:][\s'"*\])}״׳-]*$/u;
-const ENDS_WITH_LETTER = /[A-Za-zא-ת]\s*$/u;  // Latin or Hebrew letter at end
+const ENDS_WITH_LETTER = /[A-Za-zא-ת]\s*$/u;
 const WHITESPACE = /\s/u;
 
-function detectTruncation(text) {
+// Exported so tests/truncationGuard.test.js can ratchet against the same
+// heuristic the scanner uses (v10.64.122 — CI guard ships in regen PR #1).
+export function detectTruncation(text) {
   const reasons = [];
   const trimmed = (text || '').replace(/\s+$/u, '');
   if (!trimmed || trimmed.length < 30) return { reasons, truncated: false };
@@ -148,4 +154,10 @@ function main() {
   console.log(`\nWrote ${OUT_PATH}`);
 }
 
-main();
+// Only run main() when invoked directly (not when imported as a module —
+// the test suite imports detectTruncation from this file and must not
+// trigger the file-write side effect at import time).
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] && resolve(process.argv[1]) === __filename) {
+  main();
+}
