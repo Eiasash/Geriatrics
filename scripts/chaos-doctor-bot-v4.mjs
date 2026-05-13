@@ -42,11 +42,60 @@
  */
 import { chromium } from 'playwright';
 import fs from 'node:fs/promises';
-import { createWriteStream } from 'node:fs';
+import { createWriteStream, readFileSync } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import { extractJson } from './lib/extractJson.mjs';
 import { resolveAppVerdict } from './lib/optionResolver.mjs';
+
+// v10.64.118: audit-grade chapter assignment input for the redesigned
+// SYS_DOCTOR_SOURCE prompt. Loaded lazily at bot startup from local
+// data/ files (the working tree's questions.json + question_chapters.json
+// + hazzard_chapters.json + harrison_chapters.json). Used to construct
+// the "audit-grade chapter assignment" block in the audit-2 user prompt.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(__dirname, '..');
+let AUDIT_GRADE_MAP = null;  // { stemPrefix80 -> { qzIdx, audit_grade_text } }
+let DATA_LOAD_FAILED = false;
+function loadAuditGradeData() {
+  if (AUDIT_GRADE_MAP !== null || DATA_LOAD_FAILED) return AUDIT_GRADE_MAP;
+  try {
+    const QZ = JSON.parse(readFileSync(path.join(REPO_ROOT, 'data', 'questions.json'), 'utf-8'));
+    const CH = JSON.parse(readFileSync(path.join(REPO_ROOT, 'data', 'question_chapters.json'), 'utf-8'));
+    const HAZ = JSON.parse(readFileSync(path.join(REPO_ROOT, 'data', 'hazzard_chapters.json'), 'utf-8'));
+    const HAR = JSON.parse(readFileSync(path.join(REPO_ROOT, 'harrison_chapters.json'), 'utf-8'));
+    const map = new Map();
+    for (let i = 0; i < QZ.length; i++) {
+      const prefix = (QZ[i].q || '').slice(0, 80);
+      if (!prefix) continue;
+      const entry = CH[String(i)] || {};
+      const lines = [];
+      if (entry.haz) {
+        const title = HAZ[String(entry.haz)]?.title || '';
+        lines.push(`- Hazzard: Ch ${entry.haz}${title ? ' — ' + title : ''}`);
+      }
+      if (entry.har) {
+        const title = HAR[String(entry.har)]?.title || '';
+        lines.push(`- Harrison: Ch ${entry.har}${title ? ' — ' + title : ''}`);
+      }
+      if (entry.grs) lines.push(`- GRS8: Ch ${entry.grs}`);
+      map.set(prefix, { qzIdx: i, audit_grade_text: lines.join('\n') || '(no audit-grade entry)' });
+    }
+    AUDIT_GRADE_MAP = map;
+    console.error(`[v4] loaded audit-grade map: ${map.size} stem-prefix entries`);
+    return map;
+  } catch (e) {
+    console.error(`[v4] WARN: audit-grade data load failed: ${e.message}. Audit-2 will run without audit-grade input.`);
+    DATA_LOAD_FAILED = true;
+    return null;
+  }
+}
+function lookupAuditGrade(stem) {
+  const map = loadAuditGradeData();
+  if (!map) return null;
+  return map.get((stem || '').slice(0, 80)) || null;
+}
 
 const DEFAULT_URL = 'https://eiasash.github.io/Geriatrics/';
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
@@ -255,22 +304,68 @@ Output format (strict): respond with ONLY a JSON object on a single line, no mar
 {"pick":"A"|"B"|"C"|"D","confidence":0..100,"why":"<=200 chars terse reasoning"}
 A=index 0, B=index 1, C=index 2, D=index 3 (Hebrew labeling א/ב/ג/ד maps the same way).`;
 
-// v4 judge prompt — explicit that we are validating the APP, not adjudicating
-// between the AI's pick and the app's pick. The AI's prior pick is supplied
-// only as context for "where you would have gone".
-const SYS_DOCTOR_JUDGE = `You are an experienced geriatric medicine attending grading a board-exam question and the app's answer key. The question is from an Israeli geriatric medicine board prep app (Shlav A, P005-2026). Your job: validate the APP's claimed correct answer against board-level geriatric medicine evidence (Hazzard 8e, Harrison 22e, GRS8, Israeli MOH). The AI's prior pick is context only — you are NOT adjudicating "AI vs app", you are validating the APP's stated key.
+// v4 judge prompt — audit-3 channel (answer-correctness validation).
+// v10.64.118 redesign: split off from SYS_DOCTOR_EXPLAIN (audit-1) so each
+// channel evaluates one axis. The original combined prompt was 75% noise
+// on audit-1 (rediscovering c-correctness conflation per 2026-05-13
+// calibration pilot). Now this prompt judges ONLY whether app's answer is
+// medically correct; audit-1 runs separately with explicit "assume answer
+// correct" carve-out.
+const SYS_DOCTOR_JUDGE = `You are an experienced geriatric medicine attending validating an APP's claimed correct answer for a Hebrew geriatric-medicine board-exam question (Shlav A, P005-2026). Your job is narrow: judge ONLY whether the app's claimed correct answer is medically correct against board-level evidence (Hazzard 8e, Harrison 22e, GRS8, Israeli MOH). DO NOT judge the explanation prose — that's audit-1, a separate channel. DO NOT judge the source citation — that's audit-2, a separate channel. The AI's prior pick is supplied as context only, NOT for adjudication.
 
 Output format (strict): one JSON line, no markdown.
 Schema:
-{"app_answer_correct":true|false,"explanation_sound":true|false,"confidence":0..100,"issue":"<=300 chars or null","correct_letter_if_app_wrong":"A"|"B"|"C"|"D"|null}
+{"app_answer_correct":true|false,"confidence":0..100,"issue":"<=300 chars or null","correct_letter_if_app_wrong":"A"|"B"|"C"|"D"|null}
 
-Be a strict but fair examiner — only flag app_answer_correct=false if you have a board-level reason. If you'd defer to the textbook (i.e. you're <80% confident the app is wrong), set app_answer_correct=true and explain in issue.`;
+Be a strict but fair examiner — only flag app_answer_correct=false if you have a board-level reason. If you'd defer to the textbook (i.e. <80% confident the app is wrong), set app_answer_correct=true and explain in issue.`;
 
-const SYS_DOCTOR_SOURCE = `You are a careful clinical educator. The explanation cites a textbook source (e.g. "Hazzard's Ch 43", "Harrison 22e Ch 437", "GRS8 פרק 19", "Brookdale 2024"). Without access to the textbook, judge whether the citation is plausible — does the chapter/section topic align with the question's clinical content?
+// v10.64.118 NEW: audit-1 channel (explanation-text-soundness given correct answer).
+// Validated 2026-05-13 against an 8-stem cohort (75% noise reduction vs prior
+// combined prompt). Carve-out structure: explicit axis exclusion ("audit-3
+// judges X separately") + three-axis decomposition (reasoning soundness,
+// distractor accuracy, prose well-formedness). Truncation defects surface
+// as axis 2-3 failures (incomplete distractor analysis + broken prose).
+const SYS_DOCTOR_EXPLAIN = `You are evaluating a Hebrew geriatric medicine board question. ASSUME THE CLAIMED CORRECT ANSWER IS CORRECT — its medical accuracy is judged separately by audit-3 (a different channel). Your job here is to judge ONLY THE EXPLANATION TEXT on three axes:
 
-Output format (strict): one JSON line.
-Schema:
-{"citation_plausible":true|false,"confidence":0..100,"note":"<=200 chars or null"}`;
+1. Does the explanation justify the correct answer with sound medical reasoning? (vs. circular reasoning, non-sequitur claims, or arguments that contradict the answer it's defending)
+2. Does the explanation contain factually wrong medical claims about the distractors (the wrong options)? (vs. claims that are accurate within the space of the option set)
+3. Is the explanation prose well-formed Hebrew with embedded clinical English where idiomatic? (vs. machine-translation artifacts, broken bidi, missing clinical context, truncated mid-sentence)
+
+Reply with strict JSON only, no prose outside JSON:
+{
+  "sound": true | false,
+  "issue": "<one paragraph naming the specific axis(es) that failed, or 'sound on all three axes' if true>",
+  "axis_failures": ["1" | "2" | "3" or empty array],
+  "confidence": <integer 0-100>
+}
+
+DO NOT consider whether the answer index "c" is correct. That's audit-3, not your job here. Even if you would have picked a different answer, defer to the claimed correct answer and judge only the explanation text quality given that the answer is right.`;
+
+// v10.64.118 redesign: audit-2 channel (ref-faithfulness given audit-grade
+// chapter assignment). Validated 2026-05-13 against a 13-stem cohort (85%
+// noise reduction vs prior "citation_plausible" prompt; idx 1954 carve-out
+// tightened to include peer-chapter specificity). Takes audit-grade chapter
+// assignment from data/question_chapters.json as INPUT (eliminates the
+// "Sonnet must construct chapter mapping from explanation text" failure
+// mode that produced ~85% noise on the prior channel).
+const SYS_DOCTOR_SOURCE = `You are evaluating whether a Hebrew geriatric medicine question's q.ref text is a FAITHFUL DISPLAY of the audit-grade chapter assignment from question_chapters.json. Your job is narrow: NOT to judge whether the chapter is topically aligned with the question, but whether q.ref displays the audit-grade assignment correctly.
+
+The q.ref is FAITHFUL if any of:
+- It cites at least one of the audited chapters with the correct chapter number.
+- It cites a more specific subchapter/section/page WITHIN an audited chapter (acceptable curatorial specificity).
+- It cites a more specific PEER CHAPTER within the same topic-default group as the audited chapter (e.g., audit says "Ch 88 — CANCER AND AGING: GENERAL PRINCIPLES" because the Q's ti=26 maps there by default, but q.ref cites "Ch 91 — LUNG CANCER" for a lung cancer Q — this is curatorial specificity choosing a more topic-specific peer chapter from the same book, and is acceptable). The audit-grade is the floor (topic-default), not the ceiling — when q.ref picks a more topically-precise peer, that's curatorial value-add, not drift.
+- The current q.ref is more specific than the audit-grade in any way that improves clinical accuracy (specific cancer subtype where audit says "cancer general", specific syndrome where audit says "broad category", etc.).
+- It cites a non-textbook source (e.g., Israeli law citation "חוק..." for legal-topic Qs) that the audit-grade mapping has no entry for. The audit-grade mapping is topic-default and doesn't cover legal sources.
+
+The q.ref is UNFAITHFUL if:
+- It cites a chapter number that disagrees with the audit-grade assignment AND is NOT a more-specific-peer relationship within the same clinical topic group (e.g., audit says Ch 79, q.ref says Ch 75, both Harrison, but Ch 75 is on a totally different topic — that's drift, not curatorial specificity).
+- It cites a clearly incorrect chapter on a different clinical topic entirely (e.g., Cardiology chapter on a Cancer Q).
+- It is internally inconsistent with the Q content.
+
+Reply with strict JSON only:
+{"faithful":true|false,"reason":"<one sentence>","confidence":0-100}
+
+DO NOT evaluate whether the explanation prose aligns with the chapter — that's audit-1. DO NOT evaluate the medical content of the question — that's audit-3. Judge ONLY whether q.ref faithfully displays the audit-grade chapter assignment given the carve-outs above.`;
 
 // ============================================================
 // Findings ledger — JSONL append (crash-resilient, unchanged shape from v3)
@@ -422,13 +517,45 @@ Validate the APP's claimed answer ${appLetter} (${appText}) against board-level 
   log.actions.push({
     at: nowIso(), type: 'ai-judge',
     app_answer_correct: judgeJson.app_answer_correct,
-    explanation_sound: judgeJson.explanation_sound,
     conf: judgeJson.confidence,
   });
 
-  // 3) Source-check
+  // 3) Audit-1: explanation-text soundness given correct answer.
+  // v10.64.118: split from SYS_DOCTOR_JUDGE per the 2026-05-13 redesign pilot
+  // (75% noise reduction). Only fires when explanation text is available.
+  let explainJson = null;
+  if (explanation && explanation.length > 50) {
+    const lettered = q.options.map((o, i) => `${'ABCD'[i]}. ${o.text}`).join('\n');
+    const userPromptExplain = `Question (Hebrew):
+${q.stem}
+
+Options:
+${lettered}
+
+Claimed correct answer (assume correct, judge only the explanation): ${appLetter} — ${appText}
+
+Explanation text (Hebrew):
+${explanation.slice(0, 2000)}
+
+Is the explanation TEXT medically sound on the three axes? Reply JSON only.`;
+    let explainResp;
+    try { explainResp = await callClaude(SYS_DOCTOR_EXPLAIN, userPromptExplain, { maxTokens: 400 }); }
+    catch (e) { log.bugs.push({ at: nowIso(), type: 'ai-error', context: 'explain', message: e.message }); }
+    explainJson = explainResp ? (extractJson(explainResp.text) || {}) : {};
+    log.actions.push({
+      at: nowIso(), type: 'ai-explain',
+      sound: explainJson.sound,
+      axis_failures: explainJson.axis_failures,
+      conf: explainJson.confidence,
+    });
+  }
+
+  // 4) Audit-2: ref-faithfulness given audit-grade chapter assignment.
+  // v10.64.118 redesign: takes audit-grade chapter assignment from
+  // data/question_chapters.json[idx] as INPUT (eliminates the failure
+  // mode where Sonnet had to construct chapter mapping from explanation
+  // text). Only fires when both audit-grade and source are available.
   let sourceJson = null;
-  // v4: try .quiz-source first (clean cite), else fall back to regex on explanation
   let cite = null;
   if (source) {
     const m = source.match(/(Hazzard|Harrison|GRS\s*8?|Brookdale|הזרד|הריסון)\s*(?:Ch\.?|Chapter|פרק)?\s*\d{1,3}/i);
@@ -437,13 +564,28 @@ Validate the APP's claimed answer ${appLetter} (${appText}) against board-level 
     const m = explanation.match(/(Hazzard|Harrison|GRS\s*8?|Brookdale|הזרד|הריסון)\s*(?:Ch\.?|Chapter|פרק)?\s*\d{1,3}/i);
     cite = m ? m[0] : null;
   }
-  if (cite) {
-    const userPrompt3 = `Explanation snippet (Hebrew geriatric medicine question):\n${(explanation || source).slice(0, 1500)}\n\nCited source: ${cite}.\nIs the chapter/section topic plausibly aligned with the explanation's claim?`;
+  const auditGrade = lookupAuditGrade(q.stem);
+  if (cite && auditGrade) {
+    const userPromptSource = `Question (Hebrew, abbreviated stem):
+${q.stem.slice(0, 400)}
+
+Audit-grade chapter assignment from question_chapters.json[${auditGrade.qzIdx}]:
+${auditGrade.audit_grade_text}
+
+Current q.ref text (extracted from explanation):
+"${cite}"
+
+Is the current q.ref a faithful display of the audit-grade chapter assignment, considering the carve-outs (curatorial specificity, non-textbook sources, subchapter relationships, peer-chapter specificity within same topic group)? Reply JSON only.`;
     let srcResp;
-    try { srcResp = await callClaude(SYS_DOCTOR_SOURCE, userPrompt3, { maxTokens: 200 }); }
+    try { srcResp = await callClaude(SYS_DOCTOR_SOURCE, userPromptSource, { maxTokens: 300 }); }
     catch (e) { log.bugs.push({ at: nowIso(), type: 'ai-error', context: 'source', message: e.message }); }
     sourceJson = srcResp ? (extractJson(srcResp.text) || {}) : {};
-    log.actions.push({ at: nowIso(), type: 'ai-source', plausible: sourceJson.citation_plausible, citation: cite, conf: sourceJson.confidence });
+    log.actions.push({ at: nowIso(), type: 'ai-source', faithful: sourceJson.faithful, citation: cite, qzIdx: auditGrade.qzIdx, conf: sourceJson.confidence });
+  } else if (cite) {
+    // Audit-grade not available (stem didn't match dataset, or data load failed).
+    // Skip source-check rather than fall back to the old prompt — partial-input
+    // judgments are exactly what the redesign eliminates.
+    log.actions.push({ at: nowIso(), type: 'ai-source-skipped', reason: 'no-audit-grade', citation: cite });
   }
 
   // Record finding.
@@ -460,6 +602,21 @@ Validate the APP's claimed answer ${appLetter} (${appText}) against board-level 
   // the served↔canonical coordinate-frame doctrine and 2026-05-13
   // .audit_logs/benchmarks/calibration_pilot_results_*.json for the
   // pilot run that surfaced the schema-level contract mismatch.
+  // v10.64.118: backwards-compat mirrors for long-chaos-analyze.mjs.
+  //  - explain.sound -> judge.explanation_sound (analyzer reads judge.explanation_sound)
+  //  - source.faithful -> source.citation_plausible (analyzer reads source.citation_plausible)
+  // The new explain.axis_failures field and the source.reason field carry
+  // the structured detail; the mirrored fields are single-boolean compat shims.
+  if (explainJson && typeof explainJson.sound === 'boolean') {
+    judgeJson.explanation_sound = explainJson.sound;
+    if (judgeJson.confidence == null && explainJson.confidence != null) {
+      judgeJson.confidence = explainJson.confidence;
+    }
+  }
+  if (sourceJson && typeof sourceJson.faithful === 'boolean') {
+    sourceJson.citation_plausible = sourceJson.faithful;
+  }
+
   const finding = {
     workerId,
     stem: q.stem.slice(0, 300),
@@ -469,13 +626,17 @@ Validate the APP's claimed answer ${appLetter} (${appText}) against board-level 
     appIdx, appDisplayIdx, appLetter, appText,
     disagrees,
     judge: judgeJson,
+    explain: explainJson,
     source: sourceJson,
     citation: cite,
   };
   recordFinding(finding);
 
-  // 4) Side-effects on flagged Qs (feedback / report) — same as v3 logic
-  const flagged = disagrees || judgeJson?.app_answer_correct === false || judgeJson?.explanation_sound === false;
+  // 4) Side-effects on flagged Qs (feedback / report)
+  const flagged = disagrees
+    || judgeJson?.app_answer_correct === false
+    || explainJson?.sound === false
+    || sourceJson?.faithful === false;
   if (flagged && Math.random() < CONFIG.feedbackRate) {
     await maybeSubmitFeedback(page, log, finding);
   }
