@@ -48,7 +48,7 @@ const REPO = path.resolve(__dirname, '..');
 // word-target dominates topic-density for output shape. Delirium + parkinson
 // predictions remain sealed for stress-testing.
 // Update only when a future regen batch tightens the count further.
-const TRUNCATION_BASELINE = 548;
+const TRUNCATION_BASELINE = 519;
 
 // Mirror of scripts/scan_truncated_explanations.mjs detectTruncation. Hebrew
 // chars expressed as Unicode escapes (א-ת for alef-tav, ״ for
