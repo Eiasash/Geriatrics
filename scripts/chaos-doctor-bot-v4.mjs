@@ -47,6 +47,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { extractJson } from './lib/extractJson.mjs';
+import { judgeWithShapeRetry } from './lib/judgeShapeValidator.mjs';
 import {
   resolveAppVerdict,
   resolveJudgeLetter,
@@ -554,10 +555,19 @@ ${source ? `\nApp's cited source: ${source}` : ''}
 (Context — NOT for adjudication: AI prior pick was ${aiLetter}: ${pickJson.why || 'no rationale'})
 
 Validate the APP's claimed answer ${appLetter} (${appText}) against board-level geriatric-medicine evidence.`;
-  let judgeResp = null;
-  try { judgeResp = await callClaude(SYS_DOCTOR_JUDGE, userPrompt2, { maxTokens: 400 }); }
-  catch (e) { log.bugs.push({ at: nowIso(), type: 'ai-error', context: 'judge', message: e.message }); }
-  const judgeJson = judgeResp ? (extractJson(judgeResp.text) || {}) : {};
+  // 2026-05-17 audit-5 (B5): post-generate JSON-shape validator + exactly
+  // one corrective retry. Replaces the bare `extractJson(...) || {}` that
+  // silently produced 22/86 audit-3 non-boolean verdicts with no log + no
+  // retry. callClaude is injected so the path is unit-testable (see
+  // scripts/lib/judgeShapeValidator.mjs + docs/AUDIT5_PRE_REGISTERED_GATE.md).
+  const judgeJson = await judgeWithShapeRetry({
+    system: SYS_DOCTOR_JUDGE,
+    userPrompt: userPrompt2,
+    maxTokens: 400,
+    callJudge: callClaude,
+    log,
+    nowIso,
+  });
   log.actions.push({
     at: nowIso(), type: 'ai-judge',
     app_answer_correct: judgeJson.app_answer_correct,
