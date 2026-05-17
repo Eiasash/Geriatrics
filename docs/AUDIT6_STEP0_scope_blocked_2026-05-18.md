@@ -289,3 +289,32 @@ failures.
 §4's three options remain accurate as a *security-surface* analysis but
 must not be treated as the immediate decision. The next workstream is
 Option 0 (its own branch/session), not a user pick among 1/2/3.
+
+### [appended] §2 independently fresh-eye confirmed
+
+An independent filesystem-grounded agent (no conclusion fed — given only
+the neutral question "which body fields reach Anthropic") read the
+Toranot source cold and **confirmed §2**: `tools` / `tool_choice` /
+`output_config.format` are all DROPPED request-side; only
+`output_config.effort` (regex-gated), `max_tokens` (clamped 256–32768),
+`system` (string-only), `thinking` (`{adaptive|disabled}`-only) survive.
+Two corroborations *stronger* than the original §2 read:
+
+1. **Edge-priority proven from routing, not asserted.** §2 claimed Edge
+   wins on the file's own header comment + workspace CLAUDE.md. The
+   fresh-eye verified it from `netlify.toml` (no `/api/claude` redirect
+   to the Lambda; an explicit separate `/api/claude-legacy →
+   /.netlify/functions/claude` alias; comment "supersedes the old
+   netlify/functions/claude.ts"). Edge intercepts before Lambda before
+   redirects.
+2. **Second independent strip layer.** `_utils.ts:120–163`
+   `validateMessages` rebuilds each message as `{role,content}` with
+   whitelisted block types and explicitly "strips unknown keys — never
+   forward raw caller input to upstream APIs." So even *message-level*
+   tool-param injection is stripped, independent of the payload
+   allowlist.
+
+The §2 proxy finding is therefore not in question. What Option 0
+re-frames is whether structured output (the thing the proxy blocks) is
+even the right fix — and the verified `max_tokens:400` + truncated
+literal pin say: measure first.
