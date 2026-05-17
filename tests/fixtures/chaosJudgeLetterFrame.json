@@ -1,0 +1,1391 @@
+{
+ "_doc": "Audit-4 regression fixture (2026-05-17). 86 disagrees:true rows from the audit-3 post-c_accept-fix ledger, backfilled with the display-frame judge-letter fields. The 3 `cited_audit3_s4` rows are the audit-3 §4 manual-sample 'artifacts' — proven 0/61 display-frame-consistent here; this fixture IS that audit trail. Frame is DISPLAY (judge saw served options A..D in display order). Never map judge letter against canonical q.o[].",
+ "cited_audit3_s4_idxs": [
+  1273,
+  1584,
+  3255
+ ],
+ "rows": [
+  {
+   "datasetIdx": 480,
+   "options": [
+    "נדרש מינוי אפוטרופוס חדש",
+    "ייפוי הכוח תקף אם נוסח כעמיד",
+    "יש לכבד את התנגדותו הנוכחית",
+    "ייפוי הכוח בטל אוטומטית"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "Under Israeli law (Legal Capacity and Guardianship Law 5722-1962 + 2016 supported decision-making amendments), a general (regular) power of attorney becomes void upon loss of capacity UNLESS it was explicitly drafted as a durable/enduring POA (ייפוי כוח מתמשך per 2016 amendment). The question states 'ייפוי כוח כללי' (general POA), not a durable one. More critically, even if it were durable, Israeli law and GRS8/Hazzard principles emphasize that expressed objections of a person with moderate dementia who retains residual autonomy must be respected and explored (supported decision-making principle). Option C better reflects current Israeli law's emphasis on residual autonomy and the obligation to respect current expressed preferences before overriding them via POA authority.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 1852,
+   "options": [
+    "Apixaban 2.5 mg BID",
+    "Aspirin 81 mg ליום בשילוב clopidogrel 75 mg ליום",
+    "Warfarin עם target INR 2-3",
+    "Apixaban 5 mg BID"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "Current guidelines (AHA/ESC, GRS8, Hazzard 8e) prefer apixaban over warfarin in CKD stage 4 (eGFR 15-29). Warfarin in advanced CKD carries excess hemorrhagic stroke, vascular calcification, and labile INR risks. Apixaban 2.5mg BID is appropriate if dose-reduction criteria met (age 77 + Cr likely ≥1.5 mg/dL = ≥2 criteria). Apixaban 5mg BID (option D) would be correct only if <2 reduction criteria met. Most board sources endorse apixaban as preferred agent in CKD4 AF.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 2
+   }
+  },
+  {
+   "datasetIdx": 2033,
+   "options": [
+    "מתן calcium gluconate עבור hyperkalemia",
+    "מתן warmed normal saline 500 mL",
+    "התחלת cardiac monitoring ב-ICU",
+    "הפסקת levothyroxine עד לאחר rewarming"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "In myxedema coma with HF (EF 35%) and CKD4, aggressive fluid resuscitation (500 mL NS bolus) risks acute decompensation and pulmonary edema — but this is a relative contraindication, not the primary management error. The classic board-level error is stopping levothyroxine (option D): myxedema coma requires urgent continuation/escalation of thyroid hormone (IV T4±T3), not cessation. TSH 45 + temp 34°C + altered consciousness = myxedema coma; halting levothyroxine is the answer per Hazzard 8e, Harrison 22e, and GRS8.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 2
+   }
+  },
+  {
+   "datasetIdx": 1891,
+   "options": [
+    "שימוש כרוני ב-prednisone הגורם ל-colonic dysmotility",
+    "malnutrition קשה המשפיעה על תפקוד מערכת העיכול",
+    "עומס anticholinergic גבוה מתרופות הנשימה",
+    "cognitive impairment המונע שימוש מספק ב-oral laxatives"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 2842,
+   "options": [
+    "3 תרביות דם שליליות",
+    "CT בטן תקין",
+    "עליות חוזרות ב- CRP במהלך שבועיים לפחות",
+    "חולה הסובל מדיכוי חיסוני"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 819,
+   "options": [
+    "להתחיל durvalumab במינון מופחת עם monitoring צמוד",
+    "לדחות את durvalumab עד לשיפור ה-performance status",
+    "להימנע מ-durvalumab בשל גיל מתקדם וירידה ב-functional status",
+    "להמשיך עם consolidation סטנדרטי של durvalumab לפי פרוטוקול PACIFIC"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "The PACIFIC trial enrolled ECOG 0-1 patients; ECOG 2 post-chemoradiation is a relative contraindication to immediate durvalumab, but guidelines recommend DEFERRAL until PS recovers, not permanent avoidance. Age alone is never a criterion for exclusion per geriatric oncology principles (GRS8, Hazzard). Answer B (defer until PS improves) better reflects board-level evidence than C (avoid entirely).",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 2397,
+   "options": [
+    "2% מהקשישים גרים במשק בית של זוג עם ילדים , 1% גרים במשק בית של הורה יחיד עם ילדים",
+    "24% מהקשישים גרים במשק בית של זוג עם ילדים , 12% גרים במשק בית של הורה יחיד עם ילדים",
+    "12% מהקשישים גרים במשק בית של זוג עם ילדים , 5% גרים במשק בית של הורה יחיד עם ילדים",
+    "0.5% מהקשישים גרים במשק בית של זוג עם ילדים , 0.5% גרים במשק בית של הורה יחיד עם ילדים"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "The Israeli CBS/Brookdale '65+ in Israel' publication reports low rates of elderly living in couple-with-children or single-parent-with-children households (~2% and ~1% respectively), consistent with option A. Option C figures (12%/5%) appear too high for Israeli elderly household composition data. However exact figures vary by edition; moderate uncertainty remains.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 3255,
+   "options": [
+    "בזמן מחלת חום יש לקחת טיפול פי 3 מהמינון הקבוע",
+    "טיפול ב- PREDNISONE במינון 10 מ\"ג בחינת",
+    "טיפול ב- HYDROCORTISONE 20 + מ\"ג בבוקר 10 מ\"ג בערב",
+    "טיפול משולב ב- HYDROCORTISONE ו- FLUDROCORTISONE"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "Primary adrenal insufficiency (Addison's) confirmed by failed cosyntropin stimulation test requires BOTH glucocorticoid AND mineralocorticoid replacement. Option D (hydrocortisone + fludrocortisone) is the standard of care per Hazzard 8e, Harrison 22e, and GRS8. Option A describes sick-day dosing rules (stress dosing ×3), which is a management adjunct but NOT the primary treatment recommendation asked. The correct answer is D.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 1
+   },
+   "cited_audit3_s4": true
+  },
+  {
+   "datasetIdx": 2005,
+   "options": [
+    "התחל deferasirox 20 mg/kg/day",
+    "התחל deferoxamine 40 mg/kg SC 5 לילות בשבוע",
+    "בצע cardiac MRI לפני ההחלטה על chelation",
+    "המשך עירויי דם ללא chelation"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "Ferritin 2800 ng/mL after 15 transfusions in 9 months represents significant transfusional iron overload in MDS. Board-level guidance (GRS8, NCCN MDS, Hazzard) supports considering chelation when ferritin >2500 in transfusion-dependent MDS with reasonable functional status. Simply continuing without chelation ignores established iron overload harm. Option C (cardiac MRI T2*) is the most defensible next step before committing to chelation in a frail 80yo with AS/DM given renal and cardiac risks of chelators — it quantifies myocardial iron and guides necessity. D (no chelation) is not the best answer at this ferritin level with this functional status.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 3
+   }
+  },
+  {
+   "datasetIdx": 1891,
+   "options": [
+    "שימוש כרוני ב-prednisone הגורם ל-colonic dysmotility",
+    "malnutrition קשה המשפיעה על תפקוד מערכת העיכול",
+    "עומס anticholinergic גבוה מתרופות הנשימה",
+    "cognitive impairment המונע שימוש מספק ב-oral laxatives"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 2641,
+   "options": [
+    "ל- ANA ( בטיטר גבוה סגוליותSPECIFICITY ) גבוהה יותר בקשישים לעומת צעירים",
+    "השכיחות בגברים קשישים דומה לשכיחות בנשים",
+    "התמונה הקלינית בקשישים סוערת יותר",
+    "השכיחות של מעורבות המטולוגית גבוהה יותר בקשישים"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 2842,
+   "options": [
+    "3 תרביות דם שליליות",
+    "CT בטן תקין",
+    "עליות חוזרות ב- CRP במהלך שבועיים לפחות",
+    "חולה הסובל מדיכוי חיסוני"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 2665,
+   "options": [
+    "לכבד את רצונה של המטופלת ולשחררה לביתה",
+    "לדווח לפקידת סעד ולא לשחרר עד למציאת פתרון הולם",
+    "יש למנות עבורה אפוטרופוס שידאג לכל צרכיה",
+    "לקבל את הסכמתה לפנות לפקידת סעד"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 1155,
+   "options": [
+    "לקיים family meeting להגעה להסכמה",
+    "המטופל שומר על סמכות ההחלטה כיוון שה-agents אינם מסכימים",
+    "לפתוח בהליך guardianship בשל כשל במבנה ה-DPAHC",
+    "לפעול לפי תוכנית הבן כיוון שהוא המבוגר יותר"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "MMSE 19 with Parkinson's dementia raises serious capacity concerns; his statement 'whatever the kids think' suggests he is deferring rather than exercising independent decisional authority. Co-agents mandated to act jointly (conjunctively) create a structural deadlock when they disagree — the DPAHC is non-functional. Board-level geriatric/legal doctrine (Hazzard 8e, GRS8) holds that a deadlocked conjunctive co-agent arrangement with a patient of questionable capacity requires guardianship proceedings, not patient re-assumption of authority. B incorrectly presumes intact capacity and ignores the conjunctive mandate.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 2405,
+   "options": [
+    "ב- EMG סימנים אופייניים של inflammatory myopathy",
+    "ANA שלילי",
+    "אנמיה מיקרוציטית",
+    "rheumatoid factor חיובי"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 2636,
+   "options": [
+    "בדיקת איזון בת ארבעה שלבים",
+    "מבחן עמ ידה מ כיסא",
+    "מדידת מהירות הליכה",
+    "מבחן וק ם ולך"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": "No image available for direct verification. The app claims image 6 shows Chair Stand Test (B). This is plausible as a standard CGA mobility assessment. Without seeing the actual image, cannot confirm with high confidence, but Chair Stand Test is a standard geriatric assessment tool per Hazzard/EWGSOP2. Deferring to app.",
+    "app_answer_correct": true,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 1155,
+   "options": [
+    "לקיים family meeting להגעה להסכמה",
+    "המטופל שומר על סמכות ההחלטה כיוון שה-agents אינם מסכימים",
+    "לפתוח בהליך guardianship בשל כשל במבנה ה-DPAHC",
+    "לפעול לפי תוכנית הבן כיוון שהוא המבוגר יותר"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "When co-agents are required to act jointly and reach deadlock, the DPAHC is effectively paralyzed—it does NOT automatically revert authority to an incapacitated patient (MMSE 19, Parkinson's dementia likely impairs decision-making capacity for complex housing decisions). Board-level teaching (Hazzard 8e, GRS8) states that structural deadlock in a durable POA triggers judicial intervention (guardianship/conservatorship), not reversion to the patient. Answer B would apply only if the patient retained decision-making capacity, which is doubtful here.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 2352,
+   "options": [
+    "thrombectomy ישיר ללא IV thrombolysis",
+    "טיפול תרופתי עם dual antiplatelet therapy",
+    "IV alteplase 0.9 mg/kg ולאחריו thrombectomy",
+    "הורדת לחץ הדם ל-<185/110 ולאחר מכן מתן IV alteplase"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "AHA/ASA 2019 guidelines (and Hazzard/Harrison board-level evidence): for large-vessel occlusion (M1, NIHSS 12) within 4.5h window with no contraindications, standard of care is IV alteplase 0.9mg/kg (after lowering BP to <185/110) FOLLOWED BY mechanical thrombectomy — i.e., bridging therapy (option C). Option D correctly addresses BP lowering before tPA but omits the mandatory thrombectomy step for proven M1 occlusion, making it incomplete and inferior to C at board level. MCI (not dementia) and CKD 3a are not contraindications to tPA.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 1292,
+   "options": [
+    "De novo urgency incontinence לאחר הפרוצדורה",
+    "Sphincteric incontinence עקב פגיעה בלייזר ל-external sphincter",
+    "Overflow incontinence מ-bladder neck contracture",
+    "Detrusor underactivity שהתגלתה לאחר פרוצדורת outlet"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 3610,
+   "options": [
+    "Quetiapine",
+    "Physical restraints",
+    "Haloperidol",
+    "Rivastigmine",
+    "Trazodone"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 191,
+   "options": [
+    "האפוטרופוס",
+    "אחייניתה שהינה קרובת המשפחה היחידה שלה",
+    "הרופא האחראי בהתייעצות עם האפוטרופוס",
+    "הרופא האחראי בהתייעצות עם השכנה"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 2044,
+   "options": [
+    "fluid restriction ל-800 mL/יום",
+    "Furosemide 40 mg IV עם החלפה ב-0.9% saline",
+    "עירוי 3% saline עם יעד עלייה של 8 mEq/L ב-24 שעות",
+    "Tolvaptan 15 mg PO יומי"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "Classic euvolemic SIADH pattern (low Na 124, low serum osm 262, high urine osm 450, high urine Na 45, euvolemic exam) likely opioid-induced. First-line is fluid restriction (~800 mL/day). Furosemide+NS is used for hypervolemic or truly euvolemic SIADH refractory to restriction, but is NOT first-line here and risks over-correction. CXR mild pulmonary edema with EF 35% makes NS infusion hazardous. Board-level answer (Hazzard 8e, GRS8) for euvolemic SIADH with mild-moderate symptoms is fluid restriction.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 1674,
+   "options": [
+    "Performance status מצוין",
+    "תפקוד IADL שמור",
+    "תפקידו כמטפל עיקרי",
+    "ההיסטולוגיה הספציפית של adenocarcinoma"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "Board-level geriatric oncology (NCCN Older Adult Oncology, ASCO guidelines, Hazzard) identifies functional/performance status — specifically ECOG PS or KPS — as the single strongest predictor of chemotherapy tolerability and outcomes. The patient walking 2 miles/day = ECOG 0, which is the dominant criterion. IADL preservation is important but is derivative of/secondary to overall performance status in treatment-eligibility frameworks; PS is the primary gating factor cited at board level.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 363,
+   "options": [
+    "רוב נשים 70+ מקבלות גמלת סיעוד",
+    "בני 65+ באחוז גבוה בהרוגי תאונות דרכים",
+    "מכבי - אחוז זקנים גבוה ביותר",
+    "כ-8% מבני 75+ במוסד"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 1600,
+   "options": [
+    "Haloperidol 0.25 mg IM",
+    "Dexmedetomidine infusion",
+    "הערכת physical therapy לצורך early mobilization",
+    "Lorazepam 0.5 mg PO"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "Acute agitation with SAH and attempted elopement requires immediate pharmacological management. Non-pharmacological measures (PT/early mobilization) are preventive/maintenance strategies, not acute interventions. Haloperidol 0.25mg IM is guideline-supported first-line for acute delirium agitation in elderly (AGS, Hazzard 8e Ch49). Lorazepam contraindicated (hepatic disease, CNS injury). Dexmedetomidine is ICU-only. C is inappropriate for acute agitation.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 1375,
+   "options": [
+    "Tilt table test עם continuous monitoring",
+    "Echocardiogram להערכת ejection fraction",
+    "EEG להערכת seizure disorder",
+    "MRI מוח לשלילת structural lesion"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "The clinical vignette describes LOC ~30s with brief jerking limb movements and post-event amnesia — classic ictal semiology, not vasovagal/orthostatic syncope. Board-level evidence (Hazzard 8e, GRS8) prioritizes EEG when seizure semiology is present. Tilt-table test evaluates vasovagal/orthostatic syncope, not the presenting picture here. Donepezil also lowers seizure threshold. EEG is the highest-yield test.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 1336,
+   "options": [
+    "החלפת lorazepam ב-haloperidol",
+    "הפסקת morphine PCA",
+    "הוספת donepezil 5mg daily",
+    "הפחתת gabapentin ל-100mg daily"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "Both A and D are defensible, but the single highest-yield intervention is stopping/replacing lorazepam (Beers Class I: avoid BZDs in elderly with delirium; she received 3 doses lorazepam q6h which is a major precipitant). Gabapentin dose-reduction for CrCl 34 is correct per renal dosing (max ~100-200mg TID) but gabapentin accumulation is a secondary contributor. Board-level geriatric consensus (AGS Beers, GRS8, Hazzard Ch17) prioritizes BZD elimination over gabapentin titration as the primary delirium intervention. Answer A better represents 'most improves delirium.'",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 2
+   }
+  },
+  {
+   "datasetIdx": 2044,
+   "options": [
+    "fluid restriction ל-800 mL/יום",
+    "Furosemide 40 mg IV עם החלפה ב-0.9% saline",
+    "עירוי 3% saline עם יעד עלייה של 8 mEq/L ב-24 שעות",
+    "Tolvaptan 15 mg PO יומי"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "This is classic SIADH (euvolemic hyponatremia, low serum osmolality, high urine osmolality >100, urine Na >40, likely drug-induced by morphine). Board-level first-line for euvolemic SIADH is fluid restriction (~800-1000 mL/day). Furosemide+NS is the approach for HYPERVOLEMIC hyponatremia (heart failure with volume overload). The patient is described as euvolemic clinically; mild CXR edema does not override the euvolemic classification. Option B would be inappropriate as primary SIADH treatment. Option A (fluid restriction 800 mL/day) is correct first-line per Hazzard 8e, Harrison 22e, GRS8.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 1081,
+   "options": [
+    "שיפור ב-grip strength ל-20 ק\"ג",
+    "זמינות משפחה לפיקוח 24 שעות",
+    "פתרון ה-dysphagia לתזונה רגילה",
+    "השגת הליכה עצמאית עם הליכון"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "Board-level evidence (Hazzard 8e, GRS8 post-acute rehab) consistently identifies functional mobility/ambulation independence as the strongest predictor of successful community discharge after post-acute illness. Family availability is a facilitating social factor, not the strongest clinical predictor. Independent ambulation with assistive device (option D) has the strongest evidence base for community discharge success.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 2641,
+   "options": [
+    "ל- ANA ( בטיטר גבוה סגוליותSPECIFICITY ) גבוהה יותר בקשישים לעומת צעירים",
+    "השכיחות בגברים קשישים דומה לשכיחות בנשים",
+    "התמונה הקלינית בקשישים סוערת יותר",
+    "השכיחות של מעורבות המטולוגית גבוהה יותר בקשישים"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 1584,
+   "options": [
+    "hyperorality ושינויים בהרגלי אכילה",
+    "אטרופיה אסימטרית של האונה הטמפורלית השמאלית ב-MRI",
+    "alien hand phenomenon",
+    "vertical gaze palsy בבדיקה"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "This is classic semantic variant PPA (svPPA/semantic dementia): fluent speech, severe anomia, circumlocution, surface dyslexia, intact repetition, and person-specific knowledge loss (cannot name grandchildren from photos but recognizes faces). The hallmark additional finding is asymmetric anterior temporal lobe atrophy on MRI (predominantly left), not hyperorality. Hyperorality is characteristic of bvFTD, not svPPA. Board-level answer is B.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 0
+   },
+   "cited_audit3_s4": true
+  },
+  {
+   "datasetIdx": 3564,
+   "options": [
+    "המלץ על אי-נקיטת פעולה מיידית, והמשך בדיקות שגרתיות שנתיות.",
+    "עודד מעקב עם אורולוג.",
+    "רשום finasteride.",
+    "רשום קורס antibiotics למשך 6 שבועות, ולאחריו מדידת PSA חוזרת."
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "At age 77 with PSA rising from 4.1 to 5.0 ng/mL over 4 years (velocity ~0.23 ng/mL/yr, borderline but cumulative rise >0.75 ng/mL total) and benign DRE, board-level geriatric guidance (GRS8, Hazzard 8e Ch10) supports shared decision-making with urology referral rather than immediate no-action. PSA >4.0 with a documented rise warrants urologic evaluation even in elderly, as life expectancy and patient preference factor into the decision. Pure watchful waiting without specialist input is not the best next step; urology referral for shared decision-making is preferred.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 2889,
+   "options": [
+    "השטחה של המיקרווילי ברירית המעי הדק",
+    "הפרעה בתפקוד הטסיות",
+    "חסם עלייתי חדרי",
+    "עליה ברמותVON WILLEBRAND FACTOR 30.09.24 בחינת"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 2033,
+   "options": [
+    "מתן calcium gluconate עבור hyperkalemia",
+    "מתן warmed normal saline 500 mL",
+    "התחלת cardiac monitoring ב-ICU",
+    "הפסקת levothyroxine עד לאחר rewarming"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "In myxedema coma with EF 35% HFrEF, giving 500 mL NS bolus risks acute decompensated heart failure/pulmonary edema. Fluid bolus in this setting is the management error. However, the MOST classic board answer for harmful error here is D—stopping levothyroxine in myxedema coma worsens the life-threatening hypothyroid crisis and directly causes deterioration. Discontinuing thyroid hormone replacement IS the dangerous error per GRS8/Harrison myxedema coma guidelines. B (fluid bolus in decompensated HF) is also hazardous, but D is the primary teaching point: levothyroxine must be continued/escalated, never stopped, in myxedema coma.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 2
+   }
+  },
+  {
+   "datasetIdx": 1906,
+   "options": [
+    "הזרקת botulinum toxin לסוגר האנאלי",
+    "חוקני מי ברז יומיים שיינתנו על ידי אשתו",
+    "הפניה לניתוח colostomy",
+    "Lubiprostone 24mcg BID"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "The clinical picture describes pelvic floor dyssynergia (anismus) — failure to coordinate puborectalis/external sphincter relaxation — refractory to lactulose, suppositories, AND enemas. Daily tap-water enemas by the spouse do not address the underlying outlet obstruction mechanism and carry aspiration/electrolyte risks in a frail 91-year-old. Hazzard 8e and GRS8 identify botulinum toxin injection into the puborectalis/external anal sphincter as the targeted intervention for refractory dyssynergia when biofeedback is not feasible (advanced PD). Lubiprostone addresses secretory/slow-transit constipation, not outlet dysfunction, and dose adjustment is needed for renal impairment. Colostomy is premature. The mechanistically correct answer at board level is A.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 2611,
+   "options": [
+    "לא ניתן להימנע מהכנסת נפרוסטום גם אם החולה מתנגדת לכך, היות והוא נחשב טיפול במחלות נלוות 9",
+    "במידה ותזדקק לדיאליזה יש להימנע לפי ההנחיות המקדימות",
+    "חובה לטפל בהיפרקלמיה היות וזו פעולה מצילת חיים",
+    "יש לטפל בה לפי רצונה גם אם הוא סותר את ההנחיות שכתבה"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 311,
+   "options": [
+    "הרפיה רק אם תרופתי נכשל",
+    "OXYCODONE לקוצר נשימה",
+    "חמצן רק אם סטורציה <90%",
+    "הנשמה לא פולשנית יכולה לעזור"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "Board-level evidence (Hazzard 8e, GRS8, CHEST/GOLD palliative guidelines) establishes low-dose opioids (morphine/oxycodone) as the evidence-based FIRST-LINE pharmacologic treatment for refractory dyspnea in palliative/advanced cancer patients. NIV can provide symptomatic relief in selected COPD-malignancy patients but is NOT the primary recommended intervention; opioids hold stronger evidence and guideline support as the preferred palliative dyspnea answer.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 2136,
+   "options": [
+    "D5W במינון 200 mL/hr",
+    "0.45% saline במינון 150 mL/hr",
+    "0.9% saline במינון 250 mL/hr",
+    "D5-0.45% saline במינון 100 mL/hr"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "In hypernatremic dehydration (Na 158) with volume depletion and AKI-on-CKD, D5W at 200 mL/hr risks excessively rapid sodium correction (cerebral edema risk) and significant hyperglycemia in an elderly patient. Board-level guidance (Hazzard 8e, Harrison) favors hypotonic saline (0.45% NaCl) which corrects both volume deficit and free-water deficit at a controlled rate (~0.5 mEq/L/hr Na reduction). D5W alone is appropriate only for pure water deficit without hemodynamic compromise and at slower rates.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 346,
+   "options": [
+    "טיפול מקומי בלבד",
+    "VAC טיפול הבחירה",
+    "אנטיביוטי סיסטמי מותאם רגישות",
+    "אנטיביוטיקה רחבת טווח"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "Board-level evidence (IDSA guidelines, Hazzard 8e Ch104-108, GRS8) states that when culture results are available, antibiotic therapy should be culture-directed (sensitivity-guided). Empiric broad-spectrum (D) is appropriate before cultures, but with known Pseudomonas+Providencia sensitivities, targeted therapy (C) is the standard of care, minimizing resistance and adverse effects in elderly.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 2
+   }
+  },
+  {
+   "datasetIdx": 2799,
+   "options": [
+    "המטופל שיקומי ומתאים לשיקום במסגרת מחלקה סיעודית",
+    "המטופל סיעודי מורכב וזקוק להמשך טיפול במסגרת בה נמצא",
+    "המטופל שיקומי, ולאחר השיקום יוכל לעבור למסגרת תשושים",
+    "המטופל סיעודי ויש להעבירו למחלקה סיעודית"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 311,
+   "options": [
+    "הרפיה רק אם תרופתי נכשל",
+    "OXYCODONE לקוצר נשימה",
+    "חמצן רק אם סטורציה <90%",
+    "הנשמה לא פולשנית יכולה לעזור"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "Board-level palliative guidelines (Hazzard 8e Ch 67, GRS8, CHEST/ERS) establish systemic opioids (morphine/oxycodone) as first-line pharmacotherapy for refractory dyspnea in advanced cancer/COPD. NIV can be a palliative tool but is NOT the primary/core palliative principle here. Option B (oxycodone for dyspnea) is the best answer per evidence.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 2005,
+   "options": [
+    "התחל deferasirox 20 mg/kg/day",
+    "התחל deferoxamine 40 mg/kg SC 5 לילות בשבוע",
+    "בצע cardiac MRI לפני ההחלטה על chelation",
+    "המשך עירויי דם ללא chelation"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "Ferritin 2800 ng/mL after 15 transfusions over 9 months in a transfusion-dependent MDS patient represents clinically significant iron overload requiring consideration of chelation. Board-level evidence (GRS8, NCCN MDS guidelines) supports chelation when ferritin >2500 ng/mL in transfusion-dependent MDS with reasonable functional status (independent ADLs). Simply continuing transfusions without any chelation assessment is not the preferred approach. Option C (cardiac MRI T2* to quantify myocardial iron before committing to chelation) is more appropriate given his age, diabetes, moderate AS, and cardiac symptoms, allowing individualized risk-benefit analysis before initiating deferasirox or deferoxamine.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 3
+   }
+  },
+  {
+   "datasetIdx": 1852,
+   "options": [
+    "Apixaban 2.5 mg BID",
+    "Aspirin 81 mg ליום בשילוב clopidogrel 75 mg ליום",
+    "Warfarin עם target INR 2-3",
+    "Apixaban 5 mg BID"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "Current board-level evidence (KDIGO 2024, AHA/ACC 2023 AF guidelines, GRS8) favors apixaban over warfarin in CKD stage 4. Warfarin in advanced CKD carries risks of calciphylaxis, vascular calcification, and labile INR. Apixaban 2.5 mg BID is preferred at eGFR<25 (reduced renal clearance ~27%). Warfarin is no longer the preferred first-line anticoagulant in this setting.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 2
+   }
+  },
+  {
+   "datasetIdx": 1273,
+   "options": [
+    "רמת המוגלובין מעל 16 g/dL",
+    "היעדר תסמינים ספציפיים של hypogonadism",
+    "היסטוריה של סרטן ערמונית שטופל",
+    "רמות טסטוסטרון נמוכות גבוליות"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "History of prostate cancer is the strongest contraindication to testosterone therapy per Endocrine Society, AUA, and Hazzard 8e guidelines — it is listed as an absolute/major contraindication. Hgb 16.2 g/dL is a relative/precautionary threshold (cutoff is typically >17-17.5 g/dL for absolute contraindication); it does not outweigh a prior prostate cancer history. PSA undetectable x3 years provides some reassurance but does not eliminate the contraindication per board-level consensus.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 0
+   },
+   "cited_audit3_s4": true
+  },
+  {
+   "datasetIdx": 705,
+   "options": [
+    "Cold therapy עם עיסוי קרח",
+    "Ultrasound therapy לכתף הפגועה",
+    "TENS therapy לניהול כאב",
+    "Neuromuscular electrical stimulation"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": "Therapeutic ultrasound is a well-established modality for rotator cuff tendinitis with no contraindication for permanent pacemakers (unlike TENS/NMES which are contraindicated or require strict precautions near pacemakers). MCI and diabetic neuropathy pose no barrier to ultrasound use. Board-level sources (Hazzard 8e, APTA guidelines) support ultrasound for soft-tissue shoulder pathology in elderly patients.",
+    "app_answer_correct": true,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 1292,
+   "options": [
+    "De novo urgency incontinence לאחר הפרוצדורה",
+    "Sphincteric incontinence עקב פגיעה בלייזר ל-external sphincter",
+    "Overflow incontinence מ-bladder neck contracture",
+    "Detrusor underactivity שהתגלתה לאחר פרוצדורת outlet"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "PVR 50 mL essentially rules out overflow; open bladder neck + patent prostatic channel rules out contracture. Sphincteric injury (B) would cause stress/positional leakage, not continuous leakage with intermittent flow pattern and prolonged voiding time. The intermittent flow + prolonged voiding time + low PVR + continuous leakage without urgency after outlet relief is classic detrusor underactivity unmasked post-procedure (D). Board-level answer is D.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 3
+   }
+  },
+  {
+   "datasetIdx": 2405,
+   "options": [
+    "ב- EMG סימנים אופייניים של inflammatory myopathy",
+    "ANA שלילי",
+    "אנמיה מיקרוציטית",
+    "rheumatoid factor חיובי"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 1855,
+   "options": [
+    "hemodialysis דחוף",
+    "חזרה על kayexalate בעוד 4 שעות",
+    "הוספת furosemide 40 mg IV",
+    "הפסקת spironolactone ובדיקת מעבדה חוזרת בעוד 24 שעות"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "After treatment K+ fell from 6.8 to 5.9 mEq/L. Board-level threshold for urgent dialysis for hyperkalemia is typically >6.5 mEq/L refractory to medical therapy. At 5.9 mEq/L with treatment response, the priority is stopping the precipitant (spironolactone in CKD4) and rechecking. Dialysis is not indicated at this level with documented response.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 2
+   }
+  },
+  {
+   "datasetIdx": 2665,
+   "options": [
+    "לכבד את רצונה של המטופלת ולשחררה לביתה",
+    "לדווח לפקידת סעד ולא לשחרר עד למציאת פתרון הולם",
+    "יש למנות עבורה אפוטרופוס שידאג לכל צרכיה",
+    "לקבל את הסכמתה לפנות לפקידת סעד"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": "Under Israeli elder-abuse law (Welfare Services Law / Chok HaSa'ad) a demented patient who shows signs of neglect (caregiver non-attendance, medication non-adherence leading to hospitalization) triggers mandatory reporting to the welfare officer (pakidat sa'ad) without requiring patient consent, and discharge should be withheld until a safe plan is in place. This aligns with board-level elder-abuse management principles. Answer B is the correct next step.",
+    "app_answer_correct": true,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 2352,
+   "options": [
+    "thrombectomy ישיר ללא IV thrombolysis",
+    "טיפול תרופתי עם dual antiplatelet therapy",
+    "IV alteplase 0.9 mg/kg ולאחריו thrombectomy",
+    "הורדת לחץ הדם ל-<185/110 ולאחר מכן מתן IV alteplase"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "For LVO (M1 occlusion) within 4.5h, AHA/ASA guidelines (and Hazzard 8e/Harrison 22e) mandate IV alteplase followed by mechanical thrombectomy ('bridging therapy'). Option C captures this complete standard of care. Option D correctly notes BP management before tPA but stops there, omitting thrombectomy — an incomplete and therefore suboptimal answer for an M1 LVO with NIHSS 12. CKD 3a and MCI are not contraindications to tPA.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 1042,
+   "options": [
+    "התחל megestrol acetate 400mg daily",
+    "התחל mirtazapine 7.5mg qhs",
+    "הפסק omeprazole",
+    "הפנה ל-percutaneous endoscopic gastrostomy"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "Omeprazole discontinuation does not address weight loss or appetite in this clinical picture. The patient has bereavement, weight loss (8 lbs/2 months), declining cognition, and likely depression/grief-related anorexia. Board-level evidence (GRS8, Hazzard 8e) supports mirtazapine as first-line for geriatric depression with anorexia/weight loss; it stimulates appetite via H1/5-HT2C antagonism. Megestrol (A) carries serious risks in elderly (thromboembolism, adrenal suppression). PEG (D) is not indicated in MCI without dysphagia. Stopping omeprazole (C) has no evidence-based role in treating weight loss or anorexia here and is not a Beers-listed concern driving this presentation.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 1600,
+   "options": [
+    "Haloperidol 0.25 mg IM",
+    "Dexmedetomidine infusion",
+    "הערכת physical therapy לצורך early mobilization",
+    "Lorazepam 0.5 mg PO"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "Acute agitation with safety risk in a patient with SAH, thrombocytopenia, and hepatic cirrhosis requires pharmacologic intervention. PT evaluation does not address immediate agitation/elopement risk. Board-level standard (Hazzard 8e Ch49, GRS8): low-dose haloperidol IM is first-line for acute delirium/agitation when non-pharm fails or safety is at risk. Lorazepam (D) is contraindicated given cirrhosis (encephalopathy risk) and post-SAH CNS depression. Dexmedetomidine (B) requires ICU. Haloperidol 0.25mg IM (A) is appropriate.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 2397,
+   "options": [
+    "2% מהקשישים גרים במשק בית של זוג עם ילדים , 1% גרים במשק בית של הורה יחיד עם ילדים",
+    "24% מהקשישים גרים במשק בית של זוג עם ילדים , 12% גרים במשק בית של הורה יחיד עם ילדים",
+    "12% מהקשישים גרים במשק בית של זוג עם ילדים , 5% גרים במשק בית של הורה יחיד עם ילדים",
+    "0.5% מהקשישים גרים במשק בית של זוג עם ילדים , 0.5% גרים במשק בית של הורה יחיד עם ילדים"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "The question references the specific Israeli CBS publication '65+ in Israel'. Israeli demographic data on elderly living arrangements shows relatively low rates of elderly living with children in couple or single-parent households. The figures in option C (12% couple with children, 5% single parent with children) appear high for Israeli elderly. Option A (2% and 1%) is more consistent with Israeli CBS data on elderly household composition, where most elderly live alone or as couples without children. However, exact figures from the specific publication are needed for certainty.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 1874,
+   "options": [
+    "הוספת fludrocortisone 0.1 mg ביום",
+    "החלפת docusate ב-polyethylene glycol",
+    "הפסקת hydrochlorothiazide",
+    "הפחתת amlodipine ל-5 mg ביום"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "Docusate has no proven efficacy for constipation (GRS8, Hazzard 8e) and PEG is superior, so B correctly addresses constipation. However, the question asks for ONE intervention addressing BOTH falls risk AND constipation. B (PEG) addresses only constipation. Stopping HCTZ (C) addresses documented orthostatic hypotension (BP drop 20/8 mmHg on standing) — the primary falls mechanism — AND diuretic-induced dehydration/electrolyte imbalance that worsens constipation, satisfying both criteria at board level.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 2020,
+   "options": [
+    "מעבר ל-comfort care לפי בקשת הבת",
+    "המשך טיפול אגרסיבי כולל antibiotics רחבי-טווח ותמיכה בעירויים",
+    "הפסקת pressors אך המשך antibiotics",
+    "קבלת ייעוץ ethics לפני קבלת החלטות"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "Continuing aggressive treatment without addressing goals-of-care when patient has expressed wishes (reported by surrogate) against life-sustaining machines contradicts geriatric/palliative medicine principles. Under Israeli Dying Patient Law 2005, surrogate-reported oral wishes and physician prognosis assessment are grounds for ethics/legal review before proceeding — not default aggressive care. Board-level answer is D (ethics consultation) given no formal written directive but clear surrogate-reported wishes and ICU physician recommendation for comfort care.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 2
+   }
+  },
+  {
+   "datasetIdx": 1617,
+   "options": [
+    "Tramadol 25mg TID עם monitoring צמוד",
+    "Topical diclofenac gel QID",
+    "Duloxetine 30mg ביום במקום sertraline",
+    "Morphine 5mg q6h PRN"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "Topical diclofenac (option B) is strongly supported by ACR/AGS guidelines for knee/hip OA in elderly: minimal systemic absorption, avoids GI risk, eGFR 58 is acceptable for topical NSAID, no serotonin interaction. Duloxetine (C) has evidence for OA pain and comorbid depression but switching from sertraline introduces complexity, discontinuation risk, and duloxetine's primary label is not OA hip pain. Tramadol+sertraline carries serotonin syndrome risk. Topical diclofenac is the safest, most guideline-concordant single step for this presentation per AGS/Beers 2023 and ACR OA guidelines.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 3
+   }
+  },
+  {
+   "datasetIdx": 1304,
+   "options": [
+    "הפסקת metformin — אין הוכחה לתועלת ב-prediabetes עם MCI",
+    "המשך metformin למניעת סוכרת",
+    "המשך metformin בשל יתרונות anti-aging פוטנציאליים",
+    "העלאת metformin ל-1000 mg BID"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "DPP trial demonstrated metformin reduces T2DM progression in prediabetes; eGFR 58 is above the contraindication threshold (≥45 mL/min). Geroscience literature (TAME trial rationale, MILES trial) supports metformin's pleiotropic benefits including potential cognitive protection. Stopping metformin is not indicated; continuation for diabetes prevention (Option B) aligns with board-level evidence from DPP and current CKD prescribing guidelines.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 1155,
+   "options": [
+    "לקיים family meeting להגעה להסכמה",
+    "המטופל שומר על סמכות ההחלטה כיוון שה-agents אינם מסכימים",
+    "לפתוח בהליך guardianship בשל כשל במבנה ה-DPAHC",
+    "לפעול לפי תוכנית הבן כיוון שהוא המבוגר יותר"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "When co-agents are designated to act jointly and reach an impasse, the DPAHC mechanism is functionally deadlocked. MMSE 19 with Parkinson's dementia raises serious decisional capacity concerns; 'whatever the children think' does not constitute a valid autonomous preference. Board-level principle (Hazzard 8e, GRS8): deadlocked joint agents with a patient of questionable capacity triggers guardianship proceedings, not retention of patient authority. B incorrectly presumes intact capacity.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 1127,
+   "options": [
+    "החלף lisinopril ב-amlodipine 5mg daily",
+    "הוסף spironolactone 12.5mg daily לצורך איזון BP",
+    "הוסף empagliflozin 10mg daily",
+    "העלה את המינון של metoprolol ל-100mg BID"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "Lisinopril (ACE-I) provides essential renoprotection and CV benefit in diabetic CKD + post-NSTEMI; replacing it with amlodipine loses RAAS protection. Empagliflozin (option C) has proven CV mortality and renal benefit post-ACS in T2DM with eGFR≥30 (EMPA-REG, EMPEROR trials; FDA-approved threshold eGFR≥30). K+5.2 is borderline-high so spironolactone (B) is contraindicated. Answer C is board-correct.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 2
+   }
+  },
+  {
+   "datasetIdx": 966,
+   "options": [
+    "הוספת megestrol acetate 400 מ\"ג ליום",
+    "הפסקת metformin והרחבת הגבלות תזונתיות",
+    "התחלת mirtazapine 7.5 מ\"ג לפני שינה לגירוי תיאבון",
+    "הפניה לדיאטנית לקבלת מרשם לתוסף עשיר בחלבון"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "Stopping metformin and expanding dietary restrictions is contraindicated here: it worsens nutritional status in an already malnourished (MNA 19, 4kg loss, BMI 21) patient. Guidelines (Hazzard 8e, GRS8) recommend liberalizing diet and referring to dietitian with oral nutritional supplements as first-line for at-risk elderly. Metformin cessation is not indicated solely for nutritional risk.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 3
+   }
+  },
+  {
+   "datasetIdx": 1859,
+   "options": [
+    "Bilateral avascular necrosis של ראשי הפמור",
+    "Steroid myopathy",
+    "Contrast nephropathy מהדמיה אחרונה",
+    "Polymyalgia rheumatica שאינה מטופלת כראוי"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "AVN typically requires months of corticosteroid exposure (usually >3 months, often higher doses); 2 weeks is far too short. Steroid myopathy develops within weeks, causes proximal hip-girdle pain and difficulty walking, normal X-ray, and the creatinine rise fits muscle/renal effects. Board-level teaching: AVN onset at 2 weeks is not plausible.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 819,
+   "options": [
+    "להתחיל durvalumab במינון מופחת עם monitoring צמוד",
+    "לדחות את durvalumab עד לשיפור ה-performance status",
+    "להימנע מ-durvalumab בשל גיל מתקדם וירידה ב-functional status",
+    "להמשיך עם consolidation סטנדרטי של durvalumab לפי פרוטוקול PACIFIC"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "PACIFIC trial eligibility required ECOG 0-1; this patient declined to ECOG 2 with significant weight loss post-CRT. Board-level geriatric oncology (GRS8, Hazzard) does NOT recommend permanent avoidance based on age alone, but ECOG 2 with functional decline is a contraindication to initiating durvalumab NOW per label and PACIFIC protocol. The correct approach is to delay and reassess (option B), not permanent avoidance. Option C conflates age with functional status inappropriately as a reason to permanently forego a potentially curative consolidation strategy.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 3255,
+   "options": [
+    "בזמן מחלת חום יש לקחת טיפול פי 3 מהמינון הקבוע",
+    "טיפול ב- PREDNISONE במינון 10 מ\"ג בחינת",
+    "טיפול ב- HYDROCORTISONE 20 + מ\"ג בבוקר 10 מ\"ג בערב",
+    "טיפול משולב ב- HYDROCORTISONE ו- FLUDROCORTISONE"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "This patient has primary adrenal insufficiency (Addison's): failed ACTH stimulation test (cortisol 10 mcg/dL vs normal >18), hyponatremia, borderline hyperkalemia, and hypotension. Board-level management requires BOTH glucocorticoid (hydrocortisone) AND mineralocorticoid (fludrocortisone) replacement for primary AI. Option A (sick-day rule: triple dose during febrile illness) is a correct adjunctive sick-day management principle but is NOT the primary treatment recommendation asked. The question asks about initial pharmacological treatment, for which D is correct per Hazzard 8e, Harrison 22e, and GRS8.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 1617,
+   "options": [
+    "Tramadol 25mg TID עם monitoring צמוד",
+    "Topical diclofenac gel QID",
+    "Duloxetine 30mg ביום במקום sertraline",
+    "Morphine 5mg q6h PRN"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "Duloxetine is FDA-approved for osteoarthritis pain (chronic musculoskeletal pain) and treats comorbid depression, making it a reasonable dual-purpose agent. However, the question specifies osteoarthritis (nociceptive, not neuropathic) with current sertraline use. Topical diclofenac (option B) is ACR/EULAR first-line for knee/hip OA in elderly patients who refuse oral NSAIDs, has minimal systemic absorption, avoids GI risk, no serotonin syndrome risk (critical here: tramadol+sertraline = serotonin syndrome risk), and eGFR 58 is acceptable for topical use. Switching antidepressants mid-treatment introduces discontinuation risk, transition period with inadequate depression coverage, and duloxetine's benefit in hip OA specifically is less robust than knee OA. Board-level answer for safest analgesic approach in this scenario favors topical diclofenac.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 3
+   }
+  },
+  {
+   "datasetIdx": 2044,
+   "options": [
+    "fluid restriction ל-800 mL/יום",
+    "Furosemide 40 mg IV עם החלפה ב-0.9% saline",
+    "עירוי 3% saline עם יעד עלייה של 8 mEq/L ב-24 שעות",
+    "Tolvaptan 15 mg PO יומי"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "The clinical picture is euvolemic hyponatremia with SIADH pattern (low serum osm, high urine osm >100, urine Na >40, euvolemic exam) likely drug-induced (morphine PCA). First-line for euvolemic SIADH is fluid restriction. Furosemide+NS is used for HYPERVOLEMIC hyponatremia (true volume overload). The mild pulmonary edema on CXR with euvolemic exam is consistent with pre-existing HF, not acute volume overload requiring diuresis. Option B addresses wrong pathophysiology. Board-level answer (Hazzard 8e, GRS8) is fluid restriction for euvolemic SIADH.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 191,
+   "options": [
+    "האפוטרופוס",
+    "אחייניתה שהינה קרובת המשפחה היחידה שלה",
+    "הרופא האחראי בהתייעצות עם האפוטרופוס",
+    "הרופא האחראי בהתייעצות עם השכנה"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 1304,
+   "options": [
+    "הפסקת metformin — אין הוכחה לתועלת ב-prediabetes עם MCI",
+    "המשך metformin למניעת סוכרת",
+    "המשך metformin בשל יתרונות anti-aging פוטנציאליים",
+    "העלאת metformin ל-1000 mg BID"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "DPP trial (NEJM 2002) and 10-year follow-up demonstrate metformin reduces T2DM progression in prediabetes; ADA Standards of Care endorse metformin for high-risk prediabetes. eGFR 58 (G3a) is not a contraindication (threshold <30-45). MCI alone does not negate this evidence-based indication. App's stated rationale is factually incorrect at board level.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 1375,
+   "options": [
+    "Tilt table test עם continuous monitoring",
+    "Echocardiogram להערכת ejection fraction",
+    "EEG להערכת seizure disorder",
+    "MRI מוח לשלילת structural lesion"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "Board-level evidence (Hazzard 8e, GRS8): brief jerking (convulsive syncope can cause this, but ~30s LOC + post-event amnesia + jerking in an Alzheimer's patient on donepezil — which lowers seizure threshold — makes seizure the leading diagnosis. EEG is first-line workup. Tilt-table is for recurrent unexplained syncope/orthostatic, not for an episode with ictal features.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 2641,
+   "options": [
+    "ל- ANA ( בטיטר גבוה סגוליותSPECIFICITY ) גבוהה יותר בקשישים לעומת צעירים",
+    "השכיחות בגברים קשישים דומה לשכיחות בנשים",
+    "התמונה הקלינית בקשישים סוערת יותר",
+    "השכיחות של מעורבות המטולוגית גבוהה יותר בקשישים"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 412,
+   "options": [
+    "רטינופתיה דיאבטית",
+    "דלקת תוך עינית",
+    "גלוקומה זוויתית סגורה",
+    "קטרקט גרעיני"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "Discoid deposits ON THE CORNEA (keratic precipitates) + lens disturbance + unilateral vision loss = intraocular inflammation (uveitis), not nuclear cataract. Nuclear cataract causes no corneal deposits. App mislocalized the corneal finding to the lens.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 3564,
+   "options": [
+    "המלץ על אי-נקיטת פעולה מיידית, והמשך בדיקות שגרתיות שנתיות.",
+    "עודד מעקב עם אורולוג.",
+    "רשום finasteride.",
+    "רשום קורס antibiotics למשך 6 שבועות, ולאחריו מדידת PSA חוזרת."
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "PSA 5.0 ng/mL at age 77 with documented rise from 4.1 over 4 years (velocity ~0.23 ng/mL/yr) exceeds age-adjusted threshold. Hazzard 8e and GRS8 indicate that in a functionally healthy older man, urologic evaluation (not outright deferral) is appropriate when PSA is rising and above threshold, even if DRE is benign. Blanket 'no action' contradicts the clinical scenario where PSA velocity and absolute level warrant urology referral.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 2611,
+   "options": [
+    "לא ניתן להימנע מהכנסת נפרוסטום גם אם החולה מתנגדת לכך, היות והוא נחשב טיפול במחלות נלוות 9",
+    "במידה ותזדקק לדיאליזה יש להימנע לפי ההנחיות המקדימות",
+    "חובה לטפל בהיפרקלמיה היות וזו פעולה מצילת חיים",
+    "יש לטפל בה לפי רצונה גם אם הוא סותר את ההנחיות שכתבה"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 1906,
+   "options": [
+    "הזרקת botulinum toxin לסוגר האנאלי",
+    "חוקני מי ברז יומיים שיינתנו על ידי אשתו",
+    "הפניה לניתוח colostomy",
+    "Lubiprostone 24mcg BID"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "The clinical picture is classic pelvic-floor dyssynergia (outlet obstruction) in advanced Parkinson's: normal anal tone but inability to coordinate pelvic-floor relaxation, failed lactulose/suppositories/enemas. Board-level management for refractory anismus/dyssynergia is botulinum toxin injection into the puborectalis/external sphincter (Hazzard 8e Ch46, GRS8). Daily tap-water enemas by a lay caregiver are not a standard or safe long-term solution for outlet-type constipation and do not address the pathophysiology; they also carry electrolyte and mucosal injury risk in a frail 91-year-old. Lubiprostone targets secretory/slow-transit constipation, not dyssynergia. Colostomy is last resort. Botulinum toxin (A) is the evidence-based next step when conservative measures have failed in this specific dyssynergia pattern.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 1042,
+   "options": [
+    "התחל megestrol acetate 400mg daily",
+    "התחל mirtazapine 7.5mg qhs",
+    "הפסק omeprazole",
+    "הפנה ל-percutaneous endoscopic gastrostomy"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "Omeprazole discontinuation does not address the clinical picture of grief-related anorexia/weight loss and cognitive decline after bereavement. Board-level evidence (GRS8, Hazzard 8e) favors mirtazapine 7.5mg qhs as first-line for depression/grief-associated anorexia in elderly MCI patients: dual benefit on mood and appetite via H1/5-HT2C antagonism. Megestrol carries DVT/adrenal suppression risk (Beers). PEG not indicated. Stopping omeprazole has no evidence-based rationale for this presentation.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 1336,
+   "options": [
+    "החלפת lorazepam ב-haloperidol",
+    "הפסקת morphine PCA",
+    "הוספת donepezil 5mg daily",
+    "הפחתת gabapentin ל-100mg daily"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 1855,
+   "options": [
+    "hemodialysis דחוף",
+    "חזרה על kayexalate בעוד 4 שעות",
+    "הוספת furosemide 40 mg IV",
+    "הפסקת spironolactone ובדיקת מעבדה חוזרת בעוד 24 שעות"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "After initial stabilization (calcium gluconate, insulin/glucose, kayexalate), K+ has fallen from 6.8→5.9 mEq/L. At 5.9 mEq/L without ongoing severe ECG changes, emergent HD is not the standard next step. Board-level teaching (Harrison/Hazzard) prioritizes removing the precipitating cause (spironolactone) and reassessing. Emergent HD is reserved for refractory severe hyperkalemia (typically K>6.5 unresponsive to measures) or anuric/oliguric AKI. This patient has residual renal function (CKD4, not ESRD) and responded partially to treatment.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 2
+   }
+  },
+  {
+   "datasetIdx": 2047,
+   "options": [
+    "SIADH מתרופות לדמנציה",
+    "Reset osmostat syndrome",
+    "Psychogenic polydipsia עם דילול תקין",
+    "Tea and toast syndrome"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 3610,
+   "options": [
+    "Quetiapine",
+    "Physical restraints",
+    "Haloperidol",
+    "Rivastigmine",
+    "Trazodone"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": null,
+    "issue": null,
+    "app_answer_correct": null,
+    "correct_display_idx": null,
+    "correct_canonical_idx": null
+   }
+  },
+  {
+   "datasetIdx": 1671,
+   "options": [
+    "Citalopram בשל תכונות anticholinergic",
+    "Metformin בשל סיכון ל-lactic acidosis",
+    "יש להמשיך את כל התרופות",
+    "Lisinopril בשל סיכון ל-hypotension"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "B",
+    "issue": "With stable vital signs and no evidence of hypotension, lisinopril is not the priority to stop. Metformin is contraindicated in acute illness/hospitalization (pneumonia with potential hemodynamic stress and renal hypoperfusion) due to lactic acidosis risk — this is a standard board-level recommendation (GRS8, Hazzard). Citalopram 20mg has minimal anticholinergic burden. Metformin cessation in acute hospitalization is the standard of care.",
+    "app_answer_correct": false,
+    "correct_display_idx": 1,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 1273,
+   "options": [
+    "רמת המוגלובין מעל 16 g/dL",
+    "היעדר תסמינים ספציפיים של hypogonadism",
+    "היסטוריה של סרטן ערמונית שטופל",
+    "רמות טסטוסטרון נמוכות גבוליות"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "History of treated prostate cancer is the strongest contraindication to testosterone therapy per Endocrine Society guidelines and Hazzard 8e. Hb 16.2 g/dL is a relative precaution (threshold for concern typically ≥54% hematocrit or Hb >18), not the strongest CI. Prostate cancer history is a classic absolute/strong contraindication even with undetectable PSA.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 1674,
+   "options": [
+    "Performance status מצוין",
+    "תפקוד IADL שמור",
+    "תפקידו כמטפל עיקרי",
+    "ההיסטולוגיה הספציפית של adenocarcinoma"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "A",
+    "issue": "In geriatric oncology (Hazzard 8e, ASCO/SIOG guidelines), ECOG/KPS performance status is the primary and strongest predictor of chemotherapy tolerance and outcomes. IADL is a component of CGA but secondary to overall functional/performance status. The patient's ECOG 0 (walks 2 miles/day, fully independent) is the strongest single predictor. IADL preserved is largely subsumed by excellent PS.",
+    "app_answer_correct": false,
+    "correct_display_idx": 0,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 2007,
+   "options": [
+    "Prednisone 20 mg ביום עם taper איטי",
+    "Ibrutinib 420 mg ביום",
+    "Prednisone 1 mg/kg ביום עם taper מהיר",
+    "Rituximab monotherapy שבועי x 4"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "Coombs+, low haptoglobin, elevated LDH = warm AIHA complicating CLL. Board-level standard first-line is prednisone 1 mg/kg/day (~80 mg for average adult), not 20 mg. 20 mg/day is sub-therapeutic for AIHA. This functionally excellent patient (independent ADLs, walks 2 miles/day) warrants full-dose steroids. Hazzard 8e, GRS8 and UpToDate all specify 1 mg/kg/day as initial dose for warm AIHA.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 0
+   }
+  },
+  {
+   "datasetIdx": 1132,
+   "options": [
+    "Trimethoprim-sulfamethoxazole DS 1 tab BID",
+    "Ciprofloxacin 500 mg PO BID",
+    "Nitrofurantoin 100 mg PO BID",
+    "Ceftriaxone 1 g IV daily"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "Board-level geriatric guidelines (Beers 2023, GRS8, IDSA) argue against TMP-SMX as first-line in an 84yo with hip fracture/post-rehab complicated UTI presenting with delirium. TMP-SMX carries hyperkalemia risk (metformin co-medication), ~20% community resistance, and this clinical picture (post-surgical, institutionalized, altered MS) qualifies as complicated UTI where IV ceftriaxone or fluoroquinolone is standard. Nitrofurantoin is contraindicated (likely reduced renal function, complicated UTI). TMP-SMX DS BID is not the safest or most appropriate first choice here.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 3
+   }
+  },
+  {
+   "datasetIdx": 2502,
+   "options": [
+    "ירידה באוצר המילים",
+    "נטי י ה להתבודדות",
+    "התחזקות באמונה דתית",
+    "נטי י ה להיות מושפע מרושם ראשוני"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "Board-level evidence (Hazzard 8e, GRS8, Harrison 22e) consistently states that vocabulary is PRESERVED or even increases with normal aging. Word-finding difficulty (tip-of-tongue phenomenon) reflects slowed lexical RETRIEVAL speed, not vocabulary loss. Answer A is therefore factually incorrect as an explanation for normal-aging word-finding difficulty.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 1
+   }
+  },
+  {
+   "datasetIdx": 346,
+   "options": [
+    "טיפול מקומי בלבד",
+    "VAC טיפול הבחירה",
+    "אנטיביוטי סיסטמי מותאם רגישות",
+    "אנטיביוטיקה רחבת טווח"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "C",
+    "issue": "Board-level standard (IDSA, Hazzard 8e Ch 104, GRS8) for infected pressure ulcers with cellulitis and positive wound cultures is systemic antibiotics TAILORED to culture/sensitivity results, not empiric broad-spectrum. When sensitivities are available (Pseudomonas, Providencia), targeted therapy (option C) is the guideline-recommended approach, minimizing resistance and toxicity in elderly.",
+    "app_answer_correct": false,
+    "correct_display_idx": 2,
+    "correct_canonical_idx": 2
+   }
+  },
+  {
+   "datasetIdx": 2020,
+   "options": [
+    "מעבר ל-comfort care לפי בקשת הבת",
+    "המשך טיפול אגרסיבי כולל antibiotics רחבי-טווח ותמיכה בעירויים",
+    "הפסקת pressors אך המשך antibiotics",
+    "קבלת ייעוץ ethics לפני קבלת החלטות"
+   ],
+   "judge": {
+    "correct_letter_if_app_wrong": "D",
+    "issue": "Answer B ignores the patient's previously expressed wishes (reported by surrogate), the ICU physician's prognostic recommendation, and Israeli law (Haamid Hanoteh Lamut 2005) which requires ethics consultation when there is no formal advance directive but surrogate reports prior verbal wishes and there is prognostic consensus. Continuing aggressive care without ethics review is not best practice. Answer D (ethics consult) is the board-correct next step before any code-status change.",
+    "app_answer_correct": false,
+    "correct_display_idx": 3,
+    "correct_canonical_idx": 2
+   }
+  }
+ ]
+}
