@@ -318,3 +318,43 @@ The §2 proxy finding is therefore not in question. What Option 0
 re-frames is whether structured output (the thing the proxy blocks) is
 even the right fix — and the verified `max_tokens:400` + truncated
 literal pin say: measure first.
+
+### [appended] Option 0's fork is itself ternary, not binary (the rule, recursed)
+
+Review caught — and `scripts/lib/extractJson.mjs` source confirms — that
+a binary truncation/not-truncation instrument would itself mask a hidden
+class (the frame-distrust rule applied to *this doc's own* remediation
+fork). `extractJson` does exactly **two strict `JSON.parse` attempts**
+(whole-string L11, brace-balanced candidate L31) with **zero lenient
+repair**, so it returns null on three structurally distinct branches:
+
+| Class | extractJson branch | `stop_reason` | Fix | Toranot? |
+|---|---|---|---|---|
+| **(a) truncated** | braces never balance → `null` L35 (or whole-parse fail) | `max_tokens` | Geri-side `max_tokens` bump / verdict-schema trim | **No** |
+| **(c) malformed-but-complete** (unquoted keys, trailing comma, `True`) | balanced candidate, `JSON.parse` throws → `null` L31 | `end_turn` | Geri-side lenient parse / one-line prompt nudge | **No** |
+| **(b) genuine prose** | no `{` → `null` L13 | `end_turn` | structured output | **Yes — only this leaf** |
+
+A single `stop_reason` boolean separates (a) from {(b),(c)} but cannot
+split (b) from (c) → "not-truncation → §4 menu" would misroute every
+class-(c) parser-miss into a cross-repo security review.
+
+**Corrected Option-0 instrument (principle; exact log schema is the
+Option-0 branch's to spec, not this doc's):** the *persistent* instrument
+records `(stop_reason, extractJson-null-branch)` — the null-branch is a
+free ~3-value enum (`no_brace` L13 / `unbalanced` L35 / `parse_threw`
+L31), just *which existing `return null` fired*, zero raw-text retention.
+That mechanically separates (a)/(c) and most of (b). The only residual
+ambiguity is prose-with-incidental-braces landing in `parse_threw`
+alongside real malformed JSON — so the *bounded sample* eyeballs raw
+text **only on the `parse_threw` bucket**, not all non-truncation
+failures. That is a transient diagnostic read of board-exam MCQ
+adjudication content (Geriatrics is a study app — **no patient PHI**;
+contrast ward-helper), not persistent logging; the retention concern
+that rules out persistent raw-text capture does not rule out a one-time
+sample look at the single ambiguous bucket.
+
+**Decision tree is ternary.** (a) → `max_tokens`, zero Toranot. (c) →
+parser/prompt, zero Toranot. (b) genuine prose → *then* §4, and there
+option 2 only (option 3 strictly dominated). **Pin all three before
+anyone reopens §4.** The most likely composite end state needs no
+Toranot change at all.
