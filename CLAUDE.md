@@ -711,6 +711,18 @@ subprocess for Hebrew-heavy edits. Drug names + lab abbreviations should stay
 in English per Israeli clinical convention; mixing in option text increases
 bidi flip risk.
 
+### Chaos-bot judge letter is DISPLAY-frame
+
+`chaos-doctor-bot-v4` `judge.correct_letter_if_app_wrong` is a **display-frame**
+letter (the judge sees served options A..D in shuffled display order). **Never
+map it against canonical `q.o[]`** — that fabricates a spurious prose↔index
+"artifact" on every shuffled Q (~67% of rows). Audit-4 (2026-05-17) proved the
+Geri judge is 0/61 inconsistent in display frame; the audit-3 §4 "3/5 artifact"
+was a frame-confused manual sample, not a judge defect. The bot now emits
+`judge.correct_display_idx` / `correct_canonical_idx` at capture — use those,
+never hand-map. Distinct from the real 2026-05-08 FM/IM served↔canonical *bot*
+bug (a no-op for Geri). See `docs/AUDIT4_judge_letter_frame_2026-05-17.md`.
+
 ---
 
 ## Deployment
