@@ -1,0 +1,53 @@
+{
+  "_doc": "Audit-5 B5 deterministic-replay corpus. The audit-3 ledger preserves only the post-extractJson judge OBJECT, not the raw failing judge TEXT, so the literal 22 B5 strings are unrecoverable. This git-tracked fixture reproduces the failure SHAPES instead (the brief explicitly permits 'or a captured fixture'). Each sample is piped through extractJson() then validateJudgeShape(); expect_ok is the required {ok}. P1 target: exactly 6 nonconforming (ok:false) + 2 conforming (ok:true).",
+  "samples": [
+    {
+      "name": "bare_valid_json",
+      "expect_ok": true,
+      "note": "the contract shape — boolean app_answer_correct",
+      "raw": "{\"app_answer_correct\":true,\"confidence\":90,\"issue\":null,\"correct_letter_if_app_wrong\":null}"
+    },
+    {
+      "name": "fenced_valid_json",
+      "expect_ok": true,
+      "note": "extractJson already strips ```json fences (do not re-handle)",
+      "raw": "```json\n{\"app_answer_correct\":false,\"confidence\":85,\"issue\":\"App key contradicts Hazzard 8e Ch 43\",\"correct_letter_if_app_wrong\":\"B\"}\n```"
+    },
+    {
+      "name": "truncated_json",
+      "expect_ok": false,
+      "note": "maxTokens cut mid-token — brace-walk never closes -> extractJson null",
+      "raw": "{\"app_answer_correct\":tr"
+    },
+    {
+      "name": "prose_then_truncated",
+      "expect_ok": false,
+      "note": "model wrote reasoning prose first, JSON cut before close",
+      "raw": "The app's claimed answer is medically correct per board-level evidence. {\"app_answer_correct\":"
+    },
+    {
+      "name": "prose_only_no_json",
+      "expect_ok": false,
+      "note": "no '{' at all -> extractJson null",
+      "raw": "Yes — the app's claimed answer is correct. This aligns with Hazzard 8e and GRS8 guidance on the management of frailty in the very old."
+    },
+    {
+      "name": "fenced_then_truncated",
+      "expect_ok": false,
+      "note": "leading fence stripped, unterminated string inside -> extractJson null",
+      "raw": "```json\n{\"app_answer_correct\":true,\"confidence\":90,\"issue\":\"The explanation correctly identifies that orthostatic hypotension in this patient is most likely "
+    },
+    {
+      "name": "json_string_bool",
+      "expect_ok": false,
+      "note": "parses fine BUT app_answer_correct is the STRING \"true\", not a boolean",
+      "raw": "{\"app_answer_correct\":\"true\",\"confidence\":90,\"issue\":null,\"correct_letter_if_app_wrong\":null}"
+    },
+    {
+      "name": "json_missing_aac",
+      "expect_ok": false,
+      "note": "valid JSON object but the verdict key is absent (the literal B5 empty-extract analogue once explain back-fills confidence)",
+      "raw": "{\"confidence\":90,\"issue\":\"Deferred to textbook; <80% confident the app is wrong\",\"correct_letter_if_app_wrong\":null}"
+    }
+  ]
+}
