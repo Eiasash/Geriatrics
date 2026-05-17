@@ -47,7 +47,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { extractJson } from './lib/extractJson.mjs';
-import { resolveAppVerdict } from './lib/optionResolver.mjs';
+import { resolveAppVerdict, pickAgreesWithApp } from './lib/optionResolver.mjs';
 
 // v10.64.118: audit-grade chapter assignment input for the redesigned
 // SYS_DOCTOR_SOURCE prompt. Loaded lazily at bot startup from local
@@ -267,6 +267,29 @@ async function detectAppCorrectIdx(page) {
   return idx >= 0 ? idx : null;
 }
 
+// 2026-05-17 (c_accept false-positive fix; bot-only, no app-version bump):
+// collect the display positions
+// of EVERY `button.qo.ok`, not just the first. Geri's `isOk(q,i)`
+// (shlav-a-mega.html:2466) returns true for every index in `q.c_accept`
+// when the question is multi-accept, so the render path
+// (shlav-a-mega.html:3160) marks all accepted options `.ok`. The old
+// single-`.ok` read in `detectAppCorrectIdx` made the bot flag a
+// disagreement whenever the AI picked an accepted-but-not-first option
+// (17 c_accept-specific / 21 any-isOk false positives on the
+// 2026-05-14 post_truncation_rollout ledger). Reading the full set keeps
+// the bot DOM-driven (the DOM already encodes `{c} ∪ c_accept`) — no
+// dataset lookup, no canonical↔display mapping. Returns display-frame
+// indices, same frame as `aiIdx`.
+async function detectAppAcceptedDisplayIdxSet(page) {
+  if ((await page.locator('button.qo.ok').count().catch(() => 0)) === 0) return [];
+  return await page.evaluate(() => {
+    const all = Array.from(document.querySelectorAll('button.qo'));
+    return Array.from(document.querySelectorAll('button.qo.ok'))
+      .map((ok) => all.indexOf(ok))
+      .filter((i) => i >= 0);
+  }).catch(() => []);
+}
+
 // v4: targeted explanation + source extraction. The dist bundle exposes
 // .quiz-feedback__body for the explanation prose and .quiz-source for the
 // citation pill. v3 grabbed the whole .card and lost discrimination.
@@ -463,10 +486,23 @@ async function doctorOneQuestion(page, workerId, log) {
   // FM/IM) cannot silently re-introduce the served↔canonical drift bug
   // that produced ~240/241 false positives in the 2026-05-08 triage.
   const appIdx = await detectAppCorrectIdx(page);
+  // 2026-05-17: full accepted-answer set (all `.ok` display positions).
+  // For single-answer Qs this is `[appIdx]`; for multi-accept Qs it is
+  // every index the app's own `isOk(q,i)` accepts. `appIdx` /
+  // `appDisplayIdx` / `appLetter` / `appText` still point at the FIRST
+  // `.ok` so the JSONL schema + analyzer + sibling record shape are
+  // unchanged — only the `disagrees` classification honors the set.
+  const appAcceptedDisplayIdxSet = await detectAppAcceptedDisplayIdxSet(page);
   const { explanation, source } = await extractExplanationAndSource(page);
   const appVerdict = resolveAppVerdict(q.options, appIdx);
   const appDisplayIdx = appVerdict ? appVerdict.displayIdx : null;
-  const disagrees = appDisplayIdx != null && appDisplayIdx !== aiIdx;
+  // 2026-05-17 c_accept false-positive fix: agreement is set-membership
+  // against ALL accepted `.ok` positions, not scalar equality with the
+  // first one. `appDisplayIdx != null` stays the single gate for "the
+  // app revealed a key at all"; `pickAgreesWithApp` only ever relaxes a
+  // disagreement (never manufactures one — the set ⊇ {first .ok}).
+  const disagrees = appDisplayIdx != null
+    && !pickAgreesWithApp(appAcceptedDisplayIdxSet, aiIdx);
 
   // v4: methodology guard. If appIdx is null after a check click in practice
   // mode, our entry path probably fell back to exam mode. Log it so we can
@@ -624,6 +660,7 @@ Is the current q.ref a faithful display of the audit-grade chapter assignment, c
     optionCanonicalIdx: null,
     aiLetter, aiIdx, aiWhy: pickJson.why || null, aiConf: pickJson.confidence,
     appIdx, appDisplayIdx, appLetter, appText,
+    appAcceptedDisplayIdxSet,
     disagrees,
     judge: judgeJson,
     explain: explainJson,
