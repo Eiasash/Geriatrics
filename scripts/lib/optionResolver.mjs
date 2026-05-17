@@ -198,3 +198,39 @@ export function pickAgreesWithApp(okDisplayIdxSet, aiDisplayIdx) {
   if (aiDisplayIdx == null) return true;
   return okDisplayIdxSet.includes(Number(aiDisplayIdx));
 }
+
+/**
+ * DOM-pure scrape of the accepted-answer DISPLAY-index set.
+ *
+ * This is the ONLY DOM-touching helper in this otherwise pure module. It
+ * lives here so the bot's Playwright wrapper and the unit test share ONE
+ * source — the 2026-05-17 c_accept fix's named risk is a selector
+ * regression (typo, or a future CSS refactor making it match the first
+ * `.ok` only) that the ledger-reconstruction ratchet structurally cannot
+ * catch. Pinning the literal scrape behaviorally closes that gap.
+ *
+ * Runs faithfully in three contexts off the SAME function body:
+ *   - Playwright: `page.evaluate(extractAcceptedDisplayIdxSet)` serializes
+ *     it into the live page; called with no arg → falls back to the
+ *     page `document` (CDP-evaluated, not subject to page CSP).
+ *   - happy-dom/jsdom unit test: called with an explicit root element.
+ *   - Node without a DOM: returns `[]` (safe no-op).
+ *
+ * Display position = index among ALL `button.qo` siblings; the returned
+ * entries are the positions carrying `.ok` (the app's isOk-driven
+ * answer-key marker, multi-accept aware — shlav-a-mega.html:2466 / :3160).
+ * Non-`button` `.qo` skeleton nodes (shlav-a-mega.html:3493-3496 are
+ * `<div class="qo">`) are excluded by the `button.qo` selector, matching
+ * the original inline behavior.
+ *
+ * @param {ParentNode} [rootEl] DOM root (defaults to global `document`).
+ * @returns {number[]} display indices of every `.ok` option (possibly []).
+ */
+export function extractAcceptedDisplayIdxSet(rootEl) {
+  const root = rootEl || (typeof document !== 'undefined' ? document : null);
+  if (!root || typeof root.querySelectorAll !== 'function') return [];
+  const all = Array.from(root.querySelectorAll('button.qo'));
+  return Array.from(root.querySelectorAll('button.qo.ok'))
+    .map((ok) => all.indexOf(ok))
+    .filter((i) => i >= 0);
+}
