@@ -17,7 +17,7 @@
 // See docs/AUDIT5_PRE_REGISTERED_GATE.md (committed before this module).
 // Unit contract: tests/chaosBotV4JudgeShapeValidator.test.js.
 
-import { extractJson } from './extractJson.mjs';
+import { extractJson, classifyExtractFailure } from './extractJson.mjs';
 
 // The SYS_DOCTOR_JUDGE contract is satisfied iff there is a boolean
 // app_answer_correct verdict. Everything else (null/extract-fail,
@@ -98,11 +98,18 @@ export async function judgeWithShapeRetry({
   // Still no boolean verdict. Close the silent-failure gap: emit a typed
   // parse-error mirroring the pick channel (chaos-doctor-bot-v4.mjs:462) so
   // B5 is observable post-run instead of vanishing into `{}`.
+  // Audit-6 Option-0: bucket on the ORIGINAL failure mode (`resp`, not
+  // the corrective `resp2`). `(first_stop_reason, first_branch)` is the
+  // 2×N grid the next bounded run buckets — truncation keyed off
+  // stop_reason==max_tokens (any branch); branch refines the end_turn
+  // rows only. Zero raw-text retention beyond the audit-5 200-char slice.
   log.bugs.push({
     at: stamp(),
     type: 'ai-parse-error',
     context: 'judge',
     text: String(resp2.text || '').slice(0, 200),
+    first_branch: classifyExtractFailure(resp.text),
+    first_stop_reason: resp.stopReason ?? null,
   });
   return {};
 }
