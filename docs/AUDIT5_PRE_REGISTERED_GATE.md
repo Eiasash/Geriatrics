@@ -142,3 +142,43 @@ showed). Do not ship a partial; do not loosen a predicate post-hoc.
   vs prose-only on *future* runs, but the fix does not depend on it and
   the brief is tight. **Explicitly cut** (non-speculative scope discipline,
   mirrors audit-4's cut of the speculative live validator).
+
+---
+
+## [2026-05-17, appended post-implementation] RESULT — all 3 predicates met, TRIP NOT met
+
+Append-only. Validator: `scripts/lib/judgeShapeValidator.mjs`; wired at
+`scripts/chaos-doctor-bot-v4.mjs` (bare `extractJson(...)||{}` → injectable
+`judgeWithShapeRetry`). Guard: `tests/chaosBotV4JudgeShapeValidator.test.js`
+(15 tests) + git-tracked fixture `tests/fixtures/judgeShapeFailures.json`.
+
+- **P1 detection — MET.** Fixture splits **exactly 6 nonconforming /
+  2 conforming**; 0 false-negatives on the non-boolean-`app_answer_correct`
+  axis (incl. `json_string_bool`, `json_missing_aac`).
+- **P2 retry wiring — MET (cap=1, symmetric).** Conforming-stub:
+  **0/22 residual**, 0 `ai-parse-error`, **2 callJudge/item**.
+  Nonconforming-stub: **22/22 stays `{}`**, **22/22 typed
+  `{type:'ai-parse-error',context:'judge'}`** (silent-gap closed; mirrors
+  pick `:462`), **2 callJudge/item — never 3** (a 3rd-queued conforming
+  response is provably never reached). Hard throw: **no shape retry,
+  1 `ai-error`, `{}`** (pre-audit-5 behavior preserved). Corrective retry
+  is a validator-gated RE-ASK (2nd userPrompt ≠ 1st, schema restated) —
+  validator-before-prompt, not prompt-only.
+- **P3 regression — MET (additive).** 3 baseline suites green (34).
+  Carried-forward c_accept-AWARE oracle (copied into
+  `chaos-reports/v4/audit5_b5_2026-05-17/`, self-validated) over the
+  audit-3 ledger: `isOk_pick_FPs:0, any_isOk_FPs:0, unresolved_total:0`
+  (== audit-4 Regression B). Full `npm run verify`: **72 files / 1396
+  passed + 7 skipped**; **trinity untouched at v10.64.130** (scripts/
+  tests/docs only — correctly no bump).
+
+Honest pre/post deterministic-replay metric: pre-fix the 22-shape B5
+corpus produced 22/22 non-boolean **silently** (0 logs, 0 retries).
+Post-fix replay: 6/6 nonconforming shapes flagged; conforming corrective
+⇒ **22/22 → 0/22 residual**; still-failing corrective ⇒ 22/22 residual
+but **22/22 now typed-logged** (B5 observable, no longer invisible).
+Recovery is conditional on the retry conforming — the honest framing; a
+fresh stochastic rate is the gate the brief forbade.
+
+**TRIP CONDITION NOT MET.** No predicate failed; no falsification. Clean
+bug-fix-with-tests ship → workspace fresh-eye route not triggered.
