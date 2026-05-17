@@ -358,3 +358,43 @@ parser/prompt, zero Toranot. (b) genuine prose → *then* §4, and there
 option 2 only (option 3 strictly dominated). **Pin all three before
 anyone reopens §4.** The most likely composite end state needs no
 Toranot change at all.
+
+### [appended, post-review] PRECISION — truncation keyed off `stop_reason`, NOT the branch
+
+The paragraphs above (and the §1–6 table) carry a branch≡class shorthand
+that is **not exact** and must not be copied literally: they imply
+`unbalanced` ≡ (a) truncation and "eyeball the `parse_threw` bucket
+only." Review caught this; corrected here append-only (the prior text
+stands as the record of the imprecise step; this is the authoritative
+rule — `feedback_spec_provenance_append_only`):
+
+**Truncation is a property of `stop_reason`, full stop.**
+`first_stop_reason === 'max_tokens'` ⟺ length-cut, for **any** branch.
+The `extractJson` null-branch is **never** a standalone truncation
+signal: a model can finish naturally (`end_turn`) and still emit an
+unmatched `{` → `unbalanced`. That is malformed/prose, **not** a
+length-cut; a `max_tokens` bump won't touch it. Counting `(end_turn,
+unbalanced)` as truncation inflates the exact number Option 0 exists to
+measure accurately (the Toranot-gating count).
+
+Corrected rule — the instrument shipped on **PR #231**
+(`scripts/lib/bucketParseFailures.mjs`, pinned by
+`tests/chaosBotV4BucketRule.test.js`) already encodes exactly this:
+
+| `(first_stop_reason, first_branch)` | Category | Fix | Toranot? |
+|---|---|---|---|
+| `max_tokens`, **any** branch | truncation (a) | Geri `max_tokens` bump / schema trim | No |
+| `end_turn` + `no_brace` | genuine_prose (b) | structured output | **Yes — only this** |
+| `end_turn` + `parsed` | wrong_shape | Geri prompt/schema | No |
+| `end_turn` + `unbalanced` | **ambiguous** | bounded-sample eyeball | (pending) |
+| `end_turn` + `parse_threw` | **ambiguous** | bounded-sample eyeball | (pending) |
+
+The bounded-sample raw-text eyeball set is the **two non-`no_brace`
+not-`max_tokens` cells** (`unbalanced` *and* `parse_threw`), **not
+`parse_threw` alone** — the earlier "shrink to `parse_threw` only"
+wrongly dropped the genuinely-ambiguous `(end_turn, unbalanced)` cell.
+`branch` refines the not-`max_tokens` rows only. Recursion terminus: the
+`(stop_reason, branch)` pair resolves the full grid; nothing below this
+needs another pass. Option-0 instrument = **shipped, PR #231**
+(docs-only #230 stays the clean STEP-0 record; instrument is its own
+branch per pacing).
