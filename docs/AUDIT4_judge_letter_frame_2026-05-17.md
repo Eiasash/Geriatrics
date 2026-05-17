@@ -70,24 +70,35 @@ B4 keys off the boolean, so nothing moved.
   bot-artifact-contaminated; fix the bot first"* is **RETRACTED** — the
   contamination was in the §4 sample, never in the queue.
 
-### B5 metric reconciliation (25 vs 22 — settle before the B5 handoff)
+### B5 metric reconciliation — the explicit ledger-verified cross-tab
 
-The STEP-1 figure "25/≈29%" and the triage bucket "B5=22" measure **two
-different fields** — **both correct**, neither a miscount; they were just
-presented without the distinction (verified against the ledger):
+The STEP-1 "25/≈29%" (no judge *letter*) and triage "B5=22" (no boolean
+*verdict*) measure two different fields. To leave nothing to re-derive (two
+prior framings of this got the 3-row delta wrong by *deriving* it instead of
+cross-tabulating), here is the full cross-tab of the 86 `disagrees:true` rows,
+verified directly against the ledger:
 
-| metric | field | count | of 86 |
+| | `aac`=True (→B1) | `aac`=False (→B4) | `aac` non-bool (→B5) |
 |---|---|---|---|
-| no usable judge **letter** | `correct_letter_if_app_wrong` absent/oob | **25** | 29% |
-| no boolean judge **verdict** (= triage `B5_judge_uncertain`) | `app_answer_correct` non-boolean | **22** | 26% |
+| **has letter** | 0 | **61** | 0 |
+| **no letter** | **3** | **0** | **22** |
 
-**`22 ⊂ 25`**: the 22 are rows where the judge emitted no clean JSON at all (no
-verdict **and** no letter) → bucket **B5**. The other **3** of the 25 are **B4**
-rows (`aac=False` — judge *did* say "app wrong") that merely left the
-alternative letter null; they stay in B4 (genuine candidate, no proposed
-alternative — already counted in the 37 distinct Qs). **The B5 next session
-scopes off the 22 verdict-failure rows** (with the 3 letter-null B4 rows as a
-minor sub-case).
+- **25 letter-null = 3 (B1) + 22 (B5) + 0 (B4).** The 3 are **B1** — the judge
+  *confirmed* the app, so emitting no `correct_letter_if_app_wrong` is correct
+  and benign (no alternative is needed when the app is right). They are **not**
+  B4 and need no follow-up. (Earlier drafts of this doc mislabeled these 3 as
+  "B4 letter-null" — wrong; `aac=True`, not `aac=False`.)
+- **0 letter-null B4 rows.** Every one of the 61 B4 rows carries a usable
+  letter → B4 (37 distinct Qs) is complete *as a bucket*.
+- **22 = B5** = no boolean verdict (no clean JSON at all). This is the only
+  actionable JSON-shape failure class. **The B5 next session scopes off exactly
+  these 22** — there is no "3-row sub-case" (that was the mislabel).
+
+**Resolver null-safety (verified):** all 25 letter-null rows emit
+`correct_display_idx`/`correct_display_text`/`correct_canonical_idx` = `null`
+with `correct_letter_frame='display'` — **0 defaulted to index 0 / 'A'**. The
+`resolveJudgeLetter(null)→null` guard holds end-to-end; the audit-4 artifact
+class was not re-created (pinned by `tests/chaosJudgeLetterFrame.test.js`).
 
 ### ⚠ B4 is clean but **INCOMPLETE** (lossless — carry forward)
 
