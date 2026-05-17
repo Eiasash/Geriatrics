@@ -37,8 +37,11 @@ sees served options labeled A..D in display order (`chaos-doctor-bot-v4.mjs:546`
      display pos C = that option.
 
 3. **Full 86-row rigorous detector**: 0 explicit inconsistencies, 0 text
-   inconsistencies across all 61 checkable rows. 25 rows carry no clean judge
-   letter (the B5 class). **Pre-fix prose↔index disagreement, correct frame = 0.**
+   inconsistencies across all 61 letter-bearing rows. **25/86 rows carry no
+   usable judge *letter*** (`correct_letter_if_app_wrong` absent/oob); these are
+   distinct from the 22 *verdict*-failure rows — see the B5 metric
+   reconciliation under STEP 2. **Pre-fix prose↔index disagreement, correct
+   frame = 0.**
 
 4. **§4 frame-error is reproducible**: reading the display letter as a *canonical*
    index (the §4 hand-method) fabricates a spurious mismatch on **41/61 rows**.
@@ -52,25 +55,50 @@ sees served options labeled A..D in display order (`chaos-doctor-bot-v4.mjs:546`
 
 ## STEP 2 — B4 revalidation
 
-Re-run after the de-noise: **identical** — B1=3, B2=0, B3=0, **B4=61 rows / 37
-distinct Qs (36 conf≥80)**, B5=22, B5_unresolved=0, source_implausible=15. **No
-re-sort, no category shift** — the de-noise is a frame annotation; triage never
-mapped the letter and B4 keys off the boolean, so nothing moved.
+Re-run after the de-noise: **identical** — by triage **row** buckets:
+B1=3, B2=0, B3=0, **B4=61 rows**, B5=22, B5_unresolved=0; source_implausible=15
+(secondary axis). Row math: 3+0+0+61+22 = 86 ✓. **No re-sort, no category
+shift** — the de-noise is a frame annotation; triage never mapped the letter and
+B4 keys off the boolean, so nothing moved.
+
+> **Unit note (prevents next-session double-count):** B1/B2/B3/B4/B5 are
+> **rows**. B4's headline **37** is **distinct questions** (61 B4 rows → 37 Qs;
+> a stem hit by N workers = N rows). Never sum 37 with the row counts.
 
 - **Clean B4 = the existing B4 = 37 distinct Qs** (4 real-IMA + 33 AI-generated
   per the audit-3 §4 split). The audit-3 §4 conclusion *"B4 is
   bot-artifact-contaminated; fix the bot first"* is **RETRACTED** — the
   contamination was in the §4 sample, never in the queue.
 
+### B5 metric reconciliation (25 vs 22 — settle before the B5 handoff)
+
+The STEP-1 figure "25/≈29%" and the triage bucket "B5=22" measure **two
+different fields** — **both correct**, neither a miscount; they were just
+presented without the distinction (verified against the ledger):
+
+| metric | field | count | of 86 |
+|---|---|---|---|
+| no usable judge **letter** | `correct_letter_if_app_wrong` absent/oob | **25** | 29% |
+| no boolean judge **verdict** (= triage `B5_judge_uncertain`) | `app_answer_correct` non-boolean | **22** | 26% |
+
+**`22 ⊂ 25`**: the 22 are rows where the judge emitted no clean JSON at all (no
+verdict **and** no letter) → bucket **B5**. The other **3** of the 25 are **B4**
+rows (`aac=False` — judge *did* say "app wrong") that merely left the
+alternative letter null; they stay in B4 (genuine candidate, no proposed
+alternative — already counted in the 37 distinct Qs). **The B5 next session
+scopes off the 22 verdict-failure rows** (with the 3 letter-null B4 rows as a
+minor sub-case).
+
 ### ⚠ B4 is clean but **INCOMPLETE** (lossless — carry forward)
 
-The 25 B5 "no clean judge letter / boolean" rows were excluded from the
-61-checkable set. B4's 37 Qs therefore **exclude 25 rows of potential genuine
-disagreement signal**. B4 is *not artifact-contaminated*, but content
-adjudication is **not fully unblocked** until the 25 B5 rows are assessed.
-**B5 (the ~29% judge-JSON-shape failure) is the named IMMEDIATE next session**,
-not a someday-item — it is the real, actionable bot-reliability defect (separate
-from the non-existent letter↔index artifact). Addressable by the
+The **22 B5 verdict-failure rows** never received a B1/B4 classification (no
+boolean verdict to bucket on), so they are excluded from the adjudicable set.
+B4's 37 Qs therefore **exclude potential genuine disagreement signal hidden in
+those 22**. B4 is *not artifact-contaminated*, but content adjudication is
+**not fully unblocked** until the 22 are assessed. **B5 (the 26%
+judge-JSON-shape *verdict* failure) is the named IMMEDIATE next session**, not a
+someday-item — it is the real, actionable bot-reliability defect (separate from
+the non-existent letter↔index artifact). Addressable by the
 validator-before-prompt pattern (post-generate shape check + corrective retry on
 `SYS_DOCTOR_JUDGE`).
 
