@@ -170,6 +170,15 @@ describe('c_accept false-positive ratchet — newest-ledger characterization', (
     expect(fixture.every((x) => x.oldDisagrees === true)).toBe(true);
   });
 
+  it('no appDisplayIdx==null rows (else the new guard masks a render-fault)', () => {
+    // The fixed `disagrees` silently reclassifies appDisplayIdx==null
+    // true→false. The old formula `appDisplayIdx != null && …` already
+    // forced all disagrees:true rows to have a non-null appDisplayIdx, so
+    // this must be 0 by construction — assert it as PROOF, not inference.
+    // A non-zero count would be a masked render-fault, not a c_accept FP.
+    expect(fixture.filter((x) => x.appDisplayIdx == null).length).toBe(0);
+  });
+
   it('(a) kills exactly the known false positives → these become non-disagreements', () => {
     expect(r.flipped).toBe(EXPECT_FLIPPED);
     expect(r.flipStems.size).toBe(EXPECT_FLIP_STEMS);
@@ -179,6 +188,11 @@ describe('c_accept false-positive ratchet — newest-ledger characterization', (
   it('every killed false positive is provably an accepted answer', () => {
     // The precise FP definition: the AI's pick IS in the app's own
     // accepted set, so flagging it was wrong. Re-derive per flipped row.
+    // The loop covers ALL 22 flipped rows — including the 2 picks the
+    // earlier per-pick quick-count could not resolve (the 21→22 delta);
+    // set-reconstruction resolves them, and this asserts pick ⊆ okSet
+    // for every one through the REAL exported predicate (not a reimpl).
+    expect(r.flippedRows.length).toBe(EXPECT_FLIPPED);
     for (const row of r.flippedRows) {
       const q = row.q;
       const acceptedCanon = new Set();

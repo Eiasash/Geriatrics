@@ -47,7 +47,11 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { extractJson } from './lib/extractJson.mjs';
-import { resolveAppVerdict, pickAgreesWithApp } from './lib/optionResolver.mjs';
+import {
+  resolveAppVerdict,
+  pickAgreesWithApp,
+  extractAcceptedDisplayIdxSet,
+} from './lib/optionResolver.mjs';
 
 // v10.64.118: audit-grade chapter assignment input for the redesigned
 // SYS_DOCTOR_SOURCE prompt. Loaded lazily at bot startup from local
@@ -275,19 +279,22 @@ async function detectAppCorrectIdx(page) {
 // (shlav-a-mega.html:3160) marks all accepted options `.ok`. The old
 // single-`.ok` read in `detectAppCorrectIdx` made the bot flag a
 // disagreement whenever the AI picked an accepted-but-not-first option
-// (17 c_accept-specific / 21 any-isOk false positives on the
-// 2026-05-14 post_truncation_rollout ledger). Reading the full set keeps
+// (22 across 11 stems, any-isOk, on the 2026-05-14
+// post_truncation_rollout ledger — deterministic set-reconstruction;
+// the c_accept-attributable subset is 17). Reading the full set keeps
 // the bot DOM-driven (the DOM already encodes `{c} ∪ c_accept`) — no
 // dataset lookup, no canonical↔display mapping. Returns display-frame
 // indices, same frame as `aiIdx`.
+//
+// The scrape itself is `extractAcceptedDisplayIdxSet` in
+// scripts/lib/optionResolver.mjs — ONE shared source so the live-DOM
+// behavior is unit-tested (tests/extractAcceptedDisplayIdxSet.test.js)
+// rather than only syntax-checked. Playwright serializes the same
+// function body into the page; called with no arg it falls back to the
+// page `document`.
 async function detectAppAcceptedDisplayIdxSet(page) {
   if ((await page.locator('button.qo.ok').count().catch(() => 0)) === 0) return [];
-  return await page.evaluate(() => {
-    const all = Array.from(document.querySelectorAll('button.qo'));
-    return Array.from(document.querySelectorAll('button.qo.ok'))
-      .map((ok) => all.indexOf(ok))
-      .filter((i) => i >= 0);
-  }).catch(() => []);
+  return await page.evaluate(extractAcceptedDisplayIdxSet).catch(() => []);
 }
 
 // v4: targeted explanation + source extraction. The dist bundle exposes
