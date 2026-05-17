@@ -172,3 +172,27 @@ describe('P2 — judgeWithShapeRetry wiring (cap=1, injected stub)', () => {
     expect(log.bugs.length).toBe(0);
   });
 });
+
+// Load-bearing RED pin: the P1 fixture proves the detector RED on the
+// failure SHAPE FAMILY (truncation/prose/string-bool/missing-key). This
+// block additionally pins it RED on the *literal observed* B5 input —
+// proven, not assumed — without perturbing the pre-registered 6/2 fixture.
+// Audit-3 `b5_rows_dump.json`: ALL 22 B5 rows had EXACTLY the post-explain-
+// back-fill object `{confidence, explanation_sound}` (the judge itself
+// contributed nothing). The PRODUCTION decision input at the replaced
+// chaos-doctor-bot-v4.mjs:560 is `extractJson(rawJudgeText)` -> null (the
+// judge text was unparseable). Both must be RED or the detector misses the
+// real defect, not just its cousins.
+describe('literal observed B5 input — RED pin (not just synthetic cousins)', () => {
+  it('(A) production input: unparseable judge text -> extractJson null -> ok:false', () => {
+    expect(extractJson('{"app_answer_correct":tr')).toBe(null); // truncated
+    expect(extractJson('Yes, the app answer is correct per Hazzard 8e.')).toBe(null); // prose-only
+    expect(validateJudgeShape(null).ok).toBe(false);
+  });
+
+  it('(B) literal 22x-observed ledger artifact {confidence, explanation_sound} -> ok:false', () => {
+    expect(validateJudgeShape({ confidence: 97, explanation_sound: false }).ok).toBe(false);
+    // key-order independent (the 22 rows appeared in both serializations)
+    expect(validateJudgeShape({ explanation_sound: false, confidence: 90 }).ok).toBe(false);
+  });
+});
