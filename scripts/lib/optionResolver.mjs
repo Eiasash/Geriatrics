@@ -152,3 +152,49 @@ export function textResolveAgainstQZ(displayOptionTexts, canonicalOptionTexts) {
     return null;
   });
 }
+
+/**
+ * Multi-accept-aware agreement predicate for the doctor-bot's `disagrees`
+ * signal.
+ *
+ * Background — the c_accept false-positive (2026-05-17)
+ * ----------------------------------------------------
+ * Geri's app marks the answer key with `class="qo ... ok"` via
+ * `isOk(q,i)` (shlav-a-mega.html:2466):
+ *   `if (Array.isArray(q.c_accept) && q.c_accept.length) return q.c_accept.includes(i);
+ *    return i === q.c;`
+ * For a multi-accept question (`q.c_accept` non-empty) the render path
+ * (shlav-a-mega.html:3160) therefore puts `.ok` on EVERY accepted option,
+ * not just `q.c`. The bot's `detectAppCorrectIdx` read only the FIRST
+ * `.ok` (`document.querySelector('button.qo.ok')`), so when the AI picked
+ * a *different but also-accepted* option the old
+ * `disagrees = appDisplayIdx !== aiIdx` fired a false positive.
+ *
+ * The fix keeps the bot DOM-driven: `detectAppAcceptedDisplayIdxSet`
+ * collects the display positions of ALL `.ok` buttons (the DOM already
+ * encodes `{c} ∪ c_accept` because `isOk` is exactly that predicate), and
+ * agreement becomes set-membership instead of scalar equality. No dataset
+ * lookup, no canonical↔display mapping in the bot — both `aiDisplayIdx`
+ * and the `.ok` positions are display-frame.
+ *
+ * Semantics: returns `true` (treat as agreement → do NOT flag) when the
+ * accepted set is unknown/empty or there is no pick, so the existing
+ * `appDisplayIdx != null` guard at the call site remains the single
+ * gate for "the app revealed a key at all". The fix only ever RELAXES
+ * a disagreement (true→false) — it can never manufacture a new one,
+ * because the accepted set is a superset of `{first .ok}`.
+ *
+ * @param {Array<number>} okDisplayIdxSet
+ *   Display positions of every `button.qo.ok` (see
+ *   `detectAppAcceptedDisplayIdxSet`).
+ * @param {number|null} aiDisplayIdx
+ *   The display index the AI was prompted with and picked.
+ * @returns {boolean} `true` if the pick is an accepted answer (or
+ *   undeterminable), `false` only when the key set is known and the pick
+ *   is provably outside it.
+ */
+export function pickAgreesWithApp(okDisplayIdxSet, aiDisplayIdx) {
+  if (!Array.isArray(okDisplayIdxSet) || okDisplayIdxSet.length === 0) return true;
+  if (aiDisplayIdx == null) return true;
+  return okDisplayIdxSet.includes(Number(aiDisplayIdx));
+}
