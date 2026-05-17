@@ -49,6 +49,7 @@ import { fileURLToPath } from 'node:url';
 import { extractJson } from './lib/extractJson.mjs';
 import {
   resolveAppVerdict,
+  resolveJudgeLetter,
   pickAgreesWithApp,
   extractAcceptedDisplayIdxSet,
 } from './lib/optionResolver.mjs';
@@ -659,6 +660,24 @@ Is the current q.ref a faithful display of the audit-grade chapter assignment, c
   if (sourceJson && typeof sourceJson.faithful === 'boolean') {
     sourceJson.citation_plausible = sourceJson.faithful;
   }
+
+  // 2026-05-17 audit-4: annotate the judge's letter frame AT THE SOURCE.
+  // `correct_letter_if_app_wrong` is DISPLAY-frame (the judge only saw
+  // served options labeled A..D in display order — see userPrompt2 above).
+  // Recording it raw let the audit-3 §4 manual sample map it against
+  // canonical q.o[] and fabricate a prose↔index "artifact" on ~41/61 rows
+  // (rigorous full-corpus detector: judge is 0/61 inconsistent in display
+  // frame — there was no defect). Emitting the resolved DISPLAY index +
+  // served text here makes the frame unambiguous so no downstream
+  // re-framer can repeat the §4 hand-error. `correct_canonical_idx` is
+  // null for Geri (no data-i; mirrors `optionCanonicalIdx: null` at the
+  // finding below) — TRUE canonical is recovered offline via
+  // scripts/backfill_judge_letter_frame.py (the sanctioned path).
+  const jLetter = resolveJudgeLetter(q.options, judgeJson.correct_letter_if_app_wrong);
+  judgeJson.correct_letter_frame = 'display';
+  judgeJson.correct_display_idx = jLetter ? jLetter.displayIdx : null;
+  judgeJson.correct_display_text = jLetter ? jLetter.displayText : null;
+  judgeJson.correct_canonical_idx = null;
 
   const finding = {
     workerId,

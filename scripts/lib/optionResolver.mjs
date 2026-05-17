@@ -102,6 +102,75 @@ export function resolveAppVerdict(servedOptions, appIdx, letterTable) {
 }
 
 /**
+ * Resolve the judge's `correct_letter_if_app_wrong` into an explicit,
+ * frame-annotated record:
+ *   { letter, displayIdx, displayText, canonicalIdxFromServed }
+ *
+ * Why this exists (2026-05-17 audit-4)
+ * -----------------------------------
+ * `correct_letter_if_app_wrong` is a DISPLAY-frame letter — the judge only
+ * ever sees served options labeled A..D in display order
+ * (chaos-doctor-bot-v4.mjs:546). It is recorded raw, so it is unambiguous
+ * ONLY if the consumer knows the frame. The audit-3 §4 manual 5-row sample
+ * mapped it against canonical `q.o[]` instead, fabricating a prose↔index
+ * "artifact" on ~41/61 disagreement rows. A full-corpus rigorous detector
+ * found the judge is **0/61 inconsistent in display frame** — there was no
+ * defect; the §4 number measured the sampler's frame error. This helper
+ * makes the frame explicit AT CAPTURE so no downstream re-framer (human or
+ * script) can repeat the §4 hand-error.
+ *
+ * NOTE — distinct root cause from the 2026-05-08 FM/IM served↔canonical
+ * *prompt* bug documented in this module's header point (2). That one was a
+ * real bot bug on FM/IM (smoking gun "FM idx 84") and is an explicit no-op
+ * for Geri (display-frame). Do not conflate the two.
+ *
+ * `canonicalIdxFromServed` = `displayToCanonical(servedOptions, displayIdx)`:
+ *   - FM/IM (data-i present): the TRUE canonical index.
+ *   - Geri (no data-i; `servedOptions[i].idx === i`): equals `displayIdx`,
+ *     i.e. canonical-from-DOM is unavailable. The bot therefore emits
+ *     `correct_canonical_idx: null` for Geri (mirroring the
+ *     `optionCanonicalIdx: null` doctrine at chaos-doctor-bot-v4.mjs:667 —
+ *     "null fails loudly; never emit a misleading identity"); TRUE canonical
+ *     is recovered offline via `textResolveAgainstQZ` (the sanctioned path).
+ *
+ * Accepts BOTH served-option shapes (same dual-context doctrine as
+ * `textResolveAgainstQZ`): the bot's live `[{idx,text}]` object array AND
+ * the JSONL ledger's plain `string[]` (`finding.options` is
+ * `q.options.map(o => o.text.slice(0,120))` — chaos-doctor-bot-v4.mjs:666).
+ * For a string-array entry, canonical-from-served is unknowable, so
+ * `canonicalIdxFromServed` falls back to `displayIdx` (the honest answer —
+ * a stringified ledger is inherently Geri display-frame, no data-i).
+ *
+ * @param {Array<{idx:number,text:string}|string>} servedOptions
+ *   display-order array (live object form OR ledger string form)
+ * @param {string|null|undefined} letter raw `correct_letter_if_app_wrong`
+ * @param {string[]} [letterTable=['A','B','C','D','E','F','G','H']]
+ * @returns {{letter:string,displayIdx:number,displayText:string,
+ *            canonicalIdxFromServed:number|null}|null}
+ *   `null` when the letter is absent/unmappable/out-of-range — the
+ *   legitimate "judge emitted no clean letter" (B5) case; the caller records
+ *   null frame fields rather than guessing.
+ */
+export function resolveJudgeLetter(servedOptions, letter, letterTable) {
+  if (!Array.isArray(servedOptions) || servedOptions.length === 0) return null;
+  if (letter == null) return null;
+  const L = String(letter).trim().slice(0, 1).toUpperCase();
+  if (!L) return null;
+  const LETTERS = letterTable || ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+  const displayIdx = LETTERS.indexOf(L);
+  if (displayIdx < 0 || displayIdx >= servedOptions.length) return null;
+  const o = servedOptions[displayIdx];
+  if (o == null) return null;
+  const isStr = typeof o === 'string';
+  return {
+    letter: L,
+    displayIdx,
+    displayText: isStr ? o : (typeof o.text === 'string' ? o.text : ''),
+    canonicalIdxFromServed: isStr ? displayIdx : displayToCanonical(servedOptions, displayIdx),
+  };
+}
+
+/**
  * Consumer-side helper for JSONL post-processing. Given a bot's served
  * options (in display order) and the canonical question's option array
  * (in canonical order), return the display→canonical permutation by
