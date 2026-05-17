@@ -667,14 +667,20 @@ layer; v10.64.46 regenerated 75 drifted Qs after detector v3.
 
 ### Two-Claude race
 
-The user runs Claude Code (terminal) and claude.ai (web) in parallel. Both
-lanes can push to main. Lane discipline:
+The user runs Claude Code (terminal) and claude.ai (web) in parallel.
+**Neither lane pushes to `main` directly** — the global `~/.claude/CLAUDE.md`
+"never push main directly — always PR" rule is hard-enforced by the
+auto-mode permission classifier and overrides any repo-level solo-lane
+carve-out. Lane discipline:
 
 - **Both lanes active**: branch first — `claude/web-<slug>` for web Claude,
   `claude/term-<slug>` for terminal Claude — and PR to main. Avoid touching
   the other lane's known files mid-session.
-- **Solo lane**: direct push to main is the release path (CI gates, Pages
-  deploys ~60s). No PR ceremony needed.
+- **Solo lane**: still branch `claude/term-<slug>` + PR (no extra two-Claude
+  coordination ceremony, but the PR is mandatory — a `git push origin main`
+  is denied by the classifier regardless of a correct solo-lane
+  self-justification). CI gates, then ask the user to merge. Geri audit-5
+  (2026-05-17) hit this: direct push denied → resolved via PR #227.
 - **Session start**: `git log --all --since="1 day ago" --oneline` to detect
   parallel work before editing shared surfaces (`questions.json`, `sw.js`,
   version files, `shared/fsrs.js`, `harrison_chapters.json`).
@@ -836,7 +842,7 @@ Reach **1,000+ tests** with coverage of every data file, every engine function, 
 
 - `main` — production branch, auto-deployed to GitHub Pages
 - Feature branches: `claude/web-<slug>` (web Claude), `claude/term-<slug>` (terminal Claude), `claude/<description>-<id>` (other)
-- Solo lane: direct push to `main` is the release path (CI gates, Pages deploys ~60s)
+- Solo lane: branch `claude/term-<slug>` + PR (the global always-PR guardrail overrides repo-level solo carve-outs — the auto-mode classifier denies direct `main` pushes; see "Two-Claude race" under Known Traps)
 - Both lanes active: branch first + PR — see "Two-Claude race" under Known Traps
 - All PRs target `main`
 - CI must pass before merging
