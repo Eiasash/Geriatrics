@@ -398,3 +398,42 @@ wrongly dropped the genuinely-ambiguous `(end_turn, unbalanced)` cell.
 needs another pass. Option-0 instrument = **shipped, PR #231**
 (docs-only #230 stays the clean STEP-0 record; instrument is its own
 branch per pacing).
+
+### [appended, post-review] POPULATION — sample the underlying first-attempt failures, not the residual
+
+A further review catch, verified against source and fixed in PR #231
+(commit `734fed6`). The first iteration of the instrument enriched the
+**terminal** `ai-parse-error` log — which audit-5
+(`judgeShapeValidator.mjs:96`) reaches **only when the corrective retry
+ALSO fails** (the ~7% double-failure **residual**; the retry-recovery
+path returns with no log of any kind). But this doc's decision tree
+consumes the **underlying first-attempt composition (~26%)** — the
+brief's KNOWN TRAP #1 ("MEASURE the underlying rate, not assume"). The
+retry is a schema-restated re-ask with the **same `max_tokens` budget**,
+so its recovery is **class-dependent**; conditioning the sample on
+"retry also failed" is a biased estimator (unknown direction) of the
+population the decision needs. Sampling the residual would have answered
+the wrong question — and option (2) ("declare we sample the residual
+and leave the underlying unmeasured") was rejected: it defeats Option
+0's entire purpose.
+
+Corrected (PR #231): `judgeWithShapeRetry` emits `judge-shape-firstfail`
+for **every** first-attempt failure (recovered or not) with a
+`recovered` flag — a **distinct type**, so audit-5's B5 double-failure
+contract and the 15-pin suite stay byte-stable (all 15 verified green).
+One emission point yields **both** populations:
+
+- **underlying** = all `judge-shape-firstfail`/judge rows = the audit-6
+  decision input (`summarizeLedger.counts`).
+- **residual** = the `recovered:false` subset (`residual_counts`) ≡ the
+  audit-5 double-failure population; a *diagnostic* that quantifies the
+  retry's class-dependent recovery (the bias itself), never the routing
+  basis.
+- **reconciliation** = `recovered:false` count must equal the
+  independent `ai-parse-error`/judge count, else the instrument drifted.
+
+Old pre-instrument ledgers (incl. the audit-3 ledger) → underlying
+total **0**: they predate `stop_reason`/firstfail capture and **cannot**
+be reconstructed. The bounded sample must be a **fresh**
+`long-chaos-run.sh` run; there is no shortcut. The decision tree above
+(and the §4 gate) consumes the **underlying** counts only.
