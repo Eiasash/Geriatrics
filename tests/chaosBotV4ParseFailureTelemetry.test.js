@@ -144,6 +144,88 @@ describe('judge parse-failure log carries first_branch + first_stop_reason', () 
   });
 });
 
+// The audit-6 target is the UNDERLYING first-attempt failure rate
+// (~26%), NOT the double-failure residual (~7%) that audit-5's terminal
+// ai-parse-error log samples. The retry is a schema-restated re-ask with
+// the SAME 400-token budget — its recovery is class-dependent, so the
+// double-failure histogram is a biased estimator of the underlying
+// composition. The instrument must emit on EVERY first-attempt failure
+// (recovered or not), via a distinct type so audit-5's B5 contract +
+// the 15-pin suite stay byte-stable.
+const judgeFF = (log) =>
+  log.bugs.filter((b) => b.type === 'judge-shape-firstfail' && b.context === 'judge');
+
+describe('un-conditioned first-attempt-failure population (the audit-6 target)', () => {
+  it('recovered-first-fail STILL leaves a firstfail trace (recovered:true), 0 ai-parse-error', async () => {
+    const log = { bugs: [] };
+    const stub = makeStub([
+      { text: '{"app_answer_correct":tr', stopReason: 'max_tokens' },              // first fails
+      { text: '{"app_answer_correct":false,"confidence":80,"issue":null,"correct_letter_if_app_wrong":"C"}', stopReason: 'end_turn' }, // retry recovers
+    ]);
+    const j = await judgeWithShapeRetry({
+      system: 'S', userPrompt: 'U', maxTokens: 400,
+      callJudge: stub, log, nowIso: () => 'T',
+    });
+    expect(typeof j.app_answer_correct).toBe('boolean'); // retry recovered
+    expect(stub.calls.length).toBe(2);                   // cap=1 unchanged
+    expect(judgePE(log).length).toBe(0);                 // residual view: nothing (the bug this fixes)
+    const ff = judgeFF(log);
+    expect(ff.length).toBe(1);                           // underlying view: the first failure IS recorded
+    expect(ff[0].first_branch).toBe('unbalanced');
+    expect(ff[0].first_stop_reason).toBe('max_tokens');
+    expect(ff[0].recovered).toBe(true);
+  });
+
+  it('double-fail emits firstfail(recovered:false) AND ai-parse-error; they reconcile 1:1', async () => {
+    const log = { bugs: [] };
+    const stub = makeStub([
+      { text: 'No — the app answer is wrong per Hazzard 8e.', stopReason: 'end_turn' },
+      { text: 'Still prose, no JSON.', stopReason: 'end_turn' },
+    ]);
+    await judgeWithShapeRetry({
+      system: 'S', userPrompt: 'U', maxTokens: 400,
+      callJudge: stub, log, nowIso: () => 'T',
+    });
+    const ff = judgeFF(log);
+    const pe = judgePE(log);
+    expect(ff.length).toBe(1);
+    expect(ff[0]).toMatchObject({ first_branch: 'no_brace', first_stop_reason: 'end_turn', recovered: false });
+    expect(pe.length).toBe(1);
+    // reconciliation invariant: residual == firstfail with recovered:false
+    expect(ff.filter((r) => r.recovered === false).length).toBe(pe.length);
+  });
+
+  it('conforming-on-first emits NO firstfail (success is not the population)', async () => {
+    const log = { bugs: [] };
+    const stub = makeStub([
+      { text: '{"app_answer_correct":true,"confidence":90,"issue":null,"correct_letter_if_app_wrong":null}', stopReason: 'end_turn' },
+    ]);
+    await judgeWithShapeRetry({
+      system: 'S', userPrompt: 'U', maxTokens: 400,
+      callJudge: stub, log, nowIso: () => 'T',
+    });
+    expect(judgeFF(log).length).toBe(0);
+  });
+
+  it('retry-throw: first failure still recorded (recovered:false) + ai-error, returns {}', async () => {
+    const log = { bugs: [] };
+    const stub = makeStub([
+      { text: '{"app_answer_correct": True}', stopReason: 'end_turn' },   // first fails (parse_threw)
+      new Error('Claude API 529: overloaded'),                            // retry throws
+    ]);
+    const j = await judgeWithShapeRetry({
+      system: 'S', userPrompt: 'U', maxTokens: 400,
+      callJudge: stub, log, nowIso: () => 'T',
+    });
+    expect(Object.keys(j).length).toBe(0);
+    const ff = judgeFF(log);
+    expect(ff.length).toBe(1);
+    expect(ff[0]).toMatchObject({ first_branch: 'parse_threw', first_stop_reason: 'end_turn', recovered: false });
+    expect(log.bugs.filter((b) => b.type === 'ai-error' && b.context === 'judge').length).toBe(1);
+    expect(judgePE(log).length).toBe(0); // retry never produced resp2 -> no terminal ai-parse-error
+  });
+});
+
 describe('callClaude surfaces stop_reason (source-assertion)', () => {
   it('callClaude return reads data.stop_reason and exposes it', () => {
     // Same verification style as chaosBotV4ProxyMode.test.js (callClaude

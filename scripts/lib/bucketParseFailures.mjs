@@ -57,24 +57,50 @@ const ZERO = () => ({
   ambiguous: 0, empty: 0, unknown: 0,
 });
 
-// rows: array of parsed JSONL ledger entries (bot's log.bugs). Filters to
-// the judge parse-failure channel and applies the rule.
+// rows: array of parsed JSONL ledger entries (bot's log.bugs).
+//
+// PRIMARY population = `judge-shape-firstfail`/judge rows = the
+// UN-CONDITIONED first-attempt failures = exactly the audit-6 target
+// (~26% underlying), what the decision tree consumes. The audit-5
+// `ai-parse-error` log fires only on DOUBLE failure (~7% residual,
+// retry-recovery is class-dependent → a biased estimator of the
+// underlying composition); we do NOT bucket off it for the primary.
+// `residual_counts` = the recovered:false subset (the residual view,
+// quantifies the retry's class-dependent recovery). `reconciliation`
+// cross-checks recovered:false against the independent ai-parse-error
+// count — a mismatch means the instrument drifted.
 export function summarizeLedger(rows) {
-  const counts = ZERO();
-  const grid = {}; // `${stop_reason}|${branch}` -> n (operator convenience)
+  const counts = ZERO();          // underlying — ALL first-attempt failures
+  const residual_counts = ZERO(); // recovered:false subset (≡ double-failures)
+  const grid = {};                // `${stop_reason}|${branch}` -> n (underlying)
   let total = 0;
+  let firstfail_unrecovered = 0;
+  let ai_parse_error = 0;
   for (const r of Array.isArray(rows) ? rows : []) {
-    if (!r || r.type !== 'ai-parse-error' || r.context !== 'judge') continue;
+    if (!r || r.context !== 'judge') continue;
+    if (r.type === 'ai-parse-error') { ai_parse_error += 1; continue; }
+    if (r.type !== 'judge-shape-firstfail') continue;
     total += 1;
-    counts[bucketJudgeFailure(r)] += 1;
+    const cat = bucketJudgeFailure(r);
+    counts[cat] += 1;
     const key = `${r.first_stop_reason ?? 'null'}|${r.first_branch ?? 'null'}`;
     grid[key] = (grid[key] || 0) + 1;
+    if (r.recovered === false) {
+      residual_counts[cat] += 1;
+      firstfail_unrecovered += 1;
+    }
   }
   return {
     total,
     counts,
+    residual_counts,
     grid,
     eyeball_total: counts[EYEBALL_CATEGORY],
+    reconciliation: {
+      firstfail_unrecovered,
+      ai_parse_error,
+      match: firstfail_unrecovered === ai_parse_error,
+    },
     fix_routing: FIX_ROUTING,
   };
 }

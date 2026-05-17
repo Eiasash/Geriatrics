@@ -88,32 +88,64 @@ describe('eyeball set = exactly the two non-no_brace end_turn cells', () => {
   });
 });
 
-describe('summarizeLedger — filters + counts', () => {
-  it('counts only ai-parse-error/context=judge rows; buckets by the rule', () => {
+describe('summarizeLedger — UNDERLYING population (judge-shape-firstfail), not the residual', () => {
+  it('buckets the un-conditioned first-attempt failures; residual + reconciliation are secondary', () => {
     const rows = [
-      { type: 'ai-parse-error', context: 'judge', first_stop_reason: 'max_tokens', first_branch: 'unbalanced' },
+      // The UNDERLYING population — every first-attempt failure, recovered or not.
+      { type: 'judge-shape-firstfail', context: 'judge', first_stop_reason: 'max_tokens', first_branch: 'unbalanced', recovered: true },
+      { type: 'judge-shape-firstfail', context: 'judge', first_stop_reason: 'max_tokens', first_branch: 'parse_threw', recovered: false },
+      { type: 'judge-shape-firstfail', context: 'judge', first_stop_reason: 'end_turn', first_branch: 'no_brace', recovered: true },
+      { type: 'judge-shape-firstfail', context: 'judge', first_stop_reason: 'end_turn', first_branch: 'unbalanced', recovered: false },
+      { type: 'judge-shape-firstfail', context: 'judge', first_stop_reason: 'end_turn', first_branch: 'parse_threw', recovered: false },
+      { type: 'judge-shape-firstfail', context: 'judge', first_stop_reason: 'end_turn', first_branch: 'parsed', recovered: true },
+      // The 3 terminal double-failures (audit-5 B5 log) — reconcile 1:1 with recovered:false above.
       { type: 'ai-parse-error', context: 'judge', first_stop_reason: 'max_tokens', first_branch: 'parse_threw' },
-      { type: 'ai-parse-error', context: 'judge', first_stop_reason: 'end_turn', first_branch: 'no_brace' },
       { type: 'ai-parse-error', context: 'judge', first_stop_reason: 'end_turn', first_branch: 'unbalanced' },
       { type: 'ai-parse-error', context: 'judge', first_stop_reason: 'end_turn', first_branch: 'parse_threw' },
-      { type: 'ai-parse-error', context: 'judge', first_stop_reason: 'end_turn', first_branch: 'parsed' },
-      { type: 'ai-parse-error', context: 'pick', first_stop_reason: 'max_tokens', first_branch: 'unbalanced' }, // excluded (pick)
-      { type: 'ai-error', context: 'judge', message: 'x' },                                                    // excluded (not parse-error)
-      { type: 'ai-judge', app_answer_correct: true },                                                          // excluded (action)
+      // Excluded noise.
+      { type: 'judge-shape-firstfail', context: 'pick', first_stop_reason: 'max_tokens', first_branch: 'unbalanced', recovered: false }, // pick, not judge
+      { type: 'ai-error', context: 'judge', message: 'x' },
+      { type: 'ai-judge', app_answer_correct: true },
     ];
     const s = summarizeLedger(rows);
+
+    // PRIMARY = the audit-6 decision input = ALL first-attempt failures.
     expect(s.total).toBe(6);
     expect(s.counts).toEqual({
       truncation: 2, genuine_prose: 1, wrong_shape: 1, ambiguous: 2, empty: 0, unknown: 0,
     });
-    expect(s.eyeball_total).toBe(2);                 // the 2 ambiguous end_turn rows
+    expect(s.eyeball_total).toBe(2);
+
+    // SECONDARY (diagnostic) = the residual = recovered:false subset
+    // (≡ the audit-5 double-failure population — quantifies the retry's
+    // class-dependent recovery, the bias the reviewer flagged).
+    expect(s.residual_counts).toEqual({
+      truncation: 1, genuine_prose: 0, wrong_shape: 0, ambiguous: 2, empty: 0, unknown: 0,
+    });
+
+    // RECONCILIATION invariant: residual (recovered:false) must equal the
+    // independent terminal ai-parse-error/judge count, or the instrument
+    // drifted.
+    expect(s.reconciliation).toEqual({
+      firstfail_unrecovered: 3, ai_parse_error: 3, match: true,
+    });
+
     expect(s.fix_routing.truncation).toMatch(/max_tokens/i);
     expect(s.fix_routing.genuine_prose).toMatch(/structured output|Toranot/i);
+  });
+
+  it('old ai-parse-error-only ledger -> underlying total 0 (cannot reconstruct; reviewer: no shortcut)', () => {
+    const s = summarizeLedger([
+      { type: 'ai-parse-error', context: 'judge', first_stop_reason: 'end_turn', first_branch: 'no_brace' },
+    ]);
+    expect(s.total).toBe(0);                           // no firstfail rows -> underlying unmeasurable
+    expect(s.reconciliation).toEqual({ firstfail_unrecovered: 0, ai_parse_error: 1, match: false });
   });
 
   it('empty ledger -> all-zero, no throw', () => {
     const s = summarizeLedger([]);
     expect(s.total).toBe(0);
     expect(s.eyeball_total).toBe(0);
+    expect(s.reconciliation.match).toBe(true); // 0 === 0
   });
 });

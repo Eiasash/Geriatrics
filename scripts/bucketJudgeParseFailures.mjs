@@ -45,13 +45,32 @@ for (const f of files) {
 const summary = summarizeLedger(rows);
 console.log(JSON.stringify(summary, null, 2));
 
-// One-line operator verdict so the routing decision is unambiguous.
+// Operator verdict. The DECISION INPUT is the UNDERLYING population
+// (every first-attempt failure) — NOT the residual. The residual +
+// reconciliation are printed as diagnostics, never as the routing basis.
 const c = summary.counts;
+const rc = summary.residual_counts;
+const rec = summary.reconciliation;
 console.log(
-  `\n# verdict: ${summary.total} judge parse-failures | ` +
-  `truncation(a)=${c.truncation} -> Geri max_tokens, ZERO Toranot | ` +
-  `genuine_prose(b)=${c.genuine_prose} -> ONLY this is a Toranot conversation | ` +
+  `\n# UNDERLYING (decision input — ${summary.total} first-attempt judge failures):\n` +
+  `  truncation(a)=${c.truncation} -> Geri max_tokens, ZERO Toranot | ` +
+  `genuine_prose(b)=${c.genuine_prose} -> the ONLY Toranot conversation | ` +
   `wrong_shape=${c.wrong_shape} -> Geri prompt/schema | ` +
   `ambiguous=${c.ambiguous} -> eyeball THIS bucket's raw text | ` +
   `empty=${c.empty} unknown=${c.unknown}`,
 );
+console.log(
+  `# residual (diagnostic — recovered:false, ≡ retry's class-dependent miss): ` +
+  `trunc=${rc.truncation} prose=${rc.genuine_prose} wrong=${rc.wrong_shape} ` +
+  `ambig=${rc.ambiguous} empty=${rc.empty} unk=${rc.unknown}`,
+);
+console.log(
+  `# reconciliation: firstfail(recovered:false)=${rec.firstfail_unrecovered} ` +
+  `vs ai-parse-error=${rec.ai_parse_error} -> ${rec.match ? 'OK' : 'MISMATCH (instrument drift / pre-instrument ledger)'}`,
+);
+if (summary.total === 0) {
+  console.log(
+    '# NOTE: 0 underlying rows. A pre-instrument ledger cannot answer the ' +
+    'audit-6 question — run a fresh bounded long-chaos-run.sh; there is no shortcut.',
+  );
+}
