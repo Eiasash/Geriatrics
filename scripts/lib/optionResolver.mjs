@@ -226,6 +226,10 @@ export function pickAgreesWithApp(okDisplayIdxSet, aiDisplayIdx) {
  * @param {ParentNode} [rootEl] DOM root (defaults to global `document`).
  * @returns {number[]} display indices of every `.ok` option (possibly []).
  */
+// TRIPWIRE: must stay closure-free — Playwright serializes this body via
+// page.evaluate(); a module/closure reference passes the happy-dom unit
+// test (node resolves it) but throws in-page. Keep refs to params + DOM
+// globals only.
 export function extractAcceptedDisplayIdxSet(rootEl) {
   const root = rootEl || (typeof document !== 'undefined' ? document : null);
   if (!root || typeof root.querySelectorAll !== 'function') return [];
