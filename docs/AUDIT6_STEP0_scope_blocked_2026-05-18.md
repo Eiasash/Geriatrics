@@ -214,3 +214,78 @@ this merged doc through a filesystem-grounded fresh-eye (clone Toranot +
 independently confirm the L198–234 strip and the zero-match grep) before
 treating the scope-block as final — it is cheap and the interpretation
 must hold under independent verification of the proxy code.
+
+---
+
+## [2026-05-18, appended post-review] Option 0 — failure-mode composition is UNMEASURED and PRECEDES §4
+
+Append-only correction (`feedback_spec_provenance_append_only`). §1–6
+above are factually correct and stand as the honest STEP-0 proxy
+record. **This section does not retract them — it demotes §4 from a
+decision menu to a contingent branch.** External review (claims
+re-verified here against primary source) established that the body
+above applied the distrust contract to the brief's *facts* (verified,
+all TRUE) but **accepted the brief's *frame*** — the unexamined premise
+that the ≈26% judge-malformation is a *grammar* failure (model emits
+prose instead of JSON) that API-layer structured output would fix.
+
+### Verified evidence the frame is unsafe
+
+- **Judge runs at `max_tokens: 400`.** `chaos-doctor-bot-v4.mjs` judge
+  call → `judgeWithShapeRetry({..., maxTokens: 400, ...})`;
+  `scripts/lib/judgeShapeValidator.mjs:57/67/86` applies `maxTokens=400`
+  to **both** the original judge call **and** the cap=1 corrective
+  re-ask. The judge *input* is large (full stem + 4 lettered options +
+  app explanation sliced to 1500 chars + source + AI rationale); the
+  *output* ceiling for a board-level geriatric adjudication verdict is
+  400 tokens.
+- **Audit-5's own canonical production-input pin is a truncated
+  string.** `8788f63` (`tests/chaosBotV4JudgeShapeValidator.test.js:42`):
+  `expect(extractJson('{"app_answer_correct":tr')).toBe(null); // truncated`.
+  The audit-5 author's comment lists the failure family as
+  "**truncation**/prose/string-bool/missing-key" — truncation first.
+- **Structured output is inert against truncation.** `output_config.format`
+  (option 2) and forced tool-use (option 3) constrain output *grammar*,
+  not *length*. A `max_tokens: 400` hit yields `stop_reason: max_tokens`
+  and an incomplete structure regardless of schema/tool enforcement. If
+  truncation dominates the ≈26%, **none** of the brief's mechanisms, nor
+  §4 options 2/3, reduce the rate.
+- **The cheap fix needs ZERO Toranot change.** The proxy *forwards*
+  `max_tokens` (`netlify/edge-functions/claude.ts:178`,
+  `clampInt(..., 256, 32768)` — 400 passes; a bump to ~1200 would too).
+  So raising the judge `max_tokens` (or trimming the required verdict
+  schema) is a pure Geri-side fix that works through the *existing*
+  proxy — no allowlist extension, no cross-repo security decision.
+- **The disambiguator was explicitly cut.** `AUDIT5_PRE_REGISTERED_GATE.md`
+  OUT OF SCOPE: *"`stop_reason` capture in `callClaude` — would
+  disambiguate truncation vs prose-only on future runs … Explicitly
+  cut (non-speculative scope discipline)."* Defensible in audit-5;
+  in audit-6's light it is the precise thing now blocking diagnosis
+  (the ledger keeps only the post-`extractJson` object → the 22
+  failures cannot be bucketed truncated-vs-prose).
+- **Run-mode confirmed:** `scripts/long-chaos-run.sh:41` hard-codes
+  `export CHAOS_USE_PROXY=1`; no scheduled/CI chaos exists. The strip
+  bites every real run; direct mode is not a free fourth option (runner
+  forces proxy + would put a raw Anthropic key in the bot runtime).
+
+### Corrected decision tree (§4's 1/2/3 is NOT a menu to action yet)
+
+**Option 0 (diagnosis) precedes everything.** Add `stop_reason` capture
+(one boolean per failure: `max_tokens` ⇒ truncation; cheapest, no
+raw-text/PHI retention — optionally raw text too) on the judge
+parse-failure path, mirroring the pick channel's existing `:462`
+parse-error log. Run one small bounded judge sample. Bucket the
+failures.
+
+- **Truncation-dominated** → Geri-side `max_tokens` bump and/or
+  verdict-schema trim. No Toranot change. No fresh-eye needed. Cheap;
+  likely end state.
+- **Prose-dominated** → *then* the Toranot decision goes live, and it is
+  **option 2 only** (`output_config.format`; option 3 is strictly
+  dominated by option 2 on every axis listed in §4 — discard it, it is
+  not a real choice). The §"Fresh-eye recommendation" above becomes a
+  precondition *here*, not before.
+
+§4's three options remain accurate as a *security-surface* analysis but
+must not be treated as the immediate decision. The next workstream is
+Option 0 (its own branch/session), not a user pick among 1/2/3.
