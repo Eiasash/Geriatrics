@@ -47,6 +47,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { extractJson } from './lib/extractJson.mjs';
+import { hashStem, normStem } from './lib/hashStem.mjs';
 import { judgeWithShapeRetry } from './lib/judgeShapeValidator.mjs';
 import {
   resolveAppVerdict,
@@ -157,12 +158,9 @@ const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const pick = (xs) => xs[rand(0, xs.length - 1)];
 const nowIso = () => new Date().toISOString();
 
-function hashStem(s) {
-  // Simple djb2 — deterministic across workers, no crypto cost.
-  let h = 5381;
-  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
-  return String(h);
-}
+// hashStem + normStem moved to scripts/lib/hashStem.mjs (single source of
+// truth; the offline audit-8 join must hash with the IDENTICAL function).
+// See docs/AUDIT8_PRESTEP_INSTRUMENT_GATE.md.
 
 // ============================================================
 // Anthropic API helper (unchanged from v3)
@@ -445,9 +443,25 @@ async function tryClick(locator, timeoutMs) {
 
 async function doctorOneQuestion(page, workerId, log) {
   const q = await extractQuestion(page);
-  if (!q || q.options.length < 2) return { advanced: false, stemHash: null };
+  if (!q || q.options.length < 2) {
+    // Pre-pick DOM/extraction failure. NOT a pick-parse event — AUDIT8
+    // pre-registers this EXCLUDED from the pick-parse universe (gate
+    // G0 / G4.1). Tagged with a distinct `dropCtx` so the offline
+    // analyzer keys the exclusion on it; counted for an honest
+    // denominator. Return shape (stemHash:null) is unchanged so the
+    // worker-loop stuck-refresh semantics are preserved; the recoverable
+    // identity lives on the bug row only. See
+    // docs/AUDIT8_PRESTEP_INSTRUMENT_GATE.md.
+    log.extractNull = (log.extractNull || 0) + 1;
+    log.bugs.push({
+      at: nowIso(), type: 'pre-pick-skip', context: 'pick',
+      dropCtx: q ? 'pre-pick-short-extract' : 'pre-pick-no-question',
+      stemHash: q && q.stem ? hashStem(normStem(q.stem)) : null,
+    });
+    return { advanced: false, stemHash: null };
+  }
 
-  const stemHash = hashStem(q.stem);
+  const stemHash = hashStem(normStem(q.stem));
   await sleep(rand(2000, 4500)); // read pause
 
   // 1) Pick
@@ -455,7 +469,7 @@ async function doctorOneQuestion(page, workerId, log) {
   let pickResp;
   try { pickResp = await callClaude(SYS_DOCTOR_PICK, userPrompt1, { maxTokens: 250 }); }
   catch (e) {
-    log.bugs.push({ at: nowIso(), type: 'ai-error', context: 'pick', message: e.message });
+    log.bugs.push({ at: nowIso(), type: 'ai-error', context: 'pick', dropCtx: 'pick-ai-error', message: e.message, stemHash });
     return { advanced: false, stemHash };
   }
   const pickJson = extractJson(pickResp.text) || {};
@@ -463,7 +477,7 @@ async function doctorOneQuestion(page, workerId, log) {
   const aiIdx = LETTER_TO_IDX[aiLetter];
   log.actions.push({ at: nowIso(), type: 'ai-pick', letter: aiLetter, idx: aiIdx, conf: pickJson.confidence });
   if (aiIdx == null || aiIdx < 0 || aiIdx >= q.options.length) {
-    log.bugs.push({ at: nowIso(), type: 'ai-parse-error', context: 'pick', text: pickResp.text.slice(0, 200) });
+    log.bugs.push({ at: nowIso(), type: 'ai-parse-error', context: 'pick', dropCtx: 'pick-parse-error', text: pickResp.text.slice(0, 200), stemHash, stem: q.stem.slice(0, 300), optCount: q.options.length });
     return { advanced: false, stemHash };
   }
 
@@ -522,7 +536,7 @@ async function doctorOneQuestion(page, workerId, log) {
   if (appIdx == null) {
     log.bugs.push({ at: nowIso(), type: 'methodology', context: 'appIdx-null-post-check', stemHash });
     recordFinding({
-      workerId, stem: q.stem.slice(0, 300),
+      workerId, stemHash, stem: q.stem.slice(0, 300),
       options: q.options.map((o) => o.text.slice(0, 120)),
       aiLetter, aiIdx, aiWhy: pickJson.why || null, aiConf: pickJson.confidence,
       appIdx: null, disagrees: null, judge: null, source: null, citation: null,
@@ -694,6 +708,7 @@ Is the current q.ref a faithful display of the audit-grade chapter assignment, c
 
   const finding = {
     workerId,
+    stemHash,
     stem: q.stem.slice(0, 300),
     options: q.options.map((o) => o.text.slice(0, 120)),
     optionCanonicalIdx: null,
@@ -890,7 +905,7 @@ async function runWorker(browser, workerId, stopAt, report) {
   });
   context.setDefaultTimeout(CONFIG.actionTimeoutMs);
   const page = await context.newPage();
-  const log = { workerId, actions: [], bugs: [], qsAnswered: 0 };
+  const log = { workerId, actions: [], bugs: [], qsAnswered: 0, extractNull: 0 };
 
   page.on('pageerror', async (error) => {
     let shotPath = null;
