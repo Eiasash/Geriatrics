@@ -230,3 +230,164 @@ audit-6 conclusions. **Constraint for the RESULT:** do not propagate
 model is **sonnet-4-6**, and the eventual fix (whichever G4 branch)
 targets the sonnet-4-6 judge in the `long-chaos-run.sh` practical run
 mode.
+
+---
+
+# [2026-05-18, appended post-run] RESULT — truncation-dominant (55/55, 100%) → ZERO Toranot, Geri-side route
+
+Append-only (`feedback_spec_provenance_append_only`). The gate above was
+locked **before** this sample; nothing above is retro-edited. The route
+below is the **mechanical output of the pre-registered G4**, not a
+post-hoc judgement.
+
+## The run
+
+`bb59uhtll` exit 0, full 4 h (no cost-cap trip). **Spend $9.74** (2096
+calls, 1 network failure) — above the script header's $5–8 estimate,
+**under the pre-registered $20 cap → G1 PASS**. Model `claude-sonnet-4-6`
+(banner-confirmed; lineage precision above). Isolated dir
+`chaos-reports/v4-long/audit7_2026-05-18/` (advisor contamination catch
+held — fresh ledger, no stale-row inheritance). Top-line: **judged=569**,
+methodology=0, source-checks=271.
+
+## Gate evaluation
+
+| Gate | Result |
+|---|---|
+| **G1** budget | $9.74 < $20 → **PASS** |
+| **G2** validity | bucketer `total = 55` > 0 → **PASS** |
+| **G3** reconciliation | `firstfail_unrecovered=0 == ai_parse_error=0`, `match:true` → **PASS** |
+
+**G2 file-location detour (recorded honestly, not buried).** STEP 0.5
+verified the `judge-shape-firstfail` *emit* into `log.bugs` and the
+call-site wiring, but stopped the trace at the "terminus" and did **not**
+establish *which persisted file* `log.bugs` lands in. It does **not**
+land in `recordFinding`'s `medical_findings_ai_v4.jsonl` (that is the
+per-question findings ledger) — it serializes into the per-worker
+`bugs[]` of the full-run report `chaos-doctor-v4-<ts>.json`. First read
+of the findings JSONL showed 0 firstfail rows; this was a plumbing
+artifact, **not** a G2 STOP. Resolved by extracting `workers[*].bugs` →
+`bugs_extracted.jsonl` (207 bug rows: 55 `judge-shape-firstfail/judge`,
+64 `ai-parse-error/pick`, 1 `ai-error/judge`, 37 http, 37 console:error,
+13 stuck-refresh) and feeding the **test-pinned** `bucketJudgeParse
+Failures.mjs` (single source of truth, `tests/chaosBotV4BucketRule.test.js`,
+38/38 green) — i.e. the result is exactly what a fully-traced setup would
+have produced. Lesson for memory: the terminus rule needs an explicit
+*operational-verification ≠ design-re-litigation* carve-out — "which file
+does `log.bugs` persist to" is plumbing the run depends on, not design
+review, and should be closed in STEP 0.5 even when the design is at
+terminus.
+
+## UNDERLYING histogram (decision input — 55 first-attempt judge failures)
+
+```
+total=55
+counts:      truncation=55  genuine_prose=0  wrong_shape=0  ambiguous=0  empty=0  unknown=0
+grid:        max_tokens|no_brace = 51
+             max_tokens|unbalanced = 4
+residual:    all 0   (recovered:false subset — every first failure was retry-recovered)
+reconciliation: firstfail(recovered:false)=0 vs ai-parse-error/judge=0 -> OK
+```
+
+**Both grid cells are `first_stop_reason == max_tokens` → bucket
+`truncation` for ANY branch.** The 4 `max_tokens|unbalanced` rows are
+length-cuts (the `{` never balanced because the response was truncated
+mid-JSON), **correctly truncation — NOT ambiguous.** This is precisely
+the case the third AUDIT6 append-only precision ("truncation keyed off
+`stop_reason`, NOT the branch") exists to get right: the obsolete
+branch≡class shorthand would have mis-routed these 4 into the eyeball
+bucket and inflated the Toronot-gating count.
+
+**Validation that 100%-truncation is a real measurement, not a stuck
+field:** `first_stop_reason` is constant (`max_tokens` ×55) but
+`first_branch` varies **independently** (`no_brace`=51, `unbalanced`=4) —
+a degenerate/stuck instrument cannot produce two independently
+distributed signals. Timestamps spread 05:39:26Z → 09:28:24Z across the
+whole ~4 h run (real accrual, not a launch cluster). All 55
+`recovered:true`, consistent with `ai-parse-error/judge=0`.
+
+**G4.3 ambiguous eyeball: VACUOUS.** `ambiguous=0` — there are zero
+`(end_turn, unbalanced)` or `(end_turn, parse_threw)` rows. Nothing to
+eyeball; the raw-text inspection step is not reached. Stated explicitly
+so the audit trail shows the step was *evaluated and empty*, not skipped.
+
+## THE ROUTE (mechanical output of pre-registered G4.4 — binary, no post-hoc adjustment)
+
+**PRIMARY QUESTION: is `genuine_prose` the strictly dominant bucket?**
+`genuine_prose = 0 / 55`. **NO** — it is empty; `truncation` is 100%.
+55-vs-0 is maximal separation → **not G4.5-inconclusive.**
+
+→ **ZERO Toranot. Geri-side route only:** truncation-dominant ⇒ **bump
+the judge `max_tokens` (currently 400 — `judgeWithShapeRetry({maxTokens:
+400})`, both the original and the cap=1 corrective re-ask) and/or trim
+the required verdict schema.** This works through the *existing* proxy
+(`netlify/edge-functions/claude.ts` forwards `max_tokens`, `clampInt(...,
+256, 32768)` — 400 and a bump both pass). **§4 / AUDIT6's structured-
+output cross-repo Toranot decision menu does NOT reopen.** The
+filesystem-grounded fresh-eye on the §2 proxy read is **not** triggered
+(it was a precondition only for the genuine_prose branch).
+
+This **empirically confirms the AUDIT6 frame-distrust hypothesis**
+(`feedback_distrust_brief_frame_not_just_facts`): the original brief
+frame ("force structured output at the API layer", the 3-option
+cross-repo Toranot security menu) was scoped to a failure mode the data
+shows is **0% of the population**. Structured output constrains grammar,
+not length; it is provably inert against 100%-truncation. The entire
+cross-repo security conversation is moot for the measured reality.
+
+## Calibration notes (recorded, not over-defended)
+
+- **Rate delta — NOT a validity concern.** Sample first-fail rate =
+  55/569 ≈ **9.7%**, vs the audit-3 ~26% baseline. G4 is locked as
+  *composition*-based precisely so absolute rate is irrelevant: a
+  measurement of `0 of 55` in `genuine_prose` bounds that bucket's
+  population share tightly **regardless of overall rate**, and the route
+  is invariant under any rate-scaling (the composition would have to flip
+  *qualitatively*, not merely shift in magnitude, to change it). Plausible
+  causes of the delta (not load-bearing): sample config differs (1 w / 4 h
+  / proxy vs audit-3's 10 w / 25 min); the v10.64.113/114 prompt re-skin
+  + operability fixes landed between audit-3 and now. Recorded; route
+  stands.
+- **Audit-5 floor: GROUNDED (verified, not inferred).** 568/569 findings
+  carry a boolean `judge.app_answer_correct`; the **single** absent one
+  is exactly the **1 `ai-error/judge`** (a network throw →
+  `judgeWithShapeRetry` returns `{}` — a distinct path, not a shape
+  failure). So the cap=1 retry recovered **100% of the 55 first-attempt
+  shape failures into shape-valid verdicts the bot consumed.** Production
+  is therefore **not currently losing judge verdicts to shape failure** —
+  the audit-5 defense-in-depth floor is working. The `max_tokens` fix
+  removes the *root cause* (so the retry stops being load-bearing and the
+  judge's first attempt succeeds), but this is a robustness/cost
+  improvement, **not an active-incident fix.** Severity calibrated
+  accordingly.
+
+## Recommended next session (the fix — NOT this session)
+
+Geri-side judge `max_tokens` bump (from 400; size it against the verdict
+schema + a board-level rationale — the AUDIT6 doc floats ~1200) and/or
+verdict-schema trim, on `scripts/lib/judgeShapeValidator.mjs` /
+`chaos-doctor-bot-v4.mjs:566`. Its own pre/post gate, its own fresh
+bounded verification run (metric: first-attempt `validateJudgeShape` OK
+rate ↑, `judge-shape-firstfail/truncation` ↓). Separate branch/session;
+ships product code so it bumps no trinity either (scripts/tests, mirrors
+audit-5).
+
+## OUT OF SCOPE (handed off untouched)
+
+- **B4 content adjudication (37 Qs).** Unchanged from audit-5/6 — NOT
+  this session, NOT a queue.
+- **Pick-channel parse failures.** `ai-parse-error/context=pick = 64/569
+  ≈ 11.2%` this run. A **separate channel** (the bot's answer-selection
+  call), explicitly **not analyzed and not bucketed here** (audit-7 is
+  judge-channel only; the bucketer's `context==='judge'` filter correctly
+  excludes it). Flagged so a future reader does **not** infer pick-channel
+  cleanliness from this judge-only "0 ai-parse-error" analysis — it is
+  **not** clean; it is unexamined. Its own workstream if pursued.
+
+## SHIP
+
+Docs-only (this gate doc, gate+RESULT as one PR per audit-5/6). No
+trinity bump. No `q.c` / `broken` / Toranot / product code touched.
+Branch `claude/term-audit7-option0-run` → PR to `main`; do **not**
+self-merge (normal PR discipline; the #230/#231 merge was a discrete
+explicit user instruction, not a precedent).
