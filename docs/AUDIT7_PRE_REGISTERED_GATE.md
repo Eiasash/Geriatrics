@@ -184,3 +184,49 @@ user instruction, not a precedent for self-merging this one).
 AI-generated).** Different axis (content, not bot-reliability). **Still
 handed off untouched — NOT this session, NOT a queue.** No `q.c` flip,
 no `broken` change, no distractor regen.
+
+---
+
+## [2026-05-18, appended pre-run] MODEL-LINEAGE precision — baseline and sample are BOTH sonnet-4-6
+
+Append-only precision (`feedback_spec_provenance_append_only`); the
+STEP-0 0.5 line above stands as written (it correctly recorded the
+script-default model) — this section adds the **lineage check** that
+0.5's self-checks did not explicitly close. Raised as the single open
+item against the kickoff while the run was still shallow (29 ledger rows,
+0 firstfail) → resolved here from primary source **before** the sample
+deepened; no kill/restart needed. This is the frame-distrust rule
+(`feedback_distrust_brief_frame_not_just_facts`) recursing onto model
+identity — exactly the class it warns about.
+
+**The concern.** `AUDIT6_STEP0_scope_blocked` §2a reasons from
+`MODEL = claude-opus-4-7` (`chaos-doctor-bot-v4.mjs:112`). The audit-7
+run is on `claude-sonnet-4-6`. If the ≈26% baseline the Option-0
+instrument decomposes was an *opus-4-7* population while audit-7 measures
+a *sonnet-4-6* one, G4 would route off a model the baseline never
+measured (failure-mode composition is strongly model-dependent even
+though the bucket *grid* is model-independent).
+
+**Verified — lineage is INTACT (primary source, both ends):**
+
+- `chaos-doctor-bot-v4.mjs:112` = `process.env.CHAOS_MODEL || 'claude-opus-4-7'`. `:173` `model: MODEL` — one model for pick/explain/**judge**.
+- `scripts/long-chaos-run.sh:45` = `export CHAOS_MODEL="${CHAOS_MODEL:-claude-sonnet-4-6}"`. The bare `:112` opus default only applies when the bot is run *without* `long-chaos-run.sh`.
+- **audit-3 baseline** (`chaos-reports/v4/audit3_caccept_fix_2026-05-17/` AUDIT3_REPORT.md): "`CHAOS_MODEL=claude-sonnet-4-6`", "MODEL=sonnet-4-6", "- Model: claude-sonnet-4-6". The ≈26% / 86-disagree / 22-B5 baseline is a **sonnet-4-6** population.
+- **audit-7 run** (its own console banner, `bb59uhtll.output`): `[v4] Launching 1 workers × 240 min, model=claude-sonnet-4-6`. **sonnet-4-6.**
+
+→ baseline sonnet-4-6 ≡ sample sonnet-4-6. The instrument decomposes the
+same model's failure composition it was calibrated against. **G4
+consumes a self-consistent population.**
+
+**The §2a opus reference is a non-load-bearing imprecision.** It
+conflated the bot's *bare* `:112` default with "the practical run
+mode," when the practical run mode = `long-chaos-run.sh` (which the
+*same* doc cites at line 266 for `CHAOS_USE_PROXY=1`) sets sonnet-4-6 at
+`:45`. §2a's opus reasoning was scoped to the **prefill fallback** — a
+mechanism the brief itself rejected, whose "not viable" conclusion holds
+on *both* models via the proxy strip regardless. It changed **zero**
+audit-6 conclusions. **Constraint for the RESULT:** do not propagate
+"opus-4-7" into any audit-7 route reasoning — the measured and routed
+model is **sonnet-4-6**, and the eventual fix (whichever G4 branch)
+targets the sonnet-4-6 judge in the `long-chaos-run.sh` practical run
+mode.
