@@ -40,8 +40,18 @@ const SRC = readFileSync(
 
 // `aiIdx == null` is unique to the invalid-pick validity gate, so this
 // does not collide with the other `return { advanced: false }` sites.
+// Body-length bound widened 200 -> 300 by the AUDIT8 instrument PRE-STEP
+// (docs/AUDIT8_PRESTEP_INSTRUMENT_GATE.md). The invariant THIS regex pins
+// is *lexical ordering* — the invalid-pick gate's early `return {
+// advanced: false }` precedes the `disagrees` compute (assert 2 enforces
+// the ordering independently via offset comparison). The 200 was incidental
+// headroom, not the load-bearing property; the gate body legitimately grew
+// because G0 mandates `stemHash` + `stem` + `optCount` + `dropCtx` on the
+// `ai-parse-error/pick` drop row, all minted after this assert was written.
+// 300 covers the measured 215-char post-instrument body with margin while
+// still tripping on a genuinely large logic insertion between gate and return.
 const INVALID_PICK_GATE =
-  /if\s*\(\s*aiIdx\s*==\s*null[^)]*\)\s*\{[\s\S]{0,200}?return\s*\{\s*advanced:\s*false/;
+  /if\s*\(\s*aiIdx\s*==\s*null[^)]*\)\s*\{[\s\S]{0,300}?return\s*\{\s*advanced:\s*false/;
 const DISAGREES_DECL = /\b(?:const|let|var)\s+disagrees\s*=/g;
 // the canonical gated compute (spans two lines in source).
 const CANONICAL_COMPUTE =
