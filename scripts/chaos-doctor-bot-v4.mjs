@@ -208,7 +208,10 @@ async function callClaude(systemPrompt, userPrompt, { maxTokens = 400, retries =
       COST.totalCalls += 1;
       COST.totalInTokens += inT;
       COST.totalOutTokens += outT;
-      return { text, inputTokens: inT, outputTokens: outT };
+      // Audit-6 Option-0: surface stop_reason so judge parse-failures can
+      // be bucketed (max_tokens ⟺ truncation; the single direct length-cut
+      // signal). Null when upstream omits it (proxy/stream tap).
+      return { text, inputTokens: inT, outputTokens: outT, stopReason: data.stop_reason || null };
     } catch (e) {
       lastErr = e;
       await sleep((attempt + 1) * 800);
