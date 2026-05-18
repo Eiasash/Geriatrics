@@ -391,3 +391,51 @@ trinity bump. No `q.c` / `broken` / Toranot / product code touched.
 Branch `claude/term-audit7-option0-run` → PR to `main`; do **not**
 self-merge (normal PR discipline; the #230/#231 merge was a discrete
 explicit user instruction, not a precedent).
+
+---
+
+## [2026-05-18, appended post-review] PICK-CHANNEL contamination DIRECTION resolved + horizon re-prioritized
+
+Append-only (`feedback_spec_provenance_append_only`); the OUT OF SCOPE
+section above stands — this **sharpens** the pick-channel horizon from
+"flagged, its own workstream if pursued" to a named, direction-resolved,
+**higher-priority** item. Caught in user review: "newly flagged, not
+engaged" undersold a finding with retroactive reach into every audit
+since audit-3.
+
+**Verified mechanism (not inferred).** `scripts/chaos-doctor-bot-v4.mjs:461-467`:
+on pick-channel parse failure (`aiIdx == null || out-of-range`) the bot
+logs `ai-parse-error/context=pick` and **`return { advanced:false }`
+immediately** — *before* the option click, `detectAppAcceptedDisplay
+IdxSet`, the `disagrees` computation (L519), `recordFinding`, and the
+judge call (L566). **Contamination direction = DROP, not
+spurious-`disagrees`.** The spurious-`disagrees:true` path posited in
+review **does not exist**: `disagrees` is computed only for picks that
+passed the L466 validity gate. A failed pick yields *no finding row*.
+
+**Corrected reach.** Not false-positive contamination of audit-4's 86
+adjudicated rows (that path is unreachable). Instead **selection /
+survivorship bias**: ~11.2% of attempted questions this run (64/569-scale)
+were silently excluded from the adjudicated population, and this has held
+every audit since audit-3 (whose `disagrees:true` set is computed from
+the pick channel's `aiIdx`). The open question: **is the dropped ~11%
+missing-completely-at-random, or correlated with stem length / topic /
+bilingual status** — i.e., is the audit-3/4/5/7 `disagrees` population
+representative or a biased subsample?
+
+**Re-prioritized next-workstream list (two items, not one):**
+
+1. **[higher — foundational] Pick-channel `disagrees`-representativeness
+   check.** Quantify pick-parse-failure rate over a bounded run; test the
+   dropped set for correlation with stem length / `ti` / bilingual /
+   year. Decides whether *the right rows are being judged at all* —
+   logically prior to any judge-verdict fix. Own session + gate.
+2. **[lower] Geri-side judge `max_tokens` bump** (from 400) /
+   verdict-schema trim, as framed in the RESULT. Only governs whether
+   judge verdicts *emit*; moot if the adjudicated population itself is
+   biased. Own session + gate + fresh verification run.
+
+Neither is this session. B4 (37 Qs) remains untouched and is **not** on
+this list. The audit-7 route (RESULT above) is unaffected — it consumes
+the *judge* channel; this is a *pick*-channel selection question that
+sits upstream of, and orthogonal to, the truncation route.
