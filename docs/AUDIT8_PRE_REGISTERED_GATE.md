@@ -333,3 +333,105 @@ bounded run (G1–G5) become authorized.
 <!-- RESULT section intentionally absent: this session authors the
 gate only. It is appended, append-only, by the bounded-run session
 that runs behind G0. -->
+
+---
+
+## [2026-05-18, appended post-fresh-eye filesystem-grounded review] DELTAS — corpus facts the no-run gate could not see
+
+Append-only (`feedback_spec_provenance_append_only`); **G0–G5 and STEP 0
+above stand verbatim** — this section *supersedes only the enumerated
+clauses* and records *why*, so a post-squash reader sees the gate was
+authored "from source, deterministic — no run" (STEP 0.2 / SCOPE) and
+then corrected by the workspace CLAUDE.md **fresh-eye
+filesystem-grounded review** (a web Claude with `git clone` read the
+real `data/questions.json`; this is that rule firing exactly as
+designed for a design-spec-shaped artifact pre-merge). Each delta was
+**re-verified terminal-side against the on-disk corpus at `fedf27e`**
+before folding — the relayed review's own prior "drop `year`" call was a
+single-object-check error, so the numbers below are full-corpus
+(`n=3743`), not deferred to.
+
+**D1 — `year` covariate is the `t` field, categorical (not numeric, not
+binary).** Verified: no `year` key (`hasYearKey:false`); `t` has **18
+distinct** exam-batch values (`Hazzard`=1852, `Harrison`=294, `GRS8`=90,
+`Hazzard-suppl`=24, `Exam`=24, plus dated IMA sessions
+`2020`…`2025-Jun-Basic`). **Supersedes the G4.2 `year` row:** the
+covariate is `t` as a **categorical**, **χ² with the same pre-registered
+expected-cell-<5 pooling rule as `topic`** — *not* the prior binary
+real-IMA-vs-AI Fisher 2×2. (The binary was a no-run simplification that
+discarded 16 of 18 levels and was itself an un-pre-registered collapse;
+the categorical with the locked pooling rule removes that DOF.)
+
+**D2 — covariate family 4 → 6: add `c_accept` and `broken`.** Verified:
+`c_accept` non-empty on **48** Qs, `broken===true` on **24**
+(CLAUDE.md's "22" is stale — disk is 24), `allow_dup` on **936**.
+Mechanism: a `broken` Q (garbled options) and a multi-accept Q (invites
+a hedged, unparseable pick) are the questions *most likely to fail the
+`:465` pick-validity gate* — i.e. exactly the suspected drop mechanism,
+so a representativeness test must carry them. Consequence: the
+audit-3/4/5/7 chain manages `c_accept` / `broken` / curator-override
+Qs most carefully, so a drop-set that over-samples them means the
+adjudicated `disagrees` set under-samples precisely the corpus the
+chain is most careful about — the most load-bearing bias axis.
+**Supersedes the G4.2 covariate table:** add `c_accept` (binary:
+non-empty `c_accept[]`) and `broken` (binary) → a **6-covariate Holm
+family**. *Power tradeoff (surfaced, Working Rule 1):* Holm over 6 vs 4
+lowers per-test power at fixed N; this is **absorbed by, not a defect
+of,** the locked $20-ceiling + G5 INCONCLUSIVE design (an honest
+under-powered first pass that recommends a sized larger run —
+lane-consistent with audit-7 / `feedback_design_gate_option_3_bias`).
+*Terminal-side contingency the relayed deltas did not address:*
+`broken===true` Qs may be **suppressed from the served practice pool**;
+if so, `broken` is a **vacuous** covariate. Pre-registered: the
+bounded-run session reports `N_broken_served`; if 0, `broken` drops out
+as vacuous. Do **not** assume suppression from memory — trace the
+production render path empirically (`feedback_verify_simulator_findings`:
+the 2026-05-02 over-flag was exactly an unverified "renderer filters
+these" assumption).
+
+**D3 — G3 global ≥95% stem-join threshold is structurally
+unsatisfiable; replace with a per-covariate-determinate join.**
+Verified: **3586 unique stems / 3743 (95.81%)**, **157** byte-identical
+`q` groups (+157 extra rows), `allow_dup`=936 (duplication is
+**sanctioned** — do **not** dedupe). A perfect run therefore sits *at*
+the 95.81% ceiling — the prior G3 `≥95%` could fail by construction.
+**Supersedes G3:** join determinacy is **per-covariate**. Verified
+within-dup-group covariate agreement over the 157 groups: `c` 157/157,
+`c_accept` 157/157, `bilingual` 157/157, `stem_len` 157/157
+(byte-identical ⇒ identical length — determinate by definition),
+`broken` 155/157, `topic`(`ti`) 144/157. A dup group that *agrees* on
+covariate X contributes determinately to X regardless of which member a
+row maps to; only covariate-**discordant** dup cells are dropped (≤2 for
+`broken`, ≤13 for `topic`, 0 for the rest). New locked invariant:
+**per-covariate determinate-join rate ≥ 99%** after collapsing
+covariate-invariant dup groups (replaces the unsatisfiable global ≥95%).
+
+**D4 — instrument the JUDGED side too; STEP 0.2 "comparator
+recoverable" was a no-run overclaim.** Verified: `recordFinding`'s
+`finding` object (`chaos-doctor-bot-v4.mjs:695-708`) stores
+`stem: q.stem.slice(0, 300)` **truncated** with **no `stemHash`**; the
+bot hashes the **full** stem (`:450`; djb2 is collision-free over the
+corpus — 3586 distinct hashes = 3586 unique stems); **1713/3743 (46%)
+of stems exceed 300 chars** (max 1327). So the persisted
+truncated slice is *not* a faithful join key for ~46% of rows and the
+full-stem `stemHash` is **not reconstructable** from it. **Corrects
+STEP 0.2 / SCOPE:** "the retained/judged comparator IS recoverable via
+`recordFinding`" → recoverable *in principle but fragile in practice*
+for ~46% of rows (truncation + 157 dup-prefix collisions). **Supersedes
+G0's PRE-STEP scope:** the instrument PRE-STEP must add `stemHash`
+(full-stem djb2) to the `finding` object (`:695-708`) **as well as** the
+`:466` / `:458` / `:448` drop rows — both sides keyed on the same
+full-stem hash.
+
+**Reconciliation / lane (unchanged where the review concurred).**
+Single doc — **no second gate doc** (two docs = reconciliation mess).
+The G4 4-way verdict + effect-size floors + G5 triggers **stand** (the
+review concurs they are better than a binary route; the binary core
+"biased or not" is preserved — the non-biased split is reporting
+granularity). The instrument PRE-STEP remains **its own future gated
+session**; two real-data-verified scripts produced by the fresh-eye
+lane (`build_stemhash_index.mjs`, `analyze_pick_representativeness.mjs`)
+exist as **inputs** for that session — **not** committed in this
+docs+test PR, and **not** pre-spec'd now: pre-writing a future gated
+session's spec would repeat the no-run / provenance hazard this very
+review just caught.
