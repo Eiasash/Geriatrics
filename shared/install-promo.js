@@ -79,7 +79,7 @@
     } catch { return { sessions: 0, engagedSec: 0, dismissedAt: 0, installedAt: 0 }; }
   }
   function writeState() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {}
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch { /* best-effort: localStorage may throw (quota / private mode / disabled); promo-state persistence is non-essential */ }
   }
 
   // Bump session counter once per page load
