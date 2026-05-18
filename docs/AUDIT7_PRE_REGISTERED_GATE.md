@@ -407,11 +407,11 @@ since audit-3.
 on pick-channel parse failure (`aiIdx == null || out-of-range`) the bot
 logs `ai-parse-error/context=pick` and **`return { advanced:false }`
 immediately** — *before* the option click, `detectAppAcceptedDisplay
-IdxSet`, the `disagrees` computation (L519), `recordFinding`, and the
+IdxSet`, the `disagrees` computation (L516), `recordFinding`, and the
 judge call (L566). **Contamination direction = DROP, not
 spurious-`disagrees`.** The spurious-`disagrees:true` path posited in
 review **does not exist**: `disagrees` is computed only for picks that
-passed the L466 validity gate. A failed pick yields *no finding row*.
+passed the L465 validity gate. A failed pick yields *no finding row*.
 
 **Corrected reach.** Not false-positive contamination of audit-4's 86
 adjudicated rows (that path is unreachable). Instead **selection /
