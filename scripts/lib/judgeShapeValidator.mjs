@@ -17,7 +17,7 @@
 // See docs/AUDIT5_PRE_REGISTERED_GATE.md (committed before this module).
 // Unit contract: tests/chaosBotV4JudgeShapeValidator.test.js.
 
-import { extractJson } from './extractJson.mjs';
+import { extractJson, classifyExtractFailure } from './extractJson.mjs';
 
 // The SYS_DOCTOR_JUDGE contract is satisfied iff there is a boolean
 // app_answer_correct verdict. Everything else (null/extract-fail,
@@ -78,6 +78,19 @@ export async function judgeWithShapeRetry({
   let obj = extractJson(resp.text);
   if (validateJudgeShape(obj).ok) return obj;
 
+  // FIRST ATTEMPT FAILED. Audit-6 Option-0: the target is the UNDERLYING
+  // first-attempt failure composition (~26%), NOT the double-failure
+  // residual (~7%) that the terminal ai-parse-error log below samples.
+  // The corrective retry is a schema-restated re-ask with the SAME
+  // maxTokens budget — its recovery is class-dependent, so conditioning
+  // the (stop_reason, branch) sample on "retry also failed" is a biased
+  // estimator of the population the audit-6 decision tree consumes.
+  // Capture the first-failure signal NOW, unconditionally. `recovered`
+  // (set after the retry resolves) lets the bucketer derive BOTH the
+  // underlying population (all rows) and the residual (recovered:false).
+  const first_branch = classifyExtractFailure(resp.text);
+  const first_stop_reason = resp.stopReason ?? null;
+
   // Exactly ONE corrective retry (cap=1 — feedback_validator_before_prompt:
   // beyond 1 you are masking a prompt problem, not fixing shape adherence).
   let resp2;
@@ -86,6 +99,13 @@ export async function judgeWithShapeRetry({
       system, correctivePrompt(userPrompt, resp.text), { maxTokens },
     );
   } catch (e) {
+    // Retry threw (network/API). The first-attempt failure still occurred
+    // and is part of the measured population — emit it (recovered:false),
+    // then preserve audit-5's ai-error behavior (no shape retry, {}).
+    log.bugs.push({
+      at: stamp(), type: 'judge-shape-firstfail', context: 'judge',
+      first_branch, first_stop_reason, recovered: false,
+    });
     log.bugs.push({
       at: stamp(), type: 'ai-error', context: 'judge', message: e.message,
     });
@@ -93,16 +113,32 @@ export async function judgeWithShapeRetry({
   }
 
   const obj2 = extractJson(resp2.text);
-  if (validateJudgeShape(obj2).ok) return obj2;
+  const recovered = validateJudgeShape(obj2).ok;
 
-  // Still no boolean verdict. Close the silent-failure gap: emit a typed
-  // parse-error mirroring the pick channel (chaos-doctor-bot-v4.mjs:462) so
-  // B5 is observable post-run instead of vanishing into `{}`.
+  // Un-conditioned first-attempt-failure telemetry. Fires for EVERY first
+  // failure (the audit-6 ~26% underlying population), recovered or not.
+  // DISTINCT type from ai-parse-error — so audit-5's B5 double-failure
+  // contract and the 15-pin suite are byte-stable. recovered:true rows
+  // are telemetry (the validator+retry worked), NOT defects; downstream
+  // consumers discriminate by `type` (as audit-5 already does).
+  log.bugs.push({
+    at: stamp(), type: 'judge-shape-firstfail', context: 'judge',
+    first_branch, first_stop_reason, recovered,
+  });
+
+  if (recovered) return obj2;
+
+  // Both failed → audit-5 B5 terminal, mirroring the pick channel
+  // (chaos-doctor-bot-v4.mjs:462) so B5 stays observable. Shape
+  // UNCHANGED (text/at preserved); first_* kept for residual-view
+  // continuity. Zero raw-text retention beyond the 200-char slice.
   log.bugs.push({
     at: stamp(),
     type: 'ai-parse-error',
     context: 'judge',
     text: String(resp2.text || '').slice(0, 200),
+    first_branch,
+    first_stop_reason,
   });
   return {};
 }
