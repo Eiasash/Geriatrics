@@ -435,3 +435,132 @@ exist as **inputs** for that session — **not** committed in this
 docs+test PR, and **not** pre-spec'd now: pre-writing a future gated
 session's spec would repeat the no-run / provenance hazard this very
 review just caught.
+
+---
+
+## [2026-05-19, appended post-run] RESULT — bounded run executed; mechanical verdict = STOP-JOIN-INTEGRITY (no representativeness verdict routed)
+
+Append-only (`feedback_spec_provenance_append_only`); **everything above
+this line is verbatim, retro-edited NOWHERE**. Appended by the bounded-run
+session per the SHIP clause, after the frozen pre-registered analysis
+tooling (PR #236, `edfa433`) was run on the completed ledger. The verdict
+below is the **mechanical output** of `scripts/analyze_pick_representativeness.mjs`
+— the histogram did not reshape it (gate STEP 0 / "the data does not get
+to reshape it").
+
+### Run end-state (actual, not assumed)
+- **Full 8 h, clean finish.** Launched `2026-05-18T19:17:05Z` → summary
+  written `2026-05-19T03:17:08Z` (the G2 8 h duration bound; the G1 \$20
+  cap was **not** reached).
+- **Cost \$7.91** (1731 calls, 1,315,804 in + 264,067 out tokens,
+  **0 failures**) — inside the gate's \$5–8 estimate, well under \$20.
+- Config verified from the launch banner: 1 worker, `claude-sonnet-4-6`,
+  `toranot-proxy`, `CHAOS_REPORT_RATE=0.0`, `CHAOS_FEEDBACK_RATE=0.0`,
+  fresh isolated dir `chaos-reports/v4-long/audit8_20260518T191705Z/`.
+- **STEP-3 script-divergence flag (surfaced, not papered over):**
+  `scripts/long-chaos-run.sh` *defaults* diverge from G1/G2 (4 h / \$25 /
+  fixed stale-inheriting report dir). The run was executed
+  gate-compliantly via explicit env overrides (`CHAOS_DURATION_MS=28800000`,
+  `CHAOS_COST_CAP_USD=20`, fresh `audit8_<ts>` dir) running the bot
+  directly (not the wrapper, whose tail invokes the superseded
+  `long-chaos-analyze.mjs`). Reconciling the script defaults to the gate
+  is a separate change, out of this docs-only RESULT scope.
+
+### G4.1 universe (real counts)
+| Class | N |
+|---|---|
+| **DROPPED** (`ai-parse-error`/`pick`) — the numerator | **30** |
+| **RETAINED** (judged findings) | **479** |
+| `ai-error`/`pick` (separate, not in numerator) | 0 |
+| `pre-pick-skip` (G4.1-excluded; DOM/extract fail) | **3800** |
+| `extractNull` honest-denominator counter | 3800 |
+| `appIdx-null` (excluded) | 0 |
+
+The run was **DOM-extraction-failure-dominated**: 3800 pre-pick-skip vs
+only 30 reaching the pick-parse gate + 479 judged. Per G4.1 the
+pre-pick-skip rows are pre-registered EXCLUDED (not pick-parse events) —
+but the magnitude is a material instrument/run observation (below).
+
+### G3 / D3 per-covariate determinate-join (locked invariant ≥ 0.99)
+`joinFailDrop = 0`, `joinFailRetain = 0` (every row hash/containment-joined).
+
+| Covariate | determinate / attempted | rate | ≥0.99? |
+|---|---|---|---|
+| stem_len | 509 / 509 | 1.000 | ✓ |
+| topic_group | 507 / 509 | 0.99607 | ✓ |
+| **t** | **474 / 509** | **0.93124** | **✗ VIOLATION** |
+| bilingual | 509 / 509 | 1.000 | ✓ |
+| c_accept | 509 / 509 | 1.000 | ✓ |
+| broken | 509 / 509 | 1.000 | ✓ (but vacuous — served = 0) |
+
+`t` falls **35 cells short** of determinate. With `joinFail = 0` this is
+**not** unjoined rows — it is `t`-discordant byte-identical-stem dup
+groups (the same stem text carried under different exam-batch `t` tags).
+Consistent with D3's pre-verified within-dup-group disagreement being
+highest for the `ti`/`t`-class tags. **D3 mandate: ≥1 covariate < 0.99 ⇒
+do NOT route a representativeness verdict.**
+
+### G2 power
+`N_drop = 30` (< MIN 80 → **under-powered**); `N_retain = 479` (≥ MIN 200).
+`powered = false`. Absent the join violation this run would route
+**INCONCLUSIVE** on the G4.5 under-powered branch — corroborating, not
+the binding reason.
+
+### Marginal family (descriptive only — verdict is STOPped, not REPRESENTATIVE)
+`broken` D2-vacuous (served = 0) → dropped; `t` D3-join-excluded →
+dropped. Holm family = {stem_len, topic_group, bilingual, c_accept},
+two-sided α = 0.05.
+
+| Covariate | test | stat | p | effect | floor | pAdj | Holm-sig | bias-signal |
+|---|---|---|---|---|---|---|---|---|
+| stem_len | Mann–Whitney U | U=6342, z=−1.078 | 0.2809 | Cliff δ = −0.1173 | \|δ\|≥0.15 | 0.7554 | no | no |
+| topic_group | χ² 2×k | χ²=1.425, df=1 | 0.2327 | Cramér V = 0.0530 | ≥0.10 | 0.7554 | no | no |
+| bilingual | Fisher 2×2 | [[10,20],[222,257]] | 0.1889 | φ = 0.0615 | ≥0.10 | 0.7554 | no | no |
+| c_accept | Fisher 2×2 | [[0,30],[6,473]] | 1.000 | φ = 0.0273 | ≥0.10 | 1.000 | no | no |
+
+0 Holm-significant; 0 meet the effect-size floor. (Reported for
+completeness; the G4.5 verdict is **not** read off this table because the
+D3 join gate STOPped the route.)
+
+### Logistic sensitivity (G4.3 — verdict-neutral by lock)
+`n = 507`, **converged = false** (`reason: max-iter`; quasi-separation —
+the extreme coefficients are separation artifacts, not estimates). Per
+the G4.3 lock the verdict never reads the logistic; the non-convergence
+is reported honestly and **no mutual-adjustment inference is drawn**
+(the analyzer's honest-non-convergence path, by design — it does not
+silently regularize to fabricate an estimate).
+
+### G4.5 / G5 — mechanical verdict and route
+**VERDICT = `STOP-JOIN-INTEGRITY`.** Per D3: a covariate (`t`,
+determinate-join 0.931 < 0.99) is join-unreliable → **do NOT route a
+representativeness verdict.** This is a pre-registered outcome, not a
+forced one. Three independent facts all say the instrument/run must be
+repaired before a representativeness verdict can stand:
+1. **(binding)** D3 `t` determinate-join 93.1 % < 99 %.
+2. Under-powered: N_drop = 30 < 80.
+3. Extraction-failure-dominated: 3800 pre-pick-skip vs 30 parse-drops.
+
+**G5 route (no verdict forced; no auto-rerun — separately gated):**
+repair the join/instrument as its **own future gated session** —
+candidate fixes: a `t`-aware (dup-group) join refinement and/or
+`normStem`/index strengthening, **plus** investigation of the
+extraction-failure rate (why `extractQuestion` returned null/<2 options
+~88 % of attempts — likely a live-DOM/practice-surface interaction, not a
+dataset fact) — **then** a fresh bounded run. Per the gate: horizon
+**item 2** (Geri judge `max_tokens`) **stays blocked**; **no `q.c`
+flip, no `broken` change; Toranot untouched; the audit-7 truncation
+route is unaffected.** Do not widen the \$20 cap; a sized follow-up (if
+warranted post-repair) is its own pre-registered session.
+
+### Provenance
+Append-only; nothing above retro-edited. Analysis = the frozen
+pre-registered tooling merged in PR #236 (`edfa433`), unmodified, run
+once on the completed ledger; result JSON at
+`chaos-reports/v4-long/audit8_20260518T191705Z/audit8_representativeness_result.json`
+(gitignored runtime artifact; a durable snapshot of the full run dir is
+preserved off-repo as the single-copy safeguard). Docs-only, **no
+trinity bump** (mirrors audit-5/6/7 + #235/#236). Branch
+`claude/term-audit8-run` → PR to `main`; **NOT self-merged** —
+`docs/AUDIT*` is an audit-evidence path (tiered-merge rule) → web-lane
+fresh-eye review against this on-main gate before merge (gate SHIP
+clause; same rigor as #236).
