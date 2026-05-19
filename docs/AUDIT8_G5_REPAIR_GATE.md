@@ -173,6 +173,50 @@ merely move the STOP from join-integrity to under-power, burning a fresh
   - The R2 commit **re-freezes** the analyzer; `git log --
     analyze_pick_representativeness.mjs` must read exactly `edfa433` + the
     single R2 commit.
+- **R2.0-REV1 — branch-symmetry amendment (pre-merge review, 2026-05-19).**
+  Web fresh-eye **Finding 1** + terminal-lane **independent disk
+  re-verification**. *Original R2.0 (above) preserved verbatim — not
+  retro-edited (`feedback_spec_provenance_append_only`); this is a pre-merge
+  revision that supersedes only R2.0's predicate ORDER and single-candidate
+  framing, kept in-doc so the squash-merge cannot erase the pre-revision
+  text.* Re-verified on disk this session (`data/questions.json` @
+  `1a393f4`, 3743 Qs): **all 157 byte-identical-stem dup-groups are
+  `t`-discordant (157/157, 0 concordant)**; `t` values are exam
+  *provenances* (`2022-Jun-Basic` vs `2022-Jun-Subspec`, `Hazzard-suppl`
+  vs `2025-Jun-Basic`) — each correct for its instance. The gate join is
+  keyed on the full-stem hash (`AUDIT8_PRE_REGISTERED_GATE.md` L423-424);
+  byte-identical stems collide on that key, so `t`-provenance is
+  information-theoretically absent from it. R2.0's `t`-aware join therefore
+  **cannot, while stem-hash-keyed, honestly recover `t`**, and the disk
+  evidence makes the honest outcome the *likely* one. To forbid a
+  documented lean toward the branch that makes 474/509 rise
+  (criterion-swap-by-frame), R2 is pre-registered **branch-symmetric**:
+  - **(a) FIRST ordered predicate — recoverability determination (gates
+    everything else; evaluated BEFORE any analyzer edit).** From
+    `data/questions.json`, establish whether a DOM-served dup-group
+    question's `t` is recoverable from what the instrument actually
+    records. If `t` is recoverable only via the served question's corpus
+    *index* and the instrument does not capture that index, **branch B1 is
+    CLOSED** — no join refinement can honestly raise the `t`
+    determinate-rate.
+  - **(b) Two equal-weight branches — neither is the default; R2's disk
+    result selects.** **B1** = the original R2.0 `t`-aware join, eligible
+    **only if (a) proves `t` recoverable** from instrument-captured data.
+    **B2** = determinate-denominator re-derivation (promoted from
+    Hypotheses #3 footnote to a co-equal pre-registered branch): exclude
+    dup-discordant cells from the determinate denominator *by definition*
+    rather than "recover" them. **All original R2.0 constraints
+    (`JOIN_DETERMINATE_MIN` stays `0.99`, verdict logic not loosened,
+    RED-proofed new fixture, re-freeze) apply to whichever branch is
+    taken — never to weaken the gate.**
+  - **(c) Finding 2 — real-data validation surface follows the branch.**
+    B2 (analyzer-side re-derivation) → the preserved audit-8 8 h ledger is
+    re-analyzable under the modified analyzer = free real-data proof
+    **before** R3's $20. B1 (instrument-side index recording) → the old
+    ledger lacks the index ⇒ R3 is the only real-data check. R3's
+    "STEP-0.2-equivalent re-pass" precondition **must name which surface
+    applies once R2 selects the branch**, since it decides whether the
+    $20 buys the first or the second validation.
 - **R2.1 `normStem`/index strengthening — scoped to the proven mechanism
   only.** The join also has the documented bilingual/bidi exposure (#236
   step-4 caveat). Strengthen `normStem`/the index **only** if R2.0's
