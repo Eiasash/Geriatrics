@@ -217,6 +217,27 @@ merely move the STOP from join-integrity to under-power, burning a fresh
     "STEP-0.2-equivalent re-pass" precondition **must name which surface
     applies once R2 selects the branch**, since it decides whether the
     $20 buys the first or the second validation.
+  - **(d) B2-honesty pin — REV1.1 (web re-glance Finding 3, 2026-05-19).**
+    B2's "exclude dup-discordant cells from the determinate denominator" is
+    *itself* the upstream redefinition Finding 1 named: read literally it
+    shrinks `t.attempted` 509→474, so `t` = 474/474 = 1.0 ≥ 0.99,
+    `joinViolations` (`:195`) drops `t`, STOP-JOIN-INTEGRITY (`:269`) no
+    longer routes — **`:38`=`0.99` and the verdict logic both literally
+    untouched**. That is criterion-swap-by-silence via denominator-shrink,
+    in the *likely* branch (since (a) probably closes B1). B2 is honest
+    **only if**: (i) the excluded dup-discordant cell count is reported
+    beside the `t` rate; (ii) the `t` covariate result is explicitly scoped
+    to the determinable subset, with the non-determinable fraction
+    surfaced; (iii) a denominator redefinition may **not, by itself,
+    convert STOP-JOIN-INTEGRITY into a pass** — a materially large
+    structurally-non-determinable `t` fraction is itself a reportable
+    limitation, **not** a cleared gate (B2's analogue of B1's CLOSED).
+  > EDIT 2026-05-19 (REV1.1): clause (c)'s "the preserved audit-8 8 h
+  > ledger" / "the old ledger" — original text retained verbatim;
+  > correction: read as "the audit-8 8 h ledger *if still on disk*".
+  > Ledger preservation is asserted by the #238 RESULT, NOT verified this
+  > session; (c)'s free-real-data-proof for B2 is contingent on the ledger
+  > being present at R2 time.
 - **R2.1 `normStem`/index strengthening — scoped to the proven mechanism
   only.** The join also has the documented bilingual/bidi exposure (#236
   step-4 caveat). Strengthen `normStem`/the index **only** if R2.0's
