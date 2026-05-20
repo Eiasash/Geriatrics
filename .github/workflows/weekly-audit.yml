@@ -60,26 +60,49 @@ jobs:
 
       - name: Check for conflicting duplicates
         run: |
-          python3 -c "
+          python3 << 'PYEOF'
+          # Respect canonical authority flags:
+          #   - allow_dup=True  → intentional curator-flagged duplicate (936 Qs on main)
+          #   - broken=True     → explicitly suppressed (~24 Qs), skip integrity checks
+          #   - c_accept        → multi-accept; if one Q's c is in the other's c_accept,
+          #                       the chosen answers are compatible, not conflicting
+          # Compare each new occurrence against ALL prior occurrences of the same
+          # stem (not just the first) so a skipped pair doesn't shadow a real
+          # conflict later in a triplet.
           import json, sys
           qs = json.load(open('data/questions.json'))
-          seen = {}
+          seen = {}  # key -> list of prior indices
           conflicts = []
+          intentional_skipped = 0
           for i, q in enumerate(qs):
+              if q.get('broken'):
+                  continue
               key = q['q'].strip()[:80]
-              if key in seen:
-                  j = seen[key]
-                  if qs[i]['c'] != qs[j]['c']:
-                      conflicts.append((j, i, key[:60]))
-              else:
-                  seen[key] = i
+              priors = seen.get(key, [])
+              for j in priors:
+                  qi, qj = qs[i], qs[j]
+                  if qi['c'] == qj['c']:
+                      continue
+                  # Intentional duplicates marked by curator
+                  if qi.get('allow_dup') and qj.get('allow_dup'):
+                      intentional_skipped += 1
+                      continue
+                  # c_accept compatibility: chosen answers cross-accepted
+                  if qi['c'] in qj.get('c_accept', []) or qj['c'] in qi.get('c_accept', []):
+                      intentional_skipped += 1
+                      continue
+                  conflicts.append((j, i, key[:60]))
+              seen.setdefault(key, []).append(i)
           if conflicts:
               print(f'CRITICAL: {len(conflicts)} conflicting duplicates:')
               for j, i, k in conflicts:
                   print(f'  Q{j} vs Q{i}: {k}...')
               sys.exit(1)
-          print('OK: No conflicting duplicates')
-          "
+          msg = 'OK: No conflicting duplicates'
+          if intentional_skipped:
+              msg += f' ({intentional_skipped} curator-flagged / c_accept-compatible pairs skipped)'
+          print(msg)
+          PYEOF
 
       - name: Check topic coverage (min 5 per topic)
         run: |
