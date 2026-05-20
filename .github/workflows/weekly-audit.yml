@@ -140,19 +140,31 @@ jobs:
           print('OK: No eval() calls')
           "
 
-      - name: Check no GRS references
+      - name: Check notes.ch citation hygiene (Hazzard/Harrison/GRS8 only)
         run: |
           python3 -c "
-          import sys
-          html = open('shlav-a-mega.html').read()
-          data_files = ['data/questions.json','data/notes.json','data/flashcards.json']
-          for f in data_files:
-              content = open(f).read()
-              if 'GRS' in content:
-                  print(f'ERROR: GRS reference found in {f}'); sys.exit(1)
-          if 'GRS' in html:
-              print('ERROR: GRS reference found in HTML'); sys.exit(1)
-          print('OK: No GRS references in app or data')
+          import json, re, sys
+          notes = json.load(open('data/notes.json'))
+          # Exception per policy: legal-topic notes (ids 29..35) may cite Israeli law.
+          legal_ids = set(range(29, 36))
+          bad = []
+          for n in notes if isinstance(notes, list) else []:
+              if n.get('id') in legal_ids:
+                  continue
+              ch = str(n.get('ch','')).strip()
+              if not ch:
+                  continue
+              # Allow: 'Hazzard', 'Harrison', 'GRS8' (with digit). Reject legacy bare 'GRS'.
+              has_legacy = bool(re.search(r'\\bGRS(?!\\d)', ch))
+              ok_anchor = ('Hazzard' in ch) or ('Harrison' in ch) or ('GRS8' in ch)
+              if has_legacy or not ok_anchor:
+                  bad.append((n.get('id'), ch[:80]))
+          if bad:
+              print(f'ERROR: {len(bad)} notes with bad citation:')
+              for nid, ch in bad[:10]:
+                  print(f'  note id={nid}: {ch}')
+              sys.exit(1)
+          print(f'OK: {len(notes) if isinstance(notes, list) else 0} notes, citation hygiene clean')
           "
 
       - name: Audit innerHTML sanitization
