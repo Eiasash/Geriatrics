@@ -178,17 +178,30 @@ jobs:
         run: |
           npm ci
           node -e "
-          const html = require('fs').readFileSync('shlav-a-mega.html','utf8');
-          const start = html.lastIndexOf('<script>');
-          const end = html.lastIndexOf('</script>');
-          const js = html.substring(start+8, end);
-          try {
-            require('acorn').parse(js, { ecmaVersion: 2022, sourceType: 'script' });
-            console.log('OK: JS parses without errors');
-          } catch(e) {
-            console.error('JS SYNTAX ERROR at line', e.loc?.line, ':', e.message);
+          const fs = require('fs');
+          const acorn = require('acorn');
+          const html = fs.readFileSync('shlav-a-mega.html','utf8');
+          // Match <script>\\n...\\n</script> blocks. The newline anchors avoid matching
+          // '<script>' inside other scripts' string literals.
+          const re = /<script>\\n([\\s\\S]*?)\\n<\\/script>/g;
+          let m, blocks = 0;
+          while ((m = re.exec(html)) !== null) {
+            blocks++;
+            const offset = m.index + '<script>\\n'.length;
+            try {
+              acorn.parse(m[1], { ecmaVersion: 2024, sourceType: 'script' });
+            } catch(e) {
+              console.error('JS SYNTAX ERROR in inline block #' + blocks +
+                            ' (file offset ' + offset + ') at line ' + e.loc?.line +
+                            ':' + e.loc?.column + ' — ' + e.message);
+              process.exit(1);
+            }
+          }
+          if (blocks === 0) {
+            console.error('No inline <script> blocks found — extractor regex likely broken');
             process.exit(1);
           }
+          console.log('OK: ' + blocks + ' inline <script> blocks parse without errors');
           "
 
       # ── Tests ──
