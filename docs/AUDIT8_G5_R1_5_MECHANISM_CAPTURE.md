@@ -1,0 +1,144 @@
+# Audit-8 — R1.5 mechanism-capture pre-registered gate (long-duration probe + first-failure diff) — NO-RUN, ZERO-DOLLAR
+
+Append-only; do not retro-edit (`feedback_spec_provenance_append_only`). Lane: single (Claude Code, post 5-19 retirement; `claude/audit8-g5-r15-mechanism-capture`, cut from `origin/main` post-#241 squash). Trinity: **untouched** — docs + bot scripts + tests only, **no bump** (mirrors #235/#241: instrument/findings precursors do not bump trinity).
+
+**Parent / trigger.** PR #241 (R1 findings-only RESULT) disk-evidence falsified R1.0/R1.0b's mechanism hypotheses (DOM drift + extractor regression) — neither has a bisect surface, neither matches the observed bifurcation. The G5 gate's R1 route is exhausted at the *mechanism-identification* step; R1.2's fix-and-pass GREEN criterion cannot be reached without first knowing what to fix. R1.5 authors the **mechanism-capture procedure** that R1 needed but didn't have.
+
+This is not a re-derivation of the G5 representativeness verdict (`STOP-JOIN-INTEGRITY`, frozen at #238). The verdict still routes through R1→R2→R3; R1.5 is a *sub-phase of R1*, gated behind this PR, before R1.2's fix.
+
+## Why R1.5 is NOT a "second G5 gate"
+
+The G5 doc warns single-gate-only on representativeness. R1.5 is **not** a representativeness re-gate. It is the *mechanism-capture session* the original R1.1 implicitly assumed would be a `git bisect` — disk evidence proved bisect is structurally unavailable, so R1.5 substitutes the procedure that *can* identify the mechanism. The G5 representativeness gate is closed and untouched. No verdict re-routes through R1.5.
+
+---
+
+## READ THIS FIRST — what this gate authorizes and forbids
+
+- It pre-registers the **long-duration RED probe**, the **first-failure capture surface**, the **diff-vs-Phase-1-control protocol**, and the **mechanism-class branch matrix** (named before evidence, not selected post-hoc).
+- It does **NOT** authorize a fix. R1.5 RESULT (appended-only by the next session) names the mechanism and routes to a follow-on R1.6 fix gate.
+- It does **NOT** authorize widening the R3 $20 cap (per G5 doc R3 — inherits unchanged).
+- It does **NOT** authorize analyzer changes. The analyzer's temporal-blindness (it counted, didn't time-bin — the very bug that hid the bifurcation in #238 RESULT) is a separate AUDIT-9 prerequisite for R3, **not** R1.5.
+
+---
+
+## STEP 0 — distrust contract (no-run; results)
+
+- **0.1 State (verified — Claude Code to re-verify at session start).** `git fetch --all`; `origin/main` HEAD = post-#241 squash. `docs/AUDIT8_G5_REPAIR_GATE.md` present on main; R1 RESULT section appended via #241. No prior `claude/audit8-g5-r15-*` branch; no `docs/AUDIT8_R1_5*` doc. Solo session; branch + PR; **no self-merge** (audit-evidence path; R1.5 is `docs/AUDIT*` + `scripts/audit8/**` + `tests/audit8*`).
+
+- **0.2 Disk-verified RESULT facts (ground truth — from #241 R1 disk evidence, cite as RESULT-derived).**
+  - Audit-8 run `chaos-reports/v4-long/audit8_20260518T191705Z/` exhibits **bifurcation**, not steady-state failure:
+    - **Phase 1** (19:17→22:30, 3h14m): 0 `pre-pick-skip`, 2-3 `ok`/min.
+    - **Transition** (~22:31, 1m40s gap, zero `pageerror`/`console:error`/HTTP-error footprint).
+    - **Phase 2** (22:31→03:17, 4h46m): 13-14 `pre-pick-skip`/min, 0 `ok`.
+  - Aggregate `3800/4309 ≈ 88%` from #238 RESULT is **time-averaged** over both phases. Phase-1 ≈ 0%, Phase-2 ≈ 95%.
+  - Audit-7 (4h, 569 ok) stayed in Phase-1 the entire run — never crossed the transition.
+  - Bisect window `dac09e2..4a66ed8` contains **zero** `shlav-a-mega.html` commits and zero `extractQuestion` changes. The structural absence of a bisect surface refutes both R1.0's DOM-drift hypothesis (H1) and the implicit extractor-regression alternative.
+
+- **0.3 The unverified HYPOTHESIS-CLASS (must be proved by R1.5 capture, not assumed).** The Phase-2 onset is **duration-gated** (audit-7 4h stayed flat; audit-8 8h crossed at 3.2h) and **silent** (no error footprint at transition). Candidate mechanism classes are pre-registered in the branch matrix below; R1.5 captures evidence to select among them. R1.5 does **not** assume which class wins.
+
+- **0.4 Frozen-analyzer state.** `scripts/analyze_pick_representativeness.mjs` remains frozen at `edfa433` (per G5 doc § 0.4). R1.5 does **not** touch the analyzer. Temporal-bin awareness is **AUDIT-9 prerequisite for R3**, separately gated, out of R1.5 scope.
+
+---
+
+## HYPOTHESIS-CLASS MATRIX (pre-registered before R1.5 captures evidence)
+
+R1.5 RESULT must name **one** of these as the named mechanism (or surface a fifth, novel class with the disk evidence to back it). Selection is by capture diff, not by inference.
+
+- **Class A — Browser process leak.** Chromium accumulates heap / GC pressure over 3+ hours. DOM operations slow, `extractQuestion` queries time-out silently or return null. **Capture signal:** process memory at Phase-2 onset ≫ Phase-1 baseline; GC frequency rising.
+- **Class B — Page-state accumulation.** The PWA's own JS heap grows (SR queue, render buffer, IndexedDB cursor leaks, event-listener accumulation). DOM queries find inconsistent state. **Capture signal:** `performance.memory` heap ratio at Phase-2 onset > N× Phase-1; DOM node count drift.
+- **Class C — Connection / proxy state.** Toranot proxy session expires, CDN edge rotates, keep-alive drops to a server that 5xx-silently. The bot's extractor calls page-rendered DOM, NOT the proxy directly — but the practice surface might be re-fetching exam data and getting partial content. **Capture signal:** `chrome://net-internals` connection state at onset; HAR diff between Phase 1 + Phase 2; Toranot response headers (rate-limit, set-cookie expiry).
+- **Class D — Persistent bot-profile state.** Chromium user-data-dir or IndexedDB accumulates per-question state that triggers a degraded code path after N entries. **Capture signal:** IndexedDB + localStorage + Service Worker registration snapshot at onset; compare to Phase-1.
+- **Class E (open) — Novel mechanism.** If none of A–D match the capture, R1.5 RESULT names the actual mechanism with disk evidence. Pre-registered so a fifth class is not post-hoc reframing.
+
+---
+
+## THE LOCKED CAPTURE PROCEDURE (binding)
+
+### R1.5.0 Long-duration RED probe — `scripts/audit8/r15LongProbe.mjs` (new file)
+
+Continuous run, minimum **6 hours** (covers audit-7's 4h flat + a 2h margin past the 3.2h transition window). Per-minute telemetry:
+
+- Timestamp
+- `pre-pick-skip` count (cumulative + delta-from-prev-minute)
+- `ok` count (cumulative + delta)
+- Last `extractQuestion` outcome (success / null / no-options)
+- `performance.memory` snapshot (`usedJSHeapSize`, `totalJSHeapSize`, `jsHeapSizeLimit`)
+- DOM node count (`document.querySelectorAll('*').length`)
+- Active service workers (`navigator.serviceWorker.getRegistrations().length`)
+
+Output: `chaos-reports/v4-long/audit8r15_<ts>/timeline.jsonl` (one record per minute).
+
+**RED criterion:** the probe reproduces Phase-2 onset (≥10 consecutive minutes of `pre-pick-skip > 5/min` after ≥1h of `ok > 1/min`). If 6h elapses with no Phase-2 crossing, extend to 10h. If 10h elapses with no crossing, R1.5 surfaces RED-NOT-REPRODUCED to user (the bifurcation may be load-dependent on factors not present in the controlled re-run; this is a discrete bail condition, not a fix-in-place).
+
+### R1.5.1 First-failure capture trigger
+
+The probe carries a **trigger predicate**: the first minute where `pre-pick-skip > 0` AND the previous minute had `ok > 0`. At that minute boundary, the probe halts the bot loop (does not close the page) and captures:
+
+- **DOM:** `document.documentElement.outerHTML` → `firstfail-dom.html`
+- **Console log buffer:** all `console.log/info/warn/error` from page start → `firstfail-console.jsonl`
+- **`performance.memory` snapshot** → `firstfail-perf.json`
+- **Active network requests:** `chrome.debugger` / CDP `Network.getResponseBody` for last 20 requests → `firstfail-net.jsonl`
+- **HAR export:** Playwright `page.context().tracing.export()` for the last 5 minutes → `firstfail-trace.zip`
+- **Toranot proxy state:** if last request was to `toranot.netlify.app/api/claude`, capture response headers (`set-cookie`, `x-ratelimit-*`, `cf-cache-status`) → `firstfail-toranot.json`. If no recent proxy call, log absence.
+- **Persistent state:** evaluate in page → `{ idb: Object.fromEntries(await Promise.all(allStores.map(...))), ls: {...localStorage}, sw: registrations.map(r=>({...})) }` → `firstfail-persist.json`
+- **Screenshot:** `firstfail-screenshot.png`
+
+### R1.5.2 Phase-1 control capture (taken BEFORE the first-failure trigger fires)
+
+At minute **30** of the probe (deep in Phase 1, well before the transition window), capture the **same 7 artifacts** with prefix `phase1control-`. Provides the diff baseline.
+
+### R1.5.3 Mechanism diff + class selection
+
+Once R1.5.1 fires and the control is in hand, the session author runs:
+- `diff firstfail-dom.html phase1control-dom.html` — DOM-state drift?
+- `jq '.usedJSHeapSize' phase1control-perf.json` vs `firstfail-perf.json` — heap accumulation?
+- `diff firstfail-persist.json phase1control-persist.json` — persistent state drift?
+- Manual review of console + network traces
+
+**One** of Classes A–E is named per the matrix. Selection criterion: which class's "capture signal" is present in the diff. If multiple, the dominant one is named with the others listed as confounders.
+
+### R1.5.4 R1.5 RESULT — append-only to *this* doc
+
+R1.5 RESULT section captures:
+- The captured artifacts' on-disk paths
+- The named mechanism class (A/B/C/D/E)
+- The diff evidence supporting the selection
+- The follow-on R1.6 fix-gate scope sketch (single paragraph; not a fix-spec)
+
+No trinity bump. No fix written. R1.6 is its own session.
+
+---
+
+## PRE-REGISTERED PREDICTIONS + OVERTURN CONDITIONS (`feedback_prewritten_predictions`)
+
+Locked before R1.5 data is captured:
+
+- **Prediction (lean — not assumed):** Class A (browser process leak) is the most likely mechanism, given the duration-gated onset (memory accumulation is monotonic in wall-clock) and the silent transition (GC pause / OOM doesn't fire `console:error`).
+- **Refutation:** if `performance.memory` deltas at first-failure are within 2× of Phase-1 baseline, Class A is **refuted** → Class B/C/D selected by other signals.
+- **Prediction:** the captured DOM at first-failure is structurally identical to Phase-1 (DOM count within 10%, same query-selectors resolve). If true, the extractor's NULL output is not a DOM-state issue → strengthens Class A or C.
+- **Refutation:** if the DOM at first-failure has substantively different structure (modal injected, route changed, content removed), it's a page-state issue → Class B selected.
+- **Prediction:** even with mechanism named, R1.6's fix scope is bot-side (process restart, page reload, profile reset), NOT shlav-a-mega.html. The aggregate-disclosure trap from the original R1 (88% steady-state assumption from a bimodal distribution) confirms the production app is not the surface.
+- **Refutation:** if Class B's diff names a specific PWA leak (event-listener accumulation, IDB cursor leak), R1.6's fix MIGHT need a shlav-a-mega.html commit — separately re-scoped at R1.6 time, NOT bundled into R1.5 RESULT.
+
+---
+
+## SCOPE
+
+Mechanism capture for the Phase-2 extraction failure **only**. Ships **no fix**. Flips **no `q.c`**. Changes **no `broken`**. Touches **no analyzer**. Touches **no Toranot file**. R2 (`t`-aware join) remains gated behind R1.6 (the fix gate that R1.5 routes to). R3 remains gated behind R2. The $20 cap stays untouched.
+
+## OUT OF SCOPE (handed off untouched)
+
+- R1.6 fix gate — separate session, gated behind R1.5 RESULT
+- R2 `t`-aware analyzer change — G5 doc § R2 still binding
+- R3 paid bounded run — G5 doc § R3 still binding; $20 cap NOT widened
+- **AUDIT-9 prerequisite for R3 — temporal-bin analyzer change.** The #238 RESULT's `3800/4309 ≈ 88%` aggregate hid the bifurcation. R3's analyzer must temporal-bin (e.g., per-15-min buckets) to surface re-occurrence of the bifurcation class. Authored as its own pre-registered gate before R3 fires. Out of R1.5 scope.
+- Any `q.c` / `broken` / distractor edit
+- B4 content adjudication
+
+## SHIP
+
+Tracked, docs + scripts + tests only, append-only audit-5/6/7/8-style: **this gate doc** (committed this session) + R1.5 RESULT section appended append-only by the capture session. **No trinity bump.** Branch `claude/audit8-g5-r15-mechanism-capture` → PR to `main`. **NO self-merge** (audit-evidence path → fresh-eye review → Eias merges).
+
+This PR is **gate-only**: the R1.5 capture run is its own subsequent session, gated behind this PR landing on main. R1.5.0–R1.5.3 procedure ships as `scripts/audit8/r15LongProbe.mjs` + supporting libs in *this* PR; the **run** of it (and the RESULT append) is the next session.
+
+<!-- R1.5 RESULT section appended append-only below by the capture session. -->
