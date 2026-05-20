@@ -181,18 +181,20 @@ jobs:
           const fs = require('fs');
           const acorn = require('acorn');
           const html = fs.readFileSync('shlav-a-mega.html','utf8');
-          // Match <script>\\n...\\n</script> blocks. The newline anchors avoid matching
-          // '<script>' inside other scripts' string literals.
-          const re = /<script>\\n([\\s\\S]*?)\\n<\\/script>/g;
+          // Match each <script ...>...</script> block (handles single-line scripts
+          // and tags with attributes like type="module"). Empty/external blocks are skipped.
+          const re = /<script\\b[^>]*>([\\s\\S]*?)<\\/script>/g;
           let m, blocks = 0;
           while ((m = re.exec(html)) !== null) {
             blocks++;
-            const offset = m.index + '<script>\\n'.length;
+            const innerStart = m.index + m[0].indexOf('>') + 1;
+            const body = m[1];
+            if (!body.trim()) continue;  // empty / external-src blocks
             try {
-              acorn.parse(m[1], { ecmaVersion: 2024, sourceType: 'script' });
+              acorn.parse(body, { ecmaVersion: 2024, sourceType: 'script' });
             } catch(e) {
               console.error('JS SYNTAX ERROR in inline block #' + blocks +
-                            ' (file offset ' + offset + ') at line ' + e.loc?.line +
+                            ' (file offset ' + innerStart + ') at line ' + e.loc?.line +
                             ':' + e.loc?.column + ' — ' + e.message);
               process.exit(1);
             }
