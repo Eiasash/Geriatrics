@@ -228,7 +228,7 @@ const LETTER_TO_IDX = { A: 0, B: 1, C: 2, D: 3, a: 0, b: 1, c: 2, d: 3, 'א': 0,
 // Question / answer extraction (v4 targeted)
 // ============================================================
 
-async function extractQuestion(page) {
+export async function extractQuestion(page) {
   // Geri renders the stem inside the quiz card; first .heb element after
   // the question card header is the stem. Skeleton-state .qo blocks have
   // ⠀ (braille blank) so we filter on stem length to skip pre-load state.
@@ -814,7 +814,7 @@ async function maybeReportQuestion(page, log, finding) {
 // v4: practice-mode entry — no start-mock, no exam mode
 // ============================================================
 
-async function ensureOnPracticeQuiz(page, log) {
+export async function ensureOnPracticeQuiz(page, log) {
   // Step 1: hydrate. Geri uses onclick handlers (no [data-action]); wait
   // for body to be ready and the quiz card to render.
   try {
