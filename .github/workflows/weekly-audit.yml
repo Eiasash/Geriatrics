@@ -30,6 +30,8 @@ jobs:
           python3 << 'PYEOF'
           import json, sys
           qs = json.load(open('data/questions.json'))
+          topics = json.load(open('data/topics.json'))
+          topic_count = len(topics)  # canonical source of truth for ti range
           errors = []
           if len(qs) < 900:
               errors.append(f'Question count too low: {len(qs)}')
@@ -40,12 +42,12 @@ jobs:
                   errors.append(f'Q{i}: needs >=4 options')
               if not isinstance(q.get('c'), int) or q['c'] < 0 or q['c'] >= len(q.get('o', [])):
                   errors.append(f'Q{i}: invalid correct answer index')
-              if q.get('ti') is None or not isinstance(q.get('ti'), int) or q['ti'] < 0 or q['ti'] > 42:
-                  errors.append(f'Q{i}: invalid topic index')
+              if q.get('ti') is None or not isinstance(q.get('ti'), int) or q['ti'] < 0 or q['ti'] >= topic_count:
+                  errors.append(f'Q{i}: invalid topic index (must be 0..{topic_count-1})')
               if not q.get('t'):
                   errors.append(f'Q{i}: missing year field')
-              if not q.get('e'):
-                  errors.append(f'Q{i}: missing explanation')
+              if not q.get('ref'):
+                  errors.append(f'Q{i}: missing citation (ref)')
           if errors:
               print(f'ERRORS ({len(errors)}):')
               for e in errors[:20]:
@@ -53,7 +55,7 @@ jobs:
               if len(errors) > 20:
                   print(f'  ... and {len(errors)-20} more')
               sys.exit(1)
-          print(f'OK: {len(qs)} questions, all valid')
+          print(f'OK: {len(qs)} questions, all valid (ti range 0..{topic_count-1})')
           PYEOF
 
       - name: Check for conflicting duplicates
@@ -84,17 +86,19 @@ jobs:
           python3 -c "
           import json, sys
           qs = json.load(open('data/questions.json'))
+          topics = json.load(open('data/topics.json'))
+          n = len(topics)
           counts = {}
           for q in qs:
               ti = q.get('ti', -1)
               counts[ti] = counts.get(ti, 0) + 1
-          thin = [ti for ti in range(40) if counts.get(ti, 0) < 5]
+          thin = [ti for ti in range(n) if counts.get(ti, 0) < 5]
           if thin:
               print(f'WARNING: {len(thin)} topics with <5 questions:')
               for ti in thin:
                   print(f'  ti={ti}: {counts.get(ti,0)} questions')
               sys.exit(1)
-          print(f'OK: All 40 topics have >=5 questions')
+          print(f'OK: All {n} topics have >=5 questions')
           "
 
       # ── Version Sync ──
