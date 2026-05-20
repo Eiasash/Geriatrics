@@ -66,17 +66,20 @@ jobs:
           #   - broken=True     → explicitly suppressed (~24 Qs), skip integrity checks
           #   - c_accept        → multi-accept; if one Q's c is in the other's c_accept,
           #                       the chosen answers are compatible, not conflicting
+          # Compare each new occurrence against ALL prior occurrences of the same
+          # stem (not just the first) so a skipped pair doesn't shadow a real
+          # conflict later in a triplet.
           import json, sys
           qs = json.load(open('data/questions.json'))
-          seen = {}
+          seen = {}  # key -> list of prior indices
           conflicts = []
           intentional_skipped = 0
           for i, q in enumerate(qs):
               if q.get('broken'):
                   continue
               key = q['q'].strip()[:80]
-              if key in seen:
-                  j = seen[key]
+              priors = seen.get(key, [])
+              for j in priors:
                   qi, qj = qs[i], qs[j]
                   if qi['c'] == qj['c']:
                       continue
@@ -89,8 +92,7 @@ jobs:
                       intentional_skipped += 1
                       continue
                   conflicts.append((j, i, key[:60]))
-              else:
-                  seen[key] = i
+              seen.setdefault(key, []).append(i)
           if conflicts:
               print(f'CRITICAL: {len(conflicts)} conflicting duplicates:')
               for j, i, k in conflicts:
