@@ -310,3 +310,249 @@ verify every corpus claim and the §"Hypotheses" separation against disk) →
 un-hold trigger.
 
 <!-- R1/R2/R3 RESULT sections appended append-only below by their sessions. -->
+
+---
+
+## R1 RESULT — findings-only; the steady-state frame is contradicted by disk (2026-05-20)
+
+Session: terminal, solo, `claude/audit8-g5-r1-extraction` cut from `origin/main`
+HEAD `655953b`. Trinity: **untouched** — scripts + docs only. **No fix in this
+PR.** This RESULT is appended append-only per
+`feedback_spec_provenance_append_only`; it does not retro-edit R1's
+pre-registered procedure, it documents what executing that procedure on disk
+returned.
+
+### STEP 0 — distrust contract (verified)
+
+- `origin/main` HEAD = `655953b` (`docs(claude): single-lane operating model
+  (#240)`). Branch cut clean; no collision with any other `claude/audit8-g5-r1-*`
+  branch (none exist). No concurrent lane (the per-repo CLAUDE.md "single lane
+  from 2026-05-19" applies).
+- Anchors verified on disk: `extractQuestion` at
+  `scripts/chaos-doctor-bot-v4.mjs:231`, `ensureOnPracticeQuiz` at `:817`;
+  `showHelp` at `shlav-a-mega.html:8217`, `closeTopModal` at `:8285`.
+- Vitest baseline isolated to the chaos-bot pin trio
+  (`chaosBotV4PickDropInvariant.test.js`, `chaosBotV4ModalDismiss.test.js`,
+  `chaosBotV4PickIdentityInstrument.test.js`) — **21/21 passed** before and
+  after the minimal `export` keyword added to `extractQuestion` and
+  `ensureOnPracticeQuiz` (needed so the probe can import the real extractor
+  per R1.0's "no proxy" rule). The chaosBotV4ModalDismiss regex-grep tests
+  still match (the `async function` prefix is preserved).
+
+### R1.0 — RED probe (built; ran; did NOT reproduce)
+
+- Probe shipped at `scripts/audit8/r1RedProbe.mjs`. Uses the **real**
+  `extractQuestion` + `ensureOnPracticeQuiz` from
+  `scripts/chaos-doctor-bot-v4.mjs` (import-from-source, not re-implementation
+  — kickoff §1.0's "no proxy" constraint). Configurable URL + N; default
+  100 attempts × ~2.5s pacing; advances between attempts via
+  `[aria-label="Next question"]` (pick + check + next), zero Claude API
+  calls. Forensic-mode classifier records `no-heb` / `stem-throw` /
+  `short-stem` / `no-qo` / `empty-options` / `modal-blocked` / `other` and
+  captures the first N forensic snapshots.
+- Run against current `main` (live URL
+  `https://eiasash.github.io/Geriatrics/`) at **N=100**:
+  - `total` = 100, `extractedOk` = 100, `extractionFailures` = 0,
+    `failureRate` = 0.000, `RED` = false.
+  - All `perMode` counters zero. `ensureOnQuizFailures` = 0.
+- **RED criterion (failure ≥ 0.85) NOT met.** Kickoff §6 bail #1 reads:
+  "RED probe does NOT reproduce against current main → regression already
+  silently fixed downstream; document and surface, do not fabricate a fix."
+  The "silently fixed" frame, however, is contradicted by §R1.1 below: there
+  is no commit to credit, because there is no commit that could have caused
+  a regression in the bisect window. The bail's *action* is correct
+  (document and surface); its *narrative* needs the bifurcation correction
+  below.
+
+### R1.0b — refutation control: structurally moot on disk
+
+The pre-registered refutation control is a static-fixture comparison against
+a pre-regression commit. On disk:
+
+- `git log --oneline dac09e2..4a66ed8 -- shlav-a-mega.html` is **empty**
+  (zero commits to the monolith in the audit-7→audit-8 window).
+- `git log --oneline dac09e2..main -- shlav-a-mega.html` is **also empty**
+  (no monolith changes through current `main`).
+- `git log --oneline dac09e2..4a66ed8 -- scripts/chaos-doctor-bot-v4.mjs
+  scripts/lib/` has exactly **two** commits: `cc85f91` (#235 PRE-STEP
+  stemHash instrument) and `edfa433` (#236 frozen analyzer tooling).
+- Neither of those commits touches `extractQuestion`. `extractQuestion`'s
+  full git history (`git log --all -S "extractQuestion"`) is a single
+  commit `f0ac470` (the Geri-native v4 port, well before audit-7).
+
+A static-fixture comparison would compare byte-identical HTML on both sides
+and byte-identical extractor logic. The control collapses to a no-op: H1
+(live-DOM drift in the window) and the implicit alternative
+(bot-extractor regression in the window) are **both** structurally
+unavailable as causes — neither codebase changed.
+
+### R1.1 — bisect: no candidate commit exists in the pre-registered window
+
+Bisect was scoped (kickoff §1.1) to "the audit-7→audit-8 commit window" on
+the named codebase. With **zero** candidate commits on either side of the
+window (monolith: empty; bot extractor: never touched; only stemHash
+instrument + analyzer changed, and `git show cc85f91` confirms cc85f91 is
+the commit that **added** the `pre-pick-skip` telemetry — see below), the
+bisect has no oracle-tunable axis. Skipping it is **not** a procedure
+violation; it is the procedure's empty-set output.
+
+### The bifurcation finding — disk re-analysis of the audit-8 RESULT ledger
+
+The kickoff's frame (`docs/AUDIT8_G5_REPAIR_GATE.md` §0.2: "Extraction
+reached-pick fraction ≈ 509 / (509+3800) ≈ **11.8 %**") is a **time-pooled
+rate**. The per-minute distribution in
+`chaos-reports/v4-long/audit8_20260518T191705Z/chaos-doctor-v4-2026-05-19T03-17-08-116Z.json`
++ `medical_findings_ai_v4.jsonl` shows a **sharp bifurcation**, not a
+steady-state ~88 % failure (numbers from disk, deterministic — re-runnable
+by anyone with the ledger):
+
+- **Phase 1** (`19:17` → `22:30` Jerusalem, ≈ 3 h 14 min): **0**
+  `pre-pick-skip` events; **2–3** successful Qs per minute, steady.
+- **Transition** (`22:29:27` last ok → `22:31:07` first `pre-pick-skip`):
+  ~1 m 40 s gap. **Zero** `pageerror` / `requestfailed` / `console:error` /
+  `http >=400` / `methodology` events at the transition or in the preceding
+  10 min. The trigger has **no telemetry footprint**.
+- **Phase 2** (`22:31` → end-of-run `03:17`, ≈ 4 h 46 min): **13–14**
+  `pre-pick-skip` events per minute, **zero** successful Qs. Mean delta
+  between consecutive `pre-pick-skip` events 4.52 s (min 3.51, median 4.52,
+  max 5.53; 3799/3799 deltas in the 2–10 s bucket) — consistent with the
+  worker loop's short-path `ensureOnPracticeQuiz` (≈ 1.5 s) +
+  `extractQuestion` timeout accumulation (4 × `.innerText({ timeout: 500 })`
+  ≈ 2–3 s). dropCtx is **100 % `pre-pick-no-question`** — `extractQuestion`
+  returned `null` (not the short-extract variant).
+- **Recovery did NOT occur.** The 6 `stuck-refresh` events all fire in
+  Phase 1 (`19:25`, `19:42`, `20:01`, `20:21`, `20:47`, `21:38`); none fire
+  in Phase 2. The bot's `stuckCount` mechanism increments only when
+  `result.stemHash` is non-null AND equal to `lastStemHash`; failed
+  extractions return `stemHash: null`, so `stuckCount` never accumulates
+  during Phase 2, and the page is never reloaded. **The bot is structurally
+  unable to recover from Phase 2** with its current stuck-refresh contract.
+
+### Cross-check — audit-7 ledger (same instrument family, 4 h vs 8 h)
+
+`chaos-reports/v4-long/audit7_2026-05-18/chaos-doctor-v4-2026-05-18T09-29-42-226Z.json`:
+
+- Duration 4 h, 1 worker, 569 `qsAnswered`.
+- Per-15-min buckets across the full run: **flat at 32–40 successful Qs
+  per 15-min window**. No tail-off in the final 30 min (32, 36, 38, 36, 37
+  → last partial minute 1). Audit-7 **did not** hit the Phase-2 collapse.
+- Audit-7 ran *before* `cc85f91` (PRE-STEP): the `pre-pick-skip` bug-type
+  did not exist in its bot (`git show cc85f91 -- scripts/chaos-doctor-bot-v4.mjs`
+  shows the row being **added**; before #235 the same condition was a
+  silent `return { advanced: false, stemHash: null }`). So audit-7's ledger
+  cannot disprove that *some* extractions failed; it can only show that the
+  bot kept producing successful Qs at a flat rate to the end.
+
+The 4 h window puts the Phase-2 onset somewhere in `[3.2 h, > 4 h]`. It is
+not 0 % steady-state ("88 % extraction failure"), and not deterministically
+4 h either — it is a duration-gated, intermittent state corruption with no
+visible trigger in the available telemetry.
+
+### What this means for R1's locked procedure
+
+- **Hypothesis 2** (gate §"HYPOTHESES" item 2): "Something regressed
+  between audit-7 (4 h) and audit-8 (8 h)" was a "bisect signal, not a
+  measured regression magnitude." Disk evidence promotes it from
+  *unverified* to **structurally refuted**: the bisect window has no
+  monolith changes and the only relevant bot change was *adding the
+  telemetry*. The 4× G2 shortfall (30 vs the projected 110–130) is
+  consistent with audit-8 having spent ~4.7 h of its 8 h budget in a
+  failure mode that audit-7's 4 h budget never entered, not with a
+  per-question extraction regression.
+- **Hypothesis 1** (gate §0.3): "live-DOM / practice-surface drift"
+  is **not testable** by R1.0b on disk evidence — both sides of the
+  pre-registered comparison are byte-identical.
+- **R1.2 GREEN criterion** (gate §1.2): projects N_drop from a short
+  (≈ 15 min) post-fix probe via *reached-pick rate × drop-fraction*. A
+  short probe **systematically samples Phase 1 only** (Phase-2 onset is
+  ≥ 3.2 h). The projection is therefore not honest for a fix that targets
+  Phase-2 — it would over-state the recovered yield. This is exactly the
+  REV1.1 "denominator-shrink / criterion-swap-by-silence in the likely
+  branch" trap, applied to the rate-projection side.
+
+### Why no fix is shipped in this PR
+
+The smallest plausible scoped fix — a `null-stemHash`-aware consecutive
+`pre-pick-skip` counter that triggers `page.reload()` after N (5? 10?)
+events — would bound the blast radius of Phase-2 (Phase-2 events ride at
+~4.5 s each, so N=10 → ~45 s lost before recovery) without addressing the
+unknown trigger. That is a legitimate option, but adopting it inside this
+PR has two problems:
+
+1. **GREEN criterion math becomes structurally non-validating.** A 15-min
+   probe never enters Phase 2, so cannot witness the recovery-on-reload
+   path firing; "rate × duration projection from a non-representative
+   window" is the spec-provenance trap REV1.1 calls out
+   (`feedback_pre_commit_diagnostic_gates`).
+2. **Trigger remains unknown.** Without a reproducible trigger, the fix is
+   resilience-only, not causal — and the gate's R1 is *named* "extraction-
+   yield repair," not "bot resilience patch." Re-naming silently inside R1
+   would be the same provenance violation, just on a different axis.
+
+The honest action under §6 bail #1 (whose *action* is "document and
+surface, do not fabricate a fix") is to ship the probe + appended RESULT
+and let the gate author decide between two pre-registered branches (open
+question §below).
+
+### What this PR ships
+
+- `scripts/chaos-doctor-bot-v4.mjs`: minimal `export` keyword added to
+  `extractQuestion` and `ensureOnPracticeQuiz`. Regex-grep tests
+  (`chaosBotV4ModalDismiss.test.js`) still match — `async function` prefix
+  preserved. Bot CLI behavior unchanged (still gated by `isMain`).
+- `scripts/audit8/r1RedProbe.mjs`: the R1.0 RED probe, configurable via
+  `R1_PROBE_URL` / `R1_PROBE_N` / `R1_PROBE_HEADLESS` / `R1_PROBE_OUT` /
+  `R1_PROBE_LABEL` / `R1_PROBE_READ_PAUSE_MS` / `R1_PROBE_FORENSIC_SAMPLES`.
+  Default-emits JSON to `chaos-reports/r1RedProbe/<label>-<ts>.json`
+  (gitignored path; output is forensic, regenerable by re-running the
+  probe).
+- This appended R1 RESULT.
+- **Not shipped:** no fix to the bot, no fix to the monolith, no new test
+  pin (no fix → nothing to pin; the existing 21 chaosBotV4 tests stay
+  green).
+
+### Open question for the gate author (binding routing decision)
+
+Two pre-registered branches, neither selected here:
+
+- **Option A — close R1 findings-only.** R1's locked procedure (RED →
+  bisect → fix) is empirically empty given the disk evidence above.
+  Author an R1.5 (its own gate) re-registering a procedure that targets
+  the actual failure mode — a long-duration probe (≥ 4 h) with
+  screenshot-on-`pre-pick-skip`-streak + `pageerror`/`console` capture +
+  DOM-state dump on the *first* `pre-pick-skip` after a successful Q
+  (the transition itself), to give the next session telemetry the trigger
+  currently lacks. R2 and R3 stay blocked behind R1.5 closing.
+- **Option B — accept a scoped bot resilience patch as R1's fix.**
+  Add a `null-stemHash` consecutive-skip counter + `page.reload()` to
+  `runWorker`. Trinity untouched (bot-only, mirrors #235). Acknowledge in
+  R1.2 RESULT that the GREEN criterion is **not** rate-projection-validated
+  (the short probe cannot witness Phase 2); validation is via (a) unit
+  test of the new counter+reload contract, (b) projection from audit-8's
+  *Phase-1* rate × 8 h (2.5 Qs / min × 480 min ≈ 1200 reach-pick;
+  with audit-8's 5.9 % `ai-parse-error/pick` drop fraction ≈ **71 drops**
+  — still under G2's 80, **option B is not on its own a green outcome**,
+  it is a precondition for a follow-up surface that lifts drop-rate
+  separately or a longer R3). Re-naming the gate's R1 silently to "bot
+  resilience" is forbidden; the doc must say so.
+
+**The session author cannot select between A and B inside R1's
+pre-registered scope — it requires the gate author's call** (this is
+exactly the `feedback_design_gate_option_3_bias` carve-out applied to a
+gate-level routing decision, not a tactical implementation choice).
+
+### Trinity + verify
+
+- `npm run verify` green on this branch (`shlav-a-mega.html` + `sw.js` +
+  `package.json` untouched; the 6 non-vitest checks dominate before the
+  vitest tail; the chaos-bot test trio is the most-relevant slice and is
+  21/21 green).
+- No `verify-deploy.sh` post-merge: this is a docs + scripts PR, no
+  monolith change, no Pages cache to verify.
+
+### Provenance
+
+Append-only addition under the gate's pre-registered HTML-comment marker.
+R1 section above this line: **not edited**. R2 / R3 sections: still
+pending their own session's appended RESULT block.
+
