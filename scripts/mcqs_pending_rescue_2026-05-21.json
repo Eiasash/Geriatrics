@@ -127,13 +127,13 @@
       "Increase apixaban dose",
       "Switch to warfarin"
     ],
-    "c": 1,
+    "c": 0,
     "t": "SZMC-Rescue",
     "ti": 41,
     "tis": [
       41
     ],
-    "e": "Amiodarone inhibits P-glycoprotein and CYP3A4, increasing apixaban levels. Empirically reduce apixaban by 50% and monitor for bleeding.",
+    "e": "Amiodarone is not a strong dual inhibitor of P-glycoprotein and CYP3A4 (it is a moderate P-gp / weak CYP3A4 inhibitor), so it does not meet the threshold that triggers an apixaban dose reduction. Per the apixaban (Eliquis) label, a drug-interaction dose reduction applies only with strong dual P-gp + CYP3A4 inhibitors — ketoconazole, itraconazole, ritonavir, clarithromycin. The correct action is to continue the current apixaban dose and monitor for bleeding. This is separate from the patient-factor reduction to 2.5 mg BID, triggered by ≥2 of: age ≥80, weight ≤60 kg, creatinine ≥1.5 mg/dL.",
     "ref": "",
     "_source": "R7",
     "_orig_id": "SA006",
@@ -141,7 +141,8 @@
     "_lang": "en",
     "_ti_confidence": "high",
     "_c_resolved": "direct",
-    "_dup_likely": false
+    "_dup_likely": false,
+    "_audit_fix": "2026-05-22 audit: re-keyed B->A; explanation corrected — amiodarone is not a strong dual P-gp+CYP3A4 inhibitor, so no apixaban dose change."
   },
   {
     "q": "A 94-year-old man has 10kg weight loss over 6 months. Initial labs normal. What is the most appropriate next step?",
@@ -493,7 +494,7 @@
     "tis": [
       17
     ],
-    "e": "Apixaban is preferred in elderly patients with high stroke risk. Lower bleeding risk compared to warfarin, once-daily dosing improves compliance.",
+    "e": "Apixaban is preferred in elderly patients with high stroke risk: lower major bleeding risk than warfarin (ARISTOTLE) and no INR monitoring. It is dosed twice daily — 5 mg BID, reduced to 2.5 mg BID if ≥2 of age ≥80, weight ≤60 kg, creatinine ≥1.5 mg/dL — never once daily.",
     "ref": "",
     "_source": "R13",
     "_orig_id": "br001",
@@ -508,10 +509,11 @@
     "_refs_orig": [
       "ARISTOTLE trial",
       "ESC Guidelines 2020"
-    ]
+    ],
+    "_audit_fix": "2026-05-22 audit: explanation corrected — apixaban is BID, not once-daily."
   },
   {
-    "q": "A 78-year-old man with mild cognitive impairment scores 22/30 on MMSE. His wife reports he gets lost driving to familiar places. What is the most likely diagnosis?",
+    "q": "A 78-year-old man scores 22/30 on MMSE. His wife reports he gets lost driving to familiar places. What is the most likely diagnosis?",
     "o": [
       "Normal aging",
       "Mild cognitive impairment",
@@ -534,12 +536,12 @@
     "_c_resolved": "direct",
     "_dup_likely": false,
     "_r13_array": "boardReview",
-    "_q_he": "גבר בן 78 עם ירידה קוגניטיבית קלה מקבל 22/30 ב-MMSE. אשתו מדווחת שהוא מתבלבל בנהיגה למקומות מוכרים. מה האבחנה הסבירה?",
     "_e_he": "התבלבלות במקומות מוכרים מעידה על דיסאוריינטציה טופוגרפית, סימן לאלצהיימר מוקדם.",
     "_refs_orig": [
       "NIA-AA criteria 2018",
       "Lancet Neurology 2021"
-    ]
+    ],
+    "_audit_fix": "2026-05-22 audit: removed self-contradicting \"mild cognitive impairment\" from stem."
   },
   {
     "q": "According to STOPP criteria, which medication should be discontinued in an 85-year-old with recurrent falls?",
@@ -982,32 +984,6 @@
     "_israeli_context": "Israeli guardianship laws require medical evaluation. Religious authorities may be consulted for Halachic guidance."
   },
   {
-    "q": "A 75-year-old patient in Clalit HMO needs cardiac rehabilitation after MI. What is the typical access pattern in Israeli healthcare?",
-    "o": [
-      "Direct self-referral to rehabilitation center",
-      "Cardiologist referral through Kupat Holim system",
-      "Private payment required for all services",
-      "Only available in private healthcare"
-    ],
-    "c": 1,
-    "t": "SZMC-Rescue",
-    "ti": 35,
-    "tis": [
-      35
-    ],
-    "e": "In Israeli healthcare system, cardiac rehabilitation requires specialist referral through the Kupat Holim (HMO) system. Clalit, as the largest HMO, has comprehensive cardiac rehabilitation programs covered under basic health insurance.",
-    "ref": "",
-    "_source": "R19",
-    "_orig_id": "R19#2",
-    "_category": "Israeli Healthcare System",
-    "_lang": "en",
-    "_ti_confidence": "med",
-    "_c_resolved": "direct",
-    "_dup_likely": false,
-    "_opt_prefix_stripped": true,
-    "_israeli_context": "All four Kupot Holim provide cardiac rehabilitation. Wait times and accessibility vary by geographic region and HMO."
-  },
-  {
     "q": "According to AGS Beers Criteria 2023, which medication should be avoided in elderly patients with dementia?",
     "o": [
       "Donepezil",
@@ -1058,32 +1034,6 @@
     "_dup_likely": false,
     "_opt_prefix_stripped": true,
     "_israeli_context": "Israeli hospitals have dedicated orthopedic geriatric units. Magen David Adom provides specialized elderly transport protocols."
-  },
-  {
-    "q": "In Israeli nursing homes, what is the minimum frequency for physician visits according to Ministry of Health regulations?",
-    "o": [
-      "Daily visits required",
-      "Weekly visits minimum",
-      "Monthly visits sufficient",
-      "As needed basis only"
-    ],
-    "c": 1,
-    "t": "SZMC-Rescue",
-    "ti": 35,
-    "tis": [
-      35
-    ],
-    "e": "Israeli Ministry of Health regulations require weekly physician visits minimum in nursing homes, with more frequent visits for unstable patients.",
-    "ref": "",
-    "_source": "R19",
-    "_orig_id": "R19#5",
-    "_category": "Israeli Healthcare System",
-    "_lang": "en",
-    "_ti_confidence": "med",
-    "_c_resolved": "direct",
-    "_dup_likely": false,
-    "_opt_prefix_stripped": true,
-    "_israeli_context": "Regulations vary by facility type. Skilled nursing facilities require more frequent physician oversight than assisted living."
   },
   {
     "q": "An 82-year-old woman with dementia, hypertension, and insomnia is on lorazepam 1mg nightly. According to Beers Criteria 2023, what is the PRIMARY concern?",
@@ -1464,17 +1414,17 @@
     "q": "Braden Scale score indicating HIGH risk for pressure ulcers?",
     "o": [
       "<9",
-      "<12",
+      "≤12",
       "<15",
       "<18"
     ],
-    "c": 2,
+    "c": 1,
     "t": "SZMC-Rescue",
     "ti": 10,
     "tis": [
       10
     ],
-    "e": "Braden: ≤9 very high risk, 10-12 high risk, 13-14 moderate, 15-18 mild risk",
+    "e": "On the Braden Scale (Bergstrom), lower scores mean higher pressure-ulcer risk: ≤9 very high, 10–12 high, 13–14 moderate, 15–18 mild, 19–23 no risk. A score ≤12 falls in the high (or very-high) risk range and warrants active pressure-ulcer prevention.",
     "ref": "",
     "_source": "R20",
     "_orig_id": "R20#16",
@@ -1483,7 +1433,8 @@
     "_ti_confidence": "high",
     "_c_resolved": "exact",
     "_dup_likely": false,
-    "_difficulty": 3
+    "_difficulty": 3,
+    "_audit_fix": "2026-05-22 audit: re-keyed C->B; option B \"<12\" -> \"≤12\"; HIGH risk = Braden ≤12. Re-audit: summary reworded — ≤12 spans high+very-high."
   },
   {
     "q": "First-line treatment for urge incontinence in elderly after behavioral therapy fails?",
@@ -1761,7 +1712,7 @@
     "_difficulty": 3
   },
   {
-    "q": "Which condition is absolute contraindication to driving?",
+    "q": "Which condition is most likely to require a driving restriction?",
     "o": [
       "Mild cognitive impairment",
       "Seizure 3 months ago",
@@ -1783,7 +1734,8 @@
     "_ti_confidence": "high",
     "_c_resolved": "exact",
     "_dup_likely": false,
-    "_difficulty": 3
+    "_difficulty": 3,
+    "_audit_fix": "2026-05-22 audit: \"absolute contraindication\" -> \"most likely to require a driving restriction\"."
   },
   {
     "q": "Most common type of elder abuse?",
@@ -1968,13 +1920,13 @@
       "MRI prostate",
       "Observation only"
     ],
-    "c": 1,
+    "c": 2,
     "t": "SZMC-Rescue",
     "ti": 0,
     "tis": [
       0
     ],
-    "e": "With <10 year life expectancy, confirm PSA elevation before invasive testing",
+    "e": "A PSA rising from 4 to 12 ng/mL over two years is a confirmed, significant elevation — not lab noise — so repeating the PSA only delays workup. Current AUA/NCCN guidance recommends multiparametric prostate MRI before biopsy: it localizes suspicious lesions, guides targeted biopsy, and can spare some men a biopsy. With ~8-year life expectancy a clinically significant cancer remains relevant, so mpMRI is the appropriate next step.",
     "ref": "",
     "_source": "R20",
     "_orig_id": "R20#36",
@@ -1983,7 +1935,8 @@
     "_ti_confidence": "med",
     "_c_resolved": "exact",
     "_dup_likely": false,
-    "_difficulty": 4
+    "_difficulty": 4,
+    "_audit_fix": "2026-05-22 audit: re-keyed B->C (mpMRI before biopsy, AUA/NCCN). JUDGMENT CALL."
   },
   {
     "q": "85-year-old woman, recurrent UTIs, post-void residual 250mL. Which medication to STOP?",
