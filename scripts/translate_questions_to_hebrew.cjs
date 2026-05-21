@@ -22,16 +22,22 @@
  *   --dry-run        Print 1-2 sample translations to stdout, don't write
  *   --limit N        Translate only the first N matching questions (default: 5)
  *   --tag TAG        Only translate questions with q.t === TAG (default: Hazzard)
- *                    Valid: Hazzard | Harrison | GRS8 | Hazzard-suppl
- *   --mode MODE      'in-place' = overwrite q/o/e with Hebrew (default)
- *                    'bilingual' = add qHe/oHe/eHe alongside originals (reversible)
+ *                    Valid: Hazzard | Harrison | GRS8 | Hazzard-suppl | SZMC-Rescue
+ *   --mode MODE      'in-place'  = overwrite q/o/e with Hebrew (default)
+ *                    'bilingual' = Hebrew primary in q/o/e + English preserved in
+ *                                  q_en/o_en/e_en (the v10.64.60 paired-variant
+ *                                  schema the app's Heb<->Eng toggle reads)
+ *   --file PATH      Translate a JSON-array file other than data/questions.json
+ *                    (e.g. a rescued-MCQ staging file). A non-default --file is
+ *                    written back pretty-printed.
  *   --delay N        Milliseconds between batches (default: 500)
  *   --help           Show this help
  *
  * Safety:
- *   - Every run creates data/questions.json.bak-PRE-HE-TRANSLATE-<ISO> before writing.
+ *   - Every run creates <target>.bak-PRE-HE-TRANSLATE-<ISO> before writing.
  *   - --dry-run shows samples to stdout and exits without touching disk.
- *   - Bilingual mode is reversible: just delete the qHe/oHe/eHe fields to revert.
+ *   - Bilingual mode keeps the English in q_en/o_en/e_en — revert by copying
+ *     those back to q/o/e and deleting the _en fields.
  */
 
 const fs    = require('fs');
@@ -155,8 +161,16 @@ const TAG     = arg('--tag', 'Hazzard');
 const MODE    = arg('--mode', 'in-place');
 const DELAY_MS = Number(arg('--delay', '500'));
 
-if (!['Hazzard','Harrison','GRS8','Hazzard-suppl'].includes(TAG)) {
-  console.error(`bad --tag "${TAG}". Valid: Hazzard | Harrison | GRS8 | Hazzard-suppl`);
+// --file lets the script target a JSON-array file other than data/questions.json
+// (e.g. a rescued-MCQ staging file). A non-default target is written back
+// pretty-printed; data/questions.json keeps its minified form (it has a separate
+// Python format pass — see the end-of-run hint).
+const TARGET    = path.resolve(arg('--file', QUESTIONS_PATH));
+const PRETTY    = TARGET !== QUESTIONS_PATH;
+const serialize = (arr) => (PRETTY ? JSON.stringify(arr, null, 2) : JSON.stringify(arr)) + '\n';
+
+if (!['Hazzard','Harrison','GRS8','Hazzard-suppl','SZMC-Rescue'].includes(TAG)) {
+  console.error(`bad --tag "${TAG}". Valid: Hazzard | Harrison | GRS8 | Hazzard-suppl | SZMC-Rescue`);
   process.exit(1);
 }
 if (!['in-place','bilingual'].includes(MODE)) {
@@ -229,7 +243,7 @@ function extractJson(text) {
 
 async function main() {
   const apiKey = DRY_RUN ? 'dry' : getApiKey();
-  const allQs = JSON.parse(fs.readFileSync(QUESTIONS_PATH, 'utf8'));
+  const allQs = JSON.parse(fs.readFileSync(TARGET, 'utf8'));
 
   // English-only filter: <30% Hebrew chars in q+o
   const HEB_RE = /[֐-׿]/g;
@@ -249,7 +263,7 @@ async function main() {
   const candidates = allQs
     .map((q, i) => ({ q, i }))
     .filter(({ q, i }) => q.t === TAG && isEnglish(q) && !SKIP_INDICES.has(i))
-    .filter(({ q }) => MODE === 'in-place' || !q.qHe);
+    .filter(({ q }) => MODE === 'in-place' || !q.q_en);
 
   console.log(`tag=${TAG} mode=${MODE} candidates=${candidates.length} limit=${LIMIT} dry-run=${DRY_RUN}`);
   const todo = candidates.slice(0, LIMIT);
@@ -271,8 +285,8 @@ async function main() {
 
   // Backup before writing
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const backupPath = QUESTIONS_PATH + '.bak-PRE-HE-TRANSLATE-' + stamp;
-  fs.copyFileSync(QUESTIONS_PATH, backupPath);
+  const backupPath = TARGET + '.bak-PRE-HE-TRANSLATE-' + stamp;
+  fs.copyFileSync(TARGET, backupPath);
   console.log(`Backup saved: ${path.basename(backupPath)}`);
 
   let done = 0, failed = 0;
@@ -297,9 +311,15 @@ async function main() {
           target.o = r.obj.o;
           if (typeof r.obj.e === 'string' && r.obj.e.length) target.e = r.obj.e;
         } else {
-          target.qHe = r.obj.q;
-          target.oHe = r.obj.o;
-          if (typeof r.obj.e === 'string' && r.obj.e.length) target.eHe = r.obj.e;
+          // bilingual: snapshot the English original into the q_en/o_en/e_en
+          // paired-variant fields, then install Hebrew as the primary q/o/e.
+          // This is the v10.64.60 schema the app's Heb<->Eng toggle reads.
+          target.q_en = target.q;
+          target.o_en = target.o;
+          if (typeof target.e === 'string' && target.e.length) target.e_en = target.e;
+          target.q = r.obj.q;
+          target.o = r.obj.o;
+          if (typeof r.obj.e === 'string' && r.obj.e.length) target.e = r.obj.e;
         }
         done++;
       } else {
@@ -309,17 +329,19 @@ async function main() {
     }
 
     if ((done + failed) % SAVE_EVERY === 0 || off + BATCH_SIZE >= todo.length) {
-      fs.writeFileSync(QUESTIONS_PATH, JSON.stringify(allQs) + '\n');
+      fs.writeFileSync(TARGET, serialize(allQs));
       console.log(`  checkpoint: done=${done} failed=${failed} (of ${todo.length})`);
     }
     if (off + BATCH_SIZE < todo.length) await new Promise((r) => setTimeout(r, DELAY_MS));
   }
 
-  fs.writeFileSync(QUESTIONS_PATH, JSON.stringify(allQs) + '\n');
+  fs.writeFileSync(TARGET, serialize(allQs));
   console.log(`\nDone: ${done} translated, ${failed} failed (of ${todo.length}).`);
   console.log(`Backup at: ${backupPath}`);
-  console.log('Next: re-format questions.json (each option per line) before commit:');
-  console.log(`  PYTHONUTF8=1 python3 -c "import json;p=r'${QUESTIONS_PATH.replace(/\\/g,'/')}';d=json.load(open(p,'r',encoding='utf-8'));# (use repo's existing format pass)"`);
+  if (!PRETTY) {
+    console.log('Next: re-format questions.json (each option per line) before commit:');
+    console.log(`  PYTHONUTF8=1 python3 -c "import json;p=r'${QUESTIONS_PATH.replace(/\\/g,'/')}';d=json.load(open(p,'r',encoding='utf-8'));# (use repo's existing format pass)"`);
+  }
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

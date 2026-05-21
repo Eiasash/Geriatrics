@@ -282,3 +282,29 @@ describe('v10.64.60 — translator skip-list pin (Sonnet mojibake guard)', () =>
     expect(script).toMatch(/!SKIP_INDICES\.has\(/);
   });
 });
+
+describe('translator bilingual mode — q_en/o_en/e_en schema pin', () => {
+  // The script's bilingual mode predated the v10.64.60 paired-variant schema:
+  // it used to write qHe/oHe/eHe, which the app's Heb<->Eng toggle never read
+  // (0 of 1,867 live bilingual Qs use it). It was fixed to write the real
+  // q_en/o_en/e_en schema. This pin prevents a silent regression to the dead
+  // form — a translation run on the stale script ships toggle-less Hebrew.
+  const scriptPath = resolve(ROOT, 'scripts/translate_questions_to_hebrew.cjs');
+  const script = readFileSync(scriptPath, 'utf-8');
+
+  it('bilingual mode writes the q_en/o_en/e_en production schema', () => {
+    expect(script).toMatch(/target\.q_en\s*=/);
+    expect(script).toMatch(/target\.o_en\s*=/);
+    expect(script).toMatch(/target\.e_en\s*=/);
+  });
+
+  it('bilingual mode no longer writes the dead qHe/oHe/eHe schema', () => {
+    expect(script).not.toMatch(/target\.qHe\s*=/);
+    expect(script).not.toMatch(/target\.oHe\s*=/);
+    expect(script).not.toMatch(/target\.eHe\s*=/);
+  });
+
+  it('--tag allowlist includes SZMC-Rescue (rescued-MCQ staging tag)', () => {
+    expect(script).toMatch(/'SZMC-Rescue'/);
+  });
+});
