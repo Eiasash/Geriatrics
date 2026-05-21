@@ -1920,13 +1920,13 @@
       "MRI prostate",
       "Observation only"
     ],
-    "c": 2,
+    "c": 1,
     "t": "SZMC-Rescue",
     "ti": 0,
     "tis": [
       0
     ],
-    "e": "A PSA rising from 4 to 12 ng/mL over two years is a confirmed, significant elevation — not lab noise — so repeating the PSA only delays workup. Current AUA/NCCN guidance recommends multiparametric prostate MRI before biopsy: it localizes suspicious lesions, guides targeted biopsy, and can spare some men a biopsy. With ~8-year life expectancy a clinically significant cancer remains relevant, so mpMRI is the appropriate next step.",
+    "e": "An isolated newly-elevated PSA should be confirmed with a repeat measurement before invasive or expensive workup — a meaningful fraction of elevated PSAs fall on retesting (transient prostatitis, recent instrumentation, lab variation). Repeating the PSA is the next step; it precedes prostate MRI and biopsy in the diagnostic sequence. In a 78-year-old who is asymptomatic with ~8-year life expectancy this confirm-first approach is especially appropriate. If the PSA stays elevated, multiparametric prostate MRI before targeted biopsy is the subsequent step (AUA 2023 / NCCN Prostate Cancer Early Detection).",
     "ref": "",
     "_source": "R20",
     "_orig_id": "R20#36",
@@ -1936,7 +1936,7 @@
     "_c_resolved": "exact",
     "_dup_likely": false,
     "_difficulty": 4,
-    "_audit_fix": "2026-05-22 audit: re-keyed B->C (mpMRI before biopsy, AUA/NCCN). JUDGMENT CALL."
+    "_audit_fix": "2026-05-22 audit: explanation rewritten to justify repeat-PSA as the next step. Codex P1 re-review: re-key B->C reverted — repeat PSA precedes imaging for a single new elevation; original key c=1 retained."
   },
   {
     "q": "85-year-old woman, recurrent UTIs, post-void residual 250mL. Which medication to STOP?",
