@@ -9,9 +9,9 @@
     ],
     "c": 2,
     "t": "SZMC-Rescue",
-    "ti": 6,
+    "ti": 29,
     "tis": [
-      6
+      29
     ],
     "e": "The most appropriate action is to hold a multidisciplinary family meeting involving the medical team, social work, and a hospital-affiliated Rabbi or ethics consultant to navigate the conflict between the patient's medical needs and the family's religious requirements.",
     "ref": "",
@@ -33,9 +33,9 @@
     ],
     "c": 1,
     "t": "SZMC-Rescue",
-    "ti": 40,
+    "ti": 8,
     "tis": [
-      40
+      8
     ],
     "e": "The patient's symptoms are classic for severe anticholinergic toxicity. Oxybutynin is a potent anticholinergic that causes delirium and worsens urinary retention in BPH. It should be stopped immediately.",
     "ref": "",
@@ -43,7 +43,7 @@
     "_orig_id": "SA002",
     "_category": "Pharmacology",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "direct",
     "_dup_likely": false
   },
@@ -57,9 +57,9 @@
     ],
     "c": 2,
     "t": "SZMC-Rescue",
-    "ti": 17,
+    "ti": 35,
     "tis": [
-      17
+      35
     ],
     "e": "Given her age, recent surgery, and challenging living situation, inpatient rehabilitation ('shikum') is essential to regain function and plan safe community transition.",
     "ref": "",
@@ -67,7 +67,7 @@
     "_orig_id": "SA003",
     "_category": "Discharge Planning",
     "_lang": "en",
-    "_ti_confidence": "med",
+    "_ti_confidence": "low",
     "_c_resolved": "direct",
     "_dup_likely": false
   },
@@ -81,9 +81,9 @@
     ],
     "c": 2,
     "t": "SZMC-Rescue",
-    "ti": 18,
+    "ti": 8,
     "tis": [
-      18
+      8
     ],
     "e": "NSAIDs and colchicine are contraindicated with severe CKD and heart failure. Short-course oral corticosteroids or intra-articular injection are safest.",
     "ref": "",
@@ -91,7 +91,7 @@
     "_orig_id": "SA004",
     "_category": "Pharmacology",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "low",
     "_c_resolved": "direct",
     "_dup_likely": false
   },
@@ -259,7 +259,7 @@
     "_orig_id": "SA011",
     "_category": "Cardiovascular",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "low",
     "_c_resolved": "direct",
     "_dup_likely": false
   },
@@ -273,9 +273,9 @@
     ],
     "c": 1,
     "t": "SZMC-Rescue",
-    "ti": 26,
+    "ti": 14,
     "tis": [
-      26
+      14
     ],
     "e": "Tamoxifen (SERM) significantly increases VTE risk. Unilateral leg swelling suggests DVT requiring urgent Doppler ultrasound.",
     "ref": "",
@@ -283,7 +283,7 @@
     "_orig_id": "SA012",
     "_category": "Oncology",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "direct",
     "_dup_likely": false
   },
@@ -355,7 +355,7 @@
     "_orig_id": "SA015",
     "_category": "Infectious Disease",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "direct",
     "_dup_likely": false
   },
@@ -369,9 +369,9 @@
     ],
     "c": 1,
     "t": "SZMC-Rescue",
-    "ti": 21,
+    "ti": 8,
     "tis": [
-      21
+      8
     ],
     "e": "LAMAs like tiotropium are anticholinergic, causing dry mouth and urinary retention, especially with BPH.",
     "ref": "",
@@ -379,7 +379,7 @@
     "_orig_id": "SA016",
     "_category": "Pulmonary",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "direct",
     "_dup_likely": false
   },
@@ -489,9 +489,9 @@
     ],
     "c": 1,
     "t": "SZMC-Rescue",
-    "ti": 41,
+    "ti": 17,
     "tis": [
-      41
+      17
     ],
     "e": "Apixaban is preferred in elderly patients with high stroke risk. Lower bleeding risk compared to warfarin, once-daily dosing improves compliance.",
     "ref": "",
@@ -499,7 +499,7 @@
     "_orig_id": "br001",
     "_category": "Cardiovascular",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "low",
     "_c_resolved": "direct",
     "_dup_likely": false,
     "_r13_array": "boardReview",
@@ -561,7 +561,7 @@
     "_orig_id": "br003",
     "_category": "Polypharmacy",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "direct",
     "_dup_likely": false,
     "_r13_array": "boardReview",
@@ -733,7 +733,7 @@
     "_orig_id": "R13#clinicalCases#case001#stage4",
     "_category": "Dementia",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "direct",
     "_dup_likely": false,
     "_r13_array": "clinicalCases",
@@ -787,7 +787,7 @@
     "_orig_id": "R13#clinicalCases#case002#stage2",
     "_category": "Delirium",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "direct",
     "_dup_likely": false,
     "_r13_array": "clinicalCases",
@@ -939,9 +939,9 @@
     ],
     "c": 2,
     "t": "SZMC-Rescue",
-    "ti": 5,
+    "ti": 2,
     "tis": [
-      5
+      2
     ],
     "e": "In acute confusion in elderly patients, delirium should be suspected first. A comprehensive delirium assessment using tools like CAM (Confusion Assessment Method) is the appropriate first step. This patient shows acute onset and fluctuation, key features of delirium.",
     "ref": "",
@@ -949,7 +949,7 @@
     "_orig_id": "R19#0",
     "_category": "Geriatric Syndromes",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "direct",
     "_dup_likely": false,
     "_opt_prefix_stripped": true,
@@ -991,9 +991,9 @@
     ],
     "c": 1,
     "t": "SZMC-Rescue",
-    "ti": 17,
+    "ti": 35,
     "tis": [
-      17
+      35
     ],
     "e": "In Israeli healthcare system, cardiac rehabilitation requires specialist referral through the Kupat Holim (HMO) system. Clalit, as the largest HMO, has comprehensive cardiac rehabilitation programs covered under basic health insurance.",
     "ref": "",
@@ -1001,7 +1001,7 @@
     "_orig_id": "R19#2",
     "_category": "Israeli Healthcare System",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "direct",
     "_dup_likely": false,
     "_opt_prefix_stripped": true,
@@ -1017,9 +1017,9 @@
     ],
     "c": 1,
     "t": "SZMC-Rescue",
-    "ti": 6,
+    "ti": 8,
     "tis": [
-      6
+      8
     ],
     "e": "Diphenhydramine is a first-generation antihistamine with strong anticholinergic properties and is listed in AGS Beers Criteria as potentially inappropriate for elderly patients, especially those with dementia.",
     "ref": "",
@@ -1043,9 +1043,9 @@
     ],
     "c": 0,
     "t": "SZMC-Rescue",
-    "ti": 4,
+    "ti": 16,
     "tis": [
-      4
+      16
     ],
     "e": "Israeli guidelines align with international standards recommending surgery within 48 hours for hip fractures in elderly patients to minimize complications and improve outcomes.",
     "ref": "",
@@ -1069,9 +1069,9 @@
     ],
     "c": 1,
     "t": "SZMC-Rescue",
-    "ti": 17,
+    "ti": 35,
     "tis": [
-      17
+      35
     ],
     "e": "Israeli Ministry of Health regulations require weekly physician visits minimum in nursing homes, with more frequent visits for unstable patients.",
     "ref": "",
@@ -1105,7 +1105,7 @@
     "_orig_id": "R20#1",
     "_category": "Polypharmacy",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "exact",
     "_dup_likely": false,
     "_difficulty": 3
@@ -1120,9 +1120,9 @@
     ],
     "c": 2,
     "t": "SZMC-Rescue",
-    "ti": 19,
+    "ti": 8,
     "tis": [
-      19
+      8
     ],
     "e": "Alpha-blockers like doxazosin cause high risk of orthostatic hypotension in elderly",
     "ref": "",
@@ -1130,7 +1130,7 @@
     "_orig_id": "R20#2",
     "_category": "Polypharmacy",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "low",
     "_c_resolved": "exact",
     "_dup_likely": false,
     "_difficulty": 3
@@ -1145,9 +1145,9 @@
     ],
     "c": 1,
     "t": "SZMC-Rescue",
-    "ti": 5,
+    "ti": 2,
     "tis": [
-      5
+      2
     ],
     "e": "CAM is the validated tool for diagnosing delirium with 94-100% sensitivity",
     "ref": "",
@@ -1155,7 +1155,7 @@
     "_orig_id": "R20#3",
     "_category": "Geriatric Syndromes",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "low",
     "_c_resolved": "exact",
     "_dup_likely": false,
     "_difficulty": 2
@@ -1455,7 +1455,7 @@
     "_orig_id": "R20#15",
     "_category": "Cardiovascular",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "low",
     "_c_resolved": "exact",
     "_dup_likely": false,
     "_difficulty": 2
@@ -1595,9 +1595,9 @@
     ],
     "c": 1,
     "t": "SZMC-Rescue",
-    "ti": 44,
+    "ti": 39,
     "tis": [
-      44
+      39
     ],
     "e": "Annual influenza vaccine; others are one-time or series",
     "ref": "",
@@ -1605,7 +1605,7 @@
     "_orig_id": "R20#21",
     "_category": "Prevention",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "exact",
     "_dup_likely": false,
     "_difficulty": 1
@@ -1680,7 +1680,7 @@
     "_orig_id": "R20#24",
     "_category": "Nutrition",
     "_lang": "en",
-    "_ti_confidence": "high",
+    "_ti_confidence": "med",
     "_c_resolved": "exact",
     "_dup_likely": false,
     "_difficulty": 3
@@ -1820,9 +1820,9 @@
     ],
     "c": 1,
     "t": "SZMC-Rescue",
-    "ti": 6,
+    "ti": 29,
     "tis": [
-      6
+      29
     ],
     "e": "POLST (Physician Orders for Life-Sustaining Treatment) for seriously ill/limited prognosis",
     "ref": "",
@@ -1830,7 +1830,7 @@
     "_orig_id": "R20#30",
     "_category": "Ethics",
     "_lang": "en",
-    "_ti_confidence": "med",
+    "_ti_confidence": "low",
     "_c_resolved": "exact",
     "_dup_likely": false,
     "_difficulty": 3

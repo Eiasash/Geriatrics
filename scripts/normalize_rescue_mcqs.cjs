@@ -167,16 +167,30 @@ const CAT_FALLBACK_TI = {
 
 function norm(s) { return String(s == null ? '' : s).replace(/\s+/g, ' ').trim().toLowerCase(); }
 
-/** Best topic index by keyword hits against data/topics.json (canonical vocab). */
-function computeTi(text) {
+/**
+ * Best topic index by keyword hits against data/topics.json (the canonical
+ * 46-topic vocabulary). The rescued file's own `category` is the author's
+ * topic intent — when it maps cleanly to a canonical ti, that ti gets a score
+ * boost so a comorbidity named in the stem (e.g. "dementia" inside an ethics
+ * question) cannot outvote the question's actual subject.
+ * Returns `kwHits` = raw keyword hits at the winning ti, EXCLUDING the boost,
+ * so confidence reflects genuine text corroboration.
+ */
+const CAT_BOOST = 3;
+function computeTi(text, category) {
   const hay = String(text).toLowerCase();
-  let bestTi = -1, bestScore = 0;
-  TOPICS.forEach((kws, ti) => {
+  const kwHits = TOPICS.map(kws => {
     let s = 0;
     for (const kw of kws) if (hay.includes(String(kw).toLowerCase())) s++;
-    if (s > bestScore) { bestScore = s; bestTi = ti; }
+    return s;
   });
-  return { ti: bestTi, score: bestScore };
+  const scores = kwHits.slice();
+  const catTi = CAT_FALLBACK_TI[norm(category)];
+  if (catTi != null) scores[catTi] += CAT_BOOST;
+  let bestTi = -1, bestScore = 0;
+  scores.forEach((s, ti) => { if (s > bestScore) { bestScore = s; bestTi = ti; } });
+  if (bestTi < 0) return { ti: -1, kwHits: 0, boosted: false };
+  return { ti: bestTi, kwHits: kwHits[bestTi], boosted: catTi === bestTi };
 }
 
 const OPT_PREFIX = /^[A-Da-d][)\.]\s+/;
@@ -239,14 +253,14 @@ function main() {
       const e = String(raw.e == null ? '' : raw.e).trim();
       if (!e) issues.push('empty explanation');
 
-      const { ti: kTi, score } = computeTi(`${q} ${o.join(' ')} ${raw.cat}`);
+      const { ti: kTi, kwHits } = computeTi(`${q} ${o.join(' ')}`, raw.cat);
       let ti, tiConf;
       if (kTi < 0) {
-        ti = CAT_FALLBACK_TI[norm(raw.cat)] ?? 2;   // 2 = CGA, generic geriatrics
+        ti = 2;            // no keyword hit and no category map → CGA (generic)
         tiConf = 'low';
       } else {
         ti = kTi;
-        tiConf = score >= 2 ? 'high' : 'med';
+        tiConf = kwHits >= 2 ? 'high' : kwHits === 1 ? 'med' : 'low';
       }
       tiDist[ti] = (tiDist[ti] || 0) + 1;
 
