@@ -177,32 +177,40 @@ jobs:
       - name: Check JS syntax with acorn
         run: |
           npm ci
-          node -e "
+          node << 'NODEEOF'
           const fs = require('fs');
           const acorn = require('acorn');
           const html = fs.readFileSync('shlav-a-mega.html','utf8');
-          // Match <script>\\n...\\n</script> blocks. The newline anchors avoid matching
-          // '<script>' inside other scripts' string literals.
-          const re = /<script>\\n([\\s\\S]*?)\\n<\\/script>/g;
-          let m, blocks = 0;
+          // Match each <script ...>...</script> block (multi-line OR single-line,
+          // with or without attributes). Empty/external-src blocks are skipped.
+          // Inline blocks with type='module' are parsed as ES modules so
+          // import/export don't get reported as syntax errors.
+          const re = /<script\b([^>]*)>([\s\S]*?)<\/script>/g;
+          let m, blocks = 0, parsed = 0;
           while ((m = re.exec(html)) !== null) {
             blocks++;
-            const offset = m.index + '<script>\\n'.length;
+            const attrs = m[1];
+            const body = m[2];
+            if (!body.trim()) continue;  // empty / external-src blocks
+            const innerStart = m.index + m[0].indexOf('>') + 1;
+            const isModule = /\btype\s*=\s*["']module["']/.test(attrs);
+            parsed++;
             try {
-              acorn.parse(m[1], { ecmaVersion: 2024, sourceType: 'script' });
+              acorn.parse(body, { ecmaVersion: 2024, sourceType: isModule ? 'module' : 'script' });
             } catch(e) {
               console.error('JS SYNTAX ERROR in inline block #' + blocks +
-                            ' (file offset ' + offset + ') at line ' + e.loc?.line +
-                            ':' + e.loc?.column + ' — ' + e.message);
+                            ' (file offset ' + innerStart + ', sourceType=' +
+                            (isModule ? 'module' : 'script') + ') at line ' +
+                            e.loc?.line + ':' + e.loc?.column + ' — ' + e.message);
               process.exit(1);
             }
           }
-          if (blocks === 0) {
-            console.error('No inline <script> blocks found — extractor regex likely broken');
+          if (parsed === 0) {
+            console.error('No inline-with-body <script> blocks found — extractor regex likely broken');
             process.exit(1);
           }
-          console.log('OK: ' + blocks + ' inline <script> blocks parse without errors');
-          "
+          console.log('OK: ' + blocks + ' total blocks, ' + parsed + ' non-empty parsed without errors');
+          NODEEOF
 
       # ── Tests ──
       - name: Run Vitest tests
