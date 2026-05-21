@@ -18,13 +18,16 @@ const data = JSON.parse(fs.readFileSync(FILE, 'utf-8'));
 describe('mcqs_pending_rescue_2026-05-21.json — rescued-MCQ staging file', () => {
   it('is a non-empty bare array (merge-compatible shape)', () => {
     expect(Array.isArray(data)).toBe(true);
-    expect(data.length).toBe(82);
+    // 82 normalized - 2 dropped (R19#2, R19#5 — unsourceable Israeli regulatory
+    // facts, dropped per the 2026-05-22 mcq-quality-auditor VERIFY findings).
+    expect(data.length).toBe(80);
   });
 
   it('holds the expected per-source counts', () => {
     const bySrc = {};
     for (const r of data) bySrc[r._source] = (bySrc[r._source] || 0) + 1;
-    expect(bySrc).toEqual({ R7: 20, R13: 16, R19: 6, R20: 40 });
+    // R19 is 4 (was 6): R19#2/#5 dropped — see length assertion above.
+    expect(bySrc).toEqual({ R7: 20, R13: 16, R19: 4, R20: 40 });
   });
 
   it('every record carries the canonical questions.json fields', () => {
