@@ -1,0 +1,87 @@
+import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+
+/**
+ * Schema guard for scripts/mcqs_pending_rescue_2026-05-21.json — the staging
+ * file produced by scripts/normalize_rescue_mcqs.cjs from the four rescued MCQ
+ * files (R7/R13/R19/R20) of the 2026-05-21 Phase-4 home-dir cleanup.
+ *
+ * This is a REVIEW STAGING file, not the live corpus. It is intentionally NOT
+ * loaded by the app or by dataIntegrity.test.js. These checks pin the staging
+ * shape so a future merge step has a known, valid input.
+ */
+
+const FILE = 'scripts/mcqs_pending_rescue_2026-05-21.json';
+const data = JSON.parse(fs.readFileSync(FILE, 'utf-8'));
+
+describe('mcqs_pending_rescue_2026-05-21.json — rescued-MCQ staging file', () => {
+  it('is a non-empty bare array (merge-compatible shape)', () => {
+    expect(Array.isArray(data)).toBe(true);
+    expect(data.length).toBe(82);
+  });
+
+  it('holds the expected per-source counts', () => {
+    const bySrc = {};
+    for (const r of data) bySrc[r._source] = (bySrc[r._source] || 0) + 1;
+    expect(bySrc).toEqual({ R7: 20, R13: 16, R19: 6, R20: 40 });
+  });
+
+  it('every record carries the canonical questions.json fields', () => {
+    for (const r of data) {
+      const id = r._orig_id;
+      expect(typeof r.q, id).toBe('string');
+      expect(r.q.trim().length, id).toBeGreaterThan(0);
+      expect(Array.isArray(r.o), id).toBe(true);
+      expect(r.o.length, id).toBe(4);
+      for (const opt of r.o) {
+        expect(typeof opt, id).toBe('string');
+        expect(opt.trim().length, id).toBeGreaterThan(0);
+      }
+      expect(Number.isInteger(r.c), id).toBe(true);
+      expect(r.c, id).toBeGreaterThanOrEqual(0);
+      expect(r.c, id).toBeLessThan(r.o.length);
+      expect(r.t, id).toBe('SZMC-Rescue');
+      expect(Number.isInteger(r.ti), id).toBe(true);
+      expect(r.ti, id).toBeGreaterThanOrEqual(0);
+      expect(r.ti, id).toBeLessThanOrEqual(45);
+      expect(r.tis, id).toEqual([r.ti]);
+      expect(typeof r.e, id).toBe('string');
+      expect(r.e.trim().length, id).toBeGreaterThan(0);
+      expect(typeof r.ref, id).toBe('string');
+    }
+  });
+
+  it('carries provenance metadata on every record', () => {
+    for (const r of data) {
+      expect(['R7', 'R13', 'R19', 'R20']).toContain(r._source);
+      expect(typeof r._orig_id).toBe('string');
+      expect(r._orig_id.length).toBeGreaterThan(0);
+      expect(['direct', 'exact', 'fuzzy', 'UNMATCHED']).toContain(r._c_resolved);
+      expect(['high', 'med', 'low']).toContain(r._ti_confidence);
+      expect(typeof r._dup_likely).toBe('boolean');
+    }
+  });
+
+  it('has unique _orig_id provenance keys', () => {
+    const ids = data.map(r => r._orig_id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('has no leftover "A) " option-letter prefixes (R19 strip regression guard)', () => {
+    const prefix = /^[A-Da-d][)\.]\s/;
+    for (const r of data) {
+      for (const opt of r.o) expect(prefix.test(opt), `${r._orig_id}: "${opt}"`).toBe(false);
+    }
+  });
+
+  it('resolved every R20 free-text answer to a real option (no UNMATCHED)', () => {
+    const r20 = data.filter(r => r._source === 'R20');
+    expect(r20.length).toBe(40);
+    expect(r20.every(r => r._c_resolved === 'exact' || r._c_resolved === 'fuzzy')).toBe(true);
+    expect(data.filter(r => r._c_resolved === 'UNMATCHED')).toEqual([]);
+  });
+
+  it('has zero records flagged with schema problems', () => {
+    expect(data.filter(r => r._needs_review).map(r => r._orig_id)).toEqual([]);
+  });
+});
