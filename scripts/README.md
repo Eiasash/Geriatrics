@@ -47,7 +47,12 @@ Generates a JSON file with validated questions in the app schema:
 
 ## merge-questions.cjs
 
-Merges generated questions into `data/questions.json` with dedup.
+Merges generated questions into `data/questions.json` with dedup. Each input
+question's `e` (explanation) is split out into `data/explanations.json` at the
+parallel array index — `questions.json` carries no inline `e` (post-v10.64.93).
+`_*`-prefixed provenance fields are stripped. `e` is optional on input. Existing
+entries in `questions.json` are preserved byte-identical (textual append);
+`explanations.json` is re-serialised minified.
 
 ```bash
 # Preview merge (dry run)
