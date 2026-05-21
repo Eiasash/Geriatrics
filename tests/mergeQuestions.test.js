@@ -89,4 +89,15 @@ describe('merge-questions — e-split aware merge', () => {
     expect(parsed[0].q).toBe('first');
     expect(parsed[1].q).toBe('second');
   });
+
+  // Codex P2 (PR #255): appending into an empty corpus must not emit "[,…".
+  it('appendToQuestionsText appends into an empty corpus without a leading comma', () => {
+    for (const empty of ['[]', '[\n]', '[ ]']) {
+      const out = appendToQuestionsText(empty, [{ q: 'first ever', o: ['a', 'b', 'c', 'd'], c: 0, t: 'X', ti: 1 }]);
+      expect(out.includes('[,'), `input ${JSON.stringify(empty)}`).toBe(false);
+      const parsed = JSON.parse(out);
+      expect(parsed, JSON.stringify(empty)).toHaveLength(1);
+      expect(parsed[0].q).toBe('first ever');
+    }
+  });
 });

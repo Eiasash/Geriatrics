@@ -90,9 +90,13 @@ function mergeQuestions(existingQs, existingExps, generated) {
 function appendToQuestionsText(existingText, newQs) {
   const close = existingText.lastIndexOf(']');
   if (close < 0) throw new Error('questions.json: no closing "]" found');
-  const head = existingText.slice(0, close).replace(/\s+$/, '');   // ends at the last "}"
+  const head = existingText.slice(0, close).replace(/\s+$/, '');
   const body = newQs.map(q => JSON.stringify(q, null, 1).replace(/^ +/gm, '')).join(',\n');
-  return `${head},\n${body}\n]`;
+  // `head` is exactly "[" only when the existing array is empty — then the
+  // first appended entry must NOT be preceded by a comma (would yield "[,…",
+  // invalid JSON). Otherwise `head` ends at the last "}" and needs the comma.
+  const sep = head === '[' ? '\n' : ',\n';
+  return `${head}${sep}${body}\n]`;
 }
 
 function main() {
