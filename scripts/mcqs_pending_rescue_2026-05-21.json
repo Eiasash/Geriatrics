@@ -1,0 +1,2088 @@
+[
+  {
+    "q": "A 91-year-old woman with advanced dementia and bilateral aspiration pneumonia is hospitalized at Shaare Zedek. The medical team recommends comfort care, but the family, citing halachic (Jewish law) principles, insists on full resuscitation measures including intubation. What is the most appropriate initial approach to this ethical dilemma?",
+    "o": [
+      "Immediately intubate per family wishes",
+      "Refuse treatment and consult legal",
+      "Hold a multidisciplinary family meeting with Rabbi/ethics consultant",
+      "Transfer to another facility"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 29,
+    "tis": [
+      29
+    ],
+    "e": "The most appropriate action is to hold a multidisciplinary family meeting involving the medical team, social work, and a hospital-affiliated Rabbi or ethics consultant to navigate the conflict between the patient's medical needs and the family's religious requirements.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA001",
+    "_category": "Ethics & End-of-Life",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "An 88-year-old man with Parkinson's disease, chronic constipation, and BPH is treated with levodopa/carbidopa, oxybutynin for urinary urgency, and senna. He presents with worsening confusion and urinary retention. What is the most likely pharmacological cause?",
+    "o": [
+      "Levodopa toxicity",
+      "Anticholinergic burden from oxybutynin",
+      "Senna overdose",
+      "Parkinson's progression"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 8,
+    "tis": [
+      8
+    ],
+    "e": "The patient's symptoms are classic for severe anticholinergic toxicity. Oxybutynin is a potent anticholinergic that causes delirium and worsens urinary retention in BPH. It should be stopped immediately.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA002",
+    "_category": "Pharmacology",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "A 92-year-old woman is being discharged from Shaare Zedek after hip fracture repair. She lives alone in a third-floor apartment with no elevator. What is the most critical component of her discharge plan?",
+    "o": [
+      "Home physical therapy",
+      "Meal delivery service",
+      "Inpatient rehabilitation facility",
+      "Family supervision"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 35,
+    "tis": [
+      35
+    ],
+    "e": "Given her age, recent surgery, and challenging living situation, inpatient rehabilitation ('shikum') is essential to regain function and plan safe community transition.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA003",
+    "_category": "Discharge Planning",
+    "_lang": "en",
+    "_ti_confidence": "low",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "An 86-year-old man with heart failure (EF 30%), CKD stage 4 (eGFR 25), and gout has an acute gout flare. What is the safest treatment?",
+    "o": [
+      "Indomethacin 50mg TID",
+      "Colchicine 1.2mg then 0.6mg",
+      "Prednisone 20mg daily x 5 days",
+      "Allopurinol 300mg daily"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 8,
+    "tis": [
+      8
+    ],
+    "e": "NSAIDs and colchicine are contraindicated with severe CKD and heart failure. Short-course oral corticosteroids or intra-articular injection are safest.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA004",
+    "_category": "Pharmacology",
+    "_lang": "en",
+    "_ti_confidence": "low",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "A 78-year-old woman with history of falls has Vitamin D level of 15 ng/mL. What is the appropriate initial treatment?",
+    "o": [
+      "Vitamin D 800 IU daily",
+      "Vitamin D 50,000 IU weekly x 8 weeks",
+      "Vitamin D 2000 IU daily",
+      "Calcium supplementation only"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 4,
+    "tis": [
+      4
+    ],
+    "e": "Vitamin D deficiency (<20 ng/mL) requires loading dose of 50,000 IU weekly for 8 weeks, then maintenance 1000-2000 IU daily.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA005",
+    "_category": "Prevention",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "An 89-year-old woman with AFib (CHA2DS2-VASc=6) on apixaban is started on amiodarone for rhythm control. What adjustment is needed?",
+    "o": [
+      "No change needed",
+      "Reduce apixaban dose by 50%",
+      "Increase apixaban dose",
+      "Switch to warfarin"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 41,
+    "tis": [
+      41
+    ],
+    "e": "Amiodarone inhibits P-glycoprotein and CYP3A4, increasing apixaban levels. Empirically reduce apixaban by 50% and monitor for bleeding.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA006",
+    "_category": "Drug Interactions",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "A 94-year-old man has 10kg weight loss over 6 months. Initial labs normal. What is the most appropriate next step?",
+    "o": [
+      "CT chest/abdomen/pelvis",
+      "Colonoscopy",
+      "Depression screening with GDS-15",
+      "PET scan"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 7,
+    "tis": [
+      7
+    ],
+    "e": "Before invasive workups, evaluate the '9 Ds' of geriatric weight loss. Depression screening and functional assessment are highest yield.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA007",
+    "_category": "Weight Loss",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "Which finding in an 80-year-old most indicates pathological cognitive decline vs normal aging?",
+    "o": [
+      "Occasional word-finding difficulty",
+      "Slower processing speed",
+      "Difficulty managing finances",
+      "Forgetting acquaintances' names"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 0,
+    "tis": [
+      0
+    ],
+    "e": "Impaired IADLs like managing finances is pathological. Word-finding and slower processing can be normal aging.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA008",
+    "_category": "Cognitive Assessment",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "A 78-year-old woman with diabetes is admitted with NSTEMI. She takes metformin, lisinopril, aspirin. What medication must be held?",
+    "o": [
+      "Lisinopril",
+      "Aspirin",
+      "Metformin",
+      "All medications"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 22,
+    "tis": [
+      22
+    ],
+    "e": "Hold metformin due to contrast exposure risk during catheterization. Risk of contrast nephropathy and lactic acidosis.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA009",
+    "_category": "Acute Care",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "An 82-year-old nursing home resident on ciprofloxacin for UTI develops confusion, hallucinations, and myoclonus. Creatinine 1.9 (baseline 1.1). Most likely cause?",
+    "o": [
+      "Sepsis",
+      "Fluoroquinolone neurotoxicity",
+      "Stroke",
+      "Hypoglycemia"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 27,
+    "tis": [
+      27
+    ],
+    "e": "Fluoroquinolones cause neurotoxicity including delirium and seizures, especially with renal impairment requiring dose adjustment.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA010",
+    "_category": "Antibiotic Toxicity",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "A 90-year-old man with severe aortic stenosis (area 0.7 cm²) has dyspnea on exertion, deemed high-risk for surgery. Best management?",
+    "o": [
+      "Medical management only",
+      "Balloon valvuloplasty",
+      "TAVR (Transcatheter Aortic Valve Replacement)",
+      "Hospice referral"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 17,
+    "tis": [
+      17
+    ],
+    "e": "TAVR is standard of care for high-risk patients with severe symptomatic aortic stenosis, improving survival and quality of life.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA011",
+    "_category": "Cardiovascular",
+    "_lang": "en",
+    "_ti_confidence": "low",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "A 77-year-old woman on tamoxifen for breast cancer presents with unilateral leg swelling and pain. Most important diagnosis to exclude?",
+    "o": [
+      "Cellulitis",
+      "Deep vein thrombosis",
+      "Heart failure",
+      "Lymphedema"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 14,
+    "tis": [
+      14
+    ],
+    "e": "Tamoxifen (SERM) significantly increases VTE risk. Unilateral leg swelling suggests DVT requiring urgent Doppler ultrasound.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA012",
+    "_category": "Oncology",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "An 85-year-old with advanced dementia yells and strikes caregivers during bathing. First-line approach?",
+    "o": [
+      "Haloperidol 0.5mg PRN",
+      "Physical restraints",
+      "Scheduled acetaminophen before bathing",
+      "Quetiapine 25mg daily"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 6,
+    "tis": [
+      6
+    ],
+    "e": "Non-pharmacological approach first. Behavior often communicates unmet needs like pain. Trial scheduled analgesia before bathing.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA013",
+    "_category": "Behavioral Symptoms",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "A 76-year-old man on digoxin for AFib. Which electrolyte abnormality most increases digoxin toxicity risk?",
+    "o": [
+      "Hypernatremia",
+      "Hypokalemia",
+      "Hypercalcemia",
+      "Hypomagnesemia"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 7,
+    "tis": [
+      7
+    ],
+    "e": "Hypokalemia sensitizes myocardium to digoxin, increasing arrhythmia risk even with therapeutic digoxin levels.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA014",
+    "_category": "Electrolytes",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "An 89-year-old woman has asymptomatic bacteriuria. No fever, dysuria, or mental status change. Management?",
+    "o": [
+      "Ciprofloxacin 500mg BID x 7 days",
+      "Nitrofurantoin 100mg BID x 5 days",
+      "No treatment",
+      "Single-dose fosfomycin"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 27,
+    "tis": [
+      27
+    ],
+    "e": "Don't treat asymptomatic bacteriuria in elderly. No benefit, increases adverse effects and resistance.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA015",
+    "_category": "Infectious Disease",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "An 80-year-old man with COPD develops dry mouth and urinary retention after starting a new inhaler. Likely culprit?",
+    "o": [
+      "LABA (salmeterol)",
+      "LAMA (tiotropium)",
+      "ICS (budesonide)",
+      "SABA (albuterol)"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 8,
+    "tis": [
+      8
+    ],
+    "e": "LAMAs like tiotropium are anticholinergic, causing dry mouth and urinary retention, especially with BPH.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA016",
+    "_category": "Pulmonary",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "A 93-year-old falls, has Na 125. Recently started antidepressant. Most likely culprit?",
+    "o": [
+      "Bupropion",
+      "Sertraline (SSRI)",
+      "Mirtazapine",
+      "Trazodone"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 7,
+    "tis": [
+      7
+    ],
+    "e": "SSRIs commonly cause SIADH in elderly, leading to hyponatremia and falls.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA017",
+    "_category": "Hyponatremia",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "According to Israeli geriatrics philosophy, the focus shifts from:",
+    "o": [
+      "Treatment to prevention",
+      "Hospital to community",
+      "Cure to care",
+      "Specialist to generalist"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 22,
+    "tis": [
+      22
+    ],
+    "e": "Geriatrics emphasizes shift from 'CURE' to 'CARE' - managing chronic conditions, preserving function, maximizing quality of life.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA018",
+    "_category": "Philosophy of Care",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "An 87-year-old takes 12 medications. Which tool specifically identifies prescribing omissions?",
+    "o": [
+      "Beers Criteria",
+      "Anticholinergic Burden Scale",
+      "START Criteria",
+      "Drug Burden Index"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 8,
+    "tis": [
+      8
+    ],
+    "e": "START (Screening Tool to Alert to Right Treatment) identifies beneficial medications that should be prescribed but are missing.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA019",
+    "_category": "Polypharmacy",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "Which combination of CAM (Confusion Assessment Method) features confirms delirium?",
+    "o": [
+      "Acute onset + inattention + disorganized thinking",
+      "Inattention + altered consciousness only",
+      "Disorganized thinking + altered consciousness only",
+      "All four features must be present"
+    ],
+    "c": 0,
+    "t": "SZMC-Rescue",
+    "ti": 5,
+    "tis": [
+      5
+    ],
+    "e": "CAM requires: (1) Acute onset AND (2) Inattention AND either (3) Disorganized thinking OR (4) Altered consciousness.",
+    "ref": "",
+    "_source": "R7",
+    "_orig_id": "SA020",
+    "_category": "Delirium",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false
+  },
+  {
+    "q": "An 82-year-old woman presents to Shaare Zedek ED with new-onset atrial fibrillation. Her CHA₂DS₂-VASc score is 5. Which anticoagulant is most appropriate?",
+    "o": [
+      "Warfarin with INR target 2.5-3.5",
+      "Apixaban 5mg BID",
+      "Aspirin 325mg daily",
+      "Dabigatran 150mg BID"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 17,
+    "tis": [
+      17
+    ],
+    "e": "Apixaban is preferred in elderly patients with high stroke risk. Lower bleeding risk compared to warfarin, once-daily dosing improves compliance.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "br001",
+    "_category": "Cardiovascular",
+    "_lang": "en",
+    "_ti_confidence": "low",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "boardReview",
+    "_q_he": "אישה בת 82 מגיעה למיון שערי צדק עם פרפור עליות חדש. ציון CHA₂DS₂-VASc שלה הוא 5. איזה נוגד קרישה הכי מתאים?",
+    "_e_he": "אפיקסבאן מועדף בקשישים עם סיכון גבוה לשבץ. סיכון דימום נמוך יותר מוורפרין.",
+    "_refs_orig": [
+      "ARISTOTLE trial",
+      "ESC Guidelines 2020"
+    ]
+  },
+  {
+    "q": "A 78-year-old man with mild cognitive impairment scores 22/30 on MMSE. His wife reports he gets lost driving to familiar places. What is the most likely diagnosis?",
+    "o": [
+      "Normal aging",
+      "Mild cognitive impairment",
+      "Alzheimer's disease - mild stage",
+      "Vascular dementia"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 6,
+    "tis": [
+      6
+    ],
+    "e": "Getting lost in familiar places indicates topographical disorientation, a hallmark of early Alzheimer's disease beyond MCI.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "br002",
+    "_category": "Cognitive",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "boardReview",
+    "_q_he": "גבר בן 78 עם ירידה קוגניטיבית קלה מקבל 22/30 ב-MMSE. אשתו מדווחת שהוא מתבלבל בנהיגה למקומות מוכרים. מה האבחנה הסבירה?",
+    "_e_he": "התבלבלות במקומות מוכרים מעידה על דיסאוריינטציה טופוגרפית, סימן לאלצהיימר מוקדם.",
+    "_refs_orig": [
+      "NIA-AA criteria 2018",
+      "Lancet Neurology 2021"
+    ]
+  },
+  {
+    "q": "According to STOPP criteria, which medication should be discontinued in an 85-year-old with recurrent falls?",
+    "o": [
+      "Metformin 500mg BID",
+      "Lorazepam 1mg QHS",
+      "Lisinopril 10mg daily",
+      "Simvastatin 20mg daily"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 8,
+    "tis": [
+      8
+    ],
+    "e": "Benzodiazepines significantly increase fall risk in elderly and should be avoided per STOPP criteria.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "br003",
+    "_category": "Polypharmacy",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "boardReview",
+    "_q_he": "לפי קריטריוני STOPP, איזו תרופה יש להפסיק בבן 85 עם נפילות חוזרות?",
+    "_e_he": "בנזודיאזפינים מעלים משמעותית סיכון לנפילות בקשישים ויש להימנע מהם לפי STOPP.",
+    "_refs_orig": [
+      "STOPP/START v2",
+      "BMJ 2021"
+    ]
+  },
+  {
+    "q": "Which assessment tool is most appropriate for evaluating functional status in community-dwelling elderly?",
+    "o": [
+      "Katz ADL",
+      "Lawton IADL",
+      "Barthel Index",
+      "FIM scale"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 2,
+    "tis": [
+      2
+    ],
+    "e": "Lawton IADL assesses complex activities needed for independent community living (shopping, finances, medications).",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "br004",
+    "_category": "Geriatric Syndromes",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "boardReview",
+    "_q_he": "איזה כלי הערכה מתאים ביותר להערכת תפקוד בקשישים בקהילה?",
+    "_e_he": "Lawton IADL מעריך פעילויות מורכבות הנדרשות לחיים עצמאיים בקהילה.",
+    "_refs_orig": [
+      "J Am Geriatr Soc 2019"
+    ]
+  },
+  {
+    "q": "A patient on warfarin for AF starts amiodarone. What INR adjustment is needed?",
+    "o": [
+      "No change needed",
+      "Increase warfarin by 25%",
+      "Decrease warfarin by 30-50%",
+      "Decrease warfarin by 10%"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 8,
+    "tis": [
+      8
+    ],
+    "e": "Amiodarone inhibits CYP2C9, requiring 30-50% warfarin dose reduction to prevent supratherapeutic INR.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "br005",
+    "_category": "Pharmacology",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "boardReview",
+    "_q_he": "מטופל על וורפרין לAF מתחיל אמיודרון. איזו התאמת INR נדרשת?",
+    "_e_he": "אמיודרון מעכב CYP2C9, דורש הפחתת וורפרין ב-30-50% למניעת INR גבוה.",
+    "_refs_orig": [
+      "Circulation 2018"
+    ]
+  },
+  {
+    "q": "A 72-year-old retired professor presents with 6-month history of memory complaints. His wife notes he repeats questions. MMSE 26/30. What is the most appropriate next step?",
+    "o": [
+      "Reassure - normal aging",
+      "MoCA testing",
+      "Start donepezil",
+      "Brain MRI"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 6,
+    "tis": [
+      6
+    ],
+    "e": "MoCA is more sensitive than MMSE for mild cognitive impairment, especially in educated individuals.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "R13#clinicalCases#case001#stage1",
+    "_category": "Dementia",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "clinicalCases",
+    "_r13_case": "case001",
+    "_q_he": "פרופסור בדימוס בן 72 עם תלונות זיכרון במשך 6 חודשים. אשתו מציינת שהוא חוזר על שאלות. MMSE 26/30. מה הצעד הבא המתאים?"
+  },
+  {
+    "q": "MoCA score is 20/30 with deficits in delayed recall and visuospatial. Lab work including B12, TSH, RPR are normal. What imaging study would be most helpful?",
+    "o": [
+      "CT head without contrast",
+      "MRI brain with volumetrics",
+      "PET amyloid scan",
+      "SPECT scan"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 6,
+    "tis": [
+      6
+    ],
+    "e": "MRI with hippocampal volumetrics can show atrophy patterns consistent with Alzheimer's.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "R13#clinicalCases#case001#stage2",
+    "_category": "Dementia",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "clinicalCases",
+    "_r13_case": "case001",
+    "_q_he": "ציון MoCA 20/30 עם ליקויים בזיכרון מושהה וויזואו-מרחבי. בדיקות מעבדה תקינות. איזו בדיקת דימות תהיה הכי מועילה?"
+  },
+  {
+    "q": "MRI shows bilateral hippocampal atrophy. Patient and family want to discuss treatment options. Which medication would you recommend starting?",
+    "o": [
+      "Donepezil 5mg daily",
+      "Memantine 5mg BID",
+      "Rivastigmine patch 4.6mg",
+      "Galantamine 8mg BID"
+    ],
+    "c": 0,
+    "t": "SZMC-Rescue",
+    "ti": 5,
+    "tis": [
+      5
+    ],
+    "e": "Donepezil is first-line for mild-moderate Alzheimer's. Start 5mg x 4 weeks, then increase to 10mg.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "R13#clinicalCases#case001#stage3",
+    "_category": "Dementia",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "clinicalCases",
+    "_r13_case": "case001",
+    "_q_he": "MRI מראה ניוון היפוקמפלי דו-צדדי. המטופל והמשפחה רוצים לדון באפשרויות טיפול. איזו תרופה תמליץ להתחיל?"
+  },
+  {
+    "q": "6 months later, patient has declined further. Now getting lost driving, MMSE 20/30. Family asks about safety. What is the most important safety intervention?",
+    "o": [
+      "Home safety evaluation",
+      "Driving assessment and likely cessation",
+      "Medication review",
+      "Adult day program"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 6,
+    "tis": [
+      6
+    ],
+    "e": "Driving cessation is critical when spatial disorientation develops. Involves DMV reporting in many jurisdictions.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "R13#clinicalCases#case001#stage4",
+    "_category": "Dementia",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "clinicalCases",
+    "_r13_case": "case001",
+    "_q_he": "אחרי 6 חודשים, המטופל הידרדר. מתבלבל בנהיגה, MMSE 20/30. המשפחה שואלת על בטיחות. מהי התערבות הבטיחות החשובה ביותר?"
+  },
+  {
+    "q": "85-year-old man admitted for CHF exacerbation. Hospital day 2, nurse reports acute confusion, pulling at IV lines. Baseline cognitively intact. What is your first assessment?",
+    "o": [
+      "Order haloperidol 2mg IM",
+      "Apply CAM criteria",
+      "Order head CT",
+      "Psychiatric consultation"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 5,
+    "tis": [
+      5
+    ],
+    "e": "CAM (Confusion Assessment Method) should be used to diagnose delirium before treatment.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "R13#clinicalCases#case002#stage1",
+    "_category": "Delirium",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "clinicalCases",
+    "_r13_case": "case002",
+    "_q_he": "גבר בן 85 אושפז עם החמרת אי ספיקת לב. ביום השני, האחות מדווחת על בלבול חריף. בבסיס - תקין קוגניטיבית. מהי ההערכה הראשונה שלך?"
+  },
+  {
+    "q": "CAM positive: acute onset, inattention, disorganized thinking. Vitals: BP 100/60, HR 110, O2 sat 88% on 2L. What is the most likely precipitating factor?",
+    "o": [
+      "Medication effect",
+      "Hypoxia",
+      "Dehydration",
+      "Infection"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 5,
+    "tis": [
+      5
+    ],
+    "e": "Hypoxia (O2 sat 88%) is a common precipitant of delirium and needs immediate correction.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "R13#clinicalCases#case002#stage2",
+    "_category": "Delirium",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "clinicalCases",
+    "_r13_case": "case002",
+    "_q_he": "CAM חיובי: התחלה חריפה, חוסר קשב, חשיבה לא מאורגנת. סימנים: BP 100/60, HR 110, O2 88%. מה הגורם המשקע הסביר ביותר?"
+  },
+  {
+    "q": "O2 increased to 4L with improvement to 94%. Review shows furosemide 80mg IV BID, new start of levofloxacin for possible pneumonia. Which medication is most likely contributing to delirium?",
+    "o": [
+      "Furosemide",
+      "Levofloxacin",
+      "Both equally",
+      "Neither"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 27,
+    "tis": [
+      27
+    ],
+    "e": "Fluoroquinolones like levofloxacin are high-risk medications for delirium in elderly.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "R13#clinicalCases#case002#stage3",
+    "_category": "Delirium",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "clinicalCases",
+    "_r13_case": "case002",
+    "_q_he": "חמצן הועלה ל-4L עם שיפור ל-94%. סקירה: פורוסמיד 80mg IV BID, התחלת לבופלוקסצין לדלקת ריאות אפשרית. איזו תרופה כנראה תורמת לדליריום?"
+  },
+  {
+    "q": "Levofloxacin changed to ceftriaxone. Patient remains agitated at night, not sleeping. Family at bedside helps during day. Best intervention for nighttime agitation?",
+    "o": [
+      "Quetiapine 25mg QHS",
+      "Melatonin 3mg + sleep hygiene",
+      "Restraints for safety",
+      "Lorazepam 0.5mg PRN"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 13,
+    "tis": [
+      13
+    ],
+    "e": "Non-pharmacologic interventions are first-line. Melatonin can help restore sleep-wake cycle.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "R13#clinicalCases#case002#stage4",
+    "_category": "Delirium",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "clinicalCases",
+    "_r13_case": "case002",
+    "_q_he": "לבופלוקסצין הוחלף לצפטריאקסון. המטופל נותר נסער בלילה, לא ישן. משפחה לצד המיטה עוזרת ביום. ההתערבות הטובה ביותר לאי-שקט לילי?"
+  },
+  {
+    "q": "79-year-old woman with HTN, DM2, OA, and insomnia presents after fall at home. Takes 12 medications including amlodipine, metformin, glyburide, gabapentin, zolpidem. Which medication poses highest fall risk?",
+    "o": [
+      "Amlodipine",
+      "Metformin",
+      "Zolpidem",
+      "Gabapentin"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 13,
+    "tis": [
+      13
+    ],
+    "e": "Zolpidem (Z-drug) significantly increases fall risk, especially in elderly. Should be discontinued.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "R13#clinicalCases#case003#stage1",
+    "_category": "Medication Management",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "clinicalCases",
+    "_r13_case": "case003",
+    "_q_he": "אישה בת 79 עם יתר לחץ דם, סוכרת, דלקת פרקים ונדודי שינה לאחר נפילה בבית. נוטלת 12 תרופות. איזו תרופה מהווה הסיכון הגבוה ביותר לנפילה?"
+  },
+  {
+    "q": "Zolpidem discontinued. Patient also takes tamsulosin, omeprazole, sertraline 100mg, hydrochlorothiazide. BP 110/70 sitting, 95/60 standing. What explains the orthostatic hypotension?",
+    "o": [
+      "Tamsulosin alone",
+      "Amlodipine + HCTZ",
+      "Multiple contributing drugs",
+      "Age-related autonomic dysfunction"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 4,
+    "tis": [
+      4
+    ],
+    "e": "Tamsulosin (alpha-blocker), amlodipine (CCB), and HCTZ (diuretic) all contribute to orthostatic hypotension.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "R13#clinicalCases#case003#stage2",
+    "_category": "Medication Management",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "clinicalCases",
+    "_r13_case": "case003",
+    "_q_he": "זולפידם הופסק. המטופלת גם נוטלת טמסולוסין, אומפרזול, סרטרלין, הידרוכלורותיאזיד. BP 110/70 בישיבה, 95/60 בעמידה. מה מסביר את התת-לחץ האורתוסטטי?"
+  },
+  {
+    "q": "You decide to deprescribe. Patient's A1c is 6.8%, BP averages 125/75, eGFR 45. Which medication should be stopped first?",
+    "o": [
+      "Glyburide",
+      "Hydrochlorothiazide",
+      "Tamsulosin",
+      "Omeprazole"
+    ],
+    "c": 0,
+    "t": "SZMC-Rescue",
+    "ti": 8,
+    "tis": [
+      8
+    ],
+    "e": "Glyburide causes hypoglycemia in elderly. With A1c 6.8%, can safely stop. Target A1c 7.5-8% in frail elderly.",
+    "ref": "",
+    "_source": "R13",
+    "_orig_id": "R13#clinicalCases#case003#stage3",
+    "_category": "Medication Management",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_r13_array": "clinicalCases",
+    "_r13_case": "case003",
+    "_q_he": "החלטת להפחית תרופות. A1c 6.8%, BP ממוצע 125/75, eGFR 45. איזו תרופה להפסיק ראשונה?"
+  },
+  {
+    "q": "A 78-year-old Israeli woman presents with acute confusion in the emergency department. Her daughter reports she was normal yesterday. What is the most appropriate first step?",
+    "o": [
+      "Order MRI of the brain immediately",
+      "Start empirical antibiotics",
+      "Perform comprehensive delirium assessment",
+      "Administer haloperidol"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 2,
+    "tis": [
+      2
+    ],
+    "e": "In acute confusion in elderly patients, delirium should be suspected first. A comprehensive delirium assessment using tools like CAM (Confusion Assessment Method) is the appropriate first step. This patient shows acute onset and fluctuation, key features of delirium.",
+    "ref": "",
+    "_source": "R19",
+    "_orig_id": "R19#0",
+    "_category": "Geriatric Syndromes",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_opt_prefix_stripped": true,
+    "_israeli_context": "In Israeli emergency departments, Hebrew-language CAM tools are available. Cultural considerations include family involvement in assessment."
+  },
+  {
+    "q": "An 82-year-old man with dementia in an Israeli nursing home has been refusing medications. According to Israeli medical ethics and Halacha, what is the most appropriate approach?",
+    "o": [
+      "Force medication administration",
+      "Assess decision-making capacity and consult family",
+      "Immediately discontinue all medications",
+      "Seek court-ordered guardianship"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 29,
+    "tis": [
+      29
+    ],
+    "e": "Decision-making capacity should be assessed first. In Israeli context, family involvement is crucial, and religious considerations (Halacha) may influence end-of-life decisions. Guardianship (אפוטרופסות) procedures follow Israeli law.",
+    "ref": "",
+    "_source": "R19",
+    "_orig_id": "R19#1",
+    "_category": "Ethics & Legal",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_opt_prefix_stripped": true,
+    "_israeli_context": "Israeli guardianship laws require medical evaluation. Religious authorities may be consulted for Halachic guidance."
+  },
+  {
+    "q": "A 75-year-old patient in Clalit HMO needs cardiac rehabilitation after MI. What is the typical access pattern in Israeli healthcare?",
+    "o": [
+      "Direct self-referral to rehabilitation center",
+      "Cardiologist referral through Kupat Holim system",
+      "Private payment required for all services",
+      "Only available in private healthcare"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 35,
+    "tis": [
+      35
+    ],
+    "e": "In Israeli healthcare system, cardiac rehabilitation requires specialist referral through the Kupat Holim (HMO) system. Clalit, as the largest HMO, has comprehensive cardiac rehabilitation programs covered under basic health insurance.",
+    "ref": "",
+    "_source": "R19",
+    "_orig_id": "R19#2",
+    "_category": "Israeli Healthcare System",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_opt_prefix_stripped": true,
+    "_israeli_context": "All four Kupot Holim provide cardiac rehabilitation. Wait times and accessibility vary by geographic region and HMO."
+  },
+  {
+    "q": "According to AGS Beers Criteria 2023, which medication should be avoided in elderly patients with dementia?",
+    "o": [
+      "Donepezil",
+      "Diphenhydramine",
+      "Memantine",
+      "Rivastigmine"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 8,
+    "tis": [
+      8
+    ],
+    "e": "Diphenhydramine is a first-generation antihistamine with strong anticholinergic properties and is listed in AGS Beers Criteria as potentially inappropriate for elderly patients, especially those with dementia.",
+    "ref": "",
+    "_source": "R19",
+    "_orig_id": "R19#3",
+    "_category": "Pharmacology",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_opt_prefix_stripped": true,
+    "_israeli_context": "In Israeli formulary, generic diphenhydramine is available but alternatives like cetirizine are preferred for elderly patients."
+  },
+  {
+    "q": "A geriatric patient in Jerusalem falls and fractures hip. What is the priority intervention according to Israeli geriatric guidelines?",
+    "o": [
+      "Immediate surgery within 48 hours",
+      "Conservative management with bed rest",
+      "Extensive pre-operative workup first",
+      "Transfer to orthopedic specialist only"
+    ],
+    "c": 0,
+    "t": "SZMC-Rescue",
+    "ti": 16,
+    "tis": [
+      16
+    ],
+    "e": "Israeli guidelines align with international standards recommending surgery within 48 hours for hip fractures in elderly patients to minimize complications and improve outcomes.",
+    "ref": "",
+    "_source": "R19",
+    "_orig_id": "R19#4",
+    "_category": "Musculoskeletal",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_opt_prefix_stripped": true,
+    "_israeli_context": "Israeli hospitals have dedicated orthopedic geriatric units. Magen David Adom provides specialized elderly transport protocols."
+  },
+  {
+    "q": "In Israeli nursing homes, what is the minimum frequency for physician visits according to Ministry of Health regulations?",
+    "o": [
+      "Daily visits required",
+      "Weekly visits minimum",
+      "Monthly visits sufficient",
+      "As needed basis only"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 35,
+    "tis": [
+      35
+    ],
+    "e": "Israeli Ministry of Health regulations require weekly physician visits minimum in nursing homes, with more frequent visits for unstable patients.",
+    "ref": "",
+    "_source": "R19",
+    "_orig_id": "R19#5",
+    "_category": "Israeli Healthcare System",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "direct",
+    "_dup_likely": false,
+    "_opt_prefix_stripped": true,
+    "_israeli_context": "Regulations vary by facility type. Skilled nursing facilities require more frequent physician oversight than assisted living."
+  },
+  {
+    "q": "An 82-year-old woman with dementia, hypertension, and insomnia is on lorazepam 1mg nightly. According to Beers Criteria 2023, what is the PRIMARY concern?",
+    "o": [
+      "Risk of respiratory depression",
+      "Increased fall risk and cognitive decline",
+      "Hypertension exacerbation",
+      "Renal toxicity"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 8,
+    "tis": [
+      8
+    ],
+    "e": "Benzodiazepines are strongly discouraged in elderly due to increased risk of cognitive impairment, delirium, falls, and fractures",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#1",
+    "_category": "Polypharmacy",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "Which medication should be AVOIDED as first-line treatment for hypertension in an 80-year-old man?",
+    "o": [
+      "Amlodipine",
+      "Lisinopril",
+      "Doxazosin",
+      "Hydrochlorothiazide"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 8,
+    "tis": [
+      8
+    ],
+    "e": "Alpha-blockers like doxazosin cause high risk of orthostatic hypotension in elderly",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#2",
+    "_category": "Polypharmacy",
+    "_lang": "en",
+    "_ti_confidence": "low",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "An 85-year-old develops acute confusion 2 days post-hip surgery. Which tool is MOST appropriate for diagnosis?",
+    "o": [
+      "MMSE",
+      "CAM (Confusion Assessment Method)",
+      "GDS",
+      "MoCA"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 2,
+    "tis": [
+      2
+    ],
+    "e": "CAM is the validated tool for diagnosing delirium with 94-100% sensitivity",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#3",
+    "_category": "Geriatric Syndromes",
+    "_lang": "en",
+    "_ti_confidence": "low",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "During a Timed Up and Go test, what time indicates high fall risk?",
+    "o": [
+      ">8 seconds",
+      ">10 seconds",
+      ">14 seconds",
+      ">20 seconds"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 4,
+    "tis": [
+      4
+    ],
+    "e": "TUG >14 seconds indicates high fall risk; >20 seconds suggests significant mobility issues",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#4",
+    "_category": "Falls",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "According to Fried's Frailty Phenotype, how many criteria must be present for frailty diagnosis?",
+    "o": [
+      "≥1",
+      "≥2",
+      "≥3",
+      "All 5"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 3,
+    "tis": [
+      3
+    ],
+    "e": "Frailty requires ≥3 of: weight loss, exhaustion, low activity, slow walking, weak grip",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#5",
+    "_category": "Frailty",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "In the Clinical Frailty Scale, what score indicates moderate frailty?",
+    "o": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 3,
+    "tis": [
+      3
+    ],
+    "e": "Score 6 = moderately frail, needs help with ADLs",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#6",
+    "_category": "Frailty",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "First-line pharmacological treatment for moderate Alzheimer's dementia?",
+    "o": [
+      "Memantine",
+      "Donepezil",
+      "Rivastigmine + Memantine",
+      "Haloperidol"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 6,
+    "tis": [
+      6
+    ],
+    "e": "Cholinesterase inhibitors like donepezil are first-line for mild-moderate Alzheimer's",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#7",
+    "_category": "Dementia",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "An 80-year-old with dementia has visual hallucinations and fluctuating cognition. Most likely diagnosis?",
+    "o": [
+      "Alzheimer's",
+      "Lewy body dementia",
+      "Vascular dementia",
+      "Frontotemporal dementia"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 6,
+    "tis": [
+      6
+    ],
+    "e": "Visual hallucinations + fluctuating cognition are core features of Lewy body dementia",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#8",
+    "_category": "Dementia",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "Which is NOT a component of basic ADLs (Katz Index)?",
+    "o": [
+      "Bathing",
+      "Shopping",
+      "Toileting",
+      "Feeding"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 2,
+    "tis": [
+      2
+    ],
+    "e": "Shopping is an IADL. Basic ADLs: Bathing, Dressing, Toileting, Transferring, Continence, Feeding",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#9",
+    "_category": "Assessment",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "MNA-SF score of 9 indicates?",
+    "o": [
+      "Normal nutrition",
+      "At risk of malnutrition",
+      "Malnourished",
+      "Severe malnutrition"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 9,
+    "tis": [
+      9
+    ],
+    "e": "MNA-SF: 12-14 normal, 8-11 at risk, 0-7 malnourished",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#10",
+    "_category": "Assessment",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "In elderly with CrCl 25 mL/min, which antibiotic needs MOST dose adjustment?",
+    "o": [
+      "Azithromycin",
+      "Doxycycline",
+      "Levofloxacin",
+      "Metronidazole"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 17,
+    "tis": [
+      17
+    ],
+    "e": "Fluoroquinolones require significant renal adjustment; others are hepatically metabolized",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#11",
+    "_category": "Medications",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 4
+  },
+  {
+    "q": "STOPP criteria would flag which prescription in an 85-year-old?",
+    "o": [
+      "Metformin with eGFR 35",
+      "PPI for 3 months post-GI bleed",
+      "Warfarin for afib with CHA2DS2-VASc 4",
+      "Aspirin for primary prevention"
+    ],
+    "c": 3,
+    "t": "SZMC-Rescue",
+    "ti": 41,
+    "tis": [
+      41
+    ],
+    "e": "STOPP criteria: avoid aspirin for primary prevention in elderly due to bleeding risk",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#12",
+    "_category": "Medications",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "Most important intervention for preventing postoperative delirium?",
+    "o": [
+      "Prophylactic haloperidol",
+      "Benzodiazepine taper",
+      "Early mobilization and orientation",
+      "Melatonin 3mg nightly"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 5,
+    "tis": [
+      5
+    ],
+    "e": "Non-pharmacological interventions are most effective for delirium prevention",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#13",
+    "_category": "Delirium",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "Hyperactive delirium represents what percentage of all delirium cases?",
+    "o": [
+      "25%",
+      "50%",
+      "75%",
+      "90%"
+    ],
+    "c": 0,
+    "t": "SZMC-Rescue",
+    "ti": 5,
+    "tis": [
+      5
+    ],
+    "e": "Only 25% hyperactive; 50% hypoactive (often missed); 25% mixed",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#14",
+    "_category": "Delirium",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 4
+  },
+  {
+    "q": "Definition of orthostatic hypotension in elderly?",
+    "o": [
+      "SBP drop >10 mmHg",
+      "SBP drop >20 mmHg or DBP >10",
+      "SBP drop >30 mmHg",
+      "Any symptomatic BP drop"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 17,
+    "tis": [
+      17
+    ],
+    "e": "Within 3 minutes of standing: SBP drop ≥20 or DBP drop ≥10 mmHg",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#15",
+    "_category": "Cardiovascular",
+    "_lang": "en",
+    "_ti_confidence": "low",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "Braden Scale score indicating HIGH risk for pressure ulcers?",
+    "o": [
+      "<9",
+      "<12",
+      "<15",
+      "<18"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 10,
+    "tis": [
+      10
+    ],
+    "e": "Braden: ≤9 very high risk, 10-12 high risk, 13-14 moderate, 15-18 mild risk",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#16",
+    "_category": "Skin",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "First-line treatment for urge incontinence in elderly after behavioral therapy fails?",
+    "o": [
+      "Oxybutynin",
+      "Mirabegron",
+      "Tolterodine",
+      "Solifenacin"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 11,
+    "tis": [
+      11
+    ],
+    "e": "Beta-3 agonist mirabegron has fewer anticholinergic effects than antimuscarinics",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#17",
+    "_category": "Incontinence",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "SARC-F questionnaire score ≥4 indicates need for?",
+    "o": [
+      "Immediate hospitalization",
+      "Further sarcopenia assessment",
+      "Protein supplementation only",
+      "Physical therapy referral"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 3,
+    "tis": [
+      3
+    ],
+    "e": "SARC-F ≥4 suggests sarcopenia; requires grip strength and muscle mass measurement",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#18",
+    "_category": "Sarcopenia",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "Best pain assessment tool for severe dementia?",
+    "o": [
+      "Numeric rating scale",
+      "PAINAD",
+      "McGill questionnaire",
+      "Wong-Baker faces"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 6,
+    "tis": [
+      6
+    ],
+    "e": "PAINAD (Pain Assessment in Advanced Dementia) uses behavioral indicators",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#19",
+    "_category": "Pain",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "Surprise question: 'Would you be surprised if this patient died in 12 months?' If NO, next step?",
+    "o": [
+      "Hospice referral",
+      "Advance care planning discussion",
+      "DNR order",
+      "Comfort care only"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 28,
+    "tis": [
+      28
+    ],
+    "e": "Negative surprise question triggers goals of care and advance directive discussions",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#20",
+    "_category": "Palliative",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "Which vaccine is recommended annually for all adults ≥65?",
+    "o": [
+      "Pneumococcal",
+      "Influenza",
+      "Herpes zoster",
+      "Tdap"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 39,
+    "tis": [
+      39
+    ],
+    "e": "Annual influenza vaccine; others are one-time or series",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#21",
+    "_category": "Prevention",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 1
+  },
+  {
+    "q": "FRAX 10-year hip fracture risk requiring treatment?",
+    "o": [
+      "≥1%",
+      "≥3%",
+      "≥5%",
+      "≥10%"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 15,
+    "tis": [
+      15
+    ],
+    "e": "Hip fracture ≥3% or major osteoporotic fracture ≥20% indicates treatment",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#22",
+    "_category": "Bone Health",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "PHQ-2 score requiring full PHQ-9 assessment?",
+    "o": [
+      "≥1",
+      "≥2",
+      "≥3",
+      "≥4"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 2,
+    "tis": [
+      2
+    ],
+    "e": "PHQ-2 ≥3 has 83% sensitivity for major depression",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#23",
+    "_category": "Mental Health",
+    "_lang": "en",
+    "_ti_confidence": "low",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "Recommended daily protein intake for healthy elderly?",
+    "o": [
+      "0.8 g/kg",
+      "1.0-1.2 g/kg",
+      "1.5 g/kg",
+      "2.0 g/kg"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 9,
+    "tis": [
+      9
+    ],
+    "e": "Higher than younger adults (0.8); acute illness requires 1.2-1.5 g/kg",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#24",
+    "_category": "Nutrition",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "First-line treatment for insomnia in elderly?",
+    "o": [
+      "Zolpidem 5mg",
+      "Trazodone 25mg",
+      "CBT-I",
+      "Melatonin 3mg"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 13,
+    "tis": [
+      13
+    ],
+    "e": "Cognitive Behavioral Therapy for Insomnia is first-line before medications",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#25",
+    "_category": "Sleep",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "What percentage of hospitalized elderly develop new ADL disability?",
+    "o": [
+      "10%",
+      "20%",
+      "35%",
+      "50%"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 2,
+    "tis": [
+      2
+    ],
+    "e": "One-third develop functional decline during hospitalization",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#26",
+    "_category": "Hospital Care",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 4
+  },
+  {
+    "q": "Whisper test failure suggests hearing loss of?",
+    "o": [
+      ">20 dB",
+      ">30 dB",
+      ">40 dB",
+      ">50 dB"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 37,
+    "tis": [
+      37
+    ],
+    "e": "Failing whisper test at 2 feet suggests >30 dB loss requiring audiometry",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#27",
+    "_category": "Sensory",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "Which condition is absolute contraindication to driving?",
+    "o": [
+      "Mild cognitive impairment",
+      "Seizure 3 months ago",
+      "Corrected vision 20/40",
+      "Insulin-dependent diabetes"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 22,
+    "tis": [
+      22
+    ],
+    "e": "Most countries require 6-12 months seizure-free before driving",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#28",
+    "_category": "Safety",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "Most common type of elder abuse?",
+    "o": [
+      "Physical",
+      "Sexual",
+      "Financial",
+      "Neglect"
+    ],
+    "c": 3,
+    "t": "SZMC-Rescue",
+    "ti": 30,
+    "tis": [
+      30
+    ],
+    "e": "Neglect (including self-neglect) accounts for >50% of cases",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#29",
+    "_category": "Safety",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "POLST form is most appropriate for patients with?",
+    "o": [
+      "Any age wanting advance directives",
+      "Prognosis <1 year",
+      "Dementia diagnosis",
+      "Age >75"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 29,
+    "tis": [
+      29
+    ],
+    "e": "POLST (Physician Orders for Life-Sustaining Treatment) for seriously ill/limited prognosis",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#30",
+    "_category": "Ethics",
+    "_lang": "en",
+    "_ti_confidence": "low",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "87-year-old man, 3 falls in 6 months, on amlodipine, metoprolol, tamsulosin, and sertraline. BP sitting 140/80, standing 115/70. Most likely medication causing falls?",
+    "o": [
+      "Amlodipine",
+      "Metoprolol",
+      "Tamsulosin",
+      "Sertraline"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 4,
+    "tis": [
+      4
+    ],
+    "e": "Alpha-blocker tamsulosin causes significant orthostatic hypotension, especially with other BP meds",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#31",
+    "_category": "Clinical Scenarios",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "79-year-old woman, BMI 19, albumin 2.8, lost 5kg in 3 months. Lives alone, daughter worried. Next best step?",
+    "o": [
+      "Start megestrol acetate",
+      "Nutritional supplement TID",
+      "Comprehensive geriatric assessment",
+      "Refer to gastroenterology"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 9,
+    "tis": [
+      9
+    ],
+    "e": "Weight loss in elderly is often multifactorial; CGA evaluates medical, functional, social causes",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#32",
+    "_category": "Clinical Scenarios",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "84-year-old with moderate Alzheimer's, agitated at 4 PM daily, hitting caregivers. Best initial management?",
+    "o": [
+      "Haloperidol 0.5mg PRN",
+      "Structured daily routine",
+      "Lorazepam 0.5mg at 3 PM",
+      "Increase donepezil dose"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 6,
+    "tis": [
+      6
+    ],
+    "e": "Sundowning responds best to non-pharmacological interventions: routine, light therapy, activities",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#33",
+    "_category": "Clinical Scenarios",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "90-year-old, creatinine 1.8 (baseline 1.2), new afib with RVR. CHA2DS2-VASc=5, HAS-BLED=3. Anticoagulation choice?",
+    "o": [
+      "Warfarin INR 2-3",
+      "Apixaban 5mg BID",
+      "Apixaban 2.5mg BID",
+      "Aspirin 81mg only"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 41,
+    "tis": [
+      41
+    ],
+    "e": "Age ≥80 + creatinine ≥1.5 requires reduced apixaban dose (2.5mg BID)",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#34",
+    "_category": "Clinical Scenarios",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 4
+  },
+  {
+    "q": "82-year-old post-op day 2 from hip fracture repair, pulling at IV lines, not recognizing family. CAM positive. First intervention?",
+    "o": [
+      "Haloperidol 1mg IM",
+      "Physical restraints",
+      "Remove unnecessary lines/catheters",
+      "Lorazepam 0.5mg IV"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 5,
+    "tis": [
+      5
+    ],
+    "e": "Environmental modifications first: remove lines, mobilize, orient, before medications",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#35",
+    "_category": "Clinical Scenarios",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "78-year-old man, PSA 12 (was 4 two years ago), no urinary symptoms. Life expectancy ~8 years. Next step?",
+    "o": [
+      "Immediate biopsy",
+      "Repeat PSA in 3 months",
+      "MRI prostate",
+      "Observation only"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 0,
+    "tis": [
+      0
+    ],
+    "e": "With <10 year life expectancy, confirm PSA elevation before invasive testing",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#36",
+    "_category": "Clinical Scenarios",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 4
+  },
+  {
+    "q": "85-year-old woman, recurrent UTIs, post-void residual 250mL. Which medication to STOP?",
+    "o": [
+      "Lisinopril",
+      "Metformin",
+      "Tolterodine",
+      "Atorvastatin"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 17,
+    "tis": [
+      17
+    ],
+    "e": "Antimuscarinic bladder agents cause urinary retention, increasing UTI risk",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#37",
+    "_category": "Clinical Scenarios",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 2
+  },
+  {
+    "q": "91-year-old, mild dementia, lives with daughter. Daughter appears exhausted, patient has bruises on arms. First action?",
+    "o": [
+      "Call adult protective services",
+      "Interview patient alone",
+      "Admit patient for safety",
+      "Confront daughter directly"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 6,
+    "tis": [
+      6
+    ],
+    "e": "Always interview potential abuse victims separately before taking action",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#38",
+    "_category": "Clinical Scenarios",
+    "_lang": "en",
+    "_ti_confidence": "med",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "77-year-old diabetic, HbA1c 6.2% on metformin + glyburide, had hypoglycemic episode. Target HbA1c?",
+    "o": [
+      "<6.5%",
+      "<7.5%",
+      "<8.0%",
+      "<8.5%"
+    ],
+    "c": 2,
+    "t": "SZMC-Rescue",
+    "ti": 22,
+    "tis": [
+      22
+    ],
+    "e": "Older adults with hypoglycemia risk: target 7.5-8.0%; avoid glyburide per Beers",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#39",
+    "_category": "Clinical Scenarios",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  },
+  {
+    "q": "86-year-old, MMSE 18/30, getting lost driving familiar routes. Family asks about driving. Your response?",
+    "o": [
+      "Immediate license revocation",
+      "Formal driving evaluation",
+      "Allow only daytime driving",
+      "Family should hide keys"
+    ],
+    "c": 1,
+    "t": "SZMC-Rescue",
+    "ti": 31,
+    "tis": [
+      31
+    ],
+    "e": "Cognitive impairment alone doesn't determine driving safety; needs formal assessment",
+    "ref": "",
+    "_source": "R20",
+    "_orig_id": "R20#40",
+    "_category": "Clinical Scenarios",
+    "_lang": "en",
+    "_ti_confidence": "high",
+    "_c_resolved": "exact",
+    "_dup_likely": false,
+    "_difficulty": 3
+  }
+]
