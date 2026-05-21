@@ -203,14 +203,22 @@ function stripPrefixes(opts) {
   return { o: opts, stripped: false };
 }
 
-/** Resolve a free-text correct answer (R20) to an option index. */
+/**
+ * Resolve a free-text correct answer (R20) to an option index.
+ * An empty/whitespace answer can never be resolved and MUST surface as
+ * UNMATCHED — `norm('')` is `''`, and `option.includes('')` is true for
+ * every option, so an empty answer would otherwise fuzzy-match index 0
+ * silently. UNMATCHED returns `c: null` (not 0) so the caller flags the
+ * record rather than trusting a fabricated index.
+ */
 function resolveTextC(text, opts) {
   const t = norm(text);
+  if (!t) return { c: null, how: 'UNMATCHED' };
   let idx = opts.findIndex(o => norm(o) === t);
   if (idx >= 0) return { c: idx, how: 'exact' };
-  idx = opts.findIndex(o => norm(o) && (norm(o).includes(t) || t.includes(norm(o))));
+  idx = opts.findIndex(o => { const no = norm(o); return no && (no.includes(t) || t.includes(no)); });
   if (idx >= 0) return { c: idx, how: 'fuzzy' };
-  return { c: 0, how: 'UNMATCHED' };
+  return { c: null, how: 'UNMATCHED' };
 }
 
 // ── main ─────────────────────────────────────────────────────────────────────
@@ -247,7 +255,12 @@ function main() {
       if (raw.cText != null) ({ c, how } = resolveTextC(raw.cText, o));
       else { c = raw.c; how = 'direct'; }
       cDist[how] = (cDist[how] || 0) + 1;
-      if (how === 'UNMATCHED') issues.push(`correct_answer not matched to an option: "${String(raw.cText).slice(0, 70)}"`);
+      if (how === 'UNMATCHED') {
+        const ct = String(raw.cText == null ? '' : raw.cText);
+        issues.push(ct.trim()
+          ? `correct_answer not matched to an option: "${ct.slice(0, 70)}"`
+          : 'correct_answer is empty/whitespace — cannot resolve');
+      }
       if (!Number.isInteger(c) || c < 0 || c >= o.length) issues.push(`c out of range (c=${c}, n=${o.length})`);
 
       const e = String(raw.e == null ? '' : raw.e).trim();
@@ -301,4 +314,8 @@ function main() {
   console.log('');
 }
 
-main();
+if (require.main === module) main();
+
+// Exported for unit testing (tests/mcqsPendingRescue.test.js). When imported
+// rather than run directly, main() above is skipped — no file I/O at import.
+module.exports = { resolveTextC, computeTi, stripPrefixes, norm };

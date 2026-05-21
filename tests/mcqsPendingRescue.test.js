@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
+import normalizer from '../scripts/normalize_rescue_mcqs.cjs';
 
 /**
  * Schema guard for scripts/mcqs_pending_rescue_2026-05-21.json — the staging
@@ -83,5 +84,34 @@ describe('mcqs_pending_rescue_2026-05-21.json — rescued-MCQ staging file', () 
 
   it('has zero records flagged with schema problems', () => {
     expect(data.filter(r => r._needs_review).map(r => r._orig_id)).toEqual([]);
+  });
+});
+
+describe('normalize_rescue_mcqs — resolveTextC free-text answer resolution', () => {
+  const { resolveTextC } = normalizer;
+  const OPTS = ['Apixaban 5mg BID', 'Warfarin', 'Aspirin 325mg', 'Dabigatran 150mg BID'];
+
+  it('exports resolveTextC for unit testing', () => {
+    expect(typeof resolveTextC).toBe('function');
+  });
+
+  it('resolves an exact text answer to its option index', () => {
+    expect(resolveTextC('Warfarin', OPTS)).toEqual({ c: 1, how: 'exact' });
+  });
+
+  // Regression guard for Codex P2 (PR #254): an empty/whitespace correct_answer
+  // must NOT silently fuzzy-match index 0 (`option.includes('')` is always true).
+  it('surfaces an empty/whitespace correct_answer as UNMATCHED — never silently indexes 0', () => {
+    for (const empty of ['', '   ', '\t\n', null, undefined]) {
+      const r = resolveTextC(empty, OPTS);
+      expect(r.how, JSON.stringify(empty)).toBe('UNMATCHED');
+      expect(Number.isInteger(r.c), JSON.stringify(empty)).toBe(false);
+    }
+  });
+
+  it('surfaces a genuinely-unmatched answer as UNMATCHED, not a fuzzy index-0 hit', () => {
+    const r = resolveTextC('Clopidogrel is not one of these options', OPTS);
+    expect(r.how).toBe('UNMATCHED');
+    expect(Number.isInteger(r.c)).toBe(false);
   });
 });
