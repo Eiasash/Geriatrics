@@ -6,16 +6,25 @@
 // + GRS8 source library. Per Phase 2c of 2026-05-08 plan: NEVER auto-merge,
 // outputs to data/ai_hard_seed.geri.generated.json for morning review.
 //
-// Usage:
-//   ANTHROPIC_API_KEY=sk-... node scripts/gen_ai_hard_geri.mjs --hazzard 30 --harrison 15 --grs8 5
+// Usage (proxy mode — default, no local key needed):
+//   node scripts/gen_ai_hard_geri.mjs --hazzard 30 --harrison 15 --grs8 5
 //
-// Cost: ~$0.0080 per question on Sonnet 4.6. Default cap: $25 = ~3000 Qs ceiling.
-// Plan-target: 50 new Qs total — that's ~$0.40. Cheap.
+// Usage (direct mode fallback, when Toranot is down):
+//   AI_DIRECT=1 ANTHROPIC_API_KEY=sk-... node scripts/gen_ai_hard_geri.mjs --hazzard 30 --harrison 15 --grs8 5
+//
+// Cost: ~$0.0080 per question on Sonnet 4.6. Cap enforcement moved server-side to Toranot
+// proxy in v10.64.131 (per audit-fix-deploy D.3 + #261 precedent). Direct mode bypasses
+// the cap entirely — use with care.
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 import { extractJson } from './lib/extractJson.mjs';
+
+// proxy-client.cjs is CJS — use createRequire for ESM interop
+const require = createRequire(import.meta.url);
+const { callClaude: callClaudeProxy } = require('./lib/proxy-client.cjs');
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -37,11 +46,14 @@ if (!N_HAZZARD && !N_HARRISON && !N_GRS8) {
   process.exit(1);
 }
 
-const API_KEY = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
-if (!API_KEY) { console.error('ANTHROPIC_API_KEY (or CLAUDE_API_KEY) env var not set.'); process.exit(2); }
-if (API_KEY.length !== 108) { console.error(`API key length=${API_KEY.length}, expected 108`); process.exit(2); }
+// v10.64.131: migrated to Toranot proxy (per audit-fix-deploy D.3 + memory #29).
+// Default = proxy mode (no key needed locally). Set AI_DIRECT=1 + ANTHROPIC_API_KEY
+// for fallback when Toranot is down (per deploy-primitives §4 direct-api carve-out).
+const DIRECT_MODE = process.env.AI_DIRECT === '1';
+const DIRECT_KEY = DIRECT_MODE ? (process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY) : null;
+if (DIRECT_MODE && !DIRECT_KEY) { console.error('AI_DIRECT=1 but ANTHROPIC_API_KEY (or CLAUDE_API_KEY) env var not set.'); process.exit(2); }
 
-const MODEL = process.env.AI_MODEL || 'claude-opus-4-7';
+const MODEL = process.env.AI_MODEL || 'opus';
 const COST_CAP_USD = Number(process.env.CHAOS_COST_CAP_USD || 25);
 const COST = { calls: 0, inTok: 0, outTok: 0 };
 const priceUsd = () => (COST.inTok / 1e6) * 3 + (COST.outTok / 1e6) * 15;
@@ -70,18 +82,19 @@ Topic indices (ti, 0-45):
 `;
 
 async function callAnthropic(userPrompt, maxTokens = 1800) {
-  if (priceUsd() >= COST_CAP_USD) throw new Error(`cost-cap reached: $${priceUsd().toFixed(2)} >= $${COST_CAP_USD}`);
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, system: SYSTEM, messages: [{ role: 'user', content: userPrompt }] }),
+  // v10.64.131: cost cap now enforced by Toranot proxy server-side (per #261 precedent).
+  // Client-side cap is a no-op in proxy mode because proxy-client doesn't expose usage tokens.
+  // Set CHAOS_COST_CAP_USD on the proxy side via toranot_config if tighter caps are needed.
+  const text = await callClaudeProxy(userPrompt, {
+    model: MODEL,
+    system: SYSTEM,
+    max_tokens: maxTokens,
+    timeout_ms: 60_000,
+    direct: DIRECT_MODE,
+    apiKey: DIRECT_KEY,
   });
-  if (!res.ok) throw new Error(`Anthropic API ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const json = await res.json();
   COST.calls += 1;
-  COST.inTok += json.usage?.input_tokens || 0;
-  COST.outTok += json.usage?.output_tokens || 0;
-  return json.content[0].text;
+  return text;
 }
 
 function parseQs(text, expectedTag) {

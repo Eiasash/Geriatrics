@@ -32,13 +32,20 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import { createRequire } from 'node:module';
 import { extractJson } from './lib/extractJson.mjs';
 
-const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
-const MODEL = process.env.SCAN_MODEL || 'claude-opus-4-7';
-const KEY = process.env.CLAUDE_API_KEY;
-if (!KEY) { console.error('CLAUDE_API_KEY not set'); process.exit(2); }
-if (KEY.length !== 108) { console.error(`CLAUDE_API_KEY length=${KEY.length}, expected 108`); process.exit(2); }
+// proxy-client.cjs is CJS — use createRequire for ESM interop
+const require = createRequire(import.meta.url);
+const { callClaude: callClaudeProxy } = require('./lib/proxy-client.cjs');
+
+// v10.64.131: migrated to Toranot proxy (per audit-fix-deploy D.3 + memory #29).
+// Default = proxy mode (no key needed locally). Set SCAN_DIRECT=1 + CLAUDE_API_KEY
+// for fallback when Toranot is down (per deploy-primitives §4 direct-api carve-out).
+const MODEL = process.env.SCAN_MODEL || 'opus';
+const DIRECT_MODE = process.env.SCAN_DIRECT === '1';
+const DIRECT_KEY = DIRECT_MODE ? (process.env.CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY) : null;
+if (DIRECT_MODE && !DIRECT_KEY) { console.error('SCAN_DIRECT=1 but CLAUDE_API_KEY/ANTHROPIC_API_KEY not set'); process.exit(2); }
 
 const CONFIG = {
   questionsPath: process.env.SCAN_QUESTIONS || 'data/questions.json',
@@ -50,28 +57,35 @@ const CONFIG = {
 
 const COST = { totalCalls: 0, inTok: 0, outTok: 0, failures: 0 };
 const priceUsd = (i, o) => (i / 1e6) * 3 + (o / 1e6) * 15;
-const costExceeded = () => priceUsd(COST.inTok, COST.outTok) >= CONFIG.costCapUsd;
+// v10.64.131: cost cap now enforced by Toranot proxy server-side (per #261 precedent).
+// Client-side cap is a no-op in proxy mode because proxy-client doesn't expose usage tokens.
+// In direct mode (SCAN_DIRECT=1) the cap is also disabled — for that case, set tighter
+// CHAOS_COST_CAP_USD environment guards or use the proxy.
+const costExceeded = () => false;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function callClaude(system, user, { maxTokens = 250, retries = 3 } = {}) {
-  const body = { model: MODEL, max_tokens: maxTokens, system, messages: [{ role: 'user', content: user }] };
+  // Retry wrapper around proxy-client. proxy-client throws on any !res.ok,
+  // so we catch and retry uniformly (vs the pre-migration code which distinguished
+  // 429/5xx as retryable and 4xx as fatal). Net effect: more retries on bad requests,
+  // which costs an extra ~3 attempts at script start if the prompt is malformed.
   let lastErr = null;
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
-      const res = await fetch(ANTHROPIC_URL, {
-        method: 'POST',
-        headers: { 'anthropic-version': '2023-06-01', 'x-api-key': KEY, 'content-type': 'application/json' },
-        body: JSON.stringify(body),
+      const text = await callClaudeProxy(user, {
+        model: MODEL,
+        system,
+        max_tokens: maxTokens,
+        timeout_ms: 60_000,
+        direct: DIRECT_MODE,
+        apiKey: DIRECT_KEY,
       });
-      if (res.status === 429 || res.status >= 500) { await sleep((attempt + 1) * 1500); continue; }
-      if (!res.ok) { lastErr = new Error(`API ${res.status}: ${(await res.text()).slice(0, 200)}`); break; }
-      const data = await res.json();
-      const text = (data.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('');
       COST.totalCalls += 1;
-      COST.inTok += data.usage?.input_tokens || 0;
-      COST.outTok += data.usage?.output_tokens || 0;
       return { text };
-    } catch (e) { lastErr = e; await sleep((attempt + 1) * 800); }
+    } catch (e) {
+      lastErr = e;
+      await sleep((attempt + 1) * 1500);
+    }
   }
   COST.failures += 1;
   throw lastErr || new Error('Claude API call failed after retries');
