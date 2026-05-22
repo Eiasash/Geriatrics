@@ -110,7 +110,13 @@ const TORANOT_URL = 'https://toranot.netlify.app/api/claude';
 // v10.64.114: documented Toranot proxy secret for Geri — same value used by
 // scripts/generate_distractors.cjs (this is the contract, not a credential).
 const TORANOT_DEFAULT_SECRET = 'shlav-a-mega-1f97f311d307-2026';
-const MODEL = process.env.CHAOS_MODEL || 'claude-opus-4-7';
+// v10.64.131: model default branches on mode after the USE_PROXY flip.
+// Proxy accepts 'opus' alias (resolves to current opus server-side); direct mode
+// needs a canonical Anthropic model ID. CHAOS_MODEL env overrides both.
+// (Codex P1 #265 caught the original opus-4-7-everywhere default would 400 on proxy.)
+// Note: USE_PROXY is declared below, so we use a getter pattern to defer resolution.
+const MODEL = process.env.CHAOS_MODEL ||
+  (process.env.CHAOS_USE_DIRECT === '1' ? 'claude-opus-4-7' : 'opus');
 
 // v10.64.114: proxy mode lets the bot run without a personal CLAUDE_API_KEY,
 // routing through the Toranot AI proxy (same path Geri's in-app aiAutopsy uses).

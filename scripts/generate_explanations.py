@@ -133,7 +133,9 @@ def generate_one(i, q):
                 return (i, text, None)
             last_err = err
             time.sleep(1 + attempt * 2)
-        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as e:
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError, RuntimeError) as e:
+            # RuntimeError covers proxy_client failures (transient 429/5xx from proxy
+            # or Anthropic surface as RuntimeError, not URLError). Codex P1 #265.
             last_err = f'{type(e).__name__}: {e}'
             time.sleep(2 + attempt * 3)
     return (i, None, last_err)
