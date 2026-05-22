@@ -1821,7 +1821,7 @@
     "q": "מה ההגדרה של orthostatic hypotension בקשיש?",
     "o": [
       "ירידה של SBP >10 mmHg",
-      "ירידה של SBP >20 mmHg או DBP >10",
+      "ירידה של SBP >20 mmHg או ירידה של DBP >10 mmHg",
       "ירידה של SBP >30 mmHg",
       "כל ירידה סימפטומטית ב-BP"
     ],
@@ -1844,7 +1844,7 @@
     "q_en": "Definition of orthostatic hypotension in elderly?",
     "o_en": [
       "SBP drop >10 mmHg",
-      "SBP drop >20 mmHg or DBP >10",
+      "SBP drop >20 mmHg or DBP drop >10 mmHg",
       "SBP drop >30 mmHg",
       "Any symptomatic BP drop"
     ],
