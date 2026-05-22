@@ -20,7 +20,6 @@
  *   --delay N        Milliseconds between batches (default: 500)
  *   --help           Show this help
  *
- * API key resolution order:
  */
 
 const fs    = require('fs');
@@ -94,6 +93,10 @@ function atomicWriteJson(filePath, data) {
     try { fs.unlinkSync(tmp); } catch {}
   }
 }
+
+// ─── Prompt builder ───────────────────────────────────────────────────────────
+
+const LETTERS = ['A', 'B', 'C', 'D', 'E'];
 
 function buildUserPrompt(q) {
   const lines = [`Question: ${q.q}`];
