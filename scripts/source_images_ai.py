@@ -8,10 +8,11 @@ For each flagged question, asks Claude Sonnet for:
 
 Writes back to sourcing_queue CSV with added columns.
 
-Uses direct Anthropic API (not Netlify proxy — avoids 20s timeout).
-Parallel 8 workers. Sonnet 4.5.
+v10.64.131: migrated to Toranot proxy. Default = proxy mode (no key needed).
+Set PYAI_DIRECT=1 + ANTHROPIC_API_KEY for fallback when Toranot is down.
+Parallel 8 workers. Sonnet (alias resolves to current Sonnet server-side).
 
-Env: ANTHROPIC_API_KEY
+Env: PYAI_DIRECT=1 + ANTHROPIC_API_KEY (direct fallback only)
 """
 import json
 import os
@@ -20,15 +21,20 @@ import csv
 import argparse
 import time
 import concurrent.futures
+import pathlib
 from urllib import request, error
 
-MODEL = "claude-sonnet-4-5"
+sys.path.insert(0, str(pathlib.Path(__file__).parent / 'lib'))
+from proxy_client import call_claude as _proxy_call, get_direct_key
+
+_DIRECT = os.environ.get('PYAI_DIRECT') == '1'
+_KEY = get_direct_key() if _DIRECT else None
+if _DIRECT and not _KEY:
+    print('PYAI_DIRECT=1 but ANTHROPIC_API_KEY not set', file=sys.stderr); sys.exit(1)
+
+MODEL = "claude-sonnet-4-5" if _DIRECT else "sonnet"
 
 def call_claude(stem, modality, topic):
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        raise RuntimeError("ANTHROPIC_API_KEY not set")
-    
     prompt = f"""You are helping source a clinical image for a board exam question.
 
 Topic: {topic}
@@ -50,24 +56,8 @@ Rules:
 - If svg_feasible=true, produce a clean minimal SVG (viewBox 0 0 600 200 for tracings) with labeled axes
 """
     
-    body = json.dumps({
-        "model": MODEL,
-        "max_tokens": 1500,
-        "messages": [{"role": "user", "content": prompt}],
-    }).encode()
-    
-    req = request.Request(
-        "https://api.anthropic.com/v1/messages",
-        data=body,
-        headers={
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
-    )
-    with request.urlopen(req, timeout=60) as resp:
-        data = json.loads(resp.read().decode())
-    text = data["content"][0]["text"].strip()
+    text = _proxy_call(prompt, model=MODEL, max_tokens=1500, timeout_s=60,
+                       direct=_DIRECT, api_key=_KEY).strip()
     # strip fences if present
     if text.startswith("```"):
         text = text.strip("`").lstrip("json").strip()
@@ -118,7 +108,7 @@ def main():
     
     fieldnames = list(rows[0].keys()) + ["description","search_terms","svg_feasible","svg","error"]
     fieldnames = list(dict.fromkeys(fieldnames))  # dedup preserve order
-    with open(args.out, "w", encoding="utf-8", newline="", encoding='utf-8') as fh:
+    with open(args.out, "w", encoding="utf-8", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=fieldnames, extrasaction="ignore")
         w.writeheader()
         w.writerows(out_rows)

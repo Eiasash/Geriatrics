@@ -1,8 +1,8 @@
-// Regression pin for v10.64.114 proxy-mode toggle on chaos-doctor-bot v4.
-// Prevents accidental loss of either:
-//   (a) the proxy mode (would force everyone to set CLAUDE_API_KEY again)
-//   (b) the direct-anthropic mode (would break overnight runs that use the
-//       personal key path)
+// Regression pin for v10.64.131 flipped proxy-mode default on chaos-doctor-bot v4.
+// As of v10.64.131 proxy is the DEFAULT (no key needed). Direct mode is opt-in
+// via CHAOS_USE_DIRECT=1 + CLAUDE_API_KEY. This pin prevents accidental loss of:
+//   (a) the flipped default (would re-introduce the bash_history leak class)
+//   (b) the direct-anthropic fallback path (would break Toranot-outage recovery)
 // Same readFile-grep style as chaosBotV4Persona.test.js — operates on the
 // source text, doesn't import the bot (which would exit(2) on missing key).
 import { describe, it, expect } from 'vitest';
@@ -20,8 +20,9 @@ describe('chaos-doctor-bot v4 — proxy-mode pins', () => {
     expect(SRC).toMatch(/TORANOT_URL\s*=\s*'https:\/\/toranot\.netlify\.app\/api\/claude'/);
   });
 
-  it('USE_PROXY toggle is gated on CHAOS_USE_PROXY=1 or TORANOT_API_SECRET', () => {
-    expect(SRC).toMatch(/USE_PROXY\s*=\s*process\.env\.CHAOS_USE_PROXY\s*===\s*'1'\s*\|\|\s*!!process\.env\.TORANOT_API_SECRET/);
+  it('USE_PROXY defaults to true; direct mode is opt-in via CHAOS_USE_DIRECT=1', () => {
+    // v10.64.131 flipped the default: proxy is now the no-key path.
+    expect(SRC).toMatch(/USE_PROXY\s*=\s*process\.env\.CHAOS_USE_DIRECT\s*!==\s*'1'/);
   });
 
   it('API_URL routes to TORANOT_URL in proxy mode, ANTHROPIC_URL otherwise', () => {

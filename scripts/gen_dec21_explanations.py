@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
-"""Generate Hebrew explanations for Dec21 missing Qs via direct Anthropic API.
-Model: claude-sonnet-4-5 | Parallel: 10 workers | max_tokens: 2000 per Q
+"""Generate Hebrew explanations for Dec21 missing Qs.
+v10.64.131: routes via Toranot proxy by default; PYAI_DIRECT=1 + ANTHROPIC_API_KEY for direct fallback.
+Model: sonnet (proxy alias) or claude-sonnet-4-5 (direct) | Parallel: 10 workers | max_tokens: 2000 per Q
 """
-import json, os, sys
+import json, os, sys, pathlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from anthropic import Anthropic
 
-client = Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])
+sys.path.insert(0, str(pathlib.Path(__file__).parent / 'lib'))
+from proxy_client import call_claude as _proxy_call, get_direct_key
+
+# v10.64.131: migrated from anthropic SDK to Toranot proxy.
+# Default = proxy mode (no key needed). Set PYAI_DIRECT=1 + ANTHROPIC_API_KEY for fallback.
+_DIRECT = os.environ.get('PYAI_DIRECT') == '1'
+_KEY = get_direct_key() if _DIRECT else None
+if _DIRECT and not _KEY:
+    print('PYAI_DIRECT=1 but ANTHROPIC_API_KEY not set', file=sys.stderr); sys.exit(1)
+
+MODEL = 'claude-sonnet-4-5' if _DIRECT else 'sonnet' 
 
 PROMPT = """אתה מומחה בגריאטריה שכותב הסברים קליניים לשאלות בחינת שלב א' הישראלית. כתוב הסבר מקיף ומקצועי בעברית לשאלה הבאה.
 
@@ -33,18 +43,16 @@ HEB = 'אבגד'
 
 def gen(q):
     accepted = '/'.join(HEB[c] for c in q['c_all'])
-    msg = client.messages.create(
-        model="claude-sonnet-4-5",
-        max_tokens=2000,
-        messages=[{"role": "user", "content": PROMPT.format(
-            q=q['q'],
-            o0=q['o'][0], o1=q['o'][1], o2=q['o'][2], o3=q['o'][3],
-            letter=HEB[q['c']],
-            accepted=accepted,
-            ref=q['ref']
-        )}]
+    prompt = PROMPT.format(
+        q=q['q'],
+        o0=q['o'][0], o1=q['o'][1], o2=q['o'][2], o3=q['o'][3],
+        letter=HEB[q['c']],
+        accepted=accepted,
+        ref=q['ref']
     )
-    return q['n'], msg.content[0].text.strip()
+    text = _proxy_call(prompt, model=MODEL, max_tokens=2000, timeout_s=60,
+                       direct=_DIRECT, api_key=_KEY)
+    return q['n'], text.strip()
 
 def main():
     qs = json.load(open('exams/2021_dec_al/missing_q_clean.json', encoding='utf-8'))
