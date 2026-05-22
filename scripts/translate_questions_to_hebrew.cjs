@@ -16,7 +16,10 @@
  *   - Numerical values, ranges, units
  *
  * Usage:
- *   ANTHROPIC_API_KEY=sk-ant-... node translate_questions_to_hebrew.cjs [options]
+ *   node translate_questions_to_hebrew.cjs [options]
+ *
+ *   By default routes through the Toranot proxy (no API key required).
+ *   Pass --direct + ANTHROPIC_API_KEY=sk-... to bypass proxy.
  *
  * Options:
  *   --dry-run        Print 1-2 sample translations to stdout, don't write
@@ -41,8 +44,8 @@
  */
 
 const fs    = require('fs');
-const https = require('https');
 const path  = require('path');
+const { callClaude } = require('./lib/proxy-client.cjs');
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -180,56 +183,15 @@ if (!['in-place','bilingual'].includes(MODE)) {
 
 // ─── API key resolution ───────────────────────────────────────────────────────
 
-function getApiKey() {
-  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
-  try {
-    const c = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
-    if (c.apiKey) return c.apiKey;
-  } catch {}
-  console.error('No API key. Set ANTHROPIC_API_KEY or add config.json with {"apiKey":"..."}.');
-  process.exit(1);
-}
-
-// ─── HTTPS call to Claude ─────────────────────────────────────────────────────
-
-function callClaude(apiKey, userMsg) {
-  const body = JSON.stringify({
-    model: MODEL,
-    max_tokens: MAX_TOKENS,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: userMsg }],
-  });
-  const opts = {
-    hostname: 'api.anthropic.com',
-    path: '/v1/messages',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'Content-Length': Buffer.byteLength(body),
-    },
-    timeout: 60_000,
-  };
-  return new Promise((resolve, reject) => {
-    const req = https.request(opts, (res) => {
-      const chunks = [];
-      res.on('data', (c) => chunks.push(c));
-      res.on('end', () => {
-        const raw = Buffer.concat(chunks).toString('utf8');
-        if (res.statusCode !== 200) return reject(new Error(`HTTP ${res.statusCode}: ${raw.slice(0, 300)}`));
-        try {
-          const parsed = JSON.parse(raw);
-          const text = parsed?.content?.[0]?.text || '';
-          resolve(text);
-        } catch (e) { reject(new Error(`bad JSON from API: ${e.message}`)); }
-      });
-    });
-    req.on('error', reject);
-    req.on('timeout', () => { req.destroy(new Error('timeout')); });
-    req.write(body);
-    req.end();
-  });
+function resolveDirectMode() {
+  const direct = process.argv.includes('--direct');
+  if (!direct) return { direct: false };
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    console.error('--direct requires ANTHROPIC_API_KEY env var.');
+    process.exit(1);
+  }
+  return { direct: true, apiKey };
 }
 
 function extractJson(text) {
@@ -273,7 +235,8 @@ function applyBilingual(target, translated) {
 }
 
 async function main() {
-  const apiKey = DRY_RUN ? 'dry' : getApiKey();
+  const directMode = DRY_RUN ? { direct: false } : resolveDirectMode();
+  console.log(directMode.direct ? 'Mode: DIRECT (api.anthropic.com)' : 'Mode: PROXY (toranot.netlify.app)');
   const allQs = JSON.parse(fs.readFileSync(TARGET, 'utf8'));
 
   // English-only filter: <30% Hebrew chars in q+o
@@ -310,7 +273,7 @@ async function main() {
       console.log(`  EN o[${q.c}] (correct): ${(q.o?.[q.c] || '').slice(0, 80)}`);
     }
     console.log('\nTo run for real:');
-    console.log(`  ANTHROPIC_API_KEY=sk-ant-... node ${path.basename(__filename)} --tag ${TAG} --limit ${LIMIT} --mode ${MODE}`);
+    console.log(`  node ${path.basename(__filename)} --tag ${TAG} --limit ${LIMIT} --mode ${MODE}`);
     return;
   }
 
@@ -325,7 +288,7 @@ async function main() {
     const slice = todo.slice(off, off + BATCH_SIZE);
     const results = await Promise.all(slice.map(async ({ q, i }) => {
       try {
-        const text = await callClaude(apiKey, USER_TEMPLATE(q));
+        const text = await callClaude(USER_TEMPLATE(q), { model: MODEL, system: SYSTEM_PROMPT, max_tokens: MAX_TOKENS, ...directMode });
         const obj = extractJson(text);
         if (typeof obj.q !== 'string' || !Array.isArray(obj.o) || obj.o.length !== q.o.length) {
           throw new Error(`bad shape: q-string=${typeof obj.q} o-array=${Array.isArray(obj.o)} same-len=${obj.o?.length === q.o.length}`);

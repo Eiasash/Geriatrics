@@ -18,14 +18,17 @@
  *   --count      questions per chapter (default: 10)
  *   --dry-run    show chapter→topic mapping without calling API
  *   --output     output file (default: generated-questions-{timestamp}.json)
- *   --api-key    Anthropic API key (or set ANTHROPIC_API_KEY env var)
- *   --proxy      use toranot proxy instead of direct API (default: false)
+ *   (proxy mode is default; no API key required)
+ *   --direct      bypass proxy, hit api.anthropic.com directly (requires --api-key or ANTHROPIC_API_KEY env)
+ *   --api-key     direct-mode only: Anthropic API key (or set ANTHROPIC_API_KEY env var)
+ *   (--proxy is now the default and was removed; pass --direct to bypass)
  *   --concurrency  parallel API calls per batch (default: 5)
  *   --resume     resume from previous run (loads existing output + skips done chapters)
  */
 
 const fs = require('fs');
 const path = require('path');
+const { callClaude: proxyCallClaude } = require('./lib/proxy-client.cjs');
 
 // ============================================================
 // CONFIG
@@ -258,7 +261,7 @@ function parseArgs() {
     dryRun: false,
     output: null,
     apiKey: process.env.ANTHROPIC_API_KEY || null,
-    proxy: false,
+    direct: false,
     concurrency: 5,
     resume: false,
   };
@@ -272,7 +275,8 @@ function parseArgs() {
       case '--dry-run': opts.dryRun = true; break;
       case '--output': opts.output = args[++i]; break;
       case '--api-key': opts.apiKey = args[++i]; break;
-      case '--proxy': opts.proxy = true; break;
+      case '--direct': opts.direct = true; break;
+      case '--proxy': /* now the default — flag retained as no-op for back-compat */ break;
       case '--concurrency': opts.concurrency = parseInt(args[++i]); break;
       case '--resume': opts.resume = true; break;
     }
@@ -286,8 +290,8 @@ function parseArgs() {
     console.error('Error: specify --chapters or --all');
     process.exit(1);
   }
-  if (!opts.dryRun && !opts.apiKey && !opts.proxy) {
-    console.error('Error: provide --api-key, set ANTHROPIC_API_KEY, or use --proxy');
+  if (opts.direct && !opts.dryRun && !opts.apiKey) {
+    console.error('Error: --direct requires --api-key or ANTHROPIC_API_KEY env var');
     process.exit(1);
   }
 
@@ -449,58 +453,18 @@ OUTPUT FORMAT — respond with ONLY a JSON array, no markdown fences, no preambl
 Generate exactly ${count} questions. JSON only, no other text.`;
 }
 
-async function callClaude(prompt, apiKey, useProxy) {
-  const url = useProxy
-    ? 'https://toranot.netlify.app/api/claude'
-    : 'https://api.anthropic.com/v1/messages';
-
-  const body = {
-    model: 'claude-opus-4-20250514',
+async function callClaude(prompt, apiKey, direct) {
+  // Delegates to scripts/lib/proxy-client.cjs.
+  // Model: 'opus' alias (resolves to current claude-opus-4-x on the proxy).
+  // The historical hardcoded 'claude-opus-4-20250514' string is REJECTED by
+  // the proxy (HTTP 400 "Unsupported model") — alias is the safe form.
+  return proxyCallClaude(prompt, {
+    model: 'opus',
     max_tokens: 8192,
-    messages: [{ role: 'user', content: prompt }],
-  };
-
-  if (useProxy) {
-    body.secret = 'shlav-a-mega-1f97f311d307-2026';
-  }
-
-  const headers = {
-    'Content-Type': 'application/json',
-    'anthropic-version': '2023-06-01',
-  };
-  if (!useProxy && apiKey) {
-    headers['x-api-key'] = apiKey;
-  }
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
+    direct: !!direct,
+    apiKey: direct ? apiKey : undefined,
   });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`API error ${response.status}: ${errText}`);
-  }
-
-  const data = await response.json();
-  
-  // Extract text from response
-  let text = '';
-  if (data.content) {
-    text = data.content.map(c => c.text || '').join('');
-  } else if (data.choices) {
-    text = data.choices[0]?.message?.content || '';
-  } else if (typeof data === 'string') {
-    text = data;
-  }
-
-  return text;
 }
-
-// ============================================================
-// VALIDATION
-// ============================================================
 
 function validateQuestion(q, topicCount) {
   const errors = [];
@@ -638,7 +602,7 @@ async function main() {
       const prompt = buildPrompt(chapter, topicName, opts.count, opts.app);
       console.log(`  🤖 ${label}: "${chapter.title.substring(0, 35)}" → ${topicName} (${Math.round(prompt.length / 4)} tok)...`);
       
-      const response = await callClaude(prompt, opts.apiKey, opts.proxy);
+      const response = await callClaude(prompt, opts.apiKey, opts.direct);
       const questions = parseGeneratedQuestions(response);
       
       if (!questions.length) {
