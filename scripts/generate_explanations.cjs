@@ -8,7 +8,10 @@
  * and writes the result back to questions.json with periodic checkpoints.
  *
  * Usage:
- *   ANTHROPIC_API_KEY=sk-ant-... node generate_explanations.cjs [options]
+ *   node generate_explanations.cjs [options]
+ *
+ *   By default routes through the Toranot proxy (no API key required).
+ *   Pass --direct + ANTHROPIC_API_KEY=sk-... to bypass proxy.
  *
  * Options:
  *   --dry-run        Print what would be done without calling API or writing files
@@ -18,18 +21,15 @@
  *   --help           Show this help
  *
  * API key resolution order:
- *   1. ANTHROPIC_API_KEY environment variable
- *   2. ../config.json (JSON file with { "apiKey": "sk-..." })
  */
 
 const fs    = require('fs');
-const https = require('https');
 const path  = require('path');
+const { callClaude } = require('./lib/proxy-client.cjs');
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const QUESTIONS_PATH = path.resolve(__dirname, '..', 'data', 'questions.json');
-const CONFIG_PATH    = path.resolve(__dirname, '..', 'config.json');
 
 const MODEL          = 'claude-opus-4-6';
 const MAX_TOKENS     = 700;   // ~200 words + some margin
@@ -69,19 +69,17 @@ function parseArgs(argv) {
   return args;
 }
 
-// ─── API key loading ──────────────────────────────────────────────────────────
+// ─── Direct-mode resolution ──────────────────────────────────────────────────
 
-function loadApiKey() {
-  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
-  if (fs.existsSync(CONFIG_PATH)) {
-    try {
-      const cfg = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
-      if (cfg.apiKey) return cfg.apiKey;
-    } catch (e) {
-      console.error(`Warning: Could not parse ${CONFIG_PATH}: ${e.message}`);
-    }
+function resolveDirectMode() {
+  const direct = process.argv.includes('--direct');
+  if (!direct) return { direct: false };
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    console.error('--direct requires ANTHROPIC_API_KEY env var.');
+    process.exit(1);
   }
-  return null;
+  return { direct: true, apiKey };
 }
 
 // ─── Atomic JSON write ────────────────────────────────────────────────────────
@@ -92,66 +90,10 @@ function atomicWriteJson(filePath, data) {
   try {
     fs.renameSync(tmp, filePath);
   } catch (e) {
-    // Windows can fail rename if target is locked; fall back to direct write
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
     try { fs.unlinkSync(tmp); } catch {}
   }
 }
-
-// ─── Claude API call ──────────────────────────────────────────────────────────
-
-function callClaude(apiKey, userPrompt) {
-  return new Promise((resolve, reject) => {
-    const body = JSON.stringify({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: userPrompt }]
-    });
-
-    const options = {
-      hostname: 'api.anthropic.com',
-      path: '/v1/messages',
-      method: 'POST',
-      headers: {
-        'Content-Type':       'application/json',
-        'anthropic-version':  '2023-06-01',
-        'x-api-key':          apiKey,
-        'Content-Length':     Buffer.byteLength(body)
-      }
-    };
-
-    const req = https.request(options, res => {
-      let data = '';
-      res.on('data', chunk => { data += chunk; });
-      res.on('end', () => {
-        try {
-          const parsed = JSON.parse(data);
-          if (parsed.content && parsed.content[0] && parsed.content[0].text) {
-            resolve(parsed.content[0].text.trim());
-          } else if (parsed.error) {
-            reject(new Error(`API error: ${parsed.error.type} — ${parsed.error.message}`));
-          } else {
-            reject(new Error(`Unexpected response: ${data.slice(0, 300)}`));
-          }
-        } catch (e) {
-          reject(new Error(`JSON parse error: ${e.message}. Raw: ${data.slice(0, 200)}`));
-        }
-      });
-    });
-
-    req.on('error', reject);
-    req.setTimeout(120000, () => {
-      req.destroy(new Error('Request timed out after 120s'));
-    });
-    req.write(body);
-    req.end();
-  });
-}
-
-// ─── Prompt builder ───────────────────────────────────────────────────────────
-
-const LETTERS = ['A', 'B', 'C', 'D', 'E'];
 
 function buildUserPrompt(q) {
   const lines = [`Question: ${q.q}`];
@@ -247,14 +189,8 @@ async function main() {
     process.exit(0);
   }
 
-  const apiKey = loadApiKey();
-  if (!apiKey) {
-    console.error(
-      'ERROR: No API key found.\n' +
-      '  Set ANTHROPIC_API_KEY env var, or create config.json with {"apiKey":"sk-..."}'
-    );
-    process.exit(1);
-  }
+  const directMode = resolveDirectMode();
+  console.log(directMode.direct ? 'Mode: DIRECT (api.anthropic.com)' : 'Mode: PROXY (toranot.netlify.app)');
 
   console.log(`Model: ${MODEL} | Batch size: ${BATCH_SIZE} | Delay: ${args.delay}ms | Save every: ${SAVE_EVERY}`);
   console.log('Starting...\n');
@@ -273,7 +209,7 @@ async function main() {
 
     // Run batch in parallel
     const results = await Promise.allSettled(
-      batch.map(({ q, idx }) => callClaude(apiKey, buildUserPrompt(q)).then(text => ({ idx, text })))
+      batch.map(({ q, idx }) => callClaude(buildUserPrompt(q), { model: MODEL, system: SYSTEM_PROMPT, max_tokens: MAX_TOKENS, timeout_ms: 120000, ...directMode }).then(text => ({ idx, text })))
     );
 
     // Apply results
