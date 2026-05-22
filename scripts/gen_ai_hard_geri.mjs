@@ -53,7 +53,11 @@ const DIRECT_MODE = process.env.AI_DIRECT === '1';
 const DIRECT_KEY = DIRECT_MODE ? (process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY) : null;
 if (DIRECT_MODE && !DIRECT_KEY) { console.error('AI_DIRECT=1 but ANTHROPIC_API_KEY (or CLAUDE_API_KEY) env var not set.'); process.exit(2); }
 
-const MODEL = process.env.AI_MODEL || 'opus';
+// Default model branches on mode: proxy accepts 'opus' alias (resolves to current
+// opus server-side); direct mode forwards the string straight to Anthropic, which
+// needs a canonical model ID. AI_MODEL env var overrides both paths.
+// (Codex P1 #264 caught the original 'opus'-everywhere default breaking direct fallback.)
+const MODEL = process.env.AI_MODEL || (DIRECT_MODE ? 'claude-opus-4-7' : 'opus');
 const COST_CAP_USD = Number(process.env.CHAOS_COST_CAP_USD || 25);
 const COST = { calls: 0, inTok: 0, outTok: 0 };
 const priceUsd = () => (COST.inTok / 1e6) * 3 + (COST.outTok / 1e6) * 15;

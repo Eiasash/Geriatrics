@@ -42,8 +42,12 @@ const { callClaude: callClaudeProxy } = require('./lib/proxy-client.cjs');
 // v10.64.131: migrated to Toranot proxy (per audit-fix-deploy D.3 + memory #29).
 // Default = proxy mode (no key needed locally). Set SCAN_DIRECT=1 + CLAUDE_API_KEY
 // for fallback when Toranot is down (per deploy-primitives §4 direct-api carve-out).
-const MODEL = process.env.SCAN_MODEL || 'opus';
 const DIRECT_MODE = process.env.SCAN_DIRECT === '1';
+// Default model branches on mode: proxy accepts 'opus' alias (resolves to current
+// opus server-side); direct mode forwards the string straight to Anthropic, which
+// needs a canonical model ID. SCAN_MODEL env var overrides both paths.
+// (Codex P1 #264 caught the original 'opus'-everywhere default breaking direct fallback.)
+const MODEL = process.env.SCAN_MODEL || (DIRECT_MODE ? 'claude-opus-4-7' : 'opus');
 const DIRECT_KEY = DIRECT_MODE ? (process.env.CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY) : null;
 if (DIRECT_MODE && !DIRECT_KEY) { console.error('SCAN_DIRECT=1 but CLAUDE_API_KEY/ANTHROPIC_API_KEY not set'); process.exit(2); }
 
