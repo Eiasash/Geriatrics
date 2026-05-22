@@ -1,10 +1,19 @@
 #!/usr/bin/env python3
 """Second-pass: re-verify every eFlag with stricter prompt. Auto-decide.
 Output: {idx: "keep"|"dismiss"} decisions JSON ready for apply script."""
-import json, os, sys, concurrent.futures
-from urllib import request
+import json, os, sys, pathlib, concurrent.futures
+sys.path.insert(0, str(pathlib.Path(__file__).parent / 'lib'))
+from proxy_client import call_claude as _proxy_call, get_direct_key
 
-API="https://api.anthropic.com/v1/messages"; MODEL="claude-sonnet-4-5"
+# v10.64.131: migrated to Toranot proxy. Default = proxy mode (no key needed).
+# Set PYAI_DIRECT=1 + ANTHROPIC_API_KEY for fallback when Toranot is down.
+_DIRECT = os.environ.get('PYAI_DIRECT') == '1'
+_KEY = get_direct_key() if _DIRECT else None
+if _DIRECT and not _KEY:
+    print('PYAI_DIRECT=1 but ANTHROPIC_API_KEY not set', file=sys.stderr); sys.exit(1)
+
+# Model branches on mode: 'sonnet' alias for proxy, canonical ID for direct.
+MODEL = 'claude-sonnet-4-5' if _DIRECT else 'sonnet' 
 
 def verify(q_idx, q, first_reason):
     prompt = f"""First-pass AI flagged this question for explanation-answer mismatch.
@@ -26,11 +35,7 @@ Explanation: {q.get('e','')[:700]}
 
 Return STRICT JSON: {{"verdict": "real" or "false_positive", "why": "<=12 words"}}"""
     try:
-        api_key = os.environ['ANTHROPIC_API_KEY']
-        body = json.dumps({"model":MODEL,"max_tokens":100,"messages":[{"role":"user","content":prompt}]}).encode()
-        req = request.Request(API, data=body, headers={"x-api-key":api_key,"anthropic-version":"2023-06-01","content-type":"application/json"})
-        with request.urlopen(req, timeout=45) as r: data = json.loads(r.read().decode())
-        txt = data['content'][0]['text'].strip()
+        txt = _proxy_call(prompt, model=MODEL, max_tokens=100, timeout_s=45, direct=_DIRECT, api_key=_KEY).strip()
         if txt.startswith('```'): txt = txt.strip('`').lstrip('json').strip()
         return q_idx, json.loads(txt)
     except Exception as e:

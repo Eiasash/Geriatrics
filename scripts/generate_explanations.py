@@ -6,9 +6,11 @@ For each question in data/questions.json whose `e` field is <10 chars,
 call Claude Sonnet 4.5 to generate a Hebrew explanation matching the
 corpus style. Only touches `e` — never q/o/c/ti/t.
 
-Usage:
-  ANTHROPIC_API_KEY=sk-ant-... python3 scripts/generate_explanations.py
-  Options: --dry-run, --limit N
+Usage (proxy mode — default, no local key needed):
+  python3 scripts/generate_explanations.py
+Usage (direct fallback when Toranot is down):
+  PYAI_DIRECT=1 ANTHROPIC_API_KEY=sk-ant-... python3 scripts/generate_explanations.py
+Options: --dry-run, --limit N
 
 Validation per response:
   - ≥100 chars
@@ -19,16 +21,23 @@ Validation per response:
 """
 import json, os, sys, re, time, argparse
 import urllib.request, urllib.error
+import pathlib
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 
-API_KEY = os.environ.get('ANTHROPIC_API_KEY')
-if not API_KEY:
-    print('ERROR: set ANTHROPIC_API_KEY', file=sys.stderr); sys.exit(1)
+sys.path.insert(0, str(pathlib.Path(__file__).parent / 'lib'))
+from proxy_client import call_claude as _proxy_call, get_direct_key
 
-MODEL = 'claude-sonnet-4-5'
-ENDPOINT = 'https://api.anthropic.com/v1/messages'
+# v10.64.131: migrated to Toranot proxy. Default = proxy mode (no key needed).
+# Set PYAI_DIRECT=1 + ANTHROPIC_API_KEY for fallback when Toranot is down.
+_DIRECT = os.environ.get('PYAI_DIRECT') == '1'
+_KEY = get_direct_key() if _DIRECT else None
+if _DIRECT and not _KEY:
+    print('PYAI_DIRECT=1 but ANTHROPIC_API_KEY not set', file=sys.stderr); sys.exit(1)
+
+# Model branches on mode: 'sonnet' alias for proxy, canonical ID for direct.
+MODEL = 'claude-sonnet-4-5' if _DIRECT else 'sonnet'
 MAX_TOKENS = 1500
 WORKERS = 10
 CHECKPOINT_EVERY = 10
@@ -80,19 +89,8 @@ PROMPT_TEMPLATE = """אתה מומחה לרפואת גריאטריה בישרא�
 
 
 def call_claude(prompt):
-    body = json.dumps({
-        'model': MODEL,
-        'max_tokens': MAX_TOKENS,
-        'messages': [{'role': 'user', 'content': prompt}],
-    }).encode('utf-8')
-    req = urllib.request.Request(ENDPOINT, data=body, headers={
-        'x-api-key': API_KEY,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-    })
-    with urllib.request.urlopen(req, timeout=120) as r:
-        data = json.loads(r.read())
-    return ''.join(b.get('text','') for b in data.get('content',[]) if b.get('type')=='text')
+    return _proxy_call(prompt, model=MODEL, max_tokens=MAX_TOKENS, timeout_s=120,
+                       direct=_DIRECT, api_key=_KEY)
 
 
 def hebrew_ratio(s):
@@ -174,17 +172,17 @@ def main():
                     questions[i]['e'] = text
                     done += 1
                     if done % 10 == 0:
-                        with open(QUESTIONS_PATH, 'w', encoding='utf-8', encoding='utf-8') as f:
+                        with open(QUESTIONS_PATH, 'w', encoding='utf-8') as f:
                             json.dump(questions, f, ensure_ascii=False, indent=2)
                         print(f'  checkpoint: {done}/{len(todo)} done')
                 else:
                     failures.append({'i': i, 'err': err, 'q': questions[i].get('q','')[:120]})
                     print(f'  FAIL [{i}]: {err}')
 
-    with open(QUESTIONS_PATH, 'w', encoding='utf-8', encoding='utf-8') as f:
+    with open(QUESTIONS_PATH, 'w', encoding='utf-8') as f:
         json.dump(questions, f, ensure_ascii=False, indent=2)
 
-    with open(FAILURES_PATH, 'w', encoding='utf-8', encoding='utf-8') as f:
+    with open(FAILURES_PATH, 'w', encoding='utf-8') as f:
         json.dump(failures, f, ensure_ascii=False, indent=2)
 
     print(f'\nFinal: {done}/{len(todo)} succeeded, {len(failures)} failed')
