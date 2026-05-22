@@ -306,6 +306,9 @@ describe("cross-file referential integrity", () => {
       "2025-Jun-Basic",
       // Non-exam content sources
       "Hazzard", "Harrison", "Hazzard-suppl", "GRS8", "Exam",
+      // v10.64.127: SZMC-Rescue — 80 MCQs rescued from abandoned-prototype folders,
+      // normalized + audited + translated, merged via PR #258. See CHANGELOG['10.64.127'].
+      "SZMC-Rescue",
     ]);
     const unknowns = new Set();
     for (const q of questions) {
