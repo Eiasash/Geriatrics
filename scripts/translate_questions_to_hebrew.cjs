@@ -241,6 +241,37 @@ function extractJson(text) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
+// ─── Question-merge helpers (exported for tests) ─────────────────────────────
+
+/**
+ * In-place mode: overwrite Hebrew primaries on target. English source is lost.
+ */
+function applyInPlace(target, translated) {
+  target.q = translated.q;
+  target.o = translated.o;
+  if (typeof translated.e === 'string' && translated.e.length) target.e = translated.e;
+}
+
+/**
+ * Bilingual mode (v10.64.60 schema): snapshot English original into
+ * q_en/o_en/e_en, install Hebrew as primary q/o/e.
+ *
+ * Contract: when q_en is set, e_en MUST be a string (tests/bilingualToggle
+ * 'every q_en is paired with o_en and e_en' — typeof check, empty string OK).
+ * Previously, missing source-e left e_en undefined → schema violation on any
+ * future run against e-missing records. The 80 SZMC-Rescue MCQs all had
+ * non-empty e so this didn't surface, but Codex P2 on PR #257 verified
+ * data/questions.json still contains e-missing candidates.
+ */
+function applyBilingual(target, translated) {
+  target.q_en = target.q;
+  target.o_en = target.o;
+  target.e_en = (typeof target.e === 'string') ? target.e : '';
+  target.q = translated.q;
+  target.o = translated.o;
+  if (typeof translated.e === 'string' && translated.e.length) target.e = translated.e;
+}
+
 async function main() {
   const apiKey = DRY_RUN ? 'dry' : getApiKey();
   const allQs = JSON.parse(fs.readFileSync(TARGET, 'utf8'));
@@ -307,19 +338,9 @@ async function main() {
       if (r.ok) {
         const target = allQs[r.i];
         if (MODE === 'in-place') {
-          target.q = r.obj.q;
-          target.o = r.obj.o;
-          if (typeof r.obj.e === 'string' && r.obj.e.length) target.e = r.obj.e;
+          applyInPlace(target, r.obj);
         } else {
-          // bilingual: snapshot the English original into the q_en/o_en/e_en
-          // paired-variant fields, then install Hebrew as the primary q/o/e.
-          // This is the v10.64.60 schema the app's Heb<->Eng toggle reads.
-          target.q_en = target.q;
-          target.o_en = target.o;
-          if (typeof target.e === 'string' && target.e.length) target.e_en = target.e;
-          target.q = r.obj.q;
-          target.o = r.obj.o;
-          if (typeof r.obj.e === 'string' && r.obj.e.length) target.e = r.obj.e;
+          applyBilingual(target, r.obj);
         }
         done++;
       } else {
@@ -344,4 +365,8 @@ async function main() {
   }
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+if (require.main === module) {
+  main().catch((e) => { console.error(e); process.exit(1); });
+}
+
+module.exports = { applyInPlace, applyBilingual };
