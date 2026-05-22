@@ -151,4 +151,35 @@ describe('regen_derived.cjs --check (integration gate)', () => {
       });
     }).not.toThrow();
   }, 35000);
+
+  it('is non-mutating: deletes files the regen created when target was absent before (Codex P2 PR #259)', async () => {
+    // Codex P2 catch: if a derived file is missing before --check runs, the
+    // taggers will create one, and the finally block must delete it again so
+    // the worktree is left in its pre-check state.
+    const fs = await import('node:fs');
+    const REG_PATH = resolve(ROOT, 'data', 'regulatory.json');
+    if (!fs.existsSync(REG_PATH)) {
+      // Skip if the file genuinely doesn't exist — can't test the restore path
+      return;
+    }
+    const snapshot = fs.readFileSync(REG_PATH);
+    try {
+      fs.unlinkSync(REG_PATH);
+      expect(fs.existsSync(REG_PATH)).toBe(false);
+      // --check should exit non-zero (drift: file was absent), AND should NOT
+      // leave a regenerated file behind.
+      let exitCode = 0;
+      try {
+        execSync('node scripts/regen_derived.cjs --check', {
+          cwd: ROOT, stdio: 'pipe', timeout: 30000,
+        });
+      } catch (e) {
+        exitCode = e.status;
+      }
+      expect(exitCode).toBe(1);
+      expect(fs.existsSync(REG_PATH)).toBe(false);  // <- the P2 assertion
+    } finally {
+      fs.writeFileSync(REG_PATH, snapshot);
+    }
+  }, 35000);
 });

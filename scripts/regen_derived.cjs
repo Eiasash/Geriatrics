@@ -139,21 +139,25 @@ function check() {
   // Snapshot the three derived files, run regen, diff parsed content, restore.
   // Content-equal (not byte-equal) — matches existing repo convention and
   // focuses the gate on the bug class (wrong values), not format drift.
+  //
+  // Existence is snapshotted alongside content so the finally block can restore
+  // exactly the pre-regen state — including deleting files that the taggers
+  // newly created (Codex P2 on PR #259: "--check must not dirty the worktree").
   const targets = [REG_PATH, QC_PATH, SYL_PATH];
   const snapshots = new Map();
   for (const t of targets) {
-    if (fs.existsSync(t)) snapshots.set(t, fs.readFileSync(t));
+    snapshots.set(t, fs.existsSync(t) ? fs.readFileSync(t) : null);
   }
   try {
     regenAll();
     const drift = [];
     for (const t of targets) {
       const before = snapshots.get(t);
-      const after = fs.readFileSync(t);
-      if (!before) {
+      if (before === null) {
         drift.push({ file: path.relative(ROOT, t), reason: 'file did not exist before regen' });
         continue;
       }
+      const after = fs.readFileSync(t);
       let beforeParsed, afterParsed;
       try { beforeParsed = JSON.parse(before.toString('utf-8')); }
       catch (e) { drift.push({ file: path.relative(ROOT, t), reason: 'pre-regen parse failed: ' + e.message }); continue; }
@@ -165,9 +169,14 @@ function check() {
     }
     return drift;
   } finally {
-    // Always restore originals — --check must be non-mutating
+    // Restore EXACTLY the pre-regen state: write back if present, delete if absent.
     for (const [t, content] of snapshots) {
-      fs.writeFileSync(t, content);
+      if (content === null) {
+        // File didn't exist before regen — if the tagger created one, remove it.
+        if (fs.existsSync(t)) fs.unlinkSync(t);
+      } else {
+        fs.writeFileSync(t, content);
+      }
     }
   }
 }
