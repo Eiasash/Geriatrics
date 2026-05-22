@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Generate Hebrew explanations for Dec21 missing Qs.
-v10.64.131: routes via Toranot proxy by default; PYAI_DIRECT=1 + ANTHROPIC_API_KEY for direct fallback.
-Model: sonnet (proxy alias) or claude-sonnet-4-5 (direct) | Parallel: 10 workers | max_tokens: 2000 per Q
+"""Generate Hebrew explanations for Dec21 missing Qs via Toranot proxy.
+Model: 'sonnet' (alias, proxy) / claude-sonnet-4-5 (direct) | Parallel: 10 workers | max_tokens: 2000 per Q
+
+v10.64.131: migrated from anthropic SDK to scripts/lib/proxy_client.py.
+Default = proxy mode (no local key needed). Set PYAI_DIRECT=1 + ANTHROPIC_API_KEY for fallback.
 """
 import json, os, sys, pathlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -9,13 +11,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 sys.path.insert(0, str(pathlib.Path(__file__).parent / 'lib'))
 from proxy_client import call_claude as _proxy_call, get_direct_key
 
-# v10.64.131: migrated from anthropic SDK to Toranot proxy.
-# Default = proxy mode (no key needed). Set PYAI_DIRECT=1 + ANTHROPIC_API_KEY for fallback.
 _DIRECT = os.environ.get('PYAI_DIRECT') == '1'
 _KEY = get_direct_key() if _DIRECT else None
 if _DIRECT and not _KEY:
     print('PYAI_DIRECT=1 but ANTHROPIC_API_KEY not set', file=sys.stderr); sys.exit(1)
 
+# Model branches on mode: 'sonnet' alias for proxy, canonical ID for direct.
 MODEL = 'claude-sonnet-4-5' if _DIRECT else 'sonnet' 
 
 PROMPT = """אתה מומחה בגריאטריה שכותב הסברים קליניים לשאלות בחינת שלב א' הישראלית. כתוב הסבר מקיף ומקצועי בעברית לשאלה הבאה.
@@ -50,8 +51,7 @@ def gen(q):
         accepted=accepted,
         ref=q['ref']
     )
-    text = _proxy_call(prompt, model=MODEL, max_tokens=2000, timeout_s=60,
-                       direct=_DIRECT, api_key=_KEY)
+    text = _proxy_call(prompt, model=MODEL, max_tokens=2000, timeout_s=120, direct=_DIRECT, api_key=_KEY)
     return q['n'], text.strip()
 
 def main():

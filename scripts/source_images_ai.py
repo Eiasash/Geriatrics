@@ -8,31 +8,30 @@ For each flagged question, asks Claude Sonnet for:
 
 Writes back to sourcing_queue CSV with added columns.
 
-v10.64.131: migrated to Toranot proxy. Default = proxy mode (no key needed).
-Set PYAI_DIRECT=1 + ANTHROPIC_API_KEY for fallback when Toranot is down.
-Parallel 8 workers. Sonnet (alias resolves to current Sonnet server-side).
-
-Env: PYAI_DIRECT=1 + ANTHROPIC_API_KEY (direct fallback only)
+Routes through Toranot proxy by default (no local key needed).
+Set PYAI_DIRECT=1 + ANTHROPIC_API_KEY for direct fallback when proxy is down.
+Parallel 8 workers. Sonnet 4.5.
 """
 import json
 import os
 import sys
 import csv
 import argparse
+import pathlib
 import time
 import concurrent.futures
-import pathlib
-from urllib import request, error
-
 sys.path.insert(0, str(pathlib.Path(__file__).parent / 'lib'))
 from proxy_client import call_claude as _proxy_call, get_direct_key
 
+# v10.64.131: migrated to Toranot proxy. Default = proxy mode (no key needed).
+# Set PYAI_DIRECT=1 + ANTHROPIC_API_KEY for fallback when Toranot is down.
 _DIRECT = os.environ.get('PYAI_DIRECT') == '1'
 _KEY = get_direct_key() if _DIRECT else None
 if _DIRECT and not _KEY:
     print('PYAI_DIRECT=1 but ANTHROPIC_API_KEY not set', file=sys.stderr); sys.exit(1)
 
-MODEL = "claude-sonnet-4-5" if _DIRECT else "sonnet"
+# Model branches on mode: 'sonnet' alias for proxy, canonical ID for direct.
+MODEL = 'claude-sonnet-4-5' if _DIRECT else 'sonnet' 
 
 def call_claude(stem, modality, topic):
     prompt = f"""You are helping source a clinical image for a board exam question.
@@ -56,8 +55,7 @@ Rules:
 - If svg_feasible=true, produce a clean minimal SVG (viewBox 0 0 600 200 for tracings) with labeled axes
 """
     
-    text = _proxy_call(prompt, model=MODEL, max_tokens=1500, timeout_s=60,
-                       direct=_DIRECT, api_key=_KEY).strip()
+    text = _proxy_call(prompt, model=MODEL, max_tokens=1500, timeout_s=60, direct=_DIRECT, api_key=_KEY).strip()
     # strip fences if present
     if text.startswith("```"):
         text = text.strip("`").lstrip("json").strip()

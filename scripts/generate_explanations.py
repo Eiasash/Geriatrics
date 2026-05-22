@@ -6,9 +6,9 @@ For each question in data/questions.json whose `e` field is <10 chars,
 call Claude Sonnet 4.5 to generate a Hebrew explanation matching the
 corpus style. Only touches `e` — never q/o/c/ti/t.
 
-Usage (proxy mode — default, no local key needed):
+Usage (proxy mode, default — no local key needed):
   python3 scripts/generate_explanations.py
-Usage (direct fallback when Toranot is down):
+Usage (direct mode fallback, when Toranot is down):
   PYAI_DIRECT=1 ANTHROPIC_API_KEY=sk-ant-... python3 scripts/generate_explanations.py
 Options: --dry-run, --limit N
 
@@ -19,9 +19,7 @@ Validation per response:
   - Contains the correct-answer letter (א/ב/ג/ד)
   - No `ð` mojibake
 """
-import json, os, sys, re, time, argparse
-import urllib.request, urllib.error
-import pathlib
+import json, os, sys, re, time, argparse, pathlib
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
@@ -89,8 +87,7 @@ PROMPT_TEMPLATE = """אתה מומחה לרפואת גריאטריה בישרא�
 
 
 def call_claude(prompt):
-    return _proxy_call(prompt, model=MODEL, max_tokens=MAX_TOKENS, timeout_s=120,
-                       direct=_DIRECT, api_key=_KEY)
+    return _proxy_call(prompt, model=MODEL, max_tokens=MAX_TOKENS, timeout_s=120, direct=_DIRECT, api_key=_KEY)
 
 
 def hebrew_ratio(s):
@@ -133,9 +130,7 @@ def generate_one(i, q):
                 return (i, text, None)
             last_err = err
             time.sleep(1 + attempt * 2)
-        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError, RuntimeError) as e:
-            # RuntimeError covers proxy_client failures (transient 429/5xx from proxy
-            # or Anthropic surface as RuntimeError, not URLError). Codex P1 #265.
+        except (TimeoutError, OSError, RuntimeError, Exception) as e:
             last_err = f'{type(e).__name__}: {e}'
             time.sleep(2 + attempt * 3)
     return (i, None, last_err)

@@ -22,8 +22,7 @@ Usage:
     # Pass B — classify, write back
     python3 bootstrap_subtopics.py --app geri --pass=b --taxonomy=geri_taxonomy.json
 
-Env (proxy mode — default): none needed.
-Env (direct fallback when Toranot is down): PYAI_DIRECT=1 + ANTHROPIC_API_KEY
+Routes through Toranot proxy by default. Set PYAI_DIRECT=1 + ANTHROPIC_API_KEY for direct fallback.
 """
 import json
 import os
@@ -31,8 +30,9 @@ import sys
 import argparse
 import random
 import concurrent.futures
-import pathlib
+from urllib import request
 
+import pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).parent / 'lib'))
 from proxy_client import call_claude as _proxy_call, get_direct_key
 
@@ -43,12 +43,12 @@ _KEY = get_direct_key() if _DIRECT else None
 if _DIRECT and not _KEY:
     print('PYAI_DIRECT=1 but ANTHROPIC_API_KEY not set', file=sys.stderr); sys.exit(1)
 
-MODEL = "claude-sonnet-4-5" if _DIRECT else "sonnet"
+# Model branches on mode: 'sonnet' alias for proxy, canonical ID for direct.
+MODEL = 'claude-sonnet-4-5' if _DIRECT else 'sonnet'
 
 
 def call_claude(prompt, max_tokens=1500):
-    text = _proxy_call(prompt, model=MODEL, max_tokens=max_tokens, timeout_s=60,
-                       direct=_DIRECT, api_key=_KEY).strip()
+    text = _proxy_call(prompt, model=MODEL, max_tokens=max_tokens, timeout_s=60, direct=_DIRECT, api_key=_KEY).strip()
     if text.startswith("```"):
         text = text.strip("`").lstrip("json").strip()
     return text
@@ -112,7 +112,7 @@ Rules:
             sts = ", ".join(s.get("key", "?") for s in result.get("subtopics", []))
             print(f"  ti={ti:2d} {result['name'][:40]:40s} → {sts}")
 
-    with open(out, "w", encoding='utf-8') as fh:
+    with open(out, "w", encoding="utf-8") as fh:
         json.dump(taxonomy, fh, ensure_ascii=False, indent=2)
     print(f"\nTaxonomy written to {out}")
     print("REVIEW THIS FILE, then run pass B with --pass=b --taxonomy=" + out)
@@ -196,7 +196,7 @@ Return STRICT JSON array of {{"n": <index>, "st": "<key>"}}. One entry per quest
             applied += 1
 
     out_path = qs_path + ".with_st.json"
-    with open(out_path, "w", encoding='utf-8') as fh:
+    with open(out_path, "w", encoding="utf-8") as fh:
         json.dump(qs, fh, ensure_ascii=False, indent=2)
     print(f"\nApplied {applied}/{len(todo)} ({100*applied/max(1,len(todo)):.1f}%)")
     print(f"Wrote {out_path}")
