@@ -41,7 +41,7 @@
           "typhlitis"
         ],
         "n_questions": 196,
-        "frequency_pct": 5.24,
+        "frequency_pct": 5.13,
         "weight": 2.41
       },
       {
@@ -235,7 +235,7 @@
           "withdraw"
         ],
         "n_questions": 101,
-        "frequency_pct": 2.7,
+        "frequency_pct": 2.64,
         "weight": 1.26
       },
       {
@@ -253,7 +253,7 @@
           "hip fracture"
         ],
         "n_questions": 102,
-        "frequency_pct": 2.73,
+        "frequency_pct": 2.67,
         "weight": 1.24
       },
       {
@@ -272,7 +272,7 @@
           "aminoglycoside"
         ],
         "n_questions": 93,
-        "frequency_pct": 2.48,
+        "frequency_pct": 2.43,
         "weight": 1.22
       },
       {
@@ -291,7 +291,7 @@
           "spironolactone"
         ],
         "n_questions": 93,
-        "frequency_pct": 2.48,
+        "frequency_pct": 2.43,
         "weight": 1.19
       },
       {
@@ -310,7 +310,7 @@
           "walking stick"
         ],
         "n_questions": 95,
-        "frequency_pct": 2.54,
+        "frequency_pct": 2.48,
         "weight": 1.15
       },
       {
@@ -349,7 +349,7 @@
           "פרקינסוניזם"
         ],
         "n_questions": 92,
-        "frequency_pct": 2.46,
+        "frequency_pct": 2.41,
         "weight": 1.13
       },
       {
@@ -385,8 +385,8 @@
           "normalax"
         ],
         "n_questions": 80,
-        "frequency_pct": 2.14,
-        "weight": 1.0
+        "frequency_pct": 2.09,
+        "weight": 1
       },
       {
         "id": 3,
@@ -500,7 +500,7 @@
           "thrombolys"
         ],
         "n_questions": 61,
-        "frequency_pct": 1.63,
+        "frequency_pct": 1.6,
         "weight": 0.74
       },
       {
@@ -539,7 +539,7 @@
           "residual volume"
         ],
         "n_questions": 56,
-        "frequency_pct": 1.5,
+        "frequency_pct": 1.46,
         "weight": 0.73
       },
       {
@@ -557,7 +557,7 @@
           "transferrin"
         ],
         "n_questions": 55,
-        "frequency_pct": 1.47,
+        "frequency_pct": 1.44,
         "weight": 0.73
       },
       {
@@ -677,7 +677,7 @@
           "euthyroid"
         ],
         "n_questions": 45,
-        "frequency_pct": 1.2,
+        "frequency_pct": 1.18,
         "weight": 0.55
       },
       {
@@ -693,7 +693,7 @@
           "תשוש נפש"
         ],
         "n_questions": 44,
-        "frequency_pct": 1.18,
+        "frequency_pct": 1.15,
         "weight": 0.53
       },
       {
@@ -815,7 +815,7 @@
           "PSA"
         ],
         "n_questions": 34,
-        "frequency_pct": 0.91,
+        "frequency_pct": 0.89,
         "weight": 0.41
       },
       {
@@ -831,7 +831,7 @@
           "life expectancy"
         ],
         "n_questions": 33,
-        "frequency_pct": 0.88,
+        "frequency_pct": 0.86,
         "weight": 0.4
       },
       {
@@ -870,7 +870,7 @@
           "קלינאית תקשורת"
         ],
         "n_questions": 32,
-        "frequency_pct": 0.85,
+        "frequency_pct": 0.84,
         "weight": 0.4
       },
       {
@@ -888,7 +888,7 @@
           "doxazosin"
         ],
         "n_questions": 30,
-        "frequency_pct": 0.8,
+        "frequency_pct": 0.78,
         "weight": 0.37
       },
       {
@@ -905,7 +905,7 @@
           "autonomy"
         ],
         "n_questions": 31,
-        "frequency_pct": 0.83,
+        "frequency_pct": 0.81,
         "weight": 0.37
       },
       {
@@ -932,7 +932,7 @@
           "androgen deficiency"
         ],
         "n_questions": 21,
-        "frequency_pct": 0.56,
+        "frequency_pct": 0.55,
         "weight": 0.25
       },
       {
@@ -1064,7 +1064,7 @@
           "MDS"
         ],
         "n_questions": 93,
-        "frequency_pct": 6.0,
+        "frequency_pct": 6,
         "weight": 1.43
       },
       {
@@ -1180,7 +1180,7 @@
           "tubular"
         ],
         "n_questions": 62,
-        "frequency_pct": 4.0,
+        "frequency_pct": 4,
         "weight": 0.96
       },
       {
@@ -1543,7 +1543,7 @@
         "he": "הריון ולידה",
         "keywords": [],
         "n_questions": 42,
-        "frequency_pct": 4.0,
+        "frequency_pct": 4,
         "weight": 1.07
       },
       {
@@ -1597,7 +1597,7 @@
         "he": "בריאות הנפש — מצב רוח, חרדה, פסיכוזה",
         "keywords": [],
         "n_questions": 32,
-        "frequency_pct": 3.0,
+        "frequency_pct": 3,
         "weight": 0.81
       },
       {
@@ -1687,7 +1687,7 @@
         "he": "אלרגיה ואימונולוגיה",
         "keywords": [],
         "n_questions": 21,
-        "frequency_pct": 2.0,
+        "frequency_pct": 2,
         "weight": 0.53
       },
       {

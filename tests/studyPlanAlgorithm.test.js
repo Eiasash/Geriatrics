@@ -60,16 +60,17 @@ describe('study_plan algorithm — JS↔Python cross-language fixture (Geri)', (
     const allocated = SP_ALGO.allocateHours(GERI_TOPICS, 89.6);
     const top5 = [...allocated].sort((a, b) => b.hours - a.hours).slice(0, 5);
     // Re-derived 2026-05-22 after the v10.64.127 syllabus refresh (3743 → 3823
-    // total + per-topic n_questions recomputed from the live ti distribution
-    // post PR #258 SZMC-Rescue merge). The auto-audit Python reference
+    // total + per-topic n_questions AND frequency_pct recomputed from the live
+    // ti distribution post PR #258 SZMC-Rescue merge — all 46 frequency_pct on
+    // the n/3823 denominator). The auto-audit Python reference
     // (generate_study_plan.py) should be re-run on the same syllabus to verify
     // cross-language alignment. The values below are what the JS algorithm
     // produces today (live-captured via the same vm-context the test uses).
     expect(top5.map((t) => ({ id: t.id, freq: t.frequency_pct, hours: t.hours }))).toEqual([
       { id:  8, freq: 8.53, hours: 6.0 },
-      { id: 26, freq: 5.24, hours: 4.7 },
+      { id: 26, freq: 5.13, hours: 4.6 },
       { id:  6, freq: 4.92, hours: 4.4 },
-      { id:  5, freq: 4.76, hours: 4.2 },
+      { id:  5, freq: 4.76, hours: 4.3 },
       { id: 27, freq: 4.63, hours: 4.1 },
     ]);
   });
@@ -118,7 +119,7 @@ describe('study_plan algorithm — JS↔Python cross-language fixture (Geri)', (
     // Re-derived 2026-05-22 after v10.64.127 syllabus refresh — see top-5 test above.
     // (Python reference comparison delta from v10.64.18 era no longer applicable
     // until generate_study_plan.py is re-run on the +80 syllabus — see PR #258.)
-    const expected = [6.0, 6.1, 6.0, 6.1, 6.0, 6.1, 6.0, 6.1, 6.1, 6.1, 6.0, 6.1, 6.1, 6.1, 3.5, 0.0];
+    const expected = [6.0, 6.0, 6.0, 6.1, 6.0, 6.1, 6.0, 6.1, 6.1, 6.0, 6.0, 6.1, 6.1, 6.1, 3.7, 0.0];
     expect(out.used.length).toBe(expected.length);
     for (let i = 0; i < expected.length; i++) {
       expect(Math.abs(out.used[i] - expected[i])).toBeLessThan(1e-9);
