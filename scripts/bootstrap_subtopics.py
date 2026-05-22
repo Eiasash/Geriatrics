@@ -22,7 +22,8 @@ Usage:
     # Pass B — classify, write back
     python3 bootstrap_subtopics.py --app geri --pass=b --taxonomy=geri_taxonomy.json
 
-Env: ANTHROPIC_API_KEY
+Env (proxy mode — default): none needed.
+Env (direct fallback when Toranot is down): PYAI_DIRECT=1 + ANTHROPIC_API_KEY
 """
 import json
 import os
@@ -30,29 +31,24 @@ import sys
 import argparse
 import random
 import concurrent.futures
-from urllib import request
+import pathlib
 
-MODEL = "claude-sonnet-4-5"
-API_URL = "https://api.anthropic.com/v1/messages"
+sys.path.insert(0, str(pathlib.Path(__file__).parent / 'lib'))
+from proxy_client import call_claude as _proxy_call, get_direct_key
+
+# v10.64.131: migrated to Toranot proxy. Default = proxy mode (no key needed).
+# Set PYAI_DIRECT=1 + ANTHROPIC_API_KEY for fallback when Toranot is down.
+_DIRECT = os.environ.get('PYAI_DIRECT') == '1'
+_KEY = get_direct_key() if _DIRECT else None
+if _DIRECT and not _KEY:
+    print('PYAI_DIRECT=1 but ANTHROPIC_API_KEY not set', file=sys.stderr); sys.exit(1)
+
+MODEL = "claude-sonnet-4-5" if _DIRECT else "sonnet"
 
 
 def call_claude(prompt, max_tokens=1500):
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        raise RuntimeError("ANTHROPIC_API_KEY not set")
-    body = json.dumps({
-        "model": MODEL,
-        "max_tokens": max_tokens,
-        "messages": [{"role": "user", "content": prompt}],
-    }).encode()
-    req = request.Request(API_URL, data=body, headers={
-        "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-    })
-    with request.urlopen(req, timeout=60) as resp:
-        data = json.loads(resp.read().decode())
-    text = data["content"][0]["text"].strip()
+    text = _proxy_call(prompt, model=MODEL, max_tokens=max_tokens, timeout_s=60,
+                       direct=_DIRECT, api_key=_KEY).strip()
     if text.startswith("```"):
         text = text.strip("`").lstrip("json").strip()
     return text
@@ -116,7 +112,7 @@ Rules:
             sts = ", ".join(s.get("key", "?") for s in result.get("subtopics", []))
             print(f"  ti={ti:2d} {result['name'][:40]:40s} → {sts}")
 
-    with open(out, "w", encoding="utf-8", encoding='utf-8') as fh:
+    with open(out, "w", encoding='utf-8') as fh:
         json.dump(taxonomy, fh, ensure_ascii=False, indent=2)
     print(f"\nTaxonomy written to {out}")
     print("REVIEW THIS FILE, then run pass B with --pass=b --taxonomy=" + out)
@@ -200,7 +196,7 @@ Return STRICT JSON array of {{"n": <index>, "st": "<key>"}}. One entry per quest
             applied += 1
 
     out_path = qs_path + ".with_st.json"
-    with open(out_path, "w", encoding="utf-8", encoding='utf-8') as fh:
+    with open(out_path, "w", encoding='utf-8') as fh:
         json.dump(qs, fh, ensure_ascii=False, indent=2)
     print(f"\nApplied {applied}/{len(todo)} ({100*applied/max(1,len(todo)):.1f}%)")
     print(f"Wrote {out_path}")
