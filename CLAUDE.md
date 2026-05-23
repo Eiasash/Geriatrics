@@ -386,11 +386,11 @@ No build step needed. Edit and refresh.
 
 ### Testing
 ```bash
-npm test             # Run all tests (vitest, 1,596 tests across 85 files + 7 skipped)
+npm test             # Run all tests (vitest, 1,602 tests across 86 files + 7 skipped)
 npm run verify       # Pre-push gate (see below) — runs 7 checks in series
 ```
 
-**1,596 tests across 85 files (~19 tests per file avg)** — run `npm test` to see current count.
+**1,602 tests across 86 files (~19 tests per file avg)** — run `npm test` to see current count.
 
 #### Pre-push gate: `npm run verify`
 
@@ -474,6 +474,7 @@ test suite alone misses.
 | `tests/pastExamCoverage.test.js` | 14 | v10.63.1 past-exam coverage — every IMA session 2021-Dec→2025-Jun present in dataset |
 | `tests/remapExplanationLetters.test.js` | 10 | v10.64.22 — `remapExplanationLetters` fix for bare label refs ("א' שגויה") (#144) |
 | `tests/honestStats.test.js` | 17 | honestStats CI guard (sibling-synced with Pnimit + FM) — accuracy denominator must include skips correctly |
+| `tests/brokenQuarantinedRatchet.test.js` | 6 | 2026-05-24 broken-quarantined ratchet — pins idx 2096 + 3618 as explicit `status: "broken-quarantined"` (chaos-doctor c-flip suggestions where existing q.e_en defends current c and no verbatim Hazzard PDF quote per v9.81 obtained). Prevents silent un-quarantine via automated "fix wrong answers" passes |
 
 **Test coverage by area:**
 
@@ -781,7 +782,7 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Study notes | 46 |
 | Hazzard chapters | 108 (in-app reader) |
 | Harrison chapters | 69 (in-app reader) |
-| Test suite | 1,596 tests across 85 files + 7 skipped (vitest) |
+| Test suite | 1,602 tests across 86 files + 7 skipped (vitest) |
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — see workspace CLAUDE.md for shared invariants |
 | CI workflows | 7 (ci.yml, claude.yml, claude-code-review.yml, distractor-autopsy.yml, distractor-merge-pr.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=214, onchange=25, oninput=6 |
