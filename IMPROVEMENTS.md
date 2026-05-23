@@ -509,3 +509,132 @@ CHANGELOG object in shlav-a-mega.html (around line 6559) for every version bump.
 4. **Skill file land** — `.claude/skills/geriatrics-dev/SKILL.md` content above is ready; needs Write permission to land.
 5. **Topic ti=43-45 content expansion** — Andropause / Prevention / Interdisciplinary Care all under 35 Qs; not failing audit, but thinnest of the 46.
 6. **Coverage instrumentation** — currently no way to see which named functions are exercised at runtime. Adding a minimal per-fn counter (gated behind DEBUG_BOOT) would convert the 165-untested figure from "may not be tested" to "verifiably exercised in integration".
+
+---
+
+## 2026-05-23 — v10.64.130 audit pass (terminal Claude, single-lane)
+
+Audit run by terminal Claude. Worktree: `~/repos/Geriatrics-wt-schema-r13`
+off `origin/main` HEAD `6ceddfc`. App version at audit: v10.64.130, 3823 Qs.
+
+### Audit summary
+
+| Phase | Result |
+|---|---|
+| `npm run verify` (full 7-check) | **GREEN** |
+| Vitest | 85 files / 1596 passed / 7 skipped / 0 failed (2.35s) |
+| Version trinity | OK (HTML / sw.js / package.json all v10.64.130) |
+| Brace balance | OK (3566 pairs) |
+| Inline-script parse | OK (4 inline scripts parse cleanly) |
+| innerHTML sanitization | OK (0 unsanitized; 11 sites with interpolation, all sanitized/annotated) |
+| Harrison Hebrew baseline | OK (0 ≤ baseline 0) |
+| Topic coverage (46 topics ≥5 Qs) | OK (no weak topics) |
+| **regen_derived gate synthetic-drift test** | **VERIFIED** |
+| Supabase RLS sanity pass | NOT RUN this session (no schema-adjacent changes) |
+
+### regen_derived gate verified (PR #259 + #262 + #263)
+
+Synthetic-drift test on `data/syllabus_data.json`:
+
+1. Injected drift: `frequency_pct: 8.53 → 99.99`
+2. `npm run regen:check` → **exit code 1**
+   - Message: `regen_derived: DRIFT DETECTED in 1 file(s): data/syllabus_data.json: content drift (parsed JSON differs)`
+   - Actionable fix message printed.
+3. Restored via `git checkout data/syllabus_data.json`
+4. `npm run regen:check` → **exit code 0**
+   - Message: `regen_derived: no drift. All 3 derived files match canonical state.`
+
+D.3 denominator-invalidates-all-ratios gate is functional. The 3 deterministic
+derived files (`regulatory.json`, `question_chapters.json`, `syllabus_data.json`)
+are properly guarded.
+
+### R13 schema proposal — PR #269 (DRAFT)
+
+`docs(schema): propose optional pearl/calc/refs Q-fields from R13 reference content`
+
+Three new **optional** Q-fields, surfaced from `R13_quizSystem.js` (a rescued
+reference file, audited 2026-05-23, classified REFERENCE-ONLY):
+
+- `pearl` (string) — 1-2 sentence clinical takeaway
+- `calc` (string[]) — calculator IDs to surface alongside the Q
+- `refs` (string[]) — multi-source citation array (complements `ref`, does not replace it)
+
+Backward-compat: 0/3823 Qs need backfill. `scripts/regen_derived.cjs` reads
+only `q.ti` (line 69) so the regen pipeline is unaffected. The original brief's
+HALT condition ("R13 schema extension touches >50 existing Qs") does not trip —
+touches zero Qs.
+
+Status: DRAFT — awaiting Eias decision (accept / accept-with-renames / defer / reject).
+
+### Out-of-scope work parked
+
+Original session brief asked for direct merging of rescued-MCQ files
+(R7/R13/R19/R20) from `~/archive/geriatrics-content-rescue-2026-05-21/` into
+`data/questions.json`. The brief was structurally incompatible with live schema
+(no `ti`, no `ref`, English-only stems, no exam-year `t` tag) and cited
+"§D.9 saturation rules" that weren't in any loaded skill (§D.9 in
+audit-fix-deploy is "Parser-bleed reconstruction"). Revised plan, approved:
+
+- R7/R13/R19/R20 moved to `~/archive/geriatrics-reference-content/` with a README
+  documenting REFERENCE-ONLY classification and the live-schema-incompatibility
+  reasoning → DONE.
+- R13's schema delta opened as draft PR #269 → DONE.
+- This audit, regen_derived gate verification → DONE.
+
+Future merge of rescued MCQs into the corpus is NOT a session-scope task: would
+require deliberate Hebrew translation, chapter-cite assignment per Q, IMA-topic
+mapping. The proper rescue-MCQ pipeline already exists in the repo (see PRs
+#254/#255/#256: 82 rescued MCQs normalized via `merge-questions.cjs` + the
+v10.64.93 explanations split). New rescue-MCQ work should use that pipeline.
+
+### Notable non-actionable findings
+
+- **Function count: 227** (CLAUDE.md docs say ~224 as of v10.64.108; skill targets
+  ~219). +3 since v10.64.108. Within tolerance; not a regression.
+- **3 ungated `console.log`** in `shlav-a-mega.html` (post-filter). Geriatrics
+  has no build step so `import.meta.env.DEV` gating doesn't apply — equivalent
+  would be a runtime check. 3 hits is low. Not actioned this session.
+- **24 broken Qs flagged** with detailed reasons (mostly Track K duplicate-flag
+  entries; 2 are c-flips pending PDF verification: Hazzard 74/Harrison 286/GRS8
+  7 at conf 85, Hazzard 38/GRS8 53 at conf 70). PDF-verify work is clinical-
+  reviewer task, not session-scope.
+- **26 imgDep Qs flagged** — image-dependent Qs with onerror placeholder pending
+  upload to Supabase `question-images` bucket.
+- **New exam tag in dataset: `SZMC-Rescue` (80 Qs)** — visible in t-tag census.
+  This is the bilingual rescue-MCQ translation campaign per PRs #254/255/256.
+
+### CLAUDE.md stale numbers
+
+Repo `CLAUDE.md` still says "App version: v10.64.108 (as of 11/05/26) — 3,743 Qs"
+and "1,270 tests across 61 files". Current state: v10.64.130, 3823 Qs, 1596
+tests across 85 files. Could be refreshed in a separate housekeeping PR (not
+this session — bigger scope than the schema-proposal).
+
+### No fix actions taken this session
+
+Audit was clean. Per audit-fix-deploy §D.2 priority order, no RLS hole / no
+crash / no version drift / no tests red — nothing to fix. PR #269 (schema
+proposal) is docs-only and gates on Eias decision, not on automated checks.
+
+### Recommendation for next session
+
+1. **Decide on PR #269** — accept/defer/reject. If accept, schema-acceptance PR
+   (no data change) is the next implementation step.
+2. **Close the 2 c-flip-pending broken Qs** (Hazzard 74/Harrison 286/GRS8 7 conf
+   85 is higher priority) — needs clinical-reviewer PDF access for verbatim
+   quote per v9.81 rule.
+3. **Refresh CLAUDE.md codebase metrics** — version + Q count + test count.
+4. **Check last RLS sanity-pass date** — if >7 days, run the 4 SQL queries from
+   deploy-primitives § 3 against project `krmlzwwelqvlfslwltol`.
+
+### Audit checksum
+
+- Worktree: `~/repos/Geriatrics-wt-schema-r13`
+- Base: `origin/main` HEAD `6ceddfc`
+- Branch: `claude/schema-r13-proposal`
+- Files added this session: `docs/SCHEMA_PROPOSAL_R13_EXTENSIONS.md` (new docs),
+  `IMPROVEMENTS.md` (this entry).
+- PR opened: #269 (DRAFT)
+- Archive moves: R7/R13/R19/R20 → `~/archive/geriatrics-reference-content/`
+  (with README documenting REFERENCE-ONLY classification)
+- Other repos touched this session: none (lane discipline — Geriatrics only)
