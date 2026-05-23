@@ -638,3 +638,124 @@ proposal) is docs-only and gates on Eias decision, not on automated checks.
 - Archive moves: R7/R13/R19/R20 → `~/archive/geriatrics-reference-content/`
   (with README documenting REFERENCE-ONLY classification)
 - Other repos touched this session: none (lane discipline — Geriatrics only)
+
+---
+
+## 2026-05-23 (continued) — RLS sanity pass + CLAUDE.md refresh
+
+Same-day continuation. Two cross-cutting cleanups: refresh stale codebase
+metrics in `CLAUDE.md` and run the deploy-primitives § 3 RLS sanity pass
+against the shared Supabase project.
+
+### CLAUDE.md refresh
+
+14 stale-number sites updated to current-state (v10.64.130 / 3,823 Qs / 85
+files / 1,596 tests + 7 skipped / 227 functions / 704 KB / 8,354 lines).
+Historical CHANGELOG narrative preserved (only the lead version + Q count
+in the Project Overview was refreshed; pre-v10.64.108 historical chain
+left intact). The line 649 stale-count "skeleton hardcodes '3,743' per the
+v10.64.41 fallback" note left alone — grep showed neither '3,743' nor
+'3,823' literally in `shlav-a-mega.html`, so that doc is describing
+deprecated code behavior and needs its own separate audit (out of scope
+for a numbers-refresh PR).
+
+### RLS sanity pass (deploy-primitives § 3) — CLEAN
+
+Run against project `krmlzwwelqvlfslwltol` (shared between Toranot /
+Geriatrics / InternalMedicine / FamilyMedicine / ward-helper) via
+Supabase MCP.
+
+**Q1 — every user-schema table has RLS on:** OK. All 20 public-schema
+user-data tables have `rowsecurity = true`. The 3 `rowsecurity = false`
+entries (`supabase_migrations.schema_migrations`, `topology.layer`,
+`topology.topology`) are system/extension-owned, not user-data holes.
+
+**Q2 — RLS-on tables with at least one policy:** 5 tables have RLS-on
+with 0 policies (deny-all). Verified all 5 are documented or
+RPC-protected server-only:
+
+| Table | Access pattern | Status |
+|---|---|---|
+| `app_config` | service_role only (deploy-primitives § 3 documented) | OK |
+| `toranot_config` | service_role only (deploy-primitives § 3 documented) | OK |
+| `app_users` | 7 SECURITY DEFINER RPCs (`auth_login_user`, `auth_register_user`, `auth_change_password`, `auth_set_api_key`, `auth_set_email`, `sync_api_key_from_backup`, `study_plan_upsert`) | OK |
+| `password_reset_tokens` | 2 SECURITY DEFINER RPCs (`auth_issue_reset_token`, `auth_reset_password_with_token`) | OK |
+| `study_plans` | 3 SECURITY DEFINER RPCs (`study_plan_get`, `study_plan_upsert`, `backup_get`) | OK |
+
+**Q3 — policy dump:** 46 policies across 18 RLS-on-with-policies tables.
+All inspected. Three pattern categories, all match documented intent:
+
+1. **auth.uid()-scoped (real RLS enforcement)** — `shared_shifts`,
+   `toranot_labs`, `toranot_patients_backup`, `toranot_state`,
+   `ward_helper_backup`. All user-owned data with explicit ownership checks.
+2. **anon-write + trigger defense (soft-token model per deploy-primitives § 3)**
+   — `*_leaderboard`, `*_feedback`, `*_backups`, `proxy_rate_limits`.
+   No `auth.uid()` ownership; defense is at the BEFORE-UPDATE trigger layer.
+3. **deny-all (intentional security)** — `synthetic_patients` (single policy
+   `ALL roles=public qual=false`).
+
+No red flags: no `qual = true` on authd policies, no missing `with_check`
+on writable policies (the implicit `qual→with_check` defaults are
+behaviorally equivalent to explicit `with_check=true`).
+
+**Q4 — cross-app touch map:** 23 public-schema tables. No generic-named
+tables (`users`, `sessions`, `logs`) that would carry cross-app collision
+risk. Each app has its own prefixed table family (`shlav_*`, `pnimit_*`,
+`mishpacha_*`, `samega_*`, `toranot_*`, `ward_helper_*`) plus 6 shared
+(`answer_reports`, `app_config`, `app_users`, `password_reset_tokens`,
+`proxy_rate_limits`, `synthetic_patients`).
+
+### Trigger inventory (defense-in-depth confirmation)
+
+Verified the documented BEFORE-UPDATE triggers are live on all expected
+tables:
+
+| Trigger | Tables |
+|---|---|
+| `backups_monotonic_update_trg` | `mishpacha_backups`, `pnimit_backups`, `samega_backups` |
+| `trg_sync_api_key_*` (AFTER INSERT+UPDATE) | `mishpacha_backups`, `pnimit_backups`, `samega_backups` |
+| `leaderboard_monotonic_stats_trg` | `mishpacha_leaderboard`, `pnimit_leaderboard`, **`shlav_leaderboard`** |
+| `proxy_rate_limits_monotonic_count_trg` | `proxy_rate_limits` |
+| `trg_proxy_rate_limit_monotonic` | `proxy_rate_limits` (duplicate — see below) |
+| `feedback_notify_webhook_trg` | `mishpacha_feedback`, `pnimit_feedback`, `shlav_feedback` |
+
+### Two doc/cleanup items found (not security holes)
+
+1. **`deploy-primitives § 3` is stale on `shlav_leaderboard`** — it says
+   "Not yet on `shlav_leaderboard` — pending Geri lane coordination". The
+   trigger IS deployed now (visible in the inventory above). The
+   primitives doc should be refreshed in a Toranot-repo PR (lane
+   discipline — this audit is in the Geriatrics repo; primitives lives
+   under `~/.claude/skills/` which is workspace-cross-cutting).
+
+2. **`proxy_rate_limits` has TWO monotonic-count triggers** —
+   `proxy_rate_limits_monotonic_count_trg` and
+   `trg_proxy_rate_limit_monotonic`. Likely a re-deploy duplicate. Not a
+   security risk (both enforce the same invariant in the same direction)
+   but redundant. Investigation + cleanup is a Toranot-lane task (the
+   proxy is Toranot-owned), not Geriatrics.
+
+### Items NOT cross-checked this pass
+
+- Drift between repo `supabase/migrations/` migration files and live DB
+  state — not part of the § 3 sanity pass; would need separate
+  `migrations.test.js`-style ratchet.
+- `auto-audit` probe RLS verification — that lives in a different repo
+  and runs on its own cron.
+
+### IMPROVEMENTS.md PR
+
+Both deltas (CLAUDE.md refresh + this entry) land in a single docs-only PR
+to avoid scope creep across files:
+- Branch: `claude/refresh-docs-2026-05-23`
+- Target: `origin/main` HEAD `b067b36`
+- Files modified: `CLAUDE.md` (14 stale-number sites refreshed),
+  `IMPROVEMENTS.md` (this entry).
+
+### Next-pass items
+
+- Toranot-lane PR: refresh `deploy-primitives § 3` shlav_leaderboard
+  trigger status; investigate proxy_rate_limits trigger duplicate.
+- Out-of-scope this pass but worth tracking: the line 649 stale-count
+  trap doc (HTML literal no longer matches the doc's claim — separate
+  audit).
