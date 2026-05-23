@@ -30,15 +30,11 @@
  */
 
 const fs    = require('fs');
-const https = require('https');
 const path  = require('path');
+const { callClaudeWithRetry } = require('./lib/proxy-client.cjs');
 
 const QUESTIONS_PATH   = path.resolve(__dirname, '..', 'data', 'questions.json');
 const DISTRACTORS_PATH = path.resolve(__dirname, '..', 'data', 'distractors.json');
-
-const PROXY_HOST   = 'toranot.netlify.app';
-const PROXY_PATH   = '/api/claude';
-const PROXY_SECRET = 'shlav-a-mega-1f97f311d307-2026';
 
 const MODEL_MAP = {
   sonnet: 'claude-sonnet-4-6',
@@ -72,87 +68,15 @@ function buildUserPrompt(q) {
   return lines.join('\n');
 }
 
-function callProxyOnce(model, userPrompt) {
-  return new Promise((resolve, reject) => {
-    const body = JSON.stringify({
-      model,
-      max_tokens: MAX_TOKENS,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: userPrompt }]
-    });
-    const options = {
-      hostname: PROXY_HOST,
-      path: PROXY_PATH,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-secret': PROXY_SECRET,
-        'Content-Length': Buffer.byteLength(body)
-      }
-    };
-    const req = https.request(options, res => {
-      let data = '';
-      res.on('data', c => data += c);
-      res.on('end', () => {
-        const trimmed = (data || '').trim();
-        // Upstream timeouts come back as plain-text "Upstream timeout" from Netlify
-        if (trimmed.startsWith('Upstream')) {
-          const e = new Error('proxy_timeout'); e.transient = true; return reject(e);
-        }
-        // Netlify / Cloudflare 5xx pages come back as HTML, not JSON.
-        // Detect by leading '<' (covers both '<!DOCTYPE' and bare '<html>').
-        if (trimmed.startsWith('<') || (res.statusCode >= 500 && res.statusCode < 600)) {
-          const e = new Error(`upstream_${res.statusCode||'html'}`); e.transient = true; return reject(e);
-        }
-        try {
-          const p = JSON.parse(data);
-          if (p.content && p.content[0] && p.content[0].text) {
-            resolve(p.content[0].text.trim());
-          } else if (p.error) {
-            const t = (p.error.type || '').toLowerCase();
-            const e = new Error(`API error: ${p.error.type||'?'} — ${p.error.message||data.slice(0,200)}`);
-            // Anthropic transient classes — retry-able
-            if (t.includes('overloaded') || t.includes('rate_limit') || t.includes('rate-limit')) e.transient = true;
-            reject(e);
-          } else {
-            reject(new Error(`Unexpected: ${data.slice(0,300)}`));
-          }
-        } catch (e) {
-          reject(new Error(`JSON parse: ${e.message}. Raw: ${data.slice(0,200)}`));
-        }
-      });
-    });
-    req.on('error', e => {
-      // Network-layer errors: DNS cache overflow (ENOTFOUND/EAI_AGAIN), conn drops, timeouts
-      if (e && typeof e.code === 'string' &&
-          ['ENOTFOUND','ECONNRESET','ETIMEDOUT','EAI_AGAIN','ECONNREFUSED','EPIPE','EHOSTUNREACH'].includes(e.code)) {
-        e.transient = true;
-      }
-      reject(e);
-    });
-    req.setTimeout(120000, () => {
-      const e = new Error('Timeout 120s'); e.transient = true; req.destroy(e);
-    });
-    req.write(body);
-    req.end();
-  });
-}
-
-async function callProxy(model, userPrompt, attempts = 5) {
-  let lastErr;
-  for (let i = 0; i < attempts; i++) {
-    try { return await callProxyOnce(model, userPrompt); }
-    catch (e) {
-      lastErr = e;
-      const retriable = e && (e.transient || e.message === 'proxy_timeout');
-      if (!retriable) throw e;
-      // Exponential backoff with jitter: 600ms, 1.2s, 2.4s, 4.8s, 9.6s ± up to 300ms
-      const base = 600 * Math.pow(2, i);
-      const jitter = Math.floor(Math.random() * 300);
-      await new Promise(r => setTimeout(r, base + jitter));
-    }
-  }
-  throw lastErr || new Error('proxy_timeout');
+// onRetry hook for callClaudeWithRetry — logs to stderr so the stdout progress
+// bar stays clean. Uses err.category from ProxyError (proxy-client.cjs) instead
+// of the prior inline regex/status logic.
+function logRetry(err, attempt, maxAttempts) {
+  const cat = (err && err.category) || 'unknown';
+  const flag = err && err.transient ? 'transient' : 'terminal';
+  process.stderr.write(
+    `[distractors] attempt ${attempt}/${maxAttempts} failed: ${cat} (${flag}) — ${err.message}\n`
+  );
 }
 
 function parseResponse(rawText, q) {
@@ -292,8 +216,18 @@ async function main() {
 
     const results = await Promise.allSettled(
       batch.map(({q, idx}) =>
-        callProxy(model, buildUserPrompt(q))
-          .then(txt => ({ idx, q, txt }))
+        callClaudeWithRetry(buildUserPrompt(q), {
+          model,
+          system: SYSTEM_PROMPT,
+          max_tokens: MAX_TOKENS,
+          // Preserve the prior socket-level 120s budget (callClaude default is 60s).
+          timeout_ms: 120_000,
+          maxAttempts: 5,
+          baseDelayMs: 600,
+          jitterMs: 300,
+          onRetry: (err, attempt) => logRetry(err, attempt, 5),
+        })
+          .then(txt => ({ idx, q, txt: (txt || '').trim() }))
       )
     );
 

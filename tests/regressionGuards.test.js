@@ -291,6 +291,9 @@ describe('questions.json — structural invariants', () => {
       'Hazzard-suppl',
       // v10.25: GRS8 import (American Geriatrics Society Q&A book) — see ATTRIBUTION-GRS8.md
       'GRS8',
+      // v10.64.127: SZMC-Rescue — 80 MCQs rescued from abandoned-prototype folders during
+      // 2026-05-21 home-cleanup, normalized + audited + translated, merged via PR #258.
+      'SZMC-Rescue',
     ]);
     const unknown = new Set();
     questions.forEach(q => {
@@ -358,8 +361,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3743 (v10.64.11: -48 orphan deletions, all fragment-dups of canonical-tagged siblings)', () => {
-    expect(questions.length).toBe(3743);
+  test('total question count is exactly 3823 (v10.64.127: +80 SZMC-Rescue MCQs merged via PR #258)', () => {
+    expect(questions.length).toBe(3823);
   });
 });
 
