@@ -40,6 +40,7 @@ import { chromium } from 'playwright';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import { extractQuestion, ensureOnPracticeQuiz } from '../chaos-doctor-bot-v4.mjs';
 import {
   DEFAULT_CONFIG,
@@ -475,7 +476,9 @@ async function main() {
 const isMain = (() => {
   try {
     const invoked = process.argv[1] ? path.resolve(process.argv[1]) : '';
-    const self = path.resolve(new URL(import.meta.url).pathname);
+    // fileURLToPath, not new URL().pathname — the latter yields "/C:/…" on
+    // Windows, which path.resolve turns into "C:\C:\…" so isMain is never true.
+    const self = path.resolve(fileURLToPath(import.meta.url));
     return invoked === self;
   } catch (_) { return false; }
 })();
