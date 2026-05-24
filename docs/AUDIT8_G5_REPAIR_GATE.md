@@ -238,6 +238,29 @@ merely move the STOP from join-integrity to under-power, burning a fresh
   > Ledger preservation is asserted by the #238 RESULT, NOT verified this
   > session; (c)'s free-real-data-proof for B2 is contingent on the ledger
   > being present at R2 time.
+- **R2.0-REV2 — Cross-pointer to AUDIT-9 §A6 re-freeze chain (post-merge review, 2026-05-24).**
+  Web fresh-eye review of AUDIT-9 noted that R2.0's "single R2 commit" pin
+  (above) reads as absolute when read in isolation. AUDIT-9 §A6
+  (`docs/AUDIT9_PRE_REGISTERED_GATE.md` §A6 sequencing block) redefines the
+  rule as "scoped to R2's own session," with AUDIT-9's implementation
+  commit then re-re-freezing to `edfa433 + R2 + AUDIT-9`. Both docs are
+  honest about this; this cross-pointer closes the dual-doc state for a
+  reviewer who only opens this gate. *Original R2.0 and R2.0-REV1 above
+  preserved verbatim — not retro-edited
+  (`feedback_spec_provenance_append_only`).*
+
+  Effective re-freeze chain (post-AUDIT-9 implementation):
+
+  ```
+  git log --oneline -- scripts/analyze_pick_representativeness.mjs
+    → edfa433  (R1: frozen analyzer, #236)
+    → <R2 commit>  (R2: t-aware join / branch B1 closed, per R2.0 + R2.0-REV1)
+    → <AUDIT-9 impl commit>  (temporal-bin instrumentation, per AUDIT9 §A6)
+  ```
+
+  Any subsequent change to `scripts/analyze_pick_representativeness.mjs`
+  requires its own pre-registered gate (sibling to AUDIT-9 §A6's pattern).
+  Cumulative-only; no rewrites.
 - **R2.1 `normStem`/index strengthening — scoped to the proven mechanism
   only.** The join also has the documented bilingual/bidi exposure (#236
   step-4 caveat). Strengthen `normStem`/the index **only** if R2.0's
