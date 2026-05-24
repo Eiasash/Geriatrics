@@ -3,8 +3,12 @@
 // control-capture, and RED-criterion decisions live in pure functions in
 // scripts/audit8/r15LongProbeLogic.mjs (split so vitest doesn't have to
 // transform playwright + the chaos-doctor-bot v4 shebang). Source spec:
-// docs/AUDIT8_G5_R1_5_MECHANISM_CAPTURE.md §R1.5.0/R1.5.1/R1.5.2.
+// docs/AUDIT8_G5_R1_5_MECHANISM_CAPTURE.md §R1.5.0/R1.5.1/R1.5.2 and
+// §R1.5.1.1 (2026-05-24 debounce calibration appended after that run).
 import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   shouldTriggerFirstFailure,
   shouldCaptureControl,
@@ -12,6 +16,8 @@ import {
   buildMinuteRecord,
   DEFAULT_CONFIG,
 } from '../scripts/audit8/r15LongProbeLogic.mjs';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Helper: build a synthetic minute record with just the fields the predicates
 // consume. Anything not specified defaults to harmless zeros.
@@ -22,39 +28,137 @@ const rec = (over = {}) => ({
   cumulativePrePickSkip: 0,
   deltaOk: 0,
   deltaPrePickSkip: 0,
+  lastExtractOutcome: null,
   ...over,
 });
 
-describe('shouldTriggerFirstFailure (R1.5.1)', () => {
-  it('returns false when prev is null (minute 0 of probe)', () => {
-    expect(shouldTriggerFirstFailure(null, rec({ deltaPrePickSkip: 3 }))).toBe(false);
+// Phase-1-ok / Phase-2-signature record shortcuts. Phase-1 = bot extracting
+// fine (deltaOk>0, outcome='ok'). Phase-2 signature = the lock-in shape from
+// the 2026-05-24 run min 288+: deltaOk=0 AND outcome='no-quiz' sustained.
+const ok = (minuteIndex, over = {}) =>
+  rec({ minuteIndex, deltaOk: 13, deltaPrePickSkip: 0, lastExtractOutcome: 'ok', ...over });
+const p2 = (minuteIndex, over = {}) =>
+  rec({ minuteIndex, deltaOk: 0, deltaPrePickSkip: 15, lastExtractOutcome: 'no-quiz', ...over });
+
+describe('shouldTriggerFirstFailure (R1.5.1 with §R1.5.1.1 streak debounce)', () => {
+  const cfg = { firstFailStreakMinutes: 3 };
+
+  it('returns false when history is too short for the streak (N=3)', () => {
+    // Even if the only 2 records are Phase-2 signature, history.length < N.
+    expect(shouldTriggerFirstFailure([], cfg)).toBe(false);
+    expect(shouldTriggerFirstFailure([p2(0), p2(1)], cfg)).toBe(false);
   });
 
-  it('returns true at the Phase-1 → Phase-2 boundary', () => {
-    // The audit-8 RESULT shape: Phase 1 had 2-3 ok/min, Phase 2 opened with
-    // pre-pick-skip>0. The trigger fires exactly at that transition.
-    const prev = rec({ minuteIndex: 193, deltaOk: 2, deltaPrePickSkip: 0 });
-    const curr = rec({ minuteIndex: 194, deltaOk: 0, deltaPrePickSkip: 3 });
-    expect(shouldTriggerFirstFailure(prev, curr)).toBe(true);
+  it('refuses to fire on a single-minute Phase-1 blip (today min-49-class)', () => {
+    // The 2026-05-24 calibration anchor: at min 49 the bot had a single
+    // d_skip=1 inside an otherwise-clean Phase-1 minute (d_ok=12,
+    // outcome=ok). Under the old prev/curr predicate this fired and
+    // consumed the firstfail capture budget at min 49 instead of the real
+    // bifurcation at min 287. Under the streak predicate the tail must be
+    // ALL Phase-2 signature — a single blip-minute (outcome='ok',
+    // d_ok>0) breaks the tail.
+    const history = [
+      ok(46), ok(47), ok(48),
+      ok(49, { deltaPrePickSkip: 1, deltaOk: 12 }), // blip
+      ok(50), ok(51),
+    ];
+    expect(shouldTriggerFirstFailure(history, cfg)).toBe(false);
   });
 
-  it('returns false when previous minute had no ok activity', () => {
-    // Without a Phase-1 baseline (deltaOk=0 in prev), a single pre-pick-skip
-    // is not a transition — could be a transient warm-up failure.
-    const prev = rec({ deltaOk: 0 });
-    const curr = rec({ deltaPrePickSkip: 5 });
-    expect(shouldTriggerFirstFailure(prev, curr)).toBe(false);
+  it('refuses to fire when only 2 consecutive Phase-2 minutes (under threshold)', () => {
+    // Phase-1 history followed by 2 minutes of Phase-2 signature. Under
+    // N=3, the tail is one short — must NOT fire. This is the debounce
+    // surface: N relocates the bug if mis-tuned; an unseen 2-min Phase-1
+    // anomaly would have to sustain past min 3 to trigger.
+    const history = [ok(0), ok(1), ok(2), p2(3), p2(4)];
+    expect(shouldTriggerFirstFailure(history, cfg)).toBe(false);
   });
 
-  it('returns false when current minute has no pre-pick-skip', () => {
-    const prev = rec({ deltaOk: 4 });
-    const curr = rec({ deltaPrePickSkip: 0, deltaOk: 4 });
-    expect(shouldTriggerFirstFailure(prev, curr)).toBe(false);
+  it('fires when N consecutive Phase-2 minutes follow a Phase-1 anchor', () => {
+    // Canonical 2026-05-24 lock-in shape: ~280 min of Phase-1 then
+    // sustained no-quiz + zero ok. With N=3 the trigger fires at the
+    // 3rd Phase-2 minute of the streak.
+    const history = [ok(0), ok(1), ok(2), p2(3), p2(4), p2(5)];
+    expect(shouldTriggerFirstFailure(history, cfg)).toBe(true);
   });
 
-  it('returns false when fields are missing (defensive guard)', () => {
-    expect(shouldTriggerFirstFailure({}, {})).toBe(false);
-    expect(shouldTriggerFirstFailure({ deltaOk: 'oops' }, { deltaPrePickSkip: 5 })).toBe(false);
+  it('refuses to fire on a cold-start no-quiz streak (no Phase-1 anchor)', () => {
+    // 3 minutes of Phase-2 signature from the very start of the run.
+    // No earlier record has deltaOk>0 — this is a cold-start failure,
+    // NOT a Phase-1 → Phase-2 bifurcation. Don't burn the capture budget.
+    const history = [p2(0), p2(1), p2(2)];
+    expect(shouldTriggerFirstFailure(history, cfg)).toBe(false);
+  });
+
+  it('requires the tail to be PURE Phase-2 (a Phase-1 minute interrupts the streak)', () => {
+    // Pattern: ok ok p2 p2 ok p2 p2 — tail at N=3 is [ok, p2, p2]. The
+    // ok in the tail breaks the streak. The lock-in shape from today's
+    // run is monotonic (no Phase-1 minutes after Phase-2 onset); a
+    // half-streak with a recovery is NOT a bifurcation.
+    const history = [ok(0), ok(1), p2(2), p2(3), ok(4), p2(5), p2(6)];
+    expect(shouldTriggerFirstFailure(history, cfg)).toBe(false);
+  });
+
+  it('rejects malformed inputs (defensive guard)', () => {
+    expect(shouldTriggerFirstFailure(null, cfg)).toBe(false);
+    expect(shouldTriggerFirstFailure(undefined, cfg)).toBe(false);
+    expect(shouldTriggerFirstFailure([ok(0), ok(1), ok(2)], { firstFailStreakMinutes: 0 })).toBe(false);
+    expect(shouldTriggerFirstFailure([ok(0), ok(1), ok(2)], {})).toBe(false);
+    // A record with deltaOk='oops' in the tail breaks the type check.
+    const bad = [ok(0), ok(1), ok(2), p2(3), p2(4), p2(5, { deltaOk: 'oops' })];
+    expect(shouldTriggerFirstFailure(bad, cfg)).toBe(false);
+  });
+
+  it('replay-pin: 2026-05-24 slimmed fixture — never fires on any of the 7 blips, fires exactly at min 290', () => {
+    // The slimmed fixture (tests/fixtures/r15-2026-05-24-timeline-slim.jsonl)
+    // covers ±2 min windows around all 7 Phase-1 blip minutes (min 1, 11,
+    // 49, 63, 78, 160, 188) plus the bifurcation window 280-295. Walks
+    // the fixture cumulatively, building history as the runner would, and
+    // asserts:
+    //   - At each blip minute, the predicate returns false (was the bug:
+    //     old predicate fired at min 49 in today's run).
+    //   - The predicate first returns true at min 290 (the third
+    //     consecutive Phase-2 minute after the partial-transition at
+    //     min 287 and the first two clean Phase-2 minutes at min 288, 289).
+    //   - Continues returning true at min 291-295 (stateless; the runner
+    //     enforces single-shot via firstFailCaptured).
+    const fixturePath = path.join(__dirname, 'fixtures', 'r15-2026-05-24-timeline-slim.jsonl');
+    const lines = fs.readFileSync(fixturePath, 'utf-8').split('\n').filter((l) => l.trim().length > 0);
+    const records = lines.map((l) => JSON.parse(l));
+
+    const BLIP_MINUTES = new Set([1, 11, 49, 63, 78, 160, 188]);
+    const FIRST_FIRE_MINUTE = 290;
+    const cumulative = [];
+    let firstFireMinute = null;
+
+    for (const r of records) {
+      cumulative.push(r);
+      const fires = shouldTriggerFirstFailure(cumulative, cfg);
+      if (BLIP_MINUTES.has(r.minuteIndex)) {
+        expect(fires, `blip min ${r.minuteIndex} should NOT fire`).toBe(false);
+      }
+      if (fires && firstFireMinute === null) firstFireMinute = r.minuteIndex;
+    }
+
+    expect(firstFireMinute).toBe(FIRST_FIRE_MINUTE);
+
+    // Sanity: fires at min 291..295 too (stateless predicate; the runner
+    // enforces single-shot via firstFailCaptured).
+    for (const tailMin of [291, 292, 293, 294, 295]) {
+      const upTo = records.findIndex((r) => r.minuteIndex === tailMin);
+      const slice = records.slice(0, upTo + 1);
+      expect(shouldTriggerFirstFailure(slice, cfg), `min ${tailMin} should fire (stateless)`).toBe(true);
+    }
+
+    // Sanity: NO record before min 290 in the fixture causes a fire.
+    let preFireCount = 0;
+    const cumulative2 = [];
+    for (const r of records) {
+      if (r.minuteIndex >= FIRST_FIRE_MINUTE) break;
+      cumulative2.push(r);
+      if (shouldTriggerFirstFailure(cumulative2, cfg)) preFireCount += 1;
+    }
+    expect(preFireCount).toBe(0);
   });
 });
 
@@ -229,15 +333,18 @@ describe('buildMinuteRecord (pure aggregation)', () => {
 });
 
 describe('DEFAULT_CONFIG', () => {
-  it('matches the gate doc defaults (R1.5.0)', () => {
-    // These are the numbers the gate doc §R1.5.0 binds: 60-min ok-window,
-    // 10-min skip-streak, threshold >5/min on skip, >1/min on ok, control
-    // at minute 30. If any drift, the gate-doc-vs-code contract is broken.
+  it('matches the gate doc defaults (R1.5.0/R1.5.2/R1.5.1.1)', () => {
+    // These are the numbers the gate doc binds: 60-min ok-window, 10-min
+    // skip-streak, threshold >5/min on skip, >1/min on ok (§R1.5.0);
+    // control at minute 30 (§R1.5.2); firstFail streak debounce = 3 min
+    // (§R1.5.1.1, calibrated from the 2026-05-24 run). If any drift, the
+    // gate-doc-vs-code contract is broken.
     expect(DEFAULT_CONFIG.redOkWindowMinutes).toBe(60);
     expect(DEFAULT_CONFIG.redSkipStreakMinutes).toBe(10);
     expect(DEFAULT_CONFIG.redOkMinThreshold).toBe(1);
     expect(DEFAULT_CONFIG.redSkipMinThreshold).toBe(5);
     expect(DEFAULT_CONFIG.phase1ControlMinute).toBe(30);
+    expect(DEFAULT_CONFIG.firstFailStreakMinutes).toBe(3);
     expect(DEFAULT_CONFIG.minHours).toBe(6);
     expect(DEFAULT_CONFIG.maxHours).toBe(10);
   });
