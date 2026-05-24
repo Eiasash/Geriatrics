@@ -28,6 +28,9 @@
 //   R15_PROBE_RED_OK_WINDOW_MINUTES    contiguous ok-minutes required (default 60)
 //   R15_PROBE_RED_SKIP_MIN_THRESHOLD   pre-pick-skip/min threshold for the streak (default 5)
 //   R15_PROBE_RED_SKIP_STREAK_MINUTES  contiguous skip-minutes required (default 10)
+//   R15_PROBE_FIRSTFAIL_STREAK_MINUTES contiguous Phase-2-signature minutes (deltaOk=0 AND
+//                                  outcome='no-quiz') required to fire the first-failure
+//                                  capture (default 3; §R1.5.1.1 debounce calibration)
 //   R15_PROBE_NET_BUFFER_SIZE      ring-buffer size for network records (default 20)
 //   R15_PROBE_CONSOLE_BUFFER_SIZE  console buffer cap (default 5000)
 //
@@ -77,6 +80,7 @@ function loadConfig() {
     redOkWindowMinutes: Math.max(1, Number(process.env.R15_PROBE_RED_OK_WINDOW_MINUTES || DEFAULT_CONFIG.redOkWindowMinutes)),
     redSkipMinThreshold: Math.max(0, Number(process.env.R15_PROBE_RED_SKIP_MIN_THRESHOLD || DEFAULT_CONFIG.redSkipMinThreshold)),
     redSkipStreakMinutes: Math.max(1, Number(process.env.R15_PROBE_RED_SKIP_STREAK_MINUTES || DEFAULT_CONFIG.redSkipStreakMinutes)),
+    firstFailStreakMinutes: Math.max(1, Number(process.env.R15_PROBE_FIRSTFAIL_STREAK_MINUTES || DEFAULT_CONFIG.firstFailStreakMinutes)),
     netBufferSize: Math.max(1, Number(process.env.R15_PROBE_NET_BUFFER_SIZE || DEFAULT_CONFIG.netBufferSize)),
     consoleBufferSize: Math.max(100, Number(process.env.R15_PROBE_CONSOLE_BUFFER_SIZE || DEFAULT_CONFIG.consoleBufferSize)),
   };
@@ -329,7 +333,6 @@ async function main() {
   let prevCumulativeOk = 0;
   let prevCumulativePrePickSkip = 0;
   let lastMinuteIndex = -1;
-  let prevMinuteRecord = null;
   const recentTimeline = []; // last ~120 minutes; bounded to cap memory
 
   let controlCaptured = false;
@@ -408,9 +411,13 @@ async function main() {
         }
       }
 
-      // First-failure trigger (R1.5.1). Only fires after the control is in
-      // hand — otherwise we'd lose the diff baseline.
-      if (controlCaptured && !firstFailCaptured && shouldTriggerFirstFailure(prevMinuteRecord, rec)) {
+      // First-failure trigger (R1.5.1, with §R1.5.1.1 debounce). Only fires
+      // after the control is in hand — otherwise we'd lose the diff baseline.
+      // Predicate consumes the recent timeline (which already includes `rec`
+      // — pushed just above) so the streak-debounce can read the last N
+      // sealed minutes; runner only owns single-shot semantics via
+      // firstFailCaptured.
+      if (controlCaptured && !firstFailCaptured && shouldTriggerFirstFailure(recentTimeline, CONFIG)) {
         console.log(`[r15LongProbe] minute ${minuteIndex}: first-failure capture`);
         try {
           await captureSet({ page, context, outDir, prefix: 'firstfail', consoleBuf, netBuf });
@@ -438,7 +445,6 @@ async function main() {
 
       prevCumulativeOk = cumulativeOk;
       prevCumulativePrePickSkip = cumulativePrePickSkip;
-      prevMinuteRecord = rec;
       lastMinuteIndex = minuteIndex;
     }
 

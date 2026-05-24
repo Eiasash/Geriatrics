@@ -142,3 +142,58 @@ Tracked, docs + scripts + tests only, append-only audit-5/6/7/8-style: **this ga
 This PR is **gate-only**: the R1.5 capture run is its own subsequent session, gated behind this PR landing on main. R1.5.0–R1.5.3 procedure ships as `scripts/audit8/r15LongProbe.mjs` + supporting libs in *this* PR; the **run** of it (and the RESULT append) is the next session.
 
 <!-- R1.5 RESULT section appended append-only below by the capture session. -->
+
+---
+
+## §R1.5.1.1 — debounce calibration (appended 2026-05-24, post first R1.5 capture-run)
+
+**Append-only correction to §R1.5.1.** Per `feedback_spec_provenance_append_only`, the §R1.5.1 trigger predicate as originally bound — "the first minute where `pre-pick-skip > 0` AND the previous minute had `ok > 0`" — is NOT retro-edited. This section calibrates the predicate after the first R1.5 capture run produced a false-positive capture, and BINDS the new shape forward.
+
+### What the 2026-05-24 run showed
+
+R1.5 run `chaos-reports/v4-long/audit8r15_20260524T022036Z/` (361 timeline minutes, terminated by `maxHours` after the bifurcation reproduced):
+
+- `firstfail-*` artifacts captured at **min 49** on a single-skip Phase-1 blip (`d_skip` 2→3 over one minute, `d_ok=12`, `outcome=ok`). At capture time the run was indistinguishable from Phase-1: `cumulativeOk=646`, `cumulativePrePickSkip=3`. The next 200+ minutes continued in Phase-1 with `ok` climbing 12–14/min.
+- The actual Phase-1 → Phase-2 lock-in happened at **min 287** (partial transition: `d_skip=6`, `d_ok=7`, `outcome=no-quiz`) and locked in fully from **min 288** (`d_ok=0`, `outcome=no-quiz`, sustained ≥73 minutes through end of run).
+- Because the `firstFailCaptured` budget was already consumed at min 49, the actual lock-in moment was NOT captured as a snap. The `phase1control-*` baseline at min 30 is valid; the firstfail capture is not.
+- The §R1.5.0 RED-criterion (`detectRedCrossing`) is unaffected — it correctly detected the crossing in this run because its predicate uses a `>5` skip-rate threshold over a 10-minute streak, which the single 1-skip blip does not satisfy.
+
+The full timeline shows **7** independent Phase-1 blip minutes in 287 Phase-1 minutes (min 1, 11, 49, 63, 78, 160, 188) — each is exactly 1 minute wide with `d_skip=1`, `d_ok≥12`, `outcome=ok`. The bifurcation signature (sustained `d_ok=0 AND outcome='no-quiz'`) is qualitatively distinct from any of these blips.
+
+### Bound forward (replaces §R1.5.1 trigger predicate)
+
+The first-failure trigger predicate is now a **3-minute streak debounce on the Phase-2 lock-in signature** rather than a single-event prev/curr crossing. Fires at the minute `t` where:
+
+1. For each of `t-2`, `t-1`, `t` (the last `firstFailStreakMinutes=3` records): `deltaOk === 0` AND `lastExtractOutcome === 'no-quiz'`.
+2. AND somewhere in the timeline before `t-2`, at least one record has `deltaOk > 0` (Phase-1 anchor — preserves the cold-start-failure exclusion the original predicate enforced with `prev.deltaOk > 0`).
+
+Capture set per §R1.5.1 (DOM, console, perf, network, HAR, Toranot, persistent state, screenshot) is unchanged.
+
+**N=3 justification (calibration anchor: 2026-05-24 run).** Longest observed Phase-1 blip width = 1 minute (n=7/7 blips). N=2 is mathematically sufficient for separation; N=3 adds 1 minute of defense-in-depth against unseen 2-minute Phase-1 anomalies for ~negligible capture-timing cost (Phase-2 sustains ≥73 min — captures at min 290 still see broken state). N≥5 would risk missing the transition's transient state; N=3 is the inflection point between safety and capture-timing.
+
+**Asymmetry vs RED-CROSSING (§R1.5.0) is deliberate, not a bug.** RED uses thresholded streaks on counters (`deltaOk > redOkMinThreshold` for `redOkWindowMinutes` minutes followed by `deltaPrePickSkip > redSkipMinThreshold` for `redSkipStreakMinutes` minutes). firstFail uses the conjunction `deltaOk === 0 AND outcome === 'no-quiz'` for `firstFailStreakMinutes` minutes. The two predicates capture different states: RED is a *crossing detector* over the whole run (used to drive bail decisions); firstFail is a *lock-in moment selector* (used to fire a one-shot capture). RED has to be lenient enough to detect partial transitions in the aggregate; firstFail has to be strict enough to refuse Phase-1 blips. Don't force symmetry.
+
+### Env knob
+
+`R15_PROBE_FIRSTFAIL_STREAK_MINUTES` (default 3; minimum 1; identical clamp shape to existing knobs). Knob-tunable so future calibration runs can sweep N without code churn — but **default N is bound here and tracks `DEFAULT_CONFIG.firstFailStreakMinutes`**, pinned by `tests/audit8r15LongProbe.test.js` "matches the gate doc defaults".
+
+### Test contract (replaces existing `shouldTriggerFirstFailure` cases)
+
+`tests/audit8r15LongProbe.test.js` pins:
+
+1. History under N → false.
+2. Single-minute Phase-1 blip (today min-49 class) → false.
+3. Two-minute Phase-2 streak under N=3 → false.
+4. Three-minute Phase-2 streak after Phase-1 anchor → true.
+5. Cold-start three-minute Phase-2 streak (no Phase-1 anchor) → false.
+6. Phase-1 minute interrupts the streak tail → false.
+7. Malformed inputs (null history, missing N, type errors) → false.
+8. Replay-pin against the 2026-05-24 slimmed fixture (`tests/fixtures/r15-2026-05-24-timeline-slim.jsonl`) — never fires at min 1/11/49/63/78/160/188 (all 7 blips); fires first at min 290.
+
+The replay-pin's fixture is a slimmed JSONL (~8KB) covering ±2-minute windows around each of the 7 blip minutes plus the bifurcation window 280–295, extracted from `chaos-reports/v4-long/audit8r15_20260524T022036Z/timeline.jsonl`. It captures the qualitative shape of the calibration anchor without committing the full 140KB timeline.
+
+### Scope of this addendum
+
+This §R1.5.1.1 calibration ships **with the predicate fix** in the same PR (atomic gate-doc-vs-code contract — test #8 enforces). The R1.5 capture run that motivated it (the min-49 false-positive run) remains valid evidence at `chaos-reports/v4-long/audit8r15_20260524T022036Z/`; the bad firstfail capture in that bundle stays as historical evidence of the bug this addendum closes. The next R1.5 run (whenever the host has a 6–10h headless window) consumes this debounce and aims to capture the actual lock-in at the new fire-point.
+
+The R1.6 fix gate (named-mechanism → fix scope) is unaffected by this addendum. R1.5 still ships no fix. Trinity untouched.
