@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import {
   shouldTriggerFirstFailure,
   shouldCaptureControl,
+  shouldCapturePhase1Late,
   detectRedCrossing,
   buildMinuteRecord,
   DEFAULT_CONFIG,
@@ -192,6 +193,33 @@ describe('shouldCaptureControl (R1.5.2)', () => {
   });
 });
 
+describe('shouldCapturePhase1Late', () => {
+  const cfg = { phase1LateMinute: 200 };
+
+  it('fires exactly at the configured minute when not yet captured', () => {
+    expect(shouldCapturePhase1Late(200, cfg, false)).toBe(true);
+  });
+
+  it('does not fire before the configured minute', () => {
+    expect(shouldCapturePhase1Late(199, cfg, false)).toBe(false);
+    expect(shouldCapturePhase1Late(30, cfg, false)).toBe(false);
+  });
+
+  it('does not fire after the configured minute (single-shot semantics)', () => {
+    expect(shouldCapturePhase1Late(201, cfg, false)).toBe(false);
+    expect(shouldCapturePhase1Late(290, cfg, false)).toBe(false);
+  });
+
+  it('refuses to re-fire when already captured', () => {
+    expect(shouldCapturePhase1Late(200, cfg, true)).toBe(false);
+  });
+
+  it('refuses non-integer minute indices', () => {
+    expect(shouldCapturePhase1Late(200.5, cfg, false)).toBe(false);
+    expect(shouldCapturePhase1Late(NaN, cfg, false)).toBe(false);
+  });
+});
+
 describe('detectRedCrossing (R1.5.0)', () => {
   // Synthesize timelines with the bifurcation shape: N minutes of ok>thr,
   // then M minutes of skip>thr. The detector returns the boundaries.
@@ -344,6 +372,7 @@ describe('DEFAULT_CONFIG', () => {
     expect(DEFAULT_CONFIG.redOkMinThreshold).toBe(1);
     expect(DEFAULT_CONFIG.redSkipMinThreshold).toBe(5);
     expect(DEFAULT_CONFIG.phase1ControlMinute).toBe(30);
+    expect(DEFAULT_CONFIG.phase1LateMinute).toBe(200);
     expect(DEFAULT_CONFIG.firstFailStreakMinutes).toBe(3);
     expect(DEFAULT_CONFIG.minHours).toBe(6);
     expect(DEFAULT_CONFIG.maxHours).toBe(10);

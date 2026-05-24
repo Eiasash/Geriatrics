@@ -21,6 +21,7 @@ export const DEFAULT_CONFIG = Object.freeze({
   label: 'r15-live-main',
   readPauseMs: 2500,
   phase1ControlMinute: 30,
+  phase1LateMinute: 200,
   redOkMinThreshold: 1,
   redOkWindowMinutes: 60,
   redSkipMinThreshold: 5,
@@ -98,6 +99,30 @@ export function shouldTriggerFirstFailure(history, config) {
 export function shouldCaptureControl(minuteIndex, config, alreadyCaptured) {
   if (alreadyCaptured) return false;
   return Number.isInteger(minuteIndex) && minuteIndex === config.phase1ControlMinute;
+}
+
+/**
+ * Phase-1 late trigger — bridges the 260-min observation gap between
+ * phase1control (min 30) and firstfail (~min 290 in the 2026-05-24
+ * calibration). Diff phase1control↔phase1late surfaces gradual drift
+ * (R1.5-doc Class A heap accumulation, Class B PWA listener/IDB-cursor
+ * leaks); diff phase1late↔firstfail surfaces what changed AT the
+ * transition (R1.5-doc Class B page-state, Class C connection/proxy/CDN,
+ * Class D bot-profile-state corruption).
+ *
+ * Default phase1LateMinute = 200; if Phase-2 onset arrives earlier (R3
+ * could plausibly land onset at min 60–150), the capture lands in early
+ * Phase-2 instead of late Phase-1 — still informative, just relabel
+ * mentally as a "phase2 settled" capture.
+ *
+ * @param {number} minuteIndex 0-based minute since probe start
+ * @param {object} config { phase1LateMinute }
+ * @param {boolean} alreadyCaptured whether this capture has fired
+ * @returns {boolean}
+ */
+export function shouldCapturePhase1Late(minuteIndex, config, alreadyCaptured) {
+  if (alreadyCaptured) return false;
+  return Number.isInteger(minuteIndex) && minuteIndex === config.phase1LateMinute;
 }
 
 /**
@@ -182,7 +207,7 @@ export function buildMinuteRecord(input) {
     minuteIndex, ts, cumulativeOk, cumulativePrePickSkip,
     prevCumulativeOk = 0, prevCumulativePrePickSkip = 0,
     lastExtractOutcome = null, perfMemory = null, domNodeCount = null,
-    serviceWorkerCount = null,
+    serviceWorkerCount = null, mutationCount = null,
   } = input;
   return {
     minuteIndex,
@@ -195,5 +220,6 @@ export function buildMinuteRecord(input) {
     perfMemory,
     domNodeCount,
     serviceWorkerCount,
+    mutationCount,
   };
 }

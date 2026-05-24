@@ -24,6 +24,7 @@
 //   R15_PROBE_LABEL                free-form label embedded in the timeline
 //   R15_PROBE_READ_PAUSE_MS        delay between attempts (default 2500)
 //   R15_PROBE_PHASE1_CONTROL_MIN   minute at which Phase-1 control is captured (default 30)
+//   R15_PROBE_PHASE1_LATE_MIN      minute at which Phase-1 late baseline is captured (default 200)
 //   R15_PROBE_RED_OK_MIN_THRESHOLD     ok/min threshold for the ok-window (default 1)
 //   R15_PROBE_RED_OK_WINDOW_MINUTES    contiguous ok-minutes required (default 60)
 //   R15_PROBE_RED_SKIP_MIN_THRESHOLD   pre-pick-skip/min threshold for the streak (default 5)
@@ -45,10 +46,12 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { extractQuestion, ensureOnPracticeQuiz } from '../chaos-doctor-bot-v4.mjs';
+import { hashStem, normStem } from '../lib/hashStem.mjs';
 import {
   DEFAULT_CONFIG,
   shouldTriggerFirstFailure,
   shouldCaptureControl,
+  shouldCapturePhase1Late,
   detectRedCrossing,
   buildMinuteRecord,
 } from './r15LongProbeLogic.mjs';
@@ -60,6 +63,7 @@ export {
   DEFAULT_CONFIG,
   shouldTriggerFirstFailure,
   shouldCaptureControl,
+  shouldCapturePhase1Late,
   detectRedCrossing,
   buildMinuteRecord,
 };
@@ -76,6 +80,7 @@ function loadConfig() {
     label: process.env.R15_PROBE_LABEL || DEFAULT_CONFIG.label,
     readPauseMs: Math.max(100, Number(process.env.R15_PROBE_READ_PAUSE_MS || DEFAULT_CONFIG.readPauseMs)),
     phase1ControlMinute: Math.max(1, Number(process.env.R15_PROBE_PHASE1_CONTROL_MIN || DEFAULT_CONFIG.phase1ControlMinute)),
+    phase1LateMinute: Math.max(1, Number(process.env.R15_PROBE_PHASE1_LATE_MIN || DEFAULT_CONFIG.phase1LateMinute)),
     redOkMinThreshold: Math.max(0, Number(process.env.R15_PROBE_RED_OK_MIN_THRESHOLD || DEFAULT_CONFIG.redOkMinThreshold)),
     redOkWindowMinutes: Math.max(1, Number(process.env.R15_PROBE_RED_OK_WINDOW_MINUTES || DEFAULT_CONFIG.redOkWindowMinutes)),
     redSkipMinThreshold: Math.max(0, Number(process.env.R15_PROBE_RED_SKIP_MIN_THRESHOLD || DEFAULT_CONFIG.redSkipMinThreshold)),
@@ -126,6 +131,82 @@ async function snapshotServiceWorkerCount(page) {
       return regs.length;
     } catch (_) { return null; }
   }).catch(() => null);
+}
+
+// R1.5-doc Class B discriminator (PWA page-state accumulation: event-listener
+// growth, render-buffer drift). Cumulative DOM mutation count since the
+// observer was installed just after initial nav. A sharp delta between
+// phase1control / phase1late / firstfail captures says "structural drift
+// at the transition"; a flat delta + same DOM node count says "structure
+// stable, look at Class A heap or Class C connection state."
+async function snapshotMutationCount(page) {
+  return await page.evaluate(() => {
+    try {
+      const c = window.__r15MutationCount;
+      const installedAt = window.__r15MutationCounterInstalledAt;
+      return { count: typeof c === 'number' ? c : null, installedAt: installedAt || null };
+    } catch (_) { return null; }
+  }).catch(() => null);
+}
+
+// R1.5-doc Class C discriminator (Connection/proxy/CDN). Cache API entries
+// per cache. A new cache key appearing between captures suggests the SW
+// swapped to a different version mid-run; an entry-count surge suggests
+// the SW re-fetched the practice surface (possible CDN edge rotation).
+async function snapshotCacheKeys(page) {
+  return await page.evaluate(async () => {
+    try {
+      if (!('caches' in window)) return null;
+      const keys = await caches.keys();
+      const out = {};
+      for (const k of keys) {
+        try {
+          const c = await caches.open(k);
+          const reqs = await c.keys();
+          out[k] = { entryCount: reqs.length };
+        } catch (_) { out[k] = { error: 'open-failed' }; }
+      }
+      return out;
+    } catch (_) { return null; }
+  }).catch(() => null);
+}
+
+// R1.5-doc Class C discriminator (the precise script URL of the active
+// service worker). The existing snapshotPersistentState captures
+// registrations, but the controller — the SW that actually owns the
+// page — is a separate handle. If `scriptURL` changes between captures,
+// a SW update took control of the page mid-run; that's a plausible
+// Phase-2 trigger absent from the current capture set.
+async function snapshotControllerUrl(page) {
+  return await page.evaluate(() => {
+    try {
+      if (!navigator.serviceWorker) return null;
+      const c = navigator.serviceWorker.controller;
+      return c ? { scriptURL: c.scriptURL, state: c.state } : null;
+    } catch (_) { return null; }
+  }).catch(() => null);
+}
+
+// Install the MutationObserver counter once after initial nav. Counts
+// every mutation on document.documentElement. Idempotent — re-running
+// is a no-op. Caveat: if a hard reload happens (window context replaced
+// by SW navigation preload, etc.), the counter resets; that reset
+// itself is a Class B/C signal worth reading (snapshotMutationCount
+// returns installedAt so the diff can detect re-installations).
+async function installMutationCounter(page) {
+  await page.evaluate(() => {
+    if (typeof window.__r15MutationCount === 'number') return;
+    try {
+      window.__r15MutationCount = 0;
+      window.__r15MutationCounterInstalledAt = Date.now();
+      const obs = new MutationObserver((muts) => {
+        window.__r15MutationCount += muts.length;
+      });
+      obs.observe(document.documentElement, {
+        childList: true, subtree: true, attributes: true, characterData: true,
+      });
+    } catch (_) { /* tolerate */ }
+  }).catch(() => {});
 }
 
 async function snapshotPersistentState(page) {
@@ -203,6 +284,10 @@ async function writeCapture(outDir, prefix, parts) {
     fs.writeFile(path.join(outDir, `${prefix}-net.jsonl`), (parts.netBuf || []).map((e) => JSON.stringify(e)).join('\n')),
     fs.writeFile(path.join(outDir, `${prefix}-toranot.json`), JSON.stringify(parts.toranot || { absent: true }, null, 2)),
     fs.writeFile(path.join(outDir, `${prefix}-persist.json`), JSON.stringify(parts.persist || null, null, 2)),
+    fs.writeFile(path.join(outDir, `${prefix}-mutation.json`), JSON.stringify(parts.mutation || null, null, 2)),
+    fs.writeFile(path.join(outDir, `${prefix}-cache-keys.json`), JSON.stringify(parts.cacheKeys || null, null, 2)),
+    fs.writeFile(path.join(outDir, `${prefix}-controller.json`), JSON.stringify(parts.controller || null, null, 2)),
+    fs.writeFile(path.join(outDir, `${prefix}-extract-probe.json`), JSON.stringify(parts.extractProbe || null, null, 2)),
   ]);
 }
 
@@ -210,7 +295,15 @@ async function captureSet({ page, context, outDir, prefix, consoleBuf, netBuf })
   const dom = await page.content().catch(() => null);
   const perf = await snapshotPerf(page);
   const persist = await snapshotPersistentState(page);
+  const mutation = await snapshotMutationCount(page);
+  const cacheKeys = await snapshotCacheKeys(page);
+  const controller = await snapshotControllerUrl(page);
   await page.screenshot({ path: path.join(outDir, `${prefix}-screenshot.png`), fullPage: true }).catch(() => {});
+  // ExtractQuestion probe runs AFTER the screenshot so the screenshot
+  // captures the pre-probe page state. The probe is read-only; it does
+  // not advance the bot's quiz position (extractQuestion source verified
+  // at chaos-doctor-bot-v4.mjs:239-265).
+  const extractProbe = await probeExtractQuestion(page);
   let toranot = { absent: true };
   for (let i = netBuf.length - 1; i >= 0; i--) {
     const n = netBuf[i];
@@ -238,7 +331,50 @@ async function captureSet({ page, context, outDir, prefix, consoleBuf, netBuf })
     netBuf: netBuf.slice(),
     toranot,
     persist,
+    mutation,
+    cacheKeys,
+    controller,
+    extractProbe,
   });
+}
+
+// R1.5-doc Class B verification (NOT a class discriminator — a direct
+// observation of whether `extractQuestion` succeeds at capture time).
+// At phase1control we expect 5/5 successful extracts; at firstfail we
+// expect 5/5 nulls or near-zero stems. A mismatch (e.g., 3/5 success at
+// firstfail) says the page state is intermittent rather than locked,
+// which would re-open the R1.0b extractor-regression hypothesis the
+// R1.5 doc's bisect-window argument otherwise rules out. Hash-aware so
+// the diff can detect "same broken question repeating" vs "different
+// questions all extracting cleanly." extractQuestion is read-only
+// (verified at chaos-doctor-bot-v4.mjs:239-265 — locator.innerText
+// only, no clicks), so calling it 5x here does not advance the bot's
+// quiz position.
+async function probeExtractQuestion(page) {
+  const results = [];
+  for (let i = 0; i < 5; i++) {
+    const start = Date.now();
+    let r = null;
+    let err = null;
+    try {
+      r = await extractQuestion(page);
+    } catch (e) {
+      err = String((e && e.message) || e);
+    }
+    const stem = r && r.stem ? r.stem : null;
+    results.push({
+      attempt: i + 1,
+      ts: nowIso(),
+      elapsedMs: Date.now() - start,
+      ok: !!(r && r.options && r.options.length >= 2),
+      stemHash: stem ? hashStem(normStem(stem)) : null,
+      stemPrefix: stem ? stem.slice(0, 60) : null,
+      optionsCount: Array.isArray(r && r.options) ? r.options.length : 0,
+      error: err,
+    });
+    await sleep(200);
+  }
+  return results;
 }
 
 async function advance(page) {
@@ -336,6 +472,7 @@ async function main() {
   const recentTimeline = []; // last ~120 minutes; bounded to cap memory
 
   let controlCaptured = false;
+  let phase1LateCaptured = false;
   let firstFailCaptured = false;
   let redCrossingAt = null;
   let outcome = 'UNKNOWN';
@@ -347,6 +484,10 @@ async function main() {
     console.error('[r15LongProbe] initial nav failed', e);
     outcome = 'NAV-FAILED';
   }
+
+  // Install the MutationObserver counter so the snapshot helpers can
+  // read window.__r15MutationCount at each capture. Idempotent.
+  await installMutationCounter(page);
 
   const log = (..._args) => { /* bot's `log` callback — suppressed to keep stdout one-line-per-minute */ };
 
@@ -395,6 +536,7 @@ async function main() {
         perfMemory: await snapshotPerf(page),
         domNodeCount: await snapshotDomNodeCount(page),
         serviceWorkerCount: await snapshotServiceWorkerCount(page),
+        mutationCount: await snapshotMutationCount(page),
       });
       await timelineHandle.appendFile(JSON.stringify(rec) + '\n');
       recentTimeline.push(rec);
@@ -408,6 +550,23 @@ async function main() {
           controlCaptured = true;
         } catch (e) {
           console.error('[r15LongProbe] phase1control capture failed', e);
+        }
+      }
+
+      // Phase-1 late capture — bridges the observation gap between
+      // phase1control (min 30) and firstfail (~min 290 in the 2026-05-24
+      // calibration). Diff phase1control↔phase1late surfaces gradual
+      // drift (R1.5-doc Class A heap, Class B PWA listener accumulation);
+      // diff phase1late↔firstfail surfaces what changed AT the
+      // transition (R1.5-doc Class B page-state, Class C connection,
+      // Class D bot-profile-state corruption).
+      if (shouldCapturePhase1Late(minuteIndex, CONFIG, phase1LateCaptured)) {
+        console.log(`[r15LongProbe] minute ${minuteIndex}: Phase-1 late capture`);
+        try {
+          await captureSet({ page, context, outDir, prefix: 'phase1late', consoleBuf, netBuf });
+          phase1LateCaptured = true;
+        } catch (e) {
+          console.error('[r15LongProbe] phase1late capture failed', e);
         }
       }
 
@@ -465,6 +624,7 @@ async function main() {
     cumulativeOk,
     cumulativePrePickSkip,
     controlCaptured,
+    phase1LateCaptured,
     firstFailCaptured,
     redCrossingAt,
     outcome,
