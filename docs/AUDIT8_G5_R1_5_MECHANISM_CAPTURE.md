@@ -256,3 +256,63 @@ This §R1.5.2-REV1 + §R1.5.2-REV2 are the **doc-side counterpart to PR #276** (
 The §R1.5.3 mechanism diff procedure is **augmented** (more discriminators available) but not redefined. Class selection still proceeds by "which class's capture signal is present in the diff", with the four new files providing structured signals for classes B and C that the original set under-covered.
 
 R1.6 fix gate (named-mechanism → fix scope) is unaffected. R1.5 still ships no fix. Trinity untouched.
+
+---
+
+## §R1.5.2-REV3 — Mutation-channel HALT (appended 2026-05-24 evening, post REV1/REV2 smoke)
+
+The 2026-05-24 evening smoke pair for the PR #276 RE-RUN — fired BEFORE the overnight long-probe — proved one of the four new mechanism channels (`mutation`) is structurally dead in the as-merged probe. **The overnight RE-RUN is suspended.** The other three channels (`cache-keys`, `controller`, `extract-probe`) verified non-null with real signal.
+
+This REV is the gate-doc surface of the finding. No code change is proposed here (R1.x discipline: gate edits ship before code edits, in their own PR). Class-discrimination authority in §R1.5.3 is reduced from 4-dimensional to 3-dimensional **until this REV is closed by a follow-up code PR** that either (a) proves the mutation channel produces non-null leaves at default `phase1ControlMinute=30`, or (b) repairs `installMutationCounter` so the snapshot reads the installed globals.
+
+### Smoke evidence (both runs against live `https://eiasash.github.io/Geriatrics/`, v10.64.130)
+
+Both runs used `R15_PROBE_HEADLESS=0 R15_PROBE_MIN_HOURS=0.1 R15_PROBE_MAX_HOURS=0.15` against current `main` (`3a55f16`, contains PR #274 debounce + PR #276 captures + PR #275 audit-9 gate). Outcome `RED-NOT-REPRODUCED` in both — expected for a 9-min window; the smoke is plumbing-validation, not Phase-2 reproduction.
+
+Smoke A — `R15_PROBE_PHASE1_CONTROL_MIN=2`, label `smoke-postr276`, started 2026-05-24T21:55:19Z, `cumulativeOk=119`, `cumulativePrePickSkip=0`, `controlCaptured=true`. `phase1control-mutation.json` content: `{ "count": null, "installedAt": null }`.
+
+Smoke B — `R15_PROBE_PHASE1_CONTROL_MIN=5`, label `smoke-postr276-min5`, started 2026-05-24T22:07:05Z, `cumulativeOk=118`, `cumulativePrePickSkip=1`, `controlCaptured=true`. `phase1control-mutation.json` content: `{ "count": null, "installedAt": null }`. **Identical null shape at min 5 — not a min-2 startup race.**
+
+Smoke B `timeline.jsonl` shows `mutationCount: { "count": null, "installedAt": null }` at **every minute** from `minuteIndex=0` onward, including the very first per-minute snapshot at 2026-05-24T22:07:11Z (~5 s after `page.goto` returned). The install therefore either never ran successfully OR ran in a JS context whose `window` is not the one `snapshotMutationCount(page)` reads.
+
+For reference, the three channels that DID land non-null in Smoke B:
+- `phase1control-cache-keys.json`: `{ "shlav-a-v10.64.130": { "entryCount": 38 }, "shlav-img-v1": { "entryCount": 0 } }` — real cache topology, two named caches with sane sizes.
+- `phase1control-controller.json`: `{ "scriptURL": "https://eiasash.github.io/Geriatrics/sw.js", "state": "activated" }` — SW activated as expected.
+- `phase1control-extract-probe.json`: 5 attempts, all `ok=true`, all with identical `stemHash="2117983509"` + `optionsCount=4` (stable read on the same Q within ~900 ms). Confirms PR #276 stem-extract probe is sound.
+
+Both artifact bundles remain on the runner disk under (gitignored) `chaos-reports/v4-long/audit8r15_2026-05-24T21-55-19-658Z/` and `chaos-reports/v4-long/audit8r15_2026-05-24T22-07-05-870Z/`. Re-grounding from clone alone is therefore not possible — this REV inlines the load-bearing contents above per `feedback_audit_logs_cross_claude_visibility`.
+
+### Suspected failure modes (NOT picked — for R1.6 to investigate)
+
+`scripts/audit8/r15LongProbe.mjs:196-211` `installMutationCounter` runs once via `await page.evaluate(() => { ... }).catch(() => {})` immediately after the initial `page.goto(..., waitUntil: 'domcontentloaded')` (lines 482-490). The `.catch(() => {})` swallows any failure silently — the install can fail invisibly. `snapshotMutationCount` (lines 142-149) reads `window.__r15MutationCount` / `window.__r15MutationCounterInstalledAt` and returns `null` for either when the global is `undefined`.
+
+Three candidate root causes, none ruled in by this REV:
+
+1. **Install context dies on first SPA hydration/navigation.** The page is a SPA with a SW that activates and may swap or reload context. `domcontentloaded` fires before any of that settles. If hydration replaces document.documentElement or the SW reloads the page, the MutationObserver attaches to a soon-to-be-stale root AND/OR the `window.__r15MutationCount` global lives on a doomed `window`. The fact that `installedAt` is also null is the strong tell — it rules out "install ran, observer fires, but counter never increments"; if the install line had executed, `installedAt` would be a number forever (it's a `Date.now()` literal, never overwritten).
+2. **`page.evaluate` execution-context mismatch.** Playwright `page.evaluate` runs in the main world by default; both install and snapshot use the same API, so both should see the same `window`. Possible exception: if the page is iframed or wrapped at an early point and the auto-discovered main frame shifts after install. Smoke B shows null from `minuteIndex=0` (~5 s in) so the shift, if any, would have to happen sub-5-s.
+3. **`MutationObserver` install threw inside the `try`.** The `try { … } catch (_) { /* tolerate */ }` swallows constructor errors. Possible in older or sandboxed Chromiums; the runner here is Playwright chromium-1217 on Windows, so this is the least likely of the three.
+
+The discriminator: surface the swallowed errors and the install-time `document.documentElement` identity. Both are one-line additions to `installMutationCounter` — but **those are code changes, out-of-scope for this REV**. R1.6 will pick them up.
+
+### What the §R1.5.3 mechanism diff procedure can do without the mutation channel
+
+Of the four §R1.5.2-REV1 capture channels:
+
+- ✅ **`cache-keys`** discriminates Class C (cache topology drift — new cache name, lost entries, eviction patterns).
+- ✅ **`controller`** discriminates Class C (SW controller replacement, scriptURL drift, state changes).
+- ✅ **`extract-probe`** discriminates Class A (per-attempt extract reliability — stem identity, options count, attempt-level race between extract and DOM rebuild).
+- ❌ **`mutation`** — would have discriminated Class B (frozen DOM during Phase-2 vs ongoing mutation during Phase-1 — the lock-in signature). The dead channel **does not block** §R1.5.3 from reaching a verdict on Classes A and C, but it removes the cleanest direct signal for Class B. Class B can still be inferred indirectly from `domNodeCount` deltas in `timeline.jsonl` (already collected per-minute) plus per-attempt `extractProbe` patterns at firstfail vs phase1control, but the inference is weaker.
+
+§R1.5.4 RESULT, when it eventually lands, must explicitly note Class-B determination is **inferred from auxiliary signals**, not directly observed, unless this REV is first closed by a fix.
+
+### Bound forward (replaces "fire overnight" expectation from the morning brief)
+
+1. **Overnight R1.5 RE-RUN is suspended.** `R15_PROBE_LABEL=overnight-postr276-20260524` was NOT fired. The morning brief's §R1.5.4 RESULT-append step is deferred until a re-fired overnight produces a non-degenerate capture set.
+2. **R1.6 follow-up PR (separate, gated on Eias sign-off)** will either:
+   - (a) Add ephemeral instrumentation: surface the swallowed errors from `installMutationCounter`'s `.catch`, log `document.documentElement.tagName` + identity at install time AND at first snapshot, and re-run a smoke. If null persists with errors surfaced → triage by error. If null persists with no errors → execution-context mismatch is likeliest, escalate.
+   - (b) Or: harden `installMutationCounter` to re-install on every snapshot if the global is missing (idempotent guard already exists for the success case; extend it to recover from a wiped install). This is the cheaper fix but obscures the root cause.
+3. **§R1.5.4 RESULT remains §R1.5.4 RESULT.** This REV does NOT pre-empt or rewrite it. It binds the precondition: §R1.5.4 cannot ship until either (1) the mutation channel produces signal at default `phase1ControlMinute=30` (overnight defaults — not the smoke override), or (2) §R1.5.4 documents the 3-of-4 limitation explicitly with a class-B-by-inference caveat.
+
+### Scope of this addendum
+
+This REV is the gate-doc precondition for a follow-up code PR. Per R1.x discipline, no code change ships in this PR — only the spec binding. Eias sign-off required to merge per workspace CLAUDE.md "(b) per-PR gate docs that explicitly carry a 'NO self-merge' clause" — this REV inherits the clause from §R1.5. **NO self-merge.** Trinity untouched. R1.5 still ships no fix; R1.6 fix gate unaffected; named-mechanism → fix scope authority unchanged.
