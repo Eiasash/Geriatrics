@@ -149,6 +149,28 @@ Hypotheses still in play:
    from AUDIT-8 G2's pre-registration. AUDIT-9 does **not** re-litigate
    budget — it instruments the analyzer that consumes whatever R3 captures.
 
+### HYPOTHESES-REV1 — Mechanism-class taxonomy alignment (post-merge review, 2026-05-24)
+
+Web fresh-eye review of this gate found that the inline class taxonomy at the §"deliberately mechanism-agnostic" paragraph (`docs/AUDIT9_PRE_REGISTERED_GATE.md:128`) — "Class A (browser process leak) / Class B (page state) / Class C (DOM injection) / Class D / Class E" — does NOT match the binding taxonomy in the parent gate doc `docs/AUDIT8_G5_R1_5_MECHANISM_CAPTURE.md:47-51`:
+
+| Class | R1.5 doc (`:47-51`, binding) | AUDIT-9 inline (`:128`) |
+|---|---|---|
+| A | Browser process leak | Browser process leak ✓ |
+| B | **Page-state accumulation** (PWA heap, listener leaks) | Page state |
+| C | **Connection / proxy state** (Toranot session, CDN edge, HAR) | DOM injection |
+| D | **Persistent bot-profile state** (IDB / localStorage / SW) | (unspecified) |
+| E | (open) Novel mechanism | (unspecified) |
+
+The C and D labels in particular have **disjoint scopes** between the two docs. AUDIT-9's "Class D" inline could plausibly be read as the brief's `opus-consult-r15-bot-run.md` "extractor bug" class — which the R1.5 doc's bisect-window argument (`docs/AUDIT8_G5_R1_5_MECHANISM_CAPTURE.md:35`) already disposes of as a hypothesis.
+
+*Original AUDIT-9 §HYPOTHESES paragraph at `:128` preserved verbatim — not retro-edited (`feedback_spec_provenance_append_only`).*
+
+**Binding clarification.** Whenever this gate or any AUDIT-9 RESULT section references R1.5 mechanism classes, the **binding taxonomy is the one at `docs/AUDIT8_G5_R1_5_MECHANISM_CAPTURE.md:47-51`** (Class A=process leak / Class B=PWA accumulation / Class C=connection-proxy-CDN / Class D=persistent bot-profile / Class E=novel). The inline AUDIT-9 paraphrase at `:128` is a non-binding gloss; if conflict surfaces, the R1.5 doc wins. The bifurcation-detection criterion's mechanism-agnostic design is unaffected — the criterion operates on bucket-level outcomes regardless of which class wins selection.
+
+**Why this matters for downstream R1.5 RESULT.** The R1.5 implementation session (when it lands) selects ONE class per the R1.5 doc's matrix. An AUDIT-9 RESULT that referenced the inline-paraphrase taxonomy would risk mis-labeling the selected class (e.g., calling a Class C/connection finding a Class D/DOM-injection finding, or absorbing what the R1.5 doc would call Class D into AUDIT-9's "Class E"). The binding clarification above forecloses that drift.
+
+**No criterion change. No predicate change.** Taxonomic clarification only.
+
 ---
 
 ## THE LOCKED ANALYZER ADDITION (binding; the design does not get reshaped)
@@ -239,6 +261,30 @@ Formally, given the per-bucket time series `B[0], B[1], …, B[n-1]` where
 - **Single-bucket dips are NOT bifurcation** (named in §A4 below for
   reviewer clarity).
 
+### A2-REV1 — Anchor-rule framing correction (post-merge review, 2026-05-24)
+
+Web fresh-eye review of this gate (consult `opus-consult-r15-bot-run.md`) flagged that §A2's claim "Mirrors PR #274's debounce predicate which requires an earlier Phase-1 anchor" is structurally inaccurate. PR #274's predicate at `scripts/audit8/r15LongProbeLogic.mjs:81-84` scans the entire history prefix (`for (let i = 0; i < tailStart; i++)`) and fires if ANY earlier record has `deltaOk > 0` — the **liberal "any earlier"** rule. AUDIT-9 §A2 locks the **strict "immediately preceding bucket"** rule (`B[b-1].reached_pick > 0`). These are two distinct rules, not mirrors.
+
+*Original §A2 anchor sentence preserved verbatim — not retro-edited (`feedback_spec_provenance_append_only`); this REV clarifies the framing without changing the bucket-level criterion.*
+
+**Behavioral equivalence on the first onset.** On the canonical Phase-1 → Phase-2 sequence (the §0.2 shape and any single-onset variant), both rules fire at the same point: PR #274 because the entire Phase-1 prefix provides an anchor; AUDIT-9 because the immediately-preceding bucket is the last Phase-1 bucket. The rules diverge only on **subsequent** onsets after a recovery span, where strict-anchor still fires (each onset's b-1 is the recovery's non-zero bucket) but at a *different* bucket index than liberal-anchor would surface. Since §A4 item 5 routes first onset only to verdict, the divergence has no verdict impact within this gate's scope.
+
+**Doc text correction (where the inaccuracy lives, for the reviewer's trail).** §A2 third bullet: "Mirrors PR #274's debounce predicate which requires an earlier Phase-1 anchor" should read **"Functionally equivalent to PR #274's debounce predicate on first-onset detection; differs on subsequent-onset semantics, which §A4 item 5 routes out of scope for this gate's verdict."**
+
+**No criterion change.** The strict-anchor lock remains, the K=2 lock remains, the bucket width remains. This REV is **framing-only**; no test or fixture changes.
+
+### A2-REV2 — Multi-onset emission contract (post-merge review, 2026-05-24)
+
+Web fresh-eye review on §A4 item 5 ("first onset only; surface subsequent as RESULT notes, not new verdict") flagged that the contract is ambiguous about WHAT structured data the analyzer emits. The implementation session could read "RESULT notes" as free-text prose and drop the structured onset list, losing the diagnostic information that all-onsets enables (e.g., "three bifurcations at b=14, b=42, b=71 with recovery spans 6/8 buckets").
+
+Pre-registering the output contract:
+
+> The analyzer's structured output object MUST include a `bifurcation_onset_buckets` field — an array of all bucket indices `b` satisfying §A2's criterion across the full timeline, in order, even when the routed verdict is `STOP-BIFURCATION` (first-onset-only). The verdict remains first-onset-only; the diagnostic field is exhaustive. Emitting `[b1]` when multiple onsets exist is a contract violation.
+
+**Rationale.** Without the structured emission, "RESULT notes" relies on prose, which downstream consumers can't programmatically diff across R3/R4/Rn runs. The list is the source-of-truth for "did the mechanism recurrence pattern change between runs."
+
+**No criterion change, no test fixture changes.** This REV adds an output-contract field; the routing logic is unchanged.
+
 ### A3 — Verdict routing: bifurcation **overrides** aggregate
 
 Pre-registered:
@@ -267,6 +313,31 @@ Pre-registered:
   allowing aggregate to override bifurcation. None of these may pass under
   §"PRE-REGISTERED PREDICTIONS" refinements; they require their own
   append-only revision before any data is seen.
+
+### A3-REV1 — Forbidden list expansion (post-merge review, 2026-05-24)
+
+Web fresh-eye review flagged two gaps in §A3's `Forbidden` list that the implementation session could plausibly exploit without violating the written predicates:
+
+1. **Bucket alignment change.** §A1 locks "run-start-aligned, not clock-aligned" with justification, but the §A3 forbidden list (`docs/AUDIT9_PRE_REGISTERED_GATE.md:262-269`) does not include "changing bucket alignment from run-start to any other origin." Implementation could clock-align without textually violating any forbidden item.
+
+2. **Branch-coverage undercount.** §A3 says STOP-BIFURCATION overrides `REPRESENTATIVE / BIASED / STOP-JOIN-INTEGRITY` — three branches. The frozen analyzer at `edfa433` actually has **five** verdict branches (`scripts/analyze_pick_representativeness.mjs` at `edfa433`, lines 267-278):
+
+   ```
+   if      (joinViolations.length) verdict = 'STOP-JOIN-INTEGRITY';
+   else if (anyBiasSignal)         verdict = 'BIASED';
+   else if (anyHolmSig)            verdict = 'DETECTABLE-BUT-NEGLIGIBLE';
+   else if (powered)               verdict = 'REPRESENTATIVE';
+   else                            verdict = 'INCONCLUSIVE';
+   ```
+
+   The two unlisted branches (`DETECTABLE-BUT-NEGLIGIBLE`, `INCONCLUSIVE`) must also be overridden by STOP-BIFURCATION; otherwise an implementation that reads §A3 literally leaves them uncovered. An R3 run that triggers bifurcation alongside underpowered `INCONCLUSIVE` would mis-route as `INCONCLUSIVE` under the literal §A3 reading.
+
+Append to §A3 `Forbidden` list:
+
+> - **Changing bucket alignment.** Bucket origin must be run-start (first ledger event's timestamp), not clock-aligned (wall-clock midnight, UTC hour boundary, or any other origin). Justified at §A1; locked here.
+> - **Under-coverage of aggregate branches.** STOP-BIFURCATION overrides ALL FIVE frozen-analyzer verdict branches (`STOP-JOIN-INTEGRITY`, `BIASED`, `DETECTABLE-BUT-NEGLIGIBLE`, `REPRESENTATIVE`, `INCONCLUSIVE`), not just the three named in §A3's first bullet. The §A3 first-bullet enumeration is illustrative; this bullet binds.
+
+**No criterion change.** Forbidden-list additions only.
 
 ### A4 — What the criterion does NOT catch (named explicitly to forbid scope-creep, `feedback_closed_decision_tree_no_extra_leaves`)
 
@@ -304,6 +375,22 @@ bucket > 0 followed by ≥ K consecutive zero buckets. It does **NOT** catch:
    show multiple cycles; if it does, that's a separate "named monitoring
    class" finding the implementation session surfaces as a RESULT note,
    not a new verdict.
+
+### A4-REV1 — Item 6 (trickle / sub-anchor floor) named (post-merge review, 2026-05-24)
+
+Web fresh-eye review flagged a Phase-2 mode the original §A4 list does not name explicitly: **trickle / sub-anchor floor**. A future Phase-2 mechanism that leaks ≥ 1 successful Q per 5-min bucket (a "leaky" lock-in, distinct from the §0.2 monotonic-zero shape) would have NO consecutive zero buckets and the §A2 K=2 criterion would never fire. The aggregate would route `BIASED` (correct, by elevated drop fraction) but the *bifurcation regime* itself is invisible to the temporal-bin output.
+
+This is **implicitly** absorbed into §A4 items 1 (gradual decay) and 2 (oscillation), but neither names it cleanly:
+- "Gradual decay" implies monotonic decline; a trickle floor is a flat near-zero, not a decline.
+- "Oscillation" implies alternation; trickle is sustained, not alternating.
+
+Naming it explicitly:
+
+> **6. Trickle / sub-anchor floor.** A sustained Phase-2-like state where `reached_pick` per bucket stays > 0 but `<< anchor floor` — e.g., 1 ok/bucket for 30+ buckets following an anchor at 12 ok/bucket. The §A2 criterion does NOT fire (no consecutive zero buckets). The aggregate correctly routes `BIASED` if the drop fraction crosses threshold. The bifurcation regime itself is surfaced as a RESULT note in the analyzer output (analogous to §A4 item 5's subsequent-onset notes), NOT silently patched into the K=2 logic. Named here to forbid scope-creep that would dilute the §A2 sharp-transition contract.
+
+**Rationale for not extending the criterion.** A "trickle detector" requires anchor-relative thresholding (e.g., `reached_pick < anchor / 10` sustained over N buckets) — that re-introduces a tunable parameter to a criterion the gate's whole shape is engineered to keep parameter-free. The aggregate already catches the failure rate; AUDIT-9's job is the binary state-flip the aggregate hides, not every Phase-2 mode.
+
+**No test or fixture changes.** This REV is taxonomic only.
 
 ### A5 — Pre/post predicate (synthetic fixtures, RED-proofed both ways)
 

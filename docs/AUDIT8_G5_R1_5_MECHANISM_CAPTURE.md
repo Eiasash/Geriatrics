@@ -197,3 +197,62 @@ The replay-pin's fixture is a slimmed JSONL (~8KB) covering ±2-minute windows a
 This §R1.5.1.1 calibration ships **with the predicate fix** in the same PR (atomic gate-doc-vs-code contract — test #8 enforces). The R1.5 capture run that motivated it (the min-49 false-positive run) remains valid evidence at `chaos-reports/v4-long/audit8r15_20260524T022036Z/`; the bad firstfail capture in that bundle stays as historical evidence of the bug this addendum closes. The next R1.5 run (whenever the host has a 6–10h headless window) consumes this debounce and aims to capture the actual lock-in at the new fire-point.
 
 The R1.6 fix gate (named-mechanism → fix scope) is unaffected by this addendum. R1.5 still ships no fix. Trinity untouched.
+
+---
+
+## §R1.5.2-REV1 — Capture-set augmentation for class-discrimination (appended 2026-05-24, post PR #276)
+
+**Append-only correction to §R1.5.2.** Per `feedback_spec_provenance_append_only`, the §R1.5.2 capture set as originally bound — 7 artifact files at `firstfail-*` and `phase1control-*` — is NOT retro-edited. This section augments the capture set after web-Claude fresh-eye review of AUDIT-9 (PR #275 review) identified three of the five R1.5 hypothesis classes as having insufficient discriminators in the existing set, and binds the new shape forward.
+
+### What the §R1.5 hypothesis-class matrix required vs what was captured
+
+R1.5 hypothesis classes (`docs/AUDIT8_G5_R1_5_MECHANISM_CAPTURE.md:47-51`) and the original capture set's coverage of each:
+
+- **Class A — Browser process leak.** Covered by `phase1control-perf.json` / `firstfail-perf.json` (`performance.memory`). ✓
+- **Class B — PWA page-state accumulation** (heap / event listener / IDB cursor / render buffer). Partially covered by `dom.html` (post-hoc diff possible). No structured signal on listener growth or cumulative DOM mutation count.
+- **Class C — Connection / proxy state** (Toranot session, CDN edge rotation, SW cache swap). Partially covered by `net.jsonl` (last-20 requests) and `toranot.json` (last proxy call). No SW controller `scriptURL` snapshot, no Cache API entries listing.
+- **Class D — Persistent bot-profile state** (IDB / localStorage / SW registrations). Covered by `persist.json`. ✓
+- **Class E — Novel mechanism.** Open by design; no specific discriminator required.
+
+Classes B and C were therefore under-discriminated; an R1.5 RESULT that named Class B or Class C as the selected mechanism would lean on `dom.html` post-hoc diffs alone, which is weaker than the structured signals available for Classes A and D.
+
+### Bound forward — capture set extended to 11 artifact files
+
+The capture set per §R1.5.2 (with the §R1.5.1.1 trigger debounce) is augmented to include **four new artifact files** at each capture prefix (`phase1control-`, `firstfail-`, plus the new `phase1late-` per the §R1.5.2-REV2 below):
+
+- `${prefix}-mutation.json` — cumulative MutationObserver count since just after initial nav. Class B discriminator (PWA structural drift / listener accumulation).
+- `${prefix}-cache-keys.json` — Cache API entries per cache. Class C discriminator (CDN edge rotation, SW cache swap).
+- `${prefix}-controller.json` — active SW `scriptURL` + state. Class C discriminator (SW update taking control mid-run).
+- `${prefix}-extract-probe.json` — `extractQuestion` called 5× back-to-back at capture time, with `hashStem(normStem(stem))` on each result. Class B verification (loop-healthy / page-broken). `extractQuestion` verified read-only at `scripts/chaos-doctor-bot-v4.mjs:239-265` — no quiz-position advance.
+
+The original 7 artifact files are unchanged: `dom.html`, `console.jsonl`, `perf.json`, `net.jsonl`, `toranot.json`, `persist.json`, `screenshot.png` (plus `trace.zip` from Playwright tracing). Total per-capture artifact count: **12** (11 JSON/HTML/PNG + 1 trace.zip).
+
+## §R1.5.2-REV2 — phase1late capture (companion REV, appended 2026-05-24, post PR #276)
+
+The capture set fires at **three** timing points per run, not two:
+
+1. `phase1control-*` at minute `phase1ControlMinute` (default 30) — deep Phase-1 baseline. Unchanged from §R1.5.2.
+2. `phase1late-*` at minute `phase1LateMinute` (default 200) — **NEW** mid-run baseline. Bridges the 260-min observation gap that the 2026-05-24 run exposed (control at min 30, firstfail at ~min 290, nothing between). Diff `phase1control↔phase1late` surfaces gradual drift (Classes A / B); diff `phase1late↔firstfail` surfaces what changed AT the transition (Classes B / C / D).
+3. `firstfail-*` at the §R1.5.1.1 debounce predicate fire-point — Phase-2 lock-in. Unchanged from §R1.5.1.1.
+
+**Caveat.** If R1.5-RE-RUN's Phase-2 onset arrives earlier than min 200, the `phase1late-*` capture lands in early Phase-2 instead of late Phase-1 — still informative (a "Phase-2 settled" capture, distinct from the lock-in moment), just labelled `phase1late-*` regardless of regime. The §R1.5.3 diff procedure is robust to this case: `phase1late↔firstfail` of two Phase-2 captures is a *Phase-2-evolution* diff, useful for distinguishing class A "ongoing leak" from class B "frozen state."
+
+### Env knobs
+
+- `R15_PROBE_PHASE1_LATE_MIN` (default 200; minimum 1; identical clamp shape to existing knobs).
+
+The other env knobs at §R1.5.2 are unchanged. Defaults are pinned by `tests/audit8r15LongProbe.test.js` "matches the gate doc defaults" — the assertion gains `expect(DEFAULT_CONFIG.phase1LateMinute).toBe(200)`.
+
+### Test contract additions
+
+`tests/audit8r15LongProbe.test.js` gains a new describe block for `shouldCapturePhase1Late` (5 cases — fires-at-200, refuses-before, refuses-after, single-shot, non-integer-rejection). Mirrors `shouldCaptureControl`'s shape per §R1.5.2.
+
+The §R1.5.1.1 replay-pin (`tests/fixtures/r15-2026-05-24-timeline-slim.jsonl`) is unchanged. The fixture does not yet pin the new artifact-file emission contract; the implementation PR (#276) verifies it at run-time only.
+
+### Scope of this addendum
+
+This §R1.5.2-REV1 + §R1.5.2-REV2 are the **doc-side counterpart to PR #276** (atomic gate-doc-vs-code contract). PR #276 shipped the implementation; this REV pair binds the spec forward.
+
+The §R1.5.3 mechanism diff procedure is **augmented** (more discriminators available) but not redefined. Class selection still proceeds by "which class's capture signal is present in the diff", with the four new files providing structured signals for classes B and C that the original set under-covered.
+
+R1.6 fix gate (named-mechanism → fix scope) is unaffected. R1.5 still ships no fix. Trinity untouched.
