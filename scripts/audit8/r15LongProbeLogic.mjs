@@ -8,8 +8,9 @@
 //
 // Spec source: `docs/AUDIT8_G5_R1_5_MECHANISM_CAPTURE.md`
 // §R1.5.0 (RED criterion), §R1.5.1 (first-failure trigger), §R1.5.2
-// (Phase-1 control trigger). Drift here = drift in the gate's binding
-// procedure; the test suite is the falsifier.
+// (Phase-1 control trigger), §R1.5.1.1 (2026-05-24 debounce calibration).
+// Drift here = drift in the gate's binding procedure; the test suite is the
+// falsifier.
 
 export const DEFAULT_CONFIG = Object.freeze({
   url: 'https://eiasash.github.io/Geriatrics/',
@@ -24,25 +25,64 @@ export const DEFAULT_CONFIG = Object.freeze({
   redOkWindowMinutes: 60,
   redSkipMinThreshold: 5,
   redSkipStreakMinutes: 10,
+  firstFailStreakMinutes: 3,
   netBufferSize: 20,
   consoleBufferSize: 5000,
 });
 
 /**
- * First-failure trigger predicate (R1.5.1).
+ * First-failure trigger predicate (R1.5.1, with §R1.5.1.1 debounce).
  *
- * Returns true at the first minute where the bot's per-minute pre-pick-skip
- * count crosses from 0 to >0 IMMEDIATELY after a minute that had ok>0. This
- * is the Phase-1 → Phase-2 transition boundary.
+ * Fires when the last `firstFailStreakMinutes` records in `history` all
+ * satisfy the Phase-2 signature:
+ *   - `deltaOk === 0`
+ *   - `lastExtractOutcome === 'no-quiz'`
  *
- * @param {object|null} prev previous minute record (null at minute 0)
- * @param {object} curr current minute record
+ * AND somewhere earlier in `history` there exists a record with
+ * `deltaOk > 0` (Phase-1 anchor — preserves the existing spec invariant
+ * that a cold-start no-quiz streak is NOT a Phase-1 → Phase-2 bifurcation).
+ *
+ * Calibration anchor: the 2026-05-24 R1.5 run (timeline at
+ * `chaos-reports/v4-long/audit8r15_20260524T022036Z/`) — original 1-event
+ * predicate fired at min 49 on a single-skip Phase-1 blip (d_skip 2→3,
+ * d_ok=12, outcome=ok), consuming the capture budget before the real
+ * lock-in at min 287. Streak debounce + outcome-conjunction discriminate:
+ * every observed Phase-1 blip in that run is 1 minute wide with d_ok≥12
+ * and outcome=ok; the bifurcation has d_ok=0 + outcome=no-quiz sustained
+ * ≥73 min. See `tests/audit8r15LongProbe.test.js` "replay-pin" case for
+ * the slimmed fixture that pins this calibration.
+ *
+ * Asymmetry vs `detectRedCrossing` (R1.5.0): RED uses thresholded streaks
+ * on counters (60-min ok-window before 10-min skip-streak with strict
+ * thresholds); firstFail uses the conjunction of `deltaOk=0` AND
+ * `outcome='no-quiz'` because the *signature of the lock-in* is the bot
+ * being unable to find a quiz at all — not just a skip-rate uptick. Don't
+ * force symmetry; the predicates capture different states.
+ *
+ * @param {Array<object>} history ordered minute records, most-recent last
+ * @param {object} config { firstFailStreakMinutes }
  * @returns {boolean}
  */
-export function shouldTriggerFirstFailure(prev, curr) {
-  if (!prev || !curr) return false;
-  if (typeof prev.deltaOk !== 'number' || typeof curr.deltaPrePickSkip !== 'number') return false;
-  return prev.deltaOk > 0 && curr.deltaPrePickSkip > 0;
+export function shouldTriggerFirstFailure(history, config) {
+  if (!Array.isArray(history)) return false;
+  if (!config || typeof config.firstFailStreakMinutes !== 'number') return false;
+  const N = config.firstFailStreakMinutes;
+  if (!Number.isInteger(N) || N < 1) return false;
+  if (history.length < N) return false;
+
+  const tailStart = history.length - N;
+  for (let i = tailStart; i < history.length; i++) {
+    const r = history[i];
+    if (!r) return false;
+    if (typeof r.deltaOk !== 'number' || r.deltaOk !== 0) return false;
+    if (r.lastExtractOutcome !== 'no-quiz') return false;
+  }
+
+  for (let i = 0; i < tailStart; i++) {
+    const r = history[i];
+    if (r && typeof r.deltaOk === 'number' && r.deltaOk > 0) return true;
+  }
+  return false;
 }
 
 /**
