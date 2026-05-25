@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { execSync } from 'child_process';
 import { loadQuestionsHydrated } from './_helpers/loadQuestionsHydrated.js';
@@ -63,10 +63,26 @@ describe('regulatory.json artifact', () => {
   });
 
   it('tagger script is idempotent (running again produces same set)', () => {
-    const before = JSON.parse(readFileSync(REG_PATH, 'utf-8'));
-    execSync('node scripts/tag_regulatory.cjs', { cwd: ROOT, stdio: 'pipe' });
-    const after = JSON.parse(readFileSync(REG_PATH, 'utf-8'));
-    expect(after.sort((a, b) => a - b)).toEqual(before.sort((a, b) => a - b));
+    // Capture original bytes BEFORE running the tagger so we can restore
+    // them in finally — the tagger uses `JSON.stringify(tagged)` (compact
+    // form) whereas the committed file may be spaced/pretty-printed, so
+    // even when the SET of indices is identical the on-disk BYTES differ.
+    // Without this restore, every `vitest run` mutates the working tree
+    // and pollutes unrelated PRs with a stray `data/regulatory.json` diff.
+    const beforeBytes = readFileSync(REG_PATH);
+    const before = JSON.parse(beforeBytes.toString('utf-8'));
+    try {
+      execSync('node scripts/tag_regulatory.cjs', { cwd: ROOT, stdio: 'pipe' });
+      const after = JSON.parse(readFileSync(REG_PATH, 'utf-8'));
+      expect(after.sort((a, b) => a - b)).toEqual(before.sort((a, b) => a - b));
+    } finally {
+      // Restore exact original bytes — including whitespace and trailing-newline
+      // shape — so the working tree is clean regardless of how the tagger
+      // chose to format its output. Idempotency in VALUES is what the test
+      // asserts; preserving on-disk FORMAT is a separate concern (committed
+      // formatting is the source of truth).
+      writeFileSync(REG_PATH, beforeBytes);
+    }
   });
 });
 
