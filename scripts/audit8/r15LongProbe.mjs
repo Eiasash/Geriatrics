@@ -292,16 +292,40 @@ async function installMutationCounter(context) {
       window.__r15MutationCount = 0;
       window.__r15MutationCounterInstalledAt = Date.now();
       window.__r15InstallTag = tag;
-      if (document.documentElement) {
-        document.documentElement.setAttribute('data-r15-tag', tag);
-      }
+      out.tag = tag;
+      // R1.7.1: addInitScript runs at readyState=loading — document.documentElement
+      // may be null at this moment. observe() requires a Node parameter; passing
+      // null throws TypeError ("parameter 1 is not of type 'Node'"). `document`
+      // itself is always a Node and exists from script-start. observe(document,
+      // { subtree: true, ... }) captures every mutation under document, including
+      // everything observe(documentElement, { subtree: true, ... }) would.
       const obs = new MutationObserver((muts) => {
         window.__r15MutationCount += muts.length;
       });
-      obs.observe(document.documentElement, {
+      obs.observe(document, {
         childList: true, subtree: true, attributes: true, characterData: true,
       });
-      out.tag = tag;
+      // R1.7.1: defer the data-r15-tag attribute set until documentElement
+      // exists. Called immediately for the common case; readystatechange
+      // listener as fallback for the script-start "loading" case (handler
+      // is idempotent — hasAttribute guard makes re-fires no-ops). Mutates
+      // window.__r15InstallDiag.docElTagName in place so the snapshot sees
+      // the eventually-attached tagName without losing the installed-at-loading
+      // marker.
+      const applyDocElTag = () => {
+        if (!document.documentElement) return;
+        if (!document.documentElement.hasAttribute('data-r15-tag')) {
+          document.documentElement.setAttribute('data-r15-tag', tag);
+          if (window.__r15InstallDiag && !window.__r15InstallDiag.docElTagName) {
+            window.__r15InstallDiag.docElTagName = document.documentElement.tagName;
+          }
+        }
+      };
+      applyDocElTag();
+      if (!document.documentElement || !document.documentElement.hasAttribute('data-r15-tag')) {
+        document.addEventListener('readystatechange', applyDocElTag);
+        document.addEventListener('DOMContentLoaded', applyDocElTag, { once: true });
+      }
     } catch (e) {
       out.installError = { name: (e && e.name) || 'Error', message: (e && e.message) || String(e) };
     }
