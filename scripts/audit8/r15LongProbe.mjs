@@ -139,14 +139,75 @@ async function snapshotServiceWorkerCount(page) {
 // phase1control / phase1late / firstfail captures says "structural drift
 // at the transition"; a flat delta + same DOM node count says "structure
 // stable, look at Class A heap or Class C connection state."
+//
+// R1.6 diagnostic (path (a), 2026-05-24 evening — pre-registered by §R1.5.2-REV3,
+// PR #278): the v10.64.130 smoke pair produced { count: null, installedAt: null }
+// at every per-minute snapshot from minuteIndex=0. Both fields nulling together
+// rules out "install succeeded, observer never fired" and points at the install
+// itself not landing visibly to the snapshot. The augmented payload below
+// surfaces the swallowed error, identity drift between install and snapshot
+// (via a window-bound + DOM-attribute-bound tag), and readyState progression —
+// the minimum forensic signal needed to pick the actual repair in R1.7.
+// Pre-existing fields (count, installedAt) preserved verbatim so any consumer
+// reading just those still works; new info under .diag.
+let installDiagnostic = null;
+
 async function snapshotMutationCount(page) {
-  return await page.evaluate(() => {
+  const snap = await page.evaluate(() => {
+    const out = {
+      count: null,
+      installedAt: null,
+      tagOnWindow: null,
+      tagOnDocEl: null,
+      readyState: null,
+      docElTagName: null,
+      readError: null,
+    };
     try {
       const c = window.__r15MutationCount;
       const installedAt = window.__r15MutationCounterInstalledAt;
-      return { count: typeof c === 'number' ? c : null, installedAt: installedAt || null };
-    } catch (_) { return null; }
-  }).catch(() => null);
+      out.count = typeof c === 'number' ? c : null;
+      out.installedAt = installedAt || null;
+      out.tagOnWindow = window.__r15InstallTag || null;
+      out.tagOnDocEl = document.documentElement
+        ? document.documentElement.getAttribute('data-r15-tag')
+        : null;
+      out.readyState = document.readyState;
+      out.docElTagName = document.documentElement ? document.documentElement.tagName : null;
+    } catch (e) {
+      out.readError = { name: (e && e.name) || 'Error', message: (e && e.message) || String(e) };
+    }
+    return out;
+  }).catch((e) => ({
+    count: null,
+    installedAt: null,
+    tagOnWindow: null,
+    tagOnDocEl: null,
+    readyState: null,
+    docElTagName: null,
+    readError: {
+      name: (e && e.name) || 'EvaluateError',
+      message: (e && e.message) || String(e),
+      outer: true,
+    },
+  }));
+  const install = installDiagnostic || null;
+  const tagMatchWindow = install && install.tag && snap.tagOnWindow ? install.tag === snap.tagOnWindow : null;
+  const tagMatchDocEl  = install && install.tag && snap.tagOnDocEl  ? install.tag === snap.tagOnDocEl  : null;
+  return {
+    count: snap.count,
+    installedAt: snap.installedAt,
+    diag: {
+      readyStateAtSnapshot: snap.readyState,
+      docElTagNameAtSnapshot: snap.docElTagName,
+      tagOnWindow: snap.tagOnWindow,
+      tagOnDocEl: snap.tagOnDocEl,
+      tagMatchWindow,
+      tagMatchDocEl,
+      readError: snap.readError,
+      install,
+    },
+  };
 }
 
 // R1.5-doc Class C discriminator (Connection/proxy/CDN). Cache API entries
@@ -193,20 +254,74 @@ async function snapshotControllerUrl(page) {
 // by SW navigation preload, etc.), the counter resets; that reset
 // itself is a Class B/C signal worth reading (snapshotMutationCount
 // returns installedAt so the diff can detect re-installations).
+//
+// R1.6 diagnostic (path (a), 2026-05-24 evening): the prior body swallowed
+// install errors via `.catch(() => {})` and the inner `try { … } catch (_) {}`,
+// which is exactly what made the v10.64.130 smoke-pair null debuggable only
+// at REV3-level. The body below: (1) returns a structured outcome from
+// page.evaluate (preInstalled / tag / installError / readyStateAtInstall /
+// hasMutationObserver / docElTagName), (2) console.errors any install failure
+// AND any "evaluate returned with no install path" anomaly, (3) tags the install
+// with both window.__r15InstallTag AND a data-r15-tag attribute on documentElement
+// so the snapshot can detect identity drift on either axis, (4) persists the
+// result in the module-level installDiagnostic so every later snapshot can
+// include it. No behavior change to the install itself; everything new is
+// diagnostic surface for R1.7.
 async function installMutationCounter(page) {
-  await page.evaluate(() => {
-    if (typeof window.__r15MutationCount === 'number') return;
+  const result = await page.evaluate(() => {
+    const out = {
+      readyStateAtInstall: null,
+      hasMutationObserver: null,
+      preInstalled: null,
+      tag: null,
+      installError: null,
+      docElTagName: null,
+    };
     try {
+      out.readyStateAtInstall = document.readyState;
+      out.hasMutationObserver = typeof MutationObserver === 'function';
+      out.docElTagName = document.documentElement ? document.documentElement.tagName : null;
+      out.preInstalled = typeof window.__r15MutationCount === 'number';
+      if (out.preInstalled) {
+        out.tag = window.__r15InstallTag || null;
+        return out;
+      }
+      const tag = 'inst-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
       window.__r15MutationCount = 0;
       window.__r15MutationCounterInstalledAt = Date.now();
+      window.__r15InstallTag = tag;
+      if (document.documentElement) {
+        document.documentElement.setAttribute('data-r15-tag', tag);
+      }
       const obs = new MutationObserver((muts) => {
         window.__r15MutationCount += muts.length;
       });
       obs.observe(document.documentElement, {
         childList: true, subtree: true, attributes: true, characterData: true,
       });
-    } catch (_) { /* tolerate */ }
-  }).catch(() => {});
+      out.tag = tag;
+    } catch (e) {
+      out.installError = { name: (e && e.name) || 'Error', message: (e && e.message) || String(e) };
+    }
+    return out;
+  }).catch((e) => ({
+    readyStateAtInstall: null,
+    hasMutationObserver: null,
+    preInstalled: null,
+    tag: null,
+    installError: {
+      name: (e && e.name) || 'EvaluateError',
+      message: (e && e.message) || String(e),
+      outer: true,
+    },
+    docElTagName: null,
+  }));
+  if (result.installError) {
+    console.error('[r15LongProbe] installMutationCounter error:', JSON.stringify(result.installError));
+  } else if (!result.preInstalled && !result.tag) {
+    console.error('[r15LongProbe] installMutationCounter: page.evaluate returned but no install path ran (preInstalled=false, tag=null)');
+  }
+  installDiagnostic = result;
 }
 
 async function snapshotPersistentState(page) {
