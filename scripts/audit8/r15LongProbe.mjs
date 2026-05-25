@@ -150,8 +150,12 @@ async function snapshotServiceWorkerCount(page) {
 // the minimum forensic signal needed to pick the actual repair in R1.7.
 // Pre-existing fields (count, installedAt) preserved verbatim so any consumer
 // reading just those still works; new info under .diag.
-let installDiagnostic = null;
-
+//
+// R1.7 fix (2026-05-25): the install now lives on window.__r15InstallDiag
+// (set by context.addInitScript at script-start time in every page context),
+// not on a module-level Node variable. The snapshot reads it from there
+// alongside the count/tag/readyState, so the install diagnostics travel
+// with the page context they describe — even after a mid-run hard reload.
 async function snapshotMutationCount(page) {
   const snap = await page.evaluate(() => {
     const out = {
@@ -162,6 +166,7 @@ async function snapshotMutationCount(page) {
       readyState: null,
       docElTagName: null,
       readError: null,
+      install: null,
     };
     try {
       const c = window.__r15MutationCount;
@@ -174,6 +179,7 @@ async function snapshotMutationCount(page) {
         : null;
       out.readyState = document.readyState;
       out.docElTagName = document.documentElement ? document.documentElement.tagName : null;
+      out.install = window.__r15InstallDiag || null;
     } catch (e) {
       out.readError = { name: (e && e.name) || 'Error', message: (e && e.message) || String(e) };
     }
@@ -185,13 +191,14 @@ async function snapshotMutationCount(page) {
     tagOnDocEl: null,
     readyState: null,
     docElTagName: null,
+    install: null,
     readError: {
       name: (e && e.name) || 'EvaluateError',
       message: (e && e.message) || String(e),
       outer: true,
     },
   }));
-  const install = installDiagnostic || null;
+  const install = snap.install || null;
   const tagMatchWindow = install && install.tag && snap.tagOnWindow ? install.tag === snap.tagOnWindow : null;
   const tagMatchDocEl  = install && install.tag && snap.tagOnDocEl  ? install.tag === snap.tagOnDocEl  : null;
   return {
@@ -248,31 +255,31 @@ async function snapshotControllerUrl(page) {
   }).catch(() => null);
 }
 
-// Install the MutationObserver counter once after initial nav. Counts
-// every mutation on document.documentElement. Idempotent — re-running
-// is a no-op. Caveat: if a hard reload happens (window context replaced
-// by SW navigation preload, etc.), the counter resets; that reset
-// itself is a Class B/C signal worth reading (snapshotMutationCount
-// returns installedAt so the diff can detect re-installations).
+// Install the MutationObserver counter via Playwright's context.addInitScript.
+// Runs in every new page context, before any page script — including any
+// context created by an SPA hard-reload, SW navigation-preload swap, or
+// hash-fragment redirect during the post-goto `domcontentloaded` window.
 //
-// R1.6 diagnostic (path (a), 2026-05-24 evening): the prior body swallowed
-// install errors via `.catch(() => {})` and the inner `try { … } catch (_) {}`,
-// which is exactly what made the v10.64.130 smoke-pair null debuggable only
-// at REV3-level. The body below: (1) returns a structured outcome from
-// page.evaluate (preInstalled / tag / installError / readyStateAtInstall /
-// hasMutationObserver / docElTagName), (2) console.errors any install failure
-// AND any "evaluate returned with no install path" anomaly, (3) tags the install
-// with both window.__r15InstallTag AND a data-r15-tag attribute on documentElement
-// so the snapshot can detect identity drift on either axis, (4) persists the
-// result in the module-level installDiagnostic so every later snapshot can
-// include it. No behavior change to the install itself; everything new is
-// diagnostic surface for R1.7.
-async function installMutationCounter(page) {
-  const result = await page.evaluate(() => {
+// R1.7 fix (2026-05-25 early-AM, PR #279 R1.6 diagnostic captured the cause):
+// the prior body used `await page.evaluate(...)` immediately after
+// `page.goto(url, { waitUntil: 'domcontentloaded' })` and reliably failed
+// with `page.evaluate: Execution context was destroyed, most likely because
+// of a navigation` (R1.6 smoke captured this verbatim on 2026-05-25 04:59).
+// Moving the install to addInitScript eliminates the timing race: the
+// install runs synchronously inside the page context at script-start time,
+// before any chance of mid-navigation context destruction. As a bonus, the
+// counter self-heals across in-run hard reloads — the original "if a hard
+// reload happens, the counter resets" caveat becomes "the counter re-installs
+// on every fresh context, idempotently no-op on already-installed contexts."
+// Diagnostic state lands on `window.__r15InstallDiag` so the snapshot can
+// embed it unchanged.
+async function installMutationCounter(context) {
+  await context.addInitScript(() => {
+    if (typeof window.__r15MutationCount === 'number') return;
     const out = {
       readyStateAtInstall: null,
       hasMutationObserver: null,
-      preInstalled: null,
+      preInstalled: false,
       tag: null,
       installError: null,
       docElTagName: null,
@@ -281,11 +288,6 @@ async function installMutationCounter(page) {
       out.readyStateAtInstall = document.readyState;
       out.hasMutationObserver = typeof MutationObserver === 'function';
       out.docElTagName = document.documentElement ? document.documentElement.tagName : null;
-      out.preInstalled = typeof window.__r15MutationCount === 'number';
-      if (out.preInstalled) {
-        out.tag = window.__r15InstallTag || null;
-        return out;
-      }
       const tag = 'inst-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
       window.__r15MutationCount = 0;
       window.__r15MutationCounterInstalledAt = Date.now();
@@ -303,25 +305,8 @@ async function installMutationCounter(page) {
     } catch (e) {
       out.installError = { name: (e && e.name) || 'Error', message: (e && e.message) || String(e) };
     }
-    return out;
-  }).catch((e) => ({
-    readyStateAtInstall: null,
-    hasMutationObserver: null,
-    preInstalled: null,
-    tag: null,
-    installError: {
-      name: (e && e.name) || 'EvaluateError',
-      message: (e && e.message) || String(e),
-      outer: true,
-    },
-    docElTagName: null,
-  }));
-  if (result.installError) {
-    console.error('[r15LongProbe] installMutationCounter error:', JSON.stringify(result.installError));
-  } else if (!result.preInstalled && !result.tag) {
-    console.error('[r15LongProbe] installMutationCounter: page.evaluate returned but no install path ran (preInstalled=false, tag=null)');
-  }
-  installDiagnostic = result;
+    window.__r15InstallDiag = out;
+  });
 }
 
 async function snapshotPersistentState(page) {
@@ -530,6 +515,11 @@ async function main() {
 
   const browser = await chromium.launch({ headless: CONFIG.headless });
   const context = await browser.newContext();
+  // R1.7: install the MutationObserver counter via addInitScript BEFORE the
+  // first page is created. Runs in every page context at script-start time,
+  // immune to the post-goto `domcontentloaded` execution-context-destroyed
+  // race R1.6 captured (PR #279 smoke 2026-05-25 04:59:38Z).
+  await installMutationCounter(context);
   // Tracing is started before page navigation so the Phase-1 control window
   // captures the whole bot warm-up; it is stopped + restarted at each capture.
   try { await context.tracing.start({ snapshots: true, screenshots: true, sources: false }); } catch (_) {}
@@ -600,9 +590,8 @@ async function main() {
     outcome = 'NAV-FAILED';
   }
 
-  // Install the MutationObserver counter so the snapshot helpers can
-  // read window.__r15MutationCount at each capture. Idempotent.
-  await installMutationCounter(page);
+  // R1.7: the install moved to addInitScript on the context above —
+  // runs in every page context at script-start, no post-goto call needed.
 
   const log = (..._args) => { /* bot's `log` callback — suppressed to keep stdout one-line-per-minute */ };
 
