@@ -1267,6 +1267,20 @@ const _disPromise = (async () => {
     console.warn('distractors.json deferred load failed:', err.message);
   } finally {
     _disReady = true;
+    // v10.64.132: trigger a re-render when DIS lands so users sitting on
+    // a post-answer view with the "⏳ טוען הסבר על מסיחים..." placeholder
+    // see the curated Distractor Autopsy populate without navigating
+    // away and back. Mirrors the _qzPromise post-completion pattern
+    // above. Without this trigger, the placeholder is permanent for the
+    // current question — and the autopsy fallback (line ~3421) used to
+    // burn a paid aiAutopsy() call during the deferred-fetch window,
+    // also fixed in this revision.
+    try {
+      if (typeof S !== 'undefined' && typeof render === 'function') {
+        const tabsThatNeedDis = ['quiz', 'track'];
+        if (!S.tab || tabsThatNeedDis.includes(S.tab)) render();
+      }
+    } catch (e) { console.warn('post-DIS rerender skipped:', e.message); }
   }
 })();
 // Mirrors _disPromise: idle-defer the explanations payload (~4.6 MB) so the boot
@@ -3418,7 +3432,15 @@ if(_dist){
   h+=`<div style="font-size:11px;line-height:1.7;color:rgb(var(--fg));unicode-bidi:plaintext" dir="auto">${_aiTxt}</div>`;
 }else{
   h+=`<div style="font-size:11px;color:rgb(var(--fg3));padding:4px 0">⏳ טוען הסבר על מסיחים...</div>`;
-  setTimeout(()=>{ if(!_exCache['autopsy_'+_qIdx])aiAutopsy(_qIdx); },100);
+  // v10.64.132: gate the paid aiAutopsy() fallback on _disReady. When the
+  // deferred distractors.json fetch is still in-flight, the curated
+  // rationale is about to arrive — don't burn a remote AI call on a
+  // question we're about to be able to render locally. _disPromise's
+  // post-completion render() call (line ~1268) will re-enter this
+  // branch with _dist populated. Pre-existing behavior for genuinely
+  // missing entries (_disReady && DIS[idx] undefined) is unchanged —
+  // fallback proceeds with aiAutopsy as before.
+  if (_disReady) setTimeout(()=>{ if(!_exCache['autopsy_'+_qIdx])aiAutopsy(_qIdx); },100);
 }
 h+=`</div>`;
 }
@@ -7205,8 +7227,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.131';
+const APP_VERSION='10.64.132';
 const CHANGELOG={
+'10.64.132':['perf(quiz): gate aiAutopsy() fallback on _disReady — mirrors the Codex P2 fix shipped to InternalMedicine #124 and FamilyMedicine #71 today. Without the guard, answering a question during the deferred distractors.json fetch window triggered the legacy on-demand AI autopsy via setTimeout, burning a paid Anthropic API call AND showing AI-generated rationales instead of the curated DIS-row content that was about to arrive. Also added a post-DIS-load render() trigger in _disPromise (mirrors the existing _qzPromise post-completion pattern) so users sitting on a post-answer view with the loading placeholder see the curated Distractor Autopsy populate without navigating away. Trinity 10.64.131 → 10.64.132. Tests pass (1610). Pre-existing behavior for genuinely-missing DIS entries unchanged.'],
 '10.64.131':['fix(library-reader): graceful chapter-not-indexed branch. 100 questions across 15 Harrison chapters (81,86,83,92,84,98,13,23,85,87,116,131,180,281,284) cite chapters not present in harrison_chapters.json. Pre-fix: clicking the cite button set harChOpen=N but the if-chain fell through to the full chapter-list view (no error). Post-fix: explicit branch shows back button, clear content-not-yet-indexed message, live cite count, and a drill-down deep-link (har-ch:X). Parallel branch for Hazzard.','test: brace balance verified; vitest 1610 passed.','perf: zero-cost (new branch only renders on the previously-silent fall-through path).'],
 '10.64.130':['docs: complete the v10.64.129 web-Claude-audit corrections — v127 entry "VALIDATED" wording softened to match v126+v128 polarity (word-target-dominates weakly supported, topic-density is the framing that did not hold). v129 deliberately scoped to a subset of corrections by web-Claude (lane-discipline carve-out: v127 wording fix was the open item); this entry closes it. Also bumps package-lock.json from 10.64.112 → 10.64.130 (17-version drift on main since v112; surfaced during web-Claude audit npm install).','meta: pattern-confirming case for filesystem-grounded fresh-eye review (banked in v10.64.129) — the v127 fix here is exactly the kind of one-line cleanup web-Claude flagged but deliberately did not unilaterally apply. Cross-lane carve-outs preserve user decision authority on scope; terminal-lane closes them after explicit authorization.','test: no test impact; CHANGELOG-only + lockfile housekeeping. npm run verify expected green.'],
 '10.64.129':['docs: CHANGELOG-correction follow-up — no app behavior change. Web Claude independent audit 2026-05-14 (two-Claude pattern, filesystem-grounded fresh-eye review) found three banked claims in the v124-128 truncation rollout overstated. Corrected in place: (1) v128 model verdict — "topic-density framing CONFIRMED" was not supported; the 5 cluster medians span only 65 chars with no monotonic relationship to ti and the pre-sealed bands were too wide to discriminate, so the band-hit rate was a width artifact; (2) v127 infra line — PR-number factual error #227 → #223; (3) v126 — annotated that v127/v128 marked the word-target-dominates refinement REFUTED, but that refutation was itself unsound — word-target-dominates is the reading the n=5 data weakly supports, topic-density is the framing that did not hold.','meta: pattern note — filesystem-grounded fresh-eye review (independent instance with repo access) caught framing overclaims that transcript-only review missed. Worth routing major workstream verdicts through this gate before declaring findings durable. Trinity bumped 10.64.128 → 10.64.129 per CHANGELOG-edit-bumps-trinity precedent (v100/v101).'],
