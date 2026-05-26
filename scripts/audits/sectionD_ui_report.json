@@ -1,0 +1,243 @@
+{
+  "generated_at": "2026-05-26T16:59:21.794Z",
+  "file": "shlav-a-mega.html",
+  "file_size_bytes": 722560,
+  "line_count": 8379,
+  "inline_styles_total": 789,
+  "inline_styled_buttons": 138,
+  "onclick_handlers": 222,
+  "hex_color_usage": {
+    "total_hex_literals": 905,
+    "unique_colors": 152,
+    "top_20": [
+      {
+        "color": "#fff",
+        "count": 92
+      },
+      {
+        "color": "#dc2626",
+        "count": 78
+      },
+      {
+        "color": "#059669",
+        "count": 59
+      },
+      {
+        "color": "#e2e8f0",
+        "count": 32
+      },
+      {
+        "color": "#d97706",
+        "count": 28
+      },
+      {
+        "color": "#1e293b",
+        "count": 23
+      },
+      {
+        "color": "#0f172a",
+        "count": 21
+      },
+      {
+        "color": "#334155",
+        "count": 21
+      },
+      {
+        "color": "#7c3aed",
+        "count": 21
+      },
+      {
+        "color": "#f59e0b",
+        "count": 20
+      },
+      {
+        "color": "#3b82f6",
+        "count": 18
+      },
+      {
+        "color": "#ecfdf5",
+        "count": 16
+      },
+      {
+        "color": "#64748b",
+        "count": 13
+      },
+      {
+        "color": "#fef2f2",
+        "count": 13
+      },
+      {
+        "color": "#0891b2",
+        "count": 13
+      },
+      {
+        "color": "#10b981",
+        "count": 12
+      },
+      {
+        "color": "#92400e",
+        "count": 12
+      },
+      {
+        "color": "#ef4444",
+        "count": 11
+      },
+      {
+        "color": "#991b1b",
+        "count": 11
+      },
+      {
+        "color": "#dcfce7",
+        "count": 10
+      }
+    ]
+  },
+  "semantic_token_usage": {
+    "by_token": {
+      "--danger": 0,
+      "--good": 0,
+      "--info": 0,
+      "--err": 0,
+      "--ok": 0,
+      "--success": 0,
+      "--warn": 0,
+      "--app-primary": 17,
+      "--app-accent": 0,
+      "--red-fg": 11,
+      "--red-bg": 20,
+      "--green-fg": 20,
+      "--green-bg": 15,
+      "--yellow-fg": 14,
+      "--yellow-bg": 14,
+      "--blue-fg": 5,
+      "--blue-bg": 12
+    },
+    "total": 128,
+    "note": "Compare semantic-token usage vs raw hex usage — ratio reflects migration debt"
+  },
+  "tap_target": {
+    "tap_min_definitions": 1,
+    "tap_min_var_references": 1,
+    "buttons_with_min_height": 33,
+    "note": "--tap-min token exists but is largely unreferenced inside <button> tags"
+  },
+  "button_class_system": {
+    "btn_class_definitions": 7,
+    "button_tags_total": 182,
+    "button_tags_with_btn_class": 78,
+    "button_tags_with_inline_style": 138,
+    "button_tags_with_both": 60,
+    "btn_class_adoption_pct": "42.9%",
+    "fully_migrated_pct": "9.9%",
+    "inline_only_pct": "42.9%",
+    "raw_class_btn_text_matches": 85,
+    "raw_minus_real": 7
+  },
+  "padding_distribution": {
+    "unique_padding_values": 80,
+    "top_15": [
+      {
+        "value": "14px",
+        "count": 38
+      },
+      {
+        "value": "10px",
+        "count": 31
+      },
+      {
+        "value": "6px 12px",
+        "count": 20
+      },
+      {
+        "value": "16px",
+        "count": 20
+      },
+      {
+        "value": "5px 10px",
+        "count": 20
+      },
+      {
+        "value": "8px 12px",
+        "count": 19
+      },
+      {
+        "value": "12px",
+        "count": 16
+      },
+      {
+        "value": "8px 10px",
+        "count": 15
+      },
+      {
+        "value": "8px",
+        "count": 15
+      },
+      {
+        "value": "4px 10px",
+        "count": 13
+      },
+      {
+        "value": "6px 10px",
+        "count": 12
+      },
+      {
+        "value": "6px 14px",
+        "count": 9
+      },
+      {
+        "value": "3px 8px",
+        "count": 9
+      },
+      {
+        "value": "10px 12px",
+        "count": 9
+      },
+      {
+        "value": "20px",
+        "count": 8
+      }
+    ]
+  },
+  "font_size_below_12px": {
+    "distinct": 7,
+    "breakdown": [
+      {
+        "size": "10px",
+        "count": 218
+      },
+      {
+        "size": "11px",
+        "count": 143
+      },
+      {
+        "size": "9px",
+        "count": 59
+      },
+      {
+        "size": "8px",
+        "count": 10
+      },
+      {
+        "size": "11.5px",
+        "count": 6
+      },
+      {
+        "size": "7px",
+        "count": 2
+      },
+      {
+        "size": "10.5px",
+        "count": 1
+      }
+    ]
+  },
+  "destructive_native_dialogs": {
+    "confirm_calls": 2,
+    "alert_calls": 0
+  },
+  "fonts": {
+    "inter": "loaded",
+    "heebo": "loaded",
+    "lang_attribute_usages": 1
+  }
+}

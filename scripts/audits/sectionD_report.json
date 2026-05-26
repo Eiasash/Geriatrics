@@ -1,0 +1,228 @@
+{
+  "generated_at": "2026-05-26T16:27:45.113Z",
+  "total_questions": 3823,
+  "harrison_chapters_indexed": 69,
+  "hazzard_chapters_indexed": 108,
+  "explanations_count": 3823,
+  "D1_syllabus_orphan_hazzard_excluded": {
+    "count": 217,
+    "pct": "5.68%",
+    "excluded_chs_with_cites": [
+      2,
+      3,
+      34,
+      62
+    ],
+    "sample": [
+      {
+        "idx": 10,
+        "ti": 27,
+        "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION· Harrison Ch 295 — Approach to the Patient with Disease of the Respiratory System",
+        "ch": 3
+      },
+      {
+        "idx": 14,
+        "ti": 27,
+        "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION · Harrison Ch 315 — Sepsis and Septic Shock",
+        "ch": 3
+      },
+      {
+        "idx": 34,
+        "ti": 27,
+        "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION · Harrison Ch 315 — Sepsis and Septic Shock",
+        "ch": 3
+      },
+      {
+        "idx": 52,
+        "ti": 26,
+        "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION · Harrison Ch 315 — Sepsis and Septic Shock",
+        "ch": 3
+      },
+      {
+        "idx": 55,
+        "ti": 27,
+        "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION· Harrison Ch 243 — Approach to the Patient with Possible Cardiovascular Disease",
+        "ch": 3
+      }
+    ]
+  },
+  "D2_cAccept_redundant_length_1": {
+    "count": 0,
+    "pct": "0.00%",
+    "sample": [],
+    "note": "c_accept with single element is functionally identical to just `c` — remove or merge"
+  },
+  "D3_cAccept_multi_correct_actual": {
+    "questions_with_cAccept_field": 48,
+    "multi_correct_pct": "1.26%",
+    "multi_count": 48,
+    "note": "Memory said 50 still-multi-accept. Actual count is 48"
+  },
+  "D4_eEn_coverage_gap": {
+    "with_e_en": 1947,
+    "without_e_en": 1876,
+    "coverage_pct": "50.93%",
+    "gap_pct": "49.07%",
+    "note": "Memory said 49% lack e_en (~1876). Actual gap: 1876"
+  },
+  "D5_qEn_coverage": {
+    "with_q_en": 1947,
+    "coverage_pct": "50.93%"
+  },
+  "D6_hazzard_top_chapters": [
+    {
+      "ch": 22,
+      "n": 293
+    },
+    {
+      "ch": 58,
+      "n": 161
+    },
+    {
+      "ch": 3,
+      "n": 135
+    },
+    {
+      "ch": 7,
+      "n": 116
+    },
+    {
+      "ch": 59,
+      "n": 112
+    },
+    {
+      "ch": 67,
+      "n": 109
+    },
+    {
+      "ch": 72,
+      "n": 109
+    },
+    {
+      "ch": 68,
+      "n": 93
+    },
+    {
+      "ch": 61,
+      "n": 92
+    },
+    {
+      "ch": 43,
+      "n": 88
+    },
+    {
+      "ch": 40,
+      "n": 81
+    },
+    {
+      "ch": 47,
+      "n": 78
+    },
+    {
+      "ch": 83,
+      "n": 72
+    },
+    {
+      "ch": 27,
+      "n": 71
+    },
+    {
+      "ch": 1,
+      "n": 70
+    }
+  ],
+  "D7_harrison_chapter_gap": {
+    "chapters_cited": 49,
+    "chapters_indexed": 69,
+    "missing_chapter_count": 14,
+    "missing_chapters": [
+      13,
+      23,
+      81,
+      83,
+      84,
+      85,
+      86,
+      87,
+      92,
+      98,
+      116,
+      131,
+      180,
+      284
+    ],
+    "questions_affected": 99,
+    "pct_questions_affected": "2.59%",
+    "missing_with_counts": [
+      {
+        "ch": 13,
+        "n": 1
+      },
+      {
+        "ch": 23,
+        "n": 1
+      },
+      {
+        "ch": 81,
+        "n": 18
+      },
+      {
+        "ch": 83,
+        "n": 19
+      },
+      {
+        "ch": 84,
+        "n": 13
+      },
+      {
+        "ch": 85,
+        "n": 1
+      },
+      {
+        "ch": 86,
+        "n": 22
+      },
+      {
+        "ch": 87,
+        "n": 1
+      },
+      {
+        "ch": 92,
+        "n": 17
+      },
+      {
+        "ch": 98,
+        "n": 2
+      },
+      {
+        "ch": 116,
+        "n": 1
+      },
+      {
+        "ch": 131,
+        "n": 1
+      },
+      {
+        "ch": 180,
+        "n": 1
+      },
+      {
+        "ch": 284,
+        "n": 1
+      }
+    ]
+  },
+  "D8_rtl_ltr_mix": {
+    "count": 2969,
+    "pct": "77.66%",
+    "note": "Stems with both Hebrew and Latin chars — typographic-hierarchy candidates"
+  },
+  "D9_broken_flag": {
+    "count": 24,
+    "note": "Memory said 24 quarantined. Actual count: 24"
+  },
+  "D10_ref_empty": {
+    "count": 80,
+    "pct": "2.09%"
+  }
+}
