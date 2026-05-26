@@ -8291,6 +8291,10 @@ if(st)setTimeout(()=>{try{st.style.transition='opacity .4s';st.style.opacity='0.
 
 // ===== HELP OVERLAY =====
 function showHelp(){
+// Dedupe — if a #help-overlay is already mounted, no-op. Prevents the
+// deferred first-visit autoshow from stacking on top of a manual Help-button
+// click during the 2-3s defer window. Caught by Codex on FM #76 (sibling).
+if(document.getElementById('help-overlay'))return;
 const ov=document.createElement('div');
 ov.id='help-overlay';
 ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px';
