@@ -278,5 +278,15 @@ jobs:
       # ── Vitest Test Suite ──
       - name: Install test dependencies
         run: npm ci
+
+      # ── Cross-Repo Syllabus Sync (network) ──
+      # Verifies Pnimit + Mishpacha sections in syllabus_data.json match
+      # the manifests published by Eiasash/InternalMedicine and
+      # Eiasash/FamilyMedicine main. Fail-closed on network errors AND on
+      # any drift. Network step kept out of vitest (local-only) to avoid
+      # adding network latency to the test suite.
+      - name: Verify Pnimit+Mishpacha sections vs IM/FM manifests
+        run: node scripts/regen_cross_repo_syllabus.cjs --check
+
       - name: Run Vitest tests
         run: npx vitest run
