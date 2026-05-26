@@ -69,8 +69,13 @@ The harder problem is that questions store mixed-script content as raw strings w
 | **Unique hex colors** | 152 | High; semantic mapping would compress to ~12 |
 | **Total hex color literals** | 905 | Mostly raw, not via token |
 | **CSS color-token occurrences** | 128 | 12.4% of color usage — 87.6% migration debt |
-| **`.btn` class definitions** | 7 | Partial system exists (`.btn`, `.btn-primary`, etc.) |
-| **`.btn` class usages** | 85 | 85 token-driven buttons vs 138 inline — system is real but adoption is partial |
+| **`.btn` class definitions** | 7 | `.btn`, `.btn-primary`, etc. |
+| **Total `<button>` tags** | **182** | The real population for migration math |
+| **`<button>` with `.btn*` class** | 78 | **42.9% adoption rate** |
+| **`<button>` with inline style** | 138 | |
+| **`<button>` with both class AND inline** | 60 | Mixed — class adopted but inline overrides remain |
+| **Fully migrated (class-only)** | 18 | **Only 9.9%** — real "done" count |
+| **Inline-only (no class)** | 78 | 42.9% un-migrated |
 | **`--tap-min` definitions** | 1 | Token exists |
 | **`--tap-min` `var()` refs** | 1 | Dead-weight — never propagated to buttons |
 | **Unique padding values** | 80 | Needs base-unit normalization (4px or 8px) |

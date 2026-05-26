@@ -66,7 +66,41 @@ const smallFonts = Object.entries(sizes).filter(([_, v]) => v.px < 12).sort((a, 
 
 // === btn class system check ===
 const hasBtnClass = (html.match(/\.btn(?:-[a-z]+)?\s*\{/g) || []).length;
-const usesBtnClass = (html.match(/class\s*=\s*["'][^"']*\bbtn(?:-[a-z]+)?\b[^"']*["']/g) || []).length;
+
+// P2 fix (Codex review on PR #286): the prior regex
+//   /class\s*=\s*["'][^"']*\bbtn(?:-[a-z]+)?\b[^"']*["']/g
+// matched any `class="...btn..."` string in the source — including JS
+// template literals, comments, and tooltip strings — so the count was
+// inflated. Restrict to `class=` attributes inside actual <button> tags.
+// Same regex pattern but anchored on <button ...> tag context, captured
+// across attribute order to handle both `<button class="..." onclick="...">`
+// and `<button onclick="..." class="...">`.
+const buttonsWithBtnClass = (() => {
+  const buttonRx = /<button\b[^>]*>/gi;
+  const classBtnRx = /class\s*=\s*["'][^"']*\bbtn(?:-[a-z]+)?\b[^"']*["']/i;
+  let count = 0;
+  let m;
+  while ((m = buttonRx.exec(html)) !== null) {
+    if (classBtnRx.test(m[0])) count++;
+  }
+  return count;
+})();
+// Buttons that have BOTH a btn* class AND inline style — overlap set,
+// used to compute the migration-debt percentage without double-counting.
+const buttonsBothClassAndInline = (() => {
+  const buttonRx = /<button\b[^>]*>/gi;
+  const classBtnRx = /class\s*=\s*["'][^"']*\bbtn(?:-[a-z]+)?\b[^"']*["']/i;
+  const inlineStyleRx = /\bstyle\s*=\s*["']/i;
+  let count = 0;
+  let m;
+  while ((m = buttonRx.exec(html)) !== null) {
+    if (classBtnRx.test(m[0]) && inlineStyleRx.test(m[0])) count++;
+  }
+  return count;
+})();
+// Legacy raw-text count, kept for diagnostic only — surfaces the gap
+// between source-text matches and real button-tag matches.
+const rawClassBtnTextMatches = (html.match(/class\s*=\s*["'][^"']*\bbtn(?:-[a-z]+)?\b[^"']*["']/g) || []).length;
 
 // === Touch-target audit: buttons with explicit min-height ===
 const minHeightInButtons = (html.match(/<button[^>]*min-height/g) || []).length;
@@ -108,9 +142,32 @@ const out = {
   },
   button_class_system: {
     btn_class_definitions: hasBtnClass,
-    btn_class_usages: usesBtnClass,
-    inline_styled_buttons: buttonInline.length,
-    migration_pct_if_class_exists: hasBtnClass > 0 ? ((usesBtnClass / (usesBtnClass + buttonInline.length)) * 100).toFixed(1) + '%' : 'N/A — no .btn class defined',
+    // Real-population counts (Codex review fix: was source-text scan before):
+    button_tags_total: (html.match(/<button\b/g) || []).length,
+    button_tags_with_btn_class: buttonsWithBtnClass,
+    button_tags_with_inline_style: buttonInline.length,
+    button_tags_with_both: buttonsBothClassAndInline,
+    // Non-overlapping migration percentages:
+    //   adoption: share of <button> tags that have at least one btn* class
+    //   class_only: share that have btn* class AND no inline style (fully migrated)
+    //   inline_only: share that have inline style AND no btn* class (un-migrated)
+    btn_class_adoption_pct: (() => {
+      const total = (html.match(/<button\b/g) || []).length;
+      return total > 0 ? ((buttonsWithBtnClass / total) * 100).toFixed(1) + '%' : 'N/A';
+    })(),
+    fully_migrated_pct: (() => {
+      const total = (html.match(/<button\b/g) || []).length;
+      const fullyMigrated = buttonsWithBtnClass - buttonsBothClassAndInline;
+      return total > 0 ? ((fullyMigrated / total) * 100).toFixed(1) + '%' : 'N/A';
+    })(),
+    inline_only_pct: (() => {
+      const total = (html.match(/<button\b/g) || []).length;
+      const inlineOnly = buttonInline.length - buttonsBothClassAndInline;
+      return total > 0 ? ((inlineOnly / total) * 100).toFixed(1) + '%' : 'N/A';
+    })(),
+    // Diagnostic only — gap between raw text scan and real-tag scan:
+    raw_class_btn_text_matches: rawClassBtnTextMatches,
+    raw_minus_real: rawClassBtnTextMatches - buttonsWithBtnClass,
   },
   padding_distribution: {
     unique_padding_values: Object.keys(padValues).length,
@@ -139,7 +196,7 @@ console.log('Unique hex colors:', out.hex_color_usage.unique_colors, '/ total oc
 console.log('Top 5 colors:', out.hex_color_usage.top_20.slice(0, 5).map(c => `${c.color}=${c.count}`).join(' '));
 console.log('Semantic token usages total:', out.semantic_token_usage.total);
 console.log('--tap-min defined:', out.tap_target.tap_min_definitions, '/ var() references:', out.tap_target.tap_min_var_references);
-console.log('.btn class system:', hasBtnClass > 0 ? `${hasBtnClass} defs / ${usesBtnClass} usages` : 'NOT DEFINED');
+console.log('.btn class system:', hasBtnClass > 0 ? `${hasBtnClass} defs / ${buttonsWithBtnClass} button-tags-w-class (of ${(html.match(/<button\b/g) || []).length} total <button>)` : 'NOT DEFINED');
 console.log('Unique padding values:', out.padding_distribution.unique_padding_values);
 console.log('Distinct font sizes <12px:', out.font_size_below_12px.distinct);
 console.log('Native confirm():', out.destructive_native_dialogs.confirm_calls, 'alert():', out.destructive_native_dialogs.alert_calls);

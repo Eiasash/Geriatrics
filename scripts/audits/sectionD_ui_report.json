@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-26T16:29:02.531Z",
+  "generated_at": "2026-05-26T16:59:21.794Z",
   "file": "shlav-a-mega.html",
   "file_size_bytes": 722560,
   "line_count": 8379,
@@ -123,9 +123,15 @@
   },
   "button_class_system": {
     "btn_class_definitions": 7,
-    "btn_class_usages": 85,
-    "inline_styled_buttons": 138,
-    "migration_pct_if_class_exists": "38.1%"
+    "button_tags_total": 182,
+    "button_tags_with_btn_class": 78,
+    "button_tags_with_inline_style": 138,
+    "button_tags_with_both": 60,
+    "btn_class_adoption_pct": "42.9%",
+    "fully_migrated_pct": "9.9%",
+    "inline_only_pct": "42.9%",
+    "raw_class_btn_text_matches": 85,
+    "raw_minus_real": 7
   },
   "padding_distribution": {
     "unique_padding_values": 80,
