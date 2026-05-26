@@ -1464,8 +1464,15 @@ if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_he
 // already on screen (e.g. postLoginRstModal during a fresh-device login).
 // Surfaced by the 1h chaos run which captured 2 transient modal-recovery-failed
 // cases caused by the help-overlay racing in over an existing modal.
+// v10.64.x perf: also defer the OUTER trigger until the page is idle so the
+// large help overlay (CHANGELOG list + sec() blocks) doesn't become the
+// LCP element. Deployed LCP measured 18s on simulated Slow-4G + 4× CPU
+// because Lighthouse picked the CHANGELOG block. requestIdleCallback lets
+// the quiz card paint and settle first. 3000ms timeout fallback for slow
+// devices that never become idle. Inner _showHelpWhenClear polling for
+// blocking modals is preserved unchanged.
 const _showHelpWhenClear=()=>{const _blocking=document.querySelector('#feModal,#sdModal,#miModal,#mockPicker,#examModal,#mexModal,#postLoginRstModal,#rstModal');if(_blocking)setTimeout(_showHelpWhenClear,400);else showHelp();};
-setTimeout(_showHelpWhenClear,500);}}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();if(typeof initPostLoginRestore==='function')initPostLoginRestore();});
+if(typeof requestIdleCallback==='function'){requestIdleCallback(()=>setTimeout(_showHelpWhenClear,300),{timeout:3000});}else{setTimeout(_showHelpWhenClear,1500);}}}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();if(typeof initPostLoginRestore==='function')initPostLoginRestore();});
 
 // ===== SCREEN WAKE LOCK =====
 let wakeLock=null;
@@ -8284,6 +8291,10 @@ if(st)setTimeout(()=>{try{st.style.transition='opacity .4s';st.style.opacity='0.
 
 // ===== HELP OVERLAY =====
 function showHelp(){
+// Dedupe — if a #help-overlay is already mounted, no-op. Prevents the
+// deferred first-visit autoshow from stacking on top of a manual Help-button
+// click during the 2-3s defer window. Caught by Codex on FM #76 (sibling).
+if(document.getElementById('help-overlay'))return;
 const ov=document.createElement('div');
 ov.id='help-overlay';
 ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px';
