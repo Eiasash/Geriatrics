@@ -4537,6 +4537,16 @@ if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:rgb(var(--red
 sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:rgb(var(--fg));margin:0 0 10px;text-align:justify">${p}</p>`;});
 });
 h+=`</div>`;
+}else if(hazChOpen!==null&&_hazData){
+// v10.64.131: parallel to Harrison — chapter requested but not in hazzard_chapters.json.
+const _hazCiteCount=QZ.filter(q=>!q.broken&&new RegExp('\\bHazzard Ch '+hazChOpen+'\\b').test(q.ref||'')).length;
+h+=`<div class="card" style="padding:24px;text-align:center">
+<button onclick="hazChOpen=null;render()" style="background:rgb(var(--bg2));border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;margin-bottom:16px">← Back to chapter list</button>
+<div style="font-size:32px;margin:8px 0">📕</div>
+<div style="font-size:15px;font-weight:700;color:rgb(var(--fg));margin-bottom:8px">Hazzard Ch ${hazChOpen}</div>
+<div style="font-size:12px;color:rgb(var(--fg2));margin-bottom:6px">Content not yet indexed in app</div>
+${_hazCiteCount>0?`<div style="font-size:11px;color:rgb(var(--fg3));margin-bottom:16px">${_hazCiteCount} question${_hazCiteCount===1?'':'s'} cite${_hazCiteCount===1?'s':''} this chapter — refer to Hazzard 8e directly</div>`:`<div style="font-size:11px;color:rgb(var(--fg3));margin-bottom:16px">Refer to Hazzard 8e directly for chapter content</div>`}
+</div>`;
 }else if(_hazLoading){
 h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">\u23f3 Loading Hazzard's chapter...</div></div>`;
 }else{
@@ -4633,6 +4643,19 @@ if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:#7c3aed;margi
 sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:rgb(var(--fg));margin:0 0 10px;text-align:justify">${p}</p>`;});
 });
 h+=`</div>`;
+}else if(harChOpen!==null&&_harData){
+// v10.64.131: chapter requested but not in harrison_chapters.json. Was falling
+// through to the full chapter-list view with no explanation. Affects 100 questions
+// across 15 chapters (13,23,81,83,84,85,86,87,92,98,116,131,180,281,284).
+const _harCiteCount=QZ.filter(q=>!q.broken&&new RegExp('\\bHarrison Ch '+harChOpen+'\\b').test(q.ref||'')).length;
+h+=`<div class="card" style="padding:24px;text-align:center">
+<button onclick="harChOpen=null;render()" style="background:rgb(var(--bg2));border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;margin-bottom:16px">← Back to chapter list</button>
+<div style="font-size:32px;margin:8px 0">📗</div>
+<div style="font-size:15px;font-weight:700;color:rgb(var(--fg));margin-bottom:8px">Harrison Ch ${harChOpen}</div>
+<div style="font-size:12px;color:rgb(var(--fg2));margin-bottom:6px">Content not yet indexed in app</div>
+${_harCiteCount>0?`<div style="font-size:11px;color:rgb(var(--fg3));margin-bottom:16px">${_harCiteCount} question${_harCiteCount===1?'':'s'} cite${_harCiteCount===1?'s':''} this chapter — refer to Harrison 22e directly</div>`:`<div style="font-size:11px;color:rgb(var(--fg3));margin-bottom:16px">Refer to Harrison 22e directly for chapter content</div>`}
+${_harCiteCount>0?`<button onclick="filt='har-ch';topicFilt=${harChOpen};tab='quiz';buildPool();render()" style="font-size:11px;padding:6px 14px;background:#7c3aed;color:#fff;border:none;border-radius:8px;cursor:pointer">▶ Drill ${_harCiteCount} question${_harCiteCount===1?'':'s'} citing Ch ${harChOpen}</button>`:''}
+</div>`;
 }else if(_harLoading){
 h+=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:13px;color:rgb(var(--fg2))">⏳ Loading Harrison's chapter...</div></div>`;
 }else{
@@ -7182,8 +7205,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.130';
+const APP_VERSION='10.64.131';
 const CHANGELOG={
+'10.64.131':['fix(library-reader): graceful chapter-not-indexed branch. 100 questions across 15 Harrison chapters (81,86,83,92,84,98,13,23,85,87,116,131,180,281,284) cite chapters not present in harrison_chapters.json. Pre-fix: clicking the cite button set harChOpen=N but the if-chain fell through to the full chapter-list view (no error). Post-fix: explicit branch shows back button, clear content-not-yet-indexed message, live cite count, and a drill-down deep-link (har-ch:X). Parallel branch for Hazzard.','test: brace balance verified; vitest 1610 passed.','perf: zero-cost (new branch only renders on the previously-silent fall-through path).'],
 '10.64.130':['docs: complete the v10.64.129 web-Claude-audit corrections — v127 entry "VALIDATED" wording softened to match v126+v128 polarity (word-target-dominates weakly supported, topic-density is the framing that did not hold). v129 deliberately scoped to a subset of corrections by web-Claude (lane-discipline carve-out: v127 wording fix was the open item); this entry closes it. Also bumps package-lock.json from 10.64.112 → 10.64.130 (17-version drift on main since v112; surfaced during web-Claude audit npm install).','meta: pattern-confirming case for filesystem-grounded fresh-eye review (banked in v10.64.129) — the v127 fix here is exactly the kind of one-line cleanup web-Claude flagged but deliberately did not unilaterally apply. Cross-lane carve-outs preserve user decision authority on scope; terminal-lane closes them after explicit authorization.','test: no test impact; CHANGELOG-only + lockfile housekeeping. npm run verify expected green.'],
 '10.64.129':['docs: CHANGELOG-correction follow-up — no app behavior change. Web Claude independent audit 2026-05-14 (two-Claude pattern, filesystem-grounded fresh-eye review) found three banked claims in the v124-128 truncation rollout overstated. Corrected in place: (1) v128 model verdict — "topic-density framing CONFIRMED" was not supported; the 5 cluster medians span only 65 chars with no monotonic relationship to ti and the pre-sealed bands were too wide to discriminate, so the band-hit rate was a width artifact; (2) v127 infra line — PR-number factual error #227 → #223; (3) v126 — annotated that v127/v128 marked the word-target-dominates refinement REFUTED, but that refutation was itself unsound — word-target-dominates is the reading the n=5 data weakly supports, topic-density is the framing that did not hold.','meta: pattern note — filesystem-grounded fresh-eye review (independent instance with repo access) caught framing overclaims that transcript-only review missed. Worth routing major workstream verdicts through this gate before declaring findings durable. Trinity bumped 10.64.128 → 10.64.129 per CHANGELOG-edit-bumps-trinity precedent (v100/v101).'],
 '10.64.128':['data: regen parkinson cluster (ti=40) — 29 stems, 0 failures, 0/29 residual, median 1849 chars (square in pre-sealed narrative-heavy band 1830-1900). Aggregate 548 → 519 (P5 point exact).','model: PREDICTIVE-MODEL VERDICT — topic-density framing NOT validated at n=5. CORRECTION (v10.64.129, web Claude audit 2026-05-14): the original CONFIRMED claim does not hold — the 5 cluster medians 1854/1800/1789/1853/1849 (at ti 5/8/26/27/40) span just 65 chars with no monotonic relationship to ti, and the pre-sealed bands were too wide to be discriminating. The weak signal that exists favors the word-target-dominates hypothesis instead (see v10.64.126). 4-of-5 band-hit rate was an artifact of band width, not a confirmation.','infra: 185-stem zero-failure streak (infections+polypharmacy+cancer+delirium+parkinson). Proxy-500 stem-specific hypothesis from PR #218 carryover incident continues to hold.','test: TRUNCATION_BASELINE tightened 548 → 519.'],
