@@ -172,8 +172,10 @@ body.dark[data-skin="geriatrics"] .tabs button.on,html[data-skin="geriatrics"] b
 .ct{max-width:640px;margin:0 auto;padding:12px 12px 80px}
 .card{background:rgb(var(--card-bg));border-radius:16px;border:1px solid rgb(var(--brd));box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:10px}
 .pill{display:inline-block;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;transition:.15s;cursor:pointer}
-.pill.on{background:var(--app-primary);color:var(--app-on-primary);box-shadow:0 2px 6px rgba(59,130,246,.25)}
+.pill.on{background:var(--app-primary);color:var(--app-on-primary);box-shadow:0 2px 6px rgba(59,130,246,.25);border:1px solid transparent}
 .pill:not(.on){background:rgb(var(--card-bg));color:rgb(var(--fg2));border:1px solid rgb(var(--brd))}
+/* v10.64.x: button.pill — pills migrated from <span> to <button> for a11y (aria-pressed is a button-only attribute per ARIA spec, and native buttons get keyboard activation for free). Reset UA button styles so the look matches the prior <span>. */
+button.pill{font-family:inherit;font-size:11px;font-weight:600;line-height:inherit;text-align:inherit;margin:0}
 .qo{width:100%;text-align:right;padding:12px 14px;border-radius:12px;border:2px solid #e2e8f0;font-size:12px;line-height:1.6;transition:.15s;margin-bottom:6px;font-family:'Heebo',sans-serif;display:block}
 .qo:not(.lk):hover{border-color:#bae6fd;background:#f0f9ff}
 .qo.sel{border-color:rgb(var(--sky));background:rgb(var(--blue-bg))}
@@ -433,7 +435,7 @@ body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg))
 
 /* ===== TOOLTIPS ===== */
 .tt-wrap{position:relative;display:inline-flex;align-items:center;gap:3px}
-.tt-icon{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:#e2e8f0;color:rgb(var(--fg2));font-size:9px;font-weight:700;cursor:help;flex-shrink:0;line-height:1;border:none;padding:0}
+.tt-icon{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#e2e8f0;color:rgb(var(--fg2));font-size:12px;font-weight:700;cursor:help;flex-shrink:0;line-height:1;border:none;padding:0}
 .tt-icon:focus{outline:2px solid rgb(var(--sky));outline-offset:1px}
 .tt-box{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1e293b;color:#f1f5f9;font-size:10px;line-height:1.5;padding:7px 10px;border-radius:8px;width:180px;z-index:999;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.3)}
 .tt-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgb(var(--fg))}
@@ -873,7 +875,7 @@ upd();setInterval(upd,30000);
 <a href="#ct" class="skip-link">Skip to content</a>
 <div class="hdr" style="position:relative">
 <h1 style="font-size:22px;font-weight:800;letter-spacing:-.01em;color:#fff">Shlav A Mega <span style="font-size:11px;font-weight:600;color:#5eead4;vertical-align:middle;letter-spacing:0">Geriatrics</span> <span id="headerVer" style="font-size:11px;font-weight:700;color:#047857;background:#ecfdf5;padding:2px 7px;border-radius:8px;vertical-align:middle;letter-spacing:.02em;border:1px solid rgb(var(--green-brd))"></span></h1>
-<button class="dm-btn" data-action="toggle-study" title="Sepia / Study Mode (warm light)" aria-label="Toggle sepia study mode" style="right:12px">☀</button><button class="dm-btn" data-action="toggle-dark" title="Dark Mode" aria-label="Toggle dark mode" style="right:56px">🌙</button><button class="dm-btn" data-action="toggle-lang" id="hdr-lang-btn" title="Toggle Hebrew / English (translated AI questions only)" aria-label="Toggle question language" style="right:100px;font-size:11px;font-weight:700">EN</button><button class="dm-btn" data-action="show-help" title="Help" aria-label="Help" style="right:144px;font-size:15px;font-weight:700">?</button><button class="dm-btn" data-action="goto-account" id="hdr-account-btn" title="Account" aria-label="Account / Login" style="right:188px;font-size:14px;font-weight:700">👤</button>
+<button class="dm-btn" data-action="toggle-study" title="Sepia / Study Mode (warm light)" aria-label="Toggle sepia study mode" style="right:12px">☀</button><button class="dm-btn" data-action="toggle-dark" title="Dark Mode" aria-label="Toggle dark mode" style="right:56px">🌙</button><button class="dm-btn" data-action="toggle-lang" id="hdr-lang-btn" title="Toggle Hebrew / English (translated AI questions only)" aria-label="EN — toggle question language" style="right:100px;font-size:11px;font-weight:700">EN</button><button class="dm-btn" data-action="show-help" title="Help" aria-label="Help" style="right:144px;font-size:15px;font-weight:700">?</button><button class="dm-btn" data-action="goto-account" id="hdr-account-btn" title="Account" aria-label="Account / Login" style="right:188px;font-size:14px;font-weight:700">👤</button>
 <p id="hdr-sub">Loading...</p>
 <div id="syncPill" class="sync-pill" role="status" aria-live="polite" style="position:absolute;top:4px;left:6px;font-size:9px;padding:2px 7px;border-radius:10px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));cursor:pointer;user-select:none;display:none" title="Sync status — click for details" onclick="showSyncStatus()"></div>
 </div>
@@ -3148,8 +3150,8 @@ if(ans){cls+=' lk';if(isOk(q,i))cls+=' ok';else if(i===sel)cls+=' no';else cls+=
 else if(i===sel)cls+=' sel';
 h+=`<button class="${cls}" onclick="pick(${i})" aria-label="Option ${i+1}: ${o}">${o}</button>`;
 });
-if(!ans)h+=`<button class="btn btn-p" onclick="sdCheck()"${sel===null?' disabled':''} aria-label="Check answer">בדוק</button>`;
-else h+=`<button class="btn btn-d" onclick="sdNext()" aria-label="Next question">הבאה ←</button>`;
+if(!ans)h+=`<button class="btn btn-p" onclick="sdCheck()"${sel===null?' disabled':''} aria-label="בדוק — check answer">בדוק</button>`;
+else h+=`<button class="btn btn-d" onclick="sdNext()" aria-label="הבאה — next question">הבאה ←</button>`;
 h+=`</div>`;
 // Leaderboard
 if(sdLeaderboard.length){
@@ -3195,7 +3197,7 @@ if(ans){cls+=' lk';if(!examMode){if(isOk(q,origI))cls+=' ok';else if(origI===sel
 else if(origI===sel)cls+=' sel';
 const blurCls=blindRecall&&!ans&&origI!==sel?' qo-blur':'';
 const autopsyCls=(autopsyMode&&ans&&!examMode&&!isOk(q,origI)&&origI===autopsyDistractor)?' distractor-highlight':'';
-h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\'qo-blur\');':''}pick(${origI})" aria-label="Option ${origI+1}" dir="${heDir(o)}"><span>${sanitize(o)}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
+h+=`<button class="${cls}${blurCls}${autopsyCls}" onclick="${blindRecall&&!ans&&origI!==sel?'this.classList.remove(\'qo-blur\');':''}pick(${origI})" aria-label="Option ${origI+1}: ${sanitize(o)}" dir="${heDir(o)}"><span>${sanitize(o)}</span>${q.oi&&q.oi[origI]?'<img src="'+sanitize(q.oi[origI])+'" style="max-width:100%;max-height:120px;margin-top:6px;border-radius:6px" loading="lazy">':''}</button>`;
 });
 return h;
 }
@@ -3205,12 +3207,12 @@ let h='';
 h+=`<div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">`;
 if(!ans){
 const _confLabel='';
-h+=`<div style="display:flex;gap:6px;align-items:center"><button class="btn btn-p" onclick="check()"${sel===null?' disabled':''} aria-label="Check answer" style="flex:1;min-height:44px">${_confLabel} בדוק</button>`;if(!examMode)h+=`<button class="btn" onclick="showAnswerHardFail()" style="background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg));font-size:11px;padding:6px 14px;min-height:44px;border:1px solid rgb(var(--yellow-brd))" aria-label="Show answer">👁 לא יודע</button>`;h+=`</div>`;}
+h+=`<div style="display:flex;gap:6px;align-items:center"><button class="btn btn-p" onclick="check()"${sel===null?' disabled':''} aria-label="${_confLabel} בדוק — check answer" style="flex:1;min-height:44px">${_confLabel} בדוק</button>`;if(!examMode)h+=`<button class="btn" onclick="showAnswerHardFail()" style="background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg));font-size:11px;padding:6px 14px;min-height:44px;border:1px solid rgb(var(--yellow-brd))" aria-label="לא יודע — show me the answer">👁 לא יודע</button>`;h+=`</div>`;}
 else{
 // POST-ANSWER LAYOUT: Next button FIRST (primary action), then secondary UI
 // Top row: Prev + Next (always visible, always tappable)
 h+=`<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">`;
-if(!examMode)h+=`<button id="prev-btn" class="btn" onclick="prev()" style="flex:0 0 auto;min-height:44px;padding:0 14px;font-size:11px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:10px;${qi<=0?'opacity:0.4;pointer-events:none;':''}" aria-label="Previous question">קודמת ←</button>`;
+if(!examMode)h+=`<button id="prev-btn" class="btn" onclick="prev()" style="flex:0 0 auto;min-height:44px;padding:0 14px;font-size:11px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:10px;${qi<=0?'opacity:0.4;pointer-events:none;':''}" aria-label="קודמת — previous question">קודמת ←</button>`;
 h+=`<button id="next-btn" class="btn btn-d" onclick="next()" style="flex:1;min-height:48px;padding:10px 18px;font-size:14px;font-weight:700" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'→ הבאה'}</button>`;
 if(!examMode&&ans){
 h+=`<button onclick="document.getElementById('report-wrong-expand').style.display=document.getElementById('report-wrong-expand').style.display==='none'?'block':'none'" style="font-size:10px;padding:4px 8px;background:none;color:rgb(var(--fg3));cursor:pointer;border:none" title="Report wrong answer key">⚠️</button>`;
@@ -3279,7 +3281,7 @@ h+='<div style="display:flex;justify-content:space-between;align-items:center;ma
 h+='<textarea id="tbInput" dir="auto" style="width:100%;min-height:60px;resize:vertical;font-family:Heebo,sans-serif;border:1px solid #a7f3d0;border-radius:8px;padding:8px;font-size:12px;unicode-bidi:plaintext;text-align:start" placeholder="הקלד את ההסבר שלך..." aria-label="Teach-back explanation"></textarea>';
 h+='<div style="display:flex;gap:8px;margin-top:8px">';
 h+='<button class="btn btn-g" style="flex:1;font-size:11px" onclick="var v=document.getElementById(\'tbInput\')?.value?.trim();if(v){gradeTeachBack(pool[qi],v);}else{teachBackState=\'skip\';render();}" aria-label="Grade teach-back with AI">🤖 Grade it</button>';
-h+='<button class="btn btn-o" style="font-size:11px" onclick="teachBackState=\'skip\';render()" aria-label="Skip teach-back">דלג</button>';
+h+='<button class="btn btn-o" style="font-size:11px" onclick="teachBackState=\'skip\';render()" aria-label="דלג — skip teach-back">דלג</button>';
 h+='</div></div>';
 }else if(teachBackState==='grading'){
 h+='<div style="margin-top:12px;background:rgb(var(--green-bg));border:1px solid #a7f3d0;border-radius:12px;padding:12px;text-align:center"><div style="font-size:12px;color:rgb(var(--green-fg))">⏳ Grading...</div></div>';
@@ -3505,8 +3507,8 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <div class="sec-t">Quiz</div>
 <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
 <button onclick="showMockExamPicker()" class="btn" style="font-size:11px;padding:7px 14px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-weight:700" aria-label="Start mock exam">🎯 Mock</button>
-<button data-testid="full-exam-trigger" onclick="startExam()" class="btn" style="font-size:11px;padding:7px 14px;background:#0f172a;color:#fff;border:none;border-radius:8px;font-weight:600" aria-label="Start full exam">📋 Full 150q</button>
-<button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:#dc2626;border:1px solid rgb(var(--red-brd));border-radius:8px" aria-label="Sudden death" title="Sudden Death — one wrong = game over">💀 SD</button>
+<button data-testid="full-exam-trigger" onclick="startExam()" class="btn" style="font-size:11px;padding:7px 14px;background:#0f172a;color:#fff;border:none;border-radius:8px;font-weight:600" aria-label="Full 150q — start full exam">📋 Full 150q</button>
+<button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:#dc2626;border:1px solid rgb(var(--red-brd));border-radius:8px" aria-label="SD — sudden death" title="Sudden Death — one wrong = game over">💀 SD</button>
 <button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px" aria-label="On-call flip cards" title="On-Call flip cards — rapid review">🏥 On-Call</button>
 ${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:#047857;border:1px solid #a7f3d0;border-radius:8px" aria-label="Pomodoro timer" title="Pomodoro 25-min study timer">⏱ Pomo</button>':''}
 </div>
@@ -3549,9 +3551,9 @@ EXAM_YEARS.forEach(yr=>{
   const _n=_yearCounts[yr]||0;if(!_n)return;
   const _on=selectedExamYears.has(yr);
   const _unresolved=(yr==='2020'||yr==='2021'||yr==='2022');
-  const _style=`display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;font-size:11px;white-space:nowrap;${_unresolved&&!_on?'opacity:0.6':''}`;
+  const _style=`display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;font-size:11px;white-space:nowrap;${_unresolved&&!_on?'opacity:0.8':''}`;
   const _title=_unresolved?'שנה לא מזוהה — ראה TODO':'';
-  h+=`<span class="pill ${_on?'on':''}" onclick="toggleExamYear('${yr}')" style="${_style}" title="${_title}" aria-pressed="${_on}">${yr} · ${_n}${_on?' ✓':''}</span>`;
+  h+=`<button type="button" class="pill ${_on?'on':''}" onclick="toggleExamYear('${yr}')" style="${_style}" title="${_title}" aria-pressed="${_on}">${yr} · ${_n}${_on?' ✓':''}</button>`;
 });
 h+=`</div>`;
 // Non-year filters row (single-select)
@@ -3575,7 +3577,7 @@ h+=`</div>`;
   const _wrongDisabled=_wrongCount===0;
   const _wrongActive=filt==='wrong';
   h+=`<div style="display:flex;gap:6px;margin-bottom:10px;align-items:center">
-<button class="btn" onclick="setFilt('wrong')" ${_wrongDisabled?'disabled aria-disabled="true"':''} aria-label="Review wrong answers" title="${_wrongDisabled?'Get a question wrong to start a review set':'Drill the questions you got wrong, sorted by recency × topic weight. Marked solved after 2 correct in a row.'}" style="flex:1;min-height:40px;font-size:12px;font-weight:700;border-radius:10px;border:1px solid ${_wrongActive?'#dc2626':'rgb(var(--red-brd))'};background:${_wrongDisabled?'rgb(var(--bg2))':_wrongActive?'#dc2626':'rgb(var(--red-bg))'};color:${_wrongDisabled?'rgb(var(--fg2))':_wrongActive?'#fff':'rgb(var(--red-fg))'};cursor:${_wrongDisabled?'not-allowed':'pointer'};opacity:${_wrongDisabled?0.6:1}">⚠️ Review wrong (${_wrongCount})</button>`;
+<button class="btn" onclick="setFilt('wrong')" ${_wrongDisabled?'disabled aria-disabled="true"':''} aria-label="Review wrong (${_wrongCount}) — drill questions you got wrong" title="${_wrongDisabled?'Get a question wrong to start a review set':'Drill the questions you got wrong, sorted by recency × topic weight. Marked solved after 2 correct in a row.'}" style="flex:1;min-height:40px;font-size:12px;font-weight:700;border-radius:10px;border:1px solid ${_wrongActive?'#dc2626':'rgb(var(--red-brd))'};background:${_wrongDisabled?'rgb(var(--bg2))':_wrongActive?'#dc2626':'rgb(var(--red-bg))'};color:${_wrongDisabled?'rgb(var(--fg2))':_wrongActive?'#fff':'rgb(var(--red-fg))'};cursor:${_wrongDisabled?'not-allowed':'pointer'};opacity:${_wrongDisabled?0.6:1}">⚠️ Review wrong (${_wrongCount})</button>`;
   if(_wrongActive&&_wrongCount>0){
     h+=`<button class="btn" onclick="if(confirm('Clear all '+${_wrongCount}+' wrong-answer entries?')){S.wrongQs={};save();if(filt==='wrong'){filt='all';buildPool();}render();}" aria-label="Clear wrong-answer set" title="Clear the wrong-answer review set" style="font-size:11px;padding:6px 12px;min-height:40px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:10px;cursor:pointer">🗑 Clear</button>`;
   }
@@ -3644,7 +3646,7 @@ TOPIC_GROUPS.forEach((grp,_gi)=>{
     grp.tis.forEach(ti=>{
       const _n=_topicCounts[ti]||0;if(!_n)return;
       const name=TOPICS[ti];const _on=selectedTopics.has(ti);
-      h+=`<span class="pill ${_on?'on':''}" onclick="toggleTopic(${ti})" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap" aria-pressed="${_on}" title="${sanitize(name)}">${sanitize(name)} (${_n})${_on?' ✓':''}</span>`;
+      h+=`<button type="button" class="pill ${_on?'on':''}" onclick="toggleTopic(${ti})" style="min-height:32px;display:inline-flex;align-items:center;padding:5px 10px;font-size:10px;white-space:nowrap" aria-pressed="${_on}" title="${sanitize(name)}">${sanitize(name)} (${_n})${_on?' ✓':''}</button>`;
     });
     h+=`</div>`;
   }
@@ -4145,7 +4147,7 @@ function renderWrongAnswerLog(){
     h+=`<div style="margin-bottom:12px;padding:10px;background:rgb(var(--yellow-bg));border-radius:10px;border:1px solid rgb(var(--yellow-brd))">
 <div style="font-size:11px;font-weight:700;color:rgb(var(--yellow-fg));margin-bottom:6px">❌ Report wrong answer key for current question</div>
 <input id="reportInput-log" class="search-box" placeholder="מה לדעתך התשובה הנכונה ולמה?" style="font-size:11px;margin-bottom:6px;unicode-bidi:plaintext;text-align:start" dir="auto">
-<button class="btn" style="font-size:10px;width:100%;background:#92400e;color:#fff" onclick="S._reportType='wrong_answer';submitReport()" aria-label="Submit report for AI review">שלח לבדיקת AI</button>
+<button class="btn" style="font-size:10px;width:100%;background:#92400e;color:#fff" onclick="S._reportType='wrong_answer';submitReport()" aria-label="שלח לבדיקת AI — submit report for AI review">שלח לבדיקת AI</button>
 <div id="fbStatus-log" style="font-size:10px;margin-top:4px;display:none"></div>
 <div id="aiVerifyResult-log" style="display:none;margin-top:8px;padding:10px;border-radius:8px;font-size:10px;line-height:1.6"></div>
 </div>`;
@@ -6367,12 +6369,12 @@ if(!_storedKey){h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px s
 if(_storedKey){
   h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
   h+='<div style="flex:1;font-size:11px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;padding:6px 10px;color:rgb(var(--green-fg))">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
-  h+='<button class="btn btn-o" style="font-size:11px" onclick="setApiKey(\'\');render()" aria-label="Remove API key">הסר</button>';
+  h+='<button class="btn btn-o" style="font-size:11px" onclick="setApiKey(\'\');render()" aria-label="הסר — remove API key">הסר</button>';
   h+='</div>';
 } else {
   h+='<div style="display:flex;gap:8px;margin-bottom:8px">';
   h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-..." class="calc-in" style="flex:1;margin:0;font-size:11px" aria-label="Claude API key">';
-  h+='<button class="btn btn-p" style="font-size:11px" onclick="var v=document.getElementById(\'apiKeyInput\').value.trim();if(v){setApiKey(v);render();}" aria-label="Save API key">שמור</button>';
+  h+='<button class="btn btn-p" style="font-size:11px" onclick="var v=document.getElementById(\'apiKeyInput\').value.trim();if(v){setApiKey(v);render();}" aria-label="שמור — save API key">שמור</button>';
   h+='</div>';
 }
 h+='<div style="font-size:9px;color:rgb(var(--fg3))">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
@@ -6521,7 +6523,7 @@ if(chatLoading){h+='<div class="chat-msg-ai" style="padding:6px 12px"><div class
 h+='</div>';
 h+='<div class="chat-input-row">';
 h+='<textarea id="chat-input" placeholder="שאל שאלה גריאטרית..." rows="2" aria-label="Chat input" dir="auto" style="flex:1;border:1px solid rgb(var(--brd));border-radius:10px;padding:8px 10px;font-size:12px;resize:none;font-family:Heebo,sans-serif;unicode-bidi:plaintext;text-align:start;background:inherit;color:inherit" onkeydown="if(event.key===&apos;Enter&apos;&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>';
-h+='<button class="btn btn-p" onclick="sendChat()" '+(chatLoading?'disabled':'')+' style="align-self:flex-end;min-width:52px" aria-label="Send">שלח</button>';
+h+='<button class="btn btn-p" onclick="sendChat()" '+(chatLoading?'disabled':'')+' style="align-self:flex-end;min-width:52px" aria-label="שלח — send">שלח</button>';
 h+='</div>';
 h+='</div>';
 return h;
@@ -7163,11 +7165,11 @@ function toggleStudyMode(){document.body.classList.toggle('study');S.studyMode=d
 // v10.64.60: language preference toggle (Hebrew ↔ English source). Only affects
 // AI-translated questions that carry both q/q_en variants — IMA exam Qs render
 // in their authoritative language regardless of this setting.
-function toggleLang(){S.langPref=(S.langPref==='en')?'he':'en';const _lb=document.getElementById('hdr-lang-btn');if(_lb)_lb.textContent=(S.langPref==='en')?'עב':'EN';save();render();}
+function toggleLang(){S.langPref=(S.langPref==='en')?'he':'en';const _lb=document.getElementById('hdr-lang-btn');if(_lb)_lb.textContent=(S.langPref==='en')?'עב':'EN',_lb.setAttribute('aria-label',_lb.textContent+' — toggle question language');save();render();}
 if(S.dark)document.body.classList.add('dark');
 if(S.studyMode)document.body.classList.add('study');
 // v10.64.60: sync header lang-toggle button text with stored preference.
-(function(){const _lb=document.getElementById('hdr-lang-btn');if(_lb)_lb.textContent=(S.langPref==='en')?'עב':'EN';})();
+(function(){const _lb=document.getElementById('hdr-lang-btn');if(_lb)_lb.textContent=(S.langPref==='en')?'עב':'EN',_lb.setAttribute('aria-label',_lb.textContent+' — toggle question language');})();
 
 // ===== FLASHCARD SPACED REP =====
 // FSRS-4.5 scoring for flashcards (rating 1=Again, 2=Hard, 3=Good, 4=Easy).
@@ -8311,7 +8313,7 @@ ${sec('Quiz Filters','📝','#047857',
 '<b>📋 Exam</b> — מבחן מדומה 150 שאלות עם טיימר (3 שעות)<br>'+
 '<b>💀 Sudden Death</b> — טעות אחת = סוף המשחק'
 )}
-${sec('AI Study Tools','🤖','#8b5cf6',
+${sec('AI Study Tools','🤖','#6d28d9',
 'כל יכולות ה-AI עובדות בלי מפתח API — דרך פרוקסי משותף.<br><br>'+
 '<b>🤖 AI Explain</b> — הסבר בעברית לתשובה הנכונה<br>'+
 '<b>🔬 Distractor Autopsy</b> — AI מסביר למה כל הסחות דעת שגויה ומתי הייתה נכונה<br>'+
