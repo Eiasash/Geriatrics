@@ -1870,7 +1870,7 @@ const _svgIcons={
 };
 document.getElementById('tb').innerHTML=TABS.map(t=>
 // safe-innerhtml: TABS is a hardcoded array of tab definitions (id/label/icon); _svgIcons is a hardcoded map; no user input
-`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" aria-label="${t.l}" style="transition:all .15s ease"><span class="ic">${_svgIcons[t.id]||t.ic}</span>${t.l}</button>`
+`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" role="tab" aria-selected="${t.id===tab?'true':'false'}" aria-label="${t.l}" style="transition:all .15s ease"><span class="ic">${_svgIcons[t.id]||t.ic}</span>${t.l}</button>`
 ).join('');
 }
 function go(t){tab=t;renderTabs();render()}
@@ -8301,7 +8301,7 @@ ov.innerHTML=`<div style="max-width:420px;margin:0 auto;background:rgb(var(--car
 <div style="font-size:10px;line-height:1.7;color:#047857">
 ${(CHANGELOG[APP_VERSION]||['(no changelog entry for v'+APP_VERSION+' — see commit log on GitHub)']).map(c=>'<b>'+c.split(' — ')[0]+'</b>'+(c.includes(' — ')?' — '+c.split(' — ').slice(1).join(' — '):'')).join('<br>')}
 </div></div>
-${sec('Quiz Filters','📝','#059669',
+${sec('Quiz Filters','📝','#047857',
 '<b>הכל</b> — כל '+QZ.length.toLocaleString()+' השאלות, מעורבב<br>'+
 '<b>2020–2025</b> — סינון לפי שנת מבחן<br>'+
 '<b>🔥 Hard</b> — שאלות שטעית בהן, הגרועות קודם<br>'+
