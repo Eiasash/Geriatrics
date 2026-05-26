@@ -13,7 +13,9 @@
     "verify": "node --check src/sw-update.js && python3 scripts/check-version-sync.py && python3 scripts/check-brace-balance.py && python3 scripts/check-inline-js.py && python3 scripts/check-innerhtml.py && python3 scripts/check-innerhtml-pieces.py && cross-env HARRISON_HEBREW_BASELINE=0 node scripts/harrison-hebrew-baseline.cjs --strict && vitest run",
     "regen:derived": "node scripts/regen_derived.cjs",
     "regen:check": "node scripts/regen_derived.cjs --check",
-    "image:check": "node scripts/add-image-question.cjs --help"
+    "image:check": "node scripts/add-image-question.cjs --help",
+    "regen:cross-repo": "node scripts/regen_cross_repo_syllabus.cjs",
+    "regen:cross-repo:check": "node scripts/regen_cross_repo_syllabus.cjs --check"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.5",
