@@ -162,7 +162,10 @@ describe("a11y issue #125 — v10.64.85 residual contrast clears", () => {
     // The _wrongDisabled branch in the inline ternary was rendering text at
     // 4.34:1 base + opacity:0.6 — effectively ~2.6:1. Bumping to --fg2 keeps
     // the disabled visual muted but legible.
-    const reviewMatch = html.match(/<button[^>]*aria-label="Review wrong answers"[^>]*>⚠️ Review wrong[^<]*<\/button>/);
+    // Selector updated post-fix/a11y-pill-buttons-and-labels: aria-label now
+    // includes visible text per WCAG 2.5.3 ("Review wrong (N) — drill ..."),
+    // so we anchor on the data-action / visible text instead.
+    const reviewMatch = html.match(/<button[^>]*onclick="setFilt\('wrong'\)"[^>]*>⚠️ Review wrong[^<]*<\/button>/);
     expect(reviewMatch).toBeTruthy();
     expect(reviewMatch[0]).toMatch(/color:\$\{_wrongDisabled\?'rgb\(var\(--fg2\)\)'/);
     expect(reviewMatch[0]).not.toMatch(/color:\$\{_wrongDisabled\?'rgb\(var\(--fg3\)\)'/);
