@@ -1256,16 +1256,34 @@ const _qzPromise = (async () => {
   }
 })();
 const _disPromise = (async () => {
+  // v10.64.132 (Codex P2 follow-up): use AbortController + watchdog so a
+  // stalled fetch can't pin _disReady=false forever. Without this, a
+  // hung-network DIS fetch would leave answered questions stuck on the
+  // "⏳ טוען..." placeholder AND prevent the aiAutopsy fallback from
+  // ever firing (because _disReady never flips). 12s budget is generous
+  // (idle-callback already gave 3s of slack; real-world DIS fetch is
+  // typically <2s even on Slow-3G); if it expires, we fall through to
+  // the AI-autopsy path with no curated rationale — same UX as a
+  // genuinely-missing DIS entry.
+  const _disCtrl = (typeof AbortController === 'function') ? new AbortController() : null;
+  const DIS_FETCH_TIMEOUT_MS = 12000;
+  const _disWatchdog = setTimeout(() => {
+    if (_disCtrl && !_disReady) {
+      console.warn('distractors.json fetch watchdog fired after', DIS_FETCH_TIMEOUT_MS, 'ms — aborting');
+      try { _disCtrl.abort(); } catch {}
+    }
+  }, DIS_FETCH_TIMEOUT_MS);
   try {
     if (typeof requestIdleCallback === 'function') {
       await new Promise(res => requestIdleCallback(res, { timeout: 3000 }));
     }
-    const r = await fetch('./data/distractors.json');
+    const r = await fetch('./data/distractors.json', _disCtrl ? { signal: _disCtrl.signal } : undefined);
     if (r.ok) DIS = await r.json();
     else console.warn('distractors.json unavailable:', r.status);
   } catch (err) {
-    console.warn('distractors.json deferred load failed:', err.message);
+    console.warn('distractors.json deferred load failed:', err && err.message);
   } finally {
+    clearTimeout(_disWatchdog);
     _disReady = true;
     // v10.64.132: trigger a re-render when DIS lands so users sitting on
     // a post-answer view with the "⏳ טוען הסבר על מסיחים..." placeholder
@@ -1274,7 +1292,9 @@ const _disPromise = (async () => {
     // above. Without this trigger, the placeholder is permanent for the
     // current question — and the autopsy fallback (line ~3421) used to
     // burn a paid aiAutopsy() call during the deferred-fetch window,
-    // also fixed in this revision.
+    // also fixed in this revision. On watchdog-abort path, _disReady
+    // still flips → aiAutopsy fallback engages on the next render
+    // (same as pre-PR behavior for fetch failures).
     try {
       if (typeof S !== 'undefined' && typeof render === 'function') {
         const tabsThatNeedDis = ['quiz', 'track'];
