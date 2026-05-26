@@ -990,7 +990,7 @@
           "troponin"
         ],
         "n_questions": 131,
-        "frequency_pct": 8.4,
+        "frequency_pct": 8.42,
         "weight": 2.02
       },
       {
@@ -1009,7 +1009,7 @@
           "prevention"
         ],
         "n_questions": 130,
-        "frequency_pct": 8.4,
+        "frequency_pct": 8.35,
         "weight": 2.01
       },
       {
@@ -1037,7 +1037,7 @@
           "sotatercept"
         ],
         "n_questions": 105,
-        "frequency_pct": 6.7,
+        "frequency_pct": 6.75,
         "weight": 1.62
       },
       {
@@ -1064,7 +1064,7 @@
           "MDS"
         ],
         "n_questions": 93,
-        "frequency_pct": 6,
+        "frequency_pct": 5.98,
         "weight": 1.43
       },
       {
@@ -1088,7 +1088,7 @@
           "varices"
         ],
         "n_questions": 88,
-        "frequency_pct": 5.7,
+        "frequency_pct": 5.66,
         "weight": 1.36
       },
       {
@@ -1112,7 +1112,7 @@
           "crystal"
         ],
         "n_questions": 79,
-        "frequency_pct": 5.1,
+        "frequency_pct": 5.08,
         "weight": 1.22
       },
       {
@@ -1135,7 +1135,7 @@
           "NT-proBNP"
         ],
         "n_questions": 68,
-        "frequency_pct": 4.4,
+        "frequency_pct": 4.37,
         "weight": 1.05
       },
       {
@@ -1159,7 +1159,7 @@
           "viral"
         ],
         "n_questions": 64,
-        "frequency_pct": 4.1,
+        "frequency_pct": 4.11,
         "weight": 0.99
       },
       {
@@ -1180,7 +1180,7 @@
           "tubular"
         ],
         "n_questions": 62,
-        "frequency_pct": 4,
+        "frequency_pct": 3.98,
         "weight": 0.96
       },
       {
@@ -1199,7 +1199,7 @@
           "prosthetic"
         ],
         "n_questions": 59,
-        "frequency_pct": 3.8,
+        "frequency_pct": 3.79,
         "weight": 0.91
       },
       {
@@ -1220,7 +1220,7 @@
           "resuscitat"
         ],
         "n_questions": 57,
-        "frequency_pct": 3.7,
+        "frequency_pct": 3.66,
         "weight": 0.88
       },
       {
@@ -1252,7 +1252,7 @@
           "melanoma"
         ],
         "n_questions": 54,
-        "frequency_pct": 3.5,
+        "frequency_pct": 3.47,
         "weight": 0.83
       },
       {
@@ -1267,7 +1267,7 @@
           "anesthes"
         ],
         "n_questions": 54,
-        "frequency_pct": 3.5,
+        "frequency_pct": 3.47,
         "weight": 0.83
       },
       {
@@ -1283,7 +1283,7 @@
           "immunodeficien"
         ],
         "n_questions": 53,
-        "frequency_pct": 3.4,
+        "frequency_pct": 3.41,
         "weight": 0.82
       },
       {
@@ -1301,7 +1301,7 @@
           "vomit"
         ],
         "n_questions": 53,
-        "frequency_pct": 3.4,
+        "frequency_pct": 3.41,
         "weight": 0.82
       },
       {
@@ -1318,7 +1318,7 @@
           "mesenteric"
         ],
         "n_questions": 53,
-        "frequency_pct": 3.4,
+        "frequency_pct": 3.41,
         "weight": 0.82
       },
       {
@@ -1342,7 +1342,7 @@
           "respiratory"
         ],
         "n_questions": 52,
-        "frequency_pct": 3.3,
+        "frequency_pct": 3.34,
         "weight": 0.8
       },
       {
@@ -1364,7 +1364,7 @@
           "prostate"
         ],
         "n_questions": 52,
-        "frequency_pct": 3.3,
+        "frequency_pct": 3.34,
         "weight": 0.8
       },
       {
@@ -1381,7 +1381,7 @@
           "hypervolemia"
         ],
         "n_questions": 52,
-        "frequency_pct": 3.3,
+        "frequency_pct": 3.34,
         "weight": 0.8
       },
       {
@@ -1405,7 +1405,7 @@
           "GLP-1"
         ],
         "n_questions": 41,
-        "frequency_pct": 2.6,
+        "frequency_pct": 2.63,
         "weight": 0.63
       },
       {
@@ -1430,7 +1430,7 @@
           "coma"
         ],
         "n_questions": 36,
-        "frequency_pct": 2.3,
+        "frequency_pct": 2.31,
         "weight": 0.56
       },
       {
@@ -1454,7 +1454,7 @@
           "amiodarone"
         ],
         "n_questions": 34,
-        "frequency_pct": 2.2,
+        "frequency_pct": 2.19,
         "weight": 0.52
       },
       {
@@ -1473,7 +1473,7 @@
           "aldosterone synthase"
         ],
         "n_questions": 30,
-        "frequency_pct": 1.9,
+        "frequency_pct": 1.93,
         "weight": 0.46
       }
     ]
@@ -1489,7 +1489,7 @@
         "he": "ילדים — מחלות חדות וזיהומים",
         "keywords": [],
         "n_questions": 115,
-        "frequency_pct": 10.8,
+        "frequency_pct": 10.84,
         "weight": 2.93
       },
       {
@@ -1498,7 +1498,7 @@
         "he": "ראומטולוגיה וטרשת שלד-שריר",
         "keywords": [],
         "n_questions": 100,
-        "frequency_pct": 9.4,
+        "frequency_pct": 9.43,
         "weight": 2.54
       },
       {
@@ -1507,7 +1507,7 @@
         "he": "רפואה מבוססת ראיות, תקשורת ומערכת משפחתית",
         "keywords": [],
         "n_questions": 75,
-        "frequency_pct": 7.1,
+        "frequency_pct": 7.07,
         "weight": 1.91
       },
       {
@@ -1516,7 +1516,7 @@
         "he": "בריאות האישה וגינקולוגיה",
         "keywords": [],
         "n_questions": 68,
-        "frequency_pct": 6.4,
+        "frequency_pct": 6.41,
         "weight": 1.73
       },
       {
@@ -1525,7 +1525,7 @@
         "he": "מחלות זיהומיות וחיסונים (מבוגרים)",
         "keywords": [],
         "n_questions": 50,
-        "frequency_pct": 4.7,
+        "frequency_pct": 4.71,
         "weight": 1.27
       },
       {
@@ -1534,7 +1534,7 @@
         "he": "גריאטריה (נפילות, קוגניציה, ריבוי תרופות)",
         "keywords": [],
         "n_questions": 46,
-        "frequency_pct": 4.3,
+        "frequency_pct": 4.34,
         "weight": 1.17
       },
       {
@@ -1543,7 +1543,7 @@
         "he": "הריון ולידה",
         "keywords": [],
         "n_questions": 42,
-        "frequency_pct": 4,
+        "frequency_pct": 3.96,
         "weight": 1.07
       },
       {
@@ -1552,7 +1552,7 @@
         "he": "גסטרו והפטולוגיה",
         "keywords": [],
         "n_questions": 41,
-        "frequency_pct": 3.9,
+        "frequency_pct": 3.86,
         "weight": 1.04
       },
       {
@@ -1561,7 +1561,7 @@
         "he": "נוירולוגיה (שבץ, כאבי ראש, דמנציה)",
         "keywords": [],
         "n_questions": 41,
-        "frequency_pct": 3.9,
+        "frequency_pct": 3.86,
         "weight": 1.04
       },
       {
@@ -1570,7 +1570,7 @@
         "he": "רפואה מונעת וקידום בריאות",
         "keywords": [],
         "n_questions": 41,
-        "frequency_pct": 3.9,
+        "frequency_pct": 3.86,
         "weight": 1.04
       },
       {
@@ -1579,7 +1579,7 @@
         "he": "חירום במרפאה",
         "keywords": [],
         "n_questions": 39,
-        "frequency_pct": 3.7,
+        "frequency_pct": 3.68,
         "weight": 0.99
       },
       {
@@ -1588,7 +1588,7 @@
         "he": "ריאות (אסטמה, COPD, תסחיף)",
         "keywords": [],
         "n_questions": 38,
-        "frequency_pct": 3.6,
+        "frequency_pct": 3.58,
         "weight": 0.97
       },
       {
@@ -1597,7 +1597,7 @@
         "he": "בריאות הנפש — מצב רוח, חרדה, פסיכוזה",
         "keywords": [],
         "n_questions": 32,
-        "frequency_pct": 3,
+        "frequency_pct": 3.02,
         "weight": 0.81
       },
       {
@@ -1606,7 +1606,7 @@
         "he": "אנדוקרינולוגיה — סוכרת",
         "keywords": [],
         "n_questions": 31,
-        "frequency_pct": 2.9,
+        "frequency_pct": 2.92,
         "weight": 0.79
       },
       {
@@ -1615,7 +1615,7 @@
         "he": "יתר לחץ דם ודיסליפידמיה",
         "keywords": [],
         "n_questions": 29,
-        "frequency_pct": 2.7,
+        "frequency_pct": 2.73,
         "weight": 0.74
       },
       {
@@ -1624,7 +1624,7 @@
         "he": "המטולוגיה וקרישה",
         "keywords": [],
         "n_questions": 28,
-        "frequency_pct": 2.6,
+        "frequency_pct": 2.64,
         "weight": 0.71
       },
       {
@@ -1633,7 +1633,7 @@
         "he": "ילדים — מתבגרים ובריאות הנפש",
         "keywords": [],
         "n_questions": 28,
-        "frequency_pct": 2.6,
+        "frequency_pct": 2.64,
         "weight": 0.71
       },
       {
@@ -1642,7 +1642,7 @@
         "he": "נפרולוגיה, UTI ואורולוגיה",
         "keywords": [],
         "n_questions": 27,
-        "frequency_pct": 2.5,
+        "frequency_pct": 2.54,
         "weight": 0.69
       },
       {
@@ -1651,7 +1651,7 @@
         "he": "אנדוקרינולוגיה — בלוטת תריס ואחר",
         "keywords": [],
         "n_questions": 24,
-        "frequency_pct": 2.3,
+        "frequency_pct": 2.26,
         "weight": 0.61
       },
       {
@@ -1660,7 +1660,7 @@
         "he": "ילדים — יילוד והתפתחות",
         "keywords": [],
         "n_questions": 24,
-        "frequency_pct": 2.3,
+        "frequency_pct": 2.26,
         "weight": 0.61
       },
       {
@@ -1669,7 +1669,7 @@
         "he": "אי-ספיקת לב ומסתמים",
         "keywords": [],
         "n_questions": 23,
-        "frequency_pct": 2.2,
+        "frequency_pct": 2.17,
         "weight": 0.59
       },
       {
@@ -1678,7 +1678,7 @@
         "he": "דרמטולוגיה",
         "keywords": [],
         "n_questions": 22,
-        "frequency_pct": 2.1,
+        "frequency_pct": 2.07,
         "weight": 0.56
       },
       {
@@ -1687,7 +1687,7 @@
         "he": "אלרגיה ואימונולוגיה",
         "keywords": [],
         "n_questions": 21,
-        "frequency_pct": 2,
+        "frequency_pct": 1.98,
         "weight": 0.53
       },
       {
@@ -1696,7 +1696,7 @@
         "he": "קרדיולוגיה למבוגר — מחלת לב איסכמית והפרעות קצב",
         "keywords": [],
         "n_questions": 20,
-        "frequency_pct": 1.9,
+        "frequency_pct": 1.89,
         "weight": 0.51
       },
       {
@@ -1705,7 +1705,7 @@
         "he": "בריאות הגבר",
         "keywords": [],
         "n_questions": 20,
-        "frequency_pct": 1.9,
+        "frequency_pct": 1.89,
         "weight": 0.51
       },
       {
@@ -1714,7 +1714,7 @@
         "he": "כאב, פליאציה וסוף החיים",
         "keywords": [],
         "n_questions": 20,
-        "frequency_pct": 1.9,
+        "frequency_pct": 1.89,
         "weight": 0.51
       },
       {
@@ -1723,7 +1723,7 @@
         "he": "התמכרויות והתנהגות בריאותית",
         "keywords": [],
         "n_questions": 16,
-        "frequency_pct": 1.5,
+        "frequency_pct": 1.51,
         "weight": 0.41
       }
     ]
