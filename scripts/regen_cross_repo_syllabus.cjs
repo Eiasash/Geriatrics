@@ -119,11 +119,46 @@ async function loadManifest(section, source) {
 }
 
 function validateManifest(section, manifest) {
+  const errors = [];
   if (manifest.schema !== 'corpus-manifest-v1') {
-    throw new Error(`${section}: unexpected manifest schema "${manifest.schema}" (expected corpus-manifest-v1)`);
+    errors.push(`unexpected schema "${manifest.schema}" (expected corpus-manifest-v1)`);
   }
-  if (typeof manifest.total_questions !== 'number' || !Array.isArray(manifest.topics)) {
-    throw new Error(`${section}: malformed manifest (missing total_questions or topics array)`);
+  if (!Number.isInteger(manifest.total_questions) || manifest.total_questions < 0) {
+    errors.push(`total_questions must be a non-negative integer (got ${JSON.stringify(manifest.total_questions)})`);
+  }
+  if (!Array.isArray(manifest.topics)) {
+    errors.push(`topics must be an array (got ${typeof manifest.topics})`);
+  } else {
+    let sumN = 0;
+    const idsSeen = new Set();
+    for (let i = 0; i < manifest.topics.length; i++) {
+      const t = manifest.topics[i];
+      if (!t || typeof t !== 'object') {
+        errors.push(`topics[${i}] is not an object`);
+        continue;
+      }
+      if (!Number.isInteger(t.id)) {
+        errors.push(`topics[${i}].id must be integer (got ${JSON.stringify(t.id)})`);
+      } else if (idsSeen.has(t.id)) {
+        errors.push(`topics[${i}].id ${t.id} duplicated`);
+      } else {
+        idsSeen.add(t.id);
+      }
+      if (!Number.isInteger(t.n_questions) || t.n_questions < 0) {
+        errors.push(`topics[${i}].n_questions must be non-negative integer (got ${JSON.stringify(t.n_questions)})`);
+      } else {
+        sumN += t.n_questions;
+      }
+    }
+    // Sum-vs-total consistency check (sum can be ≤ total — some questions may
+    // have missing/non-integer ti and be excluded from per-topic counts in the
+    // emitter; sum > total signals a real corruption)
+    if (Number.isInteger(manifest.total_questions) && sumN > manifest.total_questions) {
+      errors.push(`sum of topic n_questions (${sumN}) exceeds total_questions (${manifest.total_questions})`);
+    }
+  }
+  if (errors.length) {
+    throw new Error(`invalid manifest:\n  - ${errors.join('\n  - ')}`);
   }
 }
 
@@ -156,7 +191,9 @@ function regenSection(sectionName, oldSection, manifest) {
   for (const topic of out.topics) {
     const n = manifestById.get(topic.id);
     topic.n_questions = n;
-    topic.frequency_pct = Math.round((n / total) * 100 * 100) / 100;
+    // Guard against total=0 (valid edge case — empty corpus). frequency_pct is
+    // undefined for empty corpus; emit 0 rather than NaN.
+    topic.frequency_pct = total > 0 ? Math.round((n / total) * 100 * 100) / 100 : 0;
   }
   return out;
 }
