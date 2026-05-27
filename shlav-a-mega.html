@@ -1485,8 +1485,9 @@ if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_he
 // Inner _showHelpWhenClear modal-polling preserved unchanged.
 const _showHelpWhenClear=()=>{const _blocking=document.querySelector('#feModal,#sdModal,#miModal,#mockPicker,#examModal,#mexModal,#postLoginRstModal,#rstModal');if(_blocking)setTimeout(_showHelpWhenClear,400);else showHelp();};
 let _autoshowFired=false;
-const _tryAutoshow=()=>{if(_autoshowFired)return;_autoshowFired=true;setTimeout(_showHelpWhenClear,50);};
-['click','keyup','scroll'].forEach(ev=>window.addEventListener(ev,_tryAutoshow,{once:true,passive:true}));
+// _tryAutoshow gated on e.isTrusted as defense-in-depth against dispatchEvent / .click() synthetic events. Scroll trigger DROPPED in this rev: app.js:7085 calls window.scrollTo({top:0}) on first render, but Chromium/Firefox emit the resulting scroll event with isTrusted=true (browser-generated, not dispatch-driven) — so the gate doesn't catch it. {once:true} registration also means the synthetic event consumes the scroll listener, breaking real scrolls. Real users click/type within seconds; scroll was a redundant trigger. Sibling of FM #80 / IM #130 Codex P1+P2 amendment.
+const _tryAutoshow=(e)=>{if(_autoshowFired)return;if(e&&e.isTrusted===false)return;_autoshowFired=true;setTimeout(_showHelpWhenClear,50);};
+['click','keyup'].forEach(ev=>window.addEventListener(ev,_tryAutoshow,{once:true,passive:true}));
 // Safety net 30s — sibling of FM/IM PRs. The 12s value from #292 still
 // leaked the help overlay as LCP in some Lighthouse runs because simulated
 // throttling stretched real-time 12s inside the sample window. 30s clears
