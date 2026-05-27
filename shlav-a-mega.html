@@ -1487,7 +1487,12 @@ const _showHelpWhenClear=()=>{const _blocking=document.querySelector('#feModal,#
 let _autoshowFired=false;
 const _tryAutoshow=()=>{if(_autoshowFired)return;_autoshowFired=true;setTimeout(_showHelpWhenClear,50);};
 ['click','keyup','scroll'].forEach(ev=>window.addEventListener(ev,_tryAutoshow,{once:true,passive:true}));
-setTimeout(_tryAutoshow,12000);
+// Safety net 30s — sibling of FM/IM PRs. The 12s value from #292 still
+// leaked the help overlay as LCP in some Lighthouse runs because simulated
+// throttling stretched real-time 12s inside the sample window. 30s clears
+// every reasonable simulation budget; users idle 30s+ are gone, and the
+// interaction trigger picks them up when they return.
+setTimeout(_tryAutoshow,30000);
 }}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();if(typeof initPostLoginRestore==='function')initPostLoginRestore();});
 
 // ===== SCREEN WAKE LOCK =====
