@@ -174,6 +174,12 @@ const OVERRIDE_PATTERNS = [
   [/colorectal|colon\s*cancer|\bCRC\b|gastric\s*cancer|stomach\s*cancer|pancrea\w*\s*(?:cancer|adenocarc|malignan)|esophageal\s*cancer|hepatocellular|\bHCC\b|cholangiocarc|colon\s*adenocarc|סרטן\s*(?:ה)?מעי|סרטן\s*(?:ה)?קיב|סרטן\s*(?:ה)?לבלב|סרטן\s*(?:ה)?וושט|סרטן\s*(?:ה)?כבד/i, { haz: 92 }, { onlyTopics: [26], matchOn: 'stem' }],
   [/melanoma|basal\s*cell|\bBCC\b|squamous\s*cell\s*carcinoma\s*of\s*the\s*skin|cutaneous\s*squamous|actinic\s*keratos|מלנומה|סרטן\s*(?:ה)?עור|קרצינומה.{0,12}עור/i, { haz: 93 }, { onlyTopics: [26], matchOn: 'stem' }],
   [/breast\s*cancer|breast\s*disease|ductal\s*carcinoma|\bDCIS\b|invasive\s*ductal|invasive\s*lobular|mastectomy|סרטן\s*(?:ה)?שד|גידול\s*(?:ב)?שד/i, { haz: 89 }, { onlyTopics: [26], matchOn: 'stem' }],
+  // Therapy-induced toxicity is tumor-agnostic supportive care, not management of the named
+  // tumor: re-assert Ch 88 for immune-related adverse events (checkpoint-inhibitor toxicity
+  // managed by stopping the drug + steroids) and treatment-induced pericarditis/myocarditis,
+  // even when the stem names the background cancer. Tumor-progression complications (cord
+  // compression, SVC from mets) are NOT re-asserted -- they stay with the organ chapter.
+  [/pericarditis|myocarditis|myopericard|פריקרד|מיוקרד|(?:pembrolizumab|nivolumab|ipilimumab)[\s\S]{0,50}(?:hydrocortis|methylprednis|prednison|prednisolone|glucocortic)/i, { haz: 88 }, { onlyTopics: [26], matchOn: 'stem' }],
 ];
 
 function applyOverrides(text, stemText, topicIdx, defaults) {
