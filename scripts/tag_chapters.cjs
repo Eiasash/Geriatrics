@@ -158,6 +158,12 @@ const OVERRIDE_PATTERNS = [
   [/\bBPSD\b|behavioral.?and.?psychol|\bNPI\b|agitation/i, { haz: 60 }, { onlyTopics: [6, 7] }],
   [/dysphagia|swallow|דיספגיה|\bבליעה\b/i,             { haz: 31 }, { onlyTopics: [9, 20, 38] }],
   [/sarcopenia|סרקופניה/i,                             { haz: 49 }, { onlyTopics: [3, 9, 36] }],
+  // Sensory — vision and hearing share topic 37 (default haz 34 = Hearing Loss). Vision
+  // keywords route to Hazzard 33 (Low Vision); the hearing rule re-asserts 34 LAST so
+  // dual-sense vignettes (e.g. glaucoma patient whose Q is a hearing-aid decision) stay
+  // on their curated chapter. Gated onlyTopics:[37] — no bleed-through to other topics.
+  [/cataract|presbyop|glaucoma|macular|retinopath|visual\s*(?:acuity|impair|loss|field)|low.?vision|refractive|\bIOL\b|phacoemul|\bAMD\b|diabetic.?retinop|קטרקט|ירוד|פרסביופ|רוחק.?ראי|גלאוקומ|ברקית|ניוון.?מקול|מקול|רטינופת|לקות.?ראי|ירידה.?בראי|חדות.?ראי|עדשה.?תוך|ראייה|ראיה/i, { haz: 33 }, { onlyTopics: [37] }],
+  [/hearing|presbycusis|audiogram|audiometr|tinnitus|cochlea|hearing.?aid|cerumen|otosclero|שמיע|טינ?יטוס|חירש|צרמן|מכשיר.?שמיע|שעוו?ת.?אוז/i, { haz: 34 }, { onlyTopics: [37] }],
 ];
 
 function applyOverrides(text, topicIdx, defaults) {
