@@ -164,13 +164,26 @@ const OVERRIDE_PATTERNS = [
   // on their curated chapter. Gated onlyTopics:[37] — no bleed-through to other topics.
   [/cataract|presbyop|glaucoma|macular|retinopath|visual\s*(?:acuity|impair|loss|field)|low.?vision|refractive|\bIOL\b|phacoemul|\bAMD\b|diabetic.?retinop|קטרקט|ירוד|פרסביופ|רוחק.?ראי|גלאוקומ|ברקית|ניוון.?מקול|מקול|רטינופת|לקות.?ראי|ירידה.?בראי|חדות.?ראי|עדשה.?תוך|ראייה|ראיה/i, { haz: 33 }, { onlyTopics: [37] }],
   [/hearing|presbycusis|audiogram|audiometr|tinnitus|cochlea|hearing.?aid|cerumen|otosclero|שמיע|טינ?יטוס|חירש|צרמן|מכשיר.?שמיע|שעוו?ת.?אוז/i, { haz: 34 }, { onlyTopics: [37] }],
+  // Solid-tumor cancer subtypes — topic 26 default is Ch 88 (Cancer & Aging, general). Route
+  // specific tumors to their dedicated Hazzard chapter. Gated onlyTopics:[26]. PROSTATE-CA is
+  // first so that when a distractor names prostate cancer alongside the real answer (e.g. an HCC
+  // or small-cell-lung stem) the organ rule matching the stem wins via last-match; it is also
+  // placed after the BPH(->38) rule so true prostate-cancer stems currently tagged benign land on 90.
+  [/prostate\s*cancer|prostat\w*\s*(?:carcinoma|adenocarc|malignan)|\bGleason\b|metastatic\s*prostat|castrat\w*.?resistant|\bmCRPC\b|radical\s*prostatectomy|סרטן\s*(?:ה)?ערמונית|סרטן\s*(?:ה)?פרוסטט/i, { haz: 90 }, { onlyTopics: [26], matchOn: 'stem' }],
+  [/lung\s*cancer|\bNSCLC\b|\bSCLC\b|bronchogenic|small.?cell\s*lung|non.?small.?cell\s*lung|pancoast|סרטן\s*(?:ה)?ריא|גידול\s*(?:ב)?ריא/i, { haz: 91 }, { onlyTopics: [26], matchOn: 'stem' }],
+  [/colorectal|colon\s*cancer|\bCRC\b|gastric\s*cancer|stomach\s*cancer|pancrea\w*\s*(?:cancer|adenocarc|malignan)|esophageal\s*cancer|hepatocellular|\bHCC\b|cholangiocarc|colon\s*adenocarc|סרטן\s*(?:ה)?מעי|סרטן\s*(?:ה)?קיב|סרטן\s*(?:ה)?לבלב|סרטן\s*(?:ה)?וושט|סרטן\s*(?:ה)?כבד/i, { haz: 92 }, { onlyTopics: [26], matchOn: 'stem' }],
+  [/melanoma|basal\s*cell|\bBCC\b|squamous\s*cell\s*carcinoma\s*of\s*the\s*skin|cutaneous\s*squamous|actinic\s*keratos|מלנומה|סרטן\s*(?:ה)?עור|קרצינומה.{0,12}עור/i, { haz: 93 }, { onlyTopics: [26], matchOn: 'stem' }],
+  [/breast\s*cancer|breast\s*disease|ductal\s*carcinoma|\bDCIS\b|invasive\s*ductal|invasive\s*lobular|mastectomy|סרטן\s*(?:ה)?שד|גידול\s*(?:ב)?שד/i, { haz: 89 }, { onlyTopics: [26], matchOn: 'stem' }],
 ];
 
-function applyOverrides(text, topicIdx, defaults) {
+function applyOverrides(text, stemText, topicIdx, defaults) {
   let haz = defaults.haz, har = defaults.har;
   for (const [regex, ov, opts] of OVERRIDE_PATTERNS) {
     if (opts && opts.onlyTopics && !opts.onlyTopics.includes(topicIdx)) continue;
-    if (regex.test(text)) {
+    // matchOn:'stem' rules test the stem + correct answer only (not distractors /
+    // explanation) so a competing cancer named in a wrong option cannot mis-tag the Q.
+    const target = (opts && opts.matchOn === 'stem') ? stemText : text;
+    if (regex.test(target)) {
       if (ov.haz !== undefined) haz = ov.haz;
       if (ov.har !== undefined) har = ov.har;
     }
@@ -226,7 +239,9 @@ function main() {
   questions.forEach((q, i) => {
     const defaults = TOPIC_CHAPTER_MAP[q.ti] || { haz: null, har: null };
     const rawText = [q.q || '', (q.o || []).join(' '), q.e || ''].join(' ');
-    const finalCh = applyOverrides(rawText, q.ti, defaults);
+    const correct = (Array.isArray(q.o) && typeof q.c === 'number') ? (q.o[q.c] || '') : '';
+    const stemText = [q.q || '', correct].join(' ');
+    const finalCh = applyOverrides(rawText, stemText, q.ti, defaults);
     if (finalCh.haz !== defaults.haz || finalCh.har !== defaults.har) overridesApplied++;
 
     const entry = {};
