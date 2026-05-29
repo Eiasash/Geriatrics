@@ -568,9 +568,9 @@ describe('broken-question filter — v10.64.33 / v10.64.35', () => {
 
   test('shlav-a-mega.html buildPool wrapper applies the broken filter', () => {
     const html = readFile('shlav-a-mega.html');
-    // Wrapper at line 1857: function buildPool(){_buildPoolRaw();...filter(i=>!QZ[i]||!QZ[i].broken)...}
+    // Wrapper: function buildPool(){_buildPoolRaw();...filter(i=>!QZ[i]||(!QZ[i].broken&&!QZ[i].dup))...} — excludes broken + dup-retired copies
     expect(html).toMatch(/function buildPool\(\)\s*\{\s*_buildPoolRaw\(\)/);
-    expect(html).toMatch(/pool=pool\.filter\(i=>!QZ\[i\]\|\|!QZ\[i\]\.broken\)/);
+    expect(html).toMatch(/pool=pool\.filter\(i=>!QZ\[i\]\|\|\(!QZ\[i\]\.broken&&!QZ\[i\]\.dup\)\)/);
   });
 });
 
