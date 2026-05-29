@@ -1480,7 +1480,7 @@
   },
   "Mishpacha": {
     "repo": "Eiasash/FamilyMedicine",
-    "total_questions_analyzed": 1061,
+    "total_questions_analyzed": 1091,
     "total_topics": 27,
     "topics": [
       {
@@ -1489,7 +1489,7 @@
         "he": "ילדים — מחלות חדות וזיהומים",
         "keywords": [],
         "n_questions": 115,
-        "frequency_pct": 10.84,
+        "frequency_pct": 10.54,
         "weight": 2.93
       },
       {
@@ -1497,8 +1497,8 @@
         "en": "Rheumatology & Musculoskeletal",
         "he": "ראומטולוגיה וטרשת שלד-שריר",
         "keywords": [],
-        "n_questions": 100,
-        "frequency_pct": 9.43,
+        "n_questions": 101,
+        "frequency_pct": 9.26,
         "weight": 2.54
       },
       {
@@ -1507,7 +1507,7 @@
         "he": "רפואה מבוססת ראיות, תקשורת ומערכת משפחתית",
         "keywords": [],
         "n_questions": 75,
-        "frequency_pct": 7.07,
+        "frequency_pct": 6.87,
         "weight": 1.91
       },
       {
@@ -1516,7 +1516,7 @@
         "he": "בריאות האישה וגינקולוגיה",
         "keywords": [],
         "n_questions": 68,
-        "frequency_pct": 6.41,
+        "frequency_pct": 6.23,
         "weight": 1.73
       },
       {
@@ -1524,8 +1524,8 @@
         "en": "Infectious Disease & Vaccines (Adult)",
         "he": "מחלות זיהומיות וחיסונים (מבוגרים)",
         "keywords": [],
-        "n_questions": 50,
-        "frequency_pct": 4.71,
+        "n_questions": 52,
+        "frequency_pct": 4.77,
         "weight": 1.27
       },
       {
@@ -1534,7 +1534,7 @@
         "he": "גריאטריה (נפילות, קוגניציה, ריבוי תרופות)",
         "keywords": [],
         "n_questions": 46,
-        "frequency_pct": 4.34,
+        "frequency_pct": 4.22,
         "weight": 1.17
       },
       {
@@ -1543,7 +1543,7 @@
         "he": "הריון ולידה",
         "keywords": [],
         "n_questions": 42,
-        "frequency_pct": 3.96,
+        "frequency_pct": 3.85,
         "weight": 1.07
       },
       {
@@ -1552,7 +1552,7 @@
         "he": "גסטרו והפטולוגיה",
         "keywords": [],
         "n_questions": 41,
-        "frequency_pct": 3.86,
+        "frequency_pct": 3.76,
         "weight": 1.04
       },
       {
@@ -1561,7 +1561,7 @@
         "he": "נוירולוגיה (שבץ, כאבי ראש, דמנציה)",
         "keywords": [],
         "n_questions": 41,
-        "frequency_pct": 3.86,
+        "frequency_pct": 3.76,
         "weight": 1.04
       },
       {
@@ -1570,7 +1570,7 @@
         "he": "רפואה מונעת וקידום בריאות",
         "keywords": [],
         "n_questions": 41,
-        "frequency_pct": 3.86,
+        "frequency_pct": 3.76,
         "weight": 1.04
       },
       {
@@ -1579,7 +1579,7 @@
         "he": "חירום במרפאה",
         "keywords": [],
         "n_questions": 39,
-        "frequency_pct": 3.68,
+        "frequency_pct": 3.57,
         "weight": 0.99
       },
       {
@@ -1587,8 +1587,8 @@
         "en": "Pulmonology (Asthma, COPD, PE)",
         "he": "ריאות (אסטמה, COPD, תסחיף)",
         "keywords": [],
-        "n_questions": 38,
-        "frequency_pct": 3.58,
+        "n_questions": 40,
+        "frequency_pct": 3.67,
         "weight": 0.97
       },
       {
@@ -1596,8 +1596,8 @@
         "en": "Mental Health — Mood, Anxiety, Psychosis",
         "he": "בריאות הנפש — מצב רוח, חרדה, פסיכוזה",
         "keywords": [],
-        "n_questions": 32,
-        "frequency_pct": 3.02,
+        "n_questions": 34,
+        "frequency_pct": 3.12,
         "weight": 0.81
       },
       {
@@ -1605,8 +1605,8 @@
         "en": "Endocrinology — Diabetes",
         "he": "אנדוקרינולוגיה — סוכרת",
         "keywords": [],
-        "n_questions": 31,
-        "frequency_pct": 2.92,
+        "n_questions": 32,
+        "frequency_pct": 2.93,
         "weight": 0.79
       },
       {
@@ -1614,8 +1614,8 @@
         "en": "Hypertension & Lipids",
         "he": "יתר לחץ דם ודיסליפידמיה",
         "keywords": [],
-        "n_questions": 29,
-        "frequency_pct": 2.73,
+        "n_questions": 33,
+        "frequency_pct": 3.02,
         "weight": 0.74
       },
       {
@@ -1623,8 +1623,8 @@
         "en": "Hematology & Coagulation",
         "he": "המטולוגיה וקרישה",
         "keywords": [],
-        "n_questions": 28,
-        "frequency_pct": 2.64,
+        "n_questions": 30,
+        "frequency_pct": 2.75,
         "weight": 0.71
       },
       {
@@ -1633,7 +1633,7 @@
         "he": "ילדים — מתבגרים ובריאות הנפש",
         "keywords": [],
         "n_questions": 28,
-        "frequency_pct": 2.64,
+        "frequency_pct": 2.57,
         "weight": 0.71
       },
       {
@@ -1641,8 +1641,8 @@
         "en": "Nephrology, UTI & Urology",
         "he": "נפרולוגיה, UTI ואורולוגיה",
         "keywords": [],
-        "n_questions": 27,
-        "frequency_pct": 2.54,
+        "n_questions": 29,
+        "frequency_pct": 2.66,
         "weight": 0.69
       },
       {
@@ -1650,8 +1650,8 @@
         "en": "Endocrinology — Thyroid & Other",
         "he": "אנדוקרינולוגיה — בלוטת תריס ואחר",
         "keywords": [],
-        "n_questions": 24,
-        "frequency_pct": 2.26,
+        "n_questions": 27,
+        "frequency_pct": 2.47,
         "weight": 0.61
       },
       {
@@ -1660,7 +1660,7 @@
         "he": "ילדים — יילוד והתפתחות",
         "keywords": [],
         "n_questions": 24,
-        "frequency_pct": 2.26,
+        "frequency_pct": 2.2,
         "weight": 0.61
       },
       {
@@ -1669,7 +1669,7 @@
         "he": "אי-ספיקת לב ומסתמים",
         "keywords": [],
         "n_questions": 23,
-        "frequency_pct": 2.17,
+        "frequency_pct": 2.11,
         "weight": 0.59
       },
       {
@@ -1677,8 +1677,8 @@
         "en": "Dermatology",
         "he": "דרמטולוגיה",
         "keywords": [],
-        "n_questions": 22,
-        "frequency_pct": 2.07,
+        "n_questions": 24,
+        "frequency_pct": 2.2,
         "weight": 0.56
       },
       {
@@ -1686,8 +1686,8 @@
         "en": "Allergy & Immunology",
         "he": "אלרגיה ואימונולוגיה",
         "keywords": [],
-        "n_questions": 21,
-        "frequency_pct": 1.98,
+        "n_questions": 22,
+        "frequency_pct": 2.02,
         "weight": 0.53
       },
       {
@@ -1695,8 +1695,8 @@
         "en": "Adult Cardiology — IHD & Arrhythmia",
         "he": "קרדיולוגיה למבוגר — מחלת לב איסכמית והפרעות קצב",
         "keywords": [],
-        "n_questions": 20,
-        "frequency_pct": 1.89,
+        "n_questions": 24,
+        "frequency_pct": 2.2,
         "weight": 0.51
       },
       {
@@ -1704,8 +1704,8 @@
         "en": "Men's Health",
         "he": "בריאות הגבר",
         "keywords": [],
-        "n_questions": 20,
-        "frequency_pct": 1.89,
+        "n_questions": 21,
+        "frequency_pct": 1.92,
         "weight": 0.51
       },
       {
@@ -1713,8 +1713,8 @@
         "en": "Pain, Palliative & End-of-Life",
         "he": "כאב, פליאציה וסוף החיים",
         "keywords": [],
-        "n_questions": 20,
-        "frequency_pct": 1.89,
+        "n_questions": 21,
+        "frequency_pct": 1.92,
         "weight": 0.51
       },
       {
@@ -1722,8 +1722,8 @@
         "en": "Addictions & Lifestyle Behaviors",
         "he": "התמכרויות והתנהגות בריאותית",
         "keywords": [],
-        "n_questions": 16,
-        "frequency_pct": 1.51,
+        "n_questions": 18,
+        "frequency_pct": 1.65,
         "weight": 0.41
       }
     ]
