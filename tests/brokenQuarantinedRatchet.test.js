@@ -4,8 +4,18 @@
 // quote (per v9.81 rule) has been obtained to resolve the disagreement.
 //
 // 2026-05-24 entries (PR for P2 of the audit-8 R1.5 carryover batch):
-//   - idx 2096: Cardiology, Hazzard Ch 74 / Harrison Ch 286, conf 85
-//   - idx 3618: Urology,    Hazzard Ch 38 / GRS8 Ch 49-53,   conf 70
+//   - idx 2096: Cardiology, Hazzard Ch 74 / Harrison Ch 286, conf 85 — STILL PARKED
+//   - idx 3618: Urology,    Hazzard Ch 38 / GRS8 Ch 49-53,   conf 70 — RESOLVED 2026-05-29
+//
+// 2026-05-29: idx 3618 reopened via its documented reopen path. The verbatim
+// GRS8 source question (Q#203, ANSWER: D) confirms c=3 — measure postvoid
+// residual urine BEFORE adjusting medications, to exclude diphenhydramine-
+// induced retention; a normal PVR averts the need to stop the diphenhydramine
+// that gives good symptom control. The chaos-doctor's conf-70 flip to "stop
+// diphenhydramine" is explicitly rejected by the GRS8 rationale. c confirmed
+// unchanged; status/broken/broken_reason removed. idx 2096 stays parked — no
+// verbatim Harrison Ch 286 / Hazzard Ch 74 disposition quote obtained for the
+// low-risk elderly chest-pain-after-negative-serial-troponins scenario.
 //
 // Reopen path: obtain verbatim PDF quote, flip c (or confirm c stays),
 // remove status field + delete this ratchet entry, set broken=false.
@@ -27,8 +37,8 @@ describe('broken-quarantined ratchet', () => {
     .map((q, idx) => ({ idx, q }))
     .filter(({ q }) => q.status === 'broken-quarantined');
 
-  it('has exactly 2 quarantined Qs (as of 2026-05-24)', () => {
-    expect(quarantined.length).toBe(2);
+  it('has exactly 1 quarantined Q (idx 2096; idx 3618 resolved 2026-05-29)', () => {
+    expect(quarantined.length).toBe(1);
   });
 
   it('every status=broken-quarantined Q is also broken=true', () => {
@@ -55,14 +65,13 @@ describe('broken-quarantined ratchet', () => {
     }
   });
 
-  it('the 2 expected indices (2096, 3618) carry the quarantine', () => {
+  it('the expected index (2096) carries the quarantine', () => {
     const indices = quarantined.map(({ idx }) => idx).sort((a, b) => a - b);
-    expect(indices).toEqual([2096, 3618]);
+    expect(indices).toEqual([2096]);
   });
 
-  it('the 2 quarantined Qs cite their original textbook references intact', () => {
+  it('the quarantined Q cites its original textbook references intact', () => {
     expect(questions[2096].ref).toContain('Hazzard Ch 74');
     expect(questions[2096].ref).toContain('Harrison Ch 286');
-    expect(questions[3618].ref).toContain('Hazzard Ch 38');
   });
 });
