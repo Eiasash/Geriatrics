@@ -150,7 +150,7 @@ body.study [style*="background:#ede9fe"]{background:#2a1e0d!important;color:#e8d
 --yellow-bg:255 251 235;--yellow-brd:253 230 138;--yellow-fg:146 64 14;
 --red-bg:254 242 242;--red-brd:254 202 202;--red-fg:153 27 27}
 body{font-family:'Heebo','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:rgb(var(--bg));color:rgb(var(--fg));-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:contain}
-.heb{font-family:'Heebo',sans-serif;unicode-bidi:plaintext;text-align:start}
+.heb{font-family:'Inter','Heebo',sans-serif;unicode-bidi:plaintext;text-align:start}
 button{cursor:pointer;border:none;background:none;font:inherit}
 input,textarea,select{font:inherit}
 .hdr{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;position:sticky;top:0;z-index:40}
@@ -7285,8 +7285,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.141';
+const APP_VERSION='10.64.142';
 const CHANGELOG={
+'10.64.142':['style(ui): Section D S3 - .heb font stack lists Inter before Heebo so Latin letters and digits inside Hebrew text render in Inter (Hebrew glyphs unchanged via Heebo fallback). Font-only; unicode-bidi:plaintext and heDir() direction logic untouched. Section D slice S3. Trinity 10.64.141 to 10.64.142.'],
 '10.64.141':['fix(data): recovered 5 SZMC-Rescue refs (idx 3763-3767) from their own preserved _refs_orig provenance (scripts/mcqs_pending_rescue_2026-05-21.json) — original real citations, NOT fabricated chapters. The other 75 SZMC-Rescue Qs (bespoke / Israeli-context, no real textbook source) intentionally keep empty ref per the anti-fabrication rule (empty beats fabricated). Recovered: 3763 ARISTOTLE trial · ESC Guidelines 2020; 3764 NIA-AA criteria 2018 · Lancet Neurology 2021; 3765 STOPP/START v2 · BMJ 2021; 3766 J Am Geriatr Soc 2019; 3767 Circulation 2018. These are journal / guideline citations, not Hazzard/Harrison chapters, so parseQuestionRef renders no source-link row (data-layer recovery only, no broken deep-link). Empty-ref count 80 to 75. dataIntegrity REF_PATTERN allowlist extended (Lancet, BMJ, Circulation, STOPP, START, NIA-AA, Geriatr Soc) to recognize the recovered sources, per the add-new-sources intent of that test. Rebased onto #306 which took 10.64.140; trinity 10.64.140 to 10.64.141.'],
 '10.64.140':['style(ui): Section D S2 - quiz action row (check/next/prev/show-answer) routed onto the .btn class system and the .tap-min token instead of overriding inline styles. Dropped next-btn redundant font-weight:700 and prev-btn duplicated bg2/fg2; all four take the 44px tap target from var(--tap-min). Pure CSS consistency, computed styles unchanged. Section D slice S2. Trinity 10.64.139 to 10.64.140.'],
 '10.64.139':['fix(ui): header restructured to flexbox (.hdr-bar) — the .dm-btn toolbar icons (study/dark/lang/help/account) moved from position:absolute right:Npx into a flex .dm-row, so they no longer overlap the title and the timestamp line. Supersedes the v94/95/96 padding-right/RTL reservation hacks (which still left ~120px overlap per the live-geometry note). Mobile media-query right: overrides and the h1 padding-right:172px reservation removed as moot under flex. .dm-btn base a11y rule (white text on white-tint) preserved as the first match. Ported from FM v1.25.4. Trinity 10.64.138 to 10.64.139.'],
