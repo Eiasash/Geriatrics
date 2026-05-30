@@ -561,6 +561,10 @@ describe("cross-file referential integrity", () => {
         "CDC", "ACIP", "STEADI", "WHO",
         // Trial / cohort name patterns
         "Trial", "Study", "Cohort",
+        // Major medical journals + geriatric criteria (recovered SZMC-Rescue
+        // citations from _refs_orig, v10.64.141 — original real sources, not Hazzard/
+        // Harrison chapters; UI renders no source-link, but legitimate per this test intent)
+        "Lancet", "BMJ", "Circulation", "STOPP", "START", "NIA-AA", "Geriatr Soc",
         // Israeli MOH / clinical guidance + Israeli statutes / government / statistical sources
         "חוזר", "חוק", "מכון", "משרד", "אפוטרופוס", "הלשכה", "הר\"י", "למ\"ס",
         "MOH", "Circular", "Director-General",
