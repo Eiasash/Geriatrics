@@ -92,7 +92,7 @@ describe("Phase 2 — sw-update.js extraction", () => {
 // ── Phase 3: Shell-level inline handler delegation ──
 describe("Phase 3 — data-action delegation", () => {
   it("header buttons use data-action instead of onclick", () => {
-    const headerMatch = html.match(/<div class="hdr"[\s\S]*?<\/div>/);
+    const headerMatch = html.match(/<div class="hdr"[\s\S]*?<div class="ct"/);  // full nested flex header (v10.64.139): capture through to the main content div
     expect(headerMatch).not.toBeNull();
     const header = headerMatch[0];
     expect(header).toContain('data-action="toggle-study"');
