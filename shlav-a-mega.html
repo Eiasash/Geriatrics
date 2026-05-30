@@ -231,7 +231,6 @@ body.dark .dm-btn{background:rgba(255,255,255,0.08);color:#fff}
 body.dark .dm-btn:hover{background:rgba(255,255,255,0.18)}
 .dm-btn:active{transform:scale(.92)}
 /* v10.64.94 phone header declutter: inline h1 22px + 5x36px buttons at top:50% (centered) collide with title AND the timestamp <p> on ≤480px viewports. Anchor buttons to a fixed top below the safe-area inset (not centered), shrink to 32px, tighten the inline right: offsets, override inline h1 to 17px, hide redundant Local-only sync pill (account chip + Settings tab convey same info). Desktop ≥481px unchanged — placed AFTER the base .dm-btn rule so the canonical white-on-tint contrast rule (a11yIssue125 regex guard) stays the first match. */
-/* v10.64.96 RTL property fix — v95 used padding-inline-end:172px which in RTL writing-mode adds padding to the LEFT (inline-end = the END of inline flow = left in RTL), not the right where the absolutely-positioned icons live. Live geometry confirmed h1 text was at left 224-344 vs icons at 176-352 — still overlapping by 120px. Switched to physical padding-right:172px so the reserved space is on the actual right edge of h1 regardless of writing direction. */
 @media(max-width:480px){
   .hdr h1{font-size:17px!important;font-weight:700!important;letter-spacing:-.02em!important;line-height:1.25!important}
   .hdr h1 span:not(#headerVer){display:none!important}
