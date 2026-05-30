@@ -35,7 +35,7 @@ These four rules are the floor. They override any conflicting guidance later in 
 
 - **Live URL**: https://eiasash.github.io/Geriatrics/
 - **Main file**: `shlav-a-mega.html` (~704 KB, ~8,354 lines, 227 named functions)
-- **App version**: v10.64.130 (as of 23/05/26) — 3,823 Qs across 46 topics. All 3,823 Qs carry `ref` (Hazzard / Harrison chapter + title) and pre-generated `e` explanation. Recent: v10.64.109–130 — rescued-MCQ pipeline campaign (PRs #254/#255/#256/#258: 82 normalized rescue MCQs via `merge-questions.cjs` + v10.64.93 explanations split; bilingual translation for 80 of them via `claude/fix-translate-bilingual-schema`); regen_derived gate landed (PRs #259/#262/#263: `scripts/regen_derived.cjs --check` closes the denominator-invalidates-all-ratios bug class for `regulatory.json` / `question_chapters.json` / `syllabus_data.json`); audit-6/7/8 instrument campaign (judge-letter frame correction, pick-channel precision, stemHash identity prestep). Pre-v10.64.108 narrative: v10.64.102-108 multi-accept reframe campaign — 143 questions with `c_accept` array (multi-correct semantic) reframed via Sonnet REFRAME/KEEP → Opus cold-validate revert 39 → Opus rescue 23/39 → lane-sync +1; v10.64.101 verify chain hardened (node --check on inline scripts, cp1252-safe); v10.64.93 split `e` field into `data/explanations.json` (-43% questions.json — mobile load 79s→24s); v10.64.87-92 a11y + mobile UI polish (skip-link mobile fix, header dark-on-dark, topic groups collapsed by default); v10.64.86 a11y issue #125 final close (4 amber-600 → amber-800 button fixes, white-on-amber 3.19:1 → 7.39:1 AAA) + 6 new integrity ratchet tests (`tests/integrityRatchet.test.js`); v10.64.82–85 a11y dir=rtl + skip-link + theme-aware dm-btn + slate hierarchy + 4 residual contrast clears; v10.64.81 cancer cluster wrong_textbook drain CLOSED (record-not-queue going forward); v10.64.61 search matches across Hebrew + English variants; v10.64.60 bilingual schema + Hebrew↔English toggle for AI-translated Qs (paired Heb/Eng `o[]` arrays — `c` index valid for both); v10.64.59 1,255 AI Qs translated to Hebrew (Sonnet 4.6 batch 2); v10.64.58 pre-emptive defensive guards (FM v1.21.13 chaos-pattern parity); v10.64.57 faceted pill counts (cross-axis filter narrowing); v10.64.56 year + topic INTERSECT (was mutually exclusive); v10.64.55 topic groups (12 clinical categories) + year presets; v10.64.54 622 AI Qs translated to Hebrew (Sonnet 4.6); v10.64.51 multi-select topic filter + dynamic year picker (was hiding 1,284 Qs); v10.64.48–50 cloud-sync API key with user account (cloudBackup _apikey + auth_login_user.api_key restore); v10.64.47 loading-skeleton stale count fix + STALE_COUNTS guard; v10.64.46 Track-I distractor regen — 75 drifted Qs regenerated; v10.64.45 Track-R 1547 Hazzard refs realigned; v10.64.42–44 Track-Q backup_set SECURITY DEFINER RPC + PDF externalization to GitHub Releases (-85% repo size); v10.64.30s–40 Tracks D/H/I/J/K/L/M/N/O/P — distractor regen + detector v3 + 110 curator overrides triangulated.
+- **App version**: v10.64.141 (as of 30/05/26) — 3,823 Qs across 46 topics. 3,748 of 3,823 Qs carry `ref` (Hazzard / Harrison chapter + title); the 75 remaining are SZMC-Rescue Qs intentionally left unsourced (bespoke / Israeli-context content with no real textbook source — #307 recovered 5 of the original 80 from their own `_refs_orig`, the other 75 stay empty per the anti-fabrication rule). All 3,823 carry a pre-generated `e` explanation. Recent: v10.64.131–141 — #285 graceful Harrison-chapter-not-indexed reader branch; #304/#305 header restructured to flexbox (`.hdr-bar`, removed the v94/95/96 `padding-right:172px` overlap hacks); #306 Section-D quiz-action-row routed onto `.btn` + `.tap-min`; #307 recovered 5 SZMC-Rescue refs (idx 3763–3767) from `_refs_orig` + `dataIntegrity` REF_PATTERN allowlist extension. v10.64.109–130 — rescued-MCQ pipeline campaign (PRs #254/#255/#256/#258: 82 normalized rescue MCQs via `merge-questions.cjs` + v10.64.93 explanations split; bilingual translation for 80 of them via `claude/fix-translate-bilingual-schema`); regen_derived gate landed (PRs #259/#262/#263: `scripts/regen_derived.cjs --check` closes the denominator-invalidates-all-ratios bug class for `regulatory.json` / `question_chapters.json` / `syllabus_data.json`); audit-6/7/8 instrument campaign (judge-letter frame correction, pick-channel precision, stemHash identity prestep). Pre-v10.64.108 narrative: v10.64.102-108 multi-accept reframe campaign — 143 questions with `c_accept` array (multi-correct semantic) reframed via Sonnet REFRAME/KEEP → Opus cold-validate revert 39 → Opus rescue 23/39 → lane-sync +1; v10.64.101 verify chain hardened (node --check on inline scripts, cp1252-safe); v10.64.93 split `e` field into `data/explanations.json` (-43% questions.json — mobile load 79s→24s); v10.64.87-92 a11y + mobile UI polish (skip-link mobile fix, header dark-on-dark, topic groups collapsed by default); v10.64.86 a11y issue #125 final close (4 amber-600 → amber-800 button fixes, white-on-amber 3.19:1 → 7.39:1 AAA) + 6 new integrity ratchet tests (`tests/integrityRatchet.test.js`); v10.64.82–85 a11y dir=rtl + skip-link + theme-aware dm-btn + slate hierarchy + 4 residual contrast clears; v10.64.81 cancer cluster wrong_textbook drain CLOSED (record-not-queue going forward); v10.64.61 search matches across Hebrew + English variants; v10.64.60 bilingual schema + Hebrew↔English toggle for AI-translated Qs (paired Heb/Eng `o[]` arrays — `c` index valid for both); v10.64.59 1,255 AI Qs translated to Hebrew (Sonnet 4.6 batch 2); v10.64.58 pre-emptive defensive guards (FM v1.21.13 chaos-pattern parity); v10.64.57 faceted pill counts (cross-axis filter narrowing); v10.64.56 year + topic INTERSECT (was mutually exclusive); v10.64.55 topic groups (12 clinical categories) + year presets; v10.64.54 622 AI Qs translated to Hebrew (Sonnet 4.6); v10.64.51 multi-select topic filter + dynamic year picker (was hiding 1,284 Qs); v10.64.48–50 cloud-sync API key with user account (cloudBackup _apikey + auth_login_user.api_key restore); v10.64.47 loading-skeleton stale count fix + STALE_COUNTS guard; v10.64.46 Track-I distractor regen — 75 drifted Qs regenerated; v10.64.45 Track-R 1547 Hazzard refs realigned; v10.64.42–44 Track-Q backup_set SECURITY DEFINER RPC + PDF externalization to GitHub Releases (-85% repo size); v10.64.30s–40 Tracks D/H/I/J/K/L/M/N/O/P — distractor regen + detector v3 + 110 curator overrides triangulated.
 - **Data**: JSON files in `data/` directory, loaded lazily at runtime
 - **Deployment**: Push to `main` → GitHub Actions validates → GitHub Pages live in ~60s
 
@@ -181,13 +181,13 @@ the full decomposition ledger and safe-next-steps list.
 
 ```
 /
-├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.64.130)
+├── shlav-a-mega.html        # Main app (THE file — all HTML/CSS/JS, v10.64.141)
 ├── index.html               # GitHub Pages redirect → shlav-a-mega.html
 ├── sw.js                    # Service worker (offline caching + background sync)
 ├── manifest.json            # PWA manifest
 │
 ├── data/                    # Lazy-loaded JSON data — single source of truth
-│   ├── questions.json       # 3,823 MCQs (primary runtime source, all carry `ref` + `e`)
+│   ├── questions.json       # 3,823 MCQs (primary runtime source, all carry `e`; 3,748/3,823 carry `ref` — 75 SZMC-Rescue intentionally unsourced)
 │   ├── notes.json           # 46 study topic notes
 │   ├── drugs.json           # 113 Beers/ACB drugs database
 │   ├── flashcards.json      # 159 high-yield flashcards
@@ -265,7 +265,7 @@ All runtime data lives in `data/`. The app and service worker load exclusively f
 
 #### Bilingual schema (v10.64.59-61)
 
-1,867 of 3,823 Qs (as of v10.64.130) are AI-generated from English
+1,867 of 3,823 Qs (as of v10.64.141) are AI-generated from English
 textbooks (Hazzard 1852, Harrison 294, GRS8 90 baseline; the count grew
 as more translations shipped). They carry paired Hebrew↔English variants:
 
@@ -374,7 +374,7 @@ No build step needed. Edit and refresh.
 
 ### Service Worker Versioning
 - `APP_VERSION` in `shlav-a-mega.html` must match the cache version in `sw.js` and `package.json` `version`
-- Currently all three at `10.64.130` (sw.js cache key: `shlav-a-v10.64.130`)
+- Currently all three at `10.64.141` (sw.js cache key: `shlav-a-v10.64.141`)
 - Update all three when making changes to ensure users get cache-busted (see workspace CLAUDE.md "version-trinity invariant")
 - The trinity guard lives in two places: strict pairwise alignment in `tests/appIntegrity.test.js`, and a version-agnostic re-derivation from `package.json` in `tests/visualOverhaul2026.test.js` (refactored v10.60 — used to hard-code the literal version string and went stale every release)
 
@@ -415,7 +415,7 @@ test suite alone misses.
 - Modified data processing → edge case + boundary tests
 - After adding tests, update the test count in this section
 
-**Test file inventory (85 files, 1,596 tests + 7 skipped — current as of v10.64.130; prior tally at v10.64.86 was 61 files / 1,270 tests):**
+**Test file inventory (87 files, 1,615 tests + 7 skipped — current as of v10.64.141; prior tally at v10.64.86 was 61 files / 1,270 tests):**
 
 | File | Tests | Description |
 |------|-------|-------------|
@@ -605,12 +605,19 @@ Optional cloud sync via Supabase. The schema is in `supabase-setup.sql`.
 - Haptic feedback (`navigator.vibrate`) is used on mobile — do not remove
 - Mobile-first responsive design (max-width: 640px container)
 
-### Keyboard Shortcuts
+### Keyboard Shortcuts (ASPIRATIONAL — not currently implemented)
+
+> NOTE (2026-05-30 audit): the scheme below is the *intended* design but is **not
+> wired** in `shlav-a-mega.html` — there are no global `1–4`/`Enter`/`B`/`?` key
+> handlers (only `Ctrl+Shift+D` debug + `Escape` modal-close exist). Quiz options
+> are keyboard-operable via native `Tab`+`Enter` (WCAG 2.1.1 satisfied via button
+> semantics). Treat the list as a roadmap item, not a current feature.
+
 - `1–4`: select answer options
 - `Enter`: check answer
 - `B`: bookmark question
 - `?`: help overlay
-- Do not reuse these keys for new features
+- Do not reuse these keys for new features (reserved for the above scheme)
 
 ---
 
@@ -775,7 +782,7 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 |---|---|
 | Main file | `shlav-a-mega.html` (~7,631 lines, ~580 KB) |
 | Named functions | 227 (231 incl. shared/*.js, the integrity-guard counting basis) |
-| Questions | 3,823 (IMA past exams + Hazzard/Harrison AI-generated + GRS8 imports; all carry `ref` + `e`) |
+| Questions | 3,823 (IMA past exams + Hazzard/Harrison AI-generated + GRS8 imports; all carry `e`; 3,748/3,823 carry `ref` — 75 SZMC-Rescue unsourced) |
 | Topics | 46 |
 | Drugs | 113 |
 | Flashcards | 159 |
@@ -786,8 +793,8 @@ GitHub Actions runs CI → on pass, GitHub Pages updates within ~60 seconds.
 | Sibling repos | Mishpacha Mega (family med) + Pnimit Mega (internal med) — see workspace CLAUDE.md for shared invariants |
 | CI workflows | 7 (ci.yml, claude.yml, claude-code-review.yml, distractor-autopsy.yml, distractor-merge-pr.yml, integrity-guard.yml, weekly-audit.yml) |
 | Inline handlers | onclick=214, onchange=25, oninput=6 |
-| App version | v10.64.130 |
-| SW cache key | `shlav-a-v10.64.130` |
+| App version | v10.64.141 |
+| SW cache key | `shlav-a-v10.64.141` |
 
 
 ## Test Coverage Recommendations
