@@ -6098,7 +6098,7 @@ h+=`<div class="card track-share">
 // scrolls there for the unset case.
 // Version footer
 h+=`<div class="track-version-footer">
-<div>Shlav A Mega v${APP_VERSION} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · build ${BUILD_HASH}</div>
+<div>Shlav A Mega v${APP_VERSION}</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div class="track-version-footer__row">
 <button data-action="apply-update" class="track-version-footer__btn track-version-footer__btn--update">🔄 Force Update</button>
@@ -7288,8 +7288,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.143';
+const APP_VERSION='10.64.144';
 const CHANGELOG={
+'10.64.144':['chore(footer): remove misleading frozen-build footer. BUILD_HASH was hardcoded to 2026-05-03 (frozen for 3+ weeks while APP_VERSION advanced) and the date field used render-time new Date() (always today) — so the footer claimed "31 May 2026 · build 20260503", a today-date next to a stale build hash. Footer now shows only the honest "Shlav A Mega v${APP_VERSION}"; removed the now-unused BUILD_HASH const. No answer keys or content touched.'],
 '10.64.143':['fix(dark): core content was invisible in dark mode. Notes terms, flashcard fronts, and any prose that hardcodes a dark inline color (#1e293b/#0f172a/#334155) collided 1:1 with the dark .card/.fc/body background -> text colour == background -> invisible. A light-island scan (hunting hardcoded light backgrounds) structurally cannot see this inverse dark-text-on-dark-card bug. theme now rescues the hardcoded dark inline colours to light text under body.dark + body.study, with :not([style*=background]) skipping legitimate light-islands (e.g. the white login button). Suite-wide P1 from the 2026-05-31 audit; companion to FamilyMedicine v1.25.6 + Pnimit v10.4.37. Trinity 10.64.142 to 10.64.143.'],
 '10.64.142':['style(ui): Section D S3 - .heb font stack lists Inter before Heebo so Latin letters and digits inside Hebrew text render in Inter (Hebrew glyphs unchanged via Heebo fallback). Font-only; unicode-bidi:plaintext and heDir() direction logic untouched. Section D slice S3. Trinity 10.64.141 to 10.64.142.'],
 '10.64.141':['fix(data): recovered 5 SZMC-Rescue refs (idx 3763-3767) from their own preserved _refs_orig provenance (scripts/mcqs_pending_rescue_2026-05-21.json) — original real citations, NOT fabricated chapters. The other 75 SZMC-Rescue Qs (bespoke / Israeli-context, no real textbook source) intentionally keep empty ref per the anti-fabrication rule (empty beats fabricated). Recovered: 3763 ARISTOTLE trial · ESC Guidelines 2020; 3764 NIA-AA criteria 2018 · Lancet Neurology 2021; 3765 STOPP/START v2 · BMJ 2021; 3766 J Am Geriatr Soc 2019; 3767 Circulation 2018. These are journal / guideline citations, not Hazzard/Harrison chapters, so parseQuestionRef renders no source-link row (data-layer recovery only, no broken deep-link). Empty-ref count 80 to 75. dataIntegrity REF_PATTERN allowlist extended (Lancet, BMJ, Circulation, STOPP, START, NIA-AA, Geriatr Soc) to recognize the recovered sources, per the add-new-sources intent of that test. Rebased onto #306 which took 10.64.140; trinity 10.64.140 to 10.64.141.'],
@@ -8196,7 +8197,6 @@ function getTopicTrend(ti){
     return curr-prev; // positive = improving
   }catch(e){return null;}
 }
-const BUILD_HASH=(()=>{const d=new Date('2026-05-03T00:00:00Z');return d.toISOString().slice(0,10).replace(/-/g,'');})();
 
 // ===== SHARED AI PROXY =====
 const AI_PROXY='https://toranot.netlify.app/api/claude';
