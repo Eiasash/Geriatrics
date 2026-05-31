@@ -45,9 +45,9 @@ const EXAM_DIRS = [
 // Tag bucket → required tag list (any one of the alternatives is acceptable).
 const REQUIRED_TAGS = {
   '2020_al': ['2020'],
-  '2021_dec_al': ['2021-Dec', '2021-Jun'],
+  '2021_dec_al': ['2021-Dec'],
   '2022_jun_al': ['2022-Jun-Basic', '2022-Jun-Subspec', '2022-Jun-orphan'],
-  '2023_jun_al': ['2023-Jun-Basic', '2023-Jun-Subspec', '2023-Jun-orphan', '2023-Sep'],
+  '2023_jun_al': ['2023-Jun-Basic', '2023-Jun-Subspec', '2023-Jun-orphan'],
   '2024_may_al': ['2024-May-Basic', '2024-May-Subspec', '2024-orphan'],
   '2024_sep_al': ['2024-Sep-Basic', '2024-Sep-Subspec'],
   '2025_jun_al': ['2025-Jun-Basic'],
