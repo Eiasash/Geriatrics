@@ -84,7 +84,7 @@ describe('questions.json — formatting quality', () => {
   let questions;
   // Only past-exam sessions suffer PDF-extraction artifacts.
   // Hazzard/Harrison/Hazzard-suppl are AI-generated and immune.
-  const PAST_EXAM_TAGS = ['2020', '2021-Dec', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun-Basic'];
+  const PAST_EXAM_TAGS = ['2020', '2021-Dec', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun-Basic'];
   beforeAll(() => { questions = loadQuestions(); });
 
   // Catches "בן58" → should be "בן 58". Geriatrics has a legacy backlog
@@ -172,6 +172,7 @@ describe('questions.json — duplicates', () => {
     const byKey = new Map();
     const dupes = [];
     questions.forEach((q, i) => {
+      if (q.allow_dup) return; // honor the curator-sanctioned near-dup flag, consistent with the per-tag + cross-tag dup guards below (v10.64.150: the 2021-Jun→2021-Dec retag merged already-allow_dup'd paraphrase pairs into one tag)
       const key = `${q.t}||${normStem(q.q)}`;
       if (!key.endsWith('||')) {
         if (byKey.has(key)) {
@@ -281,7 +282,7 @@ describe('questions.json — structural invariants', () => {
       // Unresolved (TODO: determine month, currently kept as-is)
       '2020', '2022',
       // Canonical exam sessions
-      '2021-Dec', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan',
+      '2021-Dec', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan',
       // v10.11: real 2025-Jun Geri Stage A Basic (150 Qs) — per IMA post-appeal key 15314
       // v10.33: removed '2025-Jun' (219 condensed paraphrases — internal answer-key conflicts) and '2025-Jun-Subspec' (100 Qs that were 99 dupes of Basic + 1 misfiled real-Basic Q12). See CHANGELOG['10.33'].
       '2025-Jun-Basic',
@@ -333,17 +334,18 @@ describe('questions.json — per-session counts locked', () => {
   let questions;
   beforeAll(() => { questions = loadQuestions(); });
 
+  // v10.64.150: '2021-Jun'(103)+'2023-Sep'(22) were never real IMA sittings — retagged
+  // to their true booklet (all 103 '2021-Jun'→2021-Dec; '2023-Sep'→2020×8/2021-Dec×8/2023-Jun-Basic×6).
+  // So 2020 100→108, 2021-Dec 104→215, 2023-Jun-Basic 141→147; the two dead tags drop out.
   const EXPECTED = {
-    '2020': 100,
-    '2021-Dec': 104,
-    '2021-Jun': 103,
+    '2020': 108,
+    '2021-Dec': 215,
     '2022-Jun-Subspec': 95,
     '2022-Jun-Basic': 150,
     '2022-Jun-orphan': 0,
     '2023-Jun-Subspec': 100,
-    '2023-Jun-Basic': 141,
+    '2023-Jun-Basic': 147,
     '2023-Jun-orphan': 0,
-    '2023-Sep': 22,
     '2024-May-Subspec': 96,
     '2024-May-Basic': 150,
     '2024-Sep-Subspec': 98,
@@ -382,9 +384,9 @@ describe('questions.json — no within-tag stem duplicates (per past-exam tag)',
   // Past-exam tags only — Hazzard / Harrison / GRS8 / Exam are content
   // sources where the same conceptual Q can legitimately appear twice.
   const PAST_EXAM_TAGS = [
-    '2020', '2021-Dec', '2021-Jun',
+    '2020', '2021-Dec',
     '2022-Jun-Basic', '2022-Jun-Subspec', '2022-Jun-orphan',
-    '2023-Jun-Basic', '2023-Jun-Subspec', '2023-Jun-orphan', '2023-Sep',
+    '2023-Jun-Basic', '2023-Jun-Subspec', '2023-Jun-orphan',
     '2024-May-Basic', '2024-May-Subspec',
     '2024-Sep-Basic', '2024-Sep-Subspec', '2024-orphan',
     '2025-Jun-Basic',
@@ -479,7 +481,7 @@ describe('multi-select exam-year filter — Task 3 contract', () => {
   beforeAll(() => { questions = loadQuestions(); });
 
   // v10.64.11: orphan tags removed (all 48 deleted as fragment-dups)
-  const EXAM_YEARS = ['2020', '2021-Dec', '2021-Jun', '2022-Jun-Subspec', '2022-Jun-Basic', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Sep', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2025-Jun-Basic'];
+  const EXAM_YEARS = ['2020', '2021-Dec', '2022-Jun-Subspec', '2022-Jun-Basic', '2023-Jun-Subspec', '2023-Jun-Basic', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2025-Jun-Basic'];
 
   // Reproduces the pool-building logic inline so test doesn't depend on
   // running the monolith's runtime.
@@ -494,7 +496,7 @@ describe('multi-select exam-year filter — Task 3 contract', () => {
   });
 
   test('two-tag selection is exact union of those tags', () => {
-    const sel = ['2021-Jun', '2025-Jun-Basic'];
+    const sel = ['2021-Dec', '2025-Jun-Basic'];
     const expected = questions.filter(q => sel.includes(q.t)).length;
     expect(buildYearPool(sel).length).toBe(expected);
   });
@@ -517,9 +519,9 @@ describe('multi-select exam-year filter — Task 3 contract', () => {
     //   const raw = localStorage.getItem('samega_exam_filter');
     //   const arr = JSON.parse(raw);
     //   new Set(arr.filter(y => EXAM_YEARS.includes(y)));
-    const stored = ['2021-Jun', 'לא-קיים', 'Jun25']; // Jun25 is legacy pre-rename
+    const stored = ['2021-Dec', 'לא-קיים', 'Jun25']; // Jun25 is legacy pre-rename; '2021-Jun' was retagged away in v10.64.150
     const loaded = new Set(stored.filter(y => EXAM_YEARS.includes(y)));
-    expect([...loaded]).toEqual(['2021-Jun']);
+    expect([...loaded]).toEqual(['2021-Dec']);
   });
 
   test('all canonical EXAM_YEARS are represented in questions.json', () => {
