@@ -1066,9 +1066,14 @@ const LS='samega';
 // filter selections or tag-keyed fields get rewritten. Idempotent via
 // __tagMigrationV1 sentinel inside the state object.
 (function migrateExamYearTags(){
-  const MAP={'יוני 21':'2021-Jun','יוני 22':'2022-Jun-Basic','יוני 22 על':'2022-Jun-Subspec','יוני 23':'2023-Jun-Basic','יוני 23 על':'2023-Jun-Subspec','יוני 25':'2025-Jun','מאי 24':'2024-May-Basic','ספט 24':'2024-Sep-Basic','מאי 24 על':'2024-May-Subspec','ספט 24 על':'2024-Sep-Subspec','2022':'2022-Jun-Basic','2023-Jun':'2023-Jun-Basic','2024-May':'2024-May-Basic','2024-Sep':'2024-Sep-Basic','2023-ב':'2023-Sep','2025':'2025-Jun'};
-  // 2025-א cannot auto-migrate (split by classification) — drop from stored selections
-  const DROP=new Set(['2025-א']);
+  // v10.64.150: '2021-Jun' and '2023-Sep' were never real IMA sittings — booklet
+  // matching (Exams/Advanced/2021-12-21 + 2021-01_02__exam-2020) showed all 103
+  // '2021-Jun' Qs are the Dec-2021 sitting, and the 22 '2023-Sep' Qs split across
+  // 2020/2021-Dec/2023-Jun. So 'יוני 21' and the canonical '2021-Jun' now migrate to
+  // '2021-Dec'; '2023-ב'/'2023-Sep' can't map to one sitting → dropped from selections.
+  const MAP={'יוני 21':'2021-Dec','יוני 22':'2022-Jun-Basic','יוני 22 על':'2022-Jun-Subspec','יוני 23':'2023-Jun-Basic','יוני 23 על':'2023-Jun-Subspec','יוני 25':'2025-Jun','מאי 24':'2024-May-Basic','ספט 24':'2024-Sep-Basic','מאי 24 על':'2024-May-Subspec','ספט 24 על':'2024-Sep-Subspec','2022':'2022-Jun-Basic','2023-Jun':'2023-Jun-Basic','2024-May':'2024-May-Basic','2024-Sep':'2024-Sep-Basic','2025':'2025-Jun','2021-Jun':'2021-Dec'};
+  // 2025-א + 2023-ב/2023-Sep cannot auto-migrate (split by classification/sitting) — drop from stored selections
+  const DROP=new Set(['2025-א','2023-ב','2023-Sep']);
   const rename=(v)=>{if(typeof v!=='string')return v;if(DROP.has(v))return null;return Object.prototype.hasOwnProperty.call(MAP,v)?MAP[v]:v;};
   const walk=(obj)=>{
     if(Array.isArray(obj)){for(let i=obj.length-1;i>=0;i--){const w=rename(obj[i]);if(w===null)obj.splice(i,1);else if(w!==obj[i])obj[i]=w;else if(obj[i]&&typeof obj[i]==='object')walk(obj[i]);}return;}
@@ -1926,7 +1931,7 @@ function _topicSrcMatch(q){if(topicSrc==='all')return true;const ex=_isExamTag(q
 function setTopicSrc(s){if(!['all','exams','books'].includes(s))return;topicSrc=s;try{localStorage.setItem('samega_topic_src',s);}catch(e){}if(filt==='topic'){buildPool();}render();}
 // Canonical exam-session tags (ported from Pnimit's EXAM_YEARS). Bare 2020/2021/2022
 // month-unresolved — kept on whitelist so multi-select pills can still target them.
-const EXAM_YEARS=['2020','2021-Jun','2021-Dec','2022-Jun-Basic','2022-Jun-Subspec','2023-Jun-Basic','2023-Jun-Subspec','2023-Sep','2024-May-Basic','2024-May-Subspec','2024-Sep-Basic','2024-Sep-Subspec','2025-Jun-Basic']; // v10.64.11: orphan tags removed (all 48 deleted as fragment-dups)
+const EXAM_YEARS=['2020','2021-Dec','2022-Jun-Basic','2022-Jun-Subspec','2023-Jun-Basic','2023-Jun-Subspec','2024-May-Basic','2024-May-Subspec','2024-Sep-Basic','2024-Sep-Subspec','2025-Jun-Basic']; // v10.64.11: orphan tags removed (all 48 deleted as fragment-dups). v10.64.150: '2021-Jun'+'2023-Sep' removed — not real sittings (retagged to true booklet via Exams match)
 // Multi-select exam-year filter. Persisted across sessions (unlike Pnimit's runtime-only G.years).
 let selectedExamYears=(function(){
   try{const raw=localStorage.getItem('samega_exam_filter');if(!raw)return new Set();
@@ -5275,7 +5280,7 @@ const TOPIC_REF={
 
 function renderExamTrendCard(){
   // v10.55.0: real DB tags. Was matching only 225q (stale '2021','2022','2023-Jun')
-  const OLD_EX=new Set(['2020','2021-Jun','2021-Dec','2022-Jun-Basic','2022-Jun-Subspec','2022-Jun-orphan','2023-Jun-Basic','2023-Jun-Subspec','2023-Jun-orphan','2023-Sep']);
+  const OLD_EX=new Set(['2020','2021-Dec','2022-Jun-Basic','2022-Jun-Subspec','2022-Jun-orphan','2023-Jun-Basic','2023-Jun-Subspec','2023-Jun-orphan']);
   // v10.55.0: real DB tags. Was matching 0q (stale '2024-May','2024-Sep','2025-Jun')
   const NEW_EX=new Set(['2024-May-Basic','2024-May-Subspec','2024-Sep-Basic','2024-Sep-Subspec','2024-orphan','2025-Jun-Basic']);
   const TOPICS_L=TOPICS;
@@ -5996,7 +6001,7 @@ h+=`<div class="card track-wsm">`;
 h+=`<div onclick="S._wsmOpen=!S._wsmOpen;save();render()" class="track-wsm__head${_wsmOpen?' track-wsm__head--open':''}" role="button" tabindex="0" aria-expanded="${_wsmOpen?'true':'false'}" aria-label="Toggle weak spots map"><span class="track-wsm__title">🗺️ Weak Spots Map <span class="track-wsm__sub">· ${heatData.length} topic${heatData.length>1?'s':''} × ${years.length} exam${years.length>1?'s':''}</span></span><span class="track-wsm__chev">${_wsmOpen?'▲':'▼'}</span></div>`;
 if(_wsmOpen){
 h+=`<div class="track-wsm__scroll"><table class="track-wsm__table"><thead><tr><th class="track-wsm__th-topic">Topic</th>`;
-const _yearAbbr={'2020':'20','2021':'21','2021-Jun':"21·6",'2022':'22','2023-Jun':"23·6",'2023-Sep':"23·9",'2024-May':"24·5",'2024-Sep':"24·9",'2025-Jun':"25·6",'Hazzard':'Haz','Harrison':'Har','Exam':'Ex','Hazzard-suppl':'Sup','FM-Core':'FM','GRS8':'GRS','Harrison-suppl':'HSup'};
+const _yearAbbr={'2020':'20','2021':'21','2021-Dec':"21·12",'2022':'22','2023-Jun':"23·6",'2024-May':"24·5",'2024-Sep':"24·9",'2025-Jun':"25·6",'Hazzard':'Haz','Harrison':'Har','Exam':'Ex','Hazzard-suppl':'Sup','FM-Core':'FM','GRS8':'GRS','Harrison-suppl':'HSup'};
 years.forEach(y=>{h+=`<th class="track-wsm__th-year" title="${y}">${_yearAbbr[y]||y}</th>`;});
 h+=`</tr></thead><tbody>`;
 heatData.sort((a,b)=>{
@@ -7288,8 +7293,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.149';
+const APP_VERSION='10.64.150';
 const CHANGELOG={
+'10.64.150':['fix(data): retag the fabricated exam-sitting tags "2021-Jun" (103 Qs) and "2023-Sep" (22 Qs) to their TRUE sittings via authoritative booklet matching (same-corruption k-gram overlap against the real IMA exam PDFs). There was never a June-2021 or Sep-2023 IMA geriatrics sitting — the 2021 exam was Dec-2021, 2023 was Jun-2023. All 103 "2021-Jun" Qs matched the 2021-12-21 Advanced booklet (max conf 0.94, 101/103 ≥0.5, none matched 2020) → retagged 2021-Dec (vindicating the #316 idx-2419 finding). The 22 "2023-Sep" Qs were a garbage/orphan tag spread across 3 sittings (8→2020, 8→2021-Dec, 6→2023-Jun-Basic, all ≥0.5 conf) → retagged per-Q. Counts: 2020 100→108, 2021-Dec 104→215, 2023-Jun-Basic 141→147; "2021-Jun"/"2023-Sep" eliminated. 125 t-only changes (0 changes to q/o/c/e/ref; count unchanged 3823). Downstream in lockstep: EXAM_YEARS picker (13→11), _yearAbbr, OLD_EX, localStorage tag-migration MAP (יוני 21+2021-Jun→2021-Dec; 2023-ב/2023-Sep dropped — split across sittings), 8 test files (pastExamCoverage REQUIRED_TAGS, regressionGuards count-locks + lists, dataIntegrity/parserBleed/topicSrc/harrison-baseline allowlists, multiSelectFilters EXAM_YEARS len, tagMigration assertions). Within-session dup-stems 9 (≤10 ceiling). Evidence: .audit_logs/clinical_sweep_2026-06-01/retag_map.json. Trinity 10.64.149→10.64.150.'],
 '10.64.149':['fix(data): reference hygiene + new integrity guard (§1d/§1e of the 2026-05-31 audit). (A) Dropped the boilerplate-mistagged "Harrison Ch 14 — Pain: Pathophysiology and Management" citation half from 9 verifiably NON-pain questions (idx 362/2375/2376/2379/2380/2381/2385/3373/3396 — med-induced fall, chest-CT, CXR, facial BCC, bullous pemphigoid, disseminated zoster, blood-smear, uremic pruritus, DHIC urodynamics), leaving the correct Hazzard half. These were a systematic image-Q mis-tag (every "the finding shown" Q got "Ch 14 — Pain" appended regardless of topic). idx 1663 (pain assessment in non-communicative dementia, Hazzard Ch 68 PAIN MANAGEMENT) was EXCLUDED — its Harrison-Pain half is correct. Sanctioned by the authority-sources rule "rebuild only where current ref is verifiably worse, verifiable from the question content itself". (B) Canonicalized the glued ref "הריסון370" → "Harrison Ch 370 — Rheumatoid Arthritis" (idx 2959/3521; "370" was already the chapter number, title verbatim from harrison_22e_toc.json; stem = symmetric hand+knee joint disease matches RA). 11 refs changed, ref text ONLY — 0 changes to o[]/c/e/t, 0 answer-key changes, question count unchanged (3823). (C) New tests/referenceIntegrity.test.js (3 tests): asserts ZERO phantom chapters (every cited Hazzard 1-108 / Harrison 1-505 chapter exists — 0 violations across 5434 chapter-segments) + ratchets the two audited gaps (empty refs ≤75 SZMC-Rescue, Harrison unindexed-but-valid ≤219 copyright-blocked). Trinity 10.64.148→10.64.149.'],
 '10.64.148':['fix(content): reconstructed the final 10 quarantined intra-word spaced-Hebrew questions (idx 2419/2625/2632/2774/3272/3279/3379/3464/3492/3509) from their ORIGINAL exam PDFs. The corruption lives in the PDFs\' text layer (bad ToUnicode mapping), so each corrupted span was read VERBATIM off the rendered exam page (the visual layer is clean) and de-spaced — e.g. "מ מ .מאירות"→"ממאירות" (2625/3272), "ממ ו מ שך"→"ממושך" (2632/3279), "ל ת הש לת"→"להשתלת" + "ילי מ שני ות"→"מילישניות" (2774/3379), "ויפו י י כח"→"ויפויי כח" (3464), "ס י .סטמי"→"סיסטמי" + 6 more spans (3492), "סיכוי י ה תמותה"→"סיכויי התמותה" ×3 (3509), "מ ה מבחנים"→"מהמבחנים" (2419). 23 span-edits, 0 answer-key (c) changes, 0 option reorders, question count unchanged (3823); spacing/punctuation only, no word substitution (each span zoom-verified against source to avoid mis-transcription — 3 phantom "divergences" from low-res reads were caught and discarded). tests/spacedHebrewGuard.test.js ALLOWLIST emptied — the ratchet now asserts zero spaced-Hebrew dataset-wide. Note: idx 2419 t="2021-Jun" is mislabelled (its source booklet is 2021-Dec-Subspec / file 644197); tag left unchanged (out of scope). Trinity 10.64.147→10.64.148.'],
 '10.64.147':['fix(content): re-key idx 3474 (aphasia, 2024-Sep-Subspec) c:1→2 — Broca→Conduction. The stem describes intact comprehension + neologisms + impaired repetition; neologisms are a FLUENT-aphasia feature that Broca (non-fluent) does not produce, so the keyed Broca was contradicted by the stem. Source: Harrison 22e Ch 437 — "nonfluent (Broca) aphasia" vs "fluent (Wernicke\'s) aphasia ... Jargon speech". Triple-confirmed (Eias + advisor + stem). Coupled edits: distractors.json DIS[3474] empty slot 1→2 (+ added Broca wrong-because), explanations.json[3474] rewritten to Conduction with corrected rationale (the old explanation wrongly listed neologisms as a Broca feature). Only the single answer-key flip in the 2026-05-31 sweep.'],

@@ -27,9 +27,9 @@ const ROOT = resolve(import.meta.dirname, '..');
 function loadJSON(rel) { return JSON.parse(readFileSync(resolve(ROOT, rel), 'utf-8')); }
 
 const PAST_EXAM_TAGS = new Set([
-  '2020', '2021-Dec', '2021-Jun',
+  '2020', '2021-Dec',
   '2022-Jun-Basic', '2022-Jun-Subspec', '2022-Jun-orphan',
-  '2023-Jun-Basic', '2023-Jun-Subspec', '2023-Jun-orphan', '2023-Sep',
+  '2023-Jun-Basic', '2023-Jun-Subspec', '2023-Jun-orphan',
   '2024-May-Basic', '2024-May-Subspec',
   '2024-Sep-Basic', '2024-Sep-Subspec', '2024-orphan',
   '2025-Jun-Basic',

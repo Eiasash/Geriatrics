@@ -37,9 +37,9 @@ describe('v10.64.51-57 — multi-axis filter system', () => {
       expect(TOPICS.length).toBe(46);
     });
 
-    it('EXAM_YEARS array extracts to 13 entries', () => {
+    it('EXAM_YEARS array extracts to 11 entries', () => {
       expect(EXAM_YEARS).toBeTruthy();
-      expect(EXAM_YEARS.length).toBe(13);
+      expect(EXAM_YEARS.length).toBe(11); // v10.64.150: was 13; '2021-Jun'+'2023-Sep' removed (not real sittings, retagged)
     });
 
     it('every EXAM_YEARS tag exists in actual question data', () => {
@@ -295,7 +295,7 @@ describe('v10.64.51-57 — multi-axis filter system', () => {
       const counts = {};
       questions.forEach(q => { counts[q.t] = (counts[q.t] || 0) + 1; });
       const tooSmall = EXAM_YEARS.filter(y => (counts[y] || 0) < 20);
-      // 2023-Sep is currently 22 — borderline but passes.
+      // v10.64.150: smallest sitting is now well above 20 (the borderline 2023-Sep@22 was retagged away).
       expect(tooSmall, `EXAM_YEARS with <20 Qs: ${tooSmall.join(', ')}`).toEqual([]);
     });
 

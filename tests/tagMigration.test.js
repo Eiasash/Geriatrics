@@ -9,8 +9,8 @@
  *
  * Invariants:
  *   1. MAP rewrites are applied across all whitelisted storage keys.
- *   2. DROP ('2025-א') is removed from arrays and object values — split by
- *      classification, cannot auto-migrate.
+ *   2. DROP ('2025-א', '2023-ב', '2023-Sep') is removed from arrays and object
+ *      values — split by classification/sitting, cannot auto-migrate.
  *   3. Sentinel `__tagMigrationV1` is set on plain-object state, NOT arrays.
  *   4. Already-sentinel'd state is left untouched.
  *   5. Corrupt JSON per key is swallowed per-key (other keys still migrate).
@@ -75,17 +75,26 @@ describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
         }),
       });
       const after = JSON.parse(ls.getItem('samega'));
+      // v10.64.150: 'יוני 21'→2021-Dec (was 2021-Jun); '2023-ב' dropped (2023-Sep no longer a sitting).
       expect(after.selectedYears).toEqual([
-        '2021-Jun', '2023-Jun-Basic', '2025-Jun', '2024-May-Basic', '2024-Sep-Basic', '2023-Sep', '2025-Jun',
+        '2021-Dec', '2023-Jun-Basic', '2025-Jun', '2024-May-Basic', '2024-Sep-Basic', '2025-Jun',
       ]);
     });
 
     it('leaves already-canonical labels alone', () => {
       const ls = runMigration({
-        samega: JSON.stringify({ selectedYears: ['2021-Jun', '2025-Jun', 'unknown-tag'] }),
+        samega: JSON.stringify({ selectedYears: ['2021-Dec', '2025-Jun-Basic', 'unknown-tag'] }),
       });
       const after = JSON.parse(ls.getItem('samega'));
-      expect(after.selectedYears).toEqual(['2021-Jun', '2025-Jun', 'unknown-tag']);
+      expect(after.selectedYears).toEqual(['2021-Dec', '2025-Jun-Basic', 'unknown-tag']);
+    });
+
+    it('migrates the dead canonical tags (v10.64.150): 2021-Jun → 2021-Dec, 2023-Sep dropped', () => {
+      const ls = runMigration({
+        samega: JSON.stringify({ selectedYears: ['2021-Jun', '2023-Sep', '2025-Jun-Basic'] }),
+      });
+      const after = JSON.parse(ls.getItem('samega'));
+      expect(after.selectedYears).toEqual(['2021-Dec', '2025-Jun-Basic']);
     });
 
     it('walks into nested objects/arrays', () => {
@@ -99,7 +108,7 @@ describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
       const after = JSON.parse(ls.getItem('samega'));
       expect(after.filters.exam.pick).toBe('2024-May-Basic');
       expect(after.tags.q1).toBe('2025-Jun');
-      expect(after.list[0]).toEqual(['2021-Jun']);
+      expect(after.list[0]).toEqual(['2021-Dec']);
     });
   });
 
@@ -109,7 +118,7 @@ describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
         samega: JSON.stringify({ selectedYears: ['יוני 21', '2025-א', '2025-Jun'] }),
       });
       const after = JSON.parse(ls.getItem('samega'));
-      expect(after.selectedYears).toEqual(['2021-Jun', '2025-Jun']);
+      expect(after.selectedYears).toEqual(['2021-Dec', '2025-Jun']);
       expect(after.selectedYears).not.toContain('2025-א');
     });
 
@@ -118,7 +127,7 @@ describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
         samega: JSON.stringify({ picker: { current: '2025-א', prev: 'יוני 21' } }),
       });
       const after = JSON.parse(ls.getItem('samega'));
-      expect(after.picker.prev).toBe('2021-Jun');
+      expect(after.picker.prev).toBe('2021-Dec');
       expect('current' in after.picker).toBe(false);
     });
   });
@@ -159,11 +168,12 @@ describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
         samega_custom_qs: JSON.stringify({ tag: 'ספט 24' }),
         samega_pending_qs: JSON.stringify({ tag: '2023-ב' }),
       });
-      expect(JSON.parse(ls.getItem('samega')).a).toBe('2021-Jun');
+      expect(JSON.parse(ls.getItem('samega')).a).toBe('2021-Dec');
       expect(JSON.parse(ls.getItem('samega_mock_hist')).tag).toBe('2024-May-Basic');
       expect(JSON.parse(ls.getItem('samega_sessions')).tag).toBe('2025-Jun');
       expect(JSON.parse(ls.getItem('samega_custom_qs')).tag).toBe('2024-Sep-Basic');
-      expect(JSON.parse(ls.getItem('samega_pending_qs')).tag).toBe('2023-Sep');
+      // '2023-ב' is now in DROP → the value is removed, so the key is deleted.
+      expect('tag' in JSON.parse(ls.getItem('samega_pending_qs'))).toBe(false);
     });
 
     it('swallows corrupt JSON on one key without aborting others', () => {
@@ -174,7 +184,7 @@ describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
       // Corrupt key untouched.
       expect(ls.getItem('samega')).toBe('{not-json');
       // Healthy key still migrated.
-      expect(JSON.parse(ls.getItem('samega_sessions')).tag).toBe('2021-Jun');
+      expect(JSON.parse(ls.getItem('samega_sessions')).tag).toBe('2021-Dec');
     });
 
     it('ignores keys that are absent', () => {
