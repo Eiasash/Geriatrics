@@ -8,13 +8,14 @@
  * next token), so >=2 consecutive single-Hebrew-letter tokens reliably flags corruption.
  *
  * The 2026-05-31 content audit found 70 affected questions; 60 were repaired by a
- * surgical de-spacing pass (PR "hebrew-formatting-fix"). The remaining ALLOWLIST below
- * are questions where the corruption is ENTANGLED with deeper damage (scrambled letters,
- * stray periods, duplicated words) that cannot be fixed by de-spacing alone — they need
- * manual reconstruction against the source and are tracked, not silently tolerated.
+ * surgical de-spacing pass (PR "hebrew-formatting-fix") and the final 10 entangled ones
+ * were reconstructed from their ORIGINAL exam PDFs on 2026-05-31 (CHANGELOG v10.64.148):
+ * each corrupted span was read verbatim off the rendered exam page and de-spaced — no
+ * word substitution, no answer-key change. The allowlist is therefore now EMPTY.
  *
- * This is a RATCHET: any NEW spaced-Hebrew occurrence (idx not in the allowlist) fails.
- * When an allowlisted item is manually repaired, remove its idx here.
+ * This is a RATCHET: any spaced-Hebrew occurrence (the allowlist is empty) now fails.
+ * If a future ingestion re-introduces an entangled case that genuinely cannot be repaired,
+ * add its idx here WITH a source-tracking note — do not silently tolerate.
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
@@ -23,8 +24,9 @@ import { resolve } from 'path';
 const ROOT = resolve(import.meta.dirname, '..');
 const QZ = JSON.parse(readFileSync(resolve(ROOT, 'data/questions.json'), 'utf-8'));
 
-// Entangled-corruption questions awaiting manual reconstruction (NOT de-spaceable).
-const ALLOWLIST = new Set([2419, 2625, 2632, 2774, 3272, 3279, 3379, 3464, 3492, 3509]);
+// Empty — all 10 originally-entangled questions were reconstructed from source PDFs
+// on 2026-05-31. The dataset must now be free of intra-word spaced-Hebrew everywhere.
+const ALLOWLIST = new Set([]);
 
 const isHeb = (ch) => /[֐-׿]/.test(ch);
 function hasSpacedHebrew(s) {
