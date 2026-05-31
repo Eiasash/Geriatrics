@@ -192,3 +192,33 @@ describe('shlav-a-mega.html — migrateExamYearTags IIFE', () => {
     });
   });
 });
+
+// v10.64.150: the samega_exam_filter load path is NOT covered by the migrateExamYearTags
+// IIFE (it's not in the IIFE's key whitelist), so it carries its own inline retag of the
+// retired tags. Pin that behaviour so a saved '2021-Jun' filter isn't silently dropped. (Codex #318 P2)
+describe('shlav-a-mega.html — selectedExamYears loader migrates retired exam tags', () => {
+  function runLoader(saved) {
+    const eyStart = html.indexOf('const EXAM_YEARS=[');
+    const selStart = html.indexOf('let selectedExamYears=', eyStart);
+    const selEnd = html.indexOf('})();', selStart);
+    if (eyStart < 0 || selStart < 0 || selEnd < 0) throw new Error('EXAM_YEARS / selectedExamYears block not found');
+    const src = html.slice(eyStart, selEnd + 5);
+    const store = { samega_exam_filter: JSON.stringify(saved) };
+    const ctx = { localStorage: { getItem: (k) => (k in store ? store[k] : null) } };
+    vm.createContext(ctx);
+    vm.runInContext(src, ctx);
+    return vm.runInContext('[...selectedExamYears]', ctx).sort();
+  }
+
+  it("migrates a saved '2021-Jun' filter to '2021-Dec' and keeps valid tags", () => {
+    expect(runLoader(['2021-Jun', '2025-Jun-Basic'])).toEqual(['2021-Dec', '2025-Jun-Basic']);
+  });
+
+  it("drops a saved '2023-Sep' filter (split across sittings, not remappable)", () => {
+    expect(runLoader(['2021-Jun', '2023-Sep'])).toEqual(['2021-Dec']);
+  });
+
+  it('still filters out genuinely-unknown saved tags', () => {
+    expect(runLoader(['2021-Dec', 'not-a-tag', '2025-Jun-Basic'])).toEqual(['2021-Dec', '2025-Jun-Basic']);
+  });
+});

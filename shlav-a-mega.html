@@ -1935,7 +1935,12 @@ const EXAM_YEARS=['2020','2021-Dec','2022-Jun-Basic','2022-Jun-Subspec','2023-Ju
 // Multi-select exam-year filter. Persisted across sessions (unlike Pnimit's runtime-only G.years).
 let selectedExamYears=(function(){
   try{const raw=localStorage.getItem('samega_exam_filter');if(!raw)return new Set();
-    const arr=JSON.parse(raw);return new Set(Array.isArray(arr)?arr.filter(y=>EXAM_YEARS.includes(y)):[]);
+    const arr=JSON.parse(raw);if(!Array.isArray(arr))return new Set();
+    // v10.64.150: migrate retired exam tags saved in older filter selections (samega_exam_filter
+    // is not covered by the migrateExamYearTags IIFE). '2021-Jun'→'2021-Dec' (same Dec-2021 sitting);
+    // '2023-Sep' is intentionally NOT remapped (it split across 3 sittings) → it drops via the EXAM_YEARS filter.
+    const RETAG={'2021-Jun':'2021-Dec'};
+    return new Set(arr.map(y=>RETAG[y]||y).filter(y=>EXAM_YEARS.includes(y)));
   }catch(e){return new Set();}
 })();
 function saveExamYears(){try{localStorage.setItem('samega_exam_filter',JSON.stringify([...selectedExamYears]));}catch(e){}}
