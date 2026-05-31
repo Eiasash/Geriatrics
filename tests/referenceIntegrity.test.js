@@ -51,26 +51,35 @@ const HAR_UNINDEXED_BASELINE = 219;   // cited Harrison chapters with no reader 
 // Book token (English + Hebrew spellings) → optional edition marker (8e/22e) →
 // required Ch/פרק keyword → 1-3 digit chapter number.
 const SEG = /(Hazzard|Harrison|הזארד|הזרד|הריסון)\s*(?:\d{1,2}e\b)?\s*(?:Ch\.?|פרק|chapter)\s*\.?\s*(\d{1,3})\b/gi;
+// GLUED: book token fused DIRECTLY to a number with no separator/keyword (e.g.
+// "הריסון370" before this PR de-glued it). This is the exact de-gluing regression
+// class — without it the guard would not catch a re-introduced "הריסון999" (it has
+// no Ch/פרק keyword, so SEG skips it). The \b after the digits prevents matching an
+// edition marker like "Hazzard8e" (8 has no word-boundary before "e"). (Codex #317 P2.)
+const GLUED = /(Hazzard|Harrison|הזארד|הזרד|הריסון)(\d{1,3})\b/gi;
 const isHaz = (b) => ['hazzard', 'הזארד', 'הזרד'].includes(b.toLowerCase());
 
 function scan() {
   const phantom = [];
   const harUnindexed = new Set();
   let empty = 0;
+  const classify = (i, ref, bookTok, chStr) => {
+    const haz = isHaz(bookTok);
+    const ch = Number(chStr);
+    const universe = haz ? HAZ : HAR_TOC;
+    if (!universe.has(ch)) {
+      phantom.push(`idx ${i}: cites ${haz ? 'Hazzard' : 'Harrison'} Ch ${ch} (does not exist) — ${JSON.stringify(ref).slice(0, 70)}`);
+    } else if (!haz && !HAR_CONTENT.has(ch)) {
+      harUnindexed.add(`${i}:${ch}`);
+    }
+  };
   QZ.forEach((q, i) => {
     const ref = (q.ref || '').trim();
     if (!ref) { empty++; return; }
-    SEG.lastIndex = 0;
-    let m;
-    while ((m = SEG.exec(ref)) !== null) {
-      const haz = isHaz(m[1]);
-      const ch = Number(m[2]);
-      const universe = haz ? HAZ : HAR_TOC;
-      if (!universe.has(ch)) {
-        phantom.push(`idx ${i}: cites ${haz ? 'Hazzard' : 'Harrison'} Ch ${ch} (does not exist) — ${JSON.stringify(ref).slice(0, 70)}`);
-      } else if (!haz && !HAR_CONTENT.has(ch)) {
-        harUnindexed.add(`${i}:${ch}`);
-      }
+    for (const re of [SEG, GLUED]) {
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(ref)) !== null) classify(i, ref, m[1], m[2]);
     }
   });
   return { phantom, empty, harUnindexed: harUnindexed.size };
