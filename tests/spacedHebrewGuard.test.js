@@ -23,7 +23,7 @@
  *  - v10.64.153 (PR3): EXTENDED with rule (c) — a lone word-final-form letter (ךםןףץ) — and swept a
  *    DISTINCT intra-word FRACTURE class the prior rules missed (a single lone NON-prefix letter wedged
  *    inside a word: "לח ץ"→"לחץ", "אשפוזי ם"→"אשפוזים", "קר י אטנין"→"קריאטנין", "לכ י סא"→"לכיסא").
- *    59 spans / 53 Qs repaired purely mechanically (pure-despace, corpus-validated, known-words as
+ *    68 spans / 60 Qs repaired purely mechanically (pure-despace, corpus-validated, known-words as
  *    boundaries so "לב א יסכ מית"→"לב איסכמית" not "לבא"; 0 answer-key/option changes). idx 3211
  *    allowlisted (punctuation-displaced "( ם" needs source); corpus-ambiguous/rare/punct fractures
  *    (e.g. "סוכר ת" — both סוכר and סוכרת are real) are deferred, not auto-fixed.
