@@ -20,6 +20,13 @@
  *  - v10.64.152 (PR2): repaired 97 of the 99 by targeted spaced-Hebrew respacing verified against
  *    the source booklets' visual renders (minimal-span-fix — only flagged spans touched, answer
  *    keys/option-order preserved). 2 remain (idx 303, 3201 — sources not on hand); see allowlist note.
+ *  - v10.64.153 (PR3): EXTENDED with rule (c) — a lone word-final-form letter (ךםןףץ) — and swept a
+ *    DISTINCT intra-word FRACTURE class the prior rules missed (a single lone NON-prefix letter wedged
+ *    inside a word: "לח ץ"→"לחץ", "אשפוזי ם"→"אשפוזים", "קר י אטנין"→"קריאטנין", "לכ י סא"→"לכיסא").
+ *    59 spans / 53 Qs repaired purely mechanically (pure-despace, corpus-validated, known-words as
+ *    boundaries so "לב א יסכ מית"→"לב איסכמית" not "לבא"; 0 answer-key/option changes). idx 3211
+ *    allowlisted (punctuation-displaced "( ם" needs source); corpus-ambiguous/rare/punct fractures
+ *    (e.g. "סוכר ת" — both סוכר and סוכרת are real) are deferred, not auto-fixed.
  *
  * RATCHET: any spaced-Hebrew outside the allowlist fails. When a quarantined case is
  * reconstructed from source, remove its idx from ALLOWLIST in that PR.
@@ -41,13 +48,22 @@ const QZ = JSON.parse(readFileSync(resolve(ROOT, 'data/questions.json'), 'utf-8'
 //   3201 — dataset stem is a more-detailed HF-management variant whose clinical tail (vitals/
 //          labs/fluid-intake) matches no available booklet; the shorter 2022-Jun Q66 source
 //          would DROP clinical content, so it is not respaced. Both await a source not on hand.
+//   3211 — (v10.64.153) a lone final-form "ם" displaced after "(" ("( ם לעצירות"): punctuation
+//          displacement, so the word the "ם" belongs to needs a source read. It is the only fracture
+//          the new rule (c) flags that the PR3 mechanical sweep did not auto-fix (corpus-ambiguous /
+//          punctuation cases like "סוכר ת" are not flagged by rule (c) and are deferred, not allowlisted).
 // See .audit_logs/geri_single_prefix/STATE.md for the full pipeline + per-idx adjudication.
-const ALLOWLIST = new Set([303, 3201]);
+const ALLOWLIST = new Set([303, 3201, 3211]);
 
 const isHeb = (ch) => /[֐-׿]/.test(ch);
 const PFX = new Set('ובהלמכש'); // 1-letter Hebrew prefixes — always glued to the next token
+const FINAL = /[ךםןףץ]/;       // word-final-form letters — orthographically impossible except at word-end
 function hasSpacedHebrew(s) {
   const t = String(s).split(/\s+/);
+  // (c) a lone word-final-form letter (ךםןףץ) standing alone is ALWAYS a fractured word-final letter
+  //     ("אשפוזי ם"→"אשפוזים", "מסת ם"→"מסתם"). Zero false positives: a final form can never be a
+  //     standalone label or a prefix. Added v10.64.153 (intra-word FRACTURE sweep, PR3).
+  for (const tok of t) if (tok.length === 1 && FINAL.test(tok)) return true;
   for (let k = 0; k < t.length - 1; k++) {
     const a = t[k], b = t[k + 1];
     // (a) >=2 consecutive single-Hebrew-letter tokens — e.g. "ד י ספגיה"
