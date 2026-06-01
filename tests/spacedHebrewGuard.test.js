@@ -17,7 +17,9 @@
  *    or >=2-consecutive residue) are QUARANTINED below: ו can be word-final ("ו איז"=split of
  *    "איזו"), ה a SUFFIX ("מחלק ה"→"מחלקה") — gluing forward makes non-words, so they need a
  *    verbatim source read (render-the-clean-visual, like #316/#159), not a mechanical de-space.
- *  - v10.64.152 (PR2): reconstructs the 99 from source booklets and empties this allowlist.
+ *  - v10.64.152 (PR2): repaired 97 of the 99 by targeted spaced-Hebrew respacing verified against
+ *    the source booklets' visual renders (minimal-span-fix — only flagged spans touched, answer
+ *    keys/option-order preserved). 2 remain (idx 303, 3201 — sources not on hand); see allowlist note.
  *
  * RATCHET: any spaced-Hebrew outside the allowlist fails. When a quarantined case is
  * reconstructed from source, remove its idx from ALLOWLIST in that PR.
@@ -29,19 +31,18 @@ import { resolve } from 'path';
 const ROOT = resolve(import.meta.dirname, '..');
 const QZ = JSON.parse(readFileSync(resolve(ROOT, 'data/questions.json'), 'utf-8'));
 
-// 99 ambiguous single-prefix (ו/ה/ש) + entangled cases QUARANTINED for source-PDF
-// reconstruction (v10.64.151, PR1). ו can be word-final, ה a suffix — gluing forward makes
-// non-words (IM #158/#159 lesson) — so these need a verbatim source read, not a mechanical
-// de-space. PR2 reconstructs them from the exam booklets and empties this set.
-const ALLOWLIST = new Set([
-  303, 2392, 2400, 2406, 2419, 2420, 2422, 2475, 2480, 2496, 2503, 2511, 2593, 2603, 2606,
-  2621, 2624, 2637, 2646, 2653, 2660, 2661, 2663, 2679, 2681, 2688, 2737, 2751, 2779, 2787,
-  2810, 2814, 2818, 2839, 2844, 2849, 2853, 2887, 2946, 2964, 2973, 2982, 2985, 2995, 2997,
-  3004, 3011, 3018, 3028, 3045, 3168, 3172, 3175, 3181, 3189, 3201, 3222, 3236, 3240, 3242,
-  3247, 3248, 3251, 3258, 3267, 3270, 3271, 3284, 3286, 3293, 3301, 3308, 3309, 3311, 3327,
-  3329, 3341, 3356, 3384, 3392, 3415, 3419, 3423, 3432, 3437, 3439, 3444, 3448, 3449, 3452,
-  3462, 3472, 3474, 3482, 3506, 3507, 3687, 3689, 3708,
-]);
+// Of the 99 quarantined in PR1, 97 were repaired in PR2 (v10.64.152) by targeted spaced-Hebrew
+// respacing — each guard-flagged span verified against the source booklet's VISUAL render
+// (render-the-clean-visual; reorders like "ו איז"→"איזו", "ו דק ת"→"דקות" adjudicated against
+// high-DPI crops; pure forward/backward glues confirmed). Out-of-span content was left byte-
+// identical (minimal-span-fix), so answer keys + option order are untouched.
+// TWO remain quarantined — unfixable from sources on hand:
+//   303  — not present in ANY available exam booklet (10 sittings + 56 flat PDFs + 2020 exam).
+//   3201 — dataset stem is a more-detailed HF-management variant whose clinical tail (vitals/
+//          labs/fluid-intake) matches no available booklet; the shorter 2022-Jun Q66 source
+//          would DROP clinical content, so it is not respaced. Both await a source not on hand.
+// See .audit_logs/geri_single_prefix/STATE.md for the full pipeline + per-idx adjudication.
+const ALLOWLIST = new Set([303, 3201]);
 
 const isHeb = (ch) => /[֐-׿]/.test(ch);
 const PFX = new Set('ובהלמכש'); // 1-letter Hebrew prefixes — always glued to the next token
