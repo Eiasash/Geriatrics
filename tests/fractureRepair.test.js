@@ -46,6 +46,14 @@ const PINS = [
   [2593, 'q', ['העצבית'], ['העצבי ת']],
   [3236, 'q', ['העצבית'], ['העצבי ת']],
   [3465, 'q', ['הריאתיים'], ['הר י אתיים']],
+  // Source-render batch (v10.64.154): verified against the exam-booklet renders.
+  [2742, 2, ['דיסתימיה'], ['דיס ת ימיה']],      // dysthymia — pure-despace, render-confirmed Q16
+  [3346, 2, ['דיסתימיה'], ['דיס ת ימיה']],
+  [2621, 1, ['בזיכרון'], ['י בז כרון']],        // "in memory" — reorder, render-confirmed Q33
+  [3267, 1, ['בזיכרון'], ['י בז כרון']],
+  [3019, 'q', ['הייתה'], ['הי י .תה', 'הי י']], // "was" — multiset + dropped spurious mid '.'
+  [2476, 'q', ['מ"ג'], ['מ " ג']],              // mg gershayim — render-confirmed Q9
+  [3148, 'q', ['מ"ג'], ['מ " ג']],
 ];
 
 const fieldText = (q, f) => (f === 'q' ? String(q.q || '') : String((q.o || [])[f] ?? ''));
