@@ -54,6 +54,11 @@ const PINS = [
   [3019, 'q', ['הייתה'], ['הי י .תה', 'הי י']], // "was" — multiset + dropped spurious mid '.'
   [2476, 'q', ['מ"ג'], ['מ " ג']],              // mg gershayim — render-confirmed Q9
   [3148, 'q', ['מ"ג'], ['מ " ג']],
+  // Source-render round 2 (v10.64.155): verified against the exam-booklet renders.
+  [3726, 0, ['לאירדיקציה'], ['לא י רדיקציה']],   // H.pylori eradication — pure-despace, Q132
+  [2837, 'q', ['דימום'], ['ד ימו']],            // "without bleeding" — multiset + dropped ':', Q116
+  [2753, 1, ['מ״ג'], ['ג מ״']],                 // 15 mg reorder — render-confirmed Q20
+  [3350, 1, ['מ״ג'], ['ג מ״']],
 ];
 
 const fieldText = (q, f) => (f === 'q' ? String(q.q || '') : String((q.o || [])[f] ?? ''));
