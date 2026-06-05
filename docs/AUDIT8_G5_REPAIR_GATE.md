@@ -610,11 +610,29 @@ A's prescribed deliverable has already shipped, B's was never built:
   (Phase-1 rate projection ≈ 71 drops, a precondition not a close). B was the
   weaker branch and was not taken.
 
-**Consequence (unblocks the cascade).** R2 and R3 were "blocked behind R1
-closing." R1 is now closed (findings-only, A). R2 proceeds under its own
-pre-registered §R2.0 + §R2.0-REV1 branch-symmetric procedure. R3 stays blocked
-behind R2 + AUDIT-9 implementation + a separate paid-run go (**$20 cap NOT
-widened**).
+**Consequence — routes to R1.5/R1.6; does NOT by itself unblock R2.** Closing
+R1 as A does **not** flip R2 to "ready." Per Option A's own text ("R2 and R3
+stay blocked behind **R1.5** closing") and the R1.5 gate's binding SCOPE
+(`docs/AUDIT8_G5_R1_5_MECHANISM_CAPTURE.md` line 127: "R2 (`t`-aware join)
+**remains gated behind R1.6** — the fix gate that R1.5 routes to. R3 remains
+gated behind R2."), the effective chain is:
+
+```
+R1 (close, A) → R1.5 RESULT (§R1.5.4) → R1.6 fix gate (the extraction/bot fix)
+            → R2 (t-aware join analyzer) → AUDIT-9 (temporal-bin) → R3 (paid run)
+```
+
+R1's close hands off to R1.5 (whose Option-A deliverable — authoring the R1.5
+gate + long probe — already shipped as #242, and whose §R1.5.4 RESULT is the
+`win-overnight-cc-20260524` capture). **R2 stays gated behind R1.6**, which is
+gated behind R1.5 RESULT. R3 stays blocked behind R2 + AUDIT-9 implementation +
+a separate paid-run go (**$20 cap NOT widened**). This section records only the
+R1 routing decision; it asserts **no** downstream unblock beyond handing R1 off
+to R1.5.
+
+**Merge-order note.** This section forward-references §R1.5.4 (the R1.5 capture
+RESULT), which lands in a separate PR. **That PR must merge first** so this
+reference is satisfied on `main`; this PR is sequenced after it.
 
 **No scope re-name.** Per the R1 RESULT's forbidden clause, R1 is **not**
 silently re-named to "bot resilience." It closes as what it is: a findings-only
