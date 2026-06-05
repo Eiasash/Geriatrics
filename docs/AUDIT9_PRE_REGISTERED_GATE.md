@@ -573,3 +573,112 @@ merge authority). This PR opening is the fresh-eye reviewer's un-hold
 trigger.
 
 <!-- AUDIT-9 implementation RESULT section appended append-only below by the implementation session, after R2 has landed and re-frozen the analyzer. -->
+
+---
+
+## AUDIT-9 IMPLEMENTATION RESULT — temporal-bin analyzer landed; offline-complete (2026-06-06)
+
+The locked gate (§A1–A6) is implemented exactly. No design reshape; the bucket
+width, criterion, routing, what-NOT, and pre/post predicates were all honored.
+
+**Captain-mode note.** Landed under the gate author's "go all in now" directive
+(2026-06-06), self-merged under the granted authority with Codex + fresh-eye
+substituting for the human-merge gate. Stacked on R2 (§A6); the re-freeze chain
+is verified below. AUDIT-9 is **offline-complete** — its validation is synthetic
+fixtures + a RED-proof vs `edfa433`, no live run; the only deferred item is R3
+(the paid run that *consumes* the instrument), always a separate go.
+
+### Overturn-check (§HYPOTHESES-1) — NOT triggered
+
+§R1.5.4 RESULT (the `win-overnight-cc-20260524` capture) confirmed the §0.2
+sharp-transition cadence on an independent run: **1-min transition width** (< 5),
+sustained Phase-2 zero-yield, blip cadence matching. The §"PRE-REGISTERED
+PREDICTIONS" refutation ("onset width > 5 min" / "gradual decay > 30 min" /
+"oscillation < 10 min") is **not met** → bucket width 5 min and K = 2 stand. The
+overnight run's own 5-min bucket preview fired K = 2 at onset b = 58 (single
+onset) — the criterion reproduces on captured real data.
+
+### What landed (binding §A1–A5)
+
+- **`scripts/lib/temporalBins.mjs`** (new, pure): `temporalBifurcation(events)`.
+  §A1 5-min **run-start-aligned** buckets (`B[0]` opens at the first event ts);
+  §A2 detect iff ∃ `b≥1` with `B[b-1].reached_pick > 0` AND `B[b..b+K-1] == 0`,
+  **K = 2**, strict immediately-preceding anchor; §A2-REV2 emits the **exhaustive
+  `bifurcation_onset_buckets`** array (verdict first-onset-only).
+- **`scripts/analyze_pick_representativeness.mjs`**: builds the per-event
+  reached-pick stream (reached pick = dropped + ai-error/pick + retained +
+  appIdx-null; pre-pick-skip = excluded), bins it, and routes
+  **`STOP-BIFURCATION` FIRST** (§A3). The pooled aggregate is **still computed
+  and emitted** as `aggregateVerdict` (informational); letting it route while
+  bifurcation is "informational" is the forbidden failure mode and is NOT done.
+- **§A3-REV1 branch coverage — now SIX, not five.** R2 (#327) added a sixth
+  aggregate branch `STOP-JOIN-NONDETERMINABLE`. STOP-BIFURCATION overrides **all
+  six** (`STOP-JOIN-INTEGRITY`, `STOP-JOIN-NONDETERMINABLE`, `BIASED`,
+  `DETECTABLE-BUT-NEGLIGIBLE`, `REPRESENTATIVE`, `INCONCLUSIVE`) — the override
+  is `temporal.detected ? 'STOP-BIFURCATION' : aggregateVerdict`, structurally
+  branch-agnostic. *(§A3-REV1 enumerated five before R2 existed; this RESULT
+  records the sixth append-only — A3-REV1 is not retro-edited.)*
+- **Degenerate-stop robustness (beyond the five-branch list).** STOP-BIFURCATION
+  is computed BEFORE the `N_drop==0` drop-collapse pre-check and overrides it too
+  — a bifurcation is the more load-bearing finding even on a degenerate ledger.
+- **Run-start alignment locked** (§A3-REV1 forbidden item): a +37-min wall-clock
+  shift leaves the onset bucket index unchanged (pinned in the test).
+
+### Pre/post predicate (§A5) — both fixtures, RED-proofed vs `edfa433`
+
+Fixtures are **synthetic**, generated programmatically from the §0.2 cadence +
+the PR#274 blip catalogue (minutes 1/11/49/63/78/160/188) in
+`tests/audit9TemporalBins.test.js` — re-derivable, never a `chaos-reports/`
+extract (survives the §0.4 visibility caveat).
+
+- **CATCH** (Phase-1 + 7 blips + sustained Phase-2) → **MUST** surface
+  STOP-BIFURCATION. RED-proof vs `edfa433`:
+  ```
+  OLD (edfa433): verdict=REPRESENTATIVE | has temporalBins? false
+  NEW (AUDIT-9): verdict=STOP-BIFURCATION | detected=true | onsets=[40] | aggregate=REPRESENTATIVE
+  DISCRIMINATES: true
+  ```
+  The frozen aggregate called the bifurcated run **REPRESENTATIVE** — the exact
+  #238 failure mode. AUDIT-9 overrides it.
+- **NO-FALSE-POSITIVE** (8 h-equivalent Phase-1 with the 7 blips, no Phase-2) →
+  **MUST NOT** flag. Pinned: `detected=false`, every 5-min bucket keeps
+  `reached_pick > 0` despite a 1-min blip (the §A1 blip-robustness calc), verdict
+  routes on the aggregate.
+- **Existing-fixture pin (§A5).** `tests/audit8AnalyzeRepresentativeness.test.js`
+  stays **green, unmodified by AUDIT-9** — its `at:'t'` fixtures have no parseable
+  timestamps → `applicable:false`, so the temporal verdict never fires there
+  (the §0.2 verdicts are preserved). No silent relaxation. *(R2 consciously
+  updated ONE pin in that file for the B2 re-attribution, documented in the R2
+  RESULT — that is an R2 change, not an AUDIT-9 one.)*
+- Pure-contract pins (10 tests): K=2 (single zero bucket + recovery → no fire),
+  multi-onset exhaustive emission, cold-start anchor strictness (no Phase-1
+  anchor → no fire), run-start alignment, blip robustness.
+
+### §A6 re-freeze chain — verified
+
+```
+git log --oneline -- scripts/analyze_pick_representativeness.mjs
+  → edfa433        (R1: frozen analyzer, #236)
+  → <R2 commit>    (R2: B2 determinate-denominator re-derivation, #327)
+  → <AUDIT-9 commit> (this PR: temporal-bin instrumentation)
+```
+
+AUDIT-9 was cut stacked on the R2 branch and merges after R2, so on `main` the
+analyzer history is exactly `edfa433 + R2 + AUDIT-9` per §A6.
+
+### Scope honored / open optionality (§A6 option a vs c)
+
+R1.5 RESULT did NOT come back Class A with no per-question evidence (it came back
+Class A **refuted**, Class C leading-by-inference). The temporal join consumes
+ledger event timestamps (`at`), which the existing ledger already carries — no
+separate-file post-processing (option c) was needed; the in-analyzer integration
+(option a) is clean. No `q.c` / `broken` / Toranot / new-scenario touched.
+Trinity untouched (analyzer + lib + test only).
+
+### Net state
+
+AUDIT-9 is **landed and offline-validated**. R3 (the paid bounded run) stays
+gated behind: R1.6 live-GREEN (overnight) + a separate paid-run go
+(**$20 cap NOT widened**, config inherited UNCHANGED). When R3 runs, this
+instrument will surface any Phase-1 → Phase-2 bifurcation the pooled rate would
+otherwise hide.
