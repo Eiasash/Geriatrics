@@ -316,3 +316,137 @@ Of the four §R1.5.2-REV1 capture channels:
 ### Scope of this addendum
 
 This REV is the gate-doc precondition for a follow-up code PR. Per R1.x discipline, no code change ships in this PR — only the spec binding. Eias sign-off required to merge per workspace CLAUDE.md "(b) per-PR gate docs that explicitly carry a 'NO self-merge' clause" — this REV inherits the clause from §R1.5. **NO self-merge.** Trinity untouched. R1.5 still ships no fix; R1.6 fix gate unaffected; named-mechanism → fix scope authority unchanged.
+
+---
+
+## §R1.5.4 R1.5 RESULT — bifurcation RED-REPRODUCED; cadence confirmed; mechanism partially adjudicated (Class A refuted, Class C leading-by-inference) (2026-06-06)
+
+Append-only. Takes **REV3 option (2)**: ships documenting the 3-of-4 channel
+limitation explicitly (the mutation channel was dead in the eligible run), plus
+a second limitation this run surfaced (the forensic first-failure bundle
+captured a Phase-1 blip, not the sustained lock-in). The cadence result — the
+load-bearing AUDIT-9 §A6 prerequisite — is fully captured and is the primary
+deliverable here; full mechanism class-naming is **provisional**, deferred to a
+fresh 4/4-channel re-run.
+
+**This RESULT carries the §R1.5 NO-self-merge clause.** It is merged under an
+explicit captain-mode merge-authority grant from the gate author (Eias,
+2026-06-06 "run audit 9 … you have merge authority"), with Codex cross-model
+review + a fresh-eye filesystem-grounded pass substituting for the human-merge
+gate (independence preserved; see workspace CLAUDE.md "independence comes from
+cross-model review, not human-vs-AI gates").
+
+### Captured run
+
+- **Run:** `R15_PROBE_LABEL=win-overnight-cc-20260524`, headless, `minHours=6`,
+  `phase1ControlMinute=30` (the **default** — not a smoke override), against
+  live `https://eiasash.github.io/Geriatrics/` (then v10.64.130).
+- **Window:** started `2026-05-23T23:20:37Z`, finished `2026-05-24T05:20:42Z`
+  (`durationMs=21605480`, ≈ 6 h 00 m, 361 per-minute snapshots).
+- **Outcome: `RED-REPRODUCED`.** `cumulativeOk=3794`, `cumulativePrePickSkip=1102`.
+  `redCrossingAt.atMinuteIndex=296`, `skipWindow=[287,297]`.
+- **Artifacts.** Full forensic bundle (gitignored — `chaos-reports/` in
+  `.gitignore`): `chaos-reports/v4-long/audit8r15_20260524T022036Z/` on the
+  `Geriatrics-wt-r15probe` worktree (`summary.json`, `timeline.jsonl`,
+  `phase1control-*`, `firstfail-*`, two `*-trace.zip`). Per
+  `feedback_audit_logs_cross_claude_visibility`, the load-bearing per-minute
+  series is committed in clone-visible form at
+  **`docs/audit8_r15_overnight_20260524_timeline_slim.jsonl`** (361 rows:
+  `m, dOk, dSkip, cumOk, ext, dom, heapMB`); all numbers below are re-derivable
+  from it.
+
+### Cadence (primary deliverable — AUDIT-9 §A6 / §HYPOTHESES-1 prerequisite)
+
+The captured timeline shows the **sharp Phase-1 → Phase-2 bifurcation** §0.2
+predicts, not a gradual/oscillating shape:
+
+| Phase | minutes | ok/min | pre-pick-skip/min | extract outcome |
+|---|---|---|---|---|
+| Phase 1 | 0–287 (288 min) | **13.17** | 0.05 | `ok` |
+| Transition | min 287 → 288 | — | — | last `ok` min 287; sustained `0 ok` from min 288 |
+| Phase 2 | 288–360 (73 min) | **0.00** | **14.92** | **100 % `no-quiz`** (73/73) |
+
+- **Transition width = 1 minute** (min 287 last `ok`; min 288 onward sustained
+  zero `ok`). **< 5 min** ⇒ the AUDIT-9 §"PRE-REGISTERED PREDICTIONS"
+  refutation ("Phase-2 onset width > 5 min") is **NOT triggered**. AUDIT-9's
+  5-min bucket width and K=2 criterion remain valid.
+- Per-minute deltas at the transition (from the slim timeline): `min286 dOk=14`,
+  `min287 dOk=7/dSkip=6` (the single mixed minute), `min288 dOk=0/dSkip=15`,
+  and flat `0/15` thereafter to min 360. Phase-2 `dropCtx` = 100 % `no-quiz`,
+  matching §0.2's "100 % `pre-pick-no-question`."
+- **AUDIT-9 5-min run-start-aligned bucket preview** (sanity, not a verdict):
+  73 buckets; anchor `B[57]` (ok=34) → `B[58]`=0, `B[59]`=0 ⇒ K=2 fires at
+  **onset bucket b=58** (min 290–295), a **single** onset. The criterion the
+  AUDIT-9 implementation will encode reproduces on real captured data.
+- Onset at min 287 (≈ 80 % of a 6 h run) vs audit-8's min 194/480 (≈ 40 %):
+  both **duration-gated, intermittent** (≥ 3.2 h prior). Later-onset-this-run
+  is within the "intermittent" prior, not a refutation (the named refutation is
+  *earlier* onset < 20 %).
+
+**Conclusion (cadence):** the §0.2 sharp-transition shape is **confirmed across
+this independent R1.5 run**. AUDIT-9 §HYPOTHESES-1's overturn condition is **not
+met** → the AUDIT-9 implementation session is **unblocked** on the cadence
+prerequisite.
+
+### Mechanism (secondary; provisional — two stacked limitations)
+
+Pre-registered **lean was Class A** (browser process leak). The data **refutes
+it**, per the gate's own pre-registered refutations (`feedback_prewritten_predictions`
+— recorded, not rewritten):
+
+- **Class A — REFUTED** (refutation §117: heap delta within 2× of Phase-1
+  baseline). Phase-1 baseline `min30 = 37.3 MB`; deep Phase-2 `min360 = 44.7 MB`
+  ⇒ **ratio 1.20×**, well within 2×. Heap *drops* across the transition
+  (`min287 50.4 MB → min288 44.7 MB`) — the opposite of a monotonic
+  accumulation / OOM signature.
+- **Class B — not supported** (refutation §119 not triggered): `domNodeCount` is
+  flat across the transition (`~253`, within 10 % of Phase-1's 223–265). No
+  DOM-growth / listener-accumulation signature in the scalar series.
+- **Class C — leading by inference** (prediction §118: stable DOM + A refuted →
+  C). 100 % `no-quiz` extract with a **persistent ~253-node shell** is
+  consistent with the practice surface failing to deliver new question content
+  while the page shell survives — a connection / content-delivery (Class C)
+  pattern. This is an **inference from scalar timeline signals**, NOT a direct
+  capture-diff.
+
+**Limitation 1 (REV3 — 3-of-4 channels).** The mutation channel (the direct
+Class-B discriminator) was the older forensic-capture style in this run, not the
+4-channel `cache-keys`/`controller`/`extract-probe`/`mutation` set. Class-B is
+therefore excluded **by auxiliary inference (flat DOM/heap)**, not by the direct
+mutation signal §R1.5.3 designed for it.
+
+**Limitation 2 (forensic capture targeted a blip, not the lock-in).** The
+`firstfail-*` forensic bundle fired at **min 49** — a single-minute Phase-1 blip
+(both `phase1control` (min 30) and `firstfail` (min 49) `dom.html` contain 8
+`button.qo` and ≈ 749–753 KB: the quiz was fully present at min 49). The **real**
+sustained lock-in (min 287+) was **not** forensically captured (debounce #273/#274
+exists precisely to stop blip-miscapture; this overnight run's `firstFailCaptured`
+still latched the min-49 transient). The min-287 lock-in is therefore witnessed
+**only by the scalar timeline**, not by a DOM/console/network forensic snapshot.
+
+**Net mechanism verdict:** **Class A refuted; Class C leading; Class B/D not
+positively supported — class-naming PROVISIONAL.** A clean class selection
+requires a fresh run that (a) uses the post-#280 4/4-channel `installMutationCounter`
+(landed `cabc62e`), and (b) debounce-captures the forensic bundle at the
+**sustained** lock-in, not a Phase-1 blip. That re-run is R1.5-continuation /
+R1.6 territory, **not an AUDIT-9 blocker** — AUDIT-9 is mechanism-agnostic and
+consumes only the (confirmed) cadence.
+
+### R1.6 fix-gate scope sketch (one paragraph, not a fix-spec)
+
+Consistent with prediction §120 (fix is bot-side, not `shlav-a-mega.html`): if
+the fresh 4/4 run confirms Class C, R1.6's fix is a **bot-side resilience patch**
+— a consecutive-`no-quiz` (null-stemHash) skip counter + `page.reload()` in
+`runWorker`, the exact patch the R1 RESULT enumerated as Option B and the gate
+deliberately did **not** fold into R1's close. (The bot's structural inability to
+recover from Phase-2, R1 RESULT "the bot bug," is the same gap.) Whether that
+patch is scored as R1.6's GREEN or rolled into R3's run-config is R1.6's call;
+this RESULT only routes to it. No `shlav-a-mega.html` change is implicated by the
+current evidence (the page shell and answer-key DOM are intact throughout).
+
+### Provenance
+
+Append-only under the gate's `<!-- R1.5 RESULT … -->` marker region; REV1/REV2/
+REV3 above are **not edited**. Trinity untouched. No fix shipped. The pre-registered
+Class-A lean is preserved verbatim above and recorded here as refuted — not
+retro-softened.
