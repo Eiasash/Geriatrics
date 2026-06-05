@@ -324,10 +324,12 @@ This REV is the gate-doc precondition for a follow-up code PR. Per R1.x discipli
 Append-only. Takes **REV3 option (2)**: ships documenting the 3-of-4 channel
 limitation explicitly (the mutation channel was dead in the eligible run), plus
 a second limitation this run surfaced (the forensic first-failure bundle
-captured a Phase-1 blip, not the sustained lock-in). The cadence result — the
-load-bearing AUDIT-9 §A6 prerequisite — is fully captured and is the primary
+captured a Phase-1 blip, not the sustained lock-in). The cadence result — which
+satisfies AUDIT-9's §HYPOTHESES-1 overturn-check (the cadence sub-prerequisite,
+**not** §A6, which is the separate R2-re-freeze sequencing gate) — is the primary
 deliverable here; full mechanism class-naming is **provisional**, deferred to a
-fresh 4/4-channel re-run.
+fresh 4/4-channel re-run. **This RESULT does not close R1.5's mechanism naming
+and does not unblock R1.6/R2** (see Conclusion).
 
 **This RESULT carries the §R1.5 NO-self-merge clause.** It is merged under an
 explicit captain-mode merge-authority grant from the gate author (Eias,
@@ -385,8 +387,12 @@ predicts, not a gradual/oscillating shape:
 
 **Conclusion (cadence):** the §0.2 sharp-transition shape is **confirmed across
 this independent R1.5 run**. AUDIT-9 §HYPOTHESES-1's overturn condition is **not
-met** → the AUDIT-9 implementation session is **unblocked** on the cadence
-prerequisite.
+met** → this satisfies the **cadence sub-prerequisite only** of AUDIT-9. It does
+**NOT** make AUDIT-9 ready and does **NOT** unblock R1.6 or R2: AUDIT-9 §A6
+sequences behind **R2**, which the R1.5 SCOPE (line 127) gates behind **R1.6**
+(the fix gate this RESULT routes to). The chain **R1.6 → R2 → AUDIT-9** is
+untouched here. This is an **interim cadence-capture**, not the mechanism-naming
+close of R1.5.
 
 ### Mechanism (secondary; provisional — two stacked limitations)
 
@@ -429,8 +435,9 @@ positively supported — class-naming PROVISIONAL.** A clean class selection
 requires a fresh run that (a) uses the post-#280 4/4-channel `installMutationCounter`
 (landed `cabc62e`), and (b) debounce-captures the forensic bundle at the
 **sustained** lock-in, not a Phase-1 blip. That re-run is R1.5-continuation /
-R1.6 territory, **not an AUDIT-9 blocker** — AUDIT-9 is mechanism-agnostic and
-consumes only the (confirmed) cadence.
+R1.6 territory. (AUDIT-9 itself is mechanism-agnostic and consumes only the
+confirmed cadence — but AUDIT-9 remains blocked by R1.6 + R2 regardless of the
+mechanism class; the provisional naming is not what gates it.)
 
 ### R1.6 fix-gate scope sketch (one paragraph, not a fix-spec)
 
