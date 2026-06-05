@@ -579,3 +579,116 @@ Append-only addition under the gate's pre-registered HTML-comment marker.
 R1 section above this line: **not edited**. R2 / R3 sections: still
 pending their own session's appended RESULT block.
 
+---
+
+## R2 RESULT — branch B2 (determinate-denominator re-derivation); STOP re-attributed, gate NOT cleared (2026-06-06)
+
+R2's §R2.0-REV1 pre-registered a **branch-symmetric** decision: B1 (`t`-aware
+join, recover `t`) vs B2 (re-derive the determinate denominator), selected by
+step (a) — the recoverability determination — run **before** any analyzer edit.
+
+**Captain-mode note.** Landed under the gate author's "go all in now" directive
+(2026-06-06), self-merged under the granted authority with Codex + fresh-eye
+substituting for the human gate. R2 is **offline-validatable** (synthetic
+fixtures + the audit-8-shape RED-proof); no live run is involved, so unlike R1.6
+there is no pending-overnight caveat on R2 itself.
+
+### Step (a) — recoverability determination → B1 CLOSED
+
+Re-ran the within-dup-group covariate agreement on **current** `data/questions.json`
+(3823 Qs, not the stale 3743 @ `1a393f4`) via the real `buildIndex`:
+
+```
+dupGroups=172 ; within-dup-group agreement: t = 2/172
+```
+
+170/172 byte-identical-stem dup-groups are **`t`-discordant** (≈ 98.8 %). The
+gate join is stem-hash-keyed (`byHash`), so `t` (exam provenance) is
+information-theoretically absent from the key: a DOM-served dup-group question's
+`t` is **not recoverable** from instrument-captured data. **B1 is CLOSED** per
+§R2.0-REV1(a) ("if `t` is recoverable only via the served question's corpus
+index and the instrument does not capture that index, branch B1 is CLOSED"). The
+disk evidence re-confirms R2.0-REV1's 157/157 finding on the larger dataset.
+
+### B2 — implemented (analyzer change; re-freezes the analyzer)
+
+`scripts/analyze_pick_representativeness.mjs`:
+
+- Tracks, per covariate, a **structural-nondeterminable** count (joined to a dup
+  bucket, `bucketSize > 1`, members disagree — distinct from a join *failure*,
+  which is a no-match row counted separately).
+- Re-derives the **determinable-subset rate** = `determinate / (attempted −
+  nondeterminable)`. With the current join semantics every joined non-determinate
+  cell is structural, so this is **trivially 1.0** — exactly the
+  shrink-to-1.0 that §R2.0-REV1(d) warns "clears the gate by denominator
+  silence." The honest signal is therefore the **structural fraction** =
+  `nondeterminable / attempted`.
+- New verdict branch **`STOP-JOIN-NONDETERMINABLE`** (evaluated after
+  `STOP-JOIN-INTEGRITY`): routes when a covariate's structural fraction
+  ≥ `1 − JOIN_DETERMINATE_MIN` (= 0.01). `JOIN_DETERMINATE_MIN` stays `0.99`
+  (forbidden to change — unchanged).
+- Emits a new `g3b2` block: per-covariate `{determinate, nondeterminable,
+  attempted, determinableRate, structuralFraction}` + `nondeterminableViolations`.
+
+### Honesty pin (§R2.0-REV1(d)) — satisfied
+
+- **(i)** the excluded (structural) cell count is reported beside the rate
+  (`g3b2.perCovariate.<c>.nondeterminable` + `structuralFraction`). ✓
+- **(ii)** the `t` result is scoped to the determinable subset; the
+  non-determinable fraction is surfaced. ✓
+- **(iii)** a denominator redefinition does **NOT, by itself, convert
+  STOP-JOIN-INTEGRITY into a pass.** A material structural fraction routes
+  `STOP-JOIN-NONDETERMINABLE` — the gate is **re-attributed, not cleared.** For
+  the audit-8 `t`-shape (100 % structural in the synthetic fixture; 35/509 ≈
+  6.9 % on the real run), the verdict stays a STOP. ✓
+
+### Pre/post predicate — RED-proofed vs `edfa433`
+
+A new synthetic fixture (`t`-discordant dup group, the §0.2 Defect-B shape) plus
+the existing-fixture pin:
+
+```
+OLD (edfa433): verdict=STOP-JOIN-INTEGRITY | has g3b2? false | g3d3.violations=["t"]
+NEW (B2)     : verdict=STOP-JOIN-NONDETERMINABLE | has g3b2? true | nondeterminable=["t"] | t.structuralFraction=1
+RED-PROOF DISCRIMINATES: true
+```
+
+- **Existing-fixture conscious update (NOT silent).** The edfa433
+  `STOP-JOIN-INTEGRITY` pin in `tests/audit8AnalyzeRepresentativeness.test.js`
+  was a purely-structural (`broken`-disagreement) dup case; under B2 it
+  re-attributes to `STOP-JOIN-NONDETERMINABLE`. Per the R2.0 predicate it is
+  **consciously updated with this documented rationale** — the gate is still
+  STOPped, only the attribution changed. Two new B2 fixtures added (the
+  `t`-discordant RED-proof + a sub-1%-fraction no-over-trigger case). The other
+  11 verdict pins (REPRESENTATIVE / BIASED / DETECTABLE-BUT-NEGLIGIBLE /
+  INCONCLUSIVE / N_drop==0 STOP) are **untouched and green**.
+- **Real-data surface (§R2.0-REV1(c), B2 branch).** B2 is analyzer-side, so the
+  preserved audit-8 8 h ledger is re-analyzable under the modified analyzer
+  *without* R3's $20 — it would route `STOP-JOIN-NONDETERMINABLE` on `t`
+  (6.9 % structural). The ledger is gitignored (`feedback_audit_logs_cross_claude_visibility`);
+  the synthetic RED-proof reproduces the shape clone-visibly.
+
+### Re-freeze
+
+The R2 commit re-freezes the analyzer. Post-merge,
+`git log --oneline -- scripts/analyze_pick_representativeness.mjs` reads exactly
+`edfa433` + this R2 commit. AUDIT-9's temporal-bin commit will re-re-freeze on
+top (§A6: `edfa433` + R2 + AUDIT-9).
+
+### Net outcome + handoff
+
+- **The audit-8 STOP stands, correctly re-attributed.** `t` is structurally
+  non-determinable (not a join bug); the gate is **NOT cleared**. To proceed,
+  either **drop `t` from the family** as structurally-non-analyzable (its own
+  gated decision — **NOT authorized here**) or capture the served-question
+  corpus index so `t` becomes determinable (the B1 path, CLOSED). R3 stays
+  gated behind AUDIT-9 + the overnight live-GREEN + a separate go
+  (**$20 cap NOT widened**).
+- **AUDIT-9 hand-off (binding).** The analyzer now has a **sixth** verdict
+  branch (`STOP-JOIN-NONDETERMINABLE`). AUDIT-9 §A3-REV1 enumerated *five*;
+  AUDIT-9's `STOP-BIFURCATION` must override **all six** (the five + this one).
+  The AUDIT-9 implementation session must update its §A3 coverage accordingly.
+
+Trinity untouched (analyzer + test only; no `shlav-a-mega.html` / `sw.js` /
+`package.json`).
+
