@@ -644,3 +644,86 @@ an **un-taken, separately-authorable** future option, not part of R1's close.
 **Trinity untouched. Docs-only. Append-only** under the gate's marker; the R1
 RESULT and R2.0 sections above are not edited.
 
+---
+
+## R1.6 RESULT — bot-resilience fix; contract GREEN, live GREEN pending-overnight (2026-06-06)
+
+R1.5 (§R1.5.4 RESULT) routes to this R1.6 fix gate. The fix it routes to was
+**pre-registered twice** before any code: the R1 RESULT's Option B
+("`null-stemHash` consecutive-skip counter + `page.reload()` in `runWorker`")
+and the §R1.5.4 R1.6 sketch. R1.6 therefore **implements an already-registered
+fix** — it does not author-and-implement in one breath
+(`feedback_spec_provenance_append_only`).
+
+**Captain-mode note.** Landed this session under the gate author's explicit
+"go all in now" directive (2026-06-06), self-merged under the granted merge
+authority with Codex cross-model review substituting for the human gate. The
+**empirical** GREEN (does the patch actually recover the live bot from Phase-2)
+is **deferred to the overnight run** and marked pending below — not claimed.
+
+### The bug (R1 RESULT "the bot bug", verbatim cause)
+
+`runWorker`'s jam counter incremented only on a **non-null** `stemHash` equal to
+the previous one (`if (result.stemHash && result.stemHash === lastStemHash)`).
+A Phase-2 lock-in returns `{ advanced:false, stemHash:null }` every iteration,
+so the counter never advanced, `stuckThreshold` never tripped, and the bot
+logged `pre-pick-skip` indefinitely — **structurally unable to recover from
+Phase 2** (the §0.2 / §R1.5.4 sustained `no-quiz` state).
+
+### The fix (this PR)
+
+- **`scripts/lib/workerRecovery.mjs`** (new, pure / no Playwright): `nextRecovery(state, result, config)`
+  threads four counters and returns an action. It is a **faithful superset** of
+  the original logic — the same-stem jam path is preserved — plus:
+  - a **null-stemHash consecutive-skip counter** (`nullStreakThreshold`, default
+    5) → the missing Phase-2 trigger (the pre-registered fix); and
+  - a **reload → recreate escalation** (`reloadEscalateThreshold`, default 3):
+    after N reloads without progress, tear down and rebuild the browser context.
+    Rationale: §R1.5.4's leading (provisional) mechanism is **Class C**
+    (connection / proxy / CDN state), which a same-context reload may not clear;
+    a fresh context resets connection + profile state (covers Class C and D).
+    This tier is an **extension** of the pre-registered reload-only fix, flagged
+    as such; which tier actually recovers is an empirical question for the
+    overnight GREEN.
+- **`scripts/chaos-doctor-bot-v4.mjs`** `runWorker` rewired to the pure decision;
+  both lock-in shapes feed it (the no-quiz-surface path **and** the
+  extract-fails path). New env knobs `CHAOS_NULL_STREAK_THRESHOLD` /
+  `CHAOS_RELOAD_ESCALATE_THRESHOLD`. `async function runWorker` signature
+  preserved (the `chaosBotV4ModalDismiss` regex-grep tests stay green).
+
+### GREEN status — split, honestly
+
+- **Contract GREEN (achieved this PR):** `tests/audit8WorkerRecovery.test.js`
+  (13 tests) pins the counter+action contract — including the **regression test
+  that the original same-stem counter never fired on a null streak and the new
+  counter does**, the escalation tiers, and that a successful question resets the
+  streak. `npm run verify` green (1671 passed, 7 skipped). The existing 122
+  chaosBotV4 tests stay green.
+- **Live GREEN (PENDING-OVERNIGHT):** the gate (R1 §R1.2 / §1.2,
+  lines 488–494 + 505 + 552–554) pre-registers that an **offline / short probe
+  cannot validate a Phase-2 fix** ("the short probe systematically samples
+  Phase 1 only … ≈ 71 drops, a precondition not a close"). So the empirical
+  "the patch recovers the live bot from a sustained Phase-2 lock-in" GREEN is
+  **explicitly deferred** to the overnight 4/4-channel re-run (see the §R1.5.4
+  RE-RUN spec). Until that run confirms recovery + the mechanism class, R1.6's
+  live GREEN is **PENDING-OVERNIGHT**, not claimed.
+
+### Mechanism caveat (acting on a provisional class)
+
+§R1.5.4 named Class C **leading-by-inference**, naming deferred. The resilience
+patch is deliberately **mechanism-agnostic** (it recovers from a sustained
+no-quiz/null state regardless of root cause A/B/C/D), so shipping it does not
+depend on the class being finalized — but the **recreate tier's necessity** does
+(if the overnight run shows reload-alone recovers, recreate is belt-and-braces;
+if it shows reload-alone fails, recreate is load-bearing). The overnight RESULT
+will say which.
+
+### Consequence
+
+R1.6's **contract** is closed; its **live validation** is pending the overnight
+run. R2 (`t`-aware join) was gated behind R1.6 — with R1.6's code landed, R2's
+analyzer work proceeds in parallel (R2 is itself offline-validatable: fixtures +
+audit-8-ledger re-analysis, no live run). R3 (the paid bounded run) stays gated
+behind R2 + AUDIT-9 impl + the overnight live-GREEN + a separate go
+(**$20 cap NOT widened**). Trinity untouched (bot/lib/test only, mirrors #235).
+
