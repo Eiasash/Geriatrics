@@ -232,3 +232,27 @@ jobs:
           else:
               print(f'OK: CLAUDE.md references v{ver}')
           PYEOF
+
+  # AUDIT-8 #332 follow-up — catch the "inert bot" failure class LOUDLY.
+  # The v4 chaos bot locates the practice surface by live aria-labels; an a11y/i18n
+  # label edit (cf. #290, merged 2026-05-26) silently zeroes its judge calls, so it
+  # reports "0 findings = clean" while measuring nothing. Every v4 "0 findings" GREEN
+  # dated 2026-05-26 → #332-merge is therefore VACUOUS (the bot was blind ~11 days),
+  # NOT clean. This gate runs the live judge-call smoke and hard-fails when the bot's
+  # own ai-judge counter is 0, so future label drift surfaces as a red weekly run
+  # instead of a fake-clean report. (Requires the gate test added in #332.)
+  live-judge-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Live judge-call gate (fails loud if the bot is inert)
+        env:
+          CHAOS_LIVE_SMOKE: '1'
+        run: npx vitest run tests/chaosBotV4LiveJudgeGate.test.js
