@@ -500,8 +500,10 @@ async function doctorOneQuestion(page, workerId, log) {
     log.bugs.push({ at: nowIso(), type: 'action-error', context: 'doctor-pick', message: e.message });
   });
   await sleep(rand(400, 900));
-  // Geri's check button has aria-label="Check answer" + onclick="check()"
-  const check = page.locator('[aria-label="Check answer"]').first();
+  // Geri's check button onclick="check()". #290 (2026-05-26) made its aria-label
+  // bilingual + confidence-prefixed; match the persistent lowercase "check answer"
+  // fragment case-insensitively so an i18n tweak can't silently re-break the bot.
+  const check = page.locator('[aria-label*="check answer" i]').first();
   if ((await check.count().catch(() => 0)) > 0) {
     await tryClick(check, CONFIG.actionTimeoutMs).catch((e) => {
       log.bugs.push({ at: nowIso(), type: 'action-error', context: 'doctor-check', message: e.message });
@@ -862,7 +864,7 @@ export async function ensureOnPracticeQuiz(page, log) {
 
   // Step 2: if button.qo + check button are visible, we're in practice mode.
   const optsCount = await page.locator('button.qo').count().catch(() => 0);
-  const checkVisible = await page.locator('[aria-label="Check answer"]').count().catch(() => 0);
+  const checkVisible = await page.locator('[aria-label*="check answer" i]').count().catch(() => 0);
   if (optsCount >= 2 && checkVisible > 0) return true;
 
   // Step 3: if options visible but no check button, we're in exam mode.
@@ -889,7 +891,7 @@ export async function ensureOnPracticeQuiz(page, log) {
   // Step 5: confirm options + check button now both visible.
   try {
     await page.locator('button.qo').first().waitFor({ state: 'visible', timeout: 6000 });
-    await page.locator('[aria-label="Check answer"]').first().waitFor({ state: 'attached', timeout: 4000 });
+    await page.locator('[aria-label*="check answer" i]').first().waitFor({ state: 'attached', timeout: 4000 });
     log.actions.push({ at: nowIso(), type: 'mode-start', action: 'practice' });
     return true;
   } catch (_) {
