@@ -309,6 +309,11 @@ describe("cross-file referential integrity", () => {
       // v10.64.127: SZMC-Rescue — 80 MCQs rescued from abandoned-prototype folders,
       // normalized + audited + translated, merged via PR #258. See CHANGELOG['10.64.127'].
       "SZMC-Rescue",
+      // v10.64.156: AI-2026-hy — 474 AI-generated high-yield MCQs, key⟺explanation
+      // consistency-checked via scripts/verify_questions.mjs (1 conflict auto-deleted).
+      // Content-source tag (not an exam session) — like Hazzard/Harrison/GRS8, so NOT
+      // in EXAM_YEARS. See CHANGELOG['10.64.156'].
+      "AI-2026-hy",
     ]);
     const unknowns = new Set();
     for (const q of questions) {
