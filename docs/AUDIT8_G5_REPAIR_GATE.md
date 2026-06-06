@@ -858,10 +858,18 @@ surface.
 (2026-05-18, v10.64.118) predated #290 — its run was valid; the v4 bot has been
 inert vs the live practice surface since **2026-05-26**.
 
-**Repair (selector-only; no behavior change; #252 byte-identity hold on the r15
-probe untouched).** The three functional refs `:504` (reveal/appIdx),
-`:865`/`:892` (entry) re-pinned to `[aria-label*="check answer" i]` (matches the
-persistent lowercase fragment in both new + old + SD labels). Re-smoke witnessed
+**Repair (selector-only; no behavior change).** The three check-answer refs `:504`
+(reveal/appIdx), `:865`/`:892` (entry) AND the two advance refs `:561`/`:754`
+(`next question`/`finish exam`) were re-pinned to case-insensitive substring
+matchers (`[aria-label*="… " i]`) — matching the persistent lowercase English
+fragment in the new + old + SD forms, so a future a11y/i18n label edit cannot
+silently re-break the loop (the whole #290 selector class, not just check-answer).
+The dormant `scripts/audit8/r15LongProbe.mjs:562` + `r1RedProbe.mjs:116` carry the
+same broken selector but are **left as-is** — this is NOT a "#252 byte-identity
+hold" (a 0-judge-call selector preserves no identity; that framing is a category
+error). They are safe to leave because R1 is closed and R1.5 already ran
+2026-05-24 **pre-#290** (its §R1.5.4 RED-REPRODUCED result used the working
+selector). Any future r15/r1 re-run MUST re-pin the selector first. Re-smoke witnessed
 the fix: **judge calls 0 → 10** (4 Qs, 3/4 fully judged, 0 failures). Guarded by
 `tests/chaosBotV4LiveJudgeGate.test.js` — a live judge-call regression
 (hard-fails when the bot's own `ai-judge` counter is 0; env-gated

@@ -558,7 +558,7 @@ async function doctorOneQuestion(page, workerId, log) {
       methodology: 'appIdx-null-post-check',
     });
     // Try to advance even without a verdict
-    const next = page.locator('[aria-label="Next question"], [aria-label="Finish exam"]').first();
+    const next = page.locator('[aria-label*="next question" i], [aria-label*="finish exam" i]').first();
     if ((await next.count().catch(() => 0)) > 0) {
       await tryClick(next, CONFIG.actionTimeoutMs).catch(() => {});
     }
@@ -750,8 +750,9 @@ Is the current q.ref a faithful display of the audit-grade chapter assignment, c
     await maybeReportQuestion(page, log, finding);
   }
 
-  // Advance (Geri uses aria-label="Next question" + onclick="next()")
-  const next = page.locator('[aria-label="Next question"], [aria-label="Finish exam"]').first();
+  // Advance (onclick="next()"; aria-label "Next question"/"Finish exam"). Match the
+  // English fragment case-insensitively — same #290-class i18n hardening as check-answer.
+  const next = page.locator('[aria-label*="next question" i], [aria-label*="finish exam" i]').first();
   if ((await next.count().catch(() => 0)) > 0) {
     await tryClick(next, CONFIG.actionTimeoutMs).catch(() => {});
     log.actions.push({ at: nowIso(), type: 'next' });

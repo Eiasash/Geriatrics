@@ -36,13 +36,19 @@ const LIVE = process.env.CHAOS_LIVE_SMOKE === '1';
 describe('chaosBotV4 check-answer selector + judge-counter contract', () => {
   const src = fs.readFileSync(BOT, 'utf8');
 
-  it('does NOT use the exact-match [aria-label="Check answer"] selector (#290 regression)', () => {
+  it('uses NO exact-match aria-label selectors — the whole #290 i18n-drift class', () => {
+    // check-answer (the original #290 break) + the advance pair (same-class landmine:
+    // an a11y/i18n edit to these labels would silently stall the loop and burn a run).
     expect(src).not.toContain('[aria-label="Check answer"]');
+    expect(src).not.toContain('[aria-label="Next question"]');
+    expect(src).not.toContain('[aria-label="Finish exam"]');
   });
 
-  it('uses the case-insensitive substring matcher that survives i18n label drift', () => {
-    const hits = src.match(/\[aria-label\*="check answer" i\]/g) || [];
-    expect(hits.length).toBeGreaterThanOrEqual(3); // :504 reveal, :865 entry, :892 confirm
+  it('pins the case-insensitive substring matchers that survive i18n label drift', () => {
+    const checkHits = src.match(/\[aria-label\*="check answer" i\]/g) || [];
+    expect(checkHits.length).toBeGreaterThanOrEqual(3); // reveal/appIdx + entry + confirm
+    expect(src).toContain('[aria-label*="next question" i]'); // advance
+    expect(src).toContain('[aria-label*="finish exam" i]');   // advance (exam end)
   });
 
   it('still emits + aggregates the ai-judge producer counter the live gate reads', () => {
