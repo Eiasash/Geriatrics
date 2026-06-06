@@ -10,8 +10,10 @@
 //   §A1  bucket width 5 min, RUN-START-aligned (B[0] opens at the first event
 //        timestamp; B[i] at B[0]+i·5min). NOT clock-aligned (forbidden).
 //   §A2  bifurcation DETECTED iff ∃ b≥1 with B[b-1].reached_pick > 0 AND
-//        B[b+i].reached_pick == 0 ∀ i∈[0,K-1], K=2. First such b = onset;
-//        B[b-1] = anchor (immediately preceding, strict).
+//        B[b+i] is an OBSERVED zero-yield bucket (total>0, reached_pick==0)
+//        ∀ i∈[0,K-1], K=2. First such b = onset; B[b-1] = anchor (strict).
+//   §A2-REV3 an EMPTY bucket (total==0, idle/telemetry gap) is NOT zero-yield
+//        and breaks the zero-run — it is absence of observation, not collapse.
 //   §A2-REV2  emit ALL onset bucket indices (bifurcation_onset_buckets), in
 //        order, even though the verdict is first-onset-only.
 //
@@ -69,7 +71,14 @@ export function temporalBifurcation(events, opts = {}) {
     if (buckets[b - 1].reachedPick <= 0) continue;
     let allZero = true;
     for (let i = 0; i < K; i++) {
-      if (buckets[b + i].reachedPick !== 0) { allZero = false; break; }
+      const bk = buckets[b + i];
+      // §A2-REV3 (Codex P2, #328): a zero-yield bucket must be OBSERVED — events
+      // present, none reaching pick (`total > 0 && reachedPick === 0`). An EMPTY
+      // bucket (`total === 0`, e.g. a ≥bucketMs idle/telemetry gap with no events)
+      // is an *absence of observation*, not the Phase-2 pre-pick-skip collapse
+      // (§0.2: Phase-2 emits ~13–14 pre-pick-skip events/min). Treating an empty
+      // bucket as zero-yield would false-fire STOP-BIFURCATION on an idle gap.
+      if (bk.reachedPick !== 0 || bk.total === 0) { allZero = false; break; }
     }
     if (allZero) onsets.push(b);
   }

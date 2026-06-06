@@ -47,7 +47,14 @@ const JOIN_DETERMINATE_MIN = 0.99; // D3: per-covariate determinate-join rate
 // STRUCTURAL FRACTION. Per §R2.0-REV1(d-iii) the denominator shrink may NOT, by
 // itself, clear the gate: a structural fraction at/above this ceiling is a
 // reportable limitation → STOP-JOIN-NONDETERMINABLE (gate NOT cleared).
-const STRUCTURAL_NONDETERMINABLE_MAX = 1 - JOIN_DETERMINATE_MIN; // 0.01
+const STRUCTURAL_NONDETERMINABLE_MAX = 1 - JOIN_DETERMINATE_MIN; // 0.01 (ceiling)
+// Codex P2 (#327): `1 - 0.99` is 0.0100000000000000089 in IEEE-754, while an
+// exact 1-in-100 structural fraction is 0.0100000000000000002, so a bare
+// `structuralFraction >= STRUCTURAL_NONDETERMINABLE_MAX` does NOT fire at the
+// documented "at/above 1%" knife-edge. Compare with a tolerance far below any
+// meaningful step (0.5%) and far above float error (~1e-17) so the exact-1%
+// ceiling routes to STOP-JOIN-NONDETERMINABLE as specified.
+const STRUCTURAL_FRACTION_EPS = 1e-9;
 
 const CATEGORICAL = ['topic_group', 't', 'bilingual', 'c_accept', 'broken'];
 const ALL_COVS = ['stem_len', ...CATEGORICAL];
@@ -256,7 +263,7 @@ function analyze({ reportDir, index, questionsPath }) {
     const rate = t.attempted ? t.determinate / t.attempted : 0; // legacy D3 rate (reported, not routed)
     joinRates[c] = { rate, determinableRate, structuralFraction, ...t };
     if (determinableRate < JOIN_DETERMINATE_MIN) joinViolations.push(c);
-    else if (structuralFraction >= STRUCTURAL_NONDETERMINABLE_MAX) nondeterminableViolations.push(c);
+    else if (structuralFraction >= STRUCTURAL_NONDETERMINABLE_MAX - STRUCTURAL_FRACTION_EPS) nondeterminableViolations.push(c);
   }
   // Union of covariates that cannot enter the analysis family (either reason).
   const unusableCovs = [...joinViolations, ...nondeterminableViolations];
