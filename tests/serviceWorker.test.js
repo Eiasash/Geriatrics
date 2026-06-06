@@ -122,19 +122,19 @@ describe("sw.js — lifecycle events", () => {
   });
 });
 
-describe("sw.js — background sync", () => {
-  it("has sync event listener for supabase-backup", () => {
-    expect(swContent).toContain("supabase-backup");
+describe("sw.js — background sync (removed in v10.64.157, was dead code)", () => {
+  // The old assertions only proved the dead strings existed. Nothing in the
+  // page ever registered the 'supabase-backup' tag or wrote 'pending_sync',
+  // so the handler could never fire; the retry also sent only the apikey
+  // header while the live backup_set RPC sends apikey + Authorization. The
+  // block was removed; these guards pin that it stays gone.
+  it("no longer ships the unreachable supabase-backup sync handler", () => {
+    expect(swContent).not.toContain("supabase-backup");
+    expect(swContent).not.toContain("pending_sync");
   });
 
-  it("reads pending_sync from IndexedDB", () => {
-    expect(swContent).toContain("pending_sync");
-    expect(swContent).toContain("indexedDB.open");
-  });
-
-  it("clears pending_sync after successful backup", () => {
-    // After successful fetch, should delete the pending_sync entry
-    expect(swContent).toMatch(/delete.*pending_sync|objectStore.*delete/s);
+  it("has no sync event listener", () => {
+    expect(swContent).not.toContain("addEventListener('sync'");
   });
 });
 
