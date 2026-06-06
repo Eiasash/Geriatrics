@@ -55,6 +55,7 @@ import {
   pickAgreesWithApp,
   extractAcceptedDisplayIdxSet,
 } from './lib/optionResolver.mjs';
+import { nextRecovery, initialRecoveryState } from './lib/workerRecovery.mjs';
 
 // v10.64.118: audit-grade chapter assignment input for the redesigned
 // SYS_DOCTOR_SOURCE prompt. Loaded lazily at bot startup from local
@@ -140,6 +141,10 @@ const CONFIG = {
   reportRate: Number(process.env.CHAOS_REPORT_RATE || 0.08),
   // v4: jam-detection threshold — N consecutive same-stem iterations triggers refresh
   stuckThreshold: Number(process.env.CHAOS_STUCK_THRESHOLD || 3),
+  // R1.6: null-stemHash consecutive-skip threshold → reload (Phase-2 lock-in recovery)
+  nullStreakThreshold: Number(process.env.CHAOS_NULL_STREAK_THRESHOLD || 5),
+  // R1.6: reloads-without-progress before escalating reload → context recreate
+  reloadEscalateThreshold: Number(process.env.CHAOS_RELOAD_ESCALATE_THRESHOLD || 3),
   // v4: cost cap (USD). Workers self-terminate when cost ledger crosses this.
   costCapUsd: Number(process.env.CHAOS_COST_CAP_USD || 25),
 };
@@ -906,41 +911,60 @@ export async function ensureOnPracticeQuiz(page, log) {
 // ============================================================
 
 async function runWorker(browser, workerId, stopAt, report) {
-  const context = await browser.newContext({
-    viewport: { width: pick([390, 414, 768, 1280]), height: pick([844, 896, 900]) },
-    locale: pick(['he-IL', 'en-US']),
-    timezoneId: 'Asia/Jerusalem',
-  });
-  context.setDefaultTimeout(CONFIG.actionTimeoutMs);
-  const page = await context.newPage();
   const log = { workerId, actions: [], bugs: [], qsAnswered: 0, extractNull: 0 };
 
-  page.on('pageerror', async (error) => {
-    let shotPath = null;
-    if (CONFIG.screenshotOnBug) {
-      shotPath = path.join(CONFIG.reportDir, `worker-${workerId}-${Date.now()}-pageerror.png`);
-      await page.screenshot({ path: shotPath, fullPage: true }).catch(() => { shotPath = null; });
-    }
-    log.bugs.push({ at: nowIso(), type: 'pageerror', message: error.message, stack: error.stack ? String(error.stack).split('\n').slice(0, 8).join('\n') : null, screenshot: shotPath });
-  });
-  page.on('requestfailed', (request) => {
-    log.bugs.push({ at: nowIso(), type: 'requestfailed', url: request.url(), method: request.method(), failure: request.failure()?.errorText || 'unknown' });
-  });
-  page.on('response', (response) => {
-    const status = response.status();
-    if (status >= 400) log.bugs.push({ at: nowIso(), type: 'http', status, url: response.url() });
-  });
-  page.on('console', (msg) => {
-    if (['error', 'warning'].includes(msg.type())) log.bugs.push({ at: nowIso(), type: `console:${msg.type()}`, text: msg.text() });
-  });
+  const attachHandlers = (page) => {
+    page.on('pageerror', async (error) => {
+      let shotPath = null;
+      if (CONFIG.screenshotOnBug) {
+        shotPath = path.join(CONFIG.reportDir, `worker-${workerId}-${Date.now()}-pageerror.png`);
+        await page.screenshot({ path: shotPath, fullPage: true }).catch(() => { shotPath = null; });
+      }
+      log.bugs.push({ at: nowIso(), type: 'pageerror', message: error.message, stack: error.stack ? String(error.stack).split('\n').slice(0, 8).join('\n') : null, screenshot: shotPath });
+    });
+    page.on('requestfailed', (request) => {
+      log.bugs.push({ at: nowIso(), type: 'requestfailed', url: request.url(), method: request.method(), failure: request.failure()?.errorText || 'unknown' });
+    });
+    page.on('response', (response) => {
+      const status = response.status();
+      if (status >= 400) log.bugs.push({ at: nowIso(), type: 'http', status, url: response.url() });
+    });
+    page.on('console', (msg) => {
+      if (['error', 'warning'].includes(msg.type())) log.bugs.push({ at: nowIso(), type: `console:${msg.type()}`, text: msg.text() });
+    });
+  };
 
-  try {
+  // R1.6: a fresh context resets connection + profile state — the recreate
+  // escalation tier for a Phase-2 lock-in that a same-context reload can't clear.
+  const freshContext = async () => {
+    const context = await browser.newContext({
+      viewport: { width: pick([390, 414, 768, 1280]), height: pick([844, 896, 900]) },
+      locale: pick(['he-IL', 'en-US']),
+      timezoneId: 'Asia/Jerusalem',
+    });
+    context.setDefaultTimeout(CONFIG.actionTimeoutMs);
+    const page = await context.newPage();
+    attachHandlers(page);
     await page.goto(CONFIG.url, { waitUntil: 'domcontentloaded', timeout: CONFIG.navigationTimeoutMs });
     await page.waitForLoadState('networkidle', { timeout: 15_000 }).catch(() => {});
     await sleep(rand(1500, 3000));
+    return { context, page };
+  };
 
-    let lastStemHash = null;
-    let stuckCount = 0;
+  const recoveryCfg = {
+    stuckThreshold: CONFIG.stuckThreshold,
+    nullStreakThreshold: CONFIG.nullStreakThreshold,
+    reloadEscalateThreshold: CONFIG.reloadEscalateThreshold,
+  };
+
+  let { context, page } = await freshContext();
+  try {
+    // R1.6: replaces the inline same-stem-only stuck counter (which never
+    // advanced on a Phase-2 null-stemHash lock-in) with the pure recovery
+    // decision in lib/workerRecovery.mjs. Both lock-in shapes feed it: the
+    // no-quiz-surface path and the extract-fails (advanced:false, stemHash:null)
+    // path. Tier 1 = reload; tier 2 = recreate the context.
+    let recovery = initialRecoveryState();
 
     while (Date.now() < stopAt) {
       if (costExceeded()) {
@@ -949,33 +973,37 @@ async function runWorker(browser, workerId, stopAt, report) {
       }
       const onQuiz = await ensureOnPracticeQuiz(page, log);
       if (!onQuiz) {
-        try { await page.reload({ waitUntil: 'domcontentloaded', timeout: 15_000 }); } catch (_) { /* ok */ }
-        await sleep(rand(2000, 4000));
+        // No quiz surface — count it as a null failed turn so a persistent
+        // no-quiz lock-in escalates past reload, then recover.
+        const decision = nextRecovery(recovery, { advanced: false, stemHash: null }, recoveryCfg);
+        recovery = decision.state;
+        if (decision.action === 'recreate') {
+          log.bugs.push({ at: nowIso(), type: 'stuck-refresh', tier: 'recreate', context: 'no-quiz', recovery });
+          await context.close().catch(() => {});
+          ({ context, page } = await freshContext());
+        } else {
+          try { await page.reload({ waitUntil: 'domcontentloaded', timeout: 15_000 }); } catch (_) { /* ok */ }
+          await sleep(rand(2000, 4000));
+        }
         continue;
       }
+
       const result = await doctorOneQuestion(page, workerId, log);
-      if (result.advanced) {
-        log.qsAnswered += 1;
-        if (result.stemHash === lastStemHash) {
-          stuckCount += 1;
-        } else {
-          stuckCount = 0;
-        }
-        lastStemHash = result.stemHash;
-      } else {
-        // Failed turn — count toward stuck if same stem
-        if (result.stemHash && result.stemHash === lastStemHash) {
-          stuckCount += 1;
-        }
-        lastStemHash = result.stemHash;
-      }
-      if (stuckCount >= CONFIG.stuckThreshold) {
-        log.bugs.push({ at: nowIso(), type: 'stuck-refresh', stemHash: lastStemHash, stuckCount });
+      if (result.advanced) log.qsAnswered += 1;
+
+      const decision = nextRecovery(recovery, result, recoveryCfg);
+      recovery = decision.state;
+
+      if (decision.action === 'reload') {
+        log.bugs.push({ at: nowIso(), type: 'stuck-refresh', tier: 'reload', stemHash: result.stemHash, recovery });
         try { await page.reload({ waitUntil: 'domcontentloaded', timeout: 15_000 }); } catch (_) { /* ok */ }
         await sleep(rand(2000, 4000));
-        stuckCount = 0;
-        lastStemHash = null;
+      } else if (decision.action === 'recreate') {
+        log.bugs.push({ at: nowIso(), type: 'stuck-refresh', tier: 'recreate', stemHash: result.stemHash, recovery });
+        await context.close().catch(() => {});
+        ({ context, page } = await freshContext());
       }
+
       if (!result.advanced) await sleep(rand(2000, 4000));
     }
   } finally {
