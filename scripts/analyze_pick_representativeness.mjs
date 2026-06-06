@@ -18,6 +18,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashStem, normStem } from './lib/hashStem.mjs';
 import { buildIndex } from './build_stemhash_index.mjs';
+import { temporalBifurcation } from './lib/temporalBins.mjs';
 import {
   chiSquareIndependence,
   fisherExact2x2,
@@ -189,12 +190,43 @@ function analyze({ reportDir, index, questionsPath }) {
   const Ndrop = D.nJoined;
   const Nretain = R.nJoined;
 
+  // AUDIT-9: temporal-bin the per-event reached-pick stream (5-min,
+  // run-start-aligned, K=2). Computed BEFORE the N_drop==0 pre-check so a
+  // bifurcation is surfaced even on a degenerate ledger (§A3: STOP-BIFURCATION
+  // overrides the aggregate; here it also overrides the drop-collapse stop —
+  // the bifurcation is the more load-bearing finding). reached-pick = reached
+  // the pick step (dropped + ai-error/pick + retained + appIdx-null);
+  // pre-pick-skip = excluded (the Phase-2 lock-in signature).
+  const temporal = temporalBifurcation([
+    ...u.dropped.map((e) => ({ at: e.at, reachedPick: true })),
+    ...u.aiErrorPick.map((e) => ({ at: e.at, reachedPick: true })),
+    ...u.retained.map((e) => ({ at: e.at, reachedPick: true })),
+    ...u.appIdxNull.map((e) => ({ at: e.at, reachedPick: true })),
+    ...u.prePickSkip.map((e) => ({ at: e.at, reachedPick: false })),
+  ]);
+  const temporalBinsOut = {
+    note: 'AUDIT-9 §A1–A3: 5-min run-start-aligned buckets, K=2. '
+      + 'STOP-BIFURCATION overrides the aggregate (§A3); bifurcation_onset_buckets exhaustive (§A2-REV2).',
+    bucketMs: temporal.bucketMs,
+    K: temporal.K,
+    applicable: temporal.applicable,
+    detected: temporal.detected,
+    nBuckets: temporal.nBuckets,
+    anchorBucket: temporal.anchorBucket,
+    firstOnsetBucket: temporal.firstOnsetBucket,
+    bifurcation_onset_buckets: temporal.bifurcation_onset_buckets,
+    buckets: temporal.buckets,
+  };
+
   // Pre-registered STOP: instrument live but the drop population is empty
-  // is NOT an expected branch (G2).
+  // is NOT an expected branch (G2). AUDIT-9: if a bifurcation is also detected,
+  // STOP-BIFURCATION is the more load-bearing finding and overrides it.
   if (u.dropped.length === 0) {
-    return stopReport('N_drop==0 — drop-rate-collapsed finding (not a verdict). '
+    const base = stopReport('N_drop==0 — drop-rate-collapsed finding (not a verdict). '
       + 'Instrument is live (STEP 0.2 re-passed) yet zero ai-parse-error/pick rows. '
-      + 'Per G2 this is itself a finding → STOP, report.', { ledger: summarize(u), Ndrop, Nretain });
+      + 'Per G2 this is itself a finding → STOP, report.', { ledger: summarize(u), Ndrop, Nretain, temporalBins: temporalBinsOut });
+    if (temporal.detected) { base.verdict = 'STOP-BIFURCATION'; base.aggregateVerdict = 'STOP'; base.g5route = g5RouteFor('STOP-BIFURCATION'); }
+    return base;
   }
 
   // D3: per-covariate determinate-join rate ≥ 99%. A covariate below the
@@ -298,29 +330,48 @@ function analyze({ reportDir, index, questionsPath }) {
   const anyHolmSig = family.some((k) => tests[k].holmReject);
   const powered = Ndrop >= MIN_N_DROP && Nretain >= MIN_N_RETAIN;
 
-  let verdict;
+  // The pooled aggregate verdict (the frozen 6-branch chain). Still computed
+  // and emitted as informational even when STOP-BIFURCATION overrides it.
+  let aggregateVerdict;
   if (joinViolations.length) {
-    verdict = 'STOP-JOIN-INTEGRITY'; // D3: do not route on a genuinely unreliable join
+    aggregateVerdict = 'STOP-JOIN-INTEGRITY'; // D3: do not route on a genuinely unreliable join
   } else if (nondeterminableViolations.length) {
     // R2/B2: the join is reliable on its determinable subset, but a covariate
     // is structurally non-determinable for a material fraction. The gate is NOT
     // cleared by the denominator shrink (§R2.0-REV1(d-iii)); it is re-attributed.
-    verdict = 'STOP-JOIN-NONDETERMINABLE';
+    aggregateVerdict = 'STOP-JOIN-NONDETERMINABLE';
   } else if (anyBiasSignal) {
-    verdict = 'BIASED';
+    aggregateVerdict = 'BIASED';
   } else if (anyHolmSig) {
-    verdict = 'DETECTABLE-BUT-NEGLIGIBLE';
+    aggregateVerdict = 'DETECTABLE-BUT-NEGLIGIBLE';
   } else if (powered) {
-    verdict = 'REPRESENTATIVE';
+    aggregateVerdict = 'REPRESENTATIVE';
   } else {
-    verdict = 'INCONCLUSIVE';
+    aggregateVerdict = 'INCONCLUSIVE';
   }
+
+  // AUDIT-9 §A3 (+ §A3-REV1): STOP-BIFURCATION is evaluated FIRST and OVERRIDES
+  // the aggregate, whichever of the SIX aggregate branches it is
+  // (STOP-JOIN-INTEGRITY, STOP-JOIN-NONDETERMINABLE, BIASED,
+  // DETECTABLE-BUT-NEGLIGIBLE, REPRESENTATIVE, INCONCLUSIVE). Letting the
+  // aggregate route while bifurcation is merely "informational" is the exact
+  // failure mode #238 demonstrated and is FORBIDDEN.
+  const verdict = temporal.detected ? 'STOP-BIFURCATION' : aggregateVerdict;
 
   return {
     schema: 'audit8-representativeness-result/1',
     generatedBy: 'scripts/analyze_pick_representativeness.mjs',
     boundOnMainGate: 'docs/AUDIT8_PRE_REGISTERED_GATE.md (#233 G4 + D1–D4)',
     verdict,
+    // AUDIT-9: the pooled aggregate verdict, kept as informational even when
+    // STOP-BIFURCATION overrides it (so a reader sees what the pooled rate said).
+    aggregateVerdict,
+    // AUDIT-9 temporal-bin (docs/AUDIT9_PRE_REGISTERED_GATE.md). 5-min,
+    // run-start-aligned; K=2 consecutive reached-pick=0 after a >0 anchor.
+    // bifurcation_onset_buckets is EXHAUSTIVE (§A2-REV2); the verdict is
+    // first-onset-only. applicable:false when no parseable timestamps (e.g.
+    // synthetic fixtures) — the temporal verdict never fires there.
+    temporalBins: temporalBinsOut,
     g2: { Ndrop, Nretain, MIN_N_DROP, MIN_N_RETAIN, powered },
     g3d3: {
       perCovariateDeterminateJoinRate: joinRates,
@@ -431,6 +482,14 @@ function summarize(u) {
 
 function g5RouteFor(verdict) {
   switch (verdict) {
+    case 'STOP-BIFURCATION':
+      return 'AUDIT-9: a Phase-1 → Phase-2 bifurcation was detected (≥2 consecutive '
+        + '5-min buckets with zero reached-pick after a non-zero anchor). The pooled '
+        + 'aggregate is informational ONLY and does NOT route (§A3). Do NOT route a '
+        + 'representativeness verdict: the run did not sustain pick-step arrivals, so the '
+        + 'judged subsample is not representative of the intended population. Surface '
+        + 'bifurcation_onset_buckets; the bot-resilience fix (R1.6) + a fresh bounded run '
+        + 'are the path. item 2 remains blocked.';
     case 'REPRESENTATIVE':
       return 'G5: disagrees population unbiased on tested axes; close the pick-channel '
         + 'representativeness horizon; horizon item 2 (Geri judge max_tokens) UNBLOCKED '
@@ -505,6 +564,9 @@ if (isMain) {
   if (result.g3d3) console.log('join   : violations=' + JSON.stringify(result.g3d3.violations));
   if (result.g3b2) console.log('B2     : nondeterminable=' + JSON.stringify(result.g3b2.nondeterminableViolations)
     + ' (structuralThreshold=' + result.g3b2.structuralThreshold + ')');
+  if (result.temporalBins) console.log('AUDIT-9: detected=' + result.temporalBins.detected
+    + ' onsets=' + JSON.stringify(result.temporalBins.bifurcation_onset_buckets)
+    + ' (aggregate=' + result.aggregateVerdict + ', applicable=' + result.temporalBins.applicable + ')');
   if (result.g5route) console.log('G5     :', result.g5route);
   console.log('wrote  :', out);
   console.log('NOTE: this analyzer produces the verdict only. The RESULT section is appended '
