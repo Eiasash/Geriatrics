@@ -579,3 +579,68 @@ Append-only addition under the gate's pre-registered HTML-comment marker.
 R1 section above this line: **not edited**. R2 / R3 sections: still
 pending their own session's appended RESULT block.
 
+---
+
+## R1 ROUTING DECISION — Option A selected (gate-author call, 2026-06-06)
+
+The R1 RESULT above left a **binding routing decision** open ("Open question
+for the gate author"): **Option A** (close R1 findings-only, author R1.5 as
+its own gate) vs **Option B** (accept a scoped bot-resilience patch as R1's
+fix). The session author was forbidden from selecting (`feedback_design_gate_option_3_bias`
+applied at gate level). This section records the gate-author call.
+
+**Decision: Option A.** Close R1 findings-only.
+
+**Disk-forced, not preference.** The two options are not symmetric on disk —
+A's prescribed deliverable has already shipped, B's was never built:
+
+- **Option A's deliverable** was "author an R1.5 (its own gate) re-registering
+  a procedure that targets the actual failure mode — a long-duration probe
+  (≥ 4 h) with screenshot-on-`pre-pick-skip`-streak + capture on the *first*
+  `pre-pick-skip` after a successful Q." That gate **shipped as PR #242**
+  (`18c35e6`, `docs/AUDIT8_G5_R1_5_MECHANISM_CAPTURE.md`) and its long probe
+  shipped as `scripts/audit8/r15LongProbe.mjs`. R1.5 has since produced a
+  reproduced capture (§R1.5.4 RESULT, the `win-overnight-cc-20260524` overnight
+  run — RED-REPRODUCED, sharp Phase-1 → Phase-2 transition, 1-min transition
+  width). Selecting A records what already happened.
+- **Option B's deliverable** (a `null-stemHash` consecutive-skip counter +
+  `page.reload()` in `runWorker`) was **never committed**. `git log --
+  scripts/chaos-doctor-bot-v4.mjs` carries no such patch. The disk-honest math
+  in the R1 RESULT already flagged B as "not on its own a green outcome"
+  (Phase-1 rate projection ≈ 71 drops, a precondition not a close). B was the
+  weaker branch and was not taken.
+
+**Consequence — routes to R1.5/R1.6; does NOT by itself unblock R2.** Closing
+R1 as A does **not** flip R2 to "ready." Per Option A's own text ("R2 and R3
+stay blocked behind **R1.5** closing") and the R1.5 gate's binding SCOPE
+(`docs/AUDIT8_G5_R1_5_MECHANISM_CAPTURE.md` line 127: "R2 (`t`-aware join)
+**remains gated behind R1.6** — the fix gate that R1.5 routes to. R3 remains
+gated behind R2."), the effective chain is:
+
+```
+R1 (close, A) → R1.5 RESULT (§R1.5.4) → R1.6 fix gate (the extraction/bot fix)
+            → R2 (t-aware join analyzer) → AUDIT-9 (temporal-bin) → R3 (paid run)
+```
+
+R1's close hands off to R1.5 (whose Option-A deliverable — authoring the R1.5
+gate + long probe — already shipped as #242, and whose §R1.5.4 RESULT is the
+`win-overnight-cc-20260524` capture). **R2 stays gated behind R1.6**, which is
+gated behind R1.5 RESULT. R3 stays blocked behind R2 + AUDIT-9 implementation +
+a separate paid-run go (**$20 cap NOT widened**). This section records only the
+R1 routing decision; it asserts **no** downstream unblock beyond handing R1 off
+to R1.5.
+
+**Merge-order note.** This section forward-references §R1.5.4 (the R1.5 capture
+RESULT), which lands in a separate PR. **That PR must merge first** so this
+reference is satisfied on `main`; this PR is sequenced after it.
+
+**No scope re-name.** Per the R1 RESULT's forbidden clause, R1 is **not**
+silently re-named to "bot resilience." It closes as what it is: a findings-only
+result whose locked RED → bisect → fix procedure mapped to an empty set on
+disk (the bisect window had zero `shlav-a-mega.html` commits), with the
+re-registered procedure handed to R1.5. The bot-resilience patch (B) remains
+an **un-taken, separately-authorable** future option, not part of R1's close.
+
+**Trinity untouched. Docs-only. Append-only** under the gate's marker; the R1
+RESULT and R2.0 sections above are not edited.
+
