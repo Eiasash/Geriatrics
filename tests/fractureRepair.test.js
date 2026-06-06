@@ -72,8 +72,8 @@ describe('intra-word fracture repair ratchet (PR3)', () => {
     });
   });
 
-  it('count is unchanged (3823) — fixes were pure-despace, no add/drop', () => {
-    expect(QZ.length).toBe(3823);
+  it('count is 4297 (v10.64.156: +474 AI-2026-hy MCQs; PR3 fractures were pure-despace, no add/drop)', () => {
+    expect(QZ.length).toBe(4297);
   });
 
   it('exactly one lone final-form letter remains (idx 3211, allowlisted) — fracture floor', () => {

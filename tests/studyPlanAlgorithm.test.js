@@ -59,19 +59,19 @@ describe('study_plan algorithm — JS↔Python cross-language fixture (Geri)', (
   test('allocateHours: top-5 topics by hours match Python reference', () => {
     const allocated = SP_ALGO.allocateHours(GERI_TOPICS, 89.6);
     const top5 = [...allocated].sort((a, b) => b.hours - a.hours).slice(0, 5);
-    // Re-derived 2026-05-22 after the v10.64.127 syllabus refresh (3743 → 3823
+    // Re-derived 2026-06-06 after the v10.64.156 syllabus refresh (3823 → 4297
     // total + per-topic n_questions AND frequency_pct recomputed from the live
-    // ti distribution post PR #258 SZMC-Rescue merge — all 46 frequency_pct on
-    // the n/3823 denominator). The auto-audit Python reference
+    // ti distribution post the +474 AI-2026-hy merge — all 46 frequency_pct on
+    // the n/4297 denominator). The auto-audit Python reference
     // (generate_study_plan.py) should be re-run on the same syllabus to verify
     // cross-language alignment. The values below are what the JS algorithm
     // produces today (live-captured via the same vm-context the test uses).
     expect(top5.map((t) => ({ id: t.id, freq: t.frequency_pct, hours: t.hours }))).toEqual([
-      { id:  8, freq: 8.53, hours: 6.0 },
-      { id: 26, freq: 5.13, hours: 4.6 },
-      { id:  6, freq: 4.92, hours: 4.4 },
-      { id:  5, freq: 4.76, hours: 4.3 },
-      { id: 27, freq: 4.63, hours: 4.1 },
+      { id:  8, freq: 7.89, hours: 6.0 },
+      { id: 26, freq: 4.84, hours: 4.3 },
+      { id:  6, freq: 4.68, hours: 4.2 },
+      { id:  5, freq: 4.54, hours: 4.1 },
+      { id: 27, freq: 4.12, hours: 3.7 },
     ]);
   });
 
@@ -116,18 +116,18 @@ describe('study_plan algorithm — JS↔Python cross-language fixture (Geri)', (
     const allocated = SP_ALGO.allocateHours(GERI_TOPICS, 89.6);
     const out = SP_ALGO.schedule(allocated, 8, 16);
     // JS reference (matches study_plan_algorithm.js with `+ 1e-9` epsilon).
-    // Re-derived 2026-05-22 after v10.64.127 syllabus refresh — see top-5 test above.
+    // Re-derived 2026-06-06 after v10.64.156 syllabus refresh — see top-5 test above.
     // (Python reference comparison delta from v10.64.18 era no longer applicable
-    // until generate_study_plan.py is re-run on the +80 syllabus — see PR #258.)
-    const expected = [6.0, 6.0, 6.0, 6.1, 6.0, 6.1, 6.0, 6.1, 6.1, 6.0, 6.0, 6.1, 6.1, 6.1, 3.7, 0.0];
+    // until generate_study_plan.py is re-run on the +474 AI-2026-hy syllabus.)
+    const expected = [6.0, 6.1, 6.1, 6.0, 6.1, 6.0, 6.1, 6.1, 6.1, 6.1, 5.8, 5.9, 6.1, 6.0, 4.2, 0.0];
     expect(out.used.length).toBe(expected.length);
     for (let i = 0; i < expected.length; i++) {
       expect(Math.abs(out.used[i] - expected[i])).toBeLessThan(1e-9);
     }
     // Hard invariants that hold in BOTH implementations.
-    // Sum updated 2026-05-22 (88.5 with 3743-question syllabus → 88.4 with
-    // refreshed 3823-question per-topic frequencies post PR #258 +80 merge).
-    expect(out.used.reduce((s, u) => s + u, 0)).toBeCloseTo(88.4, 9);
+    // Sum updated 2026-06-06 (88.4 with 3823-question syllabus → 88.7 with
+    // refreshed 4297-question per-topic frequencies post the +474 AI-2026-hy merge).
+    expect(out.used.reduce((s, u) => s + u, 0)).toBeCloseTo(88.7, 9);
   });
 
   test('schedule: every topic placed exactly once across all weeks', () => {
