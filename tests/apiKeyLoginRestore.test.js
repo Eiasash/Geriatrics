@@ -35,16 +35,15 @@ import { resolve } from 'path';
 const ROOT = resolve(import.meta.dirname, '..');
 const html = readFileSync(resolve(ROOT, 'shlav-a-mega.html'), 'utf-8');
 
-describe('Geri v10.64.48 — _apikey in cloudBackup payload', () => {
-  it('cloudBackup function reads getApiKey() into local _apikey', () => {
-    // Pattern: const _apikey=getApiKey(); inside cloudBackup body
-    const m = html.match(/async function cloudBackup\(\)\{[\s\S]+?const _apikey\s*=\s*getApiKey\(\)/);
-    expect(m, 'cloudBackup must read api key via getApiKey()').toBeTruthy();
-  });
-
-  it('cloudBackup bundles _apikey alongside S/_mockHist/_sessions', () => {
-    // Pattern: const _bundled={...S,_mockHist,_sessions,_apikey};
-    expect(html).toMatch(/const\s+_bundled\s*=\s*\{[^}]*\.\.\.S[^}]*_apikey[^}]*\}/);
+describe('Geri v10.64.158 — API key is NOT cloud-synced (security fix)', () => {
+  // v10.64.48/50 synced _apikey in the backup blob; v10.64.158 removed it because
+  // backup_get is SECURITY DEFINER with no identity check, so a synced key was
+  // exfiltratable by username guess. auth_login_user still returns the key on
+  // login, so restore is unaffected. Do NOT re-add _apikey to the payload.
+  it('cloudBackup does NOT bundle _apikey into the synced payload', () => {
+    const m = html.match(/async function cloudBackup\(\)\{[\s\S]+?const\s+_bundled\s*=\s*\{[^}]+\}/);
+    expect(m, 'cloudBackup _bundled not found').toBeTruthy();
+    expect(m[0], '_apikey must not be in the cloud-sync payload').not.toMatch(/_apikey/);
   });
 
   it('applyRestorePayload restores rowData._apikey via setApiKey with typeof guard', () => {
@@ -116,14 +115,12 @@ describe('Geri sibling-parity with IM/FM auth_login_user contract', () => {
     expect(m[0]).not.toMatch(/r\.apiKey\b/);
   });
 
-  it('cloudBackup _bundled key is _apikey (matches FM/IM payload shape)', () => {
-    // The shared Supabase backup_set RPC stores this as a JSONB blob.
-    // If keys diverge across siblings, restore won't find _apikey on
-    // a backup made by a different sibling app.
+  it('cloudBackup intentionally DIVERGES from FM/IM: no _apikey in payload (v10.64.158)', () => {
+    // Geri dropped _apikey from the synced blob for security (exfiltration via the
+    // no-identity backup_get RPC). FM/IM still sync it and need the same fix; until
+    // then this divergence is deliberate, not a parity regression.
     const m = html.match(/async function cloudBackup\(\)\{[\s\S]+?const\s+_bundled\s*=\s*\{[^}]+\}/);
     expect(m).toBeTruthy();
-    expect(m[0]).toMatch(/_apikey\b/);
-    expect(m[0]).not.toMatch(/_apiKey\b/);  // camelCase would break sibling parity
-    expect(m[0]).not.toMatch(/apikey:/);    // bare apikey would also break
+    expect(m[0], 'Geri must not sync the api key').not.toMatch(/_apikey/);
   });
 });
