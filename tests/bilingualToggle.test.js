@@ -99,7 +99,7 @@ describe('v10.64.60 — render sites use qLang (regression guard)', () => {
     const bareQq = (html.match(/h\+=`<p class="heb"[^`]*\$\{q\.q\}<\/p>/g) || []).length;
     expect(bareQq, 'renderQuiz must use qLang(q,"q") for question text, not bare q.q').toBe(0);
     // And there should be at least one site using qLang.
-    expect(html).toMatch(/h\+=`<p class="heb"[^`]*\$\{qLang\(q,['"]q['"]\)\}/);
+    expect(html).toMatch(/h\+=`<p class="heb"[^`]*\$\{(?:sanitize\()?qLang\(q,['"]q['"]\)/);
   });
 
   it('the option iteration uses qLang(q,"o") not bare q.o.forEach', () => {
