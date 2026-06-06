@@ -234,11 +234,10 @@ describe('v10.64.51-57 — multi-axis filter system', () => {
   });
 
   describe('api-key cloud sync (v10.64.48 + v10.64.50)', () => {
-    it('cloudBackup payload bundle includes _apikey field', () => {
+    it('cloudBackup payload bundle does NOT include _apikey (v10.64.158 security fix)', () => {
       const fn = html.match(/async function cloudBackup\(\)\s*\{[\s\S]+?\n\}/);
       expect(fn, 'cloudBackup not found').toBeTruthy();
-      expect(fn[0]).toContain('_apikey');
-      expect(fn[0]).toContain('getApiKey()');
+      expect(fn[0], 'api key must not be cloud-synced').not.toContain('_apikey');
     });
 
     it('applyRestorePayload restores _apikey via setApiKey', () => {
