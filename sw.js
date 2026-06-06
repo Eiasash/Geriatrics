@@ -1,4 +1,4 @@
-const CACHE='shlav-a-v10.64.156';
+const CACHE='shlav-a-v10.64.157';
 const HTML_URLS=['shlav-a-mega.html','manifest.json','shared/fsrs.js','shared/tokens.css','shared/install-promo.js','src/storage.js','src/sw-update.js','src/study_plan_algorithm.js','src/study_plan.js','icons/icon-192.png','icons/icon-512.png'];
 // CRITICAL_URLS = the bare-minimum app shell required for offline boot.
 // Anything else (data/*.json, fonts, icons) is best-effort in the install
@@ -132,45 +132,11 @@ self.addEventListener('fetch',e=>{
   }
 });
 
-// ===== BACKGROUND SYNC =====
-// When a Supabase backup fails offline, the app registers a sync event.
-// When connectivity returns, this fires and retries the backup.
-self.addEventListener('sync',e=>{
-if(e.tag==='supabase-backup'){
-e.waitUntil(
-(async()=>{
-try{
-// Open IDB without a version — the SW shouldn't trigger an upgrade and
-// shouldn't fail with VersionError if the main thread bumps schema version.
-const db=await new Promise((resolve,reject)=>{
-const req=indexedDB.open('shlav_mega_db');
-req.onsuccess=ev=>resolve(ev.target.result);
-req.onerror=ev=>reject(ev.target.error);
-});
-if(!db.objectStoreNames.contains('state')){db.close();return;}
-const tx=db.transaction('state','readonly');
-const req=tx.objectStore('state').get('pending_sync');
-const data=await new Promise(r=>{req.onsuccess=()=>r(req.result);req.onerror=()=>r(null);});
-if(data&&data.url&&data.body){
-// Pin to the actual project origin — wildcard *.supabase.co would still allow
-// exfiltration to an attacker-controlled Supabase project if a compromised
-// same-origin script poisoned pending_sync.
-const SUPABASE_ORIGIN='https://krmlzwwelqvlfslwltol.supabase.co';
-let _supaOk=false;
-try{const u=new URL(data.url);_supaOk=(u.origin===SUPABASE_ORIGIN&&u.pathname.startsWith('/rest/v1/'));}catch(_){}
-if(!_supaOk){console.warn('Background sync: refusing non-Supabase url',data.url);return;}
-const res=await fetch(data.url,{method:'POST',headers:{'Content-Type':'application/json','apikey':data.apikey||''},body:JSON.stringify(data.body)});
-if(res.ok){
-// Clear pending sync
-const clearTx=db.transaction('state','readwrite');
-clearTx.objectStore('state').delete('pending_sync');
-}
-}
-}catch(err){console.warn('Background sync failed:',err);}
-})()
-);
-}
-});
+// Background-sync handler removed in v10.64.157: dead code. Nothing in the
+// page ever registered the background-sync tag or wrote the pending-sync IDB
+// record, so it could never fire; the retry also sent only the apikey header
+// while the live backup_set RPC sends apikey + Authorization. Removed to avoid
+// a misleading offline-resilience surface and the false-confidence tests.
 
 // ===== DAILY PUSH NOTIFICATION (07:00 local time) =====
 // Scheduled via periodic background sync or a setInterval from the main thread.
