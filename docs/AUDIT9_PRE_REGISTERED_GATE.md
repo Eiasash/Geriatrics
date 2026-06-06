@@ -682,3 +682,50 @@ gated behind: R1.6 live-GREEN (overnight) + a separate paid-run go
 (**$20 cap NOT widened**, config inherited UNCHANGED). When R3 runs, this
 instrument will surface any Phase-1 → Phase-2 bifurcation the pooled rate would
 otherwise hide.
+
+---
+
+## §A2-REV3 — Observed-zero-yield refinement (post-merge Codex review, 2026-06-06)
+
+Codex P2 on the AUDIT-9 implementation PR (#328,
+`scripts/lib/temporalBins.mjs`) flagged that the §A2 zero-run check tested only
+`reached_pick === 0`, so a **synthesized empty bucket** (`total === 0`) — a
+≥ `bucketMs` window with **no** AUDIT-9 input events at all (e.g. the worker
+reloads/sleeps off the quiz surface without emitting a dropped / retained /
+pre-pick-skip row) — was counted as a consecutive zero-yield bucket. A later
+event extending `runEnd` could then route `STOP-BIFURCATION` on an **idle /
+telemetry gap** rather than on the Phase-2 pre-pick-skip collapse the criterion
+targets.
+
+This is a refinement registered **before any R3 data is consumed** (R3 is still
+deferred — `$20 cap NOT widened`), so no verdict that has been seen is being
+re-routed (`feedback_prewritten_predictions`: the overturn condition is named
+before the data). The original §A2 / §A2-REV1 / §A2-REV2 text is **not
+retro-edited** (`feedback_spec_provenance_append_only`); this REV binds the
+clarification.
+
+**Binding clarification.** A bucket counts as a **zero-yield** bucket for the
+§A2 criterion only if it is **observed** — i.e. `total > 0 AND reached_pick == 0`
+(events present in the bucket, none reaching the pick step). An **empty** bucket
+(`total === 0`) is an *absence of observation*, not a Phase-2 collapse, and
+**breaks** the consecutive-zero run (it cannot be one of the K zero buckets, nor
+can it be the anchor). This matches §0.2's disk-grounded Phase-2 signature
+(13–14 `pre-pick-skip` **events** per minute — dense, not empty).
+
+**Why this does not touch the locked design.** Bucket width stays 5 min, K stays
+2, the strict immediately-preceding anchor stays, run-start alignment stays,
+`STOP-BIFURCATION` still overrides all aggregate branches. The forbidden list
+(K shrink, anchor relax, bucket resize, alignment change, aggregate-overrides-
+bifurcation, branch under-coverage) is untouched — REV3 *tightens* the
+zero-yield definition (fewer false positives), it does not relax any lock.
+
+**Pre/post (§A5 mirror).** The implementation PR adds an **idle-gap fixture**
+(anchor bucket > 0 → ≥ 2 empty buckets from an event gap → a later event):
+the criterion **MUST NOT** fire (`detected=false`). The canonical CATCH fixture
+(dense Phase-2: events present, all `pre-pick-skip`) **MUST still** fire
+`STOP-BIFURCATION` — the dense-Phase-2 path is unchanged because those buckets
+have `total > 0`. Both pinned in `tests/audit9TemporalBins.test.js`.
+
+**Review.** Criterion-semantics change to the locked instrument → **Codex
+re-review requested** (`@codex review`); not self-merged unreviewed, per the
+gate's cross-model independence rule.

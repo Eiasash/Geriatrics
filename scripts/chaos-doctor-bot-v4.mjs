@@ -977,12 +977,22 @@ async function runWorker(browser, workerId, stopAt, report) {
         // no-quiz lock-in escalates past reload, then recover.
         const decision = nextRecovery(recovery, { advanced: false, stemHash: null }, recoveryCfg);
         recovery = decision.state;
+        // Codex P2 (#326): only act on the escalation decision. Previously this
+        // branch reloaded on BOTH 'reload' AND 'none', but reloadsSinceProgress
+        // only advances inside nextRecovery once the null streak crosses
+        // nullStreakThreshold — so reloading on 'none' thrashed the page without
+        // counting toward escalation, needing ~15 reloads (5×3) to reach
+        // 'recreate' instead of the documented 3. Mirror the on-quiz path: act
+        // only on 'reload'/'recreate'; on 'none' just wait for the next turn.
         if (decision.action === 'recreate') {
           log.bugs.push({ at: nowIso(), type: 'stuck-refresh', tier: 'recreate', context: 'no-quiz', recovery });
           await context.close().catch(() => {});
           ({ context, page } = await freshContext());
-        } else {
+        } else if (decision.action === 'reload') {
+          log.bugs.push({ at: nowIso(), type: 'stuck-refresh', tier: 'reload', context: 'no-quiz', recovery });
           try { await page.reload({ waitUntil: 'domcontentloaded', timeout: 15_000 }); } catch (_) { /* ok */ }
+          await sleep(rand(2000, 4000));
+        } else {
           await sleep(rand(2000, 4000));
         }
         continue;

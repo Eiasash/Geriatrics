@@ -111,6 +111,29 @@ describe('temporalBifurcation — pure contract (§A1/§A2/§A2-REV2)', () => {
     const shifted = base.map((e) => ({ ...e, at: new Date(Date.parse(e.at) + 37 * 60_000).toISOString() }));
     expect(temporalBifurcation(shifted).bifurcation_onset_buckets).toEqual([3]);
   });
+
+  it('§A2-REV3: an idle gap (empty buckets, no events) does NOT fire — only OBSERVED zero-yield does', () => {
+    // Phase-1 anchor (15 min, 3 buckets reached>0), then a ≥10-min event gap
+    // (empty minutes → total:0 buckets), then a later event extending runEnd.
+    const idle = [];
+    for (let i = 0; i < 15; i++) idle.push({ ok: 13 });   // minutes 0–14: Phase-1
+    for (let i = 0; i < 15; i++) idle.push({});           // minutes 15–29: NO events (idle gap)
+    idle.push({ ok: 5 });                                  // minute 30: a later event
+    const rIdle = temporalBifurcation(genEvents(idle));
+    // the gap buckets exist and are empty (total:0) — they must NOT be onsets
+    expect(rIdle.buckets.some((b) => b.total === 0)).toBe(true);
+    expect(rIdle.detected).toBe(false);
+    expect(rIdle.bifurcation_onset_buckets).toEqual([]);
+
+    // CONTRAST: same shape but the gap carries pre-pick-skip EVENTS (observed
+    // zero-yield = dense Phase-2) → the criterion MUST fire. Proves REV3
+    // excludes only EMPTY buckets, not observed zero-yield ones.
+    const dense = [];
+    for (let i = 0; i < 15; i++) dense.push({ ok: 13 });
+    for (let i = 0; i < 15; i++) dense.push({ skip: 14 }); // observed zero-yield
+    dense.push({ ok: 5 });
+    expect(temporalBifurcation(genEvents(dense)).detected).toBe(true);
+  });
 });
 
 // ── Integration through analyze() with timestamped ledgers ──────────────
