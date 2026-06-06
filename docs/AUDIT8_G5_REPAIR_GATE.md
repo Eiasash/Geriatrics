@@ -840,3 +840,48 @@ top (§A6: `edfa433` + R2 + AUDIT-9).
 Trinity untouched (analyzer + test only; no `shlav-a-mega.html` / `sw.js` /
 `package.json`).
 
+---
+
+## R3 INSTRUMENT-REPAIR NOTE — check-answer selector drift (2026-06-06)
+
+**The R3 instrument (`scripts/chaos-doctor-bot-v4.mjs`) was found inert against
+the current live site and repaired before any R3 run.** A pre-flight proxy smoke
+(90 s, $0.05 cap) at live `v10.64.156` produced **0 judge calls / $0.00**, only
+`worker-no-practice-*.png` — `ensureOnPracticeQuiz` could not enter the practice
+surface.
+
+**Root cause (verified, `git show 29f5639`).** PR #290 (`29f5639`, merged
+2026-05-26 23:23 "Lighthouse a11y 87→100") rewrote the practice check button
+`aria-label="Check answer"` → `aria-label="${_confLabel} בדוק — check answer"`
+(`shlav-a-mega.html:3259`; SD button `:3202` → `"בדוק — check answer"`). The bot's
+**exact-match** `[aria-label="Check answer"]` matched 0 elements. Audit-8
+(2026-05-18, v10.64.118) predated #290 — its run was valid; the v4 bot has been
+inert vs the live practice surface since **2026-05-26**.
+
+**Repair (selector-only; no behavior change).** The three check-answer refs `:504`
+(reveal/appIdx), `:865`/`:892` (entry) AND the two advance refs `:561`/`:754`
+(`next question`/`finish exam`) were re-pinned to case-insensitive substring
+matchers (`[aria-label*="… " i]`) — matching the persistent lowercase English
+fragment in the new + old + SD forms, so a future a11y/i18n label edit cannot
+silently re-break the loop (the whole #290 selector class, not just check-answer).
+The dormant `scripts/audit8/r15LongProbe.mjs:562` + `r1RedProbe.mjs:116` carry the
+same broken selector but are **left as-is** — this is NOT a "#252 byte-identity
+hold" (a 0-judge-call selector preserves no identity; that framing is a category
+error). They are safe to leave because R1 is closed and R1.5 already ran
+2026-05-24 **pre-#290** (its §R1.5.4 RED-REPRODUCED result used the working
+selector). Any future r15/r1 re-run MUST re-pin the selector first. Re-smoke witnessed
+the fix: **judge calls 0 → 10** (4 Qs, 3/4 fully judged, 0 failures). Guarded by
+`tests/chaosBotV4LiveJudgeGate.test.js` — a live judge-call regression
+(hard-fails when the bot's own `ai-judge` counter is 0; env-gated
+`CHAOS_LIVE_SMOKE=1`) plus an offline pin that the exact-match selector is not
+reintroduced.
+
+**Provenance bar for R3 (binding):** any R3 verdict data is valid only if it
+**post-dates the merge of this selector fix to `main`** AND the live judge-gate
+(`CHAOS_LIVE_SMOKE=1 npx vitest run tests/chaosBotV4LiveJudgeGate.test.js`) is
+green at run-start. Do NOT fire R3 on a pre-fix instrument. Selector pins to an
+i18n surface — a future translation PR can re-break it; follow-up filed to add a
+non-translated hook (`data-testid`/`id`) to the check button and re-pin the bot.
+
+Scripts/tests/docs only — Trinity untouched.
+
