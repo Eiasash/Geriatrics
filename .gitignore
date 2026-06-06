@@ -53,6 +53,10 @@ scripts/fm-state-probe.mjs
 source_completeness_audit_*.json
 data/ai_hard_seed.geri.generated.json
 
+# Orphan AI-generation scratch stubs (no in-repo producer) — prevent git add -A commits
+data/gapfill.generated.json
+data/highyield.generated.json
+
 # 2026-05-10: chaos-bot output + test coverage (prevent git add -A near-misses)
 chaos-reports/
 coverage/
