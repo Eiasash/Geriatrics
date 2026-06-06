@@ -295,6 +295,9 @@ describe('questions.json — structural invariants', () => {
       // v10.64.127: SZMC-Rescue — 80 MCQs rescued from abandoned-prototype folders during
       // 2026-05-21 home-cleanup, normalized + audited + translated, merged via PR #258.
       'SZMC-Rescue',
+      // v10.64.156: AI-2026-hy — 474 AI-generated high-yield MCQs, key⟺explanation
+      // consistency-checked (scripts/verify_questions.mjs, 1 conflict auto-deleted).
+      'AI-2026-hy',
     ]);
     const unknown = new Set();
     questions.forEach(q => {
@@ -363,8 +366,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 3823 (v10.64.127: +80 SZMC-Rescue MCQs merged via PR #258)', () => {
-    expect(questions.length).toBe(3823);
+  test('total question count is exactly 4297 (v10.64.156: +474 AI-2026-hy MCQs, 1 of 475 auto-deleted)', () => {
+    expect(questions.length).toBe(4297);
   });
 });
 
