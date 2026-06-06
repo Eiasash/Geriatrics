@@ -186,7 +186,16 @@ describe('G4.5 verdict branches (synthetic)', () => {
     expect(r.verdict).toBe('DETECTABLE-BUT-NEGLIGIBLE');
   });
 
-  it('STOP-JOIN-INTEGRITY — a covariate determinate-join rate < 99% (D3)', () => {
+  // ── R2/B2 CONSCIOUS UPDATE (AUDIT8_G5_REPAIR_GATE §R2.0-REV1) ──────────
+  // This fixture was the edfa433 `STOP-JOIN-INTEGRITY` pin. B2 re-attributes
+  // a PURELY-structural (dup-discordant) non-determinacy away from
+  // "join integrity failure": the determinable-subset rate is 1.0, so
+  // `g3d3.violations` is now EMPTY and the verdict is `STOP-JOIN-NONDETERMINABLE`.
+  // Per the R2.0 predicate ("either still passes OR is consciously, pre-
+  // registeredly updated with the rationale documented in the R2 PR"), the
+  // assertion is updated — NOT silently. The gate is still STOPped (not cleared
+  // by the denominator shrink, §R2.0-REV1(d-iii)); only the attribution changed.
+  it('STOP-JOIN-NONDETERMINABLE — purely-structural dup-discordance (B2; was STOP-JOIN-INTEGRITY @ edfa433)', () => {
     // idx0 & idx1 are byte-identical `q` (same stemHash, a dup group) but
     // disagree on `broken` only → every routed row is broken-indeterminate.
     const q = [
@@ -196,8 +205,51 @@ describe('G4.5 verdict branches (synthetic)', () => {
     const drop = Array.from({ length: 100 }, () => 0);
     const ret = Array.from({ length: 250 }, () => 0);
     const r = runCase({ questions: q, dropSpecs: drop, retainSpecs: ret });
-    expect(r.g3d3.violations).toContain('broken');
-    expect(r.verdict).toBe('STOP-JOIN-INTEGRITY');
+    // genuine join-integrity is clean (determinable-subset rate 1.0)
+    expect(r.g3d3.violations).not.toContain('broken');
+    // B2 re-attribution: broken is structurally non-determinable for 100% of rows
+    expect(r.g3b2.nondeterminableViolations).toContain('broken');
+    expect(r.g3b2.perCovariate.broken.determinableRate).toBe(1);
+    expect(r.g3b2.perCovariate.broken.structuralFraction).toBeGreaterThanOrEqual(r.g3b2.structuralThreshold);
+    expect(r.verdict).toBe('STOP-JOIN-NONDETERMINABLE');
+  });
+
+  it('STOP-JOIN-NONDETERMINABLE — t-discordant dup group (the audit-8 t-join shape; B2 RED-proof)', () => {
+    // The disk shape from §0.2 Defect B: byte-identical stems that disagree on
+    // `t` (exam provenance) — structurally non-recoverable from a stem-hash key
+    // (step (a): t within-dup-group agreement 2/172 on current data → B1 CLOSED).
+    // B2 routes STOP-JOIN-NONDETERMINABLE and exposes the structural metrics.
+    // RED-proof vs edfa433: the asserted `g3b2` surface does not exist on the
+    // frozen analyzer, so this test fails there and passes on B2.
+    const q = [
+      { q: 'shared t-discordant stem alpha', o: ['a', 'b'], c: 0, ti: 0, t: '2022-Jun-Basic' },
+      { q: 'shared t-discordant stem alpha', o: ['a', 'b'], c: 0, ti: 0, t: '2022-Jun-Subspec' },
+    ];
+    const drop = Array.from({ length: 100 }, () => 0);
+    const ret = Array.from({ length: 250 }, () => 0);
+    const r = runCase({ questions: q, dropSpecs: drop, retainSpecs: ret });
+    expect(r).toHaveProperty('g3b2'); // B2 surface absent on edfa433 → RED there
+    expect(r.g3b2.nondeterminableViolations).toContain('t');
+    expect(r.g3b2.perCovariate.t.structuralFraction).toBe(1); // 100% of served rows are t-indeterminate
+    expect(r.g3b2.perCovariate.t.determinableRate).toBe(1);   // the shrink-to-1.0 the honesty pin forbids clearing on
+    expect(r.verdict).toBe('STOP-JOIN-NONDETERMINABLE');       // gate NOT cleared
+  });
+
+  it('B2 does NOT over-trigger — a sub-1% structural fraction stays usable', () => {
+    // 250 distinct questions; one dup-pair (idx0,idx1) shares a stem and
+    // disagrees on `broken` (and incidentally `t`). Served proportionally, the
+    // pair is 2/250 = 0.8% of routed rows — BELOW the 1% structural ceiling — so
+    // neither `broken` nor `t` is a nondeterminable violation; the covariates
+    // stay in the family and the verdict routes on the marginals (not a STOP).
+    const q = pool(250, (o, i) => (i === 0
+      ? { ...o, q: 'dupB', broken: true }
+      : i === 1 ? { ...o, q: 'dupB', broken: false } : o));
+    const drop = Array.from({ length: 250 }, (_, i) => i % 250); // 1× each
+    const ret = Array.from({ length: 750 }, (_, i) => i % 250);  // 3× each
+    const r = runCase({ questions: q, dropSpecs: drop, retainSpecs: ret });
+    expect(r.g3b2.nondeterminableViolations).not.toContain('broken');
+    expect(r.g3b2.perCovariate.broken.structuralFraction).toBeLessThan(r.g3b2.structuralThreshold);
+    expect(r.verdict).not.toBe('STOP-JOIN-NONDETERMINABLE');
   });
 });
 

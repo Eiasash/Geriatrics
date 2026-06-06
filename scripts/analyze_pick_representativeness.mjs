@@ -36,6 +36,17 @@ const FLOOR_V = 0.10;       // G4.4: Cramér's V floor (categoricals)
 const MIN_N_DROP = 80;      // G2
 const MIN_N_RETAIN = 200;   // G2
 const JOIN_DETERMINATE_MIN = 0.99; // D3: per-covariate determinate-join rate
+// R2/B2 (AUDIT8_G5_REPAIR_GATE §R2.0-REV1, branch B2): a dup-discordant cell
+// (byte-identical stem served by the DOM, dup-group members disagreeing on a
+// covariate) is STRUCTURALLY non-determinable — the stem-hash join key cannot
+// carry the covariate. It is NOT a join-reliability failure. B2 re-derives the
+// determinate denominator by excluding these structural cells; the
+// determinable-subset rate is then trivially 1.0 (every joined row is either
+// determinate or structurally non-determinable), so the HONEST signal is the
+// STRUCTURAL FRACTION. Per §R2.0-REV1(d-iii) the denominator shrink may NOT, by
+// itself, clear the gate: a structural fraction at/above this ceiling is a
+// reportable limitation → STOP-JOIN-NONDETERMINABLE (gate NOT cleared).
+const STRUCTURAL_NONDETERMINABLE_MAX = 1 - JOIN_DETERMINATE_MIN; // 0.01
 
 const CATEGORICAL = ['topic_group', 't', 'bilingual', 'c_accept', 'broken'];
 const ALL_COVS = ['stem_len', ...CATEGORICAL];
@@ -142,8 +153,8 @@ function analyze({ reportDir, index, questionsPath }) {
   const qNorm = buildQNorm(index, questionsPath);
 
   // Join every dropped + retained row; per-covariate determinate tallies.
-  const joinTally = {};       // cov → {determinate, attempted}
-  for (const c of ALL_COVS) joinTally[c] = { determinate: 0, attempted: 0 };
+  const joinTally = {};       // cov → {determinate, attempted, nondeterminable}
+  for (const c of ALL_COVS) joinTally[c] = { determinate: 0, attempted: 0, nondeterminable: 0 };
   let joinFailDrop = 0;
   let joinFailRetain = 0;
 
@@ -163,6 +174,10 @@ function analyze({ reportDir, index, questionsPath }) {
         if (c in j.covs) {
           joinTally[c].determinate++;
           byCov[c].push(j.covs[c]);
+        } else if (j.bucketSize > 1) {
+          // R2/B2: joined to a dup bucket but the covariate disagrees across
+          // members → structurally non-determinable (not a join failure).
+          joinTally[c].nondeterminable++;
         }
       }
     }
@@ -186,14 +201,33 @@ function analyze({ reportDir, index, questionsPath }) {
   // floor is join-unreliable → dropped from the family + flagged; if ANY
   // is violated the analyzer refuses to route a verdict (D3 "do not
   // route" intent — replaces the unsatisfiable global ≥95% STOP).
+  // R2/B2: split the old single `rate < 0.99 → join violation` check into two
+  // honestly-attributed signals.
+  //   • determinableRate = determinate / (attempted − structurally-nondeterminable).
+  //     With the current join semantics every joined non-determinate cell IS
+  //     structural, so this is trivially 1.0 — which is exactly why the naive
+  //     denominator shrink would clear the gate (§R2.0-REV1(d) forbids that).
+  //   • structuralFraction = nondeterminable / attempted — the HONEST signal.
+  // A covariate routes STOP only if (a) its determinable-subset rate is genuinely
+  // below floor (join unreliability — STOP-JOIN-INTEGRITY), or (b) its structural
+  // fraction is at/above the materiality ceiling (STOP-JOIN-NONDETERMINABLE: the
+  // covariate is structurally non-analyzable for a material fraction — a
+  // reportable limitation, NOT a cleared gate).
   const joinRates = {};
-  const joinViolations = [];
+  const joinViolations = [];            // genuine join unreliability
+  const nondeterminableViolations = []; // B2: material structural non-determinability
   for (const c of ALL_COVS) {
     const t = joinTally[c];
-    const rate = t.attempted ? t.determinate / t.attempted : 0;
-    joinRates[c] = { rate, ...t };
-    if (rate < JOIN_DETERMINATE_MIN) joinViolations.push(c);
+    const determinableAttempted = t.attempted - t.nondeterminable;
+    const determinableRate = determinableAttempted ? t.determinate / determinableAttempted : 1;
+    const structuralFraction = t.attempted ? t.nondeterminable / t.attempted : 0;
+    const rate = t.attempted ? t.determinate / t.attempted : 0; // legacy D3 rate (reported, not routed)
+    joinRates[c] = { rate, determinableRate, structuralFraction, ...t };
+    if (determinableRate < JOIN_DETERMINATE_MIN) joinViolations.push(c);
+    else if (structuralFraction >= STRUCTURAL_NONDETERMINABLE_MAX) nondeterminableViolations.push(c);
   }
+  // Union of covariates that cannot enter the analysis family (either reason).
+  const unusableCovs = [...joinViolations, ...nondeterminableViolations];
 
   // ---- the 6-covariate marginal family (G4.2 + D1 + D2) -------------
   // broken vacuity (D2): N_broken_served over the joined universe.
@@ -205,7 +239,7 @@ function analyze({ reportDir, index, questionsPath }) {
   const tests = {}; // cov → {test, stat, p, effect, effectName, floor, ...}
 
   // stem_len — Mann–Whitney U + Cliff's δ
-  if (!joinViolations.includes('stem_len')) {
+  if (!unusableCovs.includes('stem_len')) {
     const mw = mannWhitneyAndCliffs(D.byCov.stem_len, R.byCov.stem_len);
     tests.stem_len = {
       test: 'mann-whitney-u', U: mw.U, z: mw.z, p: mw.p,
@@ -216,7 +250,7 @@ function analyze({ reportDir, index, questionsPath }) {
 
   // categorical χ² (topic_group, t) with locked <5 pooling
   for (const c of ['topic_group', 't']) {
-    if (joinViolations.includes(c)) continue;
+    if (unusableCovs.includes(c)) continue;
     const levels = [...new Set([...D.byCov[c], ...R.byCov[c]].map(String))].sort();
     const cntD = levels.map((L) => D.byCov[c].filter((v) => String(v) === L).length);
     const cntR = levels.map((L) => R.byCov[c].filter((v) => String(v) === L).length);
@@ -230,7 +264,7 @@ function analyze({ reportDir, index, questionsPath }) {
 
   // binary Fisher exact (bilingual, c_accept, broken[unless vacuous])
   for (const c of ['bilingual', 'c_accept', 'broken']) {
-    if (joinViolations.includes(c)) continue;
+    if (unusableCovs.includes(c)) continue;
     if (c === 'broken' && brokenVacuous) continue;
     const a = D.byCov[c].filter((v) => v === true).length;
     const b = D.byCov[c].filter((v) => v === false).length;
@@ -257,7 +291,7 @@ function analyze({ reportDir, index, questionsPath }) {
 
   // ---- G4.3 logistic SENSITIVITY (surfaced reconciliation: the family,
   // not the 4-era formula — verdict-NEUTRAL; see crosswalk) -----------
-  const logistic = runLogisticSensitivity(D, R, brokenVacuous, joinViolations);
+  const logistic = runLogisticSensitivity(D, R, brokenVacuous, unusableCovs);
 
   // ---- G4.5 verdict (keyed ONLY on the primary marginal family) -----
   const anyBiasSignal = family.some((k) => tests[k].biasSignal);
@@ -266,7 +300,12 @@ function analyze({ reportDir, index, questionsPath }) {
 
   let verdict;
   if (joinViolations.length) {
-    verdict = 'STOP-JOIN-INTEGRITY'; // D3: do not route on an unreliable join
+    verdict = 'STOP-JOIN-INTEGRITY'; // D3: do not route on a genuinely unreliable join
+  } else if (nondeterminableViolations.length) {
+    // R2/B2: the join is reliable on its determinable subset, but a covariate
+    // is structurally non-determinable for a material fraction. The gate is NOT
+    // cleared by the denominator shrink (§R2.0-REV1(d-iii)); it is re-attributed.
+    verdict = 'STOP-JOIN-NONDETERMINABLE';
   } else if (anyBiasSignal) {
     verdict = 'BIASED';
   } else if (anyHolmSig) {
@@ -288,6 +327,24 @@ function analyze({ reportDir, index, questionsPath }) {
       threshold: JOIN_DETERMINATE_MIN,
       violations: joinViolations,
       joinFailDrop, joinFailRetain,
+    },
+    // R2/B2: determinate-denominator re-derivation. Reports the structural
+    // non-determinability that the legacy single-rate D3 check conflated with
+    // join unreliability. Per §R2.0-REV1(d): the excluded (structural) count is
+    // reported beside the rate; the determinable-subset is scoped; a material
+    // structural fraction is a reportable limitation, NOT a cleared gate.
+    g3b2: {
+      note: 'B2 determinate-denominator re-derivation (AUDIT8_G5_REPAIR_GATE §R2.0-REV1). '
+        + 'structuralFraction >= structuralThreshold → STOP-JOIN-NONDETERMINABLE (gate NOT cleared by shrink).',
+      structuralThreshold: STRUCTURAL_NONDETERMINABLE_MAX,
+      nondeterminableViolations,
+      perCovariate: Object.fromEntries(ALL_COVS.map((c) => [c, {
+        determinate: joinTally[c].determinate,
+        nondeterminable: joinTally[c].nondeterminable,
+        attempted: joinTally[c].attempted,
+        determinableRate: joinRates[c].determinableRate,
+        structuralFraction: joinRates[c].structuralFraction,
+      }])),
     },
     family,
     brokenVacuous, brokenServed,
@@ -391,9 +448,18 @@ function g5RouteFor(verdict) {
         + 'bounded run (state target N_drop); force NO verdict; trigger NO downstream; '
         + 'item 2 remains blocked.';
     case 'STOP-JOIN-INTEGRITY':
-      return 'D3: ≥1 covariate determinate-join rate < 99% → do NOT route a verdict. '
+      return 'D3: ≥1 covariate determinable-subset join rate < 99% → do NOT route a verdict. '
         + 'Report the offending covariate(s); the bounded run/instrument join must be '
         + 'repaired (e.g. strengthen normStem) before a representativeness verdict stands.';
+    case 'STOP-JOIN-NONDETERMINABLE':
+      return 'R2/B2: ≥1 covariate is structurally non-determinable for a material fraction '
+        + '(dup-discordant byte-identical-stem cells; the stem-hash key cannot carry the '
+        + 'covariate). The join is reliable on its determinable subset, but per §R2.0-REV1(d-iii) '
+        + 'the denominator shrink does NOT clear the gate — the structural fraction is a reportable '
+        + 'limitation. Route NO representativeness verdict on the affected covariate(s); to proceed, '
+        + 'either drop the structurally-non-determinable covariate from the family (own gated decision, '
+        + 'NOT authorized here) or capture the served-question corpus index so t becomes determinable. '
+        + 'item 2 remains blocked.';
     default:
       return 'unknown';
   }
@@ -437,6 +503,8 @@ if (isMain) {
   if (result.g2) console.log('G2     :', JSON.stringify(result.g2));
   if (result.ledger) console.log('ledger :', JSON.stringify(result.ledger));
   if (result.g3d3) console.log('join   : violations=' + JSON.stringify(result.g3d3.violations));
+  if (result.g3b2) console.log('B2     : nondeterminable=' + JSON.stringify(result.g3b2.nondeterminableViolations)
+    + ' (structuralThreshold=' + result.g3b2.structuralThreshold + ')');
   if (result.g5route) console.log('G5     :', result.g5route);
   console.log('wrote  :', out);
   console.log('NOTE: this analyzer produces the verdict only. The RESULT section is appended '
