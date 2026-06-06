@@ -128,3 +128,38 @@ describe('R1.6 default config is sane', () => {
     expect(actions[4]).toBe('reload');
   });
 });
+
+// ── Codex P2 (#326): no-quiz escalation must not thrash ──────────────────
+// The bot's no-quiz branch previously reloaded on BOTH 'reload' AND 'none'.
+// reloadsSinceProgress only advances inside nextRecovery when the null streak
+// crosses nullStreakThreshold, so reloading on 'none' did not count toward
+// escalation → ~15 reloads (5×3) to reach 'recreate' instead of 3.
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+const BOT_SRC = readFileSync(
+  path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'scripts', 'chaos-doctor-bot-v4.mjs'),
+  'utf8',
+);
+
+describe('no-quiz escalation reaches recreate in exactly reloadEscalateThreshold acted reloads', () => {
+  it('a sustained null streak yields 2 reloads then recreate (not 15)', () => {
+    // Drive enough null turns to reach the first recreate.
+    const { actions } = drive(Array(15).fill(NULL_FAIL));
+    const acted = actions.filter((a) => a !== 'none'); // the FIXED bot acts ONLY on these
+    expect(acted).toEqual(['reload', 'reload', 'recreate']);
+    // recreate arrives at the 15th null turn — but via 3 ACTED decisions, not 15 reloads
+    expect(actions[14]).toBe('recreate');
+    expect(actions.filter((a) => a === 'reload').length).toBe(2);
+  });
+
+  it('bot no-quiz branch GATES its reload on action===reload (source guard)', () => {
+    const block = BOT_SRC.slice(BOT_SRC.indexOf('if (!onQuiz) {'));
+    const noQuiz = block.slice(0, block.indexOf('continue;'));
+    // the discriminating fix: reload is guarded by the escalation decision
+    expect(noQuiz).toContain("decision.action === 'reload'");
+    // and exactly one reload site in the block (the gated one) — no unconditional reload
+    expect((noQuiz.match(/page\.reload/g) || []).length).toBe(1);
+    expect(noQuiz).toContain("tier: 'reload', context: 'no-quiz'");
+  });
+});

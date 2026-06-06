@@ -251,6 +251,26 @@ describe('G4.5 verdict branches (synthetic)', () => {
     expect(r.g3b2.perCovariate.broken.structuralFraction).toBeLessThan(r.g3b2.structuralThreshold);
     expect(r.verdict).not.toBe('STOP-JOIN-NONDETERMINABLE');
   });
+
+  it('B2 fires at EXACTLY the 1% ceiling — Codex P2 (#327) float-boundary regression', () => {
+    // 200 distinct questions; idx0/idx1 share a stem and disagree ONLY on
+    // `broken` (t/ti forced equal). Served uniformly, the dup pair is exactly
+    // 1% of routed rows → structuralFraction === 0.01. In IEEE-754 the literal
+    // 0.01 (0.0100000000000000002) is STRICTLY BELOW the ceiling `1 - 0.99`
+    // (0.0100000000000000089), so the pre-fix bare `>= STRUCTURAL_NONDETERMINABLE_MAX`
+    // MISSED this case. With the epsilon tolerance it must STOP at "at/above 1%".
+    const q = pool(200, (o, i) => (i === 0
+      ? { ...o, q: 'dupExact', t: 'S0', ti: 0, broken: true }
+      : i === 1 ? { ...o, q: 'dupExact', t: 'S0', ti: 0, broken: false } : o));
+    const drop = Array.from({ length: 200 }, (_, i) => i % 200); // 1× each
+    const ret = Array.from({ length: 600 }, (_, i) => i % 200);  // 3× each → uniform
+    const r = runCase({ questions: q, dropSpecs: drop, retainSpecs: ret });
+    const sf = r.g3b2.perCovariate.broken.structuralFraction;
+    expect(sf).toBeCloseTo(0.01, 12);                 // exactly the 1% ceiling
+    expect(sf).toBeLessThan(r.g3b2.structuralThreshold); // below the raw float ceiling → old code missed it
+    expect(r.g3b2.nondeterminableViolations).toContain('broken'); // epsilon fix catches it
+    expect(r.verdict).toBe('STOP-JOIN-NONDETERMINABLE');          // gate NOT cleared at exactly 1%
+  });
 });
 
 describe('logistic sensitivity is verdict-neutral', () => {
