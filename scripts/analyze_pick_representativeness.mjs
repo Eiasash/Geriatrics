@@ -68,6 +68,16 @@ const ALL_COVS = ['stem_len', ...CATEGORICAL];
 // Was a hardcoded mis-pointer at docs/AUDIT8_PRE_REGISTERED_GATE.md.
 const RESULT_HOME_OF_RECORD_GATE = 'docs/AUDIT8_G5_REPAIR_GATE.md';
 
+// Binding provenance — the gate whose verdict LOGIC (G2–G5 + D1–D4) this
+// analyzer is bound to. That is the ORIGINAL representativeness
+// pre-registration (see the "Binding spec" header), NOT the repair gate.
+// Distinct concept from RESULT_HOME_OF_RECORD_GATE above: provenance answers
+// "which gate defines the verdict semantics" (pre-reg); home-of-record answers
+// "which gate the RESULT is appended to" (repair, SHIP clause). The
+// `boundOnMainGate` result field reports THIS. (#339 follow-up: #339
+// conflated the two and pointed this field at the home-of-record gate.)
+const BOUND_ON_MAIN_GATE = 'docs/AUDIT8_PRE_REGISTERED_GATE.md';
+
 // ---- ledger ingestion ------------------------------------------------
 
 function loadLedger(reportDir) {
@@ -377,7 +387,9 @@ function analyze({ reportDir, index, questionsPath }) {
   return {
     schema: 'audit8-representativeness-result/1',
     generatedBy: 'scripts/analyze_pick_representativeness.mjs',
-    boundOnMainGate: RESULT_HOME_OF_RECORD_GATE,
+    // Provenance: the gate whose verdict LOGIC (G2–G5) this result derives
+    // from — the original pre-registration, NOT the home-of-record repair gate.
+    boundOnMainGate: BOUND_ON_MAIN_GATE,
     verdict,
     // AUDIT-9: the pooled aggregate verdict, kept as informational even when
     // STOP-BIFURCATION overrides it (so a reader sees what the pooled rate said).
