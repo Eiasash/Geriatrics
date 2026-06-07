@@ -595,7 +595,15 @@ Validate the APP's claimed answer ${appLetter} (${appText}) against board-level 
   const judgeJson = await judgeWithShapeRetry({
     system: SYS_DOCTOR_JUDGE,
     userPrompt: userPrompt2,
-    maxTokens: 400,
+    // audit-7: 400 → 1024. In R3, ~101 judge calls truncated at stop_reason=max_tokens
+    // with first_branch=no_brace — RL'd-in JSON preamble exhausted the 400-tok budget
+    // before the model emitted any '{', so the brace-extractor + corrective retry had
+    // nothing to recover (38 residual hard ai-parse-errors fed N_drop). SYS_DOCTOR_JUDGE
+    // already mandates JSON-only; the preamble defies it, and prefill is NOT usable here
+    // (the proxy's Sonnet 4.6 returns 400 on assistant prefill — deploy-primitives §4).
+    // Budget is the available lever: ~800 tok preamble headroom + the ~200-tok verdict.
+    // Verdict-safe — more budget lets a response complete, it cannot change a verdict.
+    maxTokens: 1024,
     callJudge: callClaude,
     log,
     nowIso,

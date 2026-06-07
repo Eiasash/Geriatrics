@@ -54,7 +54,9 @@ Your previous (rejected) output started: ${String(badText || '').slice(0, 120)}`
 export async function judgeWithShapeRetry({
   system,
   userPrompt,
-  maxTokens = 400,
+  // audit-7: was 400. Default raised so the corrective retry also clears the
+  // preamble-truncation class (see the judge call in chaos-doctor-bot-v4.mjs).
+  maxTokens = 1024,
   callJudge,
   log,
   nowIso,
