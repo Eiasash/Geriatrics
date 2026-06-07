@@ -1078,11 +1078,14 @@ RED-proof P1 + the cross-check P3).
   qIdx-recovered `t`; on mismatch the qIdx fast-path is void (fall back + flag). This
   is the real guarantee behind member-level `t`-recovery — the byHash cross-check only
   catches gross drift, not same-stem member skew (see THE LOCKED CHANGE).
-  **CODE-ENFORCED (Codex P1 #342):** the run records `corpus_sha256.txt` (canonical
-  parse+reserialize hash — CRLF/LF-invariant); `analyze()` recomputes it for the
-  indexed corpus and gates the qIdx fast-path on equality, emitting
-  `corpusIdentity.qIdxTrusted`. Absent or mismatched ⇒ fail-closed (qIdx ignored →
-  bucket join). So the hard predicate is now a code gate, not only run protocol.
+  **CODE-ENFORCED (Codex P1 #342):** the **bot** records `corpus_sha256.txt` at run
+  start (production writer — `scripts/lib/corpusSha.mjs`, the canonical
+  parse+reserialize hash shared with the analyzer, CRLF/LF-invariant). `analyze()`
+  recomputes it for the indexed corpus and sets
+  `corpusIdentity.qIdxTrusted = (recorded === current)`; `joinRow` takes the qIdx
+  fast-path ONLY when `qIdxTrusted` (point-of-use gate). Absent or mismatched ⇒
+  fail-closed (qIdx ignored → bucket join). The hard predicate is thus enforced
+  writer→reader→point-of-use in code, not by run protocol.
 
 ### PREDICTIONS + OVERTURN CONDITIONS (locked before run data; `feedback_prewritten_predictions`)
 
@@ -1139,9 +1142,9 @@ RED-proof P1 + the cross-check P3).
 4. THEN the fresh bounded run (config = §R3 inherited UNCHANGED + #326 recovery +
    `data-qidx` capture; `CHAOS_COST_CAP_USD=20`, 8 h, 1 worker, `claude-sonnet-4-6`,
    proxy, `CHAOS_REPORT_RATE=0.0` + `CHAOS_FEEDBACK_RATE=0.0`, fresh
-   `chaos-reports/v4-long/audit8cert_<ts>/`). **Record `corpus_sha256.txt` =
-   canonical sha256 of the DEPLOYED `data/questions.json` into the run dir BEFORE
-   launch (P5; `analyze()` fail-closes the qIdx fast-path without it).**
+   `chaos-reports/v4-long/audit8cert_<ts>/`). **The bot auto-records
+   `corpus_sha256.txt` (canonical hash of the DEPLOYED `data/questions.json`) into
+   the run dir at startup (P5; `analyze()` fail-closes the qIdx fast-path without it).**
 5. Re-frozen analyzer → mechanical verdict → **CERT RESULT appended append-only below**
    by the run session.
 

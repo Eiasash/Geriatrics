@@ -14,8 +14,8 @@
 // clause) — writes only its own report file.
 
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
-import { createHash } from 'node:crypto';
 import path from 'node:path';
+import { corpusCanonicalSha } from './lib/corpusSha.mjs';
 import { fileURLToPath } from 'node:url';
 import { hashStem, normStem } from './lib/hashStem.mjs';
 import { buildIndex } from './build_stemhash_index.mjs';
@@ -80,20 +80,14 @@ const RESULT_HOME_OF_RECORD_GATE = 'docs/AUDIT8_G5_REPAIR_GATE.md';
 const BOUND_ON_MAIN_GATE = 'docs/AUDIT8_PRE_REGISTERED_GATE.md';
 
 // ---- CERT §CERT P5: corpus-identity gate (Codex P1 #342) ------------
-// Canonical corpus fingerprint — parse+re-serialize so the hash is invariant to
-// formatting / CRLF-vs-LF (Windows working tree) and depends ONLY on the
-// question objects and their order. The bounded run records this for the
-// DEPLOYED corpus (corpus_sha256.txt in the run dir); the analyzer recomputes it
-// for the corpus it indexes and trusts qIdx ONLY when they match. The byHash
-// membership cross-check cannot tell WHICH dup member was served, so a
-// reordered/changed corpus must VOID the index fast-path (else a drifted corpus
-// recovers the wrong member-level `t`).
-export function corpusCanonicalSha(questionsPath) {
-  const canonical = JSON.stringify(JSON.parse(readFileSync(questionsPath, 'utf-8')));
-  return createHash('sha256').update(canonical).digest('hex');
-}
-// Absent record ⇒ qIdx is NOT trusted (fail-closed): an unverifiable corpus
-// cannot back member-level t-recovery (e.g. pre-CERT ledgers like R3).
+// corpusCanonicalSha is imported from ./lib/corpusSha.mjs — SINGLE SOURCE OF
+// TRUTH shared with the bot writer. The bot records the DEPLOYED corpus hash
+// into corpus_sha256.txt at run start; the analyzer recomputes it for the corpus
+// it indexes and trusts a captured qIdx ONLY when they match. The byHash
+// membership check cannot tell WHICH byte-identical-stem member was served, so a
+// reordered/changed corpus must VOID the fast-path (else it recovers the wrong
+// member-level `t`). Absent record ⇒ NOT trusted (fail-closed; e.g. the pre-CERT
+// R3 ledger).
 function recordedCorpusSha(reportDir) {
   try { return readFileSync(path.join(reportDir, 'corpus_sha256.txt'), 'utf-8').trim() || null; }
   catch { return null; }
@@ -157,17 +151,19 @@ function classifyUniverse({ bugs, findings, extractNull }) {
 // to X; only covariate-discordant dup cells are dropped — per covariate,
 // not whole-row). `joined:false` ⇒ no hash/containment match at all
 // (G3 join failure: counted, excluded, never imputed).
-function joinRow(stemHashVal, stemSlice, index, qNorm, qIdxVal) {
+function joinRow(stemHashVal, stemSlice, index, qNorm, qIdxVal, qIdxTrusted) {
   // CERT (AUDIT8_G5_REPAIR_GATE §CERT): served-question corpus-index fast-path.
   // A ledger row carrying a determinate corpus index resolves to the SINGLE
   // served dup-group member — recovering covariates (notably `t`) that a
-  // stem-hash bucket cannot carry. Trusted ONLY when the index is a member of
-  // the served stem's hash bucket (consistency cross-check: catches gross corpus
-  // drift/reorder where the index leaves the bucket → safe fallback;
-  // bilingual-safe via build_stemhash_index's dual q/q_en hashing). Member-level
-  // integrity (WHICH dup member) rests on corpus-version identity (gate §CERT
-  // P5), not on this membership check.
-  if (Number.isInteger(qIdxVal) && index.rows[qIdxVal] && stemHashVal != null) {
+  // stem-hash bucket cannot carry.
+  // POINT-OF-USE GATE (Codex P1 #342): the fast-path fires ONLY when
+  // `qIdxTrusted` — the caller's corpus-identity verdict (recorded deployed-corpus
+  // hash == indexed-corpus hash, §CERT P5). The byHash membership check below is
+  // necessary but NOT sufficient: every byte-identical-stem dup member shares the
+  // bucket, so against a reordered/drifted corpus membership passes for the WRONG
+  // member. Only corpus identity makes the captured index member-level sound;
+  // without it (drift, or no recorded hash) qIdxTrusted is false → bucket join.
+  if (qIdxTrusted && Number.isInteger(qIdxVal) && index.rows[qIdxVal] && stemHashVal != null) {
     const hashBucket = index.byHash[String(stemHashVal)];
     if (hashBucket && hashBucket.includes(qIdxVal)) {
       const covs = {};
@@ -238,7 +234,7 @@ function analyze({ reportDir, index, questionsPath }) {
     const _rows = [];
     let nJoined = 0;
     for (const r of rows) {
-      const j = joinRow(r.stemHash, r.stem, index, qNorm, qIdxTrusted ? r.qIdx : undefined);
+      const j = joinRow(r.stemHash, r.stem, index, qNorm, r.qIdx, qIdxTrusted);
       if (!j.joined) { if (isDrop) joinFailDrop++; else joinFailRetain++; continue; }
       nJoined++;
       _rows.push(j.covs); // determinate-only covariate map for this row

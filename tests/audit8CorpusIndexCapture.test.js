@@ -14,7 +14,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashStem, normStem } from '../scripts/lib/hashStem.mjs';
 import { buildIndex } from '../scripts/build_stemhash_index.mjs';
-import { analyze, joinRow, corpusCanonicalSha } from '../scripts/analyze_pick_representativeness.mjs';
+import { analyze, joinRow } from '../scripts/analyze_pick_representativeness.mjs';
+import { corpusCanonicalSha, corpusCanonicalShaFromString } from '../scripts/lib/corpusSha.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const HTML = path.join(REPO_ROOT, 'shlav-a-mega.html'); // real 12 TOPIC_GROUPS
@@ -72,8 +73,8 @@ describe('CERT joinRow qIdx fast-path', () => {
   };
   const qNorm = ['unique alpha stem', 'shared beta stem', 'shared beta stem'];
 
-  it('qIdx in bucket → resolves the SINGLE served member (t + broken recovered)', () => {
-    const j = joinRow('DUP', null, index, qNorm, 1);
+  it('trusted qIdx in bucket → resolves the SINGLE served member (t + broken recovered)', () => {
+    const j = joinRow('DUP', null, index, qNorm, 1, true);
     expect(j.joined).toBe(true);
     expect(j.via).toBe('qIdx');
     expect(j.bucketSize).toBe(1);
@@ -81,14 +82,19 @@ describe('CERT joinRow qIdx fast-path', () => {
     expect(j.covs.broken).toBe(true);  // member-1's broken — recovered
     expect(Object.keys(j.covs).sort()).toEqual(['bilingual', 'broken', 'c_accept', 'stem_len', 't', 'topic_group']);
   });
-  it('a DIFFERENT in-bucket qIdx resolves the OTHER member', () => {
-    const j = joinRow('DUP', null, index, qNorm, 2);
+  it('a DIFFERENT trusted in-bucket qIdx resolves the OTHER member', () => {
+    const j = joinRow('DUP', null, index, qNorm, 2, true);
     expect(j.via).toBe('qIdx');
     expect(j.covs.t).toBe('C');
     expect(j.covs.broken).toBe(false);
   });
-  it('P3 cross-check: qIdx NOT in the stemHash bucket → safe fallback (no fabricated t)', () => {
-    const j = joinRow('DUP', null, index, qNorm, 99); // 99 ∉ byHash.DUP
+  it('point-of-use gate (Codex P1 #342): qIdxTrusted=false → fallback even for a valid in-bucket qIdx', () => {
+    const j = joinRow('DUP', null, index, qNorm, 1, false);
+    expect(j.via).toBe('stemHash');     // corpus identity NOT verified → no fast-path
+    expect('t' in j.covs).toBe(false);  // no fabricated member-level t
+  });
+  it('P3 cross-check: trusted qIdx NOT in the stemHash bucket → safe fallback (no fabricated t)', () => {
+    const j = joinRow('DUP', null, index, qNorm, 99, true); // 99 ∉ byHash.DUP
     expect(j.via).toBe('stemHash');     // fell back to bucket join
     expect(j.bucketSize).toBe(2);
     expect('t' in j.covs).toBe(false);  // discordant → omitted, NOT recovered
@@ -96,17 +102,17 @@ describe('CERT joinRow qIdx fast-path', () => {
     expect(j.covs.topic_group).toBe(1); // agreeing covariate still determinate
   });
   it('non-integer qIdx is ignored (defensive) → fallback', () => {
-    const j = joinRow('DUP', null, index, qNorm, '1');
+    const j = joinRow('DUP', null, index, qNorm, '1', true);
     expect(j.via).toBe('stemHash');
     expect('t' in j.covs).toBe(false);
   });
-  it('absent qIdx → existing 4-arg behavior unchanged (backward-compat)', () => {
+  it('absent qIdx → existing bucket behavior unchanged (backward-compat)', () => {
     const j = joinRow('DUP', null, index, qNorm);
     expect(j.via).toBe('stemHash');
     expect('t' in j.covs).toBe(false);
   });
-  it('qIdx present but stemHash null → fallback (no bucket to cross-check against)', () => {
-    const j = joinRow(null, 'unique alpha', index, qNorm, 0);
+  it('trusted qIdx but stemHash null → fallback (no bucket to cross-check against)', () => {
+    const j = joinRow(null, 'unique alpha', index, qNorm, 0, true);
     expect(j.via).toBe('containment'); // resolved via stem slice, not qIdx
   });
 });
@@ -172,5 +178,22 @@ describe('CERT instrument source pins', () => {
     expect(bot).toMatch(/type: 'ai-parse-error', context: 'pick'[^\n]*qIdx: q\.qIdx/);
     // RETAIN finding object carries qIdx (greppable line)
     expect(bot).toMatch(/qIdx: q\.qIdx, \/\/ CERT/);
+  });
+  it('bot records corpus_sha256.txt at startup (P5 production writer; Codex P1 #342)', () => {
+    const bot = readFileSync(path.join(REPO_ROOT, 'scripts/chaos-doctor-bot-v4.mjs'), 'utf-8');
+    expect(bot).toMatch(/corpusCanonicalShaFromString/);        // uses the shared canonical hash
+    expect(bot).toMatch(/writeFile\([^\n]*corpus_sha256\.txt/); // writes the record the analyzer reads
+  });
+});
+
+describe('CERT corpus canonical hash (scripts/lib/corpusSha.mjs)', () => {
+  it('is invariant to formatting (CRLF/LF/indent), sensitive to content + ORDER', () => {
+    const a = '[{"q":"x","t":"A"},{"q":"y","t":"B"}]';
+    const formatted = '[\r\n  {"q":"x","t":"A"},\r\n  {"q":"y","t":"B"}\r\n]'; // CRLF + indent, same data
+    const reordered = '[{"q":"y","t":"B"},{"q":"x","t":"A"}]';
+    const changed = '[{"q":"x","t":"Z"},{"q":"y","t":"B"}]';
+    expect(corpusCanonicalShaFromString(a)).toBe(corpusCanonicalShaFromString(formatted));     // format-invariant
+    expect(corpusCanonicalShaFromString(a)).not.toBe(corpusCanonicalShaFromString(reordered)); // ORDER matters (member identity)
+    expect(corpusCanonicalShaFromString(a)).not.toBe(corpusCanonicalShaFromString(changed));   // content matters
   });
 });

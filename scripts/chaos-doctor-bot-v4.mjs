@@ -56,6 +56,7 @@ import {
   extractAcceptedDisplayIdxSet,
 } from './lib/optionResolver.mjs';
 import { nextRecovery, initialRecoveryState } from './lib/workerRecovery.mjs';
+import { corpusCanonicalShaFromString } from './lib/corpusSha.mjs';
 
 // v10.64.118: audit-grade chapter assignment input for the redesigned
 // SYS_DOCTOR_SOURCE prompt. Loaded lazily at bot startup from local
@@ -1116,6 +1117,18 @@ function buildMarkdown(report) {
 
 async function main() {
   await ensureDir(CONFIG.reportDir);
+  // CERT §CERT P5 (Codex P1 #342): record the DEPLOYED corpus fingerprint so the
+  // analyzer can verify corpus identity before trusting captured data-qidx (else
+  // fail-closed → bucket join). Single source of truth: scripts/lib/corpusSha.mjs.
+  try {
+    const corpusUrl = new URL('data/questions.json', CONFIG.url).href;
+    const corpusBody = await (await fetch(corpusUrl)).text();
+    const corpusSha = corpusCanonicalShaFromString(corpusBody);
+    await fs.writeFile(path.join(CONFIG.reportDir, 'corpus_sha256.txt'), corpusSha);
+    console.log(`[v4] recorded corpus_sha256 ${corpusSha.slice(0, 12)}… (qIdx corpus-identity gate, ${corpusUrl})`);
+  } catch (e) {
+    console.warn(`[v4] WARN: could not record corpus_sha256.txt (${e.message}); captured qIdx will fail-closed at analysis`);
+  }
   openFindingsLog(CONFIG.reportDir);
   const report = { config: CONFIG, startedAt: nowIso(), finishedAt: null, workers: [] };
   console.log(`[v4] Launching ${CONFIG.users} workers × ${(CONFIG.durationMs / 60000).toFixed(0)} min, model=${MODEL}, url=${CONFIG.url}, cost-cap $${CONFIG.costCapUsd}, api=${USE_PROXY ? 'toranot-proxy' : 'anthropic-direct'}`);
