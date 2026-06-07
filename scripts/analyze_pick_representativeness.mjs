@@ -136,7 +136,24 @@ function classifyUniverse({ bugs, findings, extractNull }) {
 // to X; only covariate-discordant dup cells are dropped — per covariate,
 // not whole-row). `joined:false` ⇒ no hash/containment match at all
 // (G3 join failure: counted, excluded, never imputed).
-function joinRow(stemHashVal, stemSlice, index, qNorm) {
+function joinRow(stemHashVal, stemSlice, index, qNorm, qIdxVal) {
+  // CERT (AUDIT8_G5_REPAIR_GATE §CERT): served-question corpus-index fast-path.
+  // A ledger row carrying a determinate corpus index resolves to the SINGLE
+  // served dup-group member — recovering covariates (notably `t`) that a
+  // stem-hash bucket cannot carry. Trusted ONLY when the index is a member of
+  // the served stem's hash bucket (consistency cross-check: catches gross corpus
+  // drift/reorder where the index leaves the bucket → safe fallback;
+  // bilingual-safe via build_stemhash_index's dual q/q_en hashing). Member-level
+  // integrity (WHICH dup member) rests on corpus-version identity (gate §CERT
+  // P5), not on this membership check.
+  if (Number.isInteger(qIdxVal) && index.rows[qIdxVal] && stemHashVal != null) {
+    const hashBucket = index.byHash[String(stemHashVal)];
+    if (hashBucket && hashBucket.includes(qIdxVal)) {
+      const covs = {};
+      for (const c of ALL_COVS) covs[c] = index.rows[qIdxVal][c];
+      return { joined: true, via: 'qIdx', bucketSize: 1, covs };
+    }
+  }
   let bucket = stemHashVal != null ? index.byHash[String(stemHashVal)] : undefined;
   let via = 'stemHash';
   if (!bucket || !bucket.length) {
@@ -192,7 +209,7 @@ function analyze({ reportDir, index, questionsPath }) {
     const _rows = [];
     let nJoined = 0;
     for (const r of rows) {
-      const j = joinRow(r.stemHash, r.stem, index, qNorm);
+      const j = joinRow(r.stemHash, r.stem, index, qNorm, r.qIdx);
       if (!j.joined) { if (isDrop) joinFailDrop++; else joinFailRetain++; continue; }
       nJoined++;
       _rows.push(j.covs); // determinate-only covariate map for this row
