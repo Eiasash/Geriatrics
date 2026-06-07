@@ -59,6 +59,15 @@ const STRUCTURAL_FRACTION_EPS = 1e-9;
 const CATEGORICAL = ['topic_group', 't', 'bilingual', 'c_accept', 'broken'];
 const ALL_COVS = ['stem_len', ...CATEGORICAL];
 
+// Home-of-record gate for the bounded-run RESULT append (issue #338). The
+// repair-gate cascade (R1.x → R3) appends its RESULT to the REPAIR gate — the
+// gate that authors the bounded run — NOT the original representativeness
+// pre-registration. (The verdict LOGIC this analyzer is bound to is still the
+// original gate's G2–G5; see the "Binding spec" header — that provenance is
+// unchanged.) Single source of truth so the pointer can't silently re-drift.
+// Was a hardcoded mis-pointer at docs/AUDIT8_PRE_REGISTERED_GATE.md.
+const RESULT_HOME_OF_RECORD_GATE = 'docs/AUDIT8_G5_REPAIR_GATE.md';
+
 // ---- ledger ingestion ------------------------------------------------
 
 function loadLedger(reportDir) {
@@ -368,7 +377,7 @@ function analyze({ reportDir, index, questionsPath }) {
   return {
     schema: 'audit8-representativeness-result/1',
     generatedBy: 'scripts/analyze_pick_representativeness.mjs',
-    boundOnMainGate: 'docs/AUDIT8_PRE_REGISTERED_GATE.md (#233 G4 + D1–D4)',
+    boundOnMainGate: RESULT_HOME_OF_RECORD_GATE,
     verdict,
     // AUDIT-9: the pooled aggregate verdict, kept as informational even when
     // STOP-BIFURCATION overrides it (so a reader sees what the pooled rate said).
@@ -577,6 +586,6 @@ if (isMain) {
   if (result.g5route) console.log('G5     :', result.g5route);
   console.log('wrote  :', out);
   console.log('NOTE: this analyzer produces the verdict only. The RESULT section is appended '
-    + 'to docs/AUDIT8_PRE_REGISTERED_GATE.md by the bounded-run session (gate SHIP clause), '
-    + 'after web-lane fresh-eye review.');
+    + 'to ' + RESULT_HOME_OF_RECORD_GATE + ' by the bounded-run session (gate SHIP clause), '
+    + 'after fresh-eye / Codex review.');
 }
