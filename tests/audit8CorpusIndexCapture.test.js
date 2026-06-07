@@ -14,7 +14,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashStem, normStem } from '../scripts/lib/hashStem.mjs';
 import { buildIndex } from '../scripts/build_stemhash_index.mjs';
-import { analyze, joinRow } from '../scripts/analyze_pick_representativeness.mjs';
+import { analyze, joinRow, corpusCanonicalSha } from '../scripts/analyze_pick_representativeness.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const HTML = path.join(REPO_ROOT, 'shlav-a-mega.html'); // real 12 TOPIC_GROUPS
@@ -27,12 +27,17 @@ let caseSeq = 0;
 // Synthetic questions.json + report dir → analyze() result. `withQIdx`
 // stamps each DROP/RETAIN row with qIdx = its canonical index (what the
 // CERT-instrumented bot captures); omitted = a pre-CERT ledger.
-function runCase({ questions, dropSpecs, retainSpecs, withQIdx = false }) {
+function runCase({ questions, dropSpecs, retainSpecs, withQIdx = false, corpusSha = 'match' }) {
   const dir = path.join(TMP, `cc${caseSeq++}`);
   mkdirSync(dir, { recursive: true });
   const qPath = path.join(dir, 'questions.json');
   writeFileSync(qPath, JSON.stringify(questions));
   const idx = buildIndex({ questionsPath: qPath, htmlPath: HTML });
+  // CERT §CERT P5: the recorded deployed-corpus fingerprint the analyzer checks.
+  // 'match' = the real hash (qIdx trusted); 'wrong' = a drifted hash; 'none' = no
+  // record (fail-closed, mirrors a pre-CERT ledger like R3).
+  if (corpusSha === 'match') writeFileSync(path.join(dir, 'corpus_sha256.txt'), corpusCanonicalSha(qPath));
+  else if (corpusSha === 'wrong') writeFileSync(path.join(dir, 'corpus_sha256.txt'), 'deadbeef'.repeat(8));
 
   const sh = (i) => hashStem(normStem(String(questions[i].q)));
   const bugs = [];
@@ -118,18 +123,34 @@ describe('CERT analyze() — qIdx resolves the t-discordant dup group', () => {
   const drop = Array.from({ length: 100 }, (_, i) => i % 2); // 0,1,0,1...
   const ret = Array.from({ length: 250 }, (_, i) => i % 2);
 
-  it('P1 (RED-proof): WITH qIdx → t determinate, NOT STOP-JOIN-NONDETERMINABLE', () => {
-    const r = runCase({ questions: dupQ, dropSpecs: drop, retainSpecs: ret, withQIdx: true });
+  it('P1 (RED-proof): WITH qIdx + matching corpus hash → t determinate, NOT STOP-JOIN-NONDETERMINABLE', () => {
+    const r = runCase({ questions: dupQ, dropSpecs: drop, retainSpecs: ret, withQIdx: true, corpusSha: 'match' });
+    expect(r.corpusIdentity.qIdxTrusted).toBe(true);
     expect(r.g3b2.perCovariate.t.nondeterminable).toBe(0);
     expect(r.g3b2.perCovariate.t.structuralFraction).toBe(0);
     expect(r.g3b2.nondeterminableViolations).not.toContain('t');
     expect(r.verdict).not.toBe('STOP-JOIN-NONDETERMINABLE'); // <-- fails on pre-CERT analyzer
   });
 
-  it('P2 (backward-compat): WITHOUT qIdx → unchanged STOP-JOIN-NONDETERMINABLE on t', () => {
-    const r = runCase({ questions: dupQ, dropSpecs: drop, retainSpecs: ret, withQIdx: false });
+  it('P2 (backward-compat): WITHOUT qIdx (pre-CERT ledger, no hash) → unchanged STOP-JOIN-NONDETERMINABLE', () => {
+    const r = runCase({ questions: dupQ, dropSpecs: drop, retainSpecs: ret, withQIdx: false, corpusSha: 'none' });
     expect(r.g3b2.perCovariate.t.structuralFraction).toBe(1);
     expect(r.g3b2.nondeterminableViolations).toContain('t');
+    expect(r.verdict).toBe('STOP-JOIN-NONDETERMINABLE');
+  });
+
+  // ── P5 corpus-identity gate (Codex P1 #342): fast-path VOIDED unless the
+  //    analysis corpus matches the run-recorded deployed corpus ──────────────
+  it('P5: WITH qIdx but DRIFTED corpus hash → fast-path voided → STOP-JOIN-NONDETERMINABLE', () => {
+    const r = runCase({ questions: dupQ, dropSpecs: drop, retainSpecs: ret, withQIdx: true, corpusSha: 'wrong' });
+    expect(r.corpusIdentity.qIdxTrusted).toBe(false);
+    expect(r.g3b2.perCovariate.t.structuralFraction).toBe(1); // fell back to the bucket join
+    expect(r.verdict).toBe('STOP-JOIN-NONDETERMINABLE');       // no fabricated member-level t
+  });
+
+  it('P5: WITH qIdx but NO recorded hash → fail-closed → STOP-JOIN-NONDETERMINABLE', () => {
+    const r = runCase({ questions: dupQ, dropSpecs: drop, retainSpecs: ret, withQIdx: true, corpusSha: 'none' });
+    expect(r.corpusIdentity.qIdxTrusted).toBe(false);
     expect(r.verdict).toBe('STOP-JOIN-NONDETERMINABLE');
   });
 });

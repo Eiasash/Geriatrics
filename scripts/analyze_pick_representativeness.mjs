@@ -14,6 +14,7 @@
 // clause) — writes only its own report file.
 
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashStem, normStem } from './lib/hashStem.mjs';
@@ -77,6 +78,26 @@ const RESULT_HOME_OF_RECORD_GATE = 'docs/AUDIT8_G5_REPAIR_GATE.md';
 // `boundOnMainGate` result field reports THIS. (#339 follow-up: #339
 // conflated the two and pointed this field at the home-of-record gate.)
 const BOUND_ON_MAIN_GATE = 'docs/AUDIT8_PRE_REGISTERED_GATE.md';
+
+// ---- CERT §CERT P5: corpus-identity gate (Codex P1 #342) ------------
+// Canonical corpus fingerprint — parse+re-serialize so the hash is invariant to
+// formatting / CRLF-vs-LF (Windows working tree) and depends ONLY on the
+// question objects and their order. The bounded run records this for the
+// DEPLOYED corpus (corpus_sha256.txt in the run dir); the analyzer recomputes it
+// for the corpus it indexes and trusts qIdx ONLY when they match. The byHash
+// membership cross-check cannot tell WHICH dup member was served, so a
+// reordered/changed corpus must VOID the index fast-path (else a drifted corpus
+// recovers the wrong member-level `t`).
+export function corpusCanonicalSha(questionsPath) {
+  const canonical = JSON.stringify(JSON.parse(readFileSync(questionsPath, 'utf-8')));
+  return createHash('sha256').update(canonical).digest('hex');
+}
+// Absent record ⇒ qIdx is NOT trusted (fail-closed): an unverifiable corpus
+// cannot back member-level t-recovery (e.g. pre-CERT ledgers like R3).
+function recordedCorpusSha(reportDir) {
+  try { return readFileSync(path.join(reportDir, 'corpus_sha256.txt'), 'utf-8').trim() || null; }
+  catch { return null; }
+}
 
 // ---- ledger ingestion ------------------------------------------------
 
@@ -196,6 +217,14 @@ function analyze({ reportDir, index, questionsPath }) {
   const u = classifyUniverse(ledger);
   const qNorm = buildQNorm(index, questionsPath);
 
+  // CERT §CERT P5 — corpus-identity gate (Codex P1 #342): trust qIdx ONLY when
+  // the corpus we index canonically matches the DEPLOYED corpus the run recorded
+  // (corpus_sha256.txt). Otherwise (drift / no record) void the fast-path →
+  // conservative bucket join (no fabricated member-level t in a reordered corpus).
+  const recordedSha = recordedCorpusSha(reportDir);
+  const currentSha = corpusCanonicalSha(questionsPath);
+  const qIdxTrusted = recordedSha != null && recordedSha === currentSha;
+
   // Join every dropped + retained row; per-covariate determinate tallies.
   const joinTally = {};       // cov → {determinate, attempted, nondeterminable}
   for (const c of ALL_COVS) joinTally[c] = { determinate: 0, attempted: 0, nondeterminable: 0 };
@@ -209,7 +238,7 @@ function analyze({ reportDir, index, questionsPath }) {
     const _rows = [];
     let nJoined = 0;
     for (const r of rows) {
-      const j = joinRow(r.stemHash, r.stem, index, qNorm, r.qIdx);
+      const j = joinRow(r.stemHash, r.stem, index, qNorm, qIdxTrusted ? r.qIdx : undefined);
       if (!j.joined) { if (isDrop) joinFailDrop++; else joinFailRetain++; continue; }
       nJoined++;
       _rows.push(j.covs); // determinate-only covariate map for this row
@@ -418,6 +447,10 @@ function analyze({ reportDir, index, questionsPath }) {
     // synthetic fixtures) — the temporal verdict never fires there.
     temporalBins: temporalBinsOut,
     g2: { Ndrop, Nretain, MIN_N_DROP, MIN_N_RETAIN, powered },
+    // CERT §CERT P5: corpus-identity gate. qIdxTrusted=false ⇒ the qIdx
+    // fast-path was voided (corpus drift, or no recorded hash) → bucket-join
+    // fallback. Member-level t-recovery is valid only when qIdxTrusted=true.
+    corpusIdentity: { recordedSha, currentSha, qIdxTrusted },
     g3d3: {
       perCovariateDeterminateJoinRate: joinRates,
       threshold: JOIN_DETERMINATE_MIN,

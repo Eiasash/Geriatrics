@@ -1041,7 +1041,10 @@ RED-proof P1 + the cross-check P3).
     rests on (a) `pool[qi]` fidelity — *structural*: `data-qidx` and the rendered stem
     come from the same `pool[qi]` in one synchronous `_rqmQuestion` call, so the
     attribute names exactly the served question — and (b) **deployed corpus == analysis
-    corpus**, enforced as a hard predicate (P5).
+    corpus**, enforced as a hard predicate (P5) — **code-gated**: `analyze()` passes
+    `qIdx` to `joinRow` ONLY when `corpusIdentity.qIdxTrusted` (recorded
+    `corpus_sha256.txt` == the indexed corpus's canonical hash), closing the
+    member-skew gap the membership cross-check alone cannot (Codex P1 #342).
   - `JOIN_DETERMINATE_MIN` stays **0.99** (unchanged). Verdict branches
     (`STOP-JOIN-INTEGRITY`, `STOP-JOIN-NONDETERMINABLE`, `BIASED`, `REPRESENTATIVE`, …)
     **not loosened**. The change only supplies a better key; an old (no-qIdx) ledger
@@ -1075,6 +1078,11 @@ RED-proof P1 + the cross-check P3).
   qIdx-recovered `t`; on mismatch the qIdx fast-path is void (fall back + flag). This
   is the real guarantee behind member-level `t`-recovery — the byHash cross-check only
   catches gross drift, not same-stem member skew (see THE LOCKED CHANGE).
+  **CODE-ENFORCED (Codex P1 #342):** the run records `corpus_sha256.txt` (canonical
+  parse+reserialize hash — CRLF/LF-invariant); `analyze()` recomputes it for the
+  indexed corpus and gates the qIdx fast-path on equality, emitting
+  `corpusIdentity.qIdxTrusted`. Absent or mismatched ⇒ fail-closed (qIdx ignored →
+  bucket join). So the hard predicate is now a code gate, not only run protocol.
 
 ### PREDICTIONS + OVERTURN CONDITIONS (locked before run data; `feedback_prewritten_predictions`)
 
@@ -1131,7 +1139,9 @@ RED-proof P1 + the cross-check P3).
 4. THEN the fresh bounded run (config = §R3 inherited UNCHANGED + #326 recovery +
    `data-qidx` capture; `CHAOS_COST_CAP_USD=20`, 8 h, 1 worker, `claude-sonnet-4-6`,
    proxy, `CHAOS_REPORT_RATE=0.0` + `CHAOS_FEEDBACK_RATE=0.0`, fresh
-   `chaos-reports/v4-long/audit8cert_<ts>/`).
+   `chaos-reports/v4-long/audit8cert_<ts>/`). **Record `corpus_sha256.txt` =
+   canonical sha256 of the DEPLOYED `data/questions.json` into the run dir BEFORE
+   launch (P5; `analyze()` fail-closes the qIdx fast-path without it).**
 5. Re-frozen analyzer → mechanical verdict → **CERT RESULT appended append-only below**
    by the run session.
 
