@@ -885,3 +885,73 @@ non-translated hook (`data-testid`/`id`) to the check button and re-pin the bot.
 
 Scripts/tests/docs only — Trinity untouched.
 
+---
+
+## R3 RESULT — bounded run: recovery GREEN, representativeness STOP-JOIN-NONDETERMINABLE on `t` (2026-06-07)
+
+The §R3 fresh bounded run was fired 2026-06-06 19:37Z under explicit gate-author go
+(run-start live judge-gate GREEN first) and completed the full 8 h at 2026-06-07
+03:37Z. **Home of record is THIS doc (§R3), NOT `AUDIT8_PRE_REGISTERED_GATE.md`** —
+the analyzer's hardcoded `boundOnMainGate` NOTE points at the wrong gate (filed as a
+separate instrument-bug issue; do not follow it).
+
+**Run:** `chaos-reports/v4-long/audit8g5_20260606T193727Z/` (gitignored; `result.json`
+in dir). Config = §R3 inherited UNCHANGED + the #326 recovery patch: 8 h (480 min),
+1 worker, `claude-sonnet-4-6`, proxy, `CHAOS_REPORT_RATE=0.0` + `CHAOS_FEEDBACK_RATE=0.0`,
+`CHAOS_COST_CAP_USD=20` (NOT widened). **Cost `$19.65`** (under cap — duration-bound,
+not cap-bound), **4164 calls, 0 failures, 1172 judged**. Verdict is the mechanical
+output of `scripts/analyze_pick_representativeness.mjs` (re-frozen post-R2/AUDIT-9/#330).
+
+### Part 1 — R1.6 fold: **GREEN** (recovery empirically validated)
+
+AUDIT-9 temporal-bin (5-min run-start-aligned buckets, K=2): **`applicable: true`,
+`detected: false`, `nBuckets: 97`, `bifurcation_onset_buckets: []`**. All **97/97**
+buckets healthy (0 observed-zero-yield); per-bucket `reachedPick` 1–15; aggregate
+**reached-pick 1211/1216 = 99.59 %** sustained across the full 8 h. Both K conditions
+met: sustained judge calls (1172, 0 failures) **and** bifurcation status = none.
+
+This is the inverse of Audit-8 (`audit8_20260518T191705Z`), which bifurcated Phase-1
+→ Phase-2 at ≈ 3.2 h and ran at ≈ 11.8 % reached-pick. The #290-class selector re-pin
+(#332) + the #326 bot-resilience patch are therefore **empirically validated**: the
+bot did not go inert across an 8 h soak.
+
+### Part 2 — R3 aggregate verdict: **`STOP-JOIN-NONDETERMINABLE`** on covariate `t`
+
+Pre-registered B2 structural limitation (R2, §R2.0-REV1) — **not** a new failure and
+**not** a bifurcation. Per-covariate determinate-join (threshold 0.99):
+
+| covariate | determinate | nondeterminable | join rate | structuralFraction |
+|---|---:|---:|---:|---:|
+| stem_len | 1210 | 0 | 1.0000 | 0 |
+| topic_group | 1210 | 0 | 1.0000 | 0 |
+| bilingual | 1210 | 0 | 1.0000 | 0 |
+| c_accept | 1210 | 0 | 1.0000 | 0 |
+| broken | 1210 | 0 | 1.0000 | 0 |
+| **`t`** | **1152** | **58** | **0.9521** | **0.0479** |
+
+`join violations=[]` (`joinFailDrop=0`, `joinFailRetain=0`) — the join is reliable on
+its determinable subset. Power: `Nretain=1172 ≥ 200` (powered); `Ndrop=38 < 80` (drop
+channel under-powered). The `t` shortfall is the byte-identical-stem dup-discordant
+cells — the stem-hash key cannot carry `t`.
+
+Per **G5 / §R2.0-REV1(d-iii)**: the denominator shrink does NOT clear the gate; the
+structural fraction is a reportable limitation. **Route NO representativeness verdict
+on `t`.** Certification path (NOT authorized here): capture the served-question corpus
+index so `t` becomes determinable, OR drop `t` from the family (its own gated
+decision). The five determinable covariates (stem_len / topic_group / bilingual /
+c_accept / broken) carry no join obstruction.
+
+### Downstream (now that R3 has routed a verdict)
+
+- **audit-7 judge `max_tokens` (horizon item 2)** — unblocked (was held until R3
+  routed a verdict; see `geri-audit7-truncation-route`).
+- **B4 content adjudication** — becomes evidence-grade **except** where
+  `t`-stratification matters (the structurally non-determinable covariate).
+
+### Provenance
+
+Append-only; existing lines untouched. Verdict figures pulled verbatim from
+`result.json` (`schema audit8-representativeness-result/1`). No fix shipped; trinity
+untouched. NO self-merge — fresh-eye / Codex review per the §R1.x audit-evidence
+discipline.
+
