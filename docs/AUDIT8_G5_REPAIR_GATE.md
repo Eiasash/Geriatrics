@@ -955,3 +955,206 @@ Append-only; existing lines untouched. Verdict figures pulled verbatim from
 untouched. NO self-merge — fresh-eye / Codex review per the §R1.x audit-evidence
 discipline.
 
+---
+
+## CERT — `t`-determinability via served-question corpus-index capture (B1 re-opened) — pre-registration (gate-author go 2026-06-07)
+
+Written **before** the instrument code and **before** any fresh-run data.
+Append-only; the R1→R3 sections above are **not** retro-edited
+(`feedback_spec_provenance_append_only`). Branch `claude/audit8-cert-corpus-index`,
+cut from `origin/main` `57fa35b` (#341). Lane: terminal, solo.
+
+**Parent / trigger.** The §R3 RESULT (2026-06-07) routed `STOP-JOIN-NONDETERMINABLE`
+on covariate `t` (1152/1210 determinate, 58 structurally non-determinable,
+structuralFraction 0.0479) and named a certification path it was NOT authorized to
+take: *"capture the served-question corpus index so `t` becomes determinable, OR
+drop `t` from the family."* The gate author selected **capture the corpus index**
+(2026-06-07). This section pre-registers that path.
+
+**Why this is the B1 that R2 step (a) closed — now re-opened, honestly.** R2 §step(a)
+CLOSED branch B1 (`t`-aware join) with an explicit, *conditional* verdict: "if `t` is
+recoverable only via the served question's corpus index AND **the instrument does not
+capture that index**, branch B1 is CLOSED." The binding condition was the
+**instrument**, not the dataset: `t` (exam provenance) is information-theoretically
+absent from the **stem-hash** key because byte-identical-stem dup-group members
+collide on it. B1 re-opens by **changing the instrument** so the served question's
+corpus index IS captured — exactly the §R2.0-REV1(c) "B1 (instrument-side index
+recording)" path, which already noted "the old ledger lacks the index ⇒ R3 is the
+only real-data check." This is **not** the forbidden §R2.0-REV1(d) denominator-shrink:
+it does not redefine `t.attempted`, does not touch `JOIN_DETERMINATE_MIN`, does not
+loosen any verdict branch. It supplies a **genuinely more specific join key** that
+resolves *which* dup-group member was served, recovering that member's real `t`. The
+honest test that this is recovery and not a trick is pre-registered below (the
+RED-proof P1 + the cross-check P3).
+
+### STEP 0 — distrust contract (no-run; verified on disk @ `57fa35b`)
+
+- **0.1 State.** `origin/main` HEAD `57fa35b` (#341, audit-7 judge budget 400→1024).
+  No open PRs; the other `claude/*` / `audit8/*` origin branches are merged-stale
+  (no live lane). Solo terminal lane; branch + PR; **NO self-merge** (audit-evidence
+  path — see SHIP).
+- **0.2 Mechanism verified (static source @ `57fa35b` — cite as source-derived, NOT
+  assumed; `feedback_verify_mechanism_claims_not_assert`).**
+  - **App:** `shlav-a-mega.html` `_rqmQuestion()` (≈`:3217`) renders `QZ[pool[qi]]`;
+    `pool[qi]` IS the canonical `data/questions.json` index for canonical Qs
+    (`QZ = await r.json()` `:1257` loads canonical order; user-Qs are `push`ed
+    *after* the canonical range `:1405`). Stem is `<p class="heb">` (`:3239`) — the
+    first `.heb` the bot reads.
+  - **Bot:** `extractQuestion` (`scripts/chaos-doctor-bot-v4.mjs:244`) reads
+    `.heb`.first() (stem) + `button.qo` (options); `stemHash = hashStem(normStem(q.stem))`
+    (`:477`). The ONLY two channels `project()` joins are DROP `ai-parse-error/pick`
+    (`:493`) + RETAIN judged finding (`:734`).
+  - **Analyzer:** `joinRow` keys on `index.byHash[stemHash]` → an idx bucket;
+    dup-group buckets disagree on `t` → counted `nondeterminable`. `buildIndex`
+    registers each qIdx under BOTH its `q` and `q_en` stem-hashes
+    (`build_stemhash_index.mjs:83-88`) — so a captured qIdx *consistent with the
+    served stem* is necessarily a member of `byHash[stemHash]` (the P3 cross-check).
+- **0.3 Unverified until the fresh run.** That a deployed `data-qidx` is read by the
+  bot at the live practice surface at scale, and that captured indices resolve `t` to
+  determinate ≥ 0.99 on the determinable subset. The offline RED-proof (P1) proves the
+  *analyzer* recovers `t` given qIdx-carrying rows; only the fresh run proves the
+  *end-to-end instrument* captures them live (§R2.0-REV1(c): the old ledger lacks it).
+
+### THE LOCKED CHANGE (binding; offline-deterministic except the run)
+
+- **App (instrument surface).** `_rqmQuestion()` stem `<p class="heb">` (`:3239`) gains
+  `data-qidx="${pool[qi]}"`. No behavior change. Monolith edit ⇒ version-trinity bump
+  **v10.64.158 → v10.64.159** (`package.json` + `APP_VERSION` + `sw.js` CACHE).
+  Render-pin test added (auto-expand rule).
+- **Bot (capture).** `extractQuestion` reads `data-qidx` from the SAME `.heb` stem
+  locator (so the index corresponds to the extracted stem, not a sibling), parses
+  int-or-null, returns `qIdx`. `q.qIdx` is threaded into the two joined rows ONLY
+  (DROP `:493`, RETAIN `:734`) — `project()` joins no others (touch-only-what-you-must,
+  Working Rule 3). A null/absent qIdx is benign (analyzer falls back).
+- **Analyzer (index-aware join — re-freezes the analyzer).** `joinRow` gains an
+  optional `qIdxVal`. **Fast-path:** if `qIdxVal` is an integer, `index.rows[qIdxVal]`
+  exists, AND `qIdxVal ∈ index.byHash[String(stemHashVal)]`, resolve to the single
+  served member (`bucketSize:1`, `via:'qIdx'`) → every covariate determinate, `t`
+  included. Else the existing `byHash`→containment fallback is unchanged.
+  - **Cross-check — TRUE guarantee (stated honestly; do not overstate).**
+    `qIdxVal ∈ byHash[stemHash]` verifies the captured index belongs to the served
+    stem's dup-**group** (catches gross drift/reorder where the index falls out of the
+    bucket → safe fallback; bilingual-safe via the dual-hash registration). It does
+    **NOT** disambiguate *which* member was served — all dup-group members share the
+    stem hash, so the check passes for any of them. The captured index is itself the
+    **only** member-level disambiguator. Member-level `t`-recovery integrity therefore
+    rests on (a) `pool[qi]` fidelity — *structural*: `data-qidx` and the rendered stem
+    come from the same `pool[qi]` in one synchronous `_rqmQuestion` call, so the
+    attribute names exactly the served question — and (b) **deployed corpus == analysis
+    corpus**, enforced as a hard predicate (P5) — **code-gated**: `analyze()` passes
+    `qIdx` to `joinRow` ONLY when `corpusIdentity.qIdxTrusted` (recorded
+    `corpus_sha256.txt` == the indexed corpus's canonical hash), closing the
+    member-skew gap the membership cross-check alone cannot (Codex P1 #342).
+  - `JOIN_DETERMINATE_MIN` stays **0.99** (unchanged). Verdict branches
+    (`STOP-JOIN-INTEGRITY`, `STOP-JOIN-NONDETERMINABLE`, `BIASED`, `REPRESENTATIVE`, …)
+    **not loosened**. The change only supplies a better key; an old (no-qIdx) ledger
+    routes the SAME verdict (backward-compat predicate P2).
+  - **Re-freeze (§R2.0-REV2: each analyzer change = its own pre-registered gate,
+    cumulative).** Post-merge `git log --oneline -- scripts/analyze_pick_representativeness.mjs`
+    reads `edfa433`(R1/#236) → `0d07bf3`(R2/#327) → `830b186`(AUDIT-9/#328) →
+    `1fe01fb`(#330) → `971467e`(#339) → `502a93f`(#340) → **this CERT commit**. This
+    section is that gate.
+
+### PRE/POST PREDICATES (offline — must pass before the run; the run is the real-data check)
+
+- **P1 RED-proof (discriminates).** A synthetic dup-group fixture (two Qs,
+  byte-identical stem, `t`=X vs `t`=Y) + a ledger whose DROP/RETAIN rows carry `qIdx`
+  pointing at specific members: analyzer routes `t` **determinate**
+  (`g3b2.perCovariate.t.nondeterminable = 0`, `structuralFraction = 0`). The SAME
+  ledger with `qIdx` stripped routes `STOP-JOIN-NONDETERMINABLE` on `t`. RED-proof = the
+  two outcomes differ (mirrors R2's `RED-PROOF DISCRIMINATES`).
+- **P2 Backward-compat.** Re-analyzing the on-disk §R3 ledger
+  (`chaos-reports/v4-long/audit8g5_20260606T193727Z/`, NO qIdx) routes the **unchanged**
+  `STOP-JOIN-NONDETERMINABLE` on `t` (1152/58/0.0479) — the fast-path is inert when
+  qIdx is absent.
+- **P3 Cross-check safety.** A fixture with a qIdx NOT a member of `byHash[stemHash]`
+  (simulated drift) falls back to the bucket join (no fabricated determinate `t`).
+- **P4 Gate green.** Full `npm run verify` green; the existing audit8 verdict-pin
+  fixtures (REPRESENTATIVE / BIASED / STOP-JOIN-INTEGRITY / STOP-JOIN-NONDETERMINABLE /
+  INCONCLUSIVE / N_drop==0) unchanged and green.
+- **P5 Corpus identity (hard predicate — member-level integrity).** The fresh run
+  records `sha256(deployed data/questions.json)` at run-start into the run dir. The
+  analysis MUST assert `sha256(analysis-corpus) == recorded` before trusting any
+  qIdx-recovered `t`; on mismatch the qIdx fast-path is void (fall back + flag). This
+  is the real guarantee behind member-level `t`-recovery — the byHash cross-check only
+  catches gross drift, not same-stem member skew (see THE LOCKED CHANGE).
+  **CODE-ENFORCED (Codex P1 #342):** the **bot** records `corpus_sha256.txt` at run
+  start (production writer — `scripts/lib/corpusSha.mjs`, the canonical
+  parse+reserialize hash shared with the analyzer, CRLF/LF-invariant). `analyze()`
+  recomputes it for the indexed corpus and sets
+  `corpusIdentity.qIdxTrusted = (recorded === current)`; `joinRow` takes the qIdx
+  fast-path ONLY when `qIdxTrusted` (point-of-use gate). Absent or mismatched ⇒
+  fail-closed (qIdx ignored → bucket join). The hard predicate is thus enforced
+  writer→reader→point-of-use in code, not by run protocol.
+
+### PREDICTIONS + OVERTURN CONDITIONS (locked before run data; `feedback_prewritten_predictions`)
+
+- **Prediction.** The fresh run captures `qIdx` on ≥ 99 % of joined rows; `t` resolves
+  to determinate ≥ 0.99 on the determinable subset; the aggregate verdict moves OFF
+  `STOP-JOIN-NONDETERMINABLE`-on-`t` to a routed 6-covariate verdict
+  (REPRESENTATIVE / BIASED / DETECTABLE / INCONCLUSIVE per the data — NOT pre-judged).
+- **Power caveat (load-bearing — surfaced to the gate author BEFORE the spend).**
+  `t`-resolution is **necessary but not sufficient** for `REPRESENTATIVE`. The verdict
+  chain (`analyze_pick_representativeness.mjs:362-377`) routes `REPRESENTATIVE` only
+  when `powered = Ndrop ≥ 80 ∧ Nretain ≥ 200`. §R3 had **`Ndrop=38 < 80`** (drop
+  channel = `ai-parse-error/pick`; pick runs at `maxTokens:250` — #341 raised only the
+  *judge* to 1024; drop volume is **independent of qIdx**). The fresh run inherits the
+  same locked $20 / 8 h budget (duration-bound at ~8 h per R3's $19.65), so `Ndrop` is
+  expected to land near 38 again. Therefore the **most likely** post-fix verdict is
+  **`INCONCLUSIVE`** (clean join, all 6 covariates determinable, drop channel
+  under-powered) — or `BIASED` if a covariate signal survives at n≈38. `REPRESENTATIVE`
+  requires `Ndrop ≥ 80`, which within the locked budget is **unreachable** (more drops
+  ⇒ a longer run ⇒ > $20 ⇒ cap widening, **forbidden** by this gate). So the achievable
+  terminal state of this CERT run is **`t`-determinability RESOLVED + a fully-
+  characterized `INCONCLUSIVE`** (join defect removed; the only residual is the
+  budget-bound power floor), **NOT** a `REPRESENTATIVE` certification. This is a
+  different deliverable than "certify the audit" and is the gate-author's call before
+  the spend.
+- **Overturn A (capture gap).** A material fraction of joined rows with **absent** qIdx
+  (a render path the attr missed, or a bilingual/exam surface) ⇒ `t` stays partly
+  non-determinable; the RESULT reports the capture rate and routes honestly — a low
+  capture rate is itself a reportable instrument limitation, **NOT** a cleared gate
+  (§R2.0-REV1(d-iii) analogue).
+- **Overturn B (drift).** Captured qIdx failing the cross-check at a material rate
+  (corpus drift between deployed app and analysis corpus) ⇒ the RESULT documents the
+  drift, the join falls back, `t` not certified. Mitigated by running the analyzer
+  against the exact `data/questions.json` deployed at run time.
+- **Non-prediction.** This gate does NOT predict the 5 already-determinable covariates'
+  significance results; the run's analyzer output is mechanical.
+
+### SCOPE / OUT OF SCOPE
+
+- **IN:** the instrument (app data-attr + bot capture) + the analyzer index-aware join +
+  the fresh bounded run for a full 6-covariate verdict. Flips no `q.c`; changes no
+  `broken`; touches no Toranot file.
+- **OUT** (unchanged from §R3): **`$20 cap NOT widened`**; relaxing
+  `JOIN_DETERMINATE_MIN` or any threshold (forbidden); B4 content adjudication;
+  *dropping* `t` (the alternative certification branch, not taken).
+
+### SEQUENCING (binding — the run post-dates the deploy)
+
+1. This PR (pre-reg + app + bot + analyzer + fixtures) → CI green + Codex →
+   **gate-author merge** (NO self-merge).
+2. Post-merge `verify-deploy.sh`: live `v10.64.159` + `data-qidx` present on
+   `https://eiasash.github.io/Geriatrics/`.
+3. Pre-flight **live judge-gate** (`CHAOS_LIVE_SMOKE=1`) green (§R3 INSTRUMENT-REPAIR
+   provenance bar) at run-start.
+4. THEN the fresh bounded run (config = §R3 inherited UNCHANGED + #326 recovery +
+   `data-qidx` capture; `CHAOS_COST_CAP_USD=20`, 8 h, 1 worker, `claude-sonnet-4-6`,
+   proxy, `CHAOS_REPORT_RATE=0.0` + `CHAOS_FEEDBACK_RATE=0.0`, fresh
+   `chaos-reports/v4-long/audit8cert_<ts>/`). **The bot auto-records
+   `corpus_sha256.txt` (canonical hash of the DEPLOYED `data/questions.json`) into
+   the run dir at startup (P5; `analyze()` fail-closes the qIdx fast-path without it).**
+5. Re-frozen analyzer → mechanical verdict → **CERT RESULT appended append-only below**
+   by the run session.
+
+### SHIP
+
+Branch `claude/audit8-cert-corpus-index` → PR to `main`. **NO self-merge**:
+`docs/AUDIT8*` is an audit-evidence path (gate SHIP clause). CI green + **Codex review**
+(cross-model independence) + gate-author (Eias) merge. The R1.6/R2 "go all in"
+self-merge precedent applies only under an explicit per-session grant; absent that, the
+human gate stands.
+
+<!-- CERT RESULT appended append-only below by the fresh-run session. -->
+

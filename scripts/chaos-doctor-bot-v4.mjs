@@ -56,6 +56,7 @@ import {
   extractAcceptedDisplayIdxSet,
 } from './lib/optionResolver.mjs';
 import { nextRecovery, initialRecoveryState } from './lib/workerRecovery.mjs';
+import { recordDeployedCorpusSha } from './lib/corpusSha.mjs';
 
 // v10.64.118: audit-grade chapter assignment input for the redesigned
 // SYS_DOCTOR_SOURCE prompt. Loaded lazily at bot startup from local
@@ -250,6 +251,15 @@ export async function extractQuestion(page) {
   let stem = '';
   try { stem = (await stemLoc.innerText({ timeout: 800 })).trim(); } catch (_) { return null; }
   if (!stem || stem.length < 20) return null;
+  // CERT (AUDIT8_G5_REPAIR_GATE §CERT): read the served question's canonical
+  // corpus index from the SAME stem element, so the index corresponds to the
+  // extracted stem (not a sibling). int-or-null; the analyzer falls back when
+  // absent. _rqmQuestion renders data-qidx="${pool[qi]}" on the stem <p.heb>.
+  let qIdx = null;
+  try {
+    const rawQIdx = await stemLoc.getAttribute('data-qidx');
+    if (rawQIdx != null) { const parsed = Number.parseInt(rawQIdx, 10); if (Number.isInteger(parsed)) qIdx = parsed; }
+  } catch (_) { /* qIdx stays null → analyzer bucket fallback */ }
   // Geri's quiz options are <button class="qo"> rendered by _rqmQuestion at
   // shlav-a-mega.html:3052. NO data-i attribute — index is positional.
   // The .qo skeleton blocks at lines 3493-3496 use the same class but are
@@ -266,7 +276,7 @@ export async function extractQuestion(page) {
     options.push({ idx: i, text: txt });
   }
   if (options.length < 2) return null;
-  return { stem, options };
+  return { stem, options, qIdx };
 }
 
 async function detectAppCorrectIdx(page) {
@@ -490,7 +500,7 @@ async function doctorOneQuestion(page, workerId, log) {
   const aiIdx = LETTER_TO_IDX[aiLetter];
   log.actions.push({ at: nowIso(), type: 'ai-pick', letter: aiLetter, idx: aiIdx, conf: pickJson.confidence });
   if (aiIdx == null || aiIdx < 0 || aiIdx >= q.options.length) {
-    log.bugs.push({ at: nowIso(), type: 'ai-parse-error', context: 'pick', dropCtx: 'pick-parse-error', text: pickResp.text.slice(0, 200), stemHash, stem: q.stem.slice(0, 300), optCount: q.options.length });
+    log.bugs.push({ at: nowIso(), type: 'ai-parse-error', context: 'pick', dropCtx: 'pick-parse-error', text: pickResp.text.slice(0, 200), stemHash, qIdx: q.qIdx, stem: q.stem.slice(0, 300), optCount: q.options.length });
     return { advanced: false, stemHash };
   }
 
@@ -732,6 +742,7 @@ Is the current q.ref a faithful display of the audit-grade chapter assignment, c
   const finding = {
     workerId,
     stemHash,
+    qIdx: q.qIdx, // CERT corpus-index capture (gate §CERT) — recovers t
     stem: q.stem.slice(0, 300),
     options: q.options.map((o) => o.text.slice(0, 120)),
     optionCanonicalIdx: null,
@@ -1106,6 +1117,18 @@ function buildMarkdown(report) {
 
 async function main() {
   await ensureDir(CONFIG.reportDir);
+  // CERT §CERT P5 (Codex P1 #342): record the DEPLOYED corpus fingerprint so the
+  // analyzer can verify corpus identity before trusting captured data-qidx (else
+  // fail-closed → bucket join). The helper clears any stale token FIRST, so a
+  // writer failure in a reused dir cannot leave an old trust token behind (Codex
+  // P1 #342, 3rd round). Single source of truth: scripts/lib/corpusSha.mjs.
+  const corpusUrl = new URL('data/questions.json', CONFIG.url).href;
+  const recordedCorpusSha = await recordDeployedCorpusSha(CONFIG.reportDir, corpusUrl);
+  if (recordedCorpusSha) {
+    console.log(`[v4] recorded corpus_sha256 ${recordedCorpusSha.slice(0, 12)}… (qIdx corpus-identity gate, ${corpusUrl})`);
+  } else {
+    console.warn(`[v4] WARN: could not record corpus_sha256.txt (${corpusUrl}); captured qIdx will fail-closed at analysis`);
+  }
   openFindingsLog(CONFIG.reportDir);
   const report = { config: CONFIG, startedAt: nowIso(), finishedAt: null, workers: [] };
   console.log(`[v4] Launching ${CONFIG.users} workers × ${(CONFIG.durationMs / 60000).toFixed(0)} min, model=${MODEL}, url=${CONFIG.url}, cost-cap $${CONFIG.costCapUsd}, api=${USE_PROXY ? 'toranot-proxy' : 'anthropic-direct'}`);
