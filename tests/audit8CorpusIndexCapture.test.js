@@ -8,14 +8,14 @@
 // so the WITH-qIdx assertions fail there (t stays STOP-JOIN-NONDETERMINABLE)
 // and pass on CERT — same fixture, qIdx presence flips t-determinability.
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { mkdtempSync, writeFileSync, mkdirSync, rmSync, readFileSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, mkdirSync, rmSync, readFileSync, existsSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashStem, normStem } from '../scripts/lib/hashStem.mjs';
 import { buildIndex } from '../scripts/build_stemhash_index.mjs';
 import { analyze, joinRow } from '../scripts/analyze_pick_representativeness.mjs';
-import { corpusCanonicalSha, corpusCanonicalShaFromString } from '../scripts/lib/corpusSha.mjs';
+import { corpusCanonicalSha, corpusCanonicalShaFromString, recordDeployedCorpusSha } from '../scripts/lib/corpusSha.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const HTML = path.join(REPO_ROOT, 'shlav-a-mega.html'); // real 12 TOPIC_GROUPS
@@ -181,8 +181,51 @@ describe('CERT instrument source pins', () => {
   });
   it('bot records corpus_sha256.txt at startup (P5 production writer; Codex P1 #342)', () => {
     const bot = readFileSync(path.join(REPO_ROOT, 'scripts/chaos-doctor-bot-v4.mjs'), 'utf-8');
-    expect(bot).toMatch(/corpusCanonicalShaFromString/);        // uses the shared canonical hash
-    expect(bot).toMatch(/writeFile\([^\n]*corpus_sha256\.txt/); // writes the record the analyzer reads
+    expect(bot).toMatch(/import \{ recordDeployedCorpusSha \} from '\.\/lib\/corpusSha\.mjs'/); // SSoT helper
+    expect(bot).toMatch(/await recordDeployedCorpusSha\(CONFIG\.reportDir, corpusUrl\)/);        // called at startup
+  });
+});
+
+// ── recordDeployedCorpusSha — stale-token resistance (Codex P1 #342, 3rd) ─────
+// The writer must never leave a STALE trust token behind on failure: a prior
+// run's hash in a reused dir could match the local analysis corpus and falsely
+// trust qIdx captured against a now-drifted deployed corpus.
+describe('CERT recordDeployedCorpusSha (scripts/lib/corpusSha.mjs)', () => {
+  const SHA_FILE = 'corpus_sha256.txt';
+  const freshDir = () => { const d = path.join(TMP, `rec${caseSeq++}`); mkdirSync(d, { recursive: true }); return d; };
+  const okFetch = (body) => async () => ({ text: async () => body });
+  const failFetch = () => async () => { throw new Error('network down'); };
+
+  it('RED-proof: stale token present + writer FAILS → token removed (fail-closed)', async () => {
+    const dir = freshDir();
+    writeFileSync(path.join(dir, SHA_FILE), 'STALE_HASH_FROM_A_PRIOR_RUN'); // leftover trust token
+    const r = await recordDeployedCorpusSha(dir, 'http://x/data/questions.json', { fetchImpl: failFetch() });
+    expect(r).toBe(null);
+    expect(existsSync(path.join(dir, SHA_FILE))).toBe(false); // <-- stale token GONE (would persist pre-fix)
+  });
+
+  it('fetch ok → token = canonical hash of the fetched (deployed) body, returned too', async () => {
+    const dir = freshDir();
+    const body = JSON.stringify([{ q: 'a', o: ['x', 'y'], c: 0 }]);
+    const r = await recordDeployedCorpusSha(dir, 'http://x', { fetchImpl: okFetch(body) });
+    expect(r).toBe(corpusCanonicalShaFromString(body));
+    expect(readFileSync(path.join(dir, SHA_FILE), 'utf-8')).toBe(r);
+  });
+
+  it('stale token present + fetch ok → OVERWRITTEN with the fresh hash (no stale reuse)', async () => {
+    const dir = freshDir();
+    writeFileSync(path.join(dir, SHA_FILE), 'deadbeef'.repeat(8));
+    const body = JSON.stringify([{ q: 'b', o: ['x', 'y'], c: 1 }]);
+    const r = await recordDeployedCorpusSha(dir, 'http://x', { fetchImpl: okFetch(body) });
+    expect(r).toBe(corpusCanonicalShaFromString(body));
+    expect(readFileSync(path.join(dir, SHA_FILE), 'utf-8')).toBe(r); // not the deadbeef stale value
+  });
+
+  it('no stale token + writer FAILS → no file, no throw (fails open → fail-closed at analysis)', async () => {
+    const dir = freshDir();
+    const r = await recordDeployedCorpusSha(dir, 'http://x', { fetchImpl: failFetch() });
+    expect(r).toBe(null);
+    expect(existsSync(path.join(dir, SHA_FILE))).toBe(false);
   });
 });
 
