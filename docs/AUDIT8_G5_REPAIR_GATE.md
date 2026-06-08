@@ -1158,3 +1158,152 @@ human gate stands.
 
 <!-- CERT RESULT appended append-only below by the fresh-run session. -->
 
+## CERT RESULT (appended append-only by the fresh-run session — 2026-06-08)
+
+**Run provenance.** Bounded run `chaos-reports/v4-long/audit8cert_20260607T205756Z/`
+(gitignored — all numbers below are inlined so this committed doc, not the run dir, is the
+Codex fresh-eye surface). 1 worker, `claude-sonnet-4-6`, Toranot proxy, 8 h wall,
+`CHAOS_REPORT_RATE=0.0` + `CHAOS_FEEDBACK_RATE=0.0`, `CHAOS_COST_CAP_USD=20`
+(**NOT widened**). Actual spend **$19.01**, **3992 calls**, 3,089,690 + 649,139 tokens,
+**0 failures**. Config = §R3 inherited UNCHANGED + #326 recovery + the `data-qidx` capture
+instrument this CERT added. Analyzer:
+`node scripts/analyze_pick_representativeness.mjs --report-dir chaos-reports/v4-long/audit8cert_20260607T205756Z`
+→ `audit8_representativeness_result.json` (schema `audit8-representativeness-result/1`).
+
+### B1 RESOLVED — `t` is determinable member-level (the CERT deliverable)
+
+The instrument worked. **P5 corpus-identity HELD on real data.** The bot recorded the
+canonical hash of the DEPLOYED `data/questions.json` at run start
+(`https://eiasash.github.io/Geriatrics/data/questions.json`); the analyzer recomputed it for
+the analysis corpus; they matched:
+
+- `corpusIdentity.recordedSha == currentSha == 2b26d35844229b0aa8cece0dd2a7b08151695f01278d273ef6f88d5b2d590777`
+- `corpusIdentity.qIdxTrusted = true`
+
+With trusted qIdx, **`t` joins determinate 1195/1195** (`g3b2.perCovariate.t`:
+`determinate=1195`, `nondeterminable=0`, `attempted=1195`, `determinableRate=1.0`,
+`structuralFraction=0`). All 6 covariates determinate 1195/1195; `g3d3.violations=[]`,
+`joinFailDrop=0`, `joinFailRetain=0`. **`STOP-JOIN-NONDETERMINABLE`-on-`t` — the §R3 blocker
+— is eliminated.** This closes branch **B1**: the covariate `t` the §R3 bucket-join could
+not carry is now recovered member-level.
+
+Matches the locked Prediction (≈line 1092): qIdx on ≥99 % of joined rows
+(determinableRate=1.0); `t` determinate ≥0.99 (=1.0); aggregate off
+`STOP-JOIN-NONDETERMINABLE` onto a routed 6-covariate verdict. **Overturn A (capture gap)
+NOT triggered** (determinableRate=1.0, no absent qIdx). **Overturn B (drift) NOT triggered**
+(qIdxTrusted=true, no cross-check fallback, violations=[]).
+
+### VERDICT — `BIASED` on `t` ONLY
+
+`verdict = "BIASED"` (`aggregateVerdict = "BIASED"`). The biased axis is **`t` (question
+provenance / exam-source-era) ONLY**. Per-covariate, on the frozen G3.B2 marginal family
+(`broken` vacuous — `brokenServed=0`; logistic is G4.3 SENSITIVITY ONLY, see Ledger):
+
+| covariate | test | stat | p | pAdj (Holm) | effect | floor | Holm-reject | biasSignal |
+|---|---|---|---|---|---|---|---|---|
+| **t** | chi²-2×k (df=2, 3 levels pooled) | **χ²=42.96** | **4.69e-10** | **2.34e-9** | **Cramér's V=0.190** | 0.10 | **true** | **true** |
+| stem_len | Mann-Whitney-U | U=30612, z=1.57 | 0.117 | 0.351 | Cliff's δ=0.135 | 0.15 | false | false |
+| topic_group | chi²-2×k (df=2, 3 levels) | χ²=1.96 | 0.375 | 0.750 | Cramér's V=0.041 | 0.10 | false | false |
+| bilingual | Fisher-exact 2×2 `[[15,32],[567,581]]` | — | 0.025 | 0.099 | φ=0.068 | 0.10 | false | false |
+| c_accept | Fisher-exact 2×2 `[[0,47],[6,1142]]` | — | 1.0 | 1.0 | φ=0.014 | 0.10 | false | false |
+
+`t` is the only covariate clearing BOTH conditions for `biasSignal` (Holm-adjusted p rejects
+AND effect ≥ floor; analyzer line 389 `biasSignal = holmReject && meetsFloor`). `bilingual`
+is the near-miss: raw p=0.025 but φ=0.068 < 0.10 floor and pAdj=0.099 does **not** reject —
+**no signal**.
+
+**Landing the pre-registered BIASED branch — not a surprise.** The pre-reg (≈line 1103-1105)
+named the two live outcomes: "most likely INCONCLUSIVE … **or BIASED if a covariate signal
+survives at n≈38**." A signal survived. `Ndrop=47` (near the predicted ~38), and `t`
+survived Holm correction across the 5-covariate family at that n. This is the
+pre-registered alternative branch realized.
+
+### POWER — `REPRESENTATIVE` was unreachable as pre-registered (honest outcome, not a gap)
+
+`g2`: **`Ndrop=47`** (`< MIN_N_DROP=80`), `Nretain=1148` (`≥ MIN_N_RETAIN=200`),
+**`powered=false`**. The verdict chain (`analyze_pick_representativeness.mjs:396-427`) routes
+`BIASED` on `anyBiasSignal` (line 411-412) **before** the `powered` gate that guards
+`REPRESENTATIVE` (line 415-416). That ordering is the principle made code:
+
+> **Underpower blocks proving the ABSENCE of bias (`REPRESENTATIVE`) but NOT proving its
+> PRESENCE (`BIASED`).** A signal detected despite low power is real.
+
+So `BIASED`-on-`t` (χ²=42.96, pAdj=2.34e-9, Holm-reject) is validly reachable at Ndrop=47,
+while `REPRESENTATIVE` for the quiet covariates is **not certifiable** within the locked
+budget. As the pre-reg power caveat (≈line 1096-1112) stated, the drop channel
+(`ai-parse-error/pick`) volume is independent of qIdx and budget-bound at ~$20/8 h, so
+`Ndrop` landed near the predicted floor; reaching `Ndrop ≥ 80` would require a longer run
+⇒ > $20 ⇒ cap widening, **forbidden** by this gate.
+
+### THREE GUARDRAILS ON READING THIS VERDICT (advisor 2026-06-08)
+
+1. **Do NOT certify the other 5 covariates as `REPRESENTATIVE`.** They are `biasSignal=false`
+   but `powered=false` — *no signal detected in an underpowered sample*, which is NOT
+   *representativeness proven*. Absence of evidence ≠ evidence of absence at n=47.
+2. **`V=0.190` is a decision-rule trigger, not a magnitude to lean on.** At n=47 the point
+   estimate is imprecise; it crosses the 0.10 floor (so it fires the rule) but must not be
+   quoted as "the size of the bias." The defensible claim is "a signal is present," not
+   "the bias is V≈0.19 large."
+3. **Scope-bind what "`BIASED` on `t`" means.** It is a property of the **bot's
+   `ai-parse-error/pick` drop channel** — the bot fails to parse a pick on a non-uniform
+   fraction of questions across provenance/era. It is **NOT** a statement about question
+   content, and emphatically **NOT** that any `q.c` answer key is wrong. The drop is the
+   bot's read failure, concentrated on certain source surfaces.
+
+### TEMPORAL (AUDIT-9 §A1–A3) — no bifurcation
+
+`temporalBins.detected=false`, `bifurcation_onset_buckets=[]` across 96 five-minute
+run-start-aligned buckets (K=2). Every bucket reached pick at 100 % (`reachedPick==total`):
+no pre-pick-skip dropoff, no Phase-1/Phase-2 bifurcation. The drop channel is purely
+post-pick `ai-parse-error/pick` (`N_pre_pick_skip_excluded=0`, `N_extractNull_counter=0`),
+so the AUDIT-8 "88 % pre-pick-skip" bifurcation concern does **not** recur here. Had
+bifurcation been detected it would have overridden the aggregate (line 427); it did not.
+
+### LEDGER (inlined — gitignored source)
+
+`N_dropped_ai_parse_error_pick=47`, `N_ai_error_pick_separate=0`,
+`N_pre_pick_skip_excluded=0`, `N_extractNull_counter=0`, `N_retained_judged=1148`,
+`N_appIdxNull_excluded=1`. Family = `[stem_len, topic_group, t, bilingual, c_accept]`;
+`broken` vacuous (`brokenServed=0`). **Logistic sensitivity** (`logisticSensitivity`) did
+**not** converge (`reason:"max-iter"`; complete separation — note the inflated SEs ~1e4) and
+is **SENSITIVITY ONLY**: G4.3 locks the verdict OFF the logistic, on the per-covariate frozen
+family. Its non-convergence does not affect the `BIASED`-on-`t` verdict.
+
+### G5 ROUTE (DOCUMENT-only this lane; no `q.c` flip, no `broken` change, no auto-rerun)
+
+`g5route` = "biased subsample on the named axis/axes." Its three triggers each carry their
+own session/gate; **none is taken in this lane**:
+(a) pick-side robustness hardening (bot parse resilience);
+(b) retroactive-reach characterization — **DOCUMENT, do not auto-rerun; no `q.c` flip, no
+`broken` change**;
+(c) audit horizon item 2 (Geri judge max_tokens) stays gated behind the de-bias.
+
+This CERT closes the **instrument/determinability** question (B1) and lands the verdict; it
+does **not** itself remediate. Remediation is a separate gated lane.
+
+### MERGE PROVENANCE
+
+Instrument PR **#342** (`claude/audit8-cert-corpus-index`, v10.64.159) was self-merged
+(squash **`5feda8d`**, `--admin`) under Eias's explicit per-session grant ("u self merge it u
+have authority"), after CI-green + Codex-clear (3 P1 rounds on the qIdx-trust-token
+invariant `gate→writer→stale-token`, all closed; Codex cleared `bfd01a2`). Pre-flight before
+the $20 spend: verify-deploy v159 live; **live qIdx capture probe 5/5 populated** (defeats
+the Pages CDN edge-cache stale-HTML risk); live judge-gate 4/4 ($0.08, 0 fail, bot-recorded
+corpus hash == local canonical). This CERT RESULT doc PR is self-merged under the same
+standing grant — the §SHIP NO-self-merge default is carved out by the explicit per-session
+grant clause.
+
+### BOTTOM LINE
+
+- **B1 CLOSED** — `t` determinable member-level (`qIdxTrusted=true`, `determinableRate=1.0`);
+  the `data-qidx` instrument works on real data; P5 held. `STOP-JOIN-NONDETERMINABLE`
+  eliminated.
+- **VERDICT: `BIASED` on `t` (provenance/era) ONLY** — the pre-registered BIASED branch,
+  landed at `Ndrop=47`; the other 4 family covariates show no signal.
+- **NOT `REPRESENTATIVE`, not certifiable as representative** — the `Ndrop=47 < 80` power
+  floor is budget-bound and forbidden to widen; the quiet covariates are underpowered, not
+  proven clean.
+- **Scope** — this is the **bot's pick-parse drop channel** skewing by question source, NOT a
+  content/answer-key defect. **No `q.c` flip, no `broken` change, no auto-rerun.** Any
+  remediation routes to a separate G5 lane.
+
