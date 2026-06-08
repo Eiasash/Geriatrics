@@ -102,7 +102,7 @@ async function advance(page) {
   // first option → check → next. This matches the bot's iteration cadence
   // shape; if Next is already showing (e.g., post-check state from a prior
   // attempt) skip directly to Next.
-  const next0 = page.locator('[aria-label="Next question"], [aria-label="Finish exam"]').first();
+  const next0 = page.locator('[data-testid="advance"], [aria-label*="next question" i], [aria-label*="finish exam" i]').first();
   if ((await next0.count().catch(() => 0)) > 0) {
     await next0.click({ timeout: 2500 }).catch(() => {});
     return 'next-direct';
@@ -113,12 +113,12 @@ async function advance(page) {
   if ((await qo0.count().catch(() => 0)) === 0) return 'no-qo';
   await qo0.click({ timeout: 2500 }).catch(() => {});
   await sleep(150);
-  const check = page.locator('[aria-label="Check answer"]').first();
+  const check = page.locator('[data-testid="check-answer"], [aria-label*="check answer" i]').first();
   if ((await check.count().catch(() => 0)) > 0) {
     await check.click({ timeout: 2500 }).catch(() => {});
     await sleep(250);
   }
-  const next1 = page.locator('[aria-label="Next question"], [aria-label="Finish exam"]').first();
+  const next1 = page.locator('[data-testid="advance"], [aria-label*="next question" i], [aria-label*="finish exam" i]').first();
   if ((await next1.count().catch(() => 0)) > 0) {
     await next1.click({ timeout: 2500 }).catch(() => {});
     return 'next-after-check';
