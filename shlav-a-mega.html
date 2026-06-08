@@ -3200,7 +3200,7 @@ if(ans){cls+=' lk';if(isOk(q,i))cls+=' ok';else if(i===sel)cls+=' no';else cls+=
 else if(i===sel)cls+=' sel';
 h+=`<button class="${cls}" onclick="pick(${i})" aria-label="Option ${i+1}: ${sanitize(o)}">${sanitize(o)}</button>`;
 });
-if(!ans)h+=`<button class="btn btn-p" onclick="sdCheck()"${sel===null?' disabled':''} aria-label="בדוק — check answer">בדוק</button>`;
+if(!ans)h+=`<button class="btn btn-p" data-testid="check-answer" onclick="sdCheck()"${sel===null?' disabled':''} aria-label="בדוק — check answer">בדוק</button>`;
 else h+=`<button class="btn btn-d" onclick="sdNext()" aria-label="הבאה — next question">הבאה ←</button>`;
 h+=`</div>`;
 // Leaderboard
@@ -3257,13 +3257,13 @@ let h='';
 h+=`<div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">`;
 if(!ans){
 const _confLabel='';
-h+=`<div style="display:flex;gap:6px;align-items:center"><button class="btn btn-p tap-min" onclick="check()"${sel===null?' disabled':''} aria-label="${_confLabel} בדוק — check answer" style="flex:1">${_confLabel} בדוק</button>`;if(!examMode)h+=`<button class="btn tap-min" onclick="showAnswerHardFail()" style="background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg));font-size:11px;padding:6px 14px;border:1px solid rgb(var(--yellow-brd))" aria-label="לא יודע — show me the answer">👁 לא יודע</button>`;h+=`</div>`;}
+h+=`<div style="display:flex;gap:6px;align-items:center"><button class="btn btn-p tap-min" data-testid="check-answer" onclick="check()"${sel===null?' disabled':''} aria-label="${_confLabel} בדוק — check answer" style="flex:1">${_confLabel} בדוק</button>`;if(!examMode)h+=`<button class="btn tap-min" onclick="showAnswerHardFail()" style="background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg));font-size:11px;padding:6px 14px;border:1px solid rgb(var(--yellow-brd))" aria-label="לא יודע — show me the answer">👁 לא יודע</button>`;h+=`</div>`;}
 else{
 // POST-ANSWER LAYOUT: Next button FIRST (primary action), then secondary UI
 // Top row: Prev + Next (always visible, always tappable)
 h+=`<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">`;
 if(!examMode)h+=`<button id="prev-btn" class="btn btn-o tap-min" onclick="prev()" style="flex:0 0 auto;padding:0 14px;font-size:11px;border:1px solid rgb(var(--brd));border-radius:10px;${qi<=0?'opacity:0.4;pointer-events:none;':''}" aria-label="קודמת — previous question">קודמת ←</button>`;
-h+=`<button id="next-btn" class="btn btn-d" onclick="next()" style="flex:1;min-height:48px;padding:10px 18px;font-size:14px" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'→ הבאה'}</button>`;
+h+=`<button id="next-btn" data-testid="advance" class="btn btn-d" onclick="next()" style="flex:1;min-height:48px;padding:10px 18px;font-size:14px" aria-label="${examMode&&qi+1>=150?'Finish exam':'Next question'}">${examMode&&qi+1>=150?'סיים':'→ הבאה'}</button>`;
 if(!examMode&&ans){
 h+=`<button onclick="document.getElementById('report-wrong-expand').style.display=document.getElementById('report-wrong-expand').style.display==='none'?'block':'none'" style="font-size:10px;padding:4px 8px;background:none;color:rgb(var(--fg3));cursor:pointer;border:none" title="Report wrong answer key">⚠️</button>`;
 }
