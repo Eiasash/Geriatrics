@@ -1231,8 +1231,9 @@ NONDETERMINABLE`; pinned `5feda8d` → `qIdxTrusted=true`, `verdict=BIASED`, `t.
 **Drift impact.** **B1 (instrument determinability of `t`) is robust** to the drift: the qIdx
 member-level recovery capability is independent of which option is keyed correct, and 69 `c`
 corrections + distractor restores change neither the `t` provenance tags, the question
-population (3,823 Qs), nor the stem/option surfaces that drive the bot's `ai-parse-error/pick`
-drop channel. **The VERDICT (`BIASED` on `t`) is a snapshot scoped to `2b26d358`**; it is
+population (**4,297** corpus rows — `QZ.length` is identical at `5feda8d` and current `main`;
+the drift is content-only, not row-count), nor the stem/option surfaces that drive the bot's
+`ai-parse-error/pick` drop channel. **The VERDICT (`BIASED` on `t`) is a snapshot scoped to `2b26d358`**; it is
 expected-robust for the same reason,
 but is **NOT** re-certified against `b65c97ba` — the G5 route forbids auto-rerun and the
 CERT's deliverable (`t`-*determinability*, B1) does not require it. (Precisely: the drift is
