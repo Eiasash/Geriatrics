@@ -1178,6 +1178,9 @@ canonical hash of the DEPLOYED `data/questions.json` at run start
 the analysis corpus; they matched:
 
 - `corpusIdentity.recordedSha == currentSha == 2b26d35844229b0aa8cece0dd2a7b08151695f01278d273ef6f88d5b2d590777`
+  — both = `data/questions.json` at commit **`5feda8d`** (#342), the corpus the bot served at
+  run-start. This equality is **analysis-time consistency** (analyzer run against the same
+  corpus the bot served), **NOT** a claim about current `main` — see **CORPUS SCOPE** below.
 - `corpusIdentity.qIdxTrusted = true`
 
 With trusted qIdx, **`t` joins determinate 1195/1195** (`g3b2.perCovariate.t`:
@@ -1192,6 +1195,51 @@ Matches the locked Prediction (≈line 1092): qIdx on ≥99 % of joined rows
 `STOP-JOIN-NONDETERMINABLE` onto a routed 6-covariate verdict. **Overturn A (capture gap)
 NOT triggered** (determinableRate=1.0, no absent qIdx). **Overturn B (drift) NOT triggered**
 (qIdxTrusted=true, no cross-check fallback, violations=[]).
+
+### CORPUS SCOPE — certifies the run-time corpus, not current `main` (Codex P1 #348)
+
+The CERT's P5/qIdx trust predicate is **corpus-identity-bound by design**, so the result is
+scoped to the corpus the run executed against:
+
+- **CERT analysis corpus** = `2b26d358…0777` = `data/questions.json` at commit **`5feda8d`**
+  (#342, the instrument merge) — the deployed corpus the bot recorded from the live site at
+  run-start (≈20:57 UTC 2026-06-07, before any later content merge deployed).
+- `corpusIdentity.recordedSha == currentSha` is the **P5 invariant working**: the analyzer ran
+  against the *same* corpus the bot served (the working tree had not synced the overnight
+  content merges). It is analysis-time internal consistency, **NOT** "== current `main`."
+- **Current `main`** (`5c29025`) = `b65c97ba…cf7d5` — the corpus drifted *after* this run via
+  content PRs **#343 (+6), #344 (+62), #347 (+1) = 69 answer-key (`c`) corrections** plus
+  #345/#346 distractor restores.
+
+**Consequence (the trust token doing its job, not a regression).** Re-running the analyzer
+against current `main` fails closed: `recordedSha(2b26d358) != currentSha(b65c97ba)` ⇒
+`qIdxTrusted=false` ⇒ bucket join ⇒ `STOP-JOIN-NONDETERMINABLE` (`g3b2.nondeterminableViolations
+= ["t"]`: 76 `t`-rows become bucket-nondeterminable, structuralFraction 0.064 > 0.01). The CERT
+is therefore reproducible only against its run-time corpus (which lives in git history at
+`5feda8d`):
+
+    git show 5feda8d:data/questions.json > /tmp/corpus_5feda8d.json
+    node scripts/analyze_pick_representativeness.mjs --report-dir <run-dir> \
+      --questions /tmp/corpus_5feda8d.json
+    # → corpusIdentity.qIdxTrusted=true, verdict=BIASED (this RESULT)
+
+Both invocations were run 2026-06-08 (zero AI cost, `--out` to a temp path so the run dir's
+result was untouched): current-`main` default → `qIdxTrusted=false`, `verdict=STOP-JOIN-
+NONDETERMINABLE`; pinned `5feda8d` → `qIdxTrusted=true`, `verdict=BIASED`, `t.chi²=42.96`,
+`Ndrop=47` (exact reproduction). Verified, not asserted.
+
+**Drift impact.** **B1 (instrument determinability of `t`) is robust** to the drift: the qIdx
+member-level recovery capability is independent of which option is keyed correct, and 69 `c`
+corrections + distractor restores change neither the `t` provenance tags, the question
+population (3,823 Qs), nor the stem/option surfaces that drive the bot's `ai-parse-error/pick`
+drop channel. **The VERDICT (`BIASED` on `t`) is a snapshot scoped to `2b26d358`**; it is
+expected-robust for the same reason,
+but is **NOT** re-certified against `b65c97ba` — the G5 route forbids auto-rerun and the
+CERT's deliverable (`t`-*determinability*, B1) does not require it. (Precisely: the drift is
+orthogonal to `t` — provenance tags are untouched, and the verdict is on `t` only; the answer-
+key corrections do change `c`/`c_accept` values, which is one more reason not to read the
+verdict as covering `b65c97ba`.) A live re-certification on
+current `main` would be a fresh bounded run under its own gate.
 
 ### VERDICT — `BIASED` on `t` ONLY
 
@@ -1298,6 +1346,10 @@ grant clause.
 - **B1 CLOSED** — `t` determinable member-level (`qIdxTrusted=true`, `determinableRate=1.0`);
   the `data-qidx` instrument works on real data; P5 held. `STOP-JOIN-NONDETERMINABLE`
   eliminated.
+- **SCOPE (Codex P1 #348)** — certifies the **run-time corpus** `2b26d358…0777` (= commit
+  `5feda8d`), NOT current `main` (`b65c97ba…`, drifted by #343/#344/#347 = 69 `c` corrections).
+  Re-analysis on current `main` correctly fail-closes to `STOP-JOIN-NONDETERMINABLE` (P5
+  working). B1 is robust to the drift; the verdict is a `2b26d358` snapshot. See **CORPUS SCOPE**.
 - **VERDICT: `BIASED` on `t` (provenance/era) ONLY** — the pre-registered BIASED branch,
   landed at `Ndrop=47`; the other 4 family covariates show no signal.
 - **NOT `REPRESENTATIVE`, not certifiable as representative** — the `Ndrop=47 < 80` power
