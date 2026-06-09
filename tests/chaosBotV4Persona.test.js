@@ -40,6 +40,16 @@ describe('chaos-doctor-bot v4 — Geri persona pins', () => {
     it('cites Geri-canon textbooks (Hazzard / Harrison / GRS8)', () => {
       expect(PICK).toMatch(/Hazzard/);
     });
+    it('pick contract permits E on five-option (GRS8) questions — Codex P2 on #355', () => {
+      // G5(a) made the parser + option list E-aware (letterFor), but the
+      // contract text still forbade E, so compliant models kept suppressing
+      // correct-E picks on the 38 five-option GRS8 Qs at the PROMPT layer.
+      expect(PICK).toMatch(/A\/B\/C\/D\/E/);
+      expect(PICK).toContain('E=index 4');
+      expect(PICK).toContain('א/ב/ג/ד/ה');
+      // No strict A-D-only enum may return.
+      expect(PICK).not.toContain('"pick":"A"|"B"|"C"|"D"');
+    });
   });
 
   describe('SYS_DOCTOR_JUDGE (audit-3 — answer-correctness only)', () => {
