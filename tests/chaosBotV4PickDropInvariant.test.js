@@ -2,11 +2,21 @@
 // docs/AUDIT7_PRE_REGISTERED_GATE.md (#232, "Verified mechanism", L406-417).
 //
 // Load-bearing claim being pinned:
-//   A pick that FAILS the validity gate (aiIdx == null || out-of-range)
-//   logs `ai-parse-error/context=pick` and `return { advanced:false }`
-//   BEFORE the `disagrees` computation. Therefore an invalid pick can
-//   never produce a `disagrees:true` finding row. Contamination of the
-//   audit-3/4/5/7 `disagrees` population is DROP / selection-bias only.
+//   A pick that FAILS to parse logs `ai-parse-error/context=pick` and
+//   `return { advanced:false }` BEFORE the `disagrees` computation.
+//   Therefore an invalid pick can never produce a `disagrees:true` finding
+//   row. Contamination of the audit-3/4/5/7 `disagrees` population is
+//   DROP / selection-bias only.
+//
+// AUDIT8 G5(a) update (2026-06-09): the validity gate moved from an inline
+// `if (aiIdx == null || out-of-range)` check to `if (pickResult.failed)`,
+// where `pickResult` is the return of `pickWithShapeRetry` (the layered
+// parser + one corrective retry). The range check is now encoded inside
+// `parsePickLetter` (its letter→idx table is built to `optCount`, so a
+// resolved idx is always in range). The INVARIANT — drop lexically BEFORE
+// the `disagrees` compute — is UNCHANGED; only the gate's syntactic form
+// changed. The gate-body bound is widened to 600 (the two-branch
+// api-error/parse drop emit measures 489 chars).
 //
 // Goes RED if a future edit:
 //   (a) deletes the invalid-pick gate's early `return { advanced:false }`,
@@ -38,20 +48,19 @@ const SRC = readFileSync(
   'utf8',
 );
 
-// `aiIdx == null` is unique to the invalid-pick validity gate, so this
+// `pickResult.failed` is unique to the invalid-pick validity gate, so this
 // does not collide with the other `return { advanced: false }` sites.
-// Body-length bound widened 200 -> 300 by the AUDIT8 instrument PRE-STEP
-// (docs/AUDIT8_PRESTEP_INSTRUMENT_GATE.md). The invariant THIS regex pins
-// is *lexical ordering* — the invalid-pick gate's early `return {
-// advanced: false }` precedes the `disagrees` compute (assert 2 enforces
-// the ordering independently via offset comparison). The 200 was incidental
-// headroom, not the load-bearing property; the gate body legitimately grew
-// because G0 mandates `stemHash` + `stem` + `optCount` + `dropCtx` on the
-// `ai-parse-error/pick` drop row, all minted after this assert was written.
-// 300 covers the measured 215-char post-instrument body with margin while
-// still tripping on a genuinely large logic insertion between gate and return.
+// Body-length bound: 200 -> 300 (AUDIT8 instrument PRE-STEP) -> 600 (AUDIT8
+// G5(a)). The invariant THIS regex pins is *lexical ordering* — the
+// invalid-pick gate's early `return { advanced: false }` precedes the
+// `disagrees` compute (assert 2 enforces the ordering independently via
+// offset comparison). The bound is incidental headroom, not the load-bearing
+// property; the gate body grew because the G5(a) drop emit forks two
+// branches (api-error vs parse hard-fail). 600 covers the measured 489-char
+// body with margin while still tripping on a genuinely large logic insertion
+// between gate and return.
 const INVALID_PICK_GATE =
-  /if\s*\(\s*aiIdx\s*==\s*null[^)]*\)\s*\{[\s\S]{0,300}?return\s*\{\s*advanced:\s*false/;
+  /if\s*\(\s*pickResult\.failed\s*\)\s*\{[\s\S]{0,600}?return\s*\{\s*advanced:\s*false/;
 const DISAGREES_DECL = /\b(?:const|let|var)\s+disagrees\s*=/g;
 // the canonical gated compute (spans two lines in source).
 const CANONICAL_COMPUTE =
