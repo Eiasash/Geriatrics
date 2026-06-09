@@ -2571,6 +2571,39 @@ function markEIssueVerified(qIdx){
 }
 function getApiKey(){return localStorage.getItem('samega_apikey')||'';}
 function setApiKey(k){try{if(k)localStorage.setItem('samega_apikey',k.trim());else localStorage.removeItem('samega_apikey');}catch(e){}}
+// v10.64.160 (#353): settings handlers — local save FIRST (never blocked by the
+// network), then offer account sync for logged-in users via _authSyncApiKey.
+async function _apiKeySaveFromInput(){
+  const el=document.getElementById('apiKeyInput');
+  const v=((el&&el.value)||'').trim();
+  if(!v) return;
+  setApiKey(v);
+  if(typeof window._authSyncApiKey==='function'&&typeof window.getCurrentUser==='function'&&window.getCurrentUser()){
+    const r=await window._authSyncApiKey(v);
+    if(r&&r.ok)toast('🔑 המפתח נשמר וסונכרן לחשבון','success');
+    else if(r&&r.error==='cancelled')toast('המפתח נשמר במכשיר זה בלבד','info');
+    else if(r&&r.error!=='not_logged_in')toast('המפתח נשמר מקומית — הסנכרון לחשבון נכשל ('+(r&&r.error||'')+')','warn');
+  }
+  render();
+}
+async function _apiKeySyncExisting(){
+  const k=getApiKey(); if(!k) return;
+  if(typeof window._authSyncApiKey!=='function') return;
+  const r=await window._authSyncApiKey(k);
+  if(r&&r.ok)toast('🔑 המפתח סונכרן לחשבון','success');
+  else if(r&&r.error==='cancelled')toast('הסנכרון בוטל — המפתח נשאר במכשיר זה','info');
+  else if(r&&r.error!=='not_logged_in')toast('הסנכרון לחשבון נכשל ('+(r&&r.error||'')+')','warn');
+}
+async function _apiKeyRemove(){
+  setApiKey('');
+  if(typeof window._authSyncApiKey==='function'&&typeof window.getCurrentUser==='function'&&window.getCurrentUser()){
+    const r=await window._authSyncApiKey('');
+    if(r&&r.ok)toast('🔑 המפתח הוסר גם מהחשבון','success');
+    else if(r&&r.error==='cancelled')toast('המפתח הוסר מהמכשיר בלבד — עותק החשבון נשאר','info');
+    else if(r&&r.error!=='not_logged_in')toast('המפתח הוסר מקומית — ההסרה מהחשבון נכשלה ('+(r&&r.error||'')+')','warn');
+  }
+  render();
+}
 // v10.64.60: bilingual schema. AI-translated Hazzard/Harrison/GRS8 questions
 // carry both q/o/e (Hebrew) and q_en/o_en/e_en (original English). qLang
 // returns the user-preferred language with graceful fallback to default.
@@ -6419,15 +6452,20 @@ if(!_storedKey){h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px s
 if(_storedKey){
   h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
   h+='<div style="flex:1;font-size:11px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;padding:6px 10px;color:rgb(var(--green-fg))">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
-  h+='<button class="btn btn-o" style="font-size:11px" onclick="setApiKey(\'\');render()" aria-label="הסר — remove API key">הסר</button>';
+  h+='<button class="btn btn-o" style="font-size:11px" onclick="_apiKeyRemove()" aria-label="הסר — remove API key">הסר</button>';
   h+='</div>';
+  // #354 Codex P2: users whose key predates the sync feature need a push-to-account
+  // path that doesn't require remove + re-enter.
+  if(typeof window.getCurrentUser==='function'&&window.getCurrentUser()){
+    h+='<button class="btn" style="font-size:11px;width:100%;margin-bottom:8px;background:#f0f9ff;color:#075985;border:1px solid #bae6fd" onclick="_apiKeySyncExisting()" aria-label="סנכרן את המפתח לחשבון">🔄 סנכרן את המפתח לחשבון</button>';
+  }
 } else {
   h+='<div style="display:flex;gap:8px;margin-bottom:8px">';
   h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-..." class="calc-in" style="flex:1;margin:0;font-size:11px" aria-label="Claude API key">';
-  h+='<button class="btn btn-p" style="font-size:11px" onclick="var v=document.getElementById(\'apiKeyInput\').value.trim();if(v){setApiKey(v);render();}" aria-label="שמור — save API key">שמור</button>';
+  h+='<button class="btn btn-p" style="font-size:11px" onclick="_apiKeySaveFromInput()" aria-label="שמור — save API key">שמור</button>';
   h+='</div>';
 }
-h+='<div style="font-size:9px;color:rgb(var(--fg3))">API key נשמר ב-localStorage בלבד · לא נשלח לשרתים של האפליקציה</div></div>';
+h+='<div style="font-size:9px;color:rgb(var(--fg3))">API key נשמר ב-localStorage · בחשבון מחובר תוצע שמירה גם בחשבון (עם אישור סיסמה) כדי שהמפתח יעבור איתך בין מכשירים</div></div>';
 return h;
 }
 async function toggleNotifOptIn(){
@@ -6695,6 +6733,18 @@ function clearChat(){S.chat=[];chatLoading=false;save();render();}
   async function authRegister(u,p,dn){return _rpc('auth_register_user',{p_username:u||'',p_password:p||'',p_display_name:dn||null});}
   async function authLogin(u,p){return _rpc('auth_login_user',{p_username:u||'',p_password:p||''});}
   async function authChangePassword(u,oldP,newP){return _rpc('auth_change_password',{p_username:u||'',p_old_password:oldP||'',p_new_password:newP||''});}
+  // v10.64.160 (#353): keys saved/rotated after the v10.64.158 _apikey backup
+  // removal no longer reach app_users.api_key (the backup trigger feed is gone),
+  // so a new device's login would restore a stale key. Sync at the save moment
+  // via auth_set_api_key — the RPC requires re-auth, so collect the password
+  // with window.prompt (same pattern as _doChangePwd). Guests: caller no-ops.
+  // Empty p_api_key clears the account copy (parity with setApiKey('')).
+  async function _syncApiKey(k){
+    const u=getCurrentUser(); if(!u) return {ok:false,error:'not_logged_in'};
+    const msg=k?'אישור סיסמה — סנכרון המפתח לחשבון (ביטול = שמירה במכשיר זה בלבד):':'אישור סיסמה — הסרת המפתח גם מהחשבון (ביטול = הסרה מהמכשיר בלבד):';
+    const p=window.prompt(msg); if(!p) return {ok:false,error:'cancelled'};
+    return _rpc('auth_set_api_key',{p_username:u.username,p_password:p,p_api_key:k||''});
+  }
 
   function renderAuthSection(){
     const u=getCurrentUser();
@@ -6872,7 +6922,7 @@ function clearChat(){S.chat=[];chatLoading=false;save();render();}
     subscribeAuthEvents,
     _authDoLogin:_doLogin, _authDoRegister:_doRegister,
     _authDoChangePwd:_doChangePwd, _authDoLogout:_doLogout,
-    _authSwitchTab:_switchTab,
+    _authSwitchTab:_switchTab, _authSyncApiKey:_syncApiKey,
   });
 })();
 
@@ -6987,8 +7037,11 @@ function applyRestorePayload(rowData){
   if(Array.isArray(rowData._sessions))lsSet('samega_sessions',rowData._sessions.slice(-30));
   // v10.64.48: restore the user's Anthropic API key from the bundle.
   // typeof check keeps backward compat with legacy backups that don't have _apikey.
-  // Empty string explicitly clears (parity with setApiKey('')).
-  if(typeof rowData._apikey==='string')setApiKey(rowData._apikey);
+  // v10.64.160 (#354 Codex P2): FILL-ONLY — a backup _apikey is by definition
+  // pre-.158-stale (new backups no longer carry it), so it must never clobber
+  // a present key (login already restored the fresher account copy). It only
+  // fills the true fresh-device case where no key exists yet.
+  if(typeof rowData._apikey==='string'&&!getApiKey())setApiKey(rowData._apikey);
   const allowed=Object.keys(S);
   const validated={};
   for(const k of allowed){
@@ -7298,8 +7351,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.159';
+const APP_VERSION='10.64.160';
 const CHANGELOG={
+'10.64.160':['fix(account): sync the Anthropic API key to the account at save time (#353). The v10.64.158 security fix removed _apikey from the cloud backup, which also killed the only WRITE path into app_users.api_key (the sync_api_key_from_backup trigger fed off backup writes) — so a key saved or rotated after .158 stayed localStorage-only and auth_login_user restored a stale or null key on the next device. Now the settings Save/Remove buttons route through _apiKeySaveFromInput / _apiKeyRemove: local save happens FIRST (never blocked by network), then for logged-in users the key is synced to the account via the existing auth_set_api_key RPC (SECURITY DEFINER, requires the password — collected with window.prompt, the same pattern as change-password). Cancel = device-only save with an explicit toast; RPC failure keeps the local save and warns; guests are a silent no-op. Empty key clears the account copy too (parity with setApiKey empty-string semantics). Origin: Codex P2 on IM #167 / FM #142, tracked as #353; sibling ports follow. Round-2 Codex P2s folded in: (a) the legacy backup _apikey restore is now FILL-ONLY — a backup _apikey is by definition pre-.158-stale, so it never clobbers a present key and only fills a true fresh device; (b) the has-key settings state gained a sync-to-account button (_apiKeySyncExisting) so a key saved before this release can be pushed to the account without remove + re-enter. Tests: tests/apikeyAccountSync.test.js pins the wiring, the local-save-before-sync order, both P2 fixes, and keeps the .158 regression locks intact. Trinity 10.64.159 to 10.64.160.'],
 '10.64.159':['feat(audit8/cert): expose data-qidx on the practice quiz stem so the chaos-doctor-v4 audit bot can capture the served question canonical corpus index. Re-opens audit-8 branch B1 (corpus-index capture), CLOSED in R2 only because the instrument did not record the index: the analyzer index-aware join now resolves WHICH byte-identical-stem dup-group member was served, recovering covariate t (exam provenance) that the stem-hash join key alone cannot carry. APP CHANGE IS A SINGLE DATA ATTRIBUTE — zero behavior change; the bot capture and the analyzer joinRow qIdx fast-path are scripts-only. The index is trusted only when it is a member of the served stem hash bucket (consistency cross-check, bilingual-safe, degrades to the bucket join on gross drift); member-level integrity rests on deployed-corpus equals analysis-corpus (gate P5). Pre-registered in docs/AUDIT8_G5_REPAIR_GATE.md section CERT; offline-validated by tests/audit8CorpusIndexCapture.test.js (RED-proof: same fixture, qIdx presence flips t from STOP-JOIN-NONDETERMINABLE to determinate; plus backward-compat that a no-qIdx ledger routes the unchanged verdict). HONEST CAVEAT: resolving t is necessary-but-not-sufficient for REPRESENTATIVE — R3 had Ndrop=38 below the locked G2 floor of 80 and drop volume is independent of qIdx, so the fresh bounded run likely routes INCONCLUSIVE (t resolved, drop channel under-powered) rather than a certification. The paid bounded run is the real-data check and is gated separately ($20 cap NOT widened). Trinity 10.64.158 to 10.64.159.'],
 '10.64.158':['fix(security): stop cloud-syncing the Anthropic API key and close the OnCall AI-explanation XSS. SECRET EXPOSURE (P0, confirmed against the live SQL): backup_get / backup_set are SECURITY DEFINER with no caller-identity check, so the synced backup blob, which included _apikey, was readable by anyone who could guess a user_NAME id using only the public anon key (the v10.64.50 changelog assumed RLS kept the row private, but DEFINER bypasses RLS). Since auth_login_user already returns api_key on a password-checked login, syncing it in the backup was redundant. Removed _apikey from the cloudBackup payload so new backups no longer carry the secret; the restore-read path stays for backward compatibility and login still restores the key, so no feature is lost. Existing rows scrubbed server-side separately. The remaining backup access-control gap (reading or overwriting another user low-sensitivity progress blob) is tracked for a token-bound RPC fix and is NOT closed here. XSS (P1): renderOnCall rendered the cached AI explanation string raw via innerHTML, and runExplainOnCall stores a bare string in _exCache while renderExplainBox stores an object, so OnCall both rendered unescaped and mismatched the schema. Now extracts the text from either shape and sanitizes before render, fixing the XSS and the blank or object-Object mismatch. New tests/apikeyExposureGuard.test.js pins both. Findings from a ChatGPT Pro comprehensive review; F-01 confirmed via the actual RPC definitions over Supabase MCP. Trinity 10.64.157 to 10.64.158.'],
 '10.64.157':['fix(security): escape untrusted question content at every render sink, plus remove dead background-sync. STORED-XSS HARDENING: AI-generated questions (approveGeneratedQ) and imported custom questions (samega_custom_qs / addAiChapterQs) were stored RAW and rendered without escaping at four stem sinks (flashcard flip ~2412, sudden-death path ~3191, main _rqmQuestion ~3238, bookmark row ~5974), the sudden-death option buttons, and the question image src at two sinks (~3194 and ~3240). A crafted img-onerror or markup payload inside an imported question pack could execute when the question was shown. FIX: every stem, sudden-death option, and image sink is now wrapped in sanitize() (matching the option-image sanitize that already existed), and uploadQImage now clamps the uploaded-file extension to an alphanumeric allowlist so a crafted filename cannot reach q.img. The explanation and AI-autopsy surfaces were already per-line sanitized, so no change there. Zero dataset content contains real HTML markup (every angle bracket in stems and explanations is a clinical comparison operator such as FeNa less-than 1 percent), so escaping renders every stem and operator correctly with nothing legitimate broken. New tests/renderSinkXssGuard.test.js source-scans the sinks and pins the sanitize wrapping. SW DEAD CODE: removed the background-sync block in sw.js. No page code ever registered the supabase-backup tag or wrote pending_sync, so the handler could never fire, and the retry sent only the apikey header while the live backup_set RPC sends apikey plus Authorization. Removed the three misleading serviceWorker.test.js assertions that only proved the dead strings existed and replaced them with a guard that pins the removal. Findings verified at file:line from a ChatGPT Medical-GitHub-Auditor review, then independently confirmed against source. Trinity 10.64.156 to 10.64.157.'],

@@ -20,8 +20,8 @@ describe('F-02 — API key is not cloud-synced', () => {
     expect(html).not.toMatch(/_bundled\s*=\s*\{[^}]*_apikey[^}]*\}/);
   });
 
-  it('still restores _apikey from legacy backups (backward-compat read kept)', () => {
-    expect(html).toContain("if(typeof rowData._apikey==='string')setApiKey(rowData._apikey);");
+  it('still restores _apikey from legacy backups — but FILL-ONLY (never clobbers a present key, #354 P2)', () => {
+    expect(html).toContain("if(typeof rowData._apikey==='string'&&!getApiKey())setApiKey(rowData._apikey);");
   });
 });
 
