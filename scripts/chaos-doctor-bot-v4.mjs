@@ -49,6 +49,7 @@ import { fileURLToPath } from 'node:url';
 import { extractJson } from './lib/extractJson.mjs';
 import { hashStem, normStem } from './lib/hashStem.mjs';
 import { judgeWithShapeRetry } from './lib/judgeShapeValidator.mjs';
+import { pickWithShapeRetry, letterFor } from './lib/pickParse.mjs';
 import {
   resolveAppVerdict,
   resolveJudgeLetter,
@@ -236,7 +237,11 @@ async function callClaude(systemPrompt, userPrompt, { maxTokens = 400, retries =
 // extractJson is imported from ./lib/extractJson.mjs (above) so unit tests
 // don't have to load the playwright runtime.
 
-const LETTER_TO_IDX = { A: 0, B: 1, C: 2, D: 3, a: 0, b: 1, c: 2, d: 3, 'א': 0, 'ב': 1, 'ג': 2, 'ד': 3 };
+// Pick-letter parsing now lives in ./lib/pickParse.mjs (audit-8 G5(a)):
+// a layered parser + optCount-sized letter table + corrective retry that
+// recovers the truncated/malformed/5-option drop classes the old inline
+// `LETTER_TO_IDX[…]` lookup dropped. `letterFor(i)` (imported above)
+// replaces the hardcoded `'ABCD'[i]` so 5-option (GRS8) labels render E.
 
 // ============================================================
 // Question / answer extraction (v4 targeted)
@@ -487,22 +492,31 @@ async function doctorOneQuestion(page, workerId, log) {
   const stemHash = hashStem(normStem(q.stem));
   await sleep(rand(2000, 4500)); // read pause
 
-  // 1) Pick
-  const userPrompt1 = `שאלה:\n${q.stem}\n\nאפשרויות:\n${q.options.map((o, i) => `${'ABCD'[i]}. ${o.text}`).join('\n')}\n\nWhich is correct?`;
-  let pickResp;
-  try { pickResp = await callClaude(SYS_DOCTOR_PICK, userPrompt1, { maxTokens: 250 }); }
-  catch (e) {
-    log.bugs.push({ at: nowIso(), type: 'ai-error', context: 'pick', dropCtx: 'pick-ai-error', message: e.message, stemHash });
+  // 1) Pick — audit-8 G5(a): layered parser + exactly-one corrective retry
+  // (scripts/lib/pickParse.mjs). The terminal ai-parse-error/pick drop now
+  // fires ONLY after the retry; its row schema is byte-identical to the
+  // pre-G5a shape (§3.1 schema-invariance: type/context/dropCtx/text/
+  // stemHash/qIdx/stem/optCount). `letterFor(i)` renders E for 5-option Qs.
+  const userPrompt1 = `שאלה:\n${q.stem}\n\nאפשרויות:\n${q.options.map((o, i) => `${letterFor(i)}. ${o.text}`).join('\n')}\n\nWhich is correct?`;
+  const pickResult = await pickWithShapeRetry({
+    system: SYS_DOCTOR_PICK,
+    userPrompt: userPrompt1,
+    callClaude,
+    maxTokens: 250,
+    optCount: q.options.length,
+  });
+  if (pickResult.failed) {
+    if (pickResult.reason === 'api-error') {
+      log.bugs.push({ at: nowIso(), type: 'ai-error', context: 'pick', dropCtx: 'pick-ai-error', message: pickResult.message, stemHash });
+    } else {
+      log.bugs.push({ at: nowIso(), type: 'ai-parse-error', context: 'pick', dropCtx: 'pick-parse-error', text: (pickResult.raw || '').slice(0, 200), stemHash, qIdx: q.qIdx, stem: q.stem.slice(0, 300), optCount: q.options.length });
+    }
     return { advanced: false, stemHash };
   }
-  const pickJson = extractJson(pickResp.text) || {};
-  const aiLetter = String(pickJson.pick || '').trim().slice(0, 1);
-  const aiIdx = LETTER_TO_IDX[aiLetter];
-  log.actions.push({ at: nowIso(), type: 'ai-pick', letter: aiLetter, idx: aiIdx, conf: pickJson.confidence });
-  if (aiIdx == null || aiIdx < 0 || aiIdx >= q.options.length) {
-    log.bugs.push({ at: nowIso(), type: 'ai-parse-error', context: 'pick', dropCtx: 'pick-parse-error', text: pickResp.text.slice(0, 200), stemHash, qIdx: q.qIdx, stem: q.stem.slice(0, 300), optCount: q.options.length });
-    return { advanced: false, stemHash };
-  }
+  const pickJson = pickResult.obj || {};
+  const aiLetter = pickResult.letter;
+  const aiIdx = pickResult.idx;
+  log.actions.push({ at: nowIso(), type: 'ai-pick', letter: aiLetter, idx: aiIdx, conf: pickJson.confidence, recovered: pickResult.recovered });
 
   // Click option + check (Geri uses button.qo + onclick="pick(N)" — no data-i)
   const optBtn = page.locator('button.qo').nth(aiIdx);
@@ -588,7 +602,7 @@ async function doctorOneQuestion(page, workerId, log) {
 ${q.stem}
 
 Options:
-${q.options.map((o, i) => `${'ABCD'[i]}. ${o.text}`).join('\n')}
+${q.options.map((o, i) => `${letterFor(i)}. ${o.text}`).join('\n')}
 
 App's claimed correct answer: ${appLetter} (${appText})
 App's explanation:
@@ -630,7 +644,7 @@ Validate the APP's claimed answer ${appLetter} (${appText}) against board-level 
   // (75% noise reduction). Only fires when explanation text is available.
   let explainJson = null;
   if (explanation && explanation.length > 50) {
-    const lettered = q.options.map((o, i) => `${'ABCD'[i]}. ${o.text}`).join('\n');
+    const lettered = q.options.map((o, i) => `${letterFor(i)}. ${o.text}`).join('\n');
     const userPromptExplain = `Question (Hebrew):
 ${q.stem}
 
