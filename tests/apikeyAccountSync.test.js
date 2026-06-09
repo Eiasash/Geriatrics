@@ -60,8 +60,16 @@ describe('#353 — API-key account sync wiring', () => {
 
   it('v10.64.158 regression locks stay intact (no _apikey back in the backup payload)', () => {
     expect(html).not.toMatch(/_bundled\s*=\s*\{[^}]*_apikey[^}]*\}/);
-    // Login restore + legacy backup restore both survive the wiring change.
+    // Login restore survives; legacy backup restore is FILL-ONLY (#354 P2) —
+    // a backup _apikey is pre-.158-stale and must never clobber a present key.
     expect(html).toContain("if(typeof r.api_key==='string') setApiKey(r.api_key);");
-    expect(html).toContain("if(typeof rowData._apikey==='string')setApiKey(rowData._apikey);");
+    expect(html).toContain("if(typeof rowData._apikey==='string'&&!getApiKey())setApiKey(rowData._apikey);");
+  });
+
+  it('has-key state offers a sync-to-account button for logged-in users (#354 P2)', () => {
+    expect(html).toContain('onclick="_apiKeySyncExisting()"');
+    const fn = html.slice(html.indexOf('async function _apiKeySyncExisting'), html.indexOf('async function _apiKeyRemove'));
+    expect(fn).toContain('const k=getApiKey()');
+    expect(fn).toContain('window._authSyncApiKey(k)');
   });
 });
