@@ -214,3 +214,38 @@ test files pass.
 Branch `claude/term-audit8-g5a-pickparse` → PR to `main`. **NO self-merge** —
 `docs/AUDIT8*` is an audit-evidence path. CI green + Codex review (cross-model
 independence) → **Eias merges**. This PR opening is the un-hold trigger.
+
+---
+
+## EXECUTION RECORD — appended 2026-06-09 (post-merge; append-only marker, no retro-edits above)
+
+**Shipped:** PR **#355** (`9fac2de`, Eias-merged after CI green incl. `claude-review`) +
+follow-up PR **#356** (`b158f68`, Eias-merged, same gates). Conformance verified against
+the merged artifacts, not the PR narration:
+
+| Gate clause | Outcome | Witness |
+|---|---|---|
+| §2 D0 fixture path | FALLBACK (CERT ledger dir absent on run machine) — synthesized fixtures per bucket; bucket×`t` cross-tab structurally established (38/38 five-option Qs are GRS8, `{4: 4259, 5: 38}`) | #355 body STEP-0/1; `data/questions.json` |
+| §3 module + retry | `scripts/lib/pickParse.mjs` — layered parse, optCount-sized letter table, numeric NOT coerced (routes to retry), EXACTLY ONE corrective retry, `callClaude` injected | `pickParse.mjs:24,62,71,130` |
+| §3 levers conditional on D0 | `letterFor(i)` shipped (justified by the 38-Q witness; used at pick/judge/explain prompts — the judge touch is labeling-only); pick `maxTokens` bump DECLINED, stays 250 | `chaos-doctor-bot-v4.mjs:500,605,647,506` |
+| §3.1 schema invariance | `ai-parse-error/pick` row byte-stable; `tests/chaosBotV4PickIdentityInstrument.test.js` UNTOUCHED since #235 (15 field pins green) | `git log -- tests/chaosBotV4PickIdentityInstrument.test.js` |
+| §4.A RED-proof | OLD inline parse replicated verbatim in the harness and shown to drop every recoverable bucket; GREEN recovery incl. exercised retry path | `tests/pickParseResilience.test.js:26-66` |
+| §6 merge discipline | NO self-merge honored — both PRs Eias-merged after CI green | #355 / #356 merge metadata |
+
+**Recorded deviation (the reason #356 exists):** the §3 pre-registered scope made the
+option LIST E-aware (`letterFor`) but did not name the `SYS_DOCTOR_PICK` contract text,
+which still mandated `"pick":"A"|"B"|"C"|"D"` — a compliant model was instructed never to
+answer E, so correct-E suppression on the 38 GRS8 questions survived at the PROMPT layer
+(Codex P2 on #355, `discussion_r3383678131`). #356 extended the contract to "exactly the
+letters shown" (A–D, or A–E when a fifth option is rendered) + Hebrew `א/ב/ג/ד/ה`,
+pinned by `tests/chaosBotV4Persona.test.js` (incl. a ratchet against the strict A–D enum
+returning). Range safety unchanged — `buildLetterTable` is optCount-sized, so an
+out-of-range E still fails resolution → retry/drop. This is a pick-side completion of the
+pre-registered `letterFor` lever justified by the same disk witness, recorded here rather
+than silently absorbed.
+
+**§4.B status: UNCHANGED — deferred.** The bounded re-cert run remains gated on an
+explicit $-decision (≤$20 cap), requires a frozen corpus snapshot with `data-qidx`
+capture, and its pre-registered criterion stands as written above. Criterion A is the
+evidence the mechanism is fixed; no `REPRESENTATIVE` claim is made or implied here.
+G5 triggers (b)/(c) remain their own gated sessions.
