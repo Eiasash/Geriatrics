@@ -362,8 +362,9 @@ async function extractExplanationAndSource(page) {
 const SYS_DOCTOR_PICK = `You are an experienced board-certified geriatrician taking the Israeli geriatric medicine board exam (Shlav A, P005-2026). Questions are in Hebrew. Your reference frame is Hazzard 8e, Harrison 22e, GRS8, and Israeli MOH regulation. You read carefully, reason step by step in your head, and answer with discipline.
 
 Output format (strict): respond with ONLY a JSON object on a single line, no markdown, no prose. Schema:
-{"pick":"A"|"B"|"C"|"D","confidence":0..100,"why":"<=200 chars terse reasoning"}
-A=index 0, B=index 1, C=index 2, D=index 3 (Hebrew labeling א/ב/ג/ד maps the same way).`;
+{"pick":"<letter>","confidence":0..100,"why":"<=200 chars terse reasoning"}
+"pick" must be EXACTLY one of the option letters shown in the question: A/B/C/D for four-option questions, or A/B/C/D/E when a fifth option E is shown.
+A=index 0, B=index 1, C=index 2, D=index 3, E=index 4 (Hebrew labeling א/ב/ג/ד/ה maps the same way).`;
 
 // v4 judge prompt — audit-3 channel (answer-correctness validation).
 // v10.64.118 redesign: split off from SYS_DOCTOR_EXPLAIN (audit-1) so each
