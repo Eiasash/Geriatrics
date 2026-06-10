@@ -15,3 +15,13 @@
 # App
 shlav-a-mega.html @Eiasash
 scripts/ @Eiasash
+
+# --- audit-evidence (no self-merge) ---
+/docs/AUDIT*                 @Eiasash
+/scripts/chaos-*             @Eiasash
+/scripts/analyze_*           @Eiasash
+/scripts/build_stemhash*     @Eiasash
+/scripts/lib/audit8*         @Eiasash
+/scripts/lib/hashStem*       @Eiasash
+/tests/chaosBot*             @Eiasash
+/tests/*audit8*              @Eiasash
