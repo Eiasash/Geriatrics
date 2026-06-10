@@ -122,3 +122,11 @@ remain separately gated and un-run.
 
 The freeze stands: any further continuation still requires its own fresh pre-registered gate,
 not an edit to this doc.
+
+## Corrections
+- 2026-06-10 (same-day staleness, Eias-authorized): the addendum above says "Bilingual
+  characterization and G5 triggers (b)/(c) remain separately gated and un-run." Trigger
+  **(b)** was closed hours later by PR **#362** (`docs/AUDIT8_G5b_RETROACTIVE_REACH.md`,
+  DOCUMENT-only as the G5 ROUTE mandates). Still un-run as of this marker: trigger **(c)**
+  and any `bilingual` characterization. Index maintenance only — no verdict change, the
+  series stays CLOSED, the freeze stands.
