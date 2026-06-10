@@ -15,6 +15,7 @@ import { describe, it, expect } from 'vitest';
 import { execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
+import { withDerivedFilesLock } from './_helpers/derivedFilesLock.js';
 
 const require = createRequire(import.meta.url);
 const ROOT = resolve(import.meta.dirname, '..');
@@ -138,24 +139,27 @@ describe('jsonContentEqual — content-equal helper', () => {
 });
 
 describe('regen_derived.cjs --check (integration gate)', () => {
-  it('passes against current canonical state — no drift between canonical and derived', () => {
+  it('passes against current canonical state — no drift between canonical and derived', async () => {
     // This is the CI gate. If a future PR mutates data/questions.json without
     // regenerating syllabus_data.json + regulatory.json + question_chapters.json,
     // this test fails — exactly the safety net that would have caught PR #258's
     // shipped 19/46 stale denominators.
     //
     // execSync throws non-zero exit codes as exceptions; that's the assertion.
-    expect(() => {
-      execSync('node scripts/regen_derived.cjs --check', {
-        cwd: ROOT, stdio: 'pipe', timeout: 30000,
-      });
-    }).not.toThrow();
+    await withDerivedFilesLock(ROOT, async () => {
+      expect(() => {
+        execSync('node scripts/regen_derived.cjs --check', {
+          cwd: ROOT, stdio: 'pipe', timeout: 30000,
+        });
+      }).not.toThrow();
+    });
   }, 35000);
 
   it('is non-mutating: deletes files the regen created when target was absent before (Codex P2 PR #259)', async () => {
     // Codex P2 catch: if a derived file is missing before --check runs, the
     // taggers will create one, and the finally block must delete it again so
     // the worktree is left in its pre-check state.
+    await withDerivedFilesLock(ROOT, async () => {
     const fs = await import('node:fs');
     const REG_PATH = resolve(ROOT, 'data', 'regulatory.json');
     if (!fs.existsSync(REG_PATH)) {
@@ -181,5 +185,6 @@ describe('regen_derived.cjs --check (integration gate)', () => {
     } finally {
       fs.writeFileSync(REG_PATH, snapshot);
     }
+    });
   }, 35000);
 });
