@@ -357,3 +357,12 @@ certifiable as real nor dismissible** at this power.
   defect. **No `q.c` flip, no `broken` change, no auto-rerun.** The `bilingual` flag, if pursued,
   is its own separately-gated characterization session (and per G5 ROUTE, would need a power
   argument the $20 cap does not provide). G5 triggers (b)/(c) remain their own gated sessions.
+
+## Corrections
+- 2026-06-10: The bilingual-mechanism paragraph above states the recovered drops were
+  "disproportionately mono (Hebrew-only)." That is inverted. Bilingual's share of drops
+  FELL 31.9% -> 16.7%, which forces the recovered (drop->retain) questions to have been
+  disproportionately BILINGUAL (~10 of the 17 recovered, from the figures above), not mono.
+  The contingency table [[5,25],[578,593]] already carries the correct values; only the
+  prose gloss was wrong. Mechanism narrative only — does not change the verdict (still
+  BIASED; bilingual under-powered, n=5).
