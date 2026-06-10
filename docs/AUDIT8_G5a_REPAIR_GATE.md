@@ -249,3 +249,111 @@ explicit $-decision (≤$20 cap), requires a frozen corpus snapshot with `data-q
 capture, and its pre-registered criterion stands as written above. Criterion A is the
 evidence the mechanism is fixed; no `REPRESENTATIVE` claim is made or implied here.
 G5 triggers (b)/(c) remain their own gated sessions.
+
+---
+
+## §4.B BOUNDED RE-CERT RESULT — appended append-only 2026-06-10
+
+**Append-only** (`feedback_spec_provenance_append_only`); numbers inlined (gitignored run
+dir is not the review surface). Every figure is from the frozen analyzer JSON, not narration
+(`feedback_verify_mechanism_claims_not_assert`).
+
+### Run provenance
+Bounded run `chaos-reports/v4-long/audit8g5a_recert_20260609T221558Z/` (gitignored). 1 worker,
+`claude-sonnet-4-6`, Toranot proxy, **8 h wall** (22:16:30 → 06:16:40 UTC), `CHAOS_REPORT_RATE=0`
++ `CHAOS_FEEDBACK_RATE=0`, **`CHAOS_COST_CAP_USD=20` NOT widened**. Actual spend **$19.21**,
+**4023 calls**, 3,181,485 + 644,116 tokens, **0 failures**. Bot = `main` @ `736b78d`
+(#355 `pickParse` + #356 E-contract + #357 record). Authorization: Eias "go for it" (the §4.B
+$-decision). Pre-flight smoke `audit8g5a_smoke_20260609T210443Z` ($0.20, 13 judged, 12/13 qIdx,
+0 fail) cleared the gate; predictions + overturn conditions were locked in `…_PRELAUNCH_…md`
+BEFORE launch (`feedback_prewritten_predictions`). Run-start corpus snapshotted to
+`corpus_runstart_c34cc4e0776cd256.json` (4297 rows). Analyzer:
+`node scripts/analyze_pick_representativeness.mjs --report-dir <run-dir>` → schema
+`audit8-representativeness-result/1`.
+
+### Corpus identity — P5 held natively (no drift this run)
+`corpusIdentity.recordedSha == currentSha == c34cc4e0…806` (= `data/questions.json` at `main`
+`736b78d`, unchanged through the 8 h). `qIdxTrusted=true`; all 6 covariates determinate
+**1201/1201** (`g3d3.violations=[]`, `joinFailDrop=0`, `joinFailRetain=0`). `STOP-JOIN-
+NONDETERMINABLE` not reached. **Overturn O3 (instrument regression) NOT triggered.**
+
+### VERDICT: `BIASED` — but the biased axis MOVED from `t` to `bilingual`
+
+| covariate | test | pAdj (Holm) | effect | floor | Holm-reject | **biasSignal** | vs CERT (`2b26d358`) |
+|---|---|---|---|---|---|---|---|
+| **t** | chi²-2×k | **0.0102** | **V=0.087** | 0.10 | true | **false** | was V=0.190, biasSignal=**true** |
+| **bilingual** | Fisher 2×2 `[[5,25],[578,593]]` | **0.0016** | **φ=0.102** | 0.10 | true | **true** | was φ=0.068, pAdj=0.099, **no signal** |
+| stem_len | Mann-Whitney-U | 0.156 | δ=0.208 | 0.15 | false | false | — |
+| topic_group | chi²-2×k | 0.665 | V=0.028 | 0.10 | false | false | — |
+| c_accept | Fisher 2×2 | 1.0 | φ=0.019 | 0.10 | false | false | — |
+
+`broken` vacuous (`brokenServed=0`); logistic SENSITIVITY-ONLY (non-converged, `max-iter`).
+`biasSignal = holmReject && meetsFloor` (analyzer L389).
+
+### HONEST READING — do not over- or under-claim (`feedback_claim_within_evidence`)
+
+**1. The G5(a) lever achieved its NAMED target on the verdict-relevant axis.** The CERT's
+`BIASED`-on-`t` signal is **gone**: `t`'s effect collapsed **V=0.190 → 0.087**, below the 0.10
+decision floor, so `t.biasSignal` flipped **true → false**. Corroborating mechanism wins:
+drops fell **47 → 30**; the **5-option E-suppression drop subclass is eliminated** (drop
+`optCount` dist `{4:30}` — zero five-option drops; 12 five-option questions judged with **E
+picks landing**, confirming #356's contract works). No temporal bifurcation
+(`temporalBins.detected=false`, 96 buckets). **Overturn O2 (my pre-registered falsifier:
+"`t` Holm-rejected AND effect ≥ floor") NOT triggered** — `t`'s effect is below floor.
+
+**2. BUT the §4.B criterion is NOT cleanly met as written, and the aggregate is still
+`BIASED`.** Two reasons it is not a clean pass:
+   - The criterion arm 1 is *"`t` no longer in the Holm-reject set."* `t` **still raw-Holm-
+     rejects** (pAdj=0.0102) — only its *effect* fell below floor. Literally, arm 1 is not met.
+   - Arm 2 (*"Ndrop falls far enough the channel cannot carry the skew"*) is not met either:
+     the channel still carried a skew — a **new `bilingual` signal** emerged (φ=0.102, *0.002*
+     over the floor; pAdj=0.0016).
+
+**3. The `bilingual` signal is UNDER-POWERED and must not be leaned on.** `g2.powered=false`
+(`Ndrop=30 < 80`). The bilingual 2×2 is `[[5,25],[578,593]]` — only **5 bilingual questions in
+the entire 30-row drop channel**. φ=0.102 clears the 0.10 floor by 0.002 at n=30 — it *fires
+the decision rule* but, per the CERT's guardrail #2, is **not a magnitude to lean on** and is
+**not certifiable as a real bias** (guardrail #1: absence/presence of a covariate signal at
+n=30 is power-bound). Mechanistically it is a *direction-flip artifact of the `t` de-bias*:
+the recovered drop classes were disproportionately mono(Hebrew-only), so bilingual questions
+became even more under-represented in the (smaller) drop channel (drop-bilingual rate
+31.9 % → 16.7 %; retain-bilingual rate ~49.4 % unchanged), sharpening a contrast that was a
+sub-threshold near-miss in CERT. Whether it is a real bilingual-surface effect or small-n
+instability **cannot be resolved within the closed $20 / Ndrop<80 budget**.
+
+### STATUS vs the pre-registered §4.B power-honesty clause
+This is precisely the pre-registered honest outcome for the **targeted** axis: *"drop volume
+reduced + no residual `t` *signal* at achievable power,"* **NOT** `REPRESENTATIVE` proven
+(unreachable — `Ndrop=30 < 80`, cap forbidden to widen). It additionally surfaces a **new,
+under-powered `bilingual` flag** that is outside the `t`-scoped criterion and is **neither
+certifiable as real nor dismissible** at this power.
+
+### Predictions scorecard (locked pre-launch)
+- **P1** (Ndrop 47→<15): **MISS (magnitude)** — fell to 30. Directionally correct (drops down),
+  point estimate too optimistic.
+- **P2** (verdict off Holm-reject-on-`t`): **PARTIAL** — `t.biasSignal` off (effect<floor), but
+  `t` still raw-rejects and the aggregate verdict is still BIASED (on `bilingual`).
+- **P3** (no pre-pick-skip / no bifurcation): **HIT** on bifurcation (none); minor note —
+  `N_pre_pick_skip_excluded=5`, `N_extractNull_counter=5` (CERT 0/0), properly G4.1-excluded.
+- **P4** (5-option E-picks parse + judged): **HIT** — 12 five-option rows judged, E picks land,
+  0 five-option drops.
+- **O1** (Ndrop≥47, fix ineffective): NOT triggered (30<47). **O2** NOT triggered (effect<floor).
+  **O3** NOT triggered (qIdxTrusted=true).
+
+### Ledger (inlined)
+`Ndrop=30`, `Nretain=1171`, `N_ai_error_pick_separate=0`, `N_pre_pick_skip_excluded=5`,
+`N_extractNull_counter=5`, `N_appIdxNull_excluded=1`. Family =
+`[stem_len, topic_group, t, bilingual, c_accept]`; `broken` vacuous.
+
+### BOTTOM LINE
+- **G5(a) lever — works on its target.** `t`/provenance bias **signal eliminated** (V 0.190→0.087,
+  below floor; biasSignal true→false); 5-option E-suppression drop subclass **gone**; drops 47→30.
+- **§4.B criterion — NOT cleanly met.** `t` still raw-Holm-rejects (effect below floor only); the
+  aggregate verdict is **still `BIASED`**, now on an **under-powered `bilingual` near-miss-turned-
+  signal** (φ=0.102, 5-count drop cell, Ndrop=30<80) that this budget cannot adjudicate.
+- **NOT `REPRESENTATIVE`** — unreachable at the locked cap; quiet covariates remain underpowered,
+  not proven clean.
+- **Scope unchanged** — this is the bot's pick-parse drop channel, NOT a content/answer-key
+  defect. **No `q.c` flip, no `broken` change, no auto-rerun.** The `bilingual` flag, if pursued,
+  is its own separately-gated characterization session (and per G5 ROUTE, would need a power
+  argument the $20 cap does not provide). G5 triggers (b)/(c) remain their own gated sessions.
