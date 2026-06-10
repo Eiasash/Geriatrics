@@ -24,6 +24,12 @@ Single-file Hebrew RTL PWA for Israeli geriatrics board exam prep (שלב א׳).
 **Live:** `eiasash.github.io/Geriatrics/shlav-a-mega.html` (GitHub Pages)
 **Version:** 9.7 (Apr 2026)
 
+## Current State (2026-06-11)
+- **APP_VERSION:** 10.64.164
+- **Question count:** 4,297 in `data/questions.json`
+- **Top-level function count:** 227 (`^function ` in `shlav-a-mega.html`)
+- **Latest changelog:** v10.64.164 flips idx 4043 hypertension target `c:0 -> 3` after PR #369 near-miss review; package, HTML `APP_VERSION`, and `sw.js` cache all bumped together.
+
 ## Architecture
 - **Single HTML file** (`shlav-a-mega.html`, ~95KB, ~1,427 lines) contains ALL JS and CSS
 - **Data split (v9.7):** Question data and other JSON moved to `data/` directory, lazy-loaded at runtime
