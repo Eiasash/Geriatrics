@@ -99,3 +99,26 @@ gate caps at $20). Not a defect — a declared boundary.
 
 **The series is closed. Re-opening any arm requires a fresh pre-registered gate, not an
 edit to this doc.**
+
+---
+
+## Addendum — forward pointer (authorized exception, 2026-06-10)
+
+This single dated pointer is an explicit, Eias-authorized exception to the "not an edit to
+this doc" freeze above. It reopens nothing and changes no verdict — it only records, for
+discoverability, that a parked lever was later run as its own fresh pre-registered gate
+(which is exactly what the freeze requires for any continuation).
+
+- G5(a) bounded section-4.B re-cert RESULT — `docs/AUDIT8_G5a_REPAIR_GATE.md` (PR #358)
+- Dated correction marker on that RESULT — PR #359
+
+Outcome, which does not alter this series' terminal CERT verdict: G5(a) removed the
+five-option E-suppression drop subclass and cut drops from 47 to 30; `t`'s effect fell below
+the 0.10 floor (signal removed) but `t` still raw-Holm-rejects (pAdj=0.010), so the aggregate
+stayed BIASED — now on an under-powered `bilingual` flag (Ndrop=30, only 5 bilingual in the
+drop channel; treated as a de-bias redistribution artifact, not a new finding). Not
+REPRESENTATIVE (held under the cost cap). Bilingual characterization and G5 triggers (b)/(c)
+remain separately gated and un-run.
+
+The freeze stands: any further continuation still requires its own fresh pre-registered gate,
+not an edit to this doc.
