@@ -2,6 +2,7 @@
 
 Israeli geriatrics board-exam study PWA. Live: https://eiasash.github.io/Geriatrics/
 Stack: SINGLE-FILE HTML PWA, **no build** — the whole app is `shlav-a-mega.html` (~8,560 lines, vanilla JS). Data in `data/*.json`. Hebrew RTL.
+Current release: `10.64.164`; question count: 4,297.
 
 ## Setup & commands
 ```bash
