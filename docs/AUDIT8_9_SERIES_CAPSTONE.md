@@ -99,3 +99,43 @@ gate caps at $20). Not a defect — a declared boundary.
 
 **The series is closed. Re-opening any arm requires a fresh pre-registered gate, not an
 edit to this doc.**
+
+---
+
+## POST-CLOSE ADDENDUM — 2026-06-10 (index pointer only; the series stays CLOSED)
+
+This addendum does **not** re-open any arm of the series. G5 **trigger (a)** was
+subsequently executed under its own fresh pre-registered gate — exactly the mechanism the
+closing sentence above requires — and this pointer exists so the capstone's index stays
+truthful. It re-derives nothing; every claim points to the on-main artifact.
+
+**G5 trigger (a) — EXECUTED.** Gate + execution record + bounded re-cert RESULT + dated
+correction, all in `docs/AUDIT8_G5a_REPAIR_GATE.md`:
+- Pre-registered gate + fix: PR **#355** (`pickParse.mjs` layered parse + one corrective
+  retry + optCount-sized letter table + `letterFor`) and PR **#356** (`SYS_DOCTOR_PICK`
+  contract permits E on the 38 five-option GRS8 questions — Codex P2).
+- Execution record (conformance vs the pre-registration, one recorded deviation): PR **#357**.
+- §4.B bounded re-cert RESULT (8 h, $19.21, cap NOT widened, frozen analyzer): PR **#358**.
+  **Post-fix state:** `t`'s bias **signal removed** (Cramér's V 0.190 → **0.087**, below the
+  0.10 floor; `biasSignal` true→false; `t` still RAW-Holm-rejects at pAdj=0.0102); drops
+  **47 → 30**; the five-option E-suppression drop subclass **eliminated**; **aggregate verdict
+  still `BIASED`** — now on an **under-powered `bilingual`** flag (φ=0.102, 0.002 over floor,
+  5-count drop cell, `Ndrop=30 < 80`), not certifiable as real or spurious at the closed
+  budget. `REPRESENTATIVE` remains unreachable (cap closed). Scope guardrail unchanged:
+  drop-channel property, NOT a content/answer-key defect.
+- Dated correction marker (bilingual-artifact direction prose was inverted; tables were
+  always correct): PR **#359**.
+
+**Terminal-verdict scope note.** The "Terminal verdict" section above remains the truthful
+record of the series-close state (CERT run, corpus `2b26d358…`). The G5(a) re-cert is a
+**separate post-fix snapshot** (corpus `c34cc4e0…`); it supersedes nothing in this doc — the
+two verdicts answer different questions (pre-fix vs post-fix channel behavior).
+
+**Still NOT done (unchanged):** G5 triggers **(b)** and **(c)** — their own gated sessions;
+the **`bilingual`** characterization, if ever pursued, is likewise its own gated session and
+needs a power argument the $20 cap does not provide.
+
+| Addendum artifact | Where |
+|---|---|
+| G5(a) gate + execution record + §4.B RESULT + correction | `docs/AUDIT8_G5a_REPAIR_GATE.md` (#355–#359) |
+| Pick-parse module + harness | `scripts/lib/pickParse.mjs`, `tests/pickParseResilience.test.js`, `tests/chaosBotV4PickDropInvariant.test.js` |
