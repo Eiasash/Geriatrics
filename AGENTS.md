@@ -1,52 +1,30 @@
-# AGENTS.md — Cloud development notes
+# AGENTS.md — Shlav A Mega (Geriatrics, שלב א)
 
-## Cursor Cloud specific instructions
+Israeli geriatrics board-exam study PWA. Live: https://eiasash.github.io/Geriatrics/
+Stack: SINGLE-FILE HTML PWA, **no build** — the whole app is `shlav-a-mega.html` (~8,560 lines, vanilla JS). Data in `data/*.json`. Hebrew RTL.
 
-### Product
+## Setup & commands
+```bash
+npm ci
+npm test           # vitest only (no build step)
+npm run verify     # full pre-push gate incl. scripts/check-version-sync.py. MUST pass before any PR.
+```
+To dev: just open/edit `shlav-a-mega.html`. Windows/git-bash: `encoding='utf-8'` for Python.
 
-Single-file PWA (`shlav-a-mega.html`) for Israeli geriatrics board exam prep. No production build step — static files + lazy-loaded `data/*.json`. See `CLAUDE.md` for full architecture.
+## HARD RULES (do not violate)
+1. **Branch `codex/<slug>` → PR. NEVER push to `main`** (Pages deploys `main`).
+2. **Version TRINITY — bump all three together:** `package.json` "version", `const APP_VERSION` in `shlav-a-mega.html` (~line 7354), `sw.js` `CACHE='shlav-a-v<ver>'`. Enforced by `check-version-sync.py`.
+3. **Question/answer edits:** quote the source (Hazzard 8e primary; Harrison 22e cross-ref) before the edit — never fabricate/paraphrase option text. **NEVER import medexams or any paywalled bank — PUBLIC repo = unlawful republication.**
+4. **Hebrew RTL:** UTF-8 as-is, never transliterate; `dir="auto"` + `unicode-bidi:plaintext`.
+5. **Shared files** `shared/fsrs.js` + `harrison_chapters.json` are byte-identical across the 3 medical PWAs — don't diverge.
 
-### Required local services
+## Data & state
+- `data/questions.json` (4,297 Qs) schema: `{q, o[], c, t, ti, ref, tis}`. Topics: `TOPICS[46]` (from `data/topics.json`); `q.ti` = primary topic index, `q.tis[]` = multi-topic.
+- State: localStorage object `S = {qOk, qNo, sr:{}, ck:{}, ...}`. `S.qOk/S.qNo` = total correct/wrong; `S.sr[qIdx]` = FSRS `{ef, n, ok, tot, ...}` keyed by question array index.
+- Views: tabs from `data/tabs.json` → `renderTabs()` (#tb) → `render()` `switch(tab){...}`. Track tab already has KPI cards + a 46-topic mastery heatmap + a year×topic weak-spots map. (A per-topic accuracy list + radar/ROI chart were deliberately removed as redundant — don't re-add.)
 
-| Service | Purpose | Command |
-|---------|---------|---------|
-| Static HTTP server | Serve the PWA + JSON data | `python3 -m http.server 3737` |
-| Node.js + npm | Tests and verify gate | `npm ci` then `npm test` / `npm run verify` |
+## Adding questions (only legit path)
+`scripts/gen_highyield.mjs` (Toranot proxy, grounded in Hazzard + guidelines, tag `AI-2026-hy`) → untracked output → `verify_questions.mjs` + blind audit → physician review before merge. NEVER copy external/paywalled questions.
 
-**Optional (not needed for core dev):** Supabase cloud sync, Toranot AI proxy, Playwright (chaos bots only).
-
-### Standard commands
-
-| Task | Command |
-|------|---------|
-| Install deps | `npm ci` |
-| Dev server | `python3 -m http.server 3737` → open `http://localhost:3737/shlav-a-mega.html` |
-| Alt dev server (Vite HMR) | `npm run dev` (same port 3737) |
-| Tests only | `npm test` |
-| Pre-push gate (lint + tests) | `npm run verify` |
-
-There is no ESLint/Prettier. `npm run verify` is the static-analysis + test gate (7 checks: Node syntax, 5× Python audits, Harrison baseline, Vitest).
-
-### System dependencies
-
-- **Node.js** 18+ (CI uses 20; cloud VM has 22)
-- **Python 3** — stdlib only, no venv or `requirements.txt`
-- **Playwright Chromium** — only if running `npm run chaos` or `scripts/chaos-doctor-bot-v4.mjs`; install with `npx playwright install --with-deps chromium`
-
-### Dev server gotchas
-
-1. **Help overlay on first load** — `showHelp()` auto-opens `#help-overlay` at z-index 9999. Dismiss with Escape before clicking quiz options (chaos bots do this automatically).
-2. **Data load is async** — wait for console message `Data loaded: N questions, 46 notes` before interacting with the quiz.
-3. **tmux for long-running server** — start the HTTP server in a tmux session so it survives across shell commands:
-   ```bash
-   tmux -f /exec-daemon/tmux.portal.conf new-session -d -s geri-dev-server -c /workspace -- bash -l
-   tmux -f /exec-daemon/tmux.portal.conf send-keys -t geri-dev-server:0.0 'python3 -m http.server 3737' C-m
-   ```
-4. **Version trinity** — `package.json` `version`, `APP_VERSION` in `shlav-a-mega.html`, and `CACHE` in `sw.js` must stay aligned on every release.
-
-### Hello-world smoke test
-
-1. Open `http://localhost:3737/shlav-a-mega.html`
-2. Dismiss help overlay (Escape)
-3. Click a quiz answer option (`button.qo`)
-4. Click "בדיקה" (check answer) — expect green border on correct option + explanation
+## Good first tasks
+Mobile-RTL UI fixes (overflow/contrast-AA/tap-targets/dark mode); add a correct/wrong/unanswered progress **donut** to the Track tab (only genuinely-missing visual; don't duplicate the heatmap). Report each change.
