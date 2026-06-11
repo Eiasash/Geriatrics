@@ -109,9 +109,11 @@ describe('v10.64.60 render-site audit (ratchets)', () => {
     // 2026-05-12 (v10.64.112): floor adjusted 13 → 12 after consolidating the
     // bottom explanation panel into the autopsy block. The duplicate panel had
     // two qLang(q,'e') calls (heDir + remap); the autopsy adds one. Net -1.
+    // 2026-06-12 (v10.64.168): floor adjusted 12 → 7 after deleting the
+    // duplicate Sudden Death and On-Call render surfaces.
     // If a refactor accidentally REMOVES a qLang call without good reason, this
     // catches it. To intentionally remove one, lower this floor.
-    const FLOOR = 12;
+    const FLOOR = 7;
     expect(calls, `qLang() call count; expected ≥${FLOOR}`).toBeGreaterThanOrEqual(FLOOR);
   });
 });
@@ -121,7 +123,7 @@ describe('v10.64.60 audit — surface-area inventory (informational)', () => {
     // This is a soft test — it always passes, but emits diagnostics about
     // which surfaces still bypass qLang. Helps planning v10.64.61 scope.
     const surfaces = {
-      'flashcard reveal (renderFlash flip)': /flipRevealed[^\n]*\$\{q\.q\}/.test(html),
+      'flashcard reveal (renderFlash)': /renderFlash[\s\S]{0,900}\$\{q\.q\}/.test(html),
       'mock review block': /h\+='[^']*\$\{i\+1\}\.\s*'\+sanitize\(q\.q\)/.test(html) || /mock-review[\s\S]{0,500}sanitize\(q\.q\)/.test(html),
       'track-view bookmark display': /track-bk__row[^`]*\$\{q\.q/.test(html) || /track-bk__row[^`]*q\.q\.substring/.test(html),
       'AI autopsy prompt': /AI flagged[\s\S]{0,800}\$\{q\.q\}/.test(html) || /Question:\s*\$\{q\.q\}/.test(html),

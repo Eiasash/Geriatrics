@@ -1,22 +1,27 @@
 [
   {
     "id": "quiz",
-    "ic": "📝",
+    "ic": "Q",
     "l": "Quiz"
   },
   {
     "id": "learn",
-    "ic": "📚",
+    "ic": "S",
     "l": "Study"
   },
   {
+    "id": "search",
+    "ic": "F",
+    "l": "Search"
+  },
+  {
     "id": "track",
-    "ic": "📊",
+    "ic": "T",
     "l": "Track"
   },
   {
-    "id": "more",
-    "ic": "⚙️",
-    "l": "More"
+    "id": "settings",
+    "ic": "G",
+    "l": "Settings"
   }
 ]

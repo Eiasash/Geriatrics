@@ -159,7 +159,7 @@ input,textarea,select{font:inherit}
 .hdr p{font-size:10px;color:rgb(var(--fg2));margin-top:1px}
 /* v10.64.62 UI tidy: fade both edges of horizontally-scrollable pill rows so users see "more this way" */
 .scroll-fade-x{-webkit-mask-image:linear-gradient(to left,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);mask-image:linear-gradient(to left,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%)}
-/* v10.64.62 UI tidy: hide inline version badge on phones — version is in More tab and crowds the absolute-positioned header buttons */
+/* v10.64.62 UI tidy: hide inline version badge on phones — version remains available in Settings and crowds the absolute-positioned header buttons */
 @media(max-width:480px){#headerVer{display:none}}
 .tabs{position:fixed;bottom:0;left:0;right:0;background:rgb(var(--card-bg));border-top:1px solid #e2e8f0;display:flex;z-index:50;box-shadow:0 -2px 10px rgba(0,0,0,.06);padding-bottom:max(4px,env(safe-area-inset-bottom));overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
@@ -319,19 +319,7 @@ body.dark .drug-row{border-color:#334155;color:#e2e8f0}
 .qo-blur::after{content:'Tap to reveal';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:rgb(var(--fg3));pointer-events:none;opacity:.9}
 .qo{position:relative}
 
-/* ===== SUDDEN DEATH ===== */
-.sudden-death-banner{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;padding:10px 14px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;animation:pulse-red 2s infinite}
 @keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
-.leaderboard-row{display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid rgb(var(--brd));font-size:11px}
-body.dark .leaderboard-row{border-color:#334155}
-
-/* ===== POMODORO ===== */
-.pomo-bar{position:fixed;top:0;left:0;right:0;height:4px;background:#e2e8f0;z-index:60}
-.pomo-bar .pomo-fill{height:100%;background:rgb(var(--em));transition:width 1s linear}
-.pomo-overlay{position:fixed;inset:0;background:rgba(15,23,42,.92);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(6px)}
-.pomo-overlay h2{font-size:24px;margin-bottom:8px}
-.pomo-overlay .pomo-break-timer{font-size:64px;font-weight:700;font-variant-numeric:tabular-nums}
-
 
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
@@ -1245,7 +1233,7 @@ function showSyncStatus(){
       <div style="display:flex;flex-direction:column;gap:8px">
         <button onclick="document.getElementById('sync-modal-overlay').remove();cloudBackup()" ${_online?'':'disabled'} style="background:#0D7377;color:#fff;border:none;border-radius:10px;padding:14px;font-size:13px;font-weight:700;cursor:${_online?'pointer':'not-allowed'};opacity:${_online?'1':'.5'}">💾 Backup now</button>
         <button onclick="document.getElementById('sync-modal-overlay').remove();cloudRestore()" ${_online?'':'disabled'} style="background:rgb(var(--bg2));color:rgb(var(--fg));border:1px solid rgb(var(--brd));border-radius:10px;padding:12px;font-size:12px;font-weight:600;cursor:${_online?'pointer':'not-allowed'};opacity:${_online?'1':'.5'}">☁️ Restore from cloud</button>
-        <button onclick="document.getElementById('sync-modal-overlay').remove();tab='more';moreSub='settings';renderTabs();render();setTimeout(function(){var el=document.getElementById('data-mgmt-anchor');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});else window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});},100)" style="background:none;color:rgb(var(--sky));border:none;font-size:11px;padding:10px;cursor:pointer;text-decoration:underline">Manage all data (export / import / clear) →</button>
+        <button onclick="document.getElementById('sync-modal-overlay').remove();tab='settings';settingsSub='settings';renderTabs();render();setTimeout(function(){var el=document.getElementById('data-mgmt-anchor');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});else window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});},100)" style="background:none;color:rgb(var(--sky));border:none;font-size:11px;padding:10px;cursor:pointer;text-decoration:underline">Manage all data (export / import / clear) →</button>
       </div>
     </div>`;
   // Backdrop click closes
@@ -1555,72 +1543,6 @@ if(document.visibilityState==='visible')requestWakeLock();
 });
 requestWakeLock();
 
-// ===== POMODORO TIMER =====
-let pomoActive=false,pomoSec=3000,pomoBreak=false,pomoBreakSec=300,pomoInterval=null;
-function startPomodoro(){
-pomoActive=true;pomoSec=3000;pomoBreak=false;pomoBreakSec=300;
-if(pomoInterval)clearInterval(pomoInterval);
-pomoInterval=setInterval(()=>{
-if(pomoBreak){
-pomoBreakSec--;
-if(pomoBreakSec<=0){pomoBreak=false;pomoSec=3000;}
-}else{
-pomoSec--;
-if(pomoSec<=0){pomoBreak=true;pomoBreakSec=300;}
-}
-const bar=document.getElementById('pomo-fill');
-if(bar&&!pomoBreak)bar.style.width=((3000-pomoSec)/3000*100)+'%';
-const el=document.getElementById('pomo-time');
-if(el)el.textContent=fmtT(pomoBreak?pomoBreakSec:pomoSec);
-if(pomoBreak)renderPomoOverlay();
-else{const ov=document.getElementById('pomo-overlay');if(ov)ov.remove();}
-},1000);
-render();
-}
-function stopPomodoro(){pomoActive=false;clearInterval(pomoInterval);pomoInterval=null;
-const ov=document.getElementById('pomo-overlay');if(ov)ov.remove();render();}
-function renderPomoOverlay(){
-if(!pomoBreak)return;
-if(document.getElementById('pomo-overlay'))return;
-const div=document.createElement('div');div.id='pomo-overlay';div.className='pomo-overlay';
-// safe-innerhtml: static copy; only interpolations are fmtT() (formatted timer string) and Math.ceil() of internal timer — no user input.
-div.innerHTML=`<h2>Break Time</h2><p style="font-size:13px;margin-bottom:16px;color:rgb(var(--fg3))">Rest your eyes. Stand up. Stretch.</p>
-<div class="pomo-break-timer" id="pomo-break-display">${fmtT(pomoBreakSec)}</div>
-<p style="font-size:10px;margin-top:12px;color:rgb(var(--fg2))">Auto-resumes in ${Math.ceil(pomoBreakSec/60)} min</p>`;
-document.body.appendChild(div);
-const iv=setInterval(()=>{const d=document.getElementById('pomo-break-display');
-if(!pomoBreak||!d){clearInterval(iv);const o=document.getElementById('pomo-overlay');if(o)o.remove();return;}
-d.textContent=fmtT(pomoBreakSec);},1000);
-}
-
-// ===== SUDDEN DEATH MODE =====
-let sdMode=false,sdStreak=0,sdPool=[],sdQi=0;
-let sdLeaderboard=lsGet('sd_lb',[]);
-function startSuddenDeath(){
-sdMode=true;sdStreak=0;sdPool=QZ.map((_,i)=>i);
-for(let i=sdPool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sdPool[i],sdPool[j]]=[sdPool[j],sdPool[i]];}
-sdQi=0;sel=null;ans=false;render();
-}
-function endSuddenDeath(){
-sdLeaderboard.push({streak:sdStreak,date:new Date().toISOString().slice(0,10)});
-sdLeaderboard.sort((a,b)=>b.streak-a.streak);
-sdLeaderboard=sdLeaderboard.slice(0,10);
-lsSet('sd_lb',sdLeaderboard);
-sdMode=false;
-const _sdTier=sdStreak>=20?'Legendary!':sdStreak>=10?'Impressive!':'Keep practicing!';
-const _sdHtml=`<div style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;padding:16px" id="sdModal">
-<div style="background:rgb(var(--card-bg));color:rgb(var(--fg));border-radius:16px;max-width:360px;margin:15vh auto;padding:24px;text-align:center;font-family:Heebo,Inter,sans-serif">
-<div style="font-size:48px">💀</div>
-<div style="font-size:18px;font-weight:700;margin-bottom:4px">Sudden Death Over!</div>
-<div style="font-size:28px;font-weight:700;color:var(--app-primary);margin-bottom:4px">${sdStreak}</div>
-<div style="font-size:12px;color:rgb(var(--fg3));margin-bottom:12px">streak</div>
-<div style="font-size:13px;margin-bottom:16px">${_sdTier}</div>
-<button onclick="document.getElementById('sdModal').remove()" style="width:100%;padding:12px;background:var(--app-primary);color:var(--app-on-primary);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">סגור</button>
-</div></div>`;
-const _sdD=document.createElement('div');_sdD.innerHTML=_sdHtml;document.body.appendChild(_sdD.firstChild);
-render();
-}
-
 // ===== BLIND RECALL STATE =====
 let blindRecall=false;
 
@@ -1928,9 +1850,10 @@ let TABS=[];
 const MINIMAL_MODE=(()=>{try{const p=new URLSearchParams(location.search);return p.get('minimal')==='1'||p.get('mode')==='minimal'||location.hash==='#minimal';}catch(e){return false;}})();
 if(MINIMAL_MODE)document.body.classList.add('minimal-mode');
 let tab='quiz';
-let learnSub='study'; // sub-tab within Learn: study|flash
+let learnSub='study'; // sub-tab within Study: study|notes|flash|meds|chat
 let _studyMode='learn'; // v10.54.0: 'learn'|'lib' — which mode in unified Study tab
-let moreSub='meds';   // sub-tab within More: meds|search|notes|chat|feedback|settings
+let settingsSub='settings'; // sub-tab within Settings: settings|feedback
+let moreSub='settings'; // legacy deep-link holder for older #more routes
 let libSec='haz-pdf';
 let harChOpen=null,_harData=null,_harLoading=false;
 let hazChOpen=null,_hazData=null,_hazLoading=false;
@@ -1942,8 +1865,9 @@ const _svgIcons={
   quiz:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
   learn:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
   lib:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+  search:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
   track:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="3" y1="20" x2="21" y2="20"/></svg>',
-  more:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+  settings:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
 };
 document.getElementById('tb').innerHTML=TABS.map(t=>
 // safe-innerhtml: TABS is a hardcoded array of tab definitions (id/label/icon); _svgIcons is a hardcoded map; no user input
@@ -2080,7 +2004,6 @@ function setExamYearsPreset(preset){
   if(filt==='topic')topicFilt=-1;
   saveExamYears();buildPool();render();
 }
-let onCallMode=false,flipRevealed=false;
 let timedMode=false,timedSec=90,timedInt=null,timedPaused=false;
 let _optShuffle=null; // {map:[shuffled indices], qIdx} — shuffle per question
 // Session tracking for end-of-session summary
@@ -2406,95 +2329,6 @@ for(let i=0;i<365;i++){
 return streak;
 }
 
-// ===== ON-CALL FLIP CARD MODE =====
-function startOnCallMode(){onCallMode=true;flipRevealed=false;filt='due';buildPool();if(!pool.length){filt='weak';buildPool();}if(!pool.length){filt='all';buildPool();}render();}
-function exitOnCallMode(){onCallMode=false;flipRevealed=false;render();}
-function flipCard(){flipRevealed=true;render();}
-function onCallPick(correct){
-  sel=correct?QZ[pool[qi]].c:((QZ[pool[qi]].c+1)%QZ[pool[qi]].o.length);
-  checkMockIntercept();ans=true;
-  _lastElapsed=Math.max(0,Math.round((Date.now()-qStartTime)/1000));
-  const q=QZ[pool[qi]];
-  if(correct){S.qOk++;srScore(pool[qi],true);}
-  else{S.qNo++;srScore(pool[qi],false);}
-  save();
-  setTimeout(()=>{
-    qi++;if(qi>=pool.length)qi=0;
-    sel=null;ans=false;flipRevealed=false;autopsyDistractor=-1;teachBackState=null;
-    render();
-  },600);
-}
-function renderOnCall(){
-  if(!pool.length)return '<div style="padding:40px;text-align:center;color:rgb(var(--fg3))">No questions available</div>';
-  const qIdx=pool[qi];const q=QZ[qIdx];
-  const TOPICS_L=TOPICS;
-  const topic=q.ti>=0?TOPICS_L[q.ti]:'';
-  const correct=q.o[q.c];
-  let h='<div style="min-height:100vh;min-height:100dvh;padding:16px;display:flex;flex-direction:column;gap:12px">';
-  // Header
-  h+=`<div style="display:flex;justify-content:space-between;align-items:center">
-    <div style="font-size:11px;color:rgb(var(--fg2))">${qi+1}/${pool.length} · ${filt}</div>
-    <button onclick="exitOnCallMode()" style="font-size:11px;padding:4px 10px;background:rgb(var(--bg2));border:none;border-radius:8px;cursor:pointer" aria-label="Exit on-call mode">✕ Exit</button>
-  </div>`;
-  // Topic tag
-  if(topic)h+=`<div style="font-size:10px;background:rgb(var(--green-bg));color:rgb(var(--green-fg));padding:3px 10px;border-radius:20px;display:inline-block;align-self:flex-start;font-weight:600">${topic}</div>`;
-  // Question card - large text
-  h+=`<div style="background:rgb(var(--card-bg));border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);flex:1;cursor:${flipRevealed?'default':'pointer'}" ${flipRevealed?'':'onclick="flipCard()" role="button" tabindex="0" aria-label="Flip card to reveal answer"'}>
-    <div style="font-size:16px;line-height:1.6;font-weight:500;text-align:right;margin-bottom:${flipRevealed?'16px':'0'}" dir="${heDir(qLang(q,'q'))}">${sanitize(qLang(q,'q'))}</div>`;
-  if(!flipRevealed){
-    h+=`<div style="text-align:center;margin-top:20px;color:rgb(var(--fg3));font-size:13px">👆 tap to reveal answer</div>`;
-  } else {
-    // Show correct answer prominently
-    h+=`<div style="background:#dcfce7;border-radius:12px;padding:14px;margin-bottom:12px">
-      <div style="font-size:10px;color:rgb(var(--green-fg));font-weight:700;margin-bottom:6px">✓ CORRECT ANSWER</div>
-      <div style="font-size:14px;font-weight:600;text-align:right" dir="${heDir(correct)}">${correct}</div>
-    </div>`;
-    // Explanation if available
-    const ex=_exCache&&_exCache[qIdx];
-    const _exTxt=ex?(typeof ex==='string'?ex:(ex.text||'')):'';
-    if(_exTxt){h+=`<div style="font-size:12px;color:rgb(var(--fg2));line-height:1.7;text-align:right;border-top:1px solid #e2e8f0;padding-top:10px;unicode-bidi:plaintext" dir="${heDir(_exTxt)}">${sanitize(_exTxt)}</div>`;}
-    else{h+=`<button onclick="runExplainOnCall(${qIdx})" id="oc-exp-${qIdx}" style="font-size:11px;padding:5px 12px;background:rgb(var(--blue-bg));color:#3b82f6;border:none;border-radius:8px;cursor:pointer;margin-bottom:8px">🤖 הסבר AI</button><div id="oc-exp-box-${qIdx}"></div>`;}
-  }
-  h+=`</div>`;
-  // Rate buttons (only after flip)
-  if(flipRevealed){
-    h+=`<div style="display:flex;gap:12px">
-      <button onclick="onCallPick(false)" style="flex:1;padding:18px;background:rgb(var(--red-bg));color:#dc2626;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px" aria-label="Wrong answer">✗</button>
-      <button onclick="onCallPick(true)" style="flex:1;padding:18px;background:rgb(var(--green-bg));color:#16a34a;border:none;border-radius:16px;font-size:28px;font-weight:700;cursor:pointer;min-height:64px" aria-label="Correct answer">✓</button>
-    </div>`;
-  }
-  h+=`</div>`;
-  return h;
-}
-async function runExplainOnCall(qIdx){
-  const btn=document.getElementById('oc-exp-'+qIdx);
-  const box=document.getElementById('oc-exp-box-'+qIdx);
-  if(!btn||!box)return;
-  btn.textContent='⏳ ...';btn.disabled=true;
-  const q=QZ[qIdx];const correct=q.o[q.c];
-  // v10.64.102: respect c_accept when length>1 — the dataset already knows
-  // multiple answers are valid; don't command the AI to defend ONE answer
-  // "DEFINITIVELY" when grading accepts several. 143 questions (3.8% of deck)
-  // hit this, 33 of them with all-4 options accepted. Pre-fix, students saw
-  // explanations like "the correct answer is B" with weak hedging on A/C/D —
-  // exactly the user complaint on the FeNa question (idx 4, c_accept=[0,1,2,3]).
-  const _acc=(Array.isArray(q.c_accept)&&q.c_accept.length>1)?q.c_accept:null;
-  const _keyLine=_acc
-    ?`ANSWER KEY: This question accepts multiple valid answers: ${_acc.map(i=>'"'+q.o[i]+'"').join(', ')}. IMA's published key is "${correct}". Lead the explanation by acknowledging the multi-valid stem; explain why each accepted answer is defensible and why IMA picked "${correct}".`
-    :`ANSWER KEY: The correct answer is DEFINITIVELY "${correct}".`;
-  try{
-    const txt=await callAI([{role:'user',content:_keyLine+'\n\nהסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה. עגן בתשובה הנכונה. שאלה: '+q.q+'\nתשובה נכונה: '+correct}],400,'sonnet');
-    _exCache[qIdx]=txt;lsSet('samega_ex',_exCache);
-    // v10.64.102: per-line dir+isolate (same pattern as v98 fix for the static
-    // explanation and Distractor Autopsy). Missed this site in v98. Hebrew
-    // explanations that start with an English drug name would render wrong.
-    const _ocLines=txt.split(/\n+/).filter(_l=>_l.trim());
-    const _ocHtml=_ocLines.map(_l=>'<div dir="'+heDir(_l)+'" style="unicode-bidi:isolate;margin-bottom:.4em">'+sanitize(_l)+'</div>').join('');
-    // safe-innerhtml: heDir returns fixed 'auto'|'rtl'|'ltr'; each _l is sanitize()'d in the .map above
-    box.innerHTML='<div style="font-size:12px;color:rgb(var(--fg2));line-height:1.7;text-align:right;margin-top:8px">'+_ocHtml+'</div>';
-    btn.remove();
-  }catch(e){btn.textContent='🤖 הסבר AI';btn.disabled=false;}
-}
 function pick(i){if(ans)return;sel=i;render()}
 function _storeDiff(qIdx,d){if(!S.sr[qIdx])S.sr[qIdx]={ef:2.5,n:0,next:0,ts:[],at:0,tot:0,ok:0};S.sr[qIdx].diff=d;save();}
 function check(){
@@ -2673,15 +2507,15 @@ function renderExplainBox(qIdx){
   var ex=_exCache[qIdx];
   if(!ex)return;
   if(ex.err){container.innerHTML='<div style="color:#dc2626;font-size:11px;padding:8px 0">⚠️ '+sanitize(ex.err)+'</div>';return;}
+  const _exText=typeof ex==='string'?ex:(ex.text||'');
   const _isFlagged=(S.flagged||{})[qIdx];
-  // v10.64.102: per-line dir+isolate (same pattern as v98 for static explain,
-  // v98 for autopsy outer, v102 for runExplainOnCall renderer). This is the
-  // FOURTH site of the same bug class — sweep complete for AI-text renderers.
+  // v10.64.102: per-line dir+isolate (same pattern as v98 for static explain
+  // and the autopsy outer). This keeps AI-text renderers consistent.
   // The outer block keeps text-align:right for visual continuity; per-line
   // inner divs get dir=heDir(line) + unicode-bidi:isolate so each paragraph
   // resolves bidi independently regardless of whether it starts in English
   // or Hebrew.
-  const _exLines=String(ex.text||'').split(/\n+/).filter(_l=>_l.trim());
+  const _exLines=String(_exText||'').split(/\n+/).filter(_l=>_l.trim());
   const _exHtml=_exLines.map(_l=>'<div dir="'+heDir(_l)+'" style="unicode-bidi:isolate;margin-bottom:.45em">'+sanitize(_l)+'</div>').join('');
   // safe-innerhtml: heDir returns fixed 'auto'|'rtl'|'ltr'; each _l is sanitize()'d in the .map above; qIdx is a number coerced via String() for the onclick
   container.innerHTML='<div class="explain-box" style="margin-top:8px;padding:10px 12px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:10px;font-size:11px;line-height:1.7;color:rgb(var(--green-fg));text-align:right"><div style="font-weight:700;margin-bottom:4px">🤖 הסבר AI</div>'+_exHtml+'</div>'+
@@ -2696,7 +2530,7 @@ async function explainWithAI(qIdx){
     // Feature 8: Detect language — bilingual if question has English terms
     var _qLang=(q.q.match(/[a-zA-Z]/g)||[]).length/q.q.length>0.25?'en':'he';
     var _langInstr=_qLang==='en'?'Explain in English (3-4 sentences) why this is the correct answer. Be concise and exam-focused.':'הסבר בעברית (3-4 משפטים) למה זו התשובה הנכונה לשאלה הבאה מתחום הגריאטריה. עגן תמיד בתשובה הנכונה הנל.';
-    // v10.64.102: respect c_accept multi-valid; see runExplainOnCall comment
+    // v10.64.102: respect c_accept multi-valid stems in generated explanations.
     var _acc=(Array.isArray(q.c_accept)&&q.c_accept.length>1)?q.c_accept:null;
     var _keyLine=_acc
       ?'ANSWER KEY: This question accepts multiple valid answers: '+_acc.map(function(i){return'"'+q.o[i]+'"';}).join(', ')+'. IMA\'s published key is "'+correct+'". Lead the explanation by acknowledging the multi-valid stem; explain why each accepted answer is defensible and why IMA picked "'+correct+'".'
@@ -3233,50 +3067,6 @@ function getOptShuffle(qIdx,q){
   return map;
 }
 
-// ===== QUIZ HELPERS (_rq* prefix) =====
-function _rqSuddenDeath(){
-// ===== SUDDEN DEATH RENDERING =====
-if(sdMode){
-if(sdQi>=sdPool.length)sdQi=0;
-const q=QZ[sdPool[sdQi]];
-let h=`<div class="sudden-death-banner"><span style="font-weight:700;font-size:13px">💀 Sudden Death</span>
-<span style="font-size:16px;font-weight:700">🔥 ${sdStreak}</span>
-<button class="btn" style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;padding:4px 10px" onclick="endSuddenDeath()" aria-label="Quit sudden death mode">Quit</button></div>`;
-h+=`<div class="card" style="padding:16px">`;
-if(timedMode&&!ans){
-  h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-<span id="timed-count" style="font-size:11px;font-weight:700;color:rgb(var(--fg2));min-width:24px">${timedSec}s</span>
-<div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
-  <div id="timed-bar" style="height:100%;width:${Math.round(timedSec/90*100)}%;background:${timedSec>45?'#10b981':timedSec>22?'#f59e0b':'#ef4444'};border-radius:3px;transition:width .9s linear"></div>
-</div>
-<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:6px;cursor:pointer;white-space:nowrap" aria-label="${timedPaused?'Resume timer':'Pause timer'}">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
-</div>`;
-}
-const _isFlagQ=(S.flagged||{})[pool[qi]];
-h+=`<p class="heb" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="${heDir(qLang(q,'q'))}">${_isFlagQ?'<span style="color:#dc2626;font-size:11px" title="Explanation flagged — verify">⚑ </span>':''  }${sanitize(qLang(q,'q'))}</p>`;
-if(q.eFlag&&ans){h+=`<div style="margin:6px 0;padding:6px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:10px;color:#991b1b;text-align:start;line-height:1.4;unicode-bidi:plaintext" dir="auto">⚠️ AI flagged: ההסבר עשוי לא להתאים לתשובה הנכונה (<bdi>${sanitize(q.eFlag)}</bdi>) <button onclick="event.stopPropagation();clearEFlag(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#991b1b;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-inline-start:6px">✓ אמת</button></div>`;}
-if(q.eFlag&&ans){h+=`<div style="margin:6px 0;padding:6px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:10px;color:#991b1b;text-align:start;line-height:1.4;display:flex;align-items:center;gap:6px;justify-content:space-between;unicode-bidi:plaintext" dir="auto"><span style="flex:1">⚠️ AI flagged: ההסבר עשוי לא להתאים לתשובה הנכונה (<bdi>${sanitize(q.eFlag)}</bdi>)</span><button onclick="event.stopPropagation();clearEFlag(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#991b1b;color:#fff;border:none;border-radius:6px;cursor:pointer;flex:0 0 auto">✓ אמת</button></div>`;}
-if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative"><img src="${sanitize(q.img)}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy" onerror="if(this._f)return;this._f=1;this.style.display='none';this.insertAdjacentHTML('afterend','<div class=&quot;img-fail-ph&quot; style=&quot;padding:14px;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;font-size:11px;color:#92400e;text-align:center&quot;>📷 תמונה זו טרם הועלתה למערכת</div>')"><button onclick="event.stopPropagation();removeQImage(${pool[qi]})" aria-label="הסר תמונה" title="הסר תמונה" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer">✕</button>${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:start;line-height:1.4;unicode-bidi:plaintext" dir="auto" title="Stem relies entirely on the image — explanation was auto-generated without image context and may be incorrect">⚠️ שאלה תלוית-תמונה: ההסבר נוצר ללא ראיית התמונה ועלול להיות שגוי. אמת מול מקור. <button onclick="event.stopPropagation();markImgDepVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#92400e;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-inline-start:6px">✓ מאומת</button></div>':''}</div>`;}
-if(!q.img&&!examMode){h+=`<div style="margin-bottom:10px"><button onclick="uploadQImage(${pool[qi]})" style="font-size:10px;padding:4px 12px;background:rgb(var(--bg2));color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer">📷 Attach Image</button><span id="img-status-${pool[qi]}" style="font-size:10px;color:rgb(var(--fg3));margin-left:6px"></span></div>`;}
-qLang(q,'o').forEach((o,i)=>{
-let cls='qo';
-if(ans){cls+=' lk';if(isOk(q,i))cls+=' ok';else if(i===sel)cls+=' no';else cls+=' dim';}
-else if(i===sel)cls+=' sel';
-h+=`<button class="${cls}" onclick="pick(${i})" aria-label="Option ${i+1}: ${sanitize(o)}">${sanitize(o)}</button>`;
-});
-if(!ans)h+=`<button class="btn btn-p" data-testid="check-answer" onclick="sdCheck()"${sel===null?' disabled':''} aria-label="בדוק — check answer">בדוק</button>`;
-else h+=`<button class="btn btn-d" onclick="sdNext()" aria-label="הבאה — next question">הבאה ←</button>`;
-h+=`</div>`;
-// Leaderboard
-if(sdLeaderboard.length){
-h+=`<div class="card" style="padding:14px"><div style="font-weight:700;font-size:12px;margin-bottom:8px">🏆 Leaderboard</div>`;
-sdLeaderboard.forEach((e,i)=>{h+=`<div class="leaderboard-row"><span>${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)} ${e.streak} questions</span><span style="color:rgb(var(--fg3))">${e.date}</span></div>`;});
-h+=`</div>`;}
-return h;
-}
-return '';
-}
-
 // ===== QUIZ MAIN HELPERS (_rqm* prefix) =====
 function _rqmQuestion(){
 const q=QZ[pool[qi]];
@@ -3302,7 +3092,7 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 </div></div>`;
 h+=`<p class="heb" data-qidx="${pool[qi]}" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="${heDir(qLang(q,'q'))}">${sanitize(qLang(q,'q'))}</p>`;
 if(S.qnotes&&S.qnotes[pool[qi]]){h+=`<div style="margin:0 0 12px;padding:8px 10px;background:rgb(var(--yellow-bg));border-right:3px solid rgb(var(--yellow-fg));border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg));text-align:right;cursor:pointer" dir="${heDir(S.qnotes[pool[qi]])}" onclick="toggleQNote()" title="Click to edit">📝 ${sanitize(S.qnotes[pool[qi]])}</div>`;}
-if(q.img){h+=`<div style="margin-bottom:14px;text-align:center"><img src="${sanitize(q.img)}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy" onerror="if(this._f)return;this._f=1;this.style.display='none';this.insertAdjacentHTML('afterend','<div class=&quot;img-fail-ph&quot; style=&quot;padding:14px;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;font-size:11px;color:#92400e;text-align:center&quot;>📷 תמונה זו טרם הועלתה למערכת</div>')">${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:right;line-height:1.4">⚠️ שאלה תלוית-תמונה: ההסבר עלול להיות שגוי. <button onclick="event.stopPropagation();markImgDepVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#92400e;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-right:6px">✓ מאומת</button></div>':''}</div>`;}
+if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative"><img src="${sanitize(q.img)}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy" onerror="if(this._f)return;this._f=1;this.style.display='none';this.insertAdjacentHTML('afterend','<div class=&quot;img-fail-ph&quot; style=&quot;padding:14px;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;font-size:11px;color:#92400e;text-align:center&quot;>📷 תמונה זו טרם הועלתה למערכת</div>')"><button onclick="event.stopPropagation();removeQImage(${pool[qi]})" aria-label="הסר תמונה" title="הסר תמונה" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer">✕</button>${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:right;line-height:1.4">⚠️ שאלה תלוית-תמונה: ההסבר עלול להיות שגוי. <button onclick="event.stopPropagation();markImgDepVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#92400e;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-right:6px">✓ מאומת</button></div>':''}</div>`;}
 const _shuf=getOptShuffle(pool[qi],q);
 _shuf.forEach((origI,dispJ)=>{
 const o=qLang(q,'o')[origI];
@@ -3597,11 +3387,7 @@ if(qi>=pool.length)qi=0;
 const q=QZ[pool[qi]];const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
 const bk=S.bk[pool[qi]];
 const dueN=getDueQuestions().length;
-// Pomodoro bar
-let h=pomoActive?`<div class="pomo-bar"><div class="pomo-fill" id="pomo-fill" style="width:${(3000-pomoSec)/3000*100}%"></div></div>
-<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#ecfdf5;border-radius:10px;margin-bottom:10px;font-size:11px">
-<span>⏱️ Pomodoro</span><span class="timer" id="pomo-time" style="font-weight:700">${fmtT(pomoSec)}</span>
-<button onclick="stopPomodoro()" style="font-size:10px;color:#dc2626;font-weight:600" aria-label="Stop pomodoro timer">Stop</button></div>`:'';
+let h='';
 h+=examMode?(()=>{
   const answered=S.qOk+S.qNo;
   const isMock=!!mockExamResults;
@@ -3622,9 +3408,6 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
 <button onclick="showMockExamPicker()" class="btn" style="font-size:11px;padding:7px 14px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-weight:700" aria-label="Start mock exam">🎯 Mock</button>
 <button data-testid="full-exam-trigger" onclick="startExam()" class="btn" style="font-size:11px;padding:7px 14px;background:#0f172a;color:#fff;border:none;border-radius:8px;font-weight:600" aria-label="Full 150q — start full exam">📋 Full 150q</button>
-<button onclick="startSuddenDeath()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:#dc2626;border:1px solid rgb(var(--red-brd));border-radius:8px" aria-label="SD — sudden death" title="Sudden Death — one wrong = game over">💀 SD</button>
-<button onclick="startOnCallMode()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:rgb(var(--fg2));border:1px solid rgb(var(--brd));border-radius:8px" aria-label="On-call flip cards" title="On-Call flip cards — rapid review">🏥 On-Call</button>
-${!pomoActive?'<button onclick="startPomodoro()" class="btn" style="font-size:10px;padding:6px 10px;background:transparent;color:#047857;border:1px solid #a7f3d0;border-radius:8px" aria-label="Pomodoro timer" title="Pomodoro 25-min study timer">⏱ Pomo</button>':''}
 </div>
 </div>`;
 // Exam-year multi-select row — pills are toggleable, "All" / "Clear" quick actions.
@@ -3792,8 +3575,6 @@ return h;
 }
 
 function renderQuiz(){
-const _sd=_rqSuddenDeath();
-if(_sd)return _sd;
 // v10.63.6 LCP fix: paint a skeleton card while questions.json is still loading.
 // _qzPromise defers QZ to keep FCP fast; without this, the quiz card waits for
 // QZ before it paints anything (Lighthouse measured 3.4s element-render-delay).
@@ -3815,9 +3596,6 @@ return `<div class="card" style="padding:14px">
 }
 return _rqMain();
 }
-// Sudden Death check/next
-function sdCheck(){if(sel===null)return;ans=true;const q=QZ[sdPool[sdQi]];if(isOk(q,sel)){sdStreak++;S.qOk++;srScore(sdPool[sdQi],true);save();render();}else{S.qNo++;srScore(sdPool[sdQi],false);save();render();setTimeout(()=>endSuddenDeath(),800);}}
-function sdNext(){sdQi++;if(sdQi>=sdPool.length)sdQi=0;sel=null;ans=false;autopsyDistractor=-1;render();}
 
 // ===== STUDY NOTES =====
 let openNote=null;
@@ -4273,7 +4051,7 @@ function renderWrongAnswerLog(){
     chronic.slice(0,5).forEach(({idx,q,s})=>{
       const acc=Math.round(s.ok/s.tot*100);
       const topic=q.ti>=0?TOPICS_L[q.ti]:'';
-      h+=`<div style="padding:8px;background:rgb(var(--red-bg));border-radius:8px;margin-bottom:6px;cursor:pointer" onclick="filt='all';pool=[${idx}];qi=0;sel=null;ans=false;flipRevealed=false;tab='quiz';render()">
+      h+=`<div style="padding:8px;background:rgb(var(--red-bg));border-radius:8px;margin-bottom:6px;cursor:pointer" onclick="filt='all';pool=[${idx}];qi=0;sel=null;ans=false;tab='quiz';render()">
 <div style="font-size:10px;font-weight:600;line-height:1.4">${q.q.slice(0,80)}${q.q.length>80?'…':''}</div>
 <div style="display:flex;gap:8px;margin-top:4px"><span style="font-size:9px;color:#dc2626">${s.ok}/${s.tot} (${acc}%) · D=${s.fsrsD?s.fsrsD.toFixed(1):'?'}</span><span style="font-size:9px;color:rgb(var(--fg3))">${topic}</span></div>
 </div>`;
@@ -6020,7 +5798,7 @@ h+=`</div>`;
 // link under the Priority Matrix in _rtProgress(). The standalone card was
 // disproportionate for a one-tap utility action.
 // v10.57.0: removed standalone Change exam date underline link — duplicates
-// More → Settings → Exam Date. setExamDate() is still wired everywhere it
+// Settings → Exam Date. setExamDate() is still wired everywhere it
 // was; the button just isn't surfaced from here.
 h+=renderExamTrendCard();
 // v10.50.0: removed the duplicate "Progress" stats grid (Topics/Quiz/EstScore/Due-SR) that
@@ -6626,7 +6404,7 @@ const supaPayload={
   type,
   message:text,
   app_version:APP_VERSION,
-  context:'submitFeedback (More→Feedback panel) | uid='+localTrace.uid,
+  context:'submitFeedback (Settings→Feedback panel) | uid='+localTrace.uid,
 };
 try{
   await fetch(SUPA_URL+'/rest/v1/shlav_feedback',{
@@ -7026,7 +6804,7 @@ async function cloudBackup(){
       toast('✅ Progress backed up to cloud!\nDevice ID: '+_sbDeviceId().slice(0,12)+'...','success');
     } else if(res.status===401||res.status===403){
       toast('❌ נדרשת התחברות לחשבון לגיבוי לענן\nLogin required','info');
-      tab='more';moreSub='settings';renderTabs();render();
+      tab='settings';settingsSub='settings';renderTabs();render();
       setTimeout(function(){var el=document.getElementById('auth-li-user');if(el)el.focus();},150);
     } else {
       const err=await res.text();
@@ -7216,15 +6994,17 @@ const focused=document.activeElement?.id;
 const sv={srchi:document.getElementById('srchi')?.value,nfilt:document.getElementById('nfilt')?.value};
 if(tab!==lastTab){el.classList.remove('fade-in');void el.offsetWidth;el.classList.add('fade-in');window.scrollTo({top:0});lastTab=tab;}
 switch(tab){
-case'quiz':el.innerHTML=onCallMode?renderOnCall():renderQuiz();break;
+case'quiz':el.innerHTML=renderQuiz();break;
 case'learn':
-  // v10.54.0: unified Study tab — merges old Learn (Notes/Cards/Drugs) + Library
-  // (Hazzard/Harrison/GRS8/Laws/Articles/Exams) into one horizontally-scrollable
-  // pill bar. _studyMode tracks which mode is current. Existing onclick handlers
+  // Unified Study tab: notes, cards, medication tools, AI chat, and library sources
+  // live together in one horizontally-scrollable pill bar. Existing onclick handlers
   // `tab='lib';libSec='haz-pdf'` still work via case 'lib' alias below.
   {const _learnPills=[
-    {id:'study', mode:'learn', ic:'📝', l:'Notes'},
+    {id:'study', mode:'learn', ic:'📝', l:'Study Notes'},
+    {id:'notes', mode:'learn', ic:'✎', l:'Personal Notes'},
     {id:'flash', mode:'learn', ic:'🃏', l:'Cards'},
+    {id:'meds', mode:'learn', ic:'Rx', l:'Meds'},
+    {id:'chat', mode:'learn', ic:'AI', l:'Chat'},
     {id:'haz-pdf',mode:'lib',  ic:'📕', l:'Hazzard'},
     {id:'harrison',mode:'lib', ic:'📗', l:'Harrison'},
     {id:'grs8',  mode:'lib',   ic:'📙', l:'GRS8'},
@@ -7247,14 +7027,20 @@ case'learn':
     _body = renderLibraryBody(); // lib body without its own header+sub-bar
   } else {
     if(learnSub==='study')_body=renderStudy();
+    else if(learnSub==='notes')_body=renderNotes();
     else if(learnSub==='flash')_body=renderFlash();
+    else if(learnSub==='meds')_body=renderMedBasket();
+    else if(learnSub==='chat')_body=renderChat();
+    else _body=renderStudy();
   }
   el.innerHTML=_subBar+_body;}break; // safe-innerhtml: _subBar is built from a hardcoded pill array (no user input)
 case'study':tab='learn';learnSub='study';el.innerHTML='';render();break;
+case'notes':_studyMode='learn';tab='learn';learnSub='notes';el.innerHTML='';render();break;
 case'flash':tab='learn';learnSub='flash';el.innerHTML='';render();break;
 case'lib':_studyMode='lib';tab='learn';render();break; // v10.54.0: alias to merged Study tab
-case'meds':tab='more';moreSub='meds';el.innerHTML='';render();break;
-case'calc':tab='more';moreSub='meds';el.innerHTML='';render();break; // v10.62.1: back-compat alias for old #calc deep-links
+case'meds':case'calc':_studyMode='learn';tab='learn';learnSub='meds';el.innerHTML='';render();break; // v10.62.1: calc alias preserved
+case'chat':_studyMode='learn';tab='learn';learnSub='chat';el.innerHTML='';render();break;
+case'search':el.innerHTML=renderSearch();break;
 case'track':
   // Save session summary when switching to track tab
   if(!_sessionSaved&&(_sessionOk+_sessionNo)>=5){
@@ -7262,20 +7048,17 @@ case'track':
   }
   el.innerHTML=renderTrack();break;
 case'more':
-  {const _moreBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+
-  [{id:'meds',ic:'🧺',l:'Meds'},{id:'search',ic:'🔍',l:'Search'},{id:'notes',ic:'📝',l:'Notes'},{id:'chat',ic:'💬',l:'Chat'},{id:'feedback',ic:'💡',l:'Feedback'},{id:'settings',ic:'⚙️',l:'Settings'}].map(s=>
-    '<button onclick="moreSub=\''+s.id+'\';render()" style="flex:1;padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:'+(moreSub===s.id?'700':'400')+';cursor:pointer;background:'+(moreSub===s.id?'#fff':'transparent')+';color:'+(moreSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(moreSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.ic+' '+s.l+'</button>'
+  if(moreSub==='search'){tab='search';el.innerHTML='';render();break;}
+  if(['meds','notes','chat'].includes(moreSub)){_studyMode='learn';tab='learn';learnSub=moreSub;el.innerHTML='';render();break;}
+  if(moreSub==='feedback'){tab='settings';settingsSub='feedback';el.innerHTML='';render();break;}
+  tab='settings';settingsSub='settings';el.innerHTML='';render();break;
+case'feedback':tab='settings';settingsSub='feedback';el.innerHTML='';render();break;
+case'settings':
+  {const _settingsTabs=[{id:'settings',l:'Settings'},{id:'feedback',l:'Feedback'}];
+  const _settingsBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+_settingsTabs.map(s=>
+    '<button onclick="settingsSub=\''+s.id+'\';render()" style="flex:1;padding:8px 10px;border:none;border-radius:10px;font-size:11px;font-weight:'+(settingsSub===s.id?'700':'500')+';cursor:pointer;background:'+(settingsSub===s.id?'#fff':'transparent')+';color:'+(settingsSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(settingsSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.l+'</button>'
   ).join('')+'</div>';
-  let _mBody='';
-  if(moreSub==='meds')_mBody=renderMedBasket();
-  else if(moreSub==='search')_mBody=renderSearch();
-  else if(moreSub==='notes')_mBody=renderNotes();
-  else if(moreSub==='chat')_mBody=renderChat();
-  else if(moreSub==='feedback')_mBody=renderFeedback();
-  else if(moreSub==='settings')_mBody=renderSettings();
-  el.innerHTML=_moreBar+_mBody;}break; // safe-innerhtml: _moreBar is static HTML; _mBody from internal render*() functions (no user input)
-case'search':tab='more';moreSub='search';el.innerHTML='';render();break;
-case'chat':tab='more';moreSub='chat';el.innerHTML='';render();break;
+  el.innerHTML=_settingsBar+(settingsSub==='feedback'?renderFeedback():renderSettings());}break; // safe-innerhtml: settings tab labels are hardcoded
 case'book':case'syl':_studyMode='lib';tab='learn';el.innerHTML='';render();break; // v10.54.0
 default:tab='quiz';el.innerHTML=renderQuiz();break;
 }
@@ -7290,7 +7073,7 @@ updateAccountChip();
 }
 
 // v10.49.0: Header account chip — shows initial when logged in, 👤 when guest.
-// Click → goes to More → Settings, where renderAuthSection lives (moved from Track in v10.48.0).
+// Click → goes to Settings, where renderAuthSection lives (moved from Track in v10.48.0).
 // Re-rendered after every render(); _doLogin/_doRegister already call render() after setAuthSession.
 function updateAccountChip(){
   const btn=document.getElementById('hdr-account-btn');
@@ -7409,8 +7192,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.167';
+const APP_VERSION='10.64.168';
 const CHANGELOG={
+'10.64.168':['ui(nav): remove Pomodoro, Sudden Death, and On-Call from the quiz surface; replace the visible More tab with explicit Search and Settings tabs; move Meds, Chat, and Personal Notes into Study; keep legacy #more/#meds/#chat/#feedback aliases routed to the new locations. Also keeps legacy string-shaped AI explanation cache rendering via the main explanation box after On-Call removal. No question content touched. Trinity 10.64.167 to 10.64.168.'],
 '10.64.167':['ui(theme): medexams-style retheme — teal/turquoise primary (--sky #13a99c, --em #0e8c81) + warm-gold accent (--amb #e8a13a) + medexams red (--red #d6453d), teal-tinted selected-answer, softer 12px cards with a subtle teal shadow, and a teal focus ring. Neutral text tokens (--fg/--fg2/--fg3) and all near-white backgrounds kept unchanged so the 23 a11y contrast guards (issue #125) still pass. No layout/markup/content change. Trinity 10.64.166 to 10.64.167.'],
 '10.64.166':['fix(track): resolve PR conflicts against main and keep the mobile Track polish: compact RTL Hebrew progress donut, denser phone heatmap, and no first-tap Help overlay interruption. No question content touched. Trinity 10.64.165 to 10.64.166.'],
 '10.64.165':['ui(minimal): add an explicitly gated quiz-only minimal mode for claude/geri-minimal. Minimal mode now activates only via ?minimal=1, ?mode=minimal, or #minimal, adds body.minimal-mode, hides the tab bar under that class, and normalizes non-quiz renders back to quiz only while MINIMAL_MODE is enabled. The normal GitHub Pages app keeps Learn/Track/More/library navigation. No question content touched. Trinity 10.64.164 to 10.64.165.'],
@@ -8508,8 +8292,7 @@ ${sec('Quiz Filters','📝','#047857',
 '<b>⏱️ Slow</b> — שאלות שלקחו לך יותר מ־60 שניות<br>'+
 '<b>🎯 Weak</b> — הנושאים החלשים שלך<br>'+
 '<b>🔄 Due</b> — חזרה מרווחת (SM-2)<br>'+
-'<b>📋 Exam</b> — מבחן מדומה 150 שאלות עם טיימר (3 שעות)<br>'+
-'<b>💀 Sudden Death</b> — טעות אחת = סוף המשחק'
+'<b>📋 Exam</b> — מבחן מדומה 150 שאלות עם טיימר (3 שעות)'
 )}
 ${sec('AI Study Tools','🤖','#6d28d9',
 'כל יכולות ה-AI עובדות בלי מפתח API — דרך פרוקסי משותף.<br><br>'+
@@ -8520,7 +8303,6 @@ ${sec('AI Study Tools','🤖','#6d28d9',
 )}
 ${sec('Study Modes','📚','#dc2626',
 '<b>🙈 Cover Options</b> — מסתיר תשובות, מכריח היזכרות חופשית<br>'+
-'<b>⏱️ Pomodoro</b> — טיימר 25 דקות פוקוס / 5 דקות הפסקה<br>'+
 '<b>📖 Library</b> — פרקי Hazzard + Harrison נקראים באפליקציה<br>'+
 '<b>📝 Notes</b> — הערות אישיות כלליות + לכל שאלה<br>'+
 '<b>🃏 Flashcards</b> — '+FLASH.length+' כרטיסים עם חזרה מרווחת<br>'+
@@ -8568,7 +8350,7 @@ body:JSON.stringify({app:'geriatrics',question_idx:qIdx,question_text:(q.q||'').
 }
 
 // PWA + Background Sync + Daily Notification (update logic in src/sw-update.js)
-// Daily-review notification is opt-in via ⚙️ Settings in the More tab.
+// Daily-review notification is opt-in via Settings.
 // No permission is requested on load; the scheduler checks S.notifOptIn +
 // Notification.permission=granted before posting to the SW each day.
 initSWUpdate(APP_VERSION).then(function(reg){
@@ -8602,9 +8384,7 @@ case 'toggle-dark':toggleDark();break;
 case 'toggle-lang':toggleLang();break;
 case 'show-help':showHelp();break;
 case 'goto-account':
-  // v10.49.0: jump to More → Settings, where renderAuthSection now lives
-  // (moved out of Track in v10.48.0).
-  tab='more';moreSub='settings';renderTabs();render();
+  tab='settings';settingsSub='settings';renderTabs();render();
   setTimeout(function(){window.scrollTo({top:0,behavior:'smooth'});},50);
   break;
 case 'apply-update':applyUpdate();break;

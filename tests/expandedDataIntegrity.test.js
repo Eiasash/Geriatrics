@@ -264,7 +264,7 @@ describe("tabs.json — app navigation", () => {
   });
 
   it("tab IDs match expected app modes", () => {
-    const validModes = ["quiz", "learn", "lib", "track", "more", "study", "flash", "drugs", "calc", "search", "chat"];
+    const validModes = ["quiz", "learn", "lib", "track", "settings", "more", "study", "flash", "drugs", "calc", "search", "notes", "chat"];
     tabs.forEach(t => {
       expect(validModes, `Tab "${t.id}" should be a valid mode`).toContain(t.id);
     });

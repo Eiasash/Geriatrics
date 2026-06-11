@@ -103,8 +103,9 @@ describe('v10.64.60 — render sites use qLang (regression guard)', () => {
   });
 
   it('the option iteration uses qLang(q,"o") not bare q.o.forEach', () => {
-    // The Sudden Death option render block uses qLang(q,'o').forEach.
-    expect(html).toMatch(/qLang\(q,['"]o['"]\)\.forEach/);
+    // The primary quiz option render block indexes through qLang(q,'o')
+    // after applying the stable option shuffle.
+    expect(html).toMatch(/const\s+o\s*=\s*qLang\(q,['"]o['"]\)\[origI\]/);
   });
 
   it('explanation render uses qLang(q,"e") and remapExplanationLetters (v10.64.112: now lives in the autopsy correct-row, formerly in _rqmExplain)', () => {

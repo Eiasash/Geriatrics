@@ -34,28 +34,19 @@ function scenario(name, fn) {
 }
 
 scenario('feedback_submission', async (page) => {
-  // Geri navigation: programmatic via window.go() since the bottom-nav More button
-  // is sometimes obscured by other layouts depending on viewport. go() and moreSub
-  // are window-bound for inline onclick wiring (line 514, ~6500). Falls back to
-  // bottom-nav click if go() isn't on window.
-  // Programmatic navigation to More → Feedback. Native DOM .click() invokes the
-  // inline onclick handler in its proper lexical scope (where moreSub is
-  // accessible) — Playwright's locator.click() goes through visibility checks
-  // that flake on overlapping fixed-position toolbars.
+  // Programmatic navigation avoids fixed bottom-tab visibility flake.
   const navResult = await page.evaluate(() => {
     if (typeof go !== 'function') return { error: 'go() not on window' };
-    go('more');
-    // Find Feedback pill (rendered inside More tab) and trigger inline onclick natively
-    const pill = document.querySelector('button[onclick*="moreSub"][onclick*="feedback"]');
-    if (!pill) return { stepFailed: 'no feedback pill rendered' };
-    pill.click();
+    go('settings');
+    settingsSub = 'feedback';
+    render();
     return { ok: true };
   });
   if (navResult.error || navResult.stepFailed) {
     return { status: 'SKIP', reason: `nav failed: ${JSON.stringify(navResult)}` };
   }
   await sleep(800);
-  // (legacy `await fbPill.click()` here was a leftover; programmatic moreSub set above already routes us into the feedback panel)
+  // Programmatic settingsSub set above already routes us into the feedback panel.
 
   // Inspect what feedback UI actually rendered — Geri's feedback might use any of:
   //  - submitFeedback() function with various input ids
@@ -106,13 +97,12 @@ scenario('feedback_submission', async (page) => {
 });
 
 scenario('ai_chat_round_trip', async (page) => {
-  // Geri has chat in More → Chat tab
-  await page.locator('button[onclick*="go(\'more\')"], button[aria-label="More"]').first().click({ timeout: 5000 }).catch(() => {});
-  await sleep(300);
-  // Navigate to chat — may be a sub-tab or button
-  const chatBtn = page.locator('button:has-text("Chat"), button:has-text("AI"), [data-tab="chat"]').first();
-  if ((await chatBtn.count()) === 0) return { status: 'SKIP', reason: 'no chat tab visible' };
-  await chatBtn.click();
+  await page.evaluate(() => {
+    if (typeof go === 'function') go('learn');
+    _studyMode = 'learn';
+    learnSub = 'chat';
+    render();
+  });
   await sleep(500);
 
   const chatInput = page.locator('input[placeholder*="שאל"], textarea[placeholder*="שאל"], #chat-input, .chat-input input').first();
@@ -134,14 +124,15 @@ scenario('ai_chat_round_trip', async (page) => {
 
 scenario('cloud_backup_unauthenticated_toast', async (page) => {
   // v10.64.31 fix: clicking cloud backup while not logged in should surface a
-  // Hebrew "Login required" toast and route to More→Settings.
-  // Cloud backup button lives in More → Settings sub-tab.
-  await page.locator('button[onclick*="go(\'more\')"], button[aria-label="More"]').first().click({ timeout: 5000 }).catch(() => {});
-  await sleep(700);
-  await page.locator('button:has-text("Settings"), button:has-text("⚙️"), [data-sub="settings"]').first().click({ timeout: 5000 }).catch(() => {});
+  // Hebrew "Login required" toast and route to Settings.
+  await page.evaluate(() => {
+    if (typeof go === 'function') go('settings');
+    settingsSub = 'settings';
+    render();
+  });
   await sleep(700);
   const backupBtn = page.locator('#cloud-backup-btn, button[onclick*="cloudBackup()"]').first();
-  if ((await backupBtn.count()) === 0) return { status: 'SKIP', reason: 'no cloud backup button after More→Settings nav' };
+  if ((await backupBtn.count()) === 0) return { status: 'SKIP', reason: 'no cloud backup button after Settings nav' };
 
   const respPromise = page.waitForResponse(
     (r) => r.url().includes('samega_backups') && r.request().method() === 'POST',

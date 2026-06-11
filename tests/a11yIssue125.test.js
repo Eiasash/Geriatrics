@@ -144,11 +144,9 @@ describe("a11y issue #125 — v10.64.84 account-button JS override fix", () => {
 });
 
 describe("a11y issue #125 — v10.64.85 residual contrast clears", () => {
-  it("Pomo button uses emerald-700 (#047857), not emerald-600 (#059669) — 3.6:1 → 5.5:1", () => {
-    const pomoMatch = html.match(/<button[^>]*onclick="startPomodoro\(\)"[^>]*>⏱ Pomo<\/button>/);
-    expect(pomoMatch).toBeTruthy();
-    expect(pomoMatch[0]).toContain("color:#047857");
-    expect(pomoMatch[0]).not.toContain("color:#059669");
+  it("obsolete Pomodoro control stays removed from the quiz header", () => {
+    expect(html).not.toContain('startPomodoro()');
+    expect(html).not.toMatch(/>\s*⏱\s*Pomo\s*</);
   });
 
   it("Share with Friends button uses emerald-700 background — 3.77:1 → 5.5:1 (white text)", () => {
@@ -198,18 +196,16 @@ describe("a11y issue #125 — v10.64.86 final close (amber buttons)", () => {
     expect(liveCode).not.toContain("background:#d97706;color:#fff");
   });
 
-  it("the 4 amber-button render sites use amber-800 #92400e (7.39:1 white text, AAA)", () => {
+  it("the 3 amber-button render sites use amber-800 #92400e (7.39:1 white text, AAA)", () => {
     const liveCode = html.split("const CHANGELOG=")[0];
     const count = (liveCode.match(/background:#92400e;color:#fff/g) || []).length;
-    expect(count).toBe(4);
+    expect(count).toBe(3);
   });
 
-  it("imgDep '✓ מאומת' verify buttons render with amber-800 (both render paths)", () => {
-    // Two separate render sites (lines ~3002 and ~3048) both produce the
-    // imgDep-verify button. They must share the same fixed bg.
+  it("imgDep '✓ מאומת' verify button renders with amber-800", () => {
     const matches = html.match(/markImgDepVerified[^"']*[^>]*style="[^"]*background:#92400e/g);
     expect(matches).toBeTruthy();
-    expect(matches.length).toBeGreaterThanOrEqual(2);
+    expect(matches.length).toBeGreaterThanOrEqual(1);
   });
 
   it("e_issue '✓ מאומת' verify button uses amber-800", () => {

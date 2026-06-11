@@ -21,7 +21,7 @@ describe("render function orchestrators exist", () => {
   const ORCHESTRATORS = [
     "renderQuiz", "renderTrack", "renderLibrary",
     "renderStudy", "renderFlash", "renderSearch",
-    "renderMedBasket", "renderOnCall", "render", "renderTabs",
+    "renderMedBasket", "render", "renderTabs",
   ];
   for (const name of ORCHESTRATORS) {
     it(`${name} exists`, () => {
@@ -75,7 +75,7 @@ function extractBody(sc, fnName) {
 }
 
 describe("renderQuiz → _rq* helpers", () => {
-  const H = ["_rqSuddenDeath","_rqMain"];
+  const H = ["_rqMain"];
   for (const n of H) { it(`${n} exists`, () => { expect(scriptContent).toMatch(new RegExp(`function\\s+${n}\\s*\\(`)); }); }
   it("renderQuiz calls helpers", () => { const b = extractBody(scriptContent, "renderQuiz"); for (const n of H) expect(b).toContain(n+"("); });
 });
@@ -177,10 +177,9 @@ function buildScopeHarness(helperBlock, targetName) {
     // Minimal concrete globals that helpers commonly destructure or iterate
     let tab="quiz", qi=0, sel=null, ans=false, pool=[], filt="all", topicFilt=-1;
     let examMode=false, examTimer=null, examSec=0;
-    let onCallMode=false, flipRevealed=false;
     let timedMode=false, timedSec=90, timedInt=null, timedPaused=false;
     let _optShuffle=null, _sessionSaved=false, _sessionOk=0, _sessionNo=0;
-    let learnSub="study", moreSub="meds", libSec="haz-pdf";
+    let learnSub="study", moreSub="settings", settingsSub="settings", libSec="haz-pdf";
     let hazChOpen=null, _hazData=null, _hazLoading=false;
     let harChOpen=null, _harData=null, _harLoading=false;
     const S = new Proxy({sr:{}, dark:false, studyMode:false, streak:0}, __stubHandler);
@@ -222,9 +221,9 @@ describe("runtime scope — all decomposed helpers are top-level functions", () 
       helpers: ["_rlHeader","_rlHazzard","_rlHarrison","_rlLaws","_rlArticles","_rlExams","_rlFooter"],
     },
     {
-      marker: "// ===== QUIZ HELPERS",
+      marker: "// ===== QUIZ MAIN HELPERS",
       orchestrator: "renderQuiz",
-      helpers: ["_rqSuddenDeath","_rqMain"],
+      helpers: ["_rqMain"],
     },
     {
       marker: "// ===== QUIZ MAIN HELPERS",
