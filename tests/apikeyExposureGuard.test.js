@@ -4,9 +4,8 @@
  *    (it is redundant — auth_login_user returns it on password-checked login —
  *    and backup_get is SECURITY DEFINER with no identity check, so syncing it
  *    made it exfiltratable by username guess).
- *  - F-03: the OnCall AI-explanation cache (_exCache) must be sanitized at
- *    render, and must tolerate both the string shape (runExplainOnCall) and the
- *    {text} shape (renderExplainBox).
+ *  - F-03: the AI-explanation cache (_exCache) must be sanitized at render,
+ *    and must tolerate both the legacy string shape and the {text} shape.
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
@@ -25,13 +24,18 @@ describe('F-02 — API key is not cloud-synced', () => {
   });
 });
 
-describe('F-03 — OnCall explanation cache is sanitized and schema-tolerant', () => {
+describe('F-03 — explanation cache is sanitized and schema-tolerant', () => {
   it('does not render the raw cached value into innerHTML', () => {
     expect(html).not.toContain('dir="${heDir(ex)}">${ex}</div>');
   });
 
   it('extracts text from either string or {text} shape and sanitizes it', () => {
-    expect(html).toContain("const _exTxt=ex?(typeof ex==='string'?ex:(ex.text||'')):'';");
-    expect(html).toContain('${sanitize(_exTxt)}');
+    expect(html).toContain("const _exText=typeof ex==='string'?ex:(ex.text||'');");
+    expect(html).toContain('sanitize(_l)');
+  });
+
+  it('the removed OnCall renderer does not come back as a second explanation sink', () => {
+    expect(html).not.toMatch(/function\s+renderOnCall\s*\(/);
+    expect(html).not.toMatch(/function\s+runExplainOnCall\s*\(/);
   });
 });

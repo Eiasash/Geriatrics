@@ -7,8 +7,8 @@
  *   - user-attached images (uploadQImage -> shlav_q_images / q.img)
  * None are sanitized at persistence, so the render sinks MUST escape.
  *
- * Before v10.64.157 the stem (qLang(q,'q')), the sudden-death option
- * buttons, and the image src were interpolated raw. A crafted
+ * Before v10.64.157 the stem (qLang(q,'q')), option buttons, and image src
+ * were interpolated raw. A crafted
  * `<img src=x onerror=...>` inside an imported pack executed on render.
  *
  * This guard pins that every such sink stays sanitize()-wrapped. It is a
@@ -41,9 +41,8 @@ describe('render-sink XSS guard — stem sinks are escaped', () => {
   });
 
   it('all stem content sinks use sanitize(qLang(q,\'q\'))', () => {
-    // 2 paragraph sinks (sudden-death + main) + 1 flashcard div sink.
-    expect(count(html, "${sanitize(qLang(q,'q'))}</p>")).toBe(2);
-    expect(count(html, "${sanitize(qLang(q,'q'))}</div>")).toBe(1);
+    // Primary quiz stem sink. The duplicate sudden-death stem path was removed.
+    expect(count(html, "${sanitize(qLang(q,'q'))}</p>")).toBe(1);
   });
 
   it('the dir attribute still uses bare heDir(qLang(q,\'q\')) (must NOT be sanitized)', () => {
@@ -56,9 +55,10 @@ describe('render-sink XSS guard — stem sinks are escaped', () => {
     expect(html).toContain('${sanitize(t.substring(0,80))}');
   });
 
-  it('sudden-death option buttons escape option text and aria-label', () => {
+  it('quiz option buttons escape option text and aria-label', () => {
     expect(html).not.toContain('aria-label="Option ${i+1}: ${o}">${o}</button>');
-    expect(html).toContain('aria-label="Option ${i+1}: ${sanitize(o)}">${sanitize(o)}</button>');
+    expect(html).toContain('aria-label="Option ${origI+1}: ${sanitize(o)}"');
+    expect(html).toContain('<span>${sanitize(o)}</span>');
   });
 });
 
@@ -67,8 +67,8 @@ describe('render-sink XSS guard — image sinks are escaped', () => {
     expect(count(html, 'src="${q.img}"'), 'raw q.img src').toBe(0);
   });
 
-  it('both image sinks use sanitize(q.img)', () => {
-    expect(count(html, 'src="${sanitize(q.img)}"')).toBe(2);
+  it('the quiz image sink uses sanitize(q.img)', () => {
+    expect(count(html, 'src="${sanitize(q.img)}"')).toBe(1);
   });
 
   it('uploadQImage clamps the file extension to an allowlist', () => {

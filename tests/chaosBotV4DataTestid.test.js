@@ -12,11 +12,11 @@ const html = readFileSync(join(ROOT, 'shlav-a-mega.html'), 'utf-8');
 const bot = readFileSync(join(ROOT, 'scripts', 'chaos-doctor-bot-v4.mjs'), 'utf-8');
 
 describe('#333 data-testid practice-surface hooks', () => {
-  it('monolith: both check controls (practice check() + sudden-death sdCheck()) carry data-testid="check-answer"', () => {
+  it('monolith: the practice check control carries data-testid="check-answer"', () => {
     const n = (html.match(/data-testid="check-answer"/g) || []).length;
-    expect(n).toBeGreaterThanOrEqual(2);
+    expect(n).toBeGreaterThanOrEqual(1);
     expect(html).toMatch(/data-testid="check-answer"[^>]*onclick="check\(\)"/);
-    expect(html).toMatch(/data-testid="check-answer"[^>]*onclick="sdCheck\(\)"/);
+    expect(html).not.toMatch(/onclick="sdCheck\(\)"/);
   });
 
   it('monolith: the advance control (onclick="next()") carries data-testid="advance"', () => {

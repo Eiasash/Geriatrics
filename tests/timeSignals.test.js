@@ -58,9 +58,8 @@ describe('time-to-answer wiring (source-level guards)', () => {
     expect(checkBody).toMatch(/_lastElapsed\s*=\s*Math\.max\(\s*0\s*,\s*Math\.round\(\s*\(\s*Date\.now\(\)\s*-\s*qStartTime\s*\)\s*\/\s*1000\s*\)\s*\)\s*;/);
   });
 
-  it('captures _lastElapsed inside onCallPick (flip-card path)', () => {
-    const onCallBody = extractFunction(html, 'onCallPick');
-    expect(onCallBody).toMatch(/_lastElapsed\s*=\s*Math\.max/);
+  it('does not keep the removed On-Call flip-card timing path', () => {
+    expect(html).not.toMatch(/function\s+onCallPick\s*\(/);
   });
 
   it('renders the time-signal widget only when ans&&!examMode&&_lastElapsed>0', () => {
