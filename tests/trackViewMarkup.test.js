@@ -63,6 +63,8 @@ const OUTER_SHELLS = [
   "track-wsm", "track-wsm__head", "track-wsm__title", "track-wsm__sub", "track-wsm__chev",
   "track-wsm__scroll", "track-wsm__table", "track-wsm__th-topic", "track-wsm__th-year",
   "track-wsm__td-topic", "track-wsm__td-cell", "track-wsm__legend", "track-wsm__legend-row", "track-wsm__legend-swatch",
+  "track-wsm__mobile-list", "track-wsm__mobile-row", "track-wsm__mobile-line", "track-wsm__mobile-topic",
+  "track-wsm__mobile-score", "track-wsm__mobile-meta", "track-wsm__mobile-bar",
   "track-cm", "track-cm__head", "track-cm__title", "track-cm__sub", "track-cm__blind", "track-cm__chev",
   "track-cm__grid", "track-cm__cell", "track-cm__num", "track-cm__warn",
   "track-matrix__title", "track-matrix__sub", "track-matrix__heading", "track-matrix__heading-arrow",
@@ -71,7 +73,8 @@ const OUTER_SHELLS = [
   "track-cheat-row", "track-cheat-link",
   "track-activity", "track-activity__head", "track-activity__title", "track-activity__sub",
   "track-activity__chev", "track-activity__grid", "track-activity__cell",
-  "track-daily", "track-daily__title", "track-daily__meta", "track-daily__steps", "track-daily__step", "track-daily__btn",
+  "track-daily", "track-daily__title", "track-daily__meta", "track-daily__steps", "track-daily__step",
+  "track-daily__step-num", "track-daily__step-main", "track-daily__step-title", "track-daily__step-meta", "track-daily__btn",
   "track-session-inline", "track-session-inline__title", "track-session-inline__row",
   "track-session-inline__stat", "track-session-inline__num", "track-session-inline__lbl", "track-session-inline__best",
   "track-plan", "track-plan__head", "track-plan__head-main", "track-plan__icon", "track-plan__title-block",
@@ -79,8 +82,9 @@ const OUTER_SHELLS = [
   "track-plan__tier", "track-plan__tier-head", "track-plan__tier-main", "track-plan__tier-badge",
   "track-plan__tier-text", "track-plan__tier-label", "track-plan__tier-meta", "track-plan__tier-arrow",
   "track-plan__domain", "track-plan__domain-name", "track-plan__topic", "track-plan__topic-row",
-  "track-plan__topic-cb", "track-plan__topic-name", "track-plan__topic-acc", "track-plan__topic-hrs",
+  "track-plan__topic-cb", "track-plan__topic-name", "track-plan__topic-meta", "track-plan__topic-acc", "track-plan__topic-hrs",
   "track-plan__actions", "track-plan__action",
+  "track-activity__summary", "track-activity__legend", "track-activity__legend-item", "track-activity__legend-dot",
   "track-share", "track-share__title", "track-share__sub", "track-share__btn",
   "track-version-footer", "track-version-footer__row", "track-version-footer__btn", "track-version-footer__link", "track-version-footer__sig",
 ];
@@ -211,6 +215,8 @@ describe("_rtProgress — class-driven shell", () => {
   it("Weak Spots Map uses .track-wsm shell + --open state modifier", () => {
     expect(body).toMatch(/class="card track-wsm"/);
     expect(body).toMatch(/class="track-wsm__head\$\{_wsmOpen\?' track-wsm__head--open':''\}"/);
+    expect(body).toMatch(/class="track-wsm__mobile-list"/);
+    expect(body).toMatch(/track-wsm__mobile-row track-wsm__mobile-row--\$\{mod\}/);
   });
 
   it("WSM cells use modifier classes for empty/single/ok/mid/low (no per-cell inline bg)", () => {
