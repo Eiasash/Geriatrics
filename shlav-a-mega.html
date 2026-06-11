@@ -697,26 +697,46 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .track-donut__item{padding:5px 8px;display:flex;align-items:center;justify-content:space-between;gap:6px}
 .track-donut__item-head{font-size:9px}
 .track-donut__value{font-size:14px;margin-top:0}
-.track-final,.track-rescue,.track-due{align-items:stretch;flex-wrap:wrap}
-.track-final__body,.track-rescue__body,.track-due__body{min-width:180px}
-.track-final__cta,.track-rescue__cta,.track-due__cta{margin-inline-start:auto}
-.track-heatmap__grid{grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:5px}
-.track-heatmap__cell{height:62px;padding:6px}
-.track-wsm__table{min-width:620px}
-.track-activity__grid{gap:4px}
+.track-final,.track-rescue,.track-due{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px}
+.track-final__body,.track-rescue__body,.track-due__body{min-width:0}
+.track-final__cta,.track-rescue__cta,.track-due__cta{grid-column:1 / -1;width:100%;margin:2px 0 0}
+.track-heatmap{padding:12px}
+.track-heatmap__head{display:grid;justify-content:stretch;gap:3px}
+.track-heatmap__title{font-size:13px}
+.track-heatmap__sub{display:block;margin-top:2px}
+.track-heatmap__count{font-size:10px}
+.track-heatmap__grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.track-heatmap__cell{height:auto;min-height:78px;padding:8px}
+.track-heatmap__name{font-size:11px;line-height:1.16;-webkit-line-clamp:3;overflow-wrap:anywhere}
+.track-heatmap__pct{font-size:12px}
+.track-heatmap__legend{flex-wrap:wrap;justify-content:center;row-gap:4px}
+.track-heatmap__swatches{order:3;flex:1 0 100%}
+.track-wsm__scroll,.track-wsm__legend{display:none}
+.track-wsm__mobile-list{display:grid}
+.track-matrix__line{display:grid;gap:3px}
+.track-matrix__meta{justify-content:space-between}
+.track-activity__grid{gap:5px}
 }
+@media(max-width:360px){.track-heatmap__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .track-daily{padding:14px;margin-bottom:10px;border-left:4px solid #059669}
 .track-daily__title{font-weight:700;font-size:13px;margin-bottom:4px;color:#059669}
-.track-daily__meta{font-size:10px;color:rgb(var(--fg2));margin-bottom:10px}
+.track-daily__meta{font-size:10px;color:rgb(var(--fg2));margin-bottom:10px;direction:ltr;unicode-bidi:isolate}
 .track-daily__compress{color:#d97706}
-.track-daily__steps{font-size:11px;line-height:2}
-.track-daily__step{display:block}
-.track-daily__btn{font-size:9px;padding:2px 8px;border:none;border-radius:6px;cursor:pointer}
+.track-daily__steps{font-size:11px;line-height:1.35;display:grid;gap:8px}
+.track-daily__step{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;padding:8px;border:1px solid rgb(var(--brd));border-radius:10px;background:rgb(var(--bg3));direction:ltr;text-align:left}
+.track-daily__step-num{width:22px;height:22px;border-radius:999px;background:rgb(var(--bg2));color:rgb(var(--fg2));font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.track-daily__step-title{font-size:11px;color:rgb(var(--fg));overflow-wrap:anywhere}
+.track-daily__step-meta{font-size:9px;color:rgb(var(--fg3));margin-top:2px}
+.track-daily__btn{font-size:10px;padding:5px 10px;border:none;border-radius:8px;cursor:pointer;min-height:34px;font-weight:700;white-space:nowrap}
 .track-daily__btn--primary{background:rgb(var(--blue-bg));color:#3b82f6}
 .track-daily__btn--secondary{background:#ede9fe;color:#7c3aed}
 .track-daily__btn--good{background:#dcfce7;color:rgb(var(--green-fg))}
 .track-daily__btn--warn{background:rgb(var(--yellow-bg));color:rgb(var(--yellow-fg))}
 .track-daily__btn--danger{background:#fee2e2;color:#dc2626}
+@media(max-width:480px){
+.track-daily__step{grid-template-columns:auto minmax(0,1fr)}
+.track-daily__btn{grid-column:2;justify-self:start;min-width:104px}
+}
 .track-session-inline{margin-top:10px;padding-top:10px;border-top:1px dashed rgb(var(--brd))}
 .track-session-inline__title{font-weight:700;font-size:11px;margin-bottom:6px;color:#7c3aed}
 .track-session-inline__row{display:flex;gap:12px;margin-bottom:4px}
@@ -754,24 +774,37 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .track-plan__tier-arrow--collapsed{transform:rotate(-90deg)}
 .track-plan__domain{padding:8px 14px;border-top:1px solid rgb(var(--brd))}
 .track-plan__domain-name{font-size:10px;font-weight:600;color:rgb(var(--fg2));margin-bottom:6px}
-.track-plan__topic{border-radius:8px;margin-bottom:4px}
+.track-plan__topic{border-radius:8px;margin-bottom:6px;border:1px solid transparent}
 .track-plan__topic--checked{background:#f8fafc}
-.track-plan__topic-row{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:10px;cursor:pointer}
+.track-plan__topic-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;padding:7px 8px;font-size:10px;cursor:pointer;direction:ltr;text-align:left}
 .track-plan__topic-cb{width:14px;height:14px;flex-shrink:0;cursor:pointer}
-.track-plan__topic-name{flex:1;color:rgb(var(--fg))}
+.track-plan__topic-name{color:rgb(var(--fg));min-width:0;overflow-wrap:anywhere}
 .track-plan__topic-name--done{color:rgb(var(--fg3));text-decoration:line-through}
+.track-plan__topic-meta{display:inline-flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
 .track-plan__topic-acc{padding:2px 6px;border-radius:4px;font-size:8px;font-weight:600}
 .track-plan__topic-acc--ok{background:rgba(5,150,105,.12);color:#059669}
 .track-plan__topic-acc--warn{background:rgba(217,119,6,.12);color:#d97706}
 .track-plan__topic-acc--err{background:rgba(220,38,38,.12);color:#dc2626}
 .track-plan__topic-acc--neutral{background:rgba(148,163,184,.12);color:#94a3b8}
 .track-plan__topic-hrs{color:rgb(var(--fg3));font-size:9px;white-space:nowrap}
-.track-plan__actions{display:flex;gap:4px;padding:0 8px 6px 36px;flex-wrap:wrap}
-.track-plan__action{font-size:9px;padding:3px 8px;border:1px solid rgb(var(--brd));border-radius:6px;background:rgb(var(--card-bg));cursor:pointer;white-space:nowrap}
+.track-plan__actions{display:flex;gap:6px;padding:0 8px 8px 30px;flex-wrap:wrap;direction:ltr;justify-content:flex-start}
+.track-plan__action{font-size:9px;padding:4px 8px;border:1px solid rgb(var(--brd));border-radius:7px;background:rgb(var(--card-bg));cursor:pointer;white-space:nowrap;min-height:30px}
 .track-plan__action--haz{color:#b45309}
 .track-plan__action--note{color:#0D7377}
 .track-plan__action--quiz{color:#3b82f6}
 .track-plan__action--ai{color:#7c3aed}
+@media(max-width:480px){
+.track-plan__head,.track-plan__tier-head{padding:12px}
+.track-plan__domain{padding:8px 10px}
+.track-plan__domain-name{font-size:11px}
+.track-plan__topic{padding:8px;border-color:rgb(var(--brd));background:rgb(var(--bg3))}
+.track-plan__topic--checked{background:#f8fafc}
+.track-plan__topic-row{grid-template-columns:auto minmax(0,1fr);padding:0;align-items:start}
+.track-plan__topic-name{font-size:12px;line-height:1.3}
+.track-plan__topic-meta{grid-column:2;justify-content:flex-start;margin-top:3px}
+.track-plan__actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:8px 0 0 24px}
+.track-plan__action{width:100%;font-size:10px;text-align:center}
+}
 .track-share{padding:14px;text-align:center;margin-top:12px}
 .track-share__title{font-weight:700;font-size:12px;margin-bottom:8px}
 .track-share__sub{font-size:10px;color:rgb(var(--fg2));margin-bottom:10px}
@@ -782,6 +815,41 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .track-version-footer__btn--update{background:#0D7377}
 .track-version-footer__link{font-size:10px;padding:5px 14px;background:#4f46e5;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block}
 .track-version-footer__sig{margin-top:6px}
+.track-wsm__mobile-list{display:none;gap:8px}
+.track-wsm__mobile-row{padding:9px 10px;border:1px solid rgb(var(--brd));border-radius:10px;background:rgb(var(--bg3));cursor:pointer;direction:ltr;text-align:left}
+.track-wsm__mobile-line{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px}
+.track-wsm__mobile-topic{font-weight:700;color:rgb(var(--fg));min-width:0;overflow-wrap:anywhere}
+.track-wsm__mobile-score{font-weight:800;font-variant-numeric:tabular-nums}
+.track-wsm__mobile-row--ok .track-wsm__mobile-score{color:#047857}
+.track-wsm__mobile-row--mid .track-wsm__mobile-score{color:#b45309}
+.track-wsm__mobile-row--low .track-wsm__mobile-score{color:#b91c1c}
+.track-wsm__mobile-meta{font-size:9px;color:rgb(var(--fg3));margin-top:3px;direction:ltr;unicode-bidi:isolate}
+.track-wsm__mobile-bar{height:4px;border-radius:999px;background:rgb(var(--bg2));overflow:hidden;margin-top:6px}
+.track-wsm__mobile-fill{display:block;height:100%;border-radius:999px}
+.track-wsm__mobile-fill--ok{background:#10b981}
+.track-wsm__mobile-fill--mid{background:#f59e0b}
+.track-wsm__mobile-fill--low{background:#ef4444}
+@media(max-width:480px){.track-wsm__mobile-list{display:grid}}
+.track-activity__summary{font-size:10px;color:rgb(var(--fg2));margin-bottom:8px}
+.track-activity__legend{display:flex;justify-content:center;gap:10px;margin-top:8px;font-size:9px;color:rgb(var(--fg3));flex-wrap:wrap}
+.track-activity__legend-item{display:inline-flex;align-items:center;gap:4px}
+.track-activity__legend-dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+.track-activity__legend-dot--low{background:#dcfce7}
+.track-activity__legend-dot--mid{background:#86efac}
+.track-activity__legend-dot--high{background:#15803d}
+.settings-view{max-width:100%;overflow-x:hidden}
+.settings-view .card{max-width:100%;overflow-wrap:anywhere}
+.settings-view input,.settings-view select{max-width:100%;min-width:0}
+.settings-data-actions,.settings-cloud-actions,.settings-api-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.settings-api-key-box{min-width:0;overflow-wrap:anywhere}
+@media(max-width:480px){
+.settings-view .card{padding-left:12px!important;padding-right:12px!important}
+.settings-data-actions,.settings-cloud-actions{gap:8px}
+.settings-data-actions .btn,.settings-cloud-actions .btn{flex:1 1 145px;min-width:0}
+.settings-api-row{align-items:stretch}
+.settings-api-row .btn{flex:0 0 auto}
+.settings-api-key-box{flex:1 1 190px}
+}
 /* ===== END TRACK TAB CSS ===== */
 </style>
 
@@ -5219,23 +5287,30 @@ const pa=a.s.tot?a.s.ok/a.s.tot:0,pb=b.s.tot?b.s.ok/b.s.tot:0;return pa-pb;}).sl
 const trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
 let h=`<div class="card track-daily">
 <div class="track-daily__title">📋 Today's Study Plan</div>`;
-if(daysLeft!==null)h+=`<div class="track-daily__meta">${daysLeft} days to exam · ${new Date(examDate).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}${(function(){try{let w=0;for(let i=0;i<QZ.length;i++){const sr=S.sr[i];if(sr&&sr.fsrsS&&sr.fsrsD){const base=fsrsInterval(sr.fsrsS);const wrp=fsrsIntervalWithDeadline(sr.fsrsS,sr.fsrsD,1);if(wrp<base)w++;}}return w>0?` · <span class="track-daily__compress">⚡ ${w} cards compressed</span>`:'';}catch(e){return '';}})()}</div>`;
+if(daysLeft!==null)h+=`<div class="track-daily__meta" dir="ltr">${daysLeft} days left · exam ${new Date(examDate).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}${(function(){try{let w=0;for(let i=0;i<QZ.length;i++){const sr=S.sr[i];if(sr&&sr.fsrsS&&sr.fsrsD){const base=fsrsInterval(sr.fsrsS);const wrp=fsrsIntervalWithDeadline(sr.fsrsS,sr.fsrsD,1);if(wrp<base)w++;}}return w>0?` · <span class="track-daily__compress">⚡ ${w} cards compressed</span>`:'';}catch(e){return '';}})()}</div>`;
 h+=`<div class="track-daily__steps">`;
+const addDailyStep=(num,title,meta,buttonHtml)=>{
+  h+=`<div class="track-daily__step">
+<span class="track-daily__step-num">${num}</span>
+<div class="track-daily__step-main"><div class="track-daily__step-title">${title}</div>${meta?`<div class="track-daily__step-meta">${meta}</div>`:''}</div>
+${buttonHtml||''}
+</div>`;
+};
 // Step 1: Due questions
-if(dueN>0)h+=`<div class="track-daily__step">1️⃣ <b>${dueN} due questions</b> (~${Math.round(dueN*1.5)} min) <button onclick="setFilt('due');tab='quiz';render()" class="track-daily__btn track-daily__btn--primary">▶ Start</button></div>`;
-else h+=`<div class="track-daily__step">1️⃣ ✅ No questions due — you're caught up!</div>`;
+if(dueN>0)addDailyStep(1,`<b>${dueN} due questions</b>`,`~${Math.round(dueN*1.5)} min`,`<button onclick="setFilt('due');tab='quiz';render()" class="track-daily__btn track-daily__btn--primary">Start</button>`);
+else addDailyStep(1,`✅ No questions due`,`You're caught up.`,``);
 // Step 2: Weakest topic
 if(weakest.length){
 const w=weakest[0];
 const wPct=w.s.tot?Math.round(w.s.ok/w.s.tot*100):0;
 const ref=TOPIC_REF[w.i];
-h+=`<div class="track-daily__step">2️⃣ Read: <b>${w.name}</b> (${wPct}% accuracy, ${QZ.filter(q=>q.ti===w.i).length} questions) ${ref?`<button onclick="tab='lib';libSec='harrison';render()" class="track-daily__btn track-daily__btn--secondary">📖 Open</button>`:''}</div>`;
-h+=`<div class="track-daily__step">3️⃣ Drill: <b>20q mini-exam on ${w.name}</b> <button onclick="startTopicMiniExam(${w.i})" class="track-daily__btn track-daily__btn--good">🎯 Start</button></div>`;
+addDailyStep(2,`Read: <b>${w.name}</b>`,`${wPct}% accuracy · ${QZ.filter(q=>q.ti===w.i).length} questions`,ref?`<button onclick="tab='lib';libSec='harrison';render()" class="track-daily__btn track-daily__btn--secondary">Open</button>`:'');
+addDailyStep(3,`Drill: <b>20q mini-exam on ${w.name}</b>`,`Topic-focused question block`,`<button onclick="startTopicMiniExam(${w.i})" class="track-daily__btn track-daily__btn--good">Start</button>`);
 }
 // Step 3: Traps
-if(trapCount>0)h+=`<div class="track-daily__step">4️⃣ Review <b>${trapCount} trap questions</b> <button onclick="setFilt('traps');tab='quiz';render()" class="track-daily__btn track-daily__btn--warn">🪤 Start</button></div>`;
+if(trapCount>0)addDailyStep(4,`Review <b>${trapCount} trap questions</b>`,`High-risk repeated misses`,`<button onclick="setFilt('traps');tab='quiz';render()" class="track-daily__btn track-daily__btn--warn">Start</button>`);
 // Step 4: Replay last mock wrong (if any)
-try{const _mh=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');const _last=_mh[_mh.length-1];const _wn=_last&&_last.wrongIdxs?_last.wrongIdxs.length:0;if(_wn>0){const _dt=new Date(_last.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'});h+=`<div class="track-daily__step">5️⃣ Replay <b>${_wn} wrong answers</b> from mock on ${_dt} <button onclick="replayLastMockWrong()" class="track-daily__btn track-daily__btn--danger">🔁 Start</button></div>`;}}catch(e){}
+try{const _mh=JSON.parse(localStorage.getItem('samega_mock_hist')||'[]');const _last=_mh[_mh.length-1];const _wn=_last&&_last.wrongIdxs?_last.wrongIdxs.length:0;if(_wn>0){const _dt=new Date(_last.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'});addDailyStep(5,`Replay <b>${_wn} wrong answers</b>`,`Last mock: ${_dt}`,`<button onclick="replayLastMockWrong()" class="track-daily__btn track-daily__btn--danger">Start</button>`);}}catch(e){}
 h+=`</div>`;
 // v10.58.0: append today's session stats inline below the plan steps,
 // inside the same card, instead of a separate "Today's Session" card.
@@ -5602,18 +5677,20 @@ function renderStudyPlan(){
               accBadge = `<span class="track-plan__topic-acc track-plan__topic-acc--${accMod}">${acc}%</span>`;
             }
 
+            const topicEsc = topic.n.replace(/'/g,"\\'");
+            const topicLabel = topic.n.replace(/'/g,'');
+            const chapterAction = HAZ_CHAPTERS[topic.n]?`<button onclick="event.stopPropagation();tab='lib';libSec='haz-pdf';openHazzardChapter(parseInt(HAZ_CHAPTERS['${topicEsc}'].ch))" class="track-plan__action track-plan__action--haz" aria-label="Read Hazzard's chapter for ${topicLabel}">📕 Ch ${HAZ_CHAPTERS[topic.n].ch}</button>`:'';
             h += `<div class="track-plan__topic${isChecked?' track-plan__topic--checked':''}">
-            <div class="track-plan__topic-row" onclick="event.stopPropagation();S.sp=S.sp||{};S.sp['${topic.n.replace(/'/g,"\\'")}']=!S.sp['${topic.n.replace(/'/g,"\\'")}']; save();render()" role="checkbox" aria-checked="${isChecked?'true':'false'}" tabindex="0">
+            <div class="track-plan__topic-row" onclick="event.stopPropagation();S.sp=S.sp||{};S.sp['${topicEsc}']=!S.sp['${topicEsc}']; save();render()" role="checkbox" aria-checked="${isChecked?'true':'false'}" tabindex="0">
             <input type="checkbox" class="track-plan__topic-cb" ${isChecked?'checked':''} readonly tabindex="-1">
-            <span class="track-plan__topic-name${isChecked?' track-plan__topic-name--done':''}">${topic.n}</span>
-            ${accBadge}
-            <span class="track-plan__topic-hrs">${topic.hrs}</span>
+            <span class="track-plan__topic-name${isChecked?' track-plan__topic-name--done':''}" dir="auto">${topic.n}</span>
+            <span class="track-plan__topic-meta">${accBadge}<span class="track-plan__topic-hrs">${topic.hrs}</span></span>
             </div>
             <div class="track-plan__actions">
-            ${HAZ_CHAPTERS[topic.n]?`<button onclick="event.stopPropagation();tab='lib';libSec='haz-pdf';openHazzardChapter(parseInt(HAZ_CHAPTERS['${topic.n.replace(/'/g,"\\'")}'].ch))" class="track-plan__action track-plan__action--haz" aria-label="Read Hazzard's chapter for ${topic.n.replace(/'/g,'')}">📕 Ch ${HAZ_CHAPTERS[topic.n].ch}</button>`:''}
-            <button onclick="event.stopPropagation();openNote=${topic.ti};go('study')" class="track-plan__action track-plan__action--note" aria-label="Open notes for ${topic.n.replace(/'/g,'')}">📖 Notes</button>
-            <button onclick="event.stopPropagation();setTopicFilt(${topic.ti});go('quiz')" class="track-plan__action track-plan__action--quiz" aria-label="Quiz ${topic.n.replace(/'/g,'')}">📝 Quiz</button>
-            <button onclick="event.stopPropagation();S.chat=[];go('chat');setTimeout(function(){sendChatStarter('Give me a concise board-review summary of ${topic.n.replace(/'/g,"\\'")} in geriatrics. Cover: key definitions, diagnostic criteria, management pearls, exam traps, and must-know numbers. Format with bold headings.')},100)" class="track-plan__action track-plan__action--ai" aria-label="AI summary of ${topic.n.replace(/'/g,'')}">🤖 Summarize</button>
+            <button onclick="event.stopPropagation();setTopicFilt(${topic.ti});go('quiz')" class="track-plan__action track-plan__action--quiz" aria-label="Quiz ${topicLabel}">📝 Quiz</button>
+            <button onclick="event.stopPropagation();openNote=${topic.ti};go('study')" class="track-plan__action track-plan__action--note" aria-label="Open notes for ${topicLabel}">📖 Notes</button>
+            <button onclick="event.stopPropagation();S.chat=[];go('chat');setTimeout(function(){sendChatStarter('Give me a concise board-review summary of ${topicEsc} in geriatrics. Cover: key definitions, diagnostic criteria, management pearls, exam traps, and must-know numbers. Format with bold headings.')},100)" class="track-plan__action track-plan__action--ai" aria-label="AI summary of ${topicLabel}">🤖 Summarize</button>
+            ${chapterAction}
             </div>
             </div>`;
           });
@@ -5854,7 +5931,7 @@ const tSt=getTopicStats();
 const years=[...new Set(QZ.map(q=>q.t))].sort();
 const heatData=[];
 TOPICS.forEach((topic,ti)=>{
-const row={topic,cells:[]};
+const row={topic,ti,cells:[]};
 years.forEach(yr=>{
 const qs=QZ.map((q,i)=>({q,i})).filter(e=>e.q.ti===ti&&e.q.t===yr);
 if(!qs.length){row.cells.push({yr,pct:-1,n:0});return;}
@@ -5874,16 +5951,28 @@ const _wsmOpen=S._wsmOpen===true;
 h+=`<div class="card track-wsm">`;
 h+=`<div onclick="S._wsmOpen=!S._wsmOpen;save();render()" class="track-wsm__head${_wsmOpen?' track-wsm__head--open':''}" role="button" tabindex="0" aria-expanded="${_wsmOpen?'true':'false'}" aria-label="Toggle weak spots map"><span class="track-wsm__title">🗺️ Weak Spots Map <span class="track-wsm__sub">· ${heatData.length} topic${heatData.length>1?'s':''} × ${years.length} exam${years.length>1?'s':''}</span></span><span class="track-wsm__chev">${_wsmOpen?'▲':'▼'}</span></div>`;
 if(_wsmOpen){
+const _wsmAvg=row=>{const cells=row.cells.filter(c=>c.n>0);return cells.length?Math.round(cells.reduce((s,c)=>s+c.pct,0)/cells.length):0;};
+const _wsmAnswered=row=>row.cells.reduce((s,c)=>s+c.n,0);
+const _wsmRows=heatData.slice().sort((a,b)=>_wsmAvg(a)-_wsmAvg(b));
+h+=`<div class="track-wsm__mobile-list" aria-label="Weak spots ranked list">`;
+_wsmRows.slice(0,12).forEach(row=>{
+const avg=_wsmAvg(row);
+const attempts=_wsmAnswered(row);
+const covered=row.cells.filter(c=>c.n>0).length;
+const mod=avg>=75?'ok':avg>=50?'mid':'low';
+const width=Math.max(4,Math.min(100,avg));
+h+=`<div class="track-wsm__mobile-row track-wsm__mobile-row--${mod}" onclick="setTopicFilt(${row.ti});tab='quiz';render()" role="button" tabindex="0" aria-label="${row.topic}: ${avg}% across ${attempts} answered questions">
+<div class="track-wsm__mobile-line"><span class="track-wsm__mobile-topic">${row.topic}</span><span class="track-wsm__mobile-score">${avg}%</span></div>
+<div class="track-wsm__mobile-meta">${attempts} answered · ${covered}/${years.length} exam periods with data</div>
+<div class="track-wsm__mobile-bar"><span class="track-wsm__mobile-fill track-wsm__mobile-fill--${mod}" style="width:${width}%"></span></div>
+</div>`;
+});
+h+=`</div>`;
 h+=`<div class="track-wsm__scroll"><table class="track-wsm__table"><thead><tr><th class="track-wsm__th-topic">Topic</th>`;
 const _yearAbbr={'2020':'20','2021':'21','2021-Dec':"21·12",'2022':'22','2023-Jun':"23·6",'2024-May':"24·5",'2024-Sep':"24·9",'2025-Jun':"25·6",'Hazzard':'Haz','Harrison':'Har','Exam':'Ex','Hazzard-suppl':'Sup','FM-Core':'FM','GRS8':'GRS','Harrison-suppl':'HSup'};
 years.forEach(y=>{h+=`<th class="track-wsm__th-year" title="${y}">${_yearAbbr[y]||y}</th>`;});
 h+=`</tr></thead><tbody>`;
-heatData.sort((a,b)=>{
-const avgA=a.cells.filter(c=>c.n>0).reduce((s,c)=>s+c.pct,0)/(a.cells.filter(c=>c.n>0).length||1);
-const avgB=b.cells.filter(c=>c.n>0).reduce((s,c)=>s+c.pct,0)/(b.cells.filter(c=>c.n>0).length||1);
-return avgA-avgB;
-});
-heatData.forEach(row=>{
+_wsmRows.forEach(row=>{
 h+=`<tr><td class="track-wsm__td-topic">${row.topic}</td>`;
 row.cells.forEach(c=>{
 if(c.n===0){h+=`<td class="track-wsm__td-cell track-wsm__td-cell--empty">·</td>`;}
@@ -5943,9 +6032,11 @@ h+=`</div>`;
 {
 const _actOpen=S._actOpen===true;
 const _actDays=(function(){let n=0;for(let _i=29;_i>=0;_i--){const _d=new Date();_d.setDate(_d.getDate()-_i);const _dk=_d.toISOString().slice(0,10);const _act=S.dailyAct&&S.dailyAct[_dk];if(_act&&_act.q>0)n++;}return n;})();
+const _actTotal=(function(){let n=0;for(let _i=29;_i>=0;_i--){const _d=new Date();_d.setDate(_d.getDate()-_i);const _dk=_d.toISOString().slice(0,10);const _act=S.dailyAct&&S.dailyAct[_dk];n+=_act&&_act.q?_act.q:0;}return n;})();
 h+=`<div class="card track-activity">`;
 h+=`<div onclick="S._actOpen=!S._actOpen;save();render()" class="track-activity__head${_actOpen?' track-activity__head--open':''}" role="button" tabindex="0" aria-expanded="${_actOpen?'true':'false'}" aria-label="Toggle activity heatmap"><span class="track-activity__title">📊 Activity Heatmap (last 30 days) <span class="track-activity__sub">· ${_actDays} active day${_actDays===1?'':'s'}</span></span><span class="track-activity__chev">${_actOpen?'▲':'▼'}</span></div>`;
 if(_actOpen){
+if(_actTotal>0)h+=`<div class="track-activity__summary">${_actTotal} questions answered in the last 30 days</div>`;
 h+=`<div class="track-activity__grid">`;
 for(let _i=29;_i>=0;_i--){
 const _d=new Date();_d.setDate(_d.getDate()-_i);
@@ -5956,6 +6047,11 @@ const _int=_qc===0?0:_qc<5?1:_qc<15?2:_qc<30?3:4;
 h+=`<div class="track-activity__cell track-activity__cell--lvl${_int}" title="${_dk}: ${_qc} Qs"></div>`;
 }
 h+=`</div>`;
+h+=`<div class="track-activity__legend">
+<span class="track-activity__legend-item"><span class="track-activity__legend-dot track-activity__legend-dot--low"></span>1-4 Qs</span>
+<span class="track-activity__legend-item"><span class="track-activity__legend-dot track-activity__legend-dot--mid"></span>5-29 Qs</span>
+<span class="track-activity__legend-item"><span class="track-activity__legend-dot track-activity__legend-dot--high"></span>30+ Qs</span>
+</div>`;
 }
 h+=`</div>`;
 }
@@ -6247,7 +6343,7 @@ permHint='<div style="font-size:10px;color:#059669;margin-top:6px">✓ תזכו�
 }else if(optIn&&browserPerm!=='granted'){
 permHint='<div style="font-size:10px;color:#b45309;margin-top:6px">ההרשאה טרם ניתנה — לחץ שוב כדי לבקש.</div>';
 }
-let h='<div class="sec-t">⚙️ Settings</div><div class="sec-s">העדפות אישיות — נשמרות מקומית במכשיר</div>';
+let h='<div class="settings-view"><div class="sec-t">⚙️ Settings</div><div class="sec-s">העדפות אישיות — נשמרות מקומית במכשיר</div>';
 h+='<div class="card" style="padding:14px">';
 h+='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px">';
 h+='<div style="flex:1">';
@@ -6267,12 +6363,12 @@ if(typeof window.renderStudyPlanSection==='function')h+=window.renderStudyPlanSe
 h+=`<div class="card" id="data-mgmt-anchor" style="padding:14px;margin-top:12px;scroll-margin-top:80px">
 <div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Your progress is saved automatically in your browser. Export to backup or transfer between devices.</div>
-<div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+<div class="settings-data-actions" style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
 <button class="btn btn-p" onclick="exportProgress()" aria-label="Export progress">📥 Export Progress</button>
 <button class="btn btn-g" onclick="importProgress()" aria-label="Import progress">📤 Import Progress</button>
 <button class="btn btn-o" onclick="confirmModal('Reset ALL data? This cannot be undone.').then(ok=>{if(ok){localStorage.removeItem('${LS}');location.reload()}})" aria-label="Reset all data">🗑️ Reset</button>
 </div>
-<div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px">
+<div class="settings-cloud-actions" style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px">
 <button id="cloud-backup-btn" class="btn" style="background:#e0f2fe;color:#0284c7" onclick="cloudBackup()" aria-label="Backup to cloud">☁️ Backup to Cloud</button>
 <button class="btn" style="background:rgb(var(--green-bg));color:#15803d" onclick="cloudRestore()" aria-label="Restore from cloud">☁️ Restore from Cloud</button>
 </div>
@@ -6285,8 +6381,8 @@ h+='<div class="sec-t" style="font-size:13px">🔑 Anthropic API Key</div>';
 h+='<div class="sec-s" style="margin-bottom:10px">לשימוש ב-AI Explain ו-Teach-Back · מאוחסן בדפדפן בלבד</div>';
 if(!_storedKey){h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;font-size:10px;color:rgb(var(--green-fg));margin-bottom:10px">✅ AI פועל דרך שרת proxy — לא צריך מפתח אישי. אפשר להוסיף כגיבוי. <a href="https://console.anthropic.com/keys" target="_blank" style="color:#d97706;font-weight:700">קבל מפתח ↗</a></div>';}
 if(_storedKey){
-  h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
-  h+='<div style="flex:1;font-size:11px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;padding:6px 10px;color:rgb(var(--green-fg))">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
+  h+='<div class="settings-api-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+  h+='<div class="settings-api-key-box" style="flex:1;font-size:11px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;padding:6px 10px;color:rgb(var(--green-fg))">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
   h+='<button class="btn btn-o" style="font-size:11px" onclick="_apiKeyRemove()" aria-label="הסר — remove API key">הסר</button>';
   h+='</div>';
   // #354 Codex P2: users whose key predates the sync feature need a push-to-account
@@ -6295,12 +6391,13 @@ if(_storedKey){
     h+='<button class="btn" style="font-size:11px;width:100%;margin-bottom:8px;background:#f0f9ff;color:#075985;border:1px solid #bae6fd" onclick="_apiKeySyncExisting()" aria-label="סנכרן את המפתח לחשבון">🔄 סנכרן את המפתח לחשבון</button>';
   }
 } else {
-  h+='<div style="display:flex;gap:8px;margin-bottom:8px">';
+  h+='<div class="settings-api-row" style="display:flex;gap:8px;margin-bottom:8px">';
   h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-..." class="calc-in" style="flex:1;margin:0;font-size:11px" aria-label="Claude API key">';
   h+='<button class="btn btn-p" style="font-size:11px" onclick="_apiKeySaveFromInput()" aria-label="שמור — save API key">שמור</button>';
   h+='</div>';
 }
 h+='<div style="font-size:9px;color:rgb(var(--fg3))">API key נשמר ב-localStorage · בחשבון מחובר תוצע שמירה גם בחשבון (עם אישור סיסמה) כדי שהמפתח יעבור איתך בין מכשירים</div></div>';
+h+='</div>';
 return h;
 }
 async function toggleNotifOptIn(){
@@ -7192,8 +7289,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.168';
+const APP_VERSION='10.64.169';
 const CHANGELOG={
+'10.64.169':['ui(track/settings): repair the screenshot-confirmed mobile layout problems without touching clinical content. Settings now has a scoped responsive wrapper for data-management, account/API-key, and cloud-sync controls so cards stay inside phone viewports. Track now uses a 3-column readable phone heatmap, structured Today Study Plan rows, mobile-first Hazzard topic rows with topic -> metrics -> actions order, a ranked phone list for Weak Spots Map instead of forcing the sideways table, and clearer activity heatmap summary/legend. Bumped package/app/SW cache markers 10.64.168 to 10.64.169.'],
 '10.64.168':['ui(nav): remove Pomodoro, Sudden Death, and On-Call from the quiz surface; replace the visible More tab with explicit Search and Settings tabs; move Meds, Chat, and Personal Notes into Study; keep legacy #more/#meds/#chat/#feedback aliases routed to the new locations. Also keeps legacy string-shaped AI explanation cache rendering via the main explanation box after On-Call removal. No question content touched. Trinity 10.64.167 to 10.64.168.'],
 '10.64.167':['ui(theme): medexams-style retheme — teal/turquoise primary (--sky #13a99c, --em #0e8c81) + warm-gold accent (--amb #e8a13a) + medexams red (--red #d6453d), teal-tinted selected-answer, softer 12px cards with a subtle teal shadow, and a teal focus ring. Neutral text tokens (--fg/--fg2/--fg3) and all near-white backgrounds kept unchanged so the 23 a11y contrast guards (issue #125) still pass. No layout/markup/content change. Trinity 10.64.166 to 10.64.167.'],
 '10.64.166':['fix(track): resolve PR conflicts against main and keep the mobile Track polish: compact RTL Hebrew progress donut, denser phone heatmap, and no first-tap Help overlay interruption. No question content touched. Trinity 10.64.165 to 10.64.166.'],
