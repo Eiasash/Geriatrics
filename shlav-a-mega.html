@@ -142,13 +142,14 @@ body.study [style*="background:#ede9fe"]{background:#2a1e0d!important;color:#e8d
 
 /* ──── end Clinical Kit ──── */
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--sky:59 130 246;--em:16 185 129;--sl8:30 41 59;--red:239 68 68;--amb:245 158 11;
+/* medexams theme: teal/slate clinical-study palette (neutral text tokens kept a11y-tuned) */
+:root{--sky:19 169 156;--em:14 140 129;--sl8:38 50 56;--red:214 69 61;--amb:232 161 58;
 --bg:248 250 252;--bg2:241 245 249;--bg3:255 255 255;--fg:30 41 59;--fg2:71 85 105;--fg3:100 116 139;
---brd:226 232 240;--card-bg:255 255 255;
+--brd:221 230 232;--card-bg:255 255 255;
 --green-bg:240 253 244;--green-brd:187 247 208;--green-fg:22 101 52;
---blue-bg:239 246 255;--blue-brd:191 219 254;--blue-fg:30 64 175;
---yellow-bg:255 251 235;--yellow-brd:253 230 138;--yellow-fg:146 64 14;
---red-bg:254 242 242;--red-brd:254 202 202;--red-fg:153 27 27}
+--blue-bg:230 248 245;--blue-brd:168 226 219;--blue-fg:13 110 101;
+--yellow-bg:255 251 240;--yellow-brd:240 225 191;--yellow-fg:146 64 14;
+--red-bg:253 230 228;--red-brd:246 202 198;--red-fg:160 40 36}
 body{font-family:'Heebo','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:rgb(var(--bg));color:rgb(var(--fg));-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:contain}
 .heb{font-family:'Inter','Heebo',sans-serif;unicode-bidi:plaintext;text-align:start}
 button{cursor:pointer;border:none;background:none;font:inherit}
@@ -175,7 +176,7 @@ body.minimal-mode .tabs{display:none!important}
 body.minimal-mode .ct{padding-bottom:24px}
 body.minimal-mode .hdr-titleblock #hdr-sub{display:none}
 body.minimal-mode .hdr h1{font-size:16px}
-.card{background:rgb(var(--card-bg));border-radius:16px;border:1px solid rgb(var(--brd));box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:10px}
+.card{background:rgb(var(--card-bg));border-radius:12px;border:1px solid rgb(var(--brd));box-shadow:0 1px 5px rgba(15,60,55,.06);overflow:hidden;margin-bottom:10px}
 .pill{display:inline-block;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;transition:.15s;cursor:pointer}
 .pill.on{background:var(--app-primary);color:var(--app-on-primary);box-shadow:0 2px 6px rgba(59,130,246,.25);border:1px solid transparent}
 .pill:not(.on){background:rgb(var(--card-bg));color:rgb(var(--fg2));border:1px solid rgb(var(--brd))}
@@ -206,7 +207,7 @@ button.pill{font-family:inherit;font-size:11px;font-weight:600;line-height:inher
 .fc{background:rgb(var(--card-bg));border-radius:16px;border:1px solid rgb(var(--brd));padding:24px 20px;min-height:180px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:.2s;user-select:none}
 .fc:active{transform:scale(.98)}
 .search-box{width:100%;border:1px solid rgb(var(--brd));border-radius:12px;padding:8px 12px;font-size:12px;margin-bottom:12px}
-.search-box:focus{outline:none;border-color:rgb(var(--sky));box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.search-box:focus{outline:none;border-color:rgb(var(--sky));box-shadow:0 0 0 3px rgba(19,169,156,.18)}
 .timer{font-variant-numeric:tabular-nums;font-family:'Inter',monospace}
 .ck{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:10px;border:1px solid rgb(var(--brd));font-size:11px;cursor:pointer;margin-bottom:5px}
 .ck:hover{background:rgb(var(--bg2))}
@@ -7408,8 +7409,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.166';
+const APP_VERSION='10.64.167';
 const CHANGELOG={
+'10.64.167':['ui(theme): medexams-style retheme — teal/turquoise primary (--sky #13a99c, --em #0e8c81) + warm-gold accent (--amb #e8a13a) + medexams red (--red #d6453d), teal-tinted selected-answer, softer 12px cards with a subtle teal shadow, and a teal focus ring. Neutral text tokens (--fg/--fg2/--fg3) and all near-white backgrounds kept unchanged so the 23 a11y contrast guards (issue #125) still pass. No layout/markup/content change. Trinity 10.64.166 to 10.64.167.'],
 '10.64.166':['fix(track): resolve PR conflicts against main and keep the mobile Track polish: compact RTL Hebrew progress donut, denser phone heatmap, and no first-tap Help overlay interruption. No question content touched. Trinity 10.64.165 to 10.64.166.'],
 '10.64.165':['ui(minimal): add an explicitly gated quiz-only minimal mode for claude/geri-minimal. Minimal mode now activates only via ?minimal=1, ?mode=minimal, or #minimal, adds body.minimal-mode, hides the tab bar under that class, and normalizes non-quiz renders back to quiz only while MINIMAL_MODE is enabled. The normal GitHub Pages app keeps Learn/Track/More/library navigation. No question content touched. Trinity 10.64.164 to 10.64.165.'],
 '10.64.164':['fix(content): idx 4043 hypertension target key flip c:0 to 3 (<140 to <130). PR #369 near-miss review rechecked every named candidate from docs/AUDIT_AI2026HY_CLINICAL_SWEEP_2026-06-10.md against in-repo sources. Hazzard Ch 79 VERBATIM: "Its recommendation for ambulatory, community-living older adults is a SBP goal of 130 mm Hg." data/notes.json Hypertension likewise states: "Target BP: <130/80 for most elderly" and reserves SBP 130-150 for frail patients (CFS >=5). The stem is a 78yo community clinic patient with HTN, T2D, and MCI, not frailty or limited life expectancy; options <120, <150, and <140 are therefore inferior to <130. The other PR #369 near-misses remain KEEP: sarcopenia has no "probable sarcopenia" option, fiber has overlapping 25-30 source vs 20-25/30-38 options, NSAID avoidance direction is correct despite over-specific eGFR<45 wording, ISH initiation threshold lacks a verbatim initiation source, transfusion is 7/8 vs 8/9 but symptomatic/case-by-case, elder-abuse figures match notes, and VTE prophylaxis has source support but no sourced 35-day hip protocol. Trinity 10.64.163 to 10.64.164.'],
