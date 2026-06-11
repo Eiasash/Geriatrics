@@ -454,8 +454,8 @@ body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg))
  * unclassed children. Test contract is `tests/trackViewMarkup.test.js`.
  * Tokens come from the shared :root block above (rgb(var(--*))).
  */
-.track-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.track-kpi{padding:10px;text-align:center}
+.track-kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.track-kpi{padding:9px 6px;text-align:center;min-width:0}
 .track-kpi__value{font-size:22px;font-weight:800}
 .track-kpi__value--ok{color:#059669}
 .track-kpi__value--warn{color:#d97706}
@@ -464,24 +464,24 @@ body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg))
 .track-kpi__value--accent{color:#7c3aed}
 .track-kpi__value--info{color:#0ea5e9}
 .track-kpi__label{font-size:9px;color:rgb(var(--fg2))}
-.track-donut{padding:14px;margin-bottom:12px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}
-.track-donut__ring{width:126px;height:126px;border-radius:50%;padding:10px;background:rgb(var(--bg2));box-shadow:inset 0 0 0 1px rgb(var(--brd));flex-shrink:0}
+.track-donut{padding:12px;margin-bottom:10px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;direction:rtl;text-align:right}
+.track-donut__ring{width:112px;height:112px;border-radius:50%;padding:9px;background:rgb(var(--bg2));box-shadow:inset 0 0 0 1px rgb(var(--brd));flex-shrink:0}
 .track-donut__ring>div{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#059669 0 var(--ok-deg),#dc2626 var(--ok-deg) var(--wrong-deg),#cbd5e1 var(--wrong-deg) 360deg);position:relative}
-.track-donut__ring>div::after{content:'';position:absolute;inset:16px;border-radius:50%;background:rgb(var(--card-bg));box-shadow:0 0 0 1px rgb(var(--brd))}
+.track-donut__ring>div::after{content:'';position:absolute;inset:14px;border-radius:50%;background:rgb(var(--card-bg));box-shadow:0 0 0 1px rgb(var(--brd))}
 .track-donut__center{position:relative;z-index:1;text-align:center;line-height:1.1}
-.track-donut__pct{font-size:24px;font-weight:800;color:rgb(var(--fg));font-variant-numeric:tabular-nums}
+.track-donut__pct{font-size:21px;font-weight:800;color:rgb(var(--fg));font-variant-numeric:tabular-nums}
 .track-donut__pct-label{font-size:9px;color:rgb(var(--fg2));font-weight:700}
 .track-donut__body{min-width:0}
-.track-donut__title{font-size:13px;font-weight:800;margin-bottom:4px}
-.track-donut__sub{font-size:10px;color:rgb(var(--fg2));margin-bottom:10px}
-.track-donut__legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.track-donut__item{border:1px solid rgb(var(--brd));border-radius:12px;padding:8px;background:rgb(var(--bg3));min-width:0}
+.track-donut__title{font-size:13px;font-weight:800;margin-bottom:3px}
+.track-donut__sub{font-size:10px;color:rgb(var(--fg2));margin-bottom:8px}
+.track-donut__legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;direction:rtl}
+.track-donut__item{border:1px solid rgb(var(--brd));border-radius:12px;padding:7px;background:rgb(var(--bg3));min-width:0}
 .track-donut__item-head{display:flex;align-items:center;gap:5px;font-size:10px;color:rgb(var(--fg2));font-weight:700;white-space:nowrap}
 .track-donut__swatch{width:10px;height:10px;border-radius:999px;flex-shrink:0}
 .track-donut__swatch--ok{background:#059669}
 .track-donut__swatch--wrong{background:#dc2626}
 .track-donut__swatch--unanswered{background:#cbd5e1;border:1px solid #94a3b8}
-.track-donut__value{font-size:17px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.track-donut__value{font-size:16px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
 .track-donut__value--ok{color:#047857}
 .track-donut__value--wrong{color:#b91c1c}
 .track-donut__value--unanswered{color:#475569}
@@ -696,17 +696,23 @@ body.dark .track-rescue{background:linear-gradient(135deg,#450a0a,#422006);borde
 body.dark .track-rescue__title{color:#fecaca}
 body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#334155}
 @media(max-width:480px){
-.track-kpi-row{grid-template-columns:repeat(2,minmax(0,1fr))}
-.track-kpi{padding:12px 8px;min-height:72px}
-.track-donut{grid-template-columns:1fr;justify-items:center;text-align:center}
-.track-donut__ring{width:148px;height:148px}
-.track-donut__legend{width:100%}
-.track-donut__item{padding:9px 6px}
+.track-kpi-row{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.track-kpi{padding:8px 4px;min-height:58px}
+.track-kpi__value{font-size:19px}
+.track-kpi__label{font-size:8px}
+.track-donut{grid-template-columns:96px minmax(0,1fr);gap:10px;padding:10px;align-items:center}
+.track-donut__ring{width:96px;height:96px;padding:8px}
+.track-donut__ring>div::after{inset:12px}
+.track-donut__pct{font-size:18px}
+.track-donut__legend{grid-template-columns:1fr;gap:4px;width:100%}
+.track-donut__item{padding:5px 8px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.track-donut__item-head{font-size:9px}
+.track-donut__value{font-size:14px;margin-top:0}
 .track-final,.track-rescue,.track-due{align-items:stretch;flex-wrap:wrap}
 .track-final__body,.track-rescue__body,.track-due__body{min-width:180px}
 .track-final__cta,.track-rescue__cta,.track-due__cta{margin-inline-start:auto}
-.track-heatmap__grid{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}
-.track-heatmap__cell{height:70px;padding:7px}
+.track-heatmap__grid{grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:5px}
+.track-heatmap__cell{height:62px;padding:6px}
 .track-wsm__table{min-width:620px}
 .track-activity__grid{gap:4px}
 }
@@ -1528,40 +1534,9 @@ renderTabs();render();
 // Must be initialized AFTER the first render so S is fully hydrated.
 if(typeof initPostLoginRestore==='function')initPostLoginRestore();
 if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_help','1');
-// v10.64.49: defer the first-time help-overlay autoshow if any other modal is
-// already on screen (e.g. postLoginRstModal during a fresh-device login).
-// Surfaced by the 1h chaos run which captured 2 transient modal-recovery-failed
-// cases caused by the help-overlay racing in over an existing modal.
-// v10.64.x perf v2: interaction-triggered autoshow. requestIdleCallback (v1
-// in #291) wasn't aggressive enough — Lighthouse measurement window still
-// captured the help overlay (LCP=18s) because the 3000ms rIC timeout fired
-// well within the window. Sibling of FM + IM v2.
-// - Real users tap/scroll within seconds → autoshow fires promptly.
-// - Lighthouse never interacts → autoshow fires only at the 12s safety net,
-//   past the LCP measurement window.
-// - showHelp() dedupe (shipped in #291) keeps this safe under manual Help
-//   clicks during the gap.
-// EVENT CHOICE — only events firing AFTER the user's intended action
-// completes (Codex P2 on Geri #292 + FM #77):
-//   click  — after mousedown+mouseup, button activation done
-//   keyup  — after key release, key's own handler done
-//   scroll — fires during scroll, doesn't intercept tap targets
-// Excluded touchstart/pointerdown/keydown because they precede the
-// corresponding click/keyup and a slow-device tap would mount the overlay
-// before the tap target's click handler ran (swallowing the user's
-// intended first action).
-// Inner _showHelpWhenClear modal-polling preserved unchanged.
-const _showHelpWhenClear=()=>{const _blocking=document.querySelector('#feModal,#sdModal,#miModal,#mockPicker,#examModal,#mexModal,#postLoginRstModal,#rstModal');if(_blocking)setTimeout(_showHelpWhenClear,400);else showHelp();};
-let _autoshowFired=false;
-// _tryAutoshow gated on e.isTrusted as defense-in-depth against dispatchEvent / .click() synthetic events. Scroll trigger DROPPED in this rev: app.js:7085 calls window.scrollTo({top:0}) on first render, but Chromium/Firefox emit the resulting scroll event with isTrusted=true (browser-generated, not dispatch-driven) — so the gate doesn't catch it. {once:true} registration also means the synthetic event consumes the scroll listener, breaking real scrolls. Real users click/type within seconds; scroll was a redundant trigger. Sibling of FM #80 / IM #130 Codex P1+P2 amendment.
-const _tryAutoshow=(e)=>{if(_autoshowFired)return;if(e&&e.isTrusted===false)return;_autoshowFired=true;setTimeout(_showHelpWhenClear,50);};
-['click','keyup'].forEach(ev=>window.addEventListener(ev,_tryAutoshow,{once:true,passive:true}));
-// Safety net 30s — sibling of FM/IM PRs. The 12s value from #292 still
-// leaked the help overlay as LCP in some Lighthouse runs because simulated
-// throttling stretched real-time 12s inside the sample window. 30s clears
-// every reasonable simulation budget; users idle 30s+ are gone, and the
-// interaction trigger picks them up when they return.
-setTimeout(_tryAutoshow,30000);
+// v10.64.166: no first-run auto Help modal. The old click/keyup trigger made
+// the first real tap feel swallowed on phones (Track tap → Help overlay). Keep
+// Help available from the explicit ? button without interrupting navigation.
 }}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();if(typeof initPostLoginRestore==='function')initPostLoginRestore();});
 
 // ===== SCREEN WAKE LOCK =====
@@ -5890,15 +5865,15 @@ const wrongDeg=(ok+wrong)/totalForRing*360;
 const acc=attempts?Math.round(ok/attempts*100):0;
 const accText=attempts?acc+'%':'—';
 const seen=Math.min(attempts,bank);
-return `<div class="card track-donut" role="img" aria-label="Progress donut: ${ok} correct, ${wrong} wrong, ${unanswered} unanswered, accuracy ${accText}">
-<div class="track-donut__ring"><div style="--ok-deg:${okDeg.toFixed(2)}deg;--wrong-deg:${wrongDeg.toFixed(2)}deg"><div class="track-donut__center"><div class="track-donut__pct">${accText}</div><div class="track-donut__pct-label">Accuracy</div></div></div></div>
+return `<div class="card track-donut" role="img" aria-label="דונאט התקדמות: ${ok} נכונות, ${wrong} שגויות, ${unanswered} טרם נענו, דיוק ${accText}">
+<div class="track-donut__ring"><div style="--ok-deg:${okDeg.toFixed(2)}deg;--wrong-deg:${wrongDeg.toFixed(2)}deg"><div class="track-donut__center"><div class="track-donut__pct">${accText}</div><div class="track-donut__pct-label">דיוק</div></div></div></div>
 <div class="track-donut__body">
-<div class="track-donut__title">Progress Donut</div>
-<div class="track-donut__sub">${seen} answered out of ${bank} questions · ${unanswered} unanswered</div>
+<div class="track-donut__title">דונאט התקדמות</div>
+<div class="track-donut__sub">${seen} נענו מתוך ${bank} · ${unanswered} טרם נענו</div>
 <div class="track-donut__legend">
-<div class="track-donut__item"><div class="track-donut__item-head"><span class="track-donut__swatch track-donut__swatch--ok"></span>Correct</div><div class="track-donut__value track-donut__value--ok">${ok}</div></div>
-<div class="track-donut__item"><div class="track-donut__item-head"><span class="track-donut__swatch track-donut__swatch--wrong"></span>Wrong</div><div class="track-donut__value track-donut__value--wrong">${wrong}</div></div>
-<div class="track-donut__item"><div class="track-donut__item-head"><span class="track-donut__swatch track-donut__swatch--unanswered"></span>Unanswered</div><div class="track-donut__value track-donut__value--unanswered">${unanswered}</div></div>
+<div class="track-donut__item"><div class="track-donut__item-head"><span class="track-donut__swatch track-donut__swatch--ok"></span>נכון</div><div class="track-donut__value track-donut__value--ok">${ok}</div></div>
+<div class="track-donut__item"><div class="track-donut__item-head"><span class="track-donut__swatch track-donut__swatch--wrong"></span>שגוי</div><div class="track-donut__value track-donut__value--wrong">${wrong}</div></div>
+<div class="track-donut__item"><div class="track-donut__item-head"><span class="track-donut__swatch track-donut__swatch--unanswered"></span>לא נענה</div><div class="track-donut__value track-donut__value--unanswered">${unanswered}</div></div>
 </div>
 </div>
 </div>`;
@@ -7433,11 +7408,12 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.165';
+const APP_VERSION='10.64.166';
 const CHANGELOG={
+'10.64.166':['fix(track): resolve PR conflicts against main and keep the mobile Track polish: compact RTL Hebrew progress donut, denser phone heatmap, and no first-tap Help overlay interruption. No question content touched. Trinity 10.64.165 to 10.64.166.'],
 '10.64.165':['ui(minimal): add an explicitly gated quiz-only minimal mode for claude/geri-minimal. Minimal mode now activates only via ?minimal=1, ?mode=minimal, or #minimal, adds body.minimal-mode, hides the tab bar under that class, and normalizes non-quiz renders back to quiz only while MINIMAL_MODE is enabled. The normal GitHub Pages app keeps Learn/Track/More/library navigation. No question content touched. Trinity 10.64.164 to 10.64.165.'],
 '10.64.164':['fix(content): idx 4043 hypertension target key flip c:0 to 3 (<140 to <130). PR #369 near-miss review rechecked every named candidate from docs/AUDIT_AI2026HY_CLINICAL_SWEEP_2026-06-10.md against in-repo sources. Hazzard Ch 79 VERBATIM: "Its recommendation for ambulatory, community-living older adults is a SBP goal of 130 mm Hg." data/notes.json Hypertension likewise states: "Target BP: <130/80 for most elderly" and reserves SBP 130-150 for frail patients (CFS >=5). The stem is a 78yo community clinic patient with HTN, T2D, and MCI, not frailty or limited life expectancy; options <120, <150, and <140 are therefore inferior to <130. The other PR #369 near-misses remain KEEP: sarcopenia has no "probable sarcopenia" option, fiber has overlapping 25-30 source vs 20-25/30-38 options, NSAID avoidance direction is correct despite over-specific eGFR<45 wording, ISH initiation threshold lacks a verbatim initiation source, transfusion is 7/8 vs 8/9 but symptomatic/case-by-case, elder-abuse figures match notes, and VTE prophylaxis has source support but no sourced 35-day hip protocol. Trinity 10.64.163 to 10.64.164.'],
-'10.64.163':['feat(track): add the missing whole-bank progress donut to the Track tab and tighten mobile RTL/a11y polish. Donut uses S.qOk/S.qNo plus the current QZ.length bank count for correct/wrong/unanswered and shows overall accuracy without re-adding any redundant per-topic accuracy list, radar, heatmap, or weak-spots duplicate. Phone fixes from a 390px RTL audit: KPI cards wrap to 2×2 to prevent squeeze; Track CTAs/collapsible headers/links now meet the 44px tap-target floor; weak-spots table gets horizontal scrolling instead of over-compressing; pastel weak-spots cells and Track matrix title get explicit dark-mode-safe colors; final-stretch/rescue cards get dark-mode gradients. Trinity 10.64.162 to 10.64.163.'],
+'10.64.163':['feat(track): add the missing whole-bank progress donut plus mobile RTL/a11y polish. Donut shows correct/wrong/unanswered and overall accuracy without duplicating the existing heatmap or weak-spots map. Trinity 10.64.162 to 10.64.163.'],
 '10.64.162':['fix(content): idx 1273 testosterone-therapy contraindication key flip c:1 to 0 (Hgb>16 to treated-prostate-cancer history). 76yo, low T, treated prostate CA (radiation 5y ago, PSA undetectable 3y), Hgb 16.2, asks the STRONGEST contraindication to testosterone replacement. Content-gate — data/notes.json id=43 (Andropause/Aging Man, Hazzard Ch 36+37) VERBATIM: "Contraindications: prostate cancer, breast cancer, severe untreated OSA, hematocrit >50%, severe LUTS (IPSS >19), recent CV event." The keyed [1] cites the wrong metric — the source threshold is HEMATOCRIT >50%, not Hgb >16, and Hgb 16.2 is only marginally elevated; prostate cancer is an EXPLICIT listed contraindication, so [0] is the strongest. Physician-adjudicated flip (Eias) from the 2026-06-10 §3 soft-flag TIER-B set (idx 1273), where it was the one item with material directional pull; the treated/remission nuance (modern data permits cautious therapy) is why the auto-rubric held KEEP, but for the board-frame STRONGEST-contraindication question the textbook + in-repo source answer is the prostate-cancer history. Trinity 10.64.161 to 10.64.162.'],
 '10.64.161':['fix(content): idx 2237 STEMI reperfusion answer-key flip c:2 to 3 (transfer-to-PCI to Tenecteplase 40mg). 81yo anterior STEMI, no PCI on-site, transfer time 140 min, no fibrinolysis contraindication, 72kg. The keyed [2] transfer-for-primary-PCI is wrong per Harrison 22e Ch 286 VERBATIM: "Compared with fibrinolysis, primary PCI is preferred unless the time to delivery of the first coronary device is anticipated to be longer than 120 min" (140>120 so fibrinolysis is the correct strategy). On the 81yo ICH concern, Harrison Ch 286 VERBATIM: "While advanced age is associated with an increase in hemorrhagic complications, the benefit of fibrinolytic therapy in the elderly appears to justify its use if no other contraindications are present, the amount of myocardium in jeopardy appears to be substantial, and timely access to primary PCI is" [not available] — anterior STEMI = substantial myocardium, no contraindications, PCI not timely. Among offered options 72kg maps to the 70-79kg TNK weight band = 40mg, so [3] is the correct lytic dose ([1] 25mg is not a standard band, [0] 35mg is the 60-69kg band). NOTE the STREAM ≥75yo half-dose (15-20mg) refinement is not represented in any option, so the question tests reperfusion STRATEGY + standard weight-band dosing, both satisfied by [3]. Physician-adjudicated flip (Eias) from the 2026-06-01 §3 clinical-sweep FLAG (idx 2237, conf 90); surfaced read-only, applied here with the verbatim source per the content-gate. Trinity 10.64.160 to 10.64.161.'],
 '10.64.160':['fix(account): sync the Anthropic API key to the account at save time (#353). The v10.64.158 security fix removed _apikey from the cloud backup, which also killed the only WRITE path into app_users.api_key (the sync_api_key_from_backup trigger fed off backup writes) — so a key saved or rotated after .158 stayed localStorage-only and auth_login_user restored a stale or null key on the next device. Now the settings Save/Remove buttons route through _apiKeySaveFromInput / _apiKeyRemove: local save happens FIRST (never blocked by network), then for logged-in users the key is synced to the account via the existing auth_set_api_key RPC (SECURITY DEFINER, requires the password — collected with window.prompt, the same pattern as change-password). Cancel = device-only save with an explicit toast; RPC failure keeps the local save and warns; guests are a silent no-op. Empty key clears the account copy too (parity with setApiKey empty-string semantics). Origin: Codex P2 on IM #167 / FM #142, tracked as #353; sibling ports follow. Round-2 Codex P2s folded in: (a) the legacy backup _apikey restore is now FILL-ONLY — a backup _apikey is by definition pre-.158-stale, so it never clobbers a present key and only fills a true fresh device; (b) the has-key settings state gained a sync-to-account button (_apiKeySyncExisting) so a key saved before this release can be pushed to the account without remove + re-enter. Tests: tests/apikeyAccountSync.test.js pins the wiring, the local-save-before-sync order, both P2 fixes, and keeps the .158 regression locks intact. Trinity 10.64.159 to 10.64.160.'],
