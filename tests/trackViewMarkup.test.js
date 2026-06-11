@@ -49,12 +49,13 @@ const OUTER_SHELLS = [
   "track-heatmap__grid", "track-heatmap__cell", "track-heatmap__name", "track-heatmap__pct",
   "track-heatmap__legend", "track-heatmap__swatches", "track-heatmap__swatch", "track-heatmap__caption",
   "track-empty", "track-empty__title",
+  "track-actions", "track-actions__title",
   "track-rescue", "track-rescue__icon", "track-rescue__body", "track-rescue__title", "track-rescue__topics", "track-rescue__cta",
   "track-final", "track-final__icon", "track-final__body", "track-final__title", "track-final__sub", "track-final__cta",
   "track-reread", "track-reread__title", "track-reread__group", "track-reread__row",
   "track-lb", "track-lb__head", "track-lb__icon", "track-lb__title", "track-lb__sub", "track-lb__chev",
   "track-lb__refresh-row", "track-lb__refresh", "track-lb__board",
-  "track-trend", "track-trend__head", "track-trend__title", "track-trend__period", "track-trend__sub",
+  "track-trend", "track-trend__head", "track-trend__title", "track-trend__period", "track-trend__chev", "track-trend__summary", "track-trend__sub",
   "track-trend__cols", "track-trend__col-heading", "track-trend__empty",
   "track-trend__row", "track-trend__row-line", "track-trend__row-name", "track-trend__row-delta",
   "track-trend__bar", "track-trend__footer",
@@ -64,7 +65,7 @@ const OUTER_SHELLS = [
   "track-wsm__scroll", "track-wsm__table", "track-wsm__th-topic", "track-wsm__th-year",
   "track-wsm__td-topic", "track-wsm__td-cell", "track-wsm__legend", "track-wsm__legend-row", "track-wsm__legend-swatch",
   "track-wsm__mobile-list", "track-wsm__mobile-row", "track-wsm__mobile-line", "track-wsm__mobile-topic",
-  "track-wsm__mobile-score", "track-wsm__mobile-meta", "track-wsm__mobile-bar",
+  "track-wsm__mobile-score", "track-wsm__mobile-meta", "track-wsm__mobile-bar", "track-wsm__mobile-toggle",
   "track-cm", "track-cm__head", "track-cm__title", "track-cm__sub", "track-cm__blind", "track-cm__chev",
   "track-cm__grid", "track-cm__cell", "track-cm__num", "track-cm__warn",
   "track-matrix__title", "track-matrix__sub", "track-matrix__heading", "track-matrix__heading-arrow",
@@ -146,8 +147,9 @@ describe("_rtTop — class-driven shell", () => {
     expect(body).toMatch(/track-due__cta/);
   });
 
-  it("uses .track-rescue + state-modified .track-final shells (no per-CTA inline gradients)", () => {
-    expect(body).toMatch(/<div class="card track-rescue">/);
+  it("groups Rescue + Final Stretch under compact .track-actions shells", () => {
+    expect(body).toMatch(/<div class="card track-actions">/);
+    expect(body).toMatch(/<div class="track-rescue">/);
     expect(body).toMatch(/track-final track-final--\$\{_mod\}/);
     expect(body).toMatch(/track-final__cta track-final__cta--\$\{_mod\}/);
     // CSS-side guard for the two state modifiers
@@ -217,6 +219,8 @@ describe("_rtProgress — class-driven shell", () => {
     expect(body).toMatch(/class="track-wsm__head\$\{_wsmOpen\?' track-wsm__head--open':''\}"/);
     expect(body).toMatch(/class="track-wsm__mobile-list"/);
     expect(body).toMatch(/track-wsm__mobile-row track-wsm__mobile-row--\$\{mod\}/);
+    expect(body).toMatch(/S\._wsmShowAll/);
+    expect(body).toMatch(/needs 3\+ for score/);
   });
 
   it("WSM cells use modifier classes for empty/single/ok/mid/low (no per-cell inline bg)", () => {
@@ -247,8 +251,10 @@ describe("_rtFooter — class-driven shell", () => {
   let body;
   beforeAll(() => { body = bodyOf("_rtFooter"); });
 
-  it("share card uses .track-share shell", () => {
-    expect(body).toMatch(/class="card track-share"/);
+  it("share action is demoted into the version footer", () => {
+    expect(body).not.toMatch(/class="card track-share"/);
+    expect(body).toMatch(/track-version-footer__btn--share/);
+    expect(body).toMatch(/shareApp\(\)/);
   });
 
   it("version footer uses .track-version-footer shell + button/link sub-classes", () => {
@@ -405,6 +411,9 @@ describe("renderExamTrendCard — class-driven shell", () => {
 
   it("outer card uses .track-trend", () => {
     expect(body).toMatch(/class="card track-trend"/);
+    expect(body).toMatch(/S\._trendOpen/);
+    expect(body).toMatch(/track-trend__head--open/);
+    expect(body).toMatch(/track-trend__summary/);
   });
 
   it("up/down columns use --up / --down heading modifiers (no inline color)", () => {
