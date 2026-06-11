@@ -435,6 +435,26 @@ body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg))
 .tt-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgb(var(--fg))}
 .tt-icon:hover+.tt-box,.tt-icon:focus+.tt-box{display:block}
 
+/* ===== QUIZ TAB mobile declutter ===== */
+.quiz-filter-summary{padding:12px;margin-bottom:10px;border:1px solid rgb(var(--brd));border-radius:14px;background:rgb(var(--card-bg));display:grid;gap:10px}
+.quiz-filter-summary__top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.quiz-filter-summary__meta{min-width:0}
+.quiz-filter-summary__count{font-size:13px;font-weight:800;color:rgb(var(--fg));font-variant-numeric:tabular-nums}
+.quiz-filter-summary__sub{font-size:10px;color:rgb(var(--fg2));margin-top:2px;overflow-wrap:anywhere}
+.quiz-filter-summary__actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.quiz-filter-toggle{font-size:11px;padding:8px 14px;border-radius:10px;border:1px solid rgb(var(--brd));background:rgb(var(--bg2));color:rgb(var(--fg));font-weight:700}
+.quiz-filter-toggle.on{background:#0D7377;color:#fff;border-color:#0D7377}
+.quiz-review-compact{font-size:11px;padding:8px 14px;border-radius:10px;border:1px solid rgb(var(--red-brd));background:rgb(var(--red-bg));color:rgb(var(--red-fg));font-weight:800}
+.quiz-review-compact.is-active{background:#dc2626;color:#fff;border-color:#dc2626}
+.quiz-filter-drawer{padding:12px;margin-bottom:12px;border:1px solid rgb(var(--brd));border-radius:14px;background:rgb(var(--bg3));box-shadow:0 6px 18px rgba(15,23,42,.06)}
+.quiz-filter-drawer__head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:12px;font-weight:800;color:rgb(var(--fg))}
+.quiz-filter-drawer__done{font-size:10px;padding:6px 10px;border-radius:9px;border:1px solid rgb(var(--brd));background:rgb(var(--card-bg));color:rgb(var(--fg2));font-weight:700}
+@media(max-width:480px){
+.quiz-filter-summary__top{align-items:flex-start}
+.quiz-filter-summary__actions{display:grid;grid-template-columns:1fr;min-width:118px}
+.quiz-filter-summary__actions .btn{width:100%;white-space:nowrap}
+}
+
 /* ===== TRACK TAB — class-driven rebuild (v10.60.0) =====
  * Mirrors the FM Quiz rebuild pattern (PR #16 on FamilyMedicine).
  * Every shell element on the Track tab carries a `track-*` class and
@@ -512,22 +532,24 @@ body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg))
 .track-heatmap__caption{font-size:9px;color:rgb(var(--fg3));margin-top:4px;text-align:center}
 .track-empty{padding:14px;margin-bottom:10px;text-align:center}
 .track-empty__title{font-size:12px;font-weight:700;margin-bottom:6px}
-.track-rescue{padding:14px;margin-bottom:10px;background:linear-gradient(135deg,#fef2f2,#fffbeb);border:1px solid rgb(var(--red-brd));display:flex;align-items:center;gap:10px}
-.track-rescue__icon{font-size:24px}
+.track-actions{padding:12px;margin-bottom:10px;display:grid;gap:8px}
+.track-actions__title{font-weight:800;font-size:12px;color:rgb(var(--fg))}
+.track-rescue{padding:10px;border-radius:12px;background:linear-gradient(135deg,#fff7ed,#fef2f2);border:1px solid rgb(var(--red-brd));display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px}
+.track-rescue__icon{font-size:18px}
 .track-rescue__body{flex:1}
 .track-rescue__title{font-weight:700;font-size:12px;color:#dc2626}
 .track-rescue__topics{font-size:10px;color:rgb(var(--fg2))}
-.track-rescue__cta{font-size:11px;padding:8px 16px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-weight:700}
-.track-final{padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;border:1px solid transparent}
+.track-rescue__cta{font-size:10px;padding:7px 12px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-weight:800;white-space:nowrap}
+.track-final{padding:10px;border-radius:12px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;border:1px solid transparent}
 .track-final--calm{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:rgba(59,130,246,.25)}
 .track-final--urgent{background:linear-gradient(135deg,#fef3c7,#fde68a);border-color:rgba(245,158,11,.25)}
-.track-final__icon{font-size:24px}
+.track-final__icon{font-size:18px}
 .track-final__body{flex:1}
 .track-final__title{font-weight:700;font-size:12px}
 .track-final__title--calm{color:#1e40af}
 .track-final__title--urgent{color:#b45309}
 .track-final__sub{font-size:10px;color:rgb(var(--fg2))}
-.track-final__cta{font-size:11px;padding:8px 16px;color:#fff;border:none;border-radius:10px;font-weight:700}
+.track-final__cta{font-size:10px;padding:7px 12px;color:#fff;border:none;border-radius:10px;font-weight:800;white-space:nowrap}
 .track-final__cta--calm{background:#3b82f6}
 .track-final__cta--urgent{background:#f59e0b}
 .track-reread{padding:14px;margin-bottom:10px}
@@ -550,9 +572,12 @@ body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg))
 .track-lb__refresh{font-size:9px;padding:4px 10px;background:#f59e0b;color:#fff;border:none;border-radius:6px;cursor:pointer}
 .track-lb__board{font-size:10px;color:rgb(var(--fg3));text-align:center}
 .track-trend{padding:14px;margin-bottom:10px}
-.track-trend__head{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+.track-trend__head{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;margin-bottom:2px;cursor:pointer;min-height:44px}
+.track-trend__head--open{margin-bottom:6px}
 .track-trend__title{font-weight:700;font-size:13px;color:rgb(var(--fg))}
 .track-trend__period{font-size:10px;color:rgb(var(--fg3));font-variant-numeric:tabular-nums}
+.track-trend__chev{font-size:10px;color:rgb(var(--fg2))}
+.track-trend__summary{font-size:10px;color:rgb(var(--fg2));margin-bottom:2px;overflow-wrap:anywhere}
 .track-trend__sub{font-size:10px;color:rgb(var(--fg2));margin-bottom:12px}
 .track-trend__cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 .track-trend__col-heading{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
@@ -697,9 +722,11 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .track-donut__item{padding:5px 8px;display:flex;align-items:center;justify-content:space-between;gap:6px}
 .track-donut__item-head{font-size:9px}
 .track-donut__value{font-size:14px;margin-top:0}
-.track-final,.track-rescue,.track-due{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px}
-.track-final__body,.track-rescue__body,.track-due__body{min-width:0}
-.track-final__cta,.track-rescue__cta,.track-due__cta{grid-column:1 / -1;width:100%;margin:2px 0 0}
+.track-due{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px}
+.track-due__body,.track-final__body,.track-rescue__body{min-width:0}
+.track-due__cta{grid-column:1 / -1;width:100%;margin:2px 0 0}
+.track-final,.track-rescue{grid-template-columns:auto minmax(0,1fr) auto}
+.track-final__cta,.track-rescue__cta{grid-column:auto;width:auto;margin:0}
 .track-heatmap{padding:12px}
 .track-heatmap__head{display:grid;justify-content:stretch;gap:3px}
 .track-heatmap__title{font-size:13px}
@@ -813,6 +840,7 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .track-version-footer__row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
 .track-version-footer__btn{font-size:10px;padding:5px 14px;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600}
 .track-version-footer__btn--update{background:#0D7377}
+.track-version-footer__btn--share{background:#f59e0b}
 .track-version-footer__link{font-size:10px;padding:5px 14px;background:#4f46e5;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block}
 .track-version-footer__sig{margin-top:6px}
 .track-wsm__mobile-list{display:none;gap:8px}
@@ -823,12 +851,15 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .track-wsm__mobile-row--ok .track-wsm__mobile-score{color:#047857}
 .track-wsm__mobile-row--mid .track-wsm__mobile-score{color:#b45309}
 .track-wsm__mobile-row--low .track-wsm__mobile-score{color:#b91c1c}
+.track-wsm__mobile-row--sample .track-wsm__mobile-score{color:rgb(var(--fg3));font-size:10px}
 .track-wsm__mobile-meta{font-size:9px;color:rgb(var(--fg3));margin-top:3px;direction:ltr;unicode-bidi:isolate}
 .track-wsm__mobile-bar{height:4px;border-radius:999px;background:rgb(var(--bg2));overflow:hidden;margin-top:6px}
 .track-wsm__mobile-fill{display:block;height:100%;border-radius:999px}
 .track-wsm__mobile-fill--ok{background:#10b981}
 .track-wsm__mobile-fill--mid{background:#f59e0b}
 .track-wsm__mobile-fill--low{background:#ef4444}
+.track-wsm__mobile-fill--sample{background:#cbd5e1}
+.track-wsm__mobile-toggle{border:1px solid rgb(var(--brd));border-radius:10px;background:rgb(var(--card-bg));color:#0D7377;font-size:10px;font-weight:800;padding:8px 10px;min-height:40px}
 @media(max-width:480px){.track-wsm__mobile-list{display:grid}}
 .track-activity__summary{font-size:10px;color:rgb(var(--fg2));margin-bottom:8px}
 .track-activity__legend{display:flex;justify-content:center;gap:10px;margin-top:8px;font-size:9px;color:rgb(var(--fg3));flex-wrap:wrap}
@@ -1946,6 +1977,8 @@ function go(t){tab=t;renderTabs();render()}
 
 // ===== QUIZ ENGINE =====
 let qi=0,sel=null,ans=false,pool=[],filt='all',topicFilt=-1,examMode=false,examTimer=null,examSec=0;
+let quizFiltersOpen=false;
+function toggleQuizFilters(){quizFiltersOpen=!quizFiltersOpen;render();}
 // v10.9: Topic-source scope — lets user filter the topic dropdown to exam-only, books-only, or all.
 // 'all' = all sources (default), 'exams' = past-exam Qs only (tag contains 20XX), 'books' = Hazzard/Harrison reconstructions only.
 let topicSrc=(function(){try{const v=localStorage.getItem('samega_topic_src');return ['all','exams','books'].includes(v)?v:'all';}catch(e){return 'all';}})();
@@ -3478,6 +3511,27 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <button data-testid="full-exam-trigger" onclick="startExam()" class="btn" style="font-size:11px;padding:7px 14px;background:#0f172a;color:#fff;border:none;border-radius:8px;font-weight:600" aria-label="Full 150q — start full exam">📋 Full 150q</button>
 </div>
 </div>`;
+const _wrongCount=getWrongReviewCount();
+const _filterNames={all:'All questions',years:'Year filter',topics:'Topic filter',topic:'Single topic',wrong:'Wrong review',Hazzard:'Teach-back AI','Hazzard-suppl':'Supplement','Harrison':'Harrison',hard:'Hard',slow:'Slow',weak:'Weak',due:'Due now',traps:'Traps',nbs:'NBS',regulatory:'Regulatory'};
+const _filterLabel=_filterNames[filt]||String(filt||'All questions');
+const _topicLabel=(filt==='topic'&&topicFilt>=0&&TOPICS[topicFilt])?TOPICS[topicFilt]:(selectedTopics.size?selectedTopics.size+' topics':'all topics');
+const _yearLabel=selectedExamYears.size?selectedExamYears.size+' exam sittings':'all years';
+const _sourceLabel=topicSrc==='exams'?'past exams only':topicSrc==='books'?'books only':'all sources';
+h+=`<div class="quiz-filter-summary">
+<div class="quiz-filter-summary__top">
+<div class="quiz-filter-summary__meta">
+<div class="quiz-filter-summary__count">${pool.length}/${QZ.length} questions</div>
+<div class="quiz-filter-summary__sub">${sanitize(_filterLabel)} · ${sanitize(_yearLabel)} · ${sanitize(_topicLabel)} · ${sanitize(_sourceLabel)}</div>
+</div>
+<div class="quiz-filter-summary__actions">
+<button type="button" class="btn quiz-filter-toggle ${quizFiltersOpen?'on':''}" onclick="toggleQuizFilters()" aria-expanded="${quizFiltersOpen?'true':'false'}" aria-controls="quizFilters">${quizFiltersOpen?'Hide filters':'Filters'}</button>
+${_wrongCount>0?`<button type="button" class="btn quiz-review-compact ${filt==='wrong'?'is-active':''}" onclick="setFilt('wrong')" aria-label="Review wrong ${_wrongCount}">Review wrong ${_wrongCount}</button>`:''}
+</div>
+</div>
+</div>`;
+if(quizFiltersOpen){
+h+=`<div id="quizFilters" class="quiz-filter-drawer">
+<div class="quiz-filter-drawer__head"><span>Filters</span><button type="button" class="quiz-filter-drawer__done" onclick="toggleQuizFilters()">Done</button></div>`;
 // Exam-year multi-select row — pills are toggleable, "All" / "Clear" quick actions.
 // Chronologically sorted. Unresolved bare years (2020/2021/2022) display faded with tooltip.
 h+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;padding-bottom:4px" role="group" aria-label="Exam-year multi-select">`;
@@ -3625,6 +3679,8 @@ if(filt==='topic'&&topicFilt>=0){
   const _onlyTi=[...selectedTopics][0];
   const _tqCount=_topicCounts[_onlyTi]||0;
   h+=`<div style="margin-bottom:10px"><button class="btn btn-d" style="font-size:10px;padding:6px 12px;white-space:nowrap" onclick="startTopicMiniExam(${_onlyTi})" aria-label="Start topic mini-exam"${_tqCount===0?' disabled':''}>🎯 Mini Exam (${Math.min(_tqCount,20)}q)</button></div>`;
+}
+h+=`</div>`;
 }
 }
 if(!pool.length){
@@ -5212,15 +5268,22 @@ function renderExamTrendCard(){
   const growing=trends.filter(r=>r.delta>0.5).sort((a,b)=>b.delta-a.delta).slice(0,5);
   const shrinking=trends.filter(r=>r.delta<-0.5).sort((a,b)=>a.delta-b.delta).slice(0,5);
   const maxAbs=Math.max(1,...growing.map(r=>r.delta),...shrinking.map(r=>-r.delta));
+  const _trendOpen=S._trendOpen===true;
+  const _growLead=growing[0]?`${growing[0].name} +${growing[0].delta.toFixed(1)}pp`:'no growth signal';
+  const _shrinkLead=shrinking[0]?`${shrinking[0].name} ${shrinking[0].delta.toFixed(1)}pp`:'no decline signal';
 
   // v10.60.0: class-driven rebuild — track-trend-* taxonomy. Bar widths stay
   // inline (data-driven); shells carry zero `style="..."`.
   let h=`<div class="card track-trend">
-<div class="track-trend__head">
+<div onclick="S._trendOpen=!S._trendOpen;save();render()" class="track-trend__head${_trendOpen?' track-trend__head--open':''}" role="button" tabindex="0" aria-expanded="${_trendOpen?'true':'false'}" aria-label="Toggle exam trend">
   <span class="track-trend__title">📈 Exam Trend</span>
   <span class="track-trend__period">2020–23 vs 2024–25</span>
+  <span class="track-trend__chev">${_trendOpen?'▲':'▼'}</span>
 </div>
-<div class="track-trend__sub">Where the exam is heading. Study accordingly.</div>`;
+<div class="track-trend__summary">Growing: ${_growLead} · Shrinking: ${_shrinkLead}</div>`;
+
+  if(_trendOpen){
+  h+=`<div class="track-trend__sub">Where the exam is heading. Study accordingly.</div>`;
 
   h+=`<div class="track-trend__cols">`;
   // Growing column
@@ -5254,6 +5317,7 @@ function renderExamTrendCard(){
   h+=`</div>`;
 
   h+=`<div class="track-trend__footer">Old: ${oldTot}q (2020–2023, 10 exam tags) · New: ${newTot}q (2024–2025, 6 exam tags)</div>`;
+  }
   h+=`</div>`;
   return h;
 }
@@ -5791,35 +5855,35 @@ h+=renderDailyPlan();
 h+=renderSessionCard();
 // v10.50.0: Confidence Matrix moved to a collapsible "Detailed analysis" section in
 // _rtProgress() — it's useful but niche, not something that needs to live above-the-fold.
-// Rescue Drill CTA
+// Compact practice drill actions. Rescue + Final Stretch used to be two full-width
+// cards with giant GO buttons; keep the workflows, but stop them dominating Track.
 const _weakTopics=getWeakTopics(3);
-if(_weakTopics.length&&_weakTopics[0].pct!==null&&_weakTopics[0].pct<65){
-h+=`<div class="card track-rescue">
-<span class="track-rescue__icon">🚨</span>
-<div class="track-rescue__body">
-<div class="track-rescue__title">Rescue Drill</div>
-<div class="track-rescue__topics">${_weakTopics.map(w=>TOPICS[w.ti]+' ('+w.pct+'%)').join(' · ')}</div>
-</div>
-<button onclick="buildRescuePool();tab='quiz';render()" class="btn track-rescue__cta">GO</button>
-</div>`;
-}
-
-// Final Stretch CTA (shows always; pushes unseen + high-yield)
-(function(){
+const _showRescue=_weakTopics.length&&_weakTopics[0].pct!==null&&_weakTopics[0].pct<65;
 const _exDate=S.examDate||localStorage.getItem('shlav_exam_date')||'';
 const _daysLeft=_exDate?Math.max(0,Math.ceil((new Date(_exDate)-Date.now())/864e5)):null;
 const _label=_daysLeft===null?'Final Stretch':(_daysLeft<=30?`Final Stretch · ${_daysLeft}d left`:`Final Stretch · ${_daysLeft}d`);
 const _urgent=_daysLeft!==null&&_daysLeft<=30;
 const _mod=_urgent?'urgent':'calm';
-h+=`<div class="card track-final track-final--${_mod}">
+h+=`<div class="card track-actions">
+<div class="track-actions__title">Practice drills</div>`;
+if(_showRescue){
+h+=`<div class="track-rescue">
+<span class="track-rescue__icon">🚨</span>
+<div class="track-rescue__body">
+<div class="track-rescue__title">Rescue Drill</div>
+<div class="track-rescue__topics">${_weakTopics.map(w=>TOPICS[w.ti]+' ('+w.pct+'%)').join(' · ')}</div>
+</div>
+<button onclick="buildRescuePool();tab='quiz';render()" class="btn track-rescue__cta">Start</button>
+</div>`;
+}
+h+=`<div class="track-final track-final--${_mod}">
 <span class="track-final__icon">🎯</span>
 <div class="track-final__body">
 <div class="track-final__title track-final__title--${_mod}">${_label}</div>
 <div class="track-final__sub">40 high-yield Qs · prioritises never-seen + your weak spots</div>
 </div>
-<button onclick="buildFinalStretchPool(40);tab='quiz';render()" class="btn track-final__cta track-final__cta--${_mod}">GO</button>
-</div>`;
-})();
+<button onclick="buildFinalStretchPool(40);tab='quiz';render()" class="btn track-final__cta track-final__cta--${_mod}">Start</button>
+</div></div>`;
 
 return h;
 }
@@ -5954,19 +6018,26 @@ if(_wsmOpen){
 const _wsmAvg=row=>{const cells=row.cells.filter(c=>c.n>0);return cells.length?Math.round(cells.reduce((s,c)=>s+c.pct,0)/cells.length):0;};
 const _wsmAnswered=row=>row.cells.reduce((s,c)=>s+c.n,0);
 const _wsmRows=heatData.slice().sort((a,b)=>_wsmAvg(a)-_wsmAvg(b));
+const _wsmLimit=S._wsmShowAll?Math.min(_wsmRows.length,24):6;
 h+=`<div class="track-wsm__mobile-list" aria-label="Weak spots ranked list">`;
-_wsmRows.slice(0,12).forEach(row=>{
+_wsmRows.slice(0,_wsmLimit).forEach(row=>{
 const avg=_wsmAvg(row);
 const attempts=_wsmAnswered(row);
 const covered=row.cells.filter(c=>c.n>0).length;
-const mod=avg>=75?'ok':avg>=50?'mid':'low';
-const width=Math.max(4,Math.min(100,avg));
-h+=`<div class="track-wsm__mobile-row track-wsm__mobile-row--${mod}" onclick="setTopicFilt(${row.ti});tab='quiz';render()" role="button" tabindex="0" aria-label="${row.topic}: ${avg}% across ${attempts} answered questions">
-<div class="track-wsm__mobile-line"><span class="track-wsm__mobile-topic">${row.topic}</span><span class="track-wsm__mobile-score">${avg}%</span></div>
-<div class="track-wsm__mobile-meta">${attempts} answered · ${covered}/${years.length} exam periods with data</div>
+const sampleOk=attempts>=3;
+const mod=sampleOk?(avg>=75?'ok':avg>=50?'mid':'low'):'sample';
+const width=sampleOk?Math.max(4,Math.min(100,avg)):4;
+const scoreText=sampleOk?avg+'%':'needs data';
+const meta=sampleOk?`${attempts} answered · ${covered}/${years.length} exam periods with data`:`${attempts} answered · needs 3+ for score · ${covered}/${years.length} exam periods`;
+h+=`<div class="track-wsm__mobile-row track-wsm__mobile-row--${mod}" onclick="setTopicFilt(${row.ti});tab='quiz';render()" role="button" tabindex="0" aria-label="${row.topic}: ${scoreText} across ${attempts} answered questions">
+<div class="track-wsm__mobile-line"><span class="track-wsm__mobile-topic">${row.topic}</span><span class="track-wsm__mobile-score">${scoreText}</span></div>
+<div class="track-wsm__mobile-meta">${meta}</div>
 <div class="track-wsm__mobile-bar"><span class="track-wsm__mobile-fill track-wsm__mobile-fill--${mod}" style="width:${width}%"></span></div>
 </div>`;
 });
+if(_wsmRows.length>6){
+h+=`<button type="button" class="track-wsm__mobile-toggle" onclick="event.stopPropagation();S._wsmShowAll=!S._wsmShowAll;save();render()">${S._wsmShowAll?'Show fewer weak spots':'Show all weak spots'}</button>`;
+}
 h+=`</div>`;
 h+=`<div class="track-wsm__scroll"><table class="track-wsm__table"><thead><tr><th class="track-wsm__th-topic">Topic</th>`;
 const _yearAbbr={'2020':'20','2021':'21','2021-Dec':"21·12",'2022':'22','2023-Jun':"23·6",'2024-May':"24·5",'2024-Sep':"24·9",'2025-Jun':"25·6",'Hazzard':'Haz','Harrison':'Har','Exam':'Ex','Hazzard-suppl':'Sup','FM-Core':'FM','GRS8':'GRS','Harrison-suppl':'HSup'};
@@ -6060,13 +6131,7 @@ return h;
 function _rtFooter(){
 let h='';
 // v10.54.0: IMA Exam Archive removed — duplicated Library → Exams sub-tab.
-// Reset
-// Share with friends
-h+=`<div class="card track-share">
-<div class="track-share__title">🔗 Share with Friends</div>
-<div class="track-share__sub">Share this app with fellow geriatric medicine residents</div>
-<button class="btn btn-p track-share__btn" onclick="shareApp()" aria-label="Share app link">📤 Share App Link</button>
-</div>`;
+// Reset / share / auxiliary links stay in the footer; avoid another full Track card.
 // Account / Study Plan / Data Management / API Key all moved to Settings tab in v10.48.0 — they were
 // stuffed into Track and made the page hard to navigate. The "discovery" entry from Track is the
 // ⚙️ Settings tab in the top tab bar, plus the "Set Exam Date" CTA earlier in this view which
@@ -6077,6 +6142,7 @@ h+=`<div class="track-version-footer">
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
 <div class="track-version-footer__row">
 <button data-action="apply-update" class="track-version-footer__btn track-version-footer__btn--update">🔄 Force Update</button>
+<button class="track-version-footer__btn track-version-footer__btn--share" onclick="shareApp()" aria-label="Share app link">📤 Share</button>
 <a href="https://eiasash.github.io/InternalMedicine/" target="_blank" class="track-version-footer__link">🏥 Internal Medicine App →</a>
 </div>
 <div class="track-version-footer__sig">صدقة جارية الى من نحب</div></div>`;
@@ -7289,8 +7355,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.169';
+const APP_VERSION='10.64.170';
 const CHANGELOG={
+'10.64.170':['ui(quiz/track): declutter the mobile-first exam workflow without changing clinical content. Quiz now opens with a compact filter summary and keeps years, sources, topics, timed mode, cover-options, and review-wrong controls inside an explicit Filters drawer instead of filling the first screen. Track now groups Rescue Drill and Final Stretch into one compact practice-drills card, collapses Exam Trend by default with a concise signal summary, demotes Share into the footer, caps the mobile Weak Spots Map to six rows by default, and labels <3-answer topic samples as "needs data" instead of showing misleading 0% scores. Bumped package/app/SW cache markers 10.64.169 to 10.64.170.'],
 '10.64.169':['ui(track/settings): repair the screenshot-confirmed mobile layout problems without touching clinical content. Settings now has a scoped responsive wrapper for data-management, account/API-key, and cloud-sync controls so cards stay inside phone viewports. Track now uses a 3-column readable phone heatmap, structured Today Study Plan rows, mobile-first Hazzard topic rows with topic -> metrics -> actions order, a ranked phone list for Weak Spots Map instead of forcing the sideways table, and clearer activity heatmap summary/legend. Bumped package/app/SW cache markers 10.64.168 to 10.64.169.'],
 '10.64.168':['ui(nav): remove Pomodoro, Sudden Death, and On-Call from the quiz surface; replace the visible More tab with explicit Search and Settings tabs; move Meds, Chat, and Personal Notes into Study; keep legacy #more/#meds/#chat/#feedback aliases routed to the new locations. Also keeps legacy string-shaped AI explanation cache rendering via the main explanation box after On-Call removal. No question content touched. Trinity 10.64.167 to 10.64.168.'],
 '10.64.167':['ui(theme): medexams-style retheme — teal/turquoise primary (--sky #13a99c, --em #0e8c81) + warm-gold accent (--amb #e8a13a) + medexams red (--red #d6453d), teal-tinted selected-answer, softer 12px cards with a subtle teal shadow, and a teal focus ring. Neutral text tokens (--fg/--fg2/--fg3) and all near-white backgrounds kept unchanged so the 23 a11y contrast guards (issue #125) still pass. No layout/markup/content change. Trinity 10.64.166 to 10.64.167.'],
