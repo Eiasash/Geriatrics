@@ -11,11 +11,12 @@
  *   6. sw.js includes data/regulatory.json in JSON_DATA_URLS
  */
 
-import { describe, it, expect } from 'vitest';
+import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 import { readFileSync, existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { execSync } from 'child_process';
 import { loadQuestionsHydrated } from './_helpers/loadQuestionsHydrated.js';
+import { acquireDerivedFilesLock } from './_helpers/derivedFilesLock.js';
 
 const ROOT = resolve(import.meta.dirname, '..');
 
@@ -25,6 +26,15 @@ const HTML_PATH = resolve(ROOT, 'shlav-a-mega.html');
 const SW_PATH = resolve(ROOT, 'sw.js');
 
 describe('regulatory.json artifact', () => {
+  let releaseDerivedFilesLock;
+  beforeEach(() => {
+    releaseDerivedFilesLock = acquireDerivedFilesLock(ROOT);
+  });
+  afterEach(() => {
+    releaseDerivedFilesLock?.();
+    releaseDerivedFilesLock = undefined;
+  });
+
   it('exists and parses as an array', () => {
     expect(existsSync(REG_PATH)).toBe(true);
     const reg = JSON.parse(readFileSync(REG_PATH, 'utf-8'));

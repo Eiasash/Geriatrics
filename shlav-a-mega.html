@@ -170,6 +170,11 @@ html[data-skin="geriatrics"] .tabs button.on{color:#b45309}
 body.dark[data-skin="geriatrics"] .tabs button.on,html[data-skin="geriatrics"] body.dark .tabs button.on{color:var(--app-primary)}
 .tabs .ic{font-size:18px}
 .ct{max-width:640px;margin:0 auto;padding:12px 12px 80px}
+/* === minimal mode (enable with ?minimal=1): strip feature chrome to just the quiz === */
+body.minimal-mode .tabs{display:none!important}
+body.minimal-mode .ct{padding-bottom:24px}
+body.minimal-mode .hdr-titleblock #hdr-sub{display:none}
+body.minimal-mode .hdr h1{font-size:16px}
 .card{background:rgb(var(--card-bg));border-radius:16px;border:1px solid rgb(var(--brd));box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden;margin-bottom:10px}
 .pill{display:inline-block;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;transition:.15s;cursor:pointer}
 .pill.on{background:var(--app-primary);color:var(--app-on-primary);box-shadow:0 2px 6px rgba(59,130,246,.25);border:1px solid transparent}
@@ -1529,7 +1534,7 @@ renderTabs();render();
 // Must be initialized AFTER the first render so S is fully hydrated.
 if(typeof initPostLoginRestore==='function')initPostLoginRestore();
 if(!localStorage.getItem('shlav_seen_help')){localStorage.setItem('shlav_seen_help','1');
-// v10.64.164: no first-run auto Help modal. The old click/keyup trigger made
+// v10.64.166: no first-run auto Help modal. The old click/keyup trigger made
 // the first real tap feel swallowed on phones (Track tap → Help overlay). Keep
 // Help available from the explicit ? button without interrupting navigation.
 }}).catch(e=>{console.error('IDB init failed, falling back to localStorage:',e);renderTabs();render();if(typeof initPostLoginRestore==='function')initPostLoginRestore();});
@@ -1919,6 +1924,8 @@ let TABS=[];
 
 // ===== END DATA LOADER =====
 
+const MINIMAL_MODE=(()=>{try{const p=new URLSearchParams(location.search);return p.get('minimal')==='1'||p.get('mode')==='minimal'||location.hash==='#minimal';}catch(e){return false;}})();
+if(MINIMAL_MODE)document.body.classList.add('minimal-mode');
 let tab='quiz';
 let learnSub='study'; // sub-tab within Learn: study|flash
 let _studyMode='learn'; // v10.54.0: 'learn'|'lib' — which mode in unified Study tab
@@ -7203,6 +7210,7 @@ function render(){
 setTimeout(()=>{
 const el=document.getElementById('ct');
 if(!el)return; // defensive: container could be detached if app teardown raced render
+if(MINIMAL_MODE&&tab!=='quiz')tab='quiz';
 const focused=document.activeElement?.id;
 const sv={srchi:document.getElementById('srchi')?.value,nfilt:document.getElementById('nfilt')?.value};
 if(tab!==lastTab){el.classList.remove('fade-in');void el.offsetWidth;el.classList.add('fade-in');window.scrollTo({top:0});lastTab=tab;}
@@ -7400,9 +7408,11 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.164';
+const APP_VERSION='10.64.166';
 const CHANGELOG={
-'10.64.164':['fix(track): make the new progress donut phone-friendly — compact RTL Hebrew copy, shorter card height, restored dense heatmap columns, and no first-tap help modal interruption. Trinity 10.64.163 to 10.64.164.'],
+'10.64.166':['fix(track): resolve PR conflicts against main and keep the mobile Track polish: compact RTL Hebrew progress donut, denser phone heatmap, and no first-tap Help overlay interruption. No question content touched. Trinity 10.64.165 to 10.64.166.'],
+'10.64.165':['ui(minimal): add an explicitly gated quiz-only minimal mode for claude/geri-minimal. Minimal mode now activates only via ?minimal=1, ?mode=minimal, or #minimal, adds body.minimal-mode, hides the tab bar under that class, and normalizes non-quiz renders back to quiz only while MINIMAL_MODE is enabled. The normal GitHub Pages app keeps Learn/Track/More/library navigation. No question content touched. Trinity 10.64.164 to 10.64.165.'],
+'10.64.164':['fix(content): idx 4043 hypertension target key flip c:0 to 3 (<140 to <130). PR #369 near-miss review rechecked every named candidate from docs/AUDIT_AI2026HY_CLINICAL_SWEEP_2026-06-10.md against in-repo sources. Hazzard Ch 79 VERBATIM: "Its recommendation for ambulatory, community-living older adults is a SBP goal of 130 mm Hg." data/notes.json Hypertension likewise states: "Target BP: <130/80 for most elderly" and reserves SBP 130-150 for frail patients (CFS >=5). The stem is a 78yo community clinic patient with HTN, T2D, and MCI, not frailty or limited life expectancy; options <120, <150, and <140 are therefore inferior to <130. The other PR #369 near-misses remain KEEP: sarcopenia has no "probable sarcopenia" option, fiber has overlapping 25-30 source vs 20-25/30-38 options, NSAID avoidance direction is correct despite over-specific eGFR<45 wording, ISH initiation threshold lacks a verbatim initiation source, transfusion is 7/8 vs 8/9 but symptomatic/case-by-case, elder-abuse figures match notes, and VTE prophylaxis has source support but no sourced 35-day hip protocol. Trinity 10.64.163 to 10.64.164.'],
 '10.64.163':['feat(track): add the missing whole-bank progress donut plus mobile RTL/a11y polish. Donut shows correct/wrong/unanswered and overall accuracy without duplicating the existing heatmap or weak-spots map. Trinity 10.64.162 to 10.64.163.'],
 '10.64.162':['fix(content): idx 1273 testosterone-therapy contraindication key flip c:1 to 0 (Hgb>16 to treated-prostate-cancer history). 76yo, low T, treated prostate CA (radiation 5y ago, PSA undetectable 3y), Hgb 16.2, asks the STRONGEST contraindication to testosterone replacement. Content-gate — data/notes.json id=43 (Andropause/Aging Man, Hazzard Ch 36+37) VERBATIM: "Contraindications: prostate cancer, breast cancer, severe untreated OSA, hematocrit >50%, severe LUTS (IPSS >19), recent CV event." The keyed [1] cites the wrong metric — the source threshold is HEMATOCRIT >50%, not Hgb >16, and Hgb 16.2 is only marginally elevated; prostate cancer is an EXPLICIT listed contraindication, so [0] is the strongest. Physician-adjudicated flip (Eias) from the 2026-06-10 §3 soft-flag TIER-B set (idx 1273), where it was the one item with material directional pull; the treated/remission nuance (modern data permits cautious therapy) is why the auto-rubric held KEEP, but for the board-frame STRONGEST-contraindication question the textbook + in-repo source answer is the prostate-cancer history. Trinity 10.64.161 to 10.64.162.'],
 '10.64.161':['fix(content): idx 2237 STEMI reperfusion answer-key flip c:2 to 3 (transfer-to-PCI to Tenecteplase 40mg). 81yo anterior STEMI, no PCI on-site, transfer time 140 min, no fibrinolysis contraindication, 72kg. The keyed [2] transfer-for-primary-PCI is wrong per Harrison 22e Ch 286 VERBATIM: "Compared with fibrinolysis, primary PCI is preferred unless the time to delivery of the first coronary device is anticipated to be longer than 120 min" (140>120 so fibrinolysis is the correct strategy). On the 81yo ICH concern, Harrison Ch 286 VERBATIM: "While advanced age is associated with an increase in hemorrhagic complications, the benefit of fibrinolytic therapy in the elderly appears to justify its use if no other contraindications are present, the amount of myocardium in jeopardy appears to be substantial, and timely access to primary PCI is" [not available] — anterior STEMI = substantial myocardium, no contraindications, PCI not timely. Among offered options 72kg maps to the 70-79kg TNK weight band = 40mg, so [3] is the correct lytic dose ([1] 25mg is not a standard band, [0] 35mg is the 60-69kg band). NOTE the STREAM ≥75yo half-dose (15-20mg) refinement is not represented in any option, so the question tests reperfusion STRATEGY + standard weight-band dosing, both satisfied by [3]. Physician-adjudicated flip (Eias) from the 2026-06-01 §3 clinical-sweep FLAG (idx 2237, conf 90); surfaced read-only, applied here with the verbatim source per the content-gate. Trinity 10.64.160 to 10.64.161.'],
