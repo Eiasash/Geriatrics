@@ -1,4 +1,4 @@
-const CACHE='shlav-a-v10.64.171';
+const CACHE='shlav-a-v10.64.172';
 const HTML_URLS=['shlav-a-mega.html','manifest.json','shared/fsrs.js','shared/tokens.css','shared/install-promo.js','src/storage.js','src/sw-update.js','src/study_plan_algorithm.js','src/study_plan.js','icons/icon-192.png','icons/icon-512.png'];
 // CRITICAL_URLS = the bare-minimum app shell required for offline boot.
 // Anything else (data/*.json, fonts, icons) is best-effort in the install
