@@ -116,7 +116,7 @@ function assertNoInlineStyleOnShells(body, label) {
   expect(offenders, `${label}: inline style on track-* shell(s): ${offenders.join(", ")}`).toEqual([]);
 }
 
-// ─── _rtTop (KPI tiles + due alert + rescue / final stretch + empty state) ───
+// ─── _rtTop (analytics summary only) ───
 describe("_rtTop — class-driven shell", () => {
   let body;
   beforeAll(() => { body = bodyOf("_rtTop"); });
@@ -142,34 +142,12 @@ describe("_rtTop — class-driven shell", () => {
     }
   });
 
-  it("renders the SRS due alert card when dueN>0 with .track-due shell", () => {
-    expect(body).toMatch(/<div class="card track-due">/);
-    expect(body).toMatch(/track-due__cta/);
-  });
-
-  it("groups Rescue + Final Stretch under compact .track-actions shells", () => {
-    expect(body).toMatch(/<div class="card track-actions">/);
-    expect(body).toMatch(/<div class="track-rescue">/);
-    expect(body).toMatch(/track-final track-final--\$\{_mod\}/);
-    expect(body).toMatch(/track-final__cta track-final__cta--\$\{_mod\}/);
-    // CSS-side guard for the two state modifiers
-    for (const m of ["calm", "urgent"]) {
-      expect(html, `.track-final--${m} missing in CSS`).toMatch(
-        new RegExp(`\\.track-final--${m}\\s*\\{`)
-      );
-      expect(html, `.track-final__cta--${m} missing in CSS`).toMatch(
-        new RegExp(`\\.track-final__cta--${m}\\s*\\{`)
-      );
-    }
-  });
-
-  it("renders empty-state card via .track-empty when no exam date set", () => {
-    expect(body).toMatch(/class="card track-empty"/);
-  });
-
-  it("preserves canonical onclick handlers (filt='due', buildPool, buildRescuePool, buildFinalStretchPool)", () => {
-    for (const fn of ["buildPool()", "buildRescuePool()", "buildFinalStretchPool(40)"]) {
-      expect(body, `_rtTop missing onclick body: ${fn}`).toContain(fn);
+  it("keeps Study/workflow cards out of Track top", () => {
+    for (const token of [
+      "track-due", "track-empty", "track-actions", "renderStudyPlan()",
+      "renderDailyPlan()", "buildPool()", "buildRescuePool()", "buildFinalStretchPool(40)"
+    ]) {
+      expect(body, `_rtTop should not contain Study workflow token: ${token}`).not.toContain(token);
     }
   });
 
@@ -178,15 +156,14 @@ describe("_rtTop — class-driven shell", () => {
   });
 });
 
-// ─── _rtMid (re-read chapters + leaderboard + exam trend orchestration) ───
+// ─── _rtMid (leaderboard + exam trend orchestration) ───
 describe("_rtMid — class-driven shell", () => {
   let body;
   beforeAll(() => { body = bodyOf("_rtMid"); });
 
-  it("re-read card uses .track-reread + group-modifier classes", () => {
-    expect(body).toMatch(/class="card track-reread"/);
-    expect(body).toMatch(/class="track-reread__group track-reread__group--haz"/);
-    expect(body).toMatch(/class="track-reread__group track-reread__group--har"/);
+  it("keeps re-read chapter workbench cards out of Track middle", () => {
+    expect(body).not.toMatch(/class="card track-reread"/);
+    expect(body).not.toMatch(/getChaptersDueForReading/);
   });
 
   it("leaderboard collapsible uses .track-lb shell + open-state modifier", () => {
@@ -204,14 +181,15 @@ describe("_rtProgress — class-driven shell", () => {
   let body;
   beforeAll(() => { body = bodyOf("_rtProgress"); });
 
-  it("bookmark folder card uses .track-bk + folder-* sub-elements", () => {
-    expect(body).toMatch(/class="card track-bk"/);
-    expect(body).toMatch(/track-bk__folder-head/);
+  it("keeps bookmark review cards out of Track analytics", () => {
+    expect(body).not.toMatch(/class="card track-bk"/);
+    expect(body).not.toMatch(/track-bk__folder-head/);
   });
 
-  it("syllabus card uses --open class for show/hide instead of inline display:", () => {
-    expect(body).toMatch(/class="card track-syllabus\$\{S\._sylOpen\?' track-syllabus--open':''\}"/);
-    expect(body).not.toMatch(/style="display:\$\{S\._sylOpen/);
+  it("keeps syllabus checklist out of Track analytics", () => {
+    expect(body).not.toMatch(/class="card track-syllabus/);
+    expect(body).not.toMatch(/S\._sylOpen/);
+    expect(body).not.toMatch(/track-cheat-row/);
   });
 
   it("Weak Spots Map uses .track-wsm shell + --open state modifier", () => {
@@ -251,20 +229,18 @@ describe("_rtFooter — class-driven shell", () => {
   let body;
   beforeAll(() => { body = bodyOf("_rtFooter"); });
 
-  it("share action is demoted into the version footer", () => {
+  it("does not expose utility actions from Track footer", () => {
     expect(body).not.toMatch(/class="card track-share"/);
-    expect(body).toMatch(/track-version-footer__btn--share/);
-    expect(body).toMatch(/shareApp\(\)/);
+    expect(body).not.toMatch(/track-version-footer__btn--share/);
+    expect(body).not.toMatch(/shareApp\(\)/);
+    expect(body).not.toMatch(/data-action="apply-update"/);
+    expect(body).not.toMatch(/InternalMedicine/);
   });
 
-  it("version footer uses .track-version-footer shell + button/link sub-classes", () => {
+  it("version footer uses .track-version-footer shell for build text only", () => {
     expect(body).toMatch(/class="track-version-footer"/);
-    expect(body).toMatch(/track-version-footer__btn--update/);
-    expect(body).toMatch(/track-version-footer__link/);
-  });
-
-  it("preserves the apply-update data-action on the force-update button", () => {
-    expect(body).toMatch(/data-action="apply-update"/);
+    expect(body).toMatch(/Shlav A Mega v\$\{APP_VERSION\}/);
+    expect(body).not.toMatch(/track-version-footer__row/);
   });
 
   it("emits ZERO inline style attributes on track-* shells", () => {
@@ -383,6 +359,81 @@ describe("renderDailyPlan — class-driven shell", () => {
   });
 });
 
+// ─── Study Today dashboard ownership ───
+describe("Study Today dashboard — moved workbench surfaces", () => {
+  it("renderStudyDashboard composes plan, due review, drills, reading, bookmarks, syllabus, and cheat sheet", () => {
+    const body = bodyOf("renderStudyDashboard");
+    for (const token of [
+      "renderDueReviewCard()", "renderStudyPlan()", "renderDailyPlan()",
+      "renderStudyPracticeActions()", "renderReadingDueCard()",
+      "renderBookmarkReviewCard()", "renderSyllabusChecklist()", "exportCheatSheet()"
+    ]) {
+      expect(body, `renderStudyDashboard missing ${token}`).toContain(token);
+    }
+    expect(body).toMatch(/class="card track-empty"/);
+    expect(body).toMatch(/learnSub='study'/);
+  });
+
+  it("due-review helper keeps the canonical due filter handler", () => {
+    const body = bodyOf("renderDueReviewCard");
+    expect(body).toMatch(/class="card track-due"/);
+    expect(body).toContain("filt='due';buildPool();tab='quiz';render()");
+    assertNoInlineStyleOnShells(body, "renderDueReviewCard");
+  });
+
+  it("practice helper owns Rescue + Final Stretch handlers", () => {
+    const body = bodyOf("renderStudyPracticeActions");
+    expect(body).toMatch(/<div class="card track-actions">/);
+    expect(body).toMatch(/<div class="track-rescue">/);
+    expect(body).toMatch(/track-final track-final--\$\{_mod\}/);
+    expect(body).toContain("buildRescuePool();tab='quiz';render()");
+    expect(body).toContain("buildFinalStretchPool(40);tab='quiz';render()");
+    for (const m of ["calm", "urgent"]) {
+      expect(html, `.track-final--${m} missing in CSS`).toMatch(
+        new RegExp(`\\.track-final--${m}\\s*\\{`)
+      );
+      expect(html, `.track-final__cta--${m} missing in CSS`).toMatch(
+        new RegExp(`\\.track-final__cta--${m}\\s*\\{`)
+      );
+    }
+    assertNoInlineStyleOnShells(body, "renderStudyPracticeActions");
+  });
+
+  it("reading due helper owns Hazzard and Harrison re-read links", () => {
+    const body = bodyOf("renderReadingDueCard");
+    expect(body).toMatch(/class="card track-reread"/);
+    expect(body).toMatch(/class="track-reread__group track-reread__group--haz"/);
+    expect(body).toMatch(/class="track-reread__group track-reread__group--har"/);
+    expect(body).toContain("openHazzardChapter");
+    expect(body).toContain("openHarrisonChapter");
+    assertNoInlineStyleOnShells(body, "renderReadingDueCard");
+  });
+
+  it("bookmarks and syllabus helpers moved out of Track retain their shells", () => {
+    const bk = bodyOf("renderBookmarkReviewCard");
+    expect(bk).toMatch(/class="card track-bk"/);
+    expect(bk).toMatch(/track-bk__folder-head/);
+    assertNoInlineStyleOnShells(bk, "renderBookmarkReviewCard");
+
+    const syl = bodyOf("renderSyllabusChecklist");
+    expect(syl).toMatch(/class="card track-syllabus\$\{S\._sylOpen\?' track-syllabus--open':''\}"/);
+    expect(syl).toMatch(/S\.ck\[\$\{i\}\]/);
+    expect(syl).not.toMatch(/style="display:\$\{S\._sylOpen/);
+    assertNoInlineStyleOnShells(syl, "renderSyllabusChecklist");
+  });
+});
+
+describe("Settings utilities — moved footer actions", () => {
+  let body;
+  beforeAll(() => { body = bodyOf("renderSettingsAppUtilities"); });
+
+  it("owns force update, share, and Internal Medicine link", () => {
+    expect(body).toMatch(/data-action="apply-update"/);
+    expect(body).toMatch(/shareApp\(\)/);
+    expect(body).toMatch(/InternalMedicine/);
+  });
+});
+
 // ─── renderSessionInline ───
 describe("renderSessionInline — class-driven shell", () => {
   let body;
@@ -438,6 +489,22 @@ describe("Track tab — cross-function invariants", () => {
   it("renderTrack still composes the four _rt* helpers in order", () => {
     const body = bodyOf("renderTrack");
     expect(body).toMatch(/_rtTop\(\)[\s\S]*_rtMid\(\)[\s\S]*_rtProgress\(\)[\s\S]*_rtFooter\(\)/);
+  });
+
+  it("Study tab defaults to Today while preserving note deep-link routing", () => {
+    expect(html).toMatch(/let learnSub='today'/);
+    const renderBody = bodyOf("render");
+    expect(renderBody).toMatch(/\{id:'today', mode:'learn'/);
+    expect(renderBody).toMatch(/if\(learnSub==='today'\)_body=renderStudyDashboard\(\)/);
+    expect(renderBody).toMatch(/case'study':_studyMode='learn';tab='learn';learnSub=openNote!==null\?'study':'today'/);
+  });
+
+  it("removed novelty modes do not reappear as visible controls", () => {
+    const liveSource = html.slice(0, html.indexOf("const CHANGELOG="));
+    expect(liveSource).not.toMatch(/>\s*Pomodoro\s*</i);
+    expect(liveSource).not.toMatch(/>\s*Sudden Death\s*</i);
+    expect(liveSource).not.toMatch(/>\s*On-Call\s*</i);
+    expect(liveSource).not.toMatch(/onclick="[^"]*(pomodoro|suddenDeath|onCall|oncall)[^"]*"/i);
   });
 
   it("CSS block defines all KPI value modifier classes", () => {
