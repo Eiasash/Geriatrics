@@ -449,10 +449,13 @@ body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg))
 .quiz-filter-drawer{padding:12px;margin-bottom:12px;border:1px solid rgb(var(--brd));border-radius:14px;background:rgb(var(--bg3));box-shadow:0 6px 18px rgba(15,23,42,.06)}
 .quiz-filter-drawer__head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:12px;font-weight:800;color:rgb(var(--fg))}
 .quiz-filter-drawer__done{font-size:10px;padding:6px 10px;border-radius:9px;border:1px solid rgb(var(--brd));background:rgb(var(--card-bg));color:rgb(var(--fg2));font-weight:700}
+.quiz-filter-pills{display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:10px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
 @media(max-width:480px){
 .quiz-filter-summary__top{align-items:flex-start}
 .quiz-filter-summary__actions{display:grid;grid-template-columns:1fr;min-width:118px}
 .quiz-filter-summary__actions .btn{width:100%;white-space:nowrap}
+.quiz-filter-pills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;overflow:visible;mask-image:none;-webkit-mask-image:none;padding-bottom:0}
+.quiz-filter-pills .pill{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:6px 8px;text-align:center;white-space:normal;line-height:1.25}
 }
 
 /* ===== TRACK TAB — class-driven rebuild (v10.60.0) =====
@@ -846,6 +849,13 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .study-dashboard__head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
 .study-dashboard__grid{display:grid;gap:10px}
 .study-dashboard__jump{font-size:10px;padding:7px 12px;border:1px solid rgb(var(--brd));border-radius:10px;background:rgb(var(--card-bg));color:rgb(var(--fg2));font-weight:700;cursor:pointer;white-space:nowrap}
+.study-subnav{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 6px;margin-bottom:12px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.study-subnav__btn{flex:0 0 auto;padding:7px 14px;border:1px solid rgb(var(--brd));border-radius:999px;font-size:11px;font-weight:500;cursor:pointer;background:rgb(var(--card-bg));color:rgb(var(--fg2));white-space:nowrap;transition:all .15s ease}
+.study-subnav__btn.on{border-color:rgb(var(--sl8));background:rgb(var(--sl8));color:#fff;font-weight:700}
+@media(max-width:480px){
+.study-subnav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;overflow:visible;padding:0;margin-bottom:12px}
+.study-subnav__btn{width:100%;min-height:40px;padding:7px 8px;white-space:normal;line-height:1.2}
+}
 .settings-utilities{padding:14px;margin-top:12px}
 .settings-utilities__title{font-weight:700;font-size:12px;margin-bottom:6px}
 .settings-utilities__sub{font-size:10px;color:rgb(var(--fg2));margin-bottom:10px}
@@ -3587,7 +3597,7 @@ EXAM_YEARS.forEach(yr=>{
 });
 h+=`</div>`;
 // Non-year filters row (single-select)
-h+=`<div class="scroll-fade-x" style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:10px;padding-bottom:4px;-webkit-overflow-scrolling:touch">`;
+h+=`<div class="quiz-filter-pills scroll-fade-x" role="group" aria-label="Advanced quiz filters">`;
 const _trapCount=QZ.filter((_,i)=>isExamTrap(i)).length;
 const _slowCount=slowQuestionCount();
 const _regCount=Array.isArray(REG)?REG.length:0;
@@ -7189,13 +7199,13 @@ case'learn':
     {id:'exams', mode:'lib',   ic:'📝', l:'Exams'}
   ];
   const _curId = _studyMode==='learn' ? learnSub : libSec;
-  let _subBar='<div style="display:flex;gap:6px;overflow-x:auto;padding:4px 2px 6px;margin-bottom:12px;-webkit-overflow-scrolling:touch;scrollbar-width:none">';
+  let _subBar='<div class="study-subnav" role="tablist" aria-label="Study sections">';
   _learnPills.forEach(p=>{
     const _on = (p.id===_curId);
     const _click = p.mode==='learn'
       ? `_studyMode='learn';learnSub='${p.id}';render()`
       : `_studyMode='lib';libSec='${p.id}';render()`;
-    _subBar += `<button onclick="${_click}" style="flex:0 0 auto;padding:7px 14px;border:1px solid ${_on?'rgb(var(--sl8))':'rgb(var(--brd))'};border-radius:999px;font-size:11px;font-weight:${_on?'700':'500'};cursor:pointer;background:${_on?'rgb(var(--sl8))':'rgb(var(--card-bg))'};color:${_on?'#fff':'rgb(var(--fg2))'};white-space:nowrap;transition:all .15s ease">${p.ic} ${p.l}</button>`;
+    _subBar += `<button type="button" role="tab" aria-selected="${_on?'true':'false'}" class="study-subnav__btn ${_on?'on':''}" onclick="${_click}">${p.ic} ${p.l}</button>`;
   });
   _subBar += '</div>';
   let _body='';
@@ -7369,8 +7379,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.173';
+const APP_VERSION='10.64.174';
 const CHANGELOG={
+'10.64.174':['ui(mobile-controls): replace the remaining horizontal-only Quiz advanced-filter strip and Study section strip with responsive mobile grids so controls no longer render half-hidden at a saved RTL scroll offset. Desktop keeps compact pill rows. No question data or clinical content touched. Bumped package/app/SW cache markers 10.64.173 to 10.64.174.'],
 '10.64.173':['fix(images): wire the Claude Geri image-dependent queue hip-fracture item to the live May 2024 subspecialty Supabase object and clear its stale imgDep warning after confirming the figure asset displays. Added a regression guard for the reviewed image queue. No answer keys, options, explanations, or clinical wording changed. Bumped package/app/SW cache markers 10.64.172 to 10.64.173.'],
 '10.64.172':['content(geri-bot-queue): source-adjudicate the Claude Geri verified queue without rerunning the audit. Ten key/rationale contradictions were resolved against Hazzard/Harrison/ACC-AHA sources, PSP now accepts both cholinesterase-inhibitor avoid answers, four internally broken or parser-contaminated items are quarantined instead of guessed, and the hypertension target rationale now matches the <130 mmHg key. Image-dependent items are deferred to a separate figure-wiring pass. Bumped package/app/SW cache markers 10.64.171 to 10.64.172.'],
 '10.64.171':['ui(study/track): redistribute the mobile workflow surfaces without touching clinical content. Study now defaults to a Today workbench containing due review, the Hazzard study plan, daily plan, rescue/final-stretch drills, chapters due for re-reading, bookmarks, syllabus checklist, and weak-topic cheat-sheet export. Track is analytics-only: KPI tiles, progress donut, topic heatmap, leaderboard, exam trend, Weak Spots Map, Confidence Matrix, Priority Matrix, and activity heatmap. Force Update, Share App Link, and the Internal Medicine link moved from the Track footer into Settings utilities. Legacy note deep links still route openNote + go("study") to Topic Notes. Bumped package/app/SW cache markers 10.64.170 to 10.64.171.'],
