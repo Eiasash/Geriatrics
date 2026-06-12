@@ -120,6 +120,10 @@ const OVERRIDE_PATTERNS = [
 
   // Iron deficiency anemia — only within anemia topic
   [/iron.?deficiency|IDA\b/i,                          { har: 102 }, { onlyTopics: [25] }],
+  // Smear-recognition item sourced from Harrison Ch 66 figure caption, not the
+  // treatment-focused iron-deficiency chapter.
+  [/משטח\s*דם[\s\S]{0,180}מיקרוציטיות[\s\S]{0,80}היפוכרומיות/i,
+                                                       { har: 66 },  { onlyTopics: [25], matchOn: 'stem' }],
 
   // GI — only within GI-adjacent topics (17 cardio has gastritis via NSAID, 24 kidney uses diuretics, etc.)
   [/\bgi.?bleed|hematemesis|\bmelena\b/i,              { har: 51 },  { onlyTopics: [25] }],

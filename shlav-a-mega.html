@@ -7379,8 +7379,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.174';
+const APP_VERSION='10.64.175';
 const CHANGELOG={
+'10.64.175':['fix(content): resolve the remaining Geri bot queue image-dependent text-only item idx 3696 without changing its key. The stem now includes the Harrison Ch 66 blood-smear finding for severe iron-deficiency anemia (microcytic/hypochromic red cells with anisopoikilocytosis), so the question is answerable when the figure is unavailable. Source anchor checked before edit: Harrison 22e Ch 66, Figure 66-4 caption. Added a regression guard. Trinity 10.64.174 to 10.64.175.'],
 '10.64.174':['ui(mobile-controls): replace the remaining horizontal-only Quiz advanced-filter strip and Study section strip with responsive mobile grids so controls no longer render half-hidden at a saved RTL scroll offset. Desktop keeps compact pill rows. No question data or clinical content touched. Bumped package/app/SW cache markers 10.64.173 to 10.64.174.'],
 '10.64.173':['fix(images): wire the Claude Geri image-dependent queue hip-fracture item to the live May 2024 subspecialty Supabase object and clear its stale imgDep warning after confirming the figure asset displays. Added a regression guard for the reviewed image queue. No answer keys, options, explanations, or clinical wording changed. Bumped package/app/SW cache markers 10.64.172 to 10.64.173.'],
 '10.64.172':['content(geri-bot-queue): source-adjudicate the Claude Geri verified queue without rerunning the audit. Ten key/rationale contradictions were resolved against Hazzard/Harrison/ACC-AHA sources, PSP now accepts both cholinesterase-inhibitor avoid answers, four internally broken or parser-contaminated items are quarantined instead of guessed, and the hypertension target rationale now matches the <130 mmHg key. Image-dependent items are deferred to a separate figure-wiring pass. Bumped package/app/SW cache markers 10.64.171 to 10.64.172.'],
