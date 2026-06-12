@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadQuestionsHydrated } from './_helpers/loadQuestionsHydrated.js';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const questions = loadQuestionsHydrated(ROOT);
+const questionChapters = JSON.parse(
+  readFileSync(resolve(ROOT, 'data/question_chapters.json'), 'utf8')
+);
 
 describe('Geri bot queue source-review guard', () => {
   it('pins source-adjudicated key corrections from the 2026-06-12 queue', () => {
@@ -56,5 +60,17 @@ describe('Geri bot queue source-review guard', () => {
       expect(questions[idx].broken_reason).toContain('QUARANTINED 2026-06-12');
       expect(questions[idx].broken_reason).toContain(marker);
     }
+  });
+
+  it('keeps the remaining image-dependent smear item answerable without a figure', () => {
+    const q = questions[3696];
+    expect(q.c).toBe(1);
+    expect(q.o[q.c]).toContain('ברזל');
+    expect(q.q).toContain('מיקרוציטיות');
+    expect(q.q).toContain('היפוכרומיות');
+    expect(q.q).toContain('שונות ניכרת בגודל ובצורה');
+    expect(q.ref).toBe('Harrison Ch 66 — Anemia and Polycythemia');
+    expect(questionChapters['3696'].har).toBe(66);
+    expect(q.broken).not.toBe(true);
   });
 });
