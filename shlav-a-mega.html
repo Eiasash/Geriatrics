@@ -843,6 +843,17 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .track-version-footer__btn--share{background:#f59e0b}
 .track-version-footer__link{font-size:10px;padding:5px 14px;background:#4f46e5;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block}
 .track-version-footer__sig{margin-top:6px}
+.study-dashboard__head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+.study-dashboard__grid{display:grid;gap:10px}
+.study-dashboard__jump{font-size:10px;padding:7px 12px;border:1px solid rgb(var(--brd));border-radius:10px;background:rgb(var(--card-bg));color:rgb(var(--fg2));font-weight:700;cursor:pointer;white-space:nowrap}
+.settings-utilities{padding:14px;margin-top:12px}
+.settings-utilities__title{font-weight:700;font-size:12px;margin-bottom:6px}
+.settings-utilities__sub{font-size:10px;color:rgb(var(--fg2));margin-bottom:10px}
+.settings-utilities__row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.settings-utilities__btn,.settings-utilities__link{min-height:44px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;padding:6px 14px;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;text-decoration:none}
+.settings-utilities__btn--update{background:#0D7377}
+.settings-utilities__btn--share{background:#f59e0b}
+.settings-utilities__link{background:#4f46e5}
 .track-wsm__mobile-list{display:none;gap:8px}
 .track-wsm__mobile-row{padding:9px 10px;border:1px solid rgb(var(--brd));border-radius:10px;background:rgb(var(--bg3));cursor:pointer;direction:ltr;text-align:left}
 .track-wsm__mobile-line{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px}
@@ -1949,7 +1960,7 @@ let TABS=[];
 const MINIMAL_MODE=(()=>{try{const p=new URLSearchParams(location.search);return p.get('minimal')==='1'||p.get('mode')==='minimal'||location.hash==='#minimal';}catch(e){return false;}})();
 if(MINIMAL_MODE)document.body.classList.add('minimal-mode');
 let tab='quiz';
-let learnSub='study'; // sub-tab within Study: study|notes|flash|meds|chat
+let learnSub='today'; // sub-tab within Study: today|study|notes|flash|meds|chat
 let _studyMode='learn'; // v10.54.0: 'learn'|'lib' — which mode in unified Study tab
 let settingsSub='settings'; // sub-tab within Settings: settings|feedback
 let moreSub='settings'; // legacy deep-link holder for older #more routes
@@ -3725,7 +3736,7 @@ return _rqMain();
 let openNote=null;
 function toggleNote(i){openNote=openNote===i?null:i;render();}
 function renderStudy(){
-let h=`<div class="sec-t">📚 Study Notes</div><div class="sec-s">${NOTES.length} IMA topics · Hazzard's 8e + Harrison's + Israeli Guidelines · Bank Qs, drugs, laws, AI tutor inline</div>`;
+let h=`<div class="sec-t">📚 Topic Notes</div><div class="sec-s">${NOTES.length} IMA topics · Hazzard's 8e + Harrison's + Israeli Guidelines · Bank Qs, drugs, laws, AI tutor inline</div>`;
 h+=`<input class="search-box" placeholder="Search topics..." oninput="filterNotes(this.value)" id="nfilt">`;
 const fv=document.getElementById('nfilt')?.value?.toLowerCase()||'';
 NOTES.filter(n=>n.topic.toLowerCase().includes(fv)||n.notes.toLowerCase().includes(fv)).forEach(n=>{
@@ -5771,6 +5782,137 @@ function renderStudyPlan(){
   return h;
 }
 
+function renderDueReviewCard(){
+const dueN=getDueQuestions().length;
+if(dueN<=0)return '';
+return `<div class="card track-due">
+<span class="track-due__icon">🔔</span>
+<div class="track-due__body"><div class="track-due__title">${dueN} questions due for review</div>
+<div class="track-due__sub">Spaced repetition items ready now</div></div>
+<button onclick="filt='due';buildPool();tab='quiz';render()" class="btn track-due__cta">▶ Review</button>
+</div>`;
+}
+function renderStudyPracticeActions(){
+const _weakTopics=getWeakTopics(3);
+const _showRescue=_weakTopics.length&&_weakTopics[0].pct!==null&&_weakTopics[0].pct<65;
+const _exDate=S.examDate||localStorage.getItem('shlav_exam_date')||'';
+const _daysLeft=_exDate?Math.max(0,Math.ceil((new Date(_exDate)-Date.now())/864e5)):null;
+const _label=_daysLeft===null?'Final Stretch':(_daysLeft<=30?`Final Stretch · ${_daysLeft}d left`:`Final Stretch · ${_daysLeft}d`);
+const _urgent=_daysLeft!==null&&_daysLeft<=30;
+const _mod=_urgent?'urgent':'calm';
+let h=`<div class="card track-actions">
+<div class="track-actions__title">Practice drills</div>`;
+if(_showRescue){
+h+=`<div class="track-rescue">
+<span class="track-rescue__icon">🚨</span>
+<div class="track-rescue__body">
+<div class="track-rescue__title">Rescue Drill</div>
+<div class="track-rescue__topics">${_weakTopics.map(w=>TOPICS[w.ti]+' ('+w.pct+'%)').join(' · ')}</div>
+</div>
+<button onclick="buildRescuePool();tab='quiz';render()" class="btn track-rescue__cta">Start</button>
+</div>`;
+}
+h+=`<div class="track-final track-final--${_mod}">
+<span class="track-final__icon">🎯</span>
+<div class="track-final__body">
+<div class="track-final__title track-final__title--${_mod}">${_label}</div>
+<div class="track-final__sub">40 high-yield Qs · prioritises never-seen + your weak spots</div>
+</div>
+<button onclick="buildFinalStretchPool(40);tab='quiz';render()" class="btn track-final__cta track-final__cta--${_mod}">Start</button>
+</div></div>`;
+return h;
+}
+function renderReadingDueCard(){
+const _hazDue=getChaptersDueForReading('haz',30);
+const _harDue=getChaptersDueForReading('har',30);
+if(!_hazDue.length&&!_harDue.length)return '';
+let h=`<div class="card track-reread">
+<div class="track-reread__title">📖 Chapters Due for Re-Reading</div>`;
+if(_hazDue.length){
+h+=`<div class="track-reread__group track-reread__group--haz">Hazzard's:</div>`;
+_hazDue.slice(0,5).forEach(c=>{
+  const _chData=_hazData&&_hazData[c.ch];
+  const _title=_chData?_chData.title:'Ch '+c.ch;
+  h+=`<div onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${c.ch})" class="track-reread__row">📕 Ch ${c.ch}: ${_title} <span class="track-reread__since track-reread__since--haz">(${c.daysSince}d ago)</span></div>`;
+});
+}
+if(_harDue.length){
+h+=`<div class="track-reread__group track-reread__group--har">Harrison's:</div>`;
+_harDue.slice(0,5).forEach(c=>{
+  const _chData=_harData&&_harData[c.ch];
+  const _title=_chData?_chData.title:'Ch '+c.ch;
+  h+=`<div onclick="tab='lib';libSec='harrison';openHarrisonChapter(${c.ch})" class="track-reread__row">📗 Ch ${c.ch}: ${_title} <span class="track-reread__since track-reread__since--har">(${c.daysSince}d ago)</span></div>`;
+});
+}
+h+=`</div>`;
+return h;
+}
+function renderBookmarkReviewCard(){
+const bkCount=Object.values(S.bk).filter(Boolean).length;
+if(bkCount<=0)return '';
+const _byTopic={};
+Object.entries(S.bk).filter(([,v])=>v).forEach(([k])=>{
+const q=QZ[k];if(!q)return;
+const tp=TOPICS[q.ti]||'Other';
+if(!_byTopic[tp])_byTopic[tp]=[];
+_byTopic[tp].push({k:k,q:q});
+});
+const _topicKeys=Object.keys(_byTopic);
+let h='';
+if(_topicKeys.length>1){
+h+='<div class="card track-bk"><div class="track-bk__title">📁 Bookmark Folders</div>';
+_topicKeys.forEach(function(topic){
+var fk='bkf_'+topic.replace(/[^a-z0-9]/gi,'_');
+var open=S[fk];
+var qs=_byTopic[topic];
+h+='<div class="track-bk__folder">';
+h+='<div onclick="S[\''+fk+'\']=' + '!S[\''+fk+'\'];save();render()" class="track-bk__folder-head" role="button" tabindex="0" aria-expanded="'+(open?'true':'false')+'" aria-label="'+topic+'">';
+h+='<span>📁 '+topic+' ('+qs.length+')</span><span>'+(open?'▼':'▶')+'</span></div>';
+if(open){qs.forEach(function(e){h+='<div class="track-bk__folder-row heb" dir="'+heDir(e.q.q)+'">'+sanitize(e.q.q.substring(0,90))+'...</div>';});}
+h+='</div>';
+});
+h+='</div>';
+}else{
+h+=`<div class="card track-bk"><div class="track-bk__title">🔖 Bookmarked (${bkCount})</div>`;
+Object.entries(S.bk).filter(([,v])=>v).slice(0,10).forEach(([k])=>{
+const q=QZ[k];if(q){const t=qLang(q,'q');h+=`<div class="track-bk__row heb" dir="${heDir(t)}">${sanitize(t.substring(0,80))}...</div>`;}
+});
+h+=`</div>`;
+}
+return h;
+}
+function renderSyllabusChecklist(){
+const done=Object.values(S.ck).filter(Boolean).length;
+let h=`<div class="card track-syllabus${S._sylOpen?' track-syllabus--open':''}"><div class="track-syllabus__title">📋 Syllabus (${done}/${TOPICS.length})</div>`;
+TOPICS.forEach((t,i)=>{h+=`<div class="topic track-syllabus__topic${S.ck[i]?' is-done done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()" role="checkbox" aria-checked="${S.ck[i]?'true':'false'}" tabindex="0" aria-label="${t}">
+<input type="checkbox" class="track-syllabus__cb" ${S.ck[i]?'checked':''} readonly tabindex="-1"><span>${t}</span></div>`;});
+h+=`<div onclick="S._sylOpen=!S._sylOpen;render()" class="track-syllabus__toggle" role="button" tabindex="0" aria-expanded="${S._sylOpen}" aria-label="Toggle syllabus topics">${S._sylOpen?'▲ Collapse':'▼ Show '+TOPICS.length+' topics'}</div>`;
+h+=`</div>`;
+return h;
+}
+function renderStudyDashboard(){
+let h=`<div class="study-dashboard__head">
+<div><div class="sec-t">Study Today</div><div class="sec-s">Daily plan, readings, review drills, and saved work.</div></div>
+<button class="study-dashboard__jump" onclick="_studyMode='learn';learnSub='study';render()">Topic Notes</button>
+</div><div class="study-dashboard__grid">`;
+h+=renderDueReviewCard();
+h+=renderStudyPlan();
+if(!S.examDate&&!localStorage.getItem('shlav_exam_date')){
+h+=`<div class="card track-empty">
+<div class="track-empty__title">📅 When is your exam?</div>
+<button class="btn btn-p" onclick="setExamDate()">Set Exam Date</button>
+</div>`;
+}else{
+h+=renderDailyPlan();
+}
+h+=renderStudyPracticeActions();
+h+=renderReadingDueCard();
+h+=renderBookmarkReviewCard();
+h+=renderSyllabusChecklist();
+h+=`<div class="track-cheat-row"><a href="#" onclick="event.preventDefault();exportCheatSheet()" class="track-cheat-link" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</a></div>`;
+h+=`</div>`;
+return h;
+}
 
 // ===== TRACK HELPERS (_rt* prefix) =====
 function renderProgressDonut(){
@@ -5799,10 +5941,7 @@ return `<div class="card track-donut" role="img" aria-label="דונאט התקד
 </div>`;
 }
 function _rtTop(){
-const done=Object.values(S.ck).filter(Boolean).length;
 const tot=S.qOk+S.qNo;const pctN=tot?Math.round(S.qOk/tot*100):0;const pct=tot?pctN+'%':'—';
-const bkCount=Object.values(S.bk).filter(Boolean).length;
-const dueN=getDueQuestions().length;
 const readiness=calcEstScore();
 const streak=getStudyStreak();
 // Key metrics row — class-driven KPI tiles (v10.60.0)
@@ -5827,97 +5966,17 @@ let h=`<div class="track-kpi-row">
 </div>
 </div>`;
 h+=renderProgressDonut();
-// SRS due alert
-if(dueN>0){
-h+=`<div class="card track-due">
-<span class="track-due__icon">🔔</span>
-<div class="track-due__body"><div class="track-due__title">${dueN} questions due for review</div>
-<div class="track-due__sub">Spaced repetition items ready now</div></div>
-<button onclick="filt='due';buildPool();tab='quiz';render()" class="btn track-due__cta">▶ Review</button>
-</div>`;
-}
 // v10.51.0: Topic Heatmap — single SVG-styled grid of all 46 topics colored
 // by aggregated FSRS retention (Cividis-safe palette). Tap a cell → filter
 // quiz to that topic. The legacy "Topic Mastery Map" mini-tile grid that
 // used to live here was retired in favour of this denser, accessibility-
 // friendlier view; the renderTopicHeatmap() function is the single source.
 h+=renderTopicHeatmap();
-h+=renderStudyPlan();
-// Feature 5: Exam date + daily plan
-if(!S.examDate&&!localStorage.getItem('shlav_exam_date')){
-h+=`<div class="card track-empty">
-<div class="track-empty__title">📅 When is your exam?</div>
-<button class="btn btn-p" onclick="setExamDate()">Set Exam Date</button>
-</div>`;
-}else{
-h+=renderDailyPlan();
-}
-h+=renderSessionCard();
-// v10.50.0: Confidence Matrix moved to a collapsible "Detailed analysis" section in
-// _rtProgress() — it's useful but niche, not something that needs to live above-the-fold.
-// Compact practice drill actions. Rescue + Final Stretch used to be two full-width
-// cards with giant GO buttons; keep the workflows, but stop them dominating Track.
-const _weakTopics=getWeakTopics(3);
-const _showRescue=_weakTopics.length&&_weakTopics[0].pct!==null&&_weakTopics[0].pct<65;
-const _exDate=S.examDate||localStorage.getItem('shlav_exam_date')||'';
-const _daysLeft=_exDate?Math.max(0,Math.ceil((new Date(_exDate)-Date.now())/864e5)):null;
-const _label=_daysLeft===null?'Final Stretch':(_daysLeft<=30?`Final Stretch · ${_daysLeft}d left`:`Final Stretch · ${_daysLeft}d`);
-const _urgent=_daysLeft!==null&&_daysLeft<=30;
-const _mod=_urgent?'urgent':'calm';
-h+=`<div class="card track-actions">
-<div class="track-actions__title">Practice drills</div>`;
-if(_showRescue){
-h+=`<div class="track-rescue">
-<span class="track-rescue__icon">🚨</span>
-<div class="track-rescue__body">
-<div class="track-rescue__title">Rescue Drill</div>
-<div class="track-rescue__topics">${_weakTopics.map(w=>TOPICS[w.ti]+' ('+w.pct+'%)').join(' · ')}</div>
-</div>
-<button onclick="buildRescuePool();tab='quiz';render()" class="btn track-rescue__cta">Start</button>
-</div>`;
-}
-h+=`<div class="track-final track-final--${_mod}">
-<span class="track-final__icon">🎯</span>
-<div class="track-final__body">
-<div class="track-final__title track-final__title--${_mod}">${_label}</div>
-<div class="track-final__sub">40 high-yield Qs · prioritises never-seen + your weak spots</div>
-</div>
-<button onclick="buildFinalStretchPool(40);tab='quiz';render()" class="btn track-final__cta track-final__cta--${_mod}">Start</button>
-</div></div>`;
 
 return h;
 }
 function _rtMid(){
-const done=Object.values(S.ck).filter(Boolean).length;
-const tot=S.qOk+S.qNo;const pctN=tot?Math.round(S.qOk/tot*100):0;const pct=tot?pctN+'%':'—';
-const dueN=getDueQuestions().length;
-const streak=getStudyStreak();
 let h='';
-// Spaced Reading Due (Feature 9)
-const _hazDue=getChaptersDueForReading('haz',30);
-const _harDue=getChaptersDueForReading('har',30);
-if(_hazDue.length||_harDue.length){
-h+=`<div class="card track-reread">
-<div class="track-reread__title">📖 Chapters Due for Re-Reading</div>`;
-if(_hazDue.length){
-h+=`<div class="track-reread__group track-reread__group--haz">Hazzard's:</div>`;
-_hazDue.slice(0,5).forEach(c=>{
-  const _chData=_hazData&&_hazData[c.ch];
-  const _title=_chData?_chData.title:'Ch '+c.ch;
-  h+=`<div onclick="tab='lib';libSec='haz-pdf';openHazzardChapter(${c.ch})" class="track-reread__row">📕 Ch ${c.ch}: ${_title} <span class="track-reread__since track-reread__since--haz">(${c.daysSince}d ago)</span></div>`;
-});
-}
-if(_harDue.length){
-h+=`<div class="track-reread__group track-reread__group--har">Harrison's:</div>`;
-_harDue.slice(0,5).forEach(c=>{
-  const _chData=_harData&&_harData[c.ch];
-  const _title=_chData?_chData.title:'Ch '+c.ch;
-  h+=`<div onclick="tab='lib';libSec='harrison';openHarrisonChapter(${c.ch})" class="track-reread__row">📗 Ch ${c.ch}: ${_title} <span class="track-reread__since track-reread__since--har">(${c.daysSince}d ago)</span></div>`;
-});
-}
-h+=`</div>`;
-}
-
 // Feature 8: Leaderboard — v10.58.0 collapsible (default closed). The card was
 // always showing the "Tap refresh to load" placeholder, eating space. Now header
 // shows readiness/answered inline; expanding reveals the full board + refresh.
@@ -5949,48 +6008,7 @@ h+=renderExamTrendCard();
 return h;
 }
 function _rtProgress(){
-const done=Object.values(S.ck).filter(Boolean).length;
-const tot=S.qOk+S.qNo;const pct=tot?Math.round(S.qOk/tot*100)+'%':'—';
-const bkCount=Object.values(S.bk).filter(Boolean).length;
-const dueN=getDueQuestions().length;
-const estScore=calcEstScore();
 let h='';
-// Bookmarked questions with folder grouping
-if(bkCount>0){
-const _byTopic={};
-Object.entries(S.bk).filter(([,v])=>v).forEach(([k])=>{
-const q=QZ[k];if(!q)return;
-const tp=TOPICS[q.ti]||'Other';
-if(!_byTopic[tp])_byTopic[tp]=[];
-_byTopic[tp].push({k:k,q:q});
-});
-const _topicKeys=Object.keys(_byTopic);
-if(_topicKeys.length>1){
-h+='<div class="card track-bk"><div class="track-bk__title">📁 Bookmark Folders</div>';
-_topicKeys.forEach(function(topic){
-var fk='bkf_'+topic.replace(/[^a-z0-9]/gi,'_');
-var open=S[fk];
-var qs=_byTopic[topic];
-h+='<div class="track-bk__folder">';
-h+='<div onclick="S[\''+fk+'\']=' + '!S[\''+fk+'\'];save();render()" class="track-bk__folder-head" role="button" tabindex="0" aria-expanded="'+(open?'true':'false')+'" aria-label="'+topic+'">';
-h+='<span>📁 '+topic+' ('+qs.length+')</span><span>'+(open?'▼':'▶')+'</span></div>';
-if(open){qs.forEach(function(e){h+='<div class="track-bk__folder-row heb" dir="'+heDir(e.q.q)+'">'+e.q.q.substring(0,90)+'...</div>';});}
-h+='</div>';
-});
-h+='</div>';
-}else{
-h+=`<div class="card track-bk"><div class="track-bk__title">🔖 Bookmarked (${bkCount})</div>`;
-Object.entries(S.bk).filter(([,v])=>v).slice(0,10).forEach(([k])=>{
-const q=QZ[k];if(q){const t=qLang(q,'q');h+=`<div class="track-bk__row heb" dir="${heDir(t)}">${sanitize(t.substring(0,80))}...</div>`;}
-});
-h+=`</div>`;
-}
-}
-// Syllabus
-h+=`<div class="card track-syllabus${S._sylOpen?' track-syllabus--open':''}"><div class="track-syllabus__title">📋 Syllabus (${done}/${TOPICS.length})</div>`;
-// v10.50.0: removed "📊 Accuracy by Topic" list — it duplicated the 🗺️ Topic Mastery Map
-// already shown at the top of Track in _rtTop(). One topic-accuracy view is enough.
-const tSt=getTopicStats();
 // Year × Topic heatmap
 const years=[...new Set(QZ.map(q=>q.t))].sort();
 const heatData=[];
@@ -6088,13 +6106,6 @@ ${_blindSpots>0?`<div class="track-cm__warn">⚠️ ${_blindSpots} blind spots �
 }
 // ROI Matrix and Radar chart removed — accuracy bars above are sufficient
 h+=renderPriorityMatrix();
-// v10.58.0: Cheat-sheet export link, demoted from full card in _rtMid()
-h+=`<div class="track-cheat-row"><a href="#" onclick="event.preventDefault();exportCheatSheet()" class="track-cheat-link" aria-label="Export cheat sheet">📄 Export Weak Topics Cheat Sheet</a></div>`;
-
-TOPICS.forEach((t,i)=>{h+=`<div class="topic track-syllabus__topic${S.ck[i]?' is-done done':''}" onclick="S.ck[${i}]=!S.ck[${i}];save();render()" role="checkbox" aria-checked="${S.ck[i]?'true':'false'}" tabindex="0" aria-label="${t}">
-<input type="checkbox" class="track-syllabus__cb" ${S.ck[i]?'checked':''} readonly tabindex="-1"><span>${t}</span></div>`;});
-h+=`<div onclick="S._sylOpen=!S._sylOpen;render()" class="track-syllabus__toggle" role="button" tabindex="0" aria-expanded="${S._sylOpen}" aria-label="Toggle syllabus topics">${S._sylOpen?'▲ Collapse':'▼ Show '+TOPICS.length+' topics'}</div>`;
-h+=`</div>`;
 // v10.57.0: Activity Calendar (30 days) — moved here from _rtTop where it
 // was buried under the action CTAs. This is a passive progress view, so it
 // belongs at the bottom of _rtProgress alongside the other history widgets.
@@ -6130,23 +6141,23 @@ return h;
 }
 function _rtFooter(){
 let h='';
-// v10.54.0: IMA Exam Archive removed — duplicated Library → Exams sub-tab.
-// Reset / share / auxiliary links stay in the footer; avoid another full Track card.
-// Account / Study Plan / Data Management / API Key all moved to Settings tab in v10.48.0 — they were
-// stuffed into Track and made the page hard to navigate. The "discovery" entry from Track is the
-// ⚙️ Settings tab in the top tab bar, plus the "Set Exam Date" CTA earlier in this view which
-// scrolls there for the unset case.
-// Version footer
 h+=`<div class="track-version-footer">
 <div>Shlav A Mega v${APP_VERSION}</div>
 <div>Hazzard's 8e + Harrison's 22e · ${QZ.length} Questions</div>
-<div class="track-version-footer__row">
-<button data-action="apply-update" class="track-version-footer__btn track-version-footer__btn--update">🔄 Force Update</button>
-<button class="track-version-footer__btn track-version-footer__btn--share" onclick="shareApp()" aria-label="Share app link">📤 Share</button>
-<a href="https://eiasash.github.io/InternalMedicine/" target="_blank" class="track-version-footer__link">🏥 Internal Medicine App →</a>
-</div>
 <div class="track-version-footer__sig">صدقة جارية الى من نحب</div></div>`;
 return h;
+}
+
+function renderSettingsAppUtilities(){
+return `<div class="card settings-utilities">
+<div class="settings-utilities__title">App Utilities</div>
+<div class="settings-utilities__sub">Update, share, and sibling app links live here instead of Track.</div>
+<div class="settings-utilities__row">
+<button data-action="apply-update" class="settings-utilities__btn settings-utilities__btn--update">🔄 Force Update</button>
+<button class="settings-utilities__btn settings-utilities__btn--share" onclick="shareApp()" aria-label="Share app link">📤 Share App Link</button>
+<a href="https://eiasash.github.io/InternalMedicine/" target="_blank" class="settings-utilities__link">🏥 Internal Medicine App →</a>
+</div>
+</div>`;
 }
 
 function renderTrack(){
@@ -6440,6 +6451,7 @@ h+=`<div class="card" id="data-mgmt-anchor" style="padding:14px;margin-top:12px;
 </div>
 <div style="font-size:9px;color:rgb(var(--fg3));text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
 </div>`;
+h+=renderSettingsAppUtilities();
 // API key
 var _storedKey=getApiKey();
 h+='<div class="card" style="padding:14px;margin-top:10px;border:2px solid '+(_storedKey?'#bbf7d0':'#fde68a')+'">';
@@ -7163,7 +7175,8 @@ case'learn':
   // live together in one horizontally-scrollable pill bar. Existing onclick handlers
   // `tab='lib';libSec='haz-pdf'` still work via case 'lib' alias below.
   {const _learnPills=[
-    {id:'study', mode:'learn', ic:'📝', l:'Study Notes'},
+    {id:'today', mode:'learn', ic:'☑', l:'Today'},
+    {id:'study', mode:'learn', ic:'📝', l:'Topic Notes'},
     {id:'notes', mode:'learn', ic:'✎', l:'Personal Notes'},
     {id:'flash', mode:'learn', ic:'🃏', l:'Cards'},
     {id:'meds', mode:'learn', ic:'Rx', l:'Meds'},
@@ -7189,15 +7202,16 @@ case'learn':
   if(_studyMode==='lib'){
     _body = renderLibraryBody(); // lib body without its own header+sub-bar
   } else {
-    if(learnSub==='study')_body=renderStudy();
+    if(learnSub==='today')_body=renderStudyDashboard();
+    else if(learnSub==='study')_body=renderStudy();
     else if(learnSub==='notes')_body=renderNotes();
     else if(learnSub==='flash')_body=renderFlash();
     else if(learnSub==='meds')_body=renderMedBasket();
     else if(learnSub==='chat')_body=renderChat();
-    else _body=renderStudy();
+    else _body=renderStudyDashboard();
   }
   el.innerHTML=_subBar+_body;}break; // safe-innerhtml: _subBar is built from a hardcoded pill array (no user input)
-case'study':tab='learn';learnSub='study';el.innerHTML='';render();break;
+case'study':_studyMode='learn';tab='learn';learnSub=openNote!==null?'study':'today';el.innerHTML='';render();break;
 case'notes':_studyMode='learn';tab='learn';learnSub='notes';el.innerHTML='';render();break;
 case'flash':tab='learn';learnSub='flash';el.innerHTML='';render();break;
 case'lib':_studyMode='lib';tab='learn';render();break; // v10.54.0: alias to merged Study tab
@@ -7355,8 +7369,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.170';
+const APP_VERSION='10.64.171';
 const CHANGELOG={
+'10.64.171':['ui(study/track): redistribute the mobile workflow surfaces without touching clinical content. Study now defaults to a Today workbench containing due review, the Hazzard study plan, daily plan, rescue/final-stretch drills, chapters due for re-reading, bookmarks, syllabus checklist, and weak-topic cheat-sheet export. Track is analytics-only: KPI tiles, progress donut, topic heatmap, leaderboard, exam trend, Weak Spots Map, Confidence Matrix, Priority Matrix, and activity heatmap. Force Update, Share App Link, and the Internal Medicine link moved from the Track footer into Settings utilities. Legacy note deep links still route openNote + go("study") to Topic Notes. Bumped package/app/SW cache markers 10.64.170 to 10.64.171.'],
 '10.64.170':['ui(quiz/track): declutter the mobile-first exam workflow without changing clinical content. Quiz now opens with a compact filter summary and keeps years, sources, topics, timed mode, cover-options, and review-wrong controls inside an explicit Filters drawer instead of filling the first screen. Track now groups Rescue Drill and Final Stretch into one compact practice-drills card, collapses Exam Trend by default with a concise signal summary, demotes Share into the footer, caps the mobile Weak Spots Map to six rows by default, and labels <3-answer topic samples as "needs data" instead of showing misleading 0% scores. Bumped package/app/SW cache markers 10.64.169 to 10.64.170.'],
 '10.64.169':['ui(track/settings): repair the screenshot-confirmed mobile layout problems without touching clinical content. Settings now has a scoped responsive wrapper for data-management, account/API-key, and cloud-sync controls so cards stay inside phone viewports. Track now uses a 3-column readable phone heatmap, structured Today Study Plan rows, mobile-first Hazzard topic rows with topic -> metrics -> actions order, a ranked phone list for Weak Spots Map instead of forcing the sideways table, and clearer activity heatmap summary/legend. Bumped package/app/SW cache markers 10.64.168 to 10.64.169.'],
 '10.64.168':['ui(nav): remove Pomodoro, Sudden Death, and On-Call from the quiz surface; replace the visible More tab with explicit Search and Settings tabs; move Meds, Chat, and Personal Notes into Study; keep legacy #more/#meds/#chat/#feedback aliases routed to the new locations. Also keeps legacy string-shaped AI explanation cache rendering via the main explanation box after On-Call removal. No question content touched. Trinity 10.64.167 to 10.64.168.'],
