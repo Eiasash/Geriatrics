@@ -1,6 +1,6 @@
 {
   "name": "geriatrics",
-  "version": "10.64.175",
+  "version": "10.64.176",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
     "test:coverage": "vitest run --coverage",
     "chaos": "node scripts/chaos-live-bot.mjs",
     "smoke:api-key": "node scripts/smoke-api-key-restore.mjs",
-    "hooks:install": "git config core.hooksPath scripts/git-hooks && echo '\u00e2\u0153\u201c pre-commit + pre-push hooks active'",
+    "hooks:install": "git config core.hooksPath scripts/git-hooks && echo 'âœ“ pre-commit + pre-push hooks active'",
     "verify": "node --check src/sw-update.js && python3 scripts/check-version-sync.py && python3 scripts/check-brace-balance.py && python3 scripts/check-inline-js.py && python3 scripts/check-innerhtml.py && python3 scripts/check-innerhtml-pieces.py && cross-env HARRISON_HEBREW_BASELINE=0 node scripts/harrison-hebrew-baseline.cjs --strict && vitest run",
     "regen:derived": "node scripts/regen_derived.cjs",
     "regen:check": "node scripts/regen_derived.cjs --check",

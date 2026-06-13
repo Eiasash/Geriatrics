@@ -286,7 +286,16 @@ jobs:
       # any drift. Network step kept out of vitest (local-only) to avoid
       # adding network latency to the test suite.
       - name: Verify Pnimit+Mishpacha sections vs IM/FM manifests
-        run: node scripts/regen_cross_repo_syllabus.cjs --check
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}" --depth=1
+            changed="$(git diff --name-only FETCH_HEAD HEAD)"
+            if ! printf '%s\n' "$changed" | grep -Eq '^(data/syllabus_data\.json|data/questions\.json|data/\.corpus_manifest\.json)$'; then
+              echo "Skipping cross-repo syllabus sync: no corpus/syllabus files changed in this PR."
+              exit 0
+            fi
+          fi
+          node scripts/regen_cross_repo_syllabus.cjs --check
 
       - name: Run Vitest tests
         run: npx vitest run

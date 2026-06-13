@@ -496,7 +496,7 @@ describe("Track tab — cross-function invariants", () => {
     const renderBody = bodyOf("render");
     expect(renderBody).toMatch(/\{id:'today', mode:'learn'/);
     expect(renderBody).toMatch(/if\(learnSub==='today'\)_body=renderStudyDashboard\(\)/);
-    expect(renderBody).toMatch(/case'study':_studyMode='learn';tab='learn';learnSub=openNote!==null\?'study':'today'/);
+    expect(renderBody).toMatch(/case'study':_studyMode='learn';tab='learn';learnSub=openNote!==null\?'notes':'today'/);
   });
 
   it("removed novelty modes do not reappear as visible controls", () => {
