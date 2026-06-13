@@ -5,14 +5,9 @@
     "l": "Quiz"
   },
   {
-    "id": "learn",
+    "id": "study",
     "ic": "S",
     "l": "Study"
-  },
-  {
-    "id": "search",
-    "ic": "F",
-    "l": "Search"
   },
   {
     "id": "track",
