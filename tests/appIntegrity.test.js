@@ -178,4 +178,69 @@ describe("study_plan APP_KEY contract", () => {
     const sp = readFileSync(resolve(ROOT, "src/study_plan.js"), "utf-8");
     expect(sp).toMatch(/invalid_app:\s*['"][^'"]+['"]/);
   });
+
+  it("study plan schedule renderer hides empty weeks and uses compact classes", () => {
+    const sp = readFileSync(resolve(ROOT, "src/study_plan.js"), "utf-8");
+    expect(sp).toContain("const nonEmptyWeeks = display.weeks.filter");
+    expect(sp).toContain("hiddenEmptyWeeks");
+    expect(sp).toMatch(/class="sp-week"/);
+    expect(sp).toContain("w === nonEmptyWeeks[0] ? 'open' : ''");
+    expect(sp).toMatch(/class="sp-topic__title"/);
+    expect(sp).not.toMatch(/_ללא נושאים בשבוע זה/);
+  });
+
+  it("study plan topic labels de-duplicate repeated English acronyms", () => {
+    const sp = readFileSync(resolve(ROOT, "src/study_plan.js"), "utf-8");
+    expect(sp).toMatch(/function\s+_cleanHeTopicLabel/);
+    expect(sp).toMatch(/A-Za-z0-9\/\+& \.-/);
+    expect(sp).toContain("_cleanHeTopicLabel(t.he, t.en)");
+  });
+
+  it("study plan topics expose mapped source chapters", () => {
+    const sp = readFileSync(resolve(ROOT, "src/study_plan.js"), "utf-8");
+    expect(sp).toMatch(/function\s+_topicSourceRefs/);
+    expect(sp).toContain("QCHAPS[String(idx)]");
+    expect(sp).toContain("Hazzard Ch ");
+    expect(sp).toContain("Harrison Ch ");
+    expect(sp).toContain("GRS8 Ch ");
+    expect(sp).toMatch(/class="sp-topic__sources"/);
+    expect(sp).toContain("Sources: ${sources}");
+  });
+
+  it("study plan sliders update labels through delegated input handling", () => {
+    const sp = readFileSync(resolve(ROOT, "src/study_plan.js"), "utf-8");
+    expect(sp).toMatch(/function\s+_syncSliderLabel/);
+    expect(sp).toContain("document.addEventListener('input'");
+    expect(sp).toContain("target.id === 'sp-hpw'");
+    expect(sp).toContain("target.id === 'sp-ramp'");
+    expect(sp).toContain("_state.hoursPerWeek = Number(target.value)");
+    expect(sp).toContain("_state.rampWeeks = Number(target.value)");
+  });
+
+  it("Settings data and credential surfaces stay compact and ordered", () => {
+    const preChangelog = html.slice(0, html.indexOf("const CHANGELOG="));
+    const settingsStart = preChangelog.indexOf("function renderSettings()");
+    const settingsEnd = preChangelog.indexOf("async function toggleNotifOptIn", settingsStart);
+    const body = preChangelog.slice(settingsStart, settingsEnd);
+    expect(body).toContain('class="settings-credentials"');
+    expect(body).toContain('class="card settings-data"');
+    expect(body).toContain('class="settings-data__danger"');
+    expect(body).toContain("Reset all local progress");
+    expect(body.indexOf("settings-credentials")).toBeLessThan(body.indexOf("renderStudyPlanSection"));
+    expect(body.indexOf("renderStudyPlanSection")).toBeLessThan(body.indexOf("settings-data"));
+    expect(body).not.toContain("Anthropic API Key</div>");
+  });
+
+  it("tag_chapters works after full textbook JSON was replaced by title-only indexes", () => {
+    const tagger = readFileSync(resolve(ROOT, "scripts/tag_chapters.cjs"), "utf-8");
+    expect(tagger).toContain("data/hazzard_index.json");
+    expect(tagger).toContain("harrison_index.json");
+    expect(tagger).toMatch(/fs\.existsSync\(path\.join\(ROOT,\s*['"]data\/hazzard_chapters\.json['"]\)\)/);
+    expect(tagger).toMatch(/fs\.existsSync\(path\.join\(ROOT,\s*['"]harrison_chapters\.json['"]\)\)/);
+  });
+
+  it("integrity guard does not require the retired Settings Feedback renderer", () => {
+    const workflow = readFileSync(resolve(ROOT, ".github/workflows/integrity-guard.yml"), "utf-8");
+    expect(workflow).not.toMatch(/['"]renderFeedback['"]/);
+  });
 });

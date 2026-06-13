@@ -146,6 +146,73 @@
     return window.SP_ALGO._addDaysISO(iso, days);
   }
 
+  function _escapeRegExp(s) {
+    return String(s || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function _cleanHeTopicLabel(he, en) {
+    let out = String(he || '').trim();
+    if (!out) return '';
+    const enText = String(en || '');
+    const acronyms = [];
+    enText.replace(/\(([A-Za-z0-9/+& .-]{2,})\)/g, (_, token) => {
+      acronyms.push(token.trim());
+      return '';
+    });
+    acronyms.forEach((token) => {
+      if (!token) return;
+      out = out.replace(new RegExp('\\s*\\(' + _escapeRegExp(token) + '\\)', 'gi'), '');
+    });
+    return out.replace(/\s+/g, ' ').trim();
+  }
+
+  function _sameTopic(q, topicId) {
+    if (!q || topicId == null) return false;
+    const ti = Number(topicId);
+    if (!Number.isFinite(ti)) return false;
+    if (Array.isArray(q.tis) && q.tis.map(Number).includes(ti)) return true;
+    return Number(q.ti) === ti;
+  }
+
+  function _topChapter(counts) {
+    let best = null;
+    Object.keys(counts || {}).forEach((ch) => {
+      const n = counts[ch] || 0;
+      if (!best || n > best.n || (n === best.n && Number(ch) < Number(best.ch))) {
+        best = { ch: ch, n: n };
+      }
+    });
+    return best && best.n > 0 ? best.ch : '';
+  }
+
+  function _topicSourceRefs(topicId) {
+    try {
+      if (typeof QZ === 'undefined' || !Array.isArray(QZ) || !QZ.length) return [];
+      if (typeof QCHAPS === 'undefined' || !QCHAPS || typeof QCHAPS !== 'object') return [];
+      const counts = { haz: {}, har: {}, grs: {} };
+      QZ.forEach((q, idx) => {
+        if (!_sameTopic(q, topicId)) return;
+        const c = QCHAPS[String(idx)] || {};
+        ['haz', 'har', 'grs'].forEach((src) => {
+          const ch = c[src];
+          if (ch == null || ch === '') return;
+          const key = String(ch);
+          counts[src][key] = (counts[src][key] || 0) + 1;
+        });
+      });
+      const haz = _topChapter(counts.haz);
+      const har = _topChapter(counts.har);
+      const grs = _topChapter(counts.grs);
+      const out = [];
+      if (haz) out.push('Hazzard Ch ' + haz);
+      if (har) out.push('Harrison Ch ' + har);
+      if (grs) out.push('GRS8 Ch ' + grs);
+      return out;
+    } catch (_) {
+      return [];
+    }
+  }
+
   function _setStatus(msg, tone) {
     _state.message = msg || '';
     _state.messageTone = tone || '';
@@ -250,10 +317,12 @@
 
   function _renderPlan(display) {
     const s = display.summary;
+    const nonEmptyWeeks = display.weeks.filter((w) => w.topics && w.topics.length);
+    const hiddenEmptyWeeks = display.weeks.length - nonEmptyWeeks.length;
     let h = `
-<div style="padding:14px;background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;margin:12px 0;color:#0f172a" dir="rtl">
-  <div style="font-size:13px;font-weight:700;color:#134e4a;margin-bottom:8px">📊 סיכום</div>
-  <div style="font-size:11px;line-height:1.8">
+<div class="sp-plan-summary" dir="rtl">
+  <div class="sp-plan-summary__title">📊 סיכום</div>
+  <div class="sp-plan-summary__body">
     <div>תאריך הבחינה: <strong>${sanitize(s.exam_date)}</strong></div>
     <div>סה"כ שבועות: <strong>${s.total_weeks}</strong> (לימוד נושאים: ${s.topic_weeks}, חזרה ומוקים: ${s.ramp_weeks})</div>
     <div>שעות לימוד שבועיות: <strong>${s.hours_per_week}h</strong> (≈ ${(s.hours_per_week*0.7).toFixed(1)}h נושאים, ${(s.hours_per_week*0.3).toFixed(1)}h שאלות)</div>
@@ -261,47 +330,52 @@
   </div>
 </div>`;
 
-    h += `<div style="font-weight:700;font-size:12px;margin:8px 0 6px" dir="rtl">🗓 שבועות לימוד</div>`;
-    display.weeks.forEach((w) => {
+    h += `<div class="sp-plan-section" dir="rtl">🗓 שבועות לימוד <span class="sp-plan-section__sub">${nonEmptyWeeks.length} שבועות עם נושאים</span></div>`;
+    if (hiddenEmptyWeeks > 0) {
+      h += `<div class="sp-empty-note" dir="rtl">${hiddenEmptyWeeks} שבועות ריקים הוסתרו כדי לשמור את המסך נקי.</div>`;
+    }
+    nonEmptyWeeks.forEach((w) => {
       h += `
-<details style="margin-bottom:6px;border:1px solid rgb(var(--brd));border-radius:10px;background:rgb(var(--bg2))" dir="rtl">
-  <summary style="padding:10px 12px;cursor:pointer;font-size:12px;font-weight:700;list-style:none">
-    שבוע ${w.idx} — ${sanitize(w.start_date)} → ${sanitize(w.end_date)}
-    <span style="float:left;color:#0891b2;font-weight:400">${w.used_hours}h • ${w.topics.length} נושאים</span>
+<details class="sp-week" dir="rtl" ${w === nonEmptyWeeks[0] ? 'open' : ''}>
+  <summary class="sp-week__summary">
+    <span>
+      שבוע ${w.idx}
+      <span class="sp-week__range">${sanitize(w.start_date)} - ${sanitize(w.end_date)}</span>
+    </span>
+    <span class="sp-week__meta">${w.used_hours}h · ${w.topics.length} נושאים</span>
   </summary>
-  <div style="padding:0 12px 12px">`;
-      if (w.topics.length === 0) {
-        h += `<div style="font-size:11px;color:rgb(var(--fg2));padding:6px 0">_ללא נושאים בשבוע זה — שמור לחזרה ושאלות._</div>`;
-      } else {
-        w.topics.forEach((t) => {
-          const en = sanitize(t.en);
-          const he = t.he ? sanitize(t.he) : '';
-          const kw = (t.keywords || []).slice(0, 6).map(sanitize).join(', ');
-          h += `
-    <div style="padding:8px 0;border-top:1px solid rgb(var(--brd))">
-      <div style="font-size:11px;font-weight:700;line-height:1.4" dir="${heDir(he || en)}">
-        ${he ? `<span>${he}</span> · ` : ''}<span style="color:rgb(var(--fg2));font-weight:500;direction:ltr;display:inline-block">${en}</span>
+  <div class="sp-week__body">`;
+      w.topics.forEach((t) => {
+        const en = sanitize(t.en);
+        const heClean = _cleanHeTopicLabel(t.he, t.en);
+        const he = heClean ? sanitize(heClean) : '';
+        const kw = (t.keywords || []).slice(0, 6).map(sanitize).join(', ');
+        const sources = _topicSourceRefs(t.id).map(sanitize).join(' · ');
+        h += `
+    <div class="sp-topic">
+      <div class="sp-topic__title" dir="auto">
+        ${he ? `<span class="sp-topic__he">${he}</span>` : ''}<span class="sp-topic__en">${en}</span>
       </div>
-      <div style="font-size:10px;color:#0891b2;margin-top:2px">${t.hours}h · ${t.frequency_pct}% מהבחינות</div>
-      ${kw ? `<div style="font-size:10px;color:rgb(var(--fg2));margin-top:2px;direction:ltr;text-align:left;font-style:italic">${kw}</div>` : ''}
+      <div class="sp-topic__meta">${t.hours}h · ${t.frequency_pct}% מהבחינות</div>
+      ${sources ? `<div class="sp-topic__sources">Sources: ${sources}</div>` : ''}
+      ${kw ? `<div class="sp-topic__kw">${kw}</div>` : ''}
     </div>`;
-        });
-      }
+      });
       h += `
   </div>
 </details>`;
     });
 
     if (display.ramp_weeks.length) {
-      h += `<div style="font-weight:700;font-size:12px;margin:12px 0 6px" dir="rtl">🎯 שבועות מוק וחזרה</div>`;
+      h += `<div class="sp-plan-section" dir="rtl">🎯 שבועות מוק וחזרה</div>`;
       display.ramp_weeks.forEach((r) => {
         h += `
-<div style="margin-bottom:6px;padding:10px 12px;border:1px solid #fde68a;border-radius:10px;background:#fffbeb;color:#0f172a" dir="rtl">
-  <div style="font-size:12px;font-weight:700;color:#92400e">
-    ${sanitize(r.mock_label)} — שבוע ${r.idx}
-    <span style="float:left;color:#b45309;font-weight:400;font-size:11px">${sanitize(r.start_date)} → ${sanitize(r.end_date)}</span>
+<div class="sp-ramp" dir="rtl">
+  <div class="sp-ramp__head">
+    <span>${sanitize(r.mock_label)} - שבוע ${r.idx}</span>
+    <span class="sp-ramp__range">${sanitize(r.start_date)} - ${sanitize(r.end_date)}</span>
   </div>
-  <div style="font-size:11px;color:#78350f;margin-top:6px;line-height:1.6">${sanitize(r.advice)}</div>
+  <div class="sp-ramp__advice">${sanitize(r.advice)}</div>
 </div>`;
       });
     }
@@ -429,7 +503,11 @@
       if (!w.topics.length) return;
       const summary = 'גריאטריה — שבוע ' + w.idx + ' (' + w.used_hours + 'h)';
       const body = w.topics
-        .map((t) => '• ' + (t.he ? t.he + ' / ' : '') + t.en + ' — ' + t.hours + 'h (' + t.frequency_pct + '%)')
+        .map((t) => {
+          const sources = _topicSourceRefs(t.id);
+          return '• ' + (t.he ? t.he + ' / ' : '') + t.en + ' — ' + t.hours + 'h (' + t.frequency_pct + '%)' +
+            (sources.length ? ' — Sources: ' + sources.join(', ') : '');
+        })
         .join('\n');
       const dtEndExclusive = _addDaysISO(w.start_date, 7);
       lines.push(
@@ -489,29 +567,35 @@
     if (typeof toast === 'function') toast('📅 הקובץ הורד — פתח אותו ב-Google Calendar / Outlook / Apple Calendar', 'success');
   }
 
+  function _syncSliderLabel(target) {
+    if (!target || !target.id) return false;
+    if (target.id === 'sp-hpw') {
+      const el = document.getElementById('sp-hpw-val');
+      if (el) el.textContent = target.value;
+      _state.hoursPerWeek = Number(target.value) || DEFAULT_HOURS_PER_WEEK;
+      return true;
+    }
+    if (target.id === 'sp-ramp') {
+      const el = document.getElementById('sp-ramp-val');
+      if (el) el.textContent = target.value;
+      _state.rampWeeks = Number(target.value) || DEFAULT_RAMP_WEEKS;
+      return true;
+    }
+    return false;
+  }
+
   function _bindSliderLabels() {
-    const hpw = document.getElementById('sp-hpw');
-    const ramp = document.getElementById('sp-ramp');
-    if (hpw && !hpw.dataset.bound) {
-      hpw.dataset.bound = '1';
-      hpw.addEventListener('input', () => {
-        const el = document.getElementById('sp-hpw-val');
-        if (el) el.textContent = hpw.value;
-      });
-    }
-    if (ramp && !ramp.dataset.bound) {
-      ramp.dataset.bound = '1';
-      ramp.addEventListener('input', () => {
-        const el = document.getElementById('sp-ramp-val');
-        if (el) el.textContent = ramp.value;
-      });
-    }
+    _syncSliderLabel(document.getElementById('sp-hpw'));
+    _syncSliderLabel(document.getElementById('sp-ramp'));
   }
 
   function bindStudyPlanEvents() {
     _bindSliderLabels();
     if (window.__studyPlanBound) return;
     window.__studyPlanBound = true;
+    document.addEventListener('input', (e) => {
+      _syncSliderLabel(e.target);
+    });
     document.addEventListener('click', (e) => {
       const t = e.target && e.target.closest && e.target.closest('[data-action]');
       if (!t) return;
