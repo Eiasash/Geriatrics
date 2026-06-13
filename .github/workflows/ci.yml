@@ -289,7 +289,7 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             git fetch origin "${{ github.base_ref }}" --depth=1
-            changed="$(git diff --name-only "origin/${{ github.base_ref }}"...HEAD)"
+            changed="$(git diff --name-only FETCH_HEAD HEAD)"
             if ! printf '%s\n' "$changed" | grep -Eq '^(data/syllabus_data\.json|data/questions\.json|data/\.corpus_manifest\.json)$'; then
               echo "Skipping cross-repo syllabus sync: no corpus/syllabus files changed in this PR."
               exit 0
