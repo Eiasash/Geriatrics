@@ -864,6 +864,28 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .settings-utilities__btn--update{background:#0D7377}
 .settings-utilities__btn--share{background:#f59e0b}
 .settings-utilities__link{background:#4f46e5}
+.settings-card-title{font-weight:800;font-size:12px;margin-bottom:6px}
+.settings-card-sub{font-size:10px;color:rgb(var(--fg2));line-height:1.55;margin-bottom:10px}
+.settings-data{padding:14px;margin-top:12px;scroll-margin-top:80px}
+.settings-data__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.settings-data__grid--secondary{margin-top:8px}
+.settings-data__btn{min-height:44px;border-radius:9px;font-size:11px;font-weight:800}
+.settings-data__danger{margin-top:8px;border-top:1px solid rgb(var(--brd));padding-top:8px}
+.settings-data__danger summary{cursor:pointer;font-size:10px;font-weight:800;color:rgb(var(--fg2));list-style:none;min-height:36px;display:flex;align-items:center;justify-content:center}
+.settings-data__danger summary::-webkit-details-marker{display:none}
+.settings-data__danger .btn{width:100%;min-height:44px;font-size:11px}
+.settings-data__foot{font-size:9px;color:rgb(var(--fg3));text-align:center;margin-top:8px;line-height:1.5}
+.settings-credentials{padding:0;margin-top:12px;border:1px solid rgb(var(--brd));border-radius:12px;background:rgb(var(--card-bg));overflow:hidden}
+.settings-credentials summary{cursor:pointer;list-style:none;padding:14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.settings-credentials summary::-webkit-details-marker{display:none}
+.settings-credentials__title{font-weight:800;font-size:12px}
+.settings-credentials__state{font-size:10px;color:rgb(var(--fg2));font-weight:700}
+.settings-credentials__body{border-top:1px solid rgb(var(--brd));padding:12px 14px 14px}
+.settings-credentials__row{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-bottom:8px}
+.settings-credentials__status{flex:1 1 190px;font-size:11px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;padding:8px 10px;color:rgb(var(--green-fg));min-width:0;overflow-wrap:anywhere}
+.settings-credentials__sync{flex:1 1 180px;font-size:11px;background:#f0f9ff;color:#075985;border:1px solid #bae6fd}
+.settings-credentials__remove{font-size:11px}
+.settings-credentials__hint{font-size:9px;color:rgb(var(--fg3));line-height:1.5}
 .track-wsm__mobile-list{display:none;gap:8px}
 .track-wsm__mobile-row{padding:9px 10px;border:1px solid rgb(var(--brd));border-radius:10px;background:rgb(var(--bg3));cursor:pointer;direction:ltr;text-align:left}
 .track-wsm__mobile-line{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px}
@@ -894,13 +916,43 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .settings-view input,.settings-view select{max-width:100%;min-width:0}
 .settings-data-actions,.settings-cloud-actions,.settings-api-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
 .settings-api-key-box{min-width:0;overflow-wrap:anywhere}
+.sp-plan-summary{padding:14px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:12px;margin:12px 0;color:rgb(var(--fg))}
+.sp-plan-summary__title{font-size:13px;font-weight:800;color:rgb(var(--green-fg));margin-bottom:8px}
+.sp-plan-summary__body{font-size:11px;line-height:1.8}
+.sp-plan-section{font-weight:800;font-size:12px;margin:10px 0 6px;color:rgb(var(--fg))}
+.sp-plan-section__sub{font-weight:500;font-size:10px;color:rgb(var(--fg2));margin-inline-start:6px}
+.sp-week{margin-bottom:6px;border:1px solid rgb(var(--brd));border-radius:10px;background:rgb(var(--bg2));overflow:hidden}
+.sp-week__summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 12px;cursor:pointer;font-size:12px;font-weight:800;list-style:none}
+.sp-week__summary::-webkit-details-marker{display:none}
+.sp-week__range{font-size:10px;color:rgb(var(--fg2));font-weight:600;margin-top:2px;direction:ltr;unicode-bidi:isolate}
+.sp-week__meta{font-size:10px;color:#0f766e;font-weight:700;white-space:nowrap;direction:ltr;unicode-bidi:isolate}
+.sp-week__body{padding:0 12px 12px}
+.sp-topic{padding:9px 0;border-top:1px solid rgb(var(--brd))}
+.sp-topic__title{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:baseline;font-size:11px;font-weight:800;line-height:1.45}
+.sp-topic__he{color:rgb(var(--fg))}
+.sp-topic__en{color:rgb(var(--fg2));font-weight:600;direction:ltr;unicode-bidi:isolate}
+.sp-topic__meta{font-size:10px;color:#0f766e;margin-top:2px;direction:ltr;unicode-bidi:isolate}
+.sp-topic__sources{font-size:10px;color:#475569;margin-top:2px;line-height:1.45;direction:ltr;text-align:left;unicode-bidi:isolate}
+.sp-topic__kw{font-size:10px;color:rgb(var(--fg2));margin-top:2px;direction:ltr;text-align:left;font-style:italic;unicode-bidi:plaintext}
+.sp-empty-note{font-size:10px;color:rgb(var(--fg3));margin:6px 0 10px;text-align:center}
+.sp-ramp{margin-bottom:6px;padding:10px 12px;border:1px solid rgb(var(--yellow-brd));border-radius:10px;background:rgb(var(--yellow-bg));color:rgb(var(--fg))}
+.sp-ramp__head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;font-size:12px;font-weight:800;color:rgb(var(--yellow-fg))}
+.sp-ramp__range{font-size:10px;color:rgb(var(--fg2));font-weight:600;direction:ltr;unicode-bidi:isolate}
+.sp-ramp__advice{font-size:11px;color:rgb(var(--yellow-fg));margin-top:6px;line-height:1.6}
 @media(max-width:480px){
 .settings-view .card{padding-left:12px!important;padding-right:12px!important}
 .settings-data-actions,.settings-cloud-actions{gap:8px}
 .settings-data-actions .btn,.settings-cloud-actions .btn{flex:1 1 145px;min-width:0}
+.settings-data__grid{grid-template-columns:1fr}
 .settings-api-row{align-items:stretch}
 .settings-api-row .btn{flex:0 0 auto}
 .settings-api-key-box{flex:1 1 190px}
+.settings-credentials summary{grid-template-columns:minmax(0,1fr)}
+.settings-credentials__row{display:grid;grid-template-columns:1fr}
+.sp-week__summary,.sp-ramp__head{grid-template-columns:minmax(0,1fr);gap:3px}
+.sp-week__meta,.sp-ramp__range{justify-self:start}
+.sp-topic__title{display:block}
+.sp-topic__en{display:block;margin-top:1px}
 }
 /* ===== END TRACK TAB CSS ===== */
 </style>
@@ -1973,7 +2025,7 @@ let tab='quiz';
 let learnSub='today'; // sub-tab within Study: today|study|notes|tools
 let studyTool='search'; // sub-tool within Study Tools: search|cards|meds|chat
 let _studyMode='learn'; // v10.54.0: 'learn'|'lib' — which mode in unified Study tab
-let settingsSub='settings'; // sub-tab within Settings: settings|feedback
+let settingsSub='settings'; // legacy holder; Settings is now a single utility surface
 let moreSub='settings'; // legacy deep-link holder for older #more routes
 let libSec='haz-pdf';
 let harChOpen=null,_harData=null,_harLoading=false;
@@ -6406,47 +6458,54 @@ h+='</div></div>';
 // Track was overloaded with Settings content; users couldn't find login. Mirror of Pnimit/FM Settings layout.
 // Account (auth)
 if(typeof window.renderAuthSection==='function')h+=window.renderAuthSection();
-// Study Plan (exam date + ramp + hours/week)
-if(typeof window.renderStudyPlanSection==='function')h+=window.renderStudyPlanSection();
-// Data management
-h+=`<div class="card" id="data-mgmt-anchor" style="padding:14px;margin-top:12px;scroll-margin-top:80px">
-<div style="font-weight:700;font-size:12px;margin-bottom:8px">💾 Data Management</div>
-<div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:10px">Your progress is saved automatically in your browser. Export to backup or transfer between devices.</div>
-<div class="settings-data-actions" style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
-<button class="btn btn-p" onclick="exportProgress()" aria-label="Export progress">📥 Export Progress</button>
-<button class="btn btn-g" onclick="importProgress()" aria-label="Import progress">📤 Import Progress</button>
-<button class="btn btn-o" onclick="confirmModal('Reset ALL data? This cannot be undone.').then(ok=>{if(ok){localStorage.removeItem('${LS}');location.reload()}})" aria-label="Reset all data">🗑️ Reset</button>
-</div>
-<div class="settings-cloud-actions" style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px">
-<button id="cloud-backup-btn" class="btn" style="background:#e0f2fe;color:#0284c7" onclick="cloudBackup()" aria-label="Backup to cloud">☁️ Backup to Cloud</button>
-<button class="btn" style="background:rgb(var(--green-bg));color:#15803d" onclick="cloudRestore()" aria-label="Restore from cloud">☁️ Restore from Cloud</button>
-</div>
-<div style="font-size:9px;color:rgb(var(--fg3));text-align:center;margin-top:6px">Cloud sync · progress keyed by device ID</div>
-</div>`;
-h+=renderSettingsAppUtilities();
-// API key
+// AI credentials sit next to account state, but stay collapsed because the proxy works without a personal key.
 var _storedKey=getApiKey();
-h+='<div class="card" style="padding:14px;margin-top:10px;border:2px solid '+(_storedKey?'#bbf7d0':'#fde68a')+'">';
-h+='<div class="sec-t" style="font-size:13px">🔑 Anthropic API Key</div>';
-h+='<div class="sec-s" style="margin-bottom:10px">לשימוש ב-AI Explain ו-Teach-Back · מאוחסן בדפדפן בלבד</div>';
-if(!_storedKey){h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;font-size:10px;color:rgb(var(--green-fg));margin-bottom:10px">✅ AI פועל דרך שרת proxy — לא צריך מפתח אישי. אפשר להוסיף כגיבוי. <a href="https://console.anthropic.com/keys" target="_blank" style="color:#d97706;font-weight:700">קבל מפתח ↗</a></div>';}
-if(_storedKey){
-  h+='<div class="settings-api-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
-  h+='<div class="settings-api-key-box" style="flex:1;font-size:11px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;padding:6px 10px;color:rgb(var(--green-fg))">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
-  h+='<button class="btn btn-o" style="font-size:11px" onclick="_apiKeyRemove()" aria-label="הסר — remove API key">הסר</button>';
-  h+='</div>';
-  // #354 Codex P2: users whose key predates the sync feature need a push-to-account
-  // path that doesn't require remove + re-enter.
-  if(typeof window.getCurrentUser==='function'&&window.getCurrentUser()){
-    h+='<button class="btn" style="font-size:11px;width:100%;margin-bottom:8px;background:#f0f9ff;color:#075985;border:1px solid #bae6fd" onclick="_apiKeySyncExisting()" aria-label="סנכרן את המפתח לחשבון">🔄 סנכרן את המפתח לחשבון</button>';
-  }
-} else {
-  h+='<div class="settings-api-row" style="display:flex;gap:8px;margin-bottom:8px">';
+h+=`<details class="settings-credentials">
+<summary>
+  <span>
+    <span class="settings-credentials__title">🔑 AI Credentials</span>
+    <span class="settings-card-sub" style="display:block;margin:3px 0 0">Optional Anthropic fallback for AI Explain and Teach-Back.</span>
+  </span>
+  <span class="settings-credentials__state">${_storedKey?'Configured':'Optional'}</span>
+</summary>
+<div class="settings-credentials__body">`;
+if(!_storedKey){
+  h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;font-size:10px;color:rgb(var(--green-fg));margin-bottom:10px">✅ AI פועל דרך שרת proxy — לא צריך מפתח אישי. אפשר להוסיף כגיבוי. <a href="https://console.anthropic.com/keys" target="_blank" style="color:#d97706;font-weight:700">קבל מפתח ↗</a></div>';
+  h+='<div class="settings-credentials__row">';
   h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-..." class="calc-in" style="flex:1;margin:0;font-size:11px" aria-label="Claude API key">';
   h+='<button class="btn btn-p" style="font-size:11px" onclick="_apiKeySaveFromInput()" aria-label="שמור — save API key">שמור</button>';
   h+='</div>';
+} else {
+  h+='<div class="settings-credentials__row">';
+  h+='<div class="settings-credentials__status">✅ API key מוגדר (sk-...'+_storedKey.slice(-6)+')</div>';
+  if(typeof window.getCurrentUser==='function'&&window.getCurrentUser()){
+    h+='<button class="btn settings-credentials__sync" onclick="_apiKeySyncExisting()" aria-label="סנכרן את המפתח לחשבון">סנכרן לחשבון</button>';
+  }
+  h+='<button class="btn btn-o settings-credentials__remove" onclick="_apiKeyRemove()" aria-label="הסר — remove API key">הסר</button>';
+  h+='</div>';
 }
-h+='<div style="font-size:9px;color:rgb(var(--fg3))">API key נשמר ב-localStorage · בחשבון מחובר תוצע שמירה גם בחשבון (עם אישור סיסמה) כדי שהמפתח יעבור איתך בין מכשירים</div></div>';
+h+='<div class="settings-credentials__hint">API key נשמר ב-localStorage. בחשבון מחובר תוצע שמירה גם בחשבון, עם אישור סיסמה, כדי שהמפתח יעבור בין מכשירים.</div></div></details>';
+// Study Plan (exam date + ramp + hours/week)
+if(typeof window.renderStudyPlanSection==='function')h+=window.renderStudyPlanSection();
+// Data management
+h+=`<div class="card settings-data" id="data-mgmt-anchor">
+<div class="settings-card-title">💾 Data & Sync</div>
+<div class="settings-card-sub">Progress is saved automatically on this device. Use cloud for same-account restore, or a file for manual backup.</div>
+<div class="settings-data__grid">
+<button id="cloud-backup-btn" class="btn btn-p settings-data__btn" onclick="cloudBackup()" aria-label="Backup to cloud">☁️ Backup to Cloud</button>
+<button class="btn settings-data__btn" style="background:#ecfeff;color:#155e75;border:1px solid #a5f3fc" onclick="exportProgress()" aria-label="Export progress file">📥 Export File</button>
+</div>
+<div class="settings-data__grid settings-data__grid--secondary">
+<button class="btn settings-data__btn" style="background:rgb(var(--green-bg));color:#15803d;border:1px solid rgb(var(--green-brd))" onclick="cloudRestore()" aria-label="Restore from cloud">☁️ Restore Cloud</button>
+<button class="btn btn-g settings-data__btn" onclick="importProgress()" aria-label="Import progress file">📤 Import File</button>
+</div>
+<details class="settings-data__danger">
+  <summary>Reset data</summary>
+  <button class="btn btn-o" onclick="confirmModal('Reset ALL data? This cannot be undone.').then(ok=>{if(ok){localStorage.removeItem('${LS}');location.reload()}})" aria-label="Reset all data">🗑️ Reset all local progress</button>
+</details>
+<div class="settings-data__foot">Cloud sync · progress keyed by device/account ID</div>
+</div>`;
+h+=renderSettingsAppUtilities();
 h+='</div>';
 return h;
 }
@@ -6501,76 +6560,6 @@ function renderNotes(){
 }
 function saveGNotes(){const t=document.getElementById('gnotes-ta');if(!t)return;S.gnotes=t.value;save();const st=document.getElementById('gnotes-status');if(st){st.textContent='✓ נשמר '+new Date().toLocaleTimeString('he-IL');setTimeout(()=>{if(st)st.textContent='';},2500);}}
 function exportGNotes(){const blob=new Blob([S.gnotes||''],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='shlav-a-notes-'+new Date().toISOString().slice(0,10)+'.txt';a.click();URL.revokeObjectURL(a.href);toast('הערות יוצאו','success');}
-function renderFeedback(){
-let h='<div class="sec-t">💡 Feedback & Feature Requests</div>';
-h+='<div class="sec-s">Help improve Shlav A Mega for everyone. AI reviews every submission.</div>';
-h+='<div class="card" style="padding:16px;margin-bottom:12px">';
-h+='<div style="font-size:12px;font-weight:700;margin-bottom:8px">Submit Feedback</div>';
-h+='<select id="fb-type" style="width:100%;padding:8px;border:1px solid rgb(var(--brd));border-radius:8px;font-size:12px;margin-bottom:8px;background:rgb(var(--bg2))">';
-h+='<option value="bug">🐛 Bug Report</option>';
-h+='<option value="feature">✨ Feature Request</option>';
-h+='<option value="content">📝 Content Fix (wrong answer/explanation)</option>';
-h+='<option value="ux">🎨 UX/Design Improvement</option>';
-h+='<option value="other">💬 Other</option>';
-h+='</select>';
-h+='<textarea id="fb-text" dir="auto" placeholder="Describe your feedback in detail..." style="width:100%;min-height:100px;padding:10px;border:1px solid rgb(var(--brd));border-radius:10px;font-size:12px;font-family:inherit;resize:vertical;margin-bottom:8px"></textarea>';
-h+='<button onclick="submitFeedback()" class="btn" style="width:100%;padding:10px;background:#7c3aed;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">📤 Submit Feedback</button>';
-h+='</div>';
-// Recent feedback
-let fb=lsGet('samega_fb_sent',[]);
-if(fb.length){
-h+='<div class="card" style="padding:14px">';
-h+='<div style="font-size:12px;font-weight:700;margin-bottom:8px">📋 Your Submissions ('+fb.length+')</div>';
-fb.slice(-5).reverse().forEach(f=>{
-  h+='<div style="padding:6px 0;border-bottom:1px solid rgb(var(--brd));font-size:10px">';
-  h+='<span style="font-weight:600">'+({bug:'🐛',feature:'✨',content:'📝',ux:'🎨',other:'💬'}[f.type]||'💬')+' '+f.type+'</span>';
-  h+=' · <span style="color:rgb(var(--fg2))">'+new Date(f.ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'})+'</span>';
-  h+='<div style="color:rgb(var(--fg2));margin-top:2px;line-height:1.5">'+f.text.slice(0,120)+(f.text.length>120?'...':'')+'</div>';
-  if(f.aiResponse){h+='<div style="color:#7c3aed;margin-top:4px;padding:6px 8px;background:#f5f3ff;border-radius:6px;font-size:9px;line-height:1.5">🤖 '+f.aiResponse+'</div>';}
-  h+='</div>';
-});
-h+='</div>';
-}
-return h;
-}
-async function submitFeedback(){
-const type=document.getElementById('fb-type')?.value||'other';
-const text=document.getElementById('fb-text')?.value?.trim();
-if(!text){toast('Please describe your feedback','info');return;}
-// Local trace keeps the legacy {type,text,ts,version,uid} shape for backward
-// compat with anything that reads samega_fb_sent locally.
-const localTrace={type,text,ts:Date.now(),version:APP_VERSION,uid:(typeof getUserId==='function'?getUserId():(localStorage.getItem('samega_uid')||'anon'))};
-let fb=[];try{fb=JSON.parse(localStorage.getItem('samega_fb_sent')||'[]');}catch(e){}
-fb.push(localTrace);
-try{localStorage.setItem('samega_fb_sent',JSON.stringify(fb));}catch(e){}
-// Submit to Supabase using the shlav_feedback canonical schema
-// (message/app_version/type/context — verified via Supabase MCP 2026-05-04).
-// The other Claude session in v10.64.31 audit assumed sibling parity with
-// mishpacha_feedback's {type,text,ts,version,uid} but the schemas diverged.
-const supaPayload={
-  type,
-  message:text,
-  app_version:APP_VERSION,
-  context:'submitFeedback (Settings→Feedback panel) | uid='+localTrace.uid,
-};
-try{
-  await fetch(SUPA_URL+'/rest/v1/shlav_feedback',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON,'Prefer':'return=minimal'},
-    body:JSON.stringify(supaPayload)
-  });
-}catch(e){console.warn('Feedback submit failed',e);}
-// AI analysis of the feedback
-try{
-  const aiPrompt='A user submitted this feedback for a medical study app. Briefly acknowledge it and assess feasibility in 1-2 sentences. Type: '+type+'. Feedback: '+text;
-  const aiText=await callAI([{role:'user',content:aiPrompt}],200,'sonnet');
-  if(aiText){
-    fb[fb.length-1].aiResponse=aiText.slice(0,300);
-    localStorage.setItem('samega_fb_sent',JSON.stringify(fb));
-  }
-}catch(e){}
-render();
-}
 
 function renderChat(){
 let h='<div class="sec-t">💬 AI Chat</div><div class="sec-s">Claude-powered geriatrics Q&A — board prep focus</div>';
@@ -7203,15 +7192,11 @@ case'more':
   if(moreSub==='search'){tab='search';el.innerHTML='';render();break;}
   if(moreSub==='notes'){_studyMode='learn';tab='learn';learnSub='notes';el.innerHTML='';render();break;}
   if(['meds','chat'].includes(moreSub)){_studyMode='learn';tab='learn';learnSub='tools';studyTool=moreSub;el.innerHTML='';render();break;}
-  if(moreSub==='feedback'){tab='settings';settingsSub='feedback';el.innerHTML='';render();break;}
+  if(moreSub==='feedback'){tab='settings';settingsSub='settings';el.innerHTML='';render();break;}
   tab='settings';settingsSub='settings';el.innerHTML='';render();break;
-case'feedback':tab='settings';settingsSub='feedback';el.innerHTML='';render();break;
+case'feedback':tab='settings';settingsSub='settings';el.innerHTML='';render();break;
 case'settings':
-  {const _settingsTabs=[{id:'settings',l:'Settings'},{id:'feedback',l:'Feedback'}];
-  const _settingsBar='<div style="display:flex;gap:4px;margin-bottom:12px;padding:4px;background:rgb(var(--bg2));border-radius:12px">'+_settingsTabs.map(s=>
-    '<button onclick="settingsSub=\''+s.id+'\';render()" style="flex:1;padding:8px 10px;border:none;border-radius:10px;font-size:11px;font-weight:'+(settingsSub===s.id?'700':'500')+';cursor:pointer;background:'+(settingsSub===s.id?'#fff':'transparent')+';color:'+(settingsSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(settingsSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.l+'</button>'
-  ).join('')+'</div>';
-  el.innerHTML=_settingsBar+(settingsSub==='feedback'?renderFeedback():renderSettings());}break; // safe-innerhtml: settings tab labels are hardcoded
+  settingsSub='settings';el.innerHTML=renderSettings();break;
 case'book':case'syl':_studyMode='lib';tab='learn';libSec='haz-pdf';el.innerHTML='';render();break; // v10.54.0
 default:tab='quiz';el.innerHTML=renderQuiz();break;
 }
@@ -7345,8 +7330,10 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.177';
+const APP_VERSION='10.64.179';
 const CHANGELOG={
+'10.64.179':['ui(settings/study-plan): further declutter Settings after mobile review. Data Management is now split into primary backup/export, secondary restore/import, and a collapsed reset danger area; AI credentials are a compact optional disclosure next to account state; study-plan hour/mock sliders update their visible numbers while dragging; generated study-plan topics now show mapped source chapters from the existing question-to-chapter map (Hazzard/Harrison/GRS8) and include them in calendar export. No clinical question content, keys, explanations, source mappings, or audit queues changed. Trinity 10.64.178 to 10.64.179.'],
+'10.64.178':['ui(settings/study-plan): remove the dead Settings Feedback subtab and route legacy feedback links back to Settings. The generated exam-date study schedule now hides empty weeks, uses compact class-driven week/topic rows, and de-duplicates repeated acronym labels such as USPSTF in mixed Hebrew/English topic titles. No clinical question content, keys, explanations, source mappings, or audit queues changed. Trinity 10.64.177 to 10.64.178.'],
 '10.64.177':['refactor(library): server-side textbook grounding. Harrison and Hazzard chapter summaries and quiz generation now send a ground book plus chapter directive to the Toranot proxy, which injects the chapter text from a private store and returns only the answer. The bundled verbatim chapter JSON (harrison_chapters.json and data/hazzard_chapters.json) is replaced by title-only index files (harrison_index.json and data/hazzard_index.json) used for navigation, and the in-app reader shows a grounded AI summary on demand instead of full chapter text. This removes copyrighted full-text distribution from the repo and the client. Trinity 10.64.176 to 10.64.177.'],
 '10.64.176':['ui(ia): align the Study shell with the ecosystem four-tab navigation. Study now owns Today, Read, Notes, and Tools while legacy search, cards, meds, chat, note, and library links remain routed into Study. Track stays analytics-only and Settings stays the utility/account home. No question content, answer keys, explanations, source mappings, or audit queues changed. Trinity 10.64.175 to 10.64.176.'],
 '10.64.175':['fix(content): resolve the remaining Geri bot queue image-dependent text-only item idx 3696 without changing its key. The stem now includes the Harrison Ch 66 blood-smear finding for severe iron-deficiency anemia (microcytic/hypochromic red cells with anisopoikilocytosis), so the question is answerable when the figure is unavailable. Source anchor checked before edit: Harrison 22e Ch 66, Figure 66-4 caption. Added a regression guard. Trinity 10.64.174 to 10.64.175.'],

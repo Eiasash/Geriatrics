@@ -507,6 +507,17 @@ describe("Track tab — cross-function invariants", () => {
     expect(liveSource).not.toMatch(/onclick="[^"]*(pomodoro|suddenDeath|onCall|oncall)[^"]*"/i);
   });
 
+  it("Settings no longer exposes the dead Feedback subtab or submit form", () => {
+    const liveSource = html.slice(0, html.indexOf("const CHANGELOG="));
+    expect(liveSource).not.toMatch(/renderFeedback|submitFeedback|samega_fb_sent/);
+    expect(liveSource).not.toMatch(/Feedback & Feature Requests/);
+    expect(liveSource).not.toMatch(/\{id:'feedback'/);
+    expect(liveSource).not.toMatch(/settingsSub==='feedback'/);
+    const renderBody = bodyOf("render");
+    expect(renderBody).toContain("case'feedback':tab='settings';settingsSub='settings'");
+    expect(renderBody).toContain("case'settings':\n  settingsSub='settings';el.innerHTML=renderSettings();break;");
+  });
+
   it("CSS block defines all KPI value modifier classes", () => {
     expect(html).toMatch(/\.track-kpi__value--ok\s*\{/);
     expect(html).toMatch(/\.track-kpi__value--warn\s*\{/);

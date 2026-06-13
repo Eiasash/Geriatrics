@@ -89,7 +89,6 @@ jobs:
               'renderLibrary',
               'renderSearch',
               'renderChat',
-              'renderFeedback',
               # Geriatrics-specific tools
               'renderMedBasket',
               # Cloud + backup

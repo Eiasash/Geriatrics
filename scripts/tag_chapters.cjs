@@ -30,8 +30,12 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const QUESTIONS_PATH = path.join(ROOT, 'data/questions.json');
 const TOPICS_PATH = path.join(ROOT, 'data/topics.json');
-const HAZ_PATH = path.join(ROOT, 'data/hazzard_chapters.json');
-const HAR_PATH = path.join(ROOT, 'harrison_chapters.json');
+const HAZ_PATH = fs.existsSync(path.join(ROOT, 'data/hazzard_chapters.json'))
+  ? path.join(ROOT, 'data/hazzard_chapters.json')
+  : path.join(ROOT, 'data/hazzard_index.json');
+const HAR_PATH = fs.existsSync(path.join(ROOT, 'harrison_chapters.json'))
+  ? path.join(ROOT, 'harrison_chapters.json')
+  : path.join(ROOT, 'harrison_index.json');
 const GRS_PATH = path.join(ROOT, 'data/grs8_chapters.json');
 const OUT_PATH = path.join(ROOT, 'data/question_chapters.json');
 
