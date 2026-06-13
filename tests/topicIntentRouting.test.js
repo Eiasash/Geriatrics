@@ -160,7 +160,7 @@ describe('v10.40.0 — chapter-AI parallel-3 single-Q pattern', () => {
   test('generateQuestionsFromChapter caps each call at 800 max_tokens', () => {
     const m = html.match(/async\s+function\s+generateQuestionsFromChapter\s*\([\s\S]*?\}catch\(err\)\{/);
     expect(m).toBeTruthy();
-    const calls = [...m[0].matchAll(/callAI\s*\([^]*?,\s*(\d+)\s*,\s*['"]sonnet['"]\s*\)/g)];
+    const calls = [...m[0].matchAll(/callAI\s*\([^]*?,\s*(\d+)\s*,\s*['"]sonnet['"]/g)];
     expect(calls.length).toBe(3);
     for (const c of calls) {
       const tok = parseInt(c[1], 10);
@@ -180,7 +180,7 @@ describe('v10.40.0 — chapter-AI parallel-3 single-Q pattern', () => {
   test('quizMeOnChapter caps each call at 800 max_tokens', () => {
     const m = html.match(/async\s+function\s+quizMeOnChapter\s*\([\s\S]*?\n\}\n/);
     expect(m).toBeTruthy();
-    const calls = [...m[0].matchAll(/callAI\s*\([^]*?,\s*(\d+)\s*,\s*['"]sonnet['"]\s*\)/g)];
+    const calls = [...m[0].matchAll(/callAI\s*\([^]*?,\s*(\d+)\s*,\s*['"]sonnet['"]/g)];
     expect(calls.length).toBe(3);
     for (const c of calls) {
       const tok = parseInt(c[1], 10);
@@ -193,7 +193,7 @@ describe('v10.39.0 — Generate Qs token budget (legacy guard, kept)', () => {
   test('generateQuestionsFromChapter never reintroduces a single >2000-tok call', () => {
     const m = html.match(/async\s+function\s+generateQuestionsFromChapter\s*\([\s\S]*?\}catch\(err\)\{/);
     expect(m).toBeTruthy();
-    const calls = [...m[0].matchAll(/callAI\s*\([^]*?,\s*(\d+)\s*,\s*['"]sonnet['"]\s*\)/g)];
+    const calls = [...m[0].matchAll(/callAI\s*\([^]*?,\s*(\d+)\s*,\s*['"]sonnet['"]/g)];
     for (const c of calls) {
       expect(parseInt(c[1], 10)).toBeLessThanOrEqual(2000);
     }

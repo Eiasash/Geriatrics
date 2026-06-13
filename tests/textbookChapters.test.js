@@ -35,8 +35,8 @@ function load(file) {
 let hazzard, harrison, harrisonToc, qchaps, notes, questions;
 
 beforeAll(() => {
-  hazzard = load('data/hazzard_chapters.json');
-  harrison = load('harrison_chapters.json');
+  hazzard = load('data/hazzard_index.json');
+  harrison = load('harrison_index.json');
   // harrison_22e_toc.json — canonical 505-chapter TOC extracted from the
   // Harrison 22e PDF. Distinct from harrison_chapters.json which is the in-
   // app reader's curated 69-chapter subset. The canonical TOC is the gold
@@ -72,53 +72,19 @@ function describeBook(label, getter, opts) {
       }
     });
 
-    it('every chapter has title (non-empty string), sections (array), wordCount (number)', () => {
+    it('every chapter has a non-empty title (index shape; body grounded server-side)', () => {
       const bad = [];
       for (const [k, ch] of Object.entries(chapters)) {
         if (typeof ch.title !== 'string' || ch.title.trim().length === 0) bad.push({ k, why: 'title' });
-        if (!Array.isArray(ch.sections)) bad.push({ k, why: 'sections-not-array' });
-        if (typeof ch.wordCount !== 'number') bad.push({ k, why: 'wordCount' });
       }
       expect(bad, JSON.stringify(bad.slice(0, 3))).toEqual([]);
     });
 
-    it('every section has title (string) and content (array of strings)', () => {
-      const bad = [];
-      for (const [k, ch] of Object.entries(chapters)) {
-        ch.sections.forEach((s, i) => {
-          if (typeof s.title !== 'string') bad.push({ k, i, why: 's.title' });
-          if (!Array.isArray(s.content)) bad.push({ k, i, why: 's.content' });
-          else {
-            for (let j = 0; j < s.content.length; j++) {
-              if (typeof s.content[j] !== 'string') {
-                bad.push({ k, i, j, why: 's.content[j]' });
-                break;
-              }
-            }
-          }
-        });
-      }
-      expect(bad, JSON.stringify(bad.slice(0, 3))).toEqual([]);
-    });
-
-    it('every chapter has at least one section (no empty parses)', () => {
-      const empty = Object.entries(chapters)
-        .filter(([, ch]) => ch.sections.length === 0)
+    it('ships NO verbatim body (copyright — sections/content absent)', () => {
+      const leaks = Object.entries(chapters)
+        .filter(([, ch]) => Array.isArray(ch.sections) || 'content' in ch)
         .map(([k]) => k);
-      expect(empty, `chapters with zero sections: ${empty.join(',')}`).toEqual([]);
-    });
-
-    it('wordCount is plausible — at least 100 words per chapter on average', () => {
-      const total = Object.values(chapters).reduce((a, ch) => a + ch.wordCount, 0);
-      const avg = total / Object.keys(chapters).length;
-      expect(avg, `avg wordCount=${avg.toFixed(0)}`).toBeGreaterThan(100);
-    });
-
-    it('no chapter has wordCount 0 (parser bleed regression)', () => {
-      const zeroes = Object.entries(chapters)
-        .filter(([, ch]) => ch.wordCount === 0)
-        .map(([k]) => k);
-      expect(zeroes, `zero-wordCount chapters: ${zeroes.join(',')}`).toEqual([]);
+      expect(leaks, `chapters still carrying body: ${leaks.slice(0, 3).join(',')}`).toEqual([]);
     });
   });
 }
@@ -164,7 +130,7 @@ describe('question_chapters.json ↔ chapters cross-reference (reverse direction
       if (e.haz !== undefined) cited.add(String(e.haz));
     }
     const broken = [...cited].filter(
-      (id) => !hazzard[id] || hazzard[id].sections.length === 0,
+      (id) => !hazzard[id],
     );
     expect(broken, `broken Hazzard targets: ${broken.join(',')}`).toEqual([]);
   });
@@ -175,7 +141,7 @@ describe('question_chapters.json ↔ chapters cross-reference (reverse direction
       if (e.har !== undefined) cited.add(String(e.har));
     }
     const broken = [...cited].filter(
-      (id) => !harrison[id] || harrison[id].sections.length === 0,
+      (id) => !harrison[id],
     );
     expect(broken, `broken Harrison targets: ${broken.join(',')}`).toEqual([]);
   });

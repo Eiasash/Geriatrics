@@ -41,8 +41,8 @@ const rd = (p) => JSON.parse(readFileSync(resolve(ROOT, p), 'utf-8'));
 
 const QZ = rd('data/questions.json');
 const HAR_TOC = new Set(Object.keys(rd('data/harrison_22e_toc.json')).filter((k) => /^\d+$/.test(k)).map(Number)); // existence (1..505)
-const HAR_CONTENT = new Set(Object.keys(rd('harrison_chapters.json')).filter((k) => /^\d+$/.test(k)).map(Number)); // in-app reader (69)
-const HAZ = new Set(Object.keys(rd('data/hazzard_chapters.json')).filter((k) => /^\d+$/.test(k)).map(Number)); // 1..108
+const HAR_CONTENT = new Set(Object.keys(rd('harrison_index.json')).filter((k) => /^\d+$/.test(k)).map(Number)); // in-app reader (69)
+const HAZ = new Set(Object.keys(rd('data/hazzard_index.json')).filter((k) => /^\d+$/.test(k)).map(Number)); // 1..108
 
 // 2026-06-01 baselines — ratchet ceilings (may shrink, must not grow without review).
 const EMPTY_REF_BASELINE = 75;        // SZMC-Rescue intentionally-unsourced Qs

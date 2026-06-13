@@ -4251,15 +4251,8 @@ async function aiSummarizeChapter(chNum,chTitle){
   const isHarrison=(typeof harChOpen!=='undefined'&&harChOpen!==null&&String(harChOpen)===String(chNum));
   const dataMap=isHarrison?_harData:_hazData;
   const textbookName=isHarrison?"Harrison's Principles of Internal Medicine, 22e":"Hazzard's Geriatric Medicine, 8e";
-  let chText='';
-  if(dataMap&&dataMap[String(chNum)]){
-    const ch=dataMap[String(chNum)];
-    if(ch&&Array.isArray(ch.sections))chText=ch.sections.slice(0,8).map(s=>(s.title||'')+(Array.isArray(s.content)?': '+s.content.join(' ').slice(0,300):s.content?': '+String(s.content).slice(0,300):'')).join('\n').slice(0,3500);
-  }
-  const prompt=`You are summarizing ${textbookName} Ch ${chNum}: ${chTitle} for the Israeli geriatrics board exam (שלב א׳).
-
-Chapter content:
-${chText||'Chapter '+chNum+': '+chTitle+' (full content unavailable — answer from textbook knowledge)'}
+  const _ground={book:isHarrison?'harrison':'hazzard',chapter:Number(chNum)};
+  const prompt=`You are summarizing ${textbookName} Ch ${chNum}: ${chTitle} for the Israeli geriatrics board exam (שלב א׳). The chapter text is supplied to you as authoritative reference context.
 
 Create a board-focused summary in HEBREW with:
 1. 5-7 key facts/thresholds the examiner will test (specific numbers, criteria)
@@ -4268,7 +4261,7 @@ Create a board-focused summary in HEBREW with:
 
 Format as clean bullet points. Be concise and high-yield.`;
   try{
-    const txt=await callAI([{role:'user',content:prompt}],800,'sonnet');
+    const txt=await callAI([{role:'user',content:prompt}],800,'sonnet',_ground);
     // safe-innerhtml: heDir returns fixed 'auto'|'rtl'|'ltr'; txt/chNum/chTitle are sanitize()'d
     box.innerHTML=`<div style="margin-top:12px;padding:14px;background:rgb(var(--green-bg));border-radius:10px;border-left:4px solid #059669">
 <div style="font-weight:700;font-size:12px;color:rgb(var(--green-fg));margin-bottom:8px">📝 Board Summary — Ch ${sanitize(String(chNum))}: ${sanitize(chTitle)}</div>
@@ -4286,27 +4279,15 @@ box.innerHTML='<div class="card" style="padding:16px;text-align:center"><div sty
 const chData=source==='haz'?(_hazData&&_hazData[String(chNum)]):(_harData&&_harData[String(chNum)]);
 if(!chData){box.innerHTML='<div class="card" style="padding:16px;color:#dc2626">Chapter data not loaded — open the chapter first</div>';return;}
 // v10.39.0 — defensive: section.content can be string OR array depending on parser
-const excerpt=(chData.sections||[]).slice(0,5).map(function(s){
-  const c=s.content;
-  return (Array.isArray(c)?c.join(' '):String(c||'')).slice(0,800);
-}).join('\n');
+const _ground={book:source==='haz'?'hazzard':'harrison',chapter:Number(chNum)};
 const textbookName=source==='haz'?"Hazzard's 8e":"Harrison's 22e";
 // v10.40.0 — parallel-3 single-Q pattern. v10.39.0's single 1800-tok call
 // took ~35s wall (Sonnet 4.6 ~60 tok/s) and got killed by the 30s client
 // AbortController, surfacing as "signal is aborted without reason". Mirror
 // of the proven scripts/eissue_via_proxy.py 6-worker / 1-Q-per-call pattern:
 // 3 calls × 600 tokens each, parallel. Each ~10-15s, wall <20s.
-const slices=[
-  excerpt.slice(0,1200),
-  excerpt.slice(1000,2200)||excerpt.slice(0,1200),
-  excerpt.slice(2000,3200)||excerpt.slice(0,1200)
-];
-const focuses=['the opening third','the middle third','the final third'];
-const buildPrompt=(idx)=>`Based on this ${textbookName} chapter section, generate exactly ONE board-style MCQ for the Israeli geriatrics שלב א׳ exam. Focus on ${focuses[idx]} of the chapter.
-
-Chapter: ${chTitle}
-Content:
-${slices[idx]}
+const focuses=['key diagnostic facts and thresholds','management and treatment','complications and geriatric-specific nuances'];
+const buildPrompt=(idx)=>`Based on ${textbookName} Ch ${chNum} (${chTitle}), supplied to you as authoritative reference context, generate exactly ONE board-style MCQ for the Israeli geriatrics שלב א׳ exam. Focus on ${focuses[idx]}.
 
 Return ONLY a single JSON object (no markdown, no preamble, no array brackets):
 - q: clinical vignette stem (Hebrew preferred)
@@ -4317,9 +4298,9 @@ Return ONLY a single JSON object (no markdown, no preamble, no array brackets):
 Format: {"q":"...","o":["A","B","C","D"],"c":0,"e":"..."}`;
 try{
 const settled=await Promise.allSettled([
-  callAI([{role:'user',content:buildPrompt(0)}],600,'sonnet'),
-  callAI([{role:'user',content:buildPrompt(1)}],600,'sonnet'),
-  callAI([{role:'user',content:buildPrompt(2)}],600,'sonnet')
+  callAI([{role:'user',content:buildPrompt(0)}],600,'sonnet',_ground),
+  callAI([{role:'user',content:buildPrompt(1)}],600,'sonnet',_ground),
+  callAI([{role:'user',content:buildPrompt(2)}],600,'sonnet',_ground)
 ]);
 const questions=[];
 for(const r of settled){
@@ -4450,25 +4431,11 @@ async function quizMeOnChapter(chNum,chTitle){
   const isHarrison=(typeof harChOpen!=='undefined'&&harChOpen!==null&&String(harChOpen)===String(chNum));
   const dataMap=isHarrison?_harData:_hazData;
   const textbookName=isHarrison?"Harrison's Principles of Internal Medicine, 22e":"Hazzard's Geriatric Medicine, 8e";
-  let chapterText='';
-  if(dataMap&&dataMap[String(chNum)]){
-    const ch=dataMap[String(chNum)];
-    if(ch&&Array.isArray(ch.sections)){
-      chapterText=ch.sections.slice(0,6).map(s=>(s.title||'')+': '+(Array.isArray(s.content)?s.content.join(' '):String(s.content||''))).join('\n').slice(0,3000);
-    }
-  }
-  if(!chapterText){
-    chapterText=textbookName+" Chapter "+chNum+": "+chTitle+' (full content unavailable — generate from textbook knowledge)';
-  }
-  // v10.40.0 — parallel-3 single-Q pattern (mirrors generateQuestionsFromChapter).
-  // v10.39.0's single 1500-tok call took ~30s wall, hit the 30s client AbortController,
-  // surfacing as "signal is aborted without reason". Split across 3 chapter slices.
-  const slices=[chapterText.slice(0,1200),chapterText.slice(1000,2200)||chapterText.slice(0,1200),chapterText.slice(2000,3200)||chapterText.slice(0,1200)];
-  const focuses=['the opening third','the middle third','the final third'];
+  const _ground={book:isHarrison?'harrison':'hazzard',chapter:Number(chNum)};
+  const focuses=['key diagnostic facts and thresholds','management and treatment','complications and geriatric-specific nuances'];
   const buildPrompt=(idx)=>`You are an Israeli geriatrics board examiner writing MCQ for the שלב א׳ exam.
 
-Based on ${textbookName} Ch ${chNum} (${chTitle}), focus on ${focuses[idx]}:
-${slices[idx]}
+Based on ${textbookName} Ch ${chNum} (${chTitle}), supplied to you as authoritative reference context, focus on ${focuses[idx]}.
 
 Generate ONE original MCQ. The question must:
 1. Test a specific fact, threshold, or mechanism from this content
@@ -4481,9 +4448,9 @@ Return ONLY a single JSON object (no markdown, no preamble, no array brackets):
 c = 0-based index of correct answer.`;
   try{
     const settled=await Promise.allSettled([
-      callAI([{role:'user',content:buildPrompt(0)}],600,'sonnet'),
-      callAI([{role:'user',content:buildPrompt(1)}],600,'sonnet'),
-      callAI([{role:'user',content:buildPrompt(2)}],600,'sonnet')
+      callAI([{role:'user',content:buildPrompt(0)}],600,'sonnet',_ground),
+      callAI([{role:'user',content:buildPrompt(1)}],600,'sonnet',_ground),
+      callAI([{role:'user',content:buildPrompt(2)}],600,'sonnet',_ground)
     ]);
     const qs=[];
     for(const r of settled){
@@ -4616,10 +4583,7 @@ ${_htpct!==null?`<span style="font-weight:700;color:${_htpct>=70?'#059669':_htpc
 </div>`;
 }
 }
-ch.sections.forEach(sec=>{
-if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:rgb(var(--red-fg));margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid rgb(var(--red-brd))">${sec.title}</div>`;}
-sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:rgb(var(--fg));margin:0 0 10px;text-align:justify">${p}</p>`;});
-});
+h+=`<div style="font-size:11px;color:rgb(var(--fg2));line-height:1.7;text-align:right" dir="rtl">📝 לחץ Summary לסיכום AI ממוקד-מבחן של הפרק, או Quiz / Generate Qs ליצירת שאלות. הסיכום מבוסס על מקור הלימוד דרך השרת. הטקסט המלא של הפרק אינו נכלל באפליקציה.</div>`;
 h+=`</div>`;
 }else if(hazChOpen!==null&&_hazData){
 // v10.64.131: parallel to Harrison — chapter requested but not in hazzard_chapters.json.
@@ -4653,8 +4617,7 @@ const _ti=_hazTopicMap[String(e.ch)];
 const _stats=_ti!==undefined?getTopicStats()[_ti]:null;
 const _pct=_stats&&_stats.tot?Math.round(_stats.ok/_stats.tot*100):null;
 const _qCnt=_ti!==undefined?QZ.filter(q=>q.ti===_ti).length:0;
-const hazCh=_hazData&&_hazData[String(e.chNum)];
-const wc=hazCh?`~${Math.round(hazCh.wordCount/250)} min`:'tap to load';
+const wc='tap to open';
 h+=`<div onclick="openHazzardChapter(${e.chNum})" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgb(var(--brd));cursor:pointer">
 <span style="background:${e.color};color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;min-width:46px;text-align:center">Ch ${e.ch}</span>
 <div style="flex:1;min-width:0">
@@ -4722,10 +4685,7 @@ ${_rpct!==null?`<span style="font-weight:700;color:${_rpct>=70?'#059669':_rpct>=
 <button onclick="filt='har-ch';topicFilt=${harChOpen};tab='quiz';buildPool();render()" style="margin-left:auto;font-size:10px;padding:4px 10px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer">▶ Drill all ${_harQCidx.length}</button>
 </div>`;
 }
-ch.sections.forEach(sec=>{
-if(sec.title){h+=`<div style="font-size:13px;font-weight:800;color:#7c3aed;margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid #ede9fe">${sec.title}</div>`;}
-sec.content.forEach(p=>{h+=`<p style="font-size:11.5px;line-height:1.9;color:rgb(var(--fg));margin:0 0 10px;text-align:justify">${p}</p>`;});
-});
+h+=`<div style="font-size:11px;color:rgb(var(--fg2));line-height:1.7;text-align:right" dir="rtl">📝 לחץ Summary לסיכום AI ממוקד-מבחן של הפרק, או Quiz / Generate Qs ליצירת שאלות. הסיכום מבוסס על מקור הלימוד דרך השרת. הטקסט המלא של הפרק אינו נכלל באפליקציה.</div>`;
 h+=`</div>`;
 }else if(harChOpen!==null&&_harData){
 // v10.64.131: chapter requested but not in harrison_chapters.json. Was falling
@@ -4750,8 +4710,7 @@ h+=`<div class="card" style="padding:14px">
 <div style="font-size:10px;color:rgb(var(--fg2));margin-bottom:12px">${allSylChs.length} required chapters · <span style="color:#7c3aed">purple</span> = all examinees · <span style="color:#06b6d4">teal</span> = base track only</div>`;
 allSylChs.forEach(c=>{
 const isAll=allChNums.includes(c.ch);
-const harCh=_harData&&_harData[String(c.ch)];
-const wc=harCh?`~${Math.round(harCh.wordCount/250)} min`:'tap to load';
+const wc='tap to open';
 h+=`<div onclick="openHarrisonChapter(${c.ch})" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgb(var(--brd));cursor:pointer">
 <span style="background:${isAll?'#7c3aed':'#06b6d4'};color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;min-width:42px;text-align:center">Ch ${c.ch}</span>
 <div style="flex:1;min-width:0">
@@ -5038,7 +4997,7 @@ if(_harLoading)return;
 _harLoading=true;
 render();
 try{
-const r=await fetch('harrison_chapters.json');
+const r=await fetch('harrison_index.json');
 _harData=await r.json();
 }catch(e){
 console.error('Failed to load Harrison chapters',e);
@@ -5056,7 +5015,7 @@ if(_hazLoading)return;
 _hazLoading=true;
 render();
 try{
-const r=await fetch('data/hazzard_chapters.json');
+const r=await fetch('data/hazzard_index.json');
 _hazData=await r.json();
 }catch(e){
 console.error('Failed to load Hazzard chapters',e);
@@ -7386,8 +7345,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.176';
+const APP_VERSION='10.64.177';
 const CHANGELOG={
+'10.64.177':['refactor(library): server-side textbook grounding. Harrison and Hazzard chapter summaries and quiz generation now send a ground book plus chapter directive to the Toranot proxy, which injects the chapter text from a private store and returns only the answer. The bundled verbatim chapter JSON (harrison_chapters.json and data/hazzard_chapters.json) is replaced by title-only index files (harrison_index.json and data/hazzard_index.json) used for navigation, and the in-app reader shows a grounded AI summary on demand instead of full chapter text. This removes copyrighted full-text distribution from the repo and the client. Trinity 10.64.176 to 10.64.177.'],
 '10.64.176':['ui(ia): align the Study shell with the ecosystem four-tab navigation. Study now owns Today, Read, Notes, and Tools while legacy search, cards, meds, chat, note, and library links remain routed into Study. Track stays analytics-only and Settings stays the utility/account home. No question content, answer keys, explanations, source mappings, or audit queues changed. Trinity 10.64.175 to 10.64.176.'],
 '10.64.175':['fix(content): resolve the remaining Geri bot queue image-dependent text-only item idx 3696 without changing its key. The stem now includes the Harrison Ch 66 blood-smear finding for severe iron-deficiency anemia (microcytic/hypochromic red cells with anisopoikilocytosis), so the question is answerable when the figure is unavailable. Source anchor checked before edit: Harrison 22e Ch 66, Figure 66-4 caption. Added a regression guard. Trinity 10.64.174 to 10.64.175.'],
 '10.64.174':['ui(mobile-controls): replace the remaining horizontal-only Quiz advanced-filter strip and Study section strip with responsive mobile grids so controls no longer render half-hidden at a saved RTL scroll offset. Desktop keeps compact pill rows. No question data or clinical content touched. Bumped package/app/SW cache markers 10.64.173 to 10.64.174.'],
@@ -8333,7 +8293,7 @@ const AI_PROXY='https://toranot.netlify.app/api/claude';
 const AI_SECRET='shlav-a-mega-1f97f311d307-2026';
 // Per-call AbortController (was singleton in v10.38.1; cancelled in-flight peers,
 // breaking bulk explainWithAI). Concurrent callers no longer cancel each other.
-async function callAI(messages,maxTokens=400,model='sonnet'){
+async function callAI(messages,maxTokens=400,model='sonnet',ground=null){
   const _ctrl=new AbortController();
   const signal=_ctrl.signal;
   // 30s safety timeout (proxy typical 3s, rare 10s+ on cold start)
@@ -8354,7 +8314,7 @@ try{
 const pr=await fetch(AI_PROXY,{
 method:'POST',
 headers:{'Content-Type':'application/json','x-api-secret':AI_SECRET},
-body:JSON.stringify({model,max_tokens:maxTokens,messages}),
+body:JSON.stringify(ground?{model,max_tokens:maxTokens,messages,ground}:{model,max_tokens:maxTokens,messages}),
 signal
 });
 if(pr.ok){const d=await pr.json();return d.content?.[0]?.text||'';}

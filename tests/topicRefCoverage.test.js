@@ -22,7 +22,7 @@ import vm from 'node:vm';
 const rootDir = resolve(import.meta.dirname, '..');
 const html = readFileSync(resolve(rootDir, 'shlav-a-mega.html'), 'utf-8');
 const chapters = JSON.parse(
-  readFileSync(resolve(rootDir, 'data/hazzard_chapters.json'), 'utf-8'),
+  readFileSync(resolve(rootDir, 'data/hazzard_index.json'), 'utf-8'),
 );
 
 /**

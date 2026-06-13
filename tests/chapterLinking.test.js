@@ -27,8 +27,8 @@ const qcPath = resolve(rootDir, 'data/question_chapters.json');
 const qcRaw = readFileSync(qcPath, 'utf-8');
 const qchaps = JSON.parse(qcRaw);
 const questions = JSON.parse(readFileSync(resolve(rootDir, 'data/questions.json'), 'utf-8'));
-const haz = JSON.parse(readFileSync(resolve(rootDir, 'data/hazzard_chapters.json'), 'utf-8'));
-const har = JSON.parse(readFileSync(resolve(rootDir, 'harrison_chapters.json'), 'utf-8'));
+const haz = JSON.parse(readFileSync(resolve(rootDir, 'data/hazzard_index.json'), 'utf-8'));
+const har = JSON.parse(readFileSync(resolve(rootDir, 'harrison_index.json'), 'utf-8'));
 
 describe('data/question_chapters.json shape', () => {
   it('exists and parses as an object', () => {
