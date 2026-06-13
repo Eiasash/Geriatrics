@@ -1970,7 +1970,8 @@ let TABS=[];
 const MINIMAL_MODE=(()=>{try{const p=new URLSearchParams(location.search);return p.get('minimal')==='1'||p.get('mode')==='minimal'||location.hash==='#minimal';}catch(e){return false;}})();
 if(MINIMAL_MODE)document.body.classList.add('minimal-mode');
 let tab='quiz';
-let learnSub='today'; // sub-tab within Study: today|study|notes|flash|meds|chat
+let learnSub='today'; // sub-tab within Study: today|study|notes|tools
+let studyTool='search'; // sub-tool within Study Tools: search|cards|meds|chat
 let _studyMode='learn'; // v10.54.0: 'learn'|'lib' — which mode in unified Study tab
 let settingsSub='settings'; // sub-tab within Settings: settings|feedback
 let moreSub='settings'; // legacy deep-link holder for older #more routes
@@ -1984,14 +1985,16 @@ function renderTabs(){
 const _svgIcons={
   quiz:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
   learn:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  study:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
   lib:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
   search:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
   track:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="3" y1="20" x2="21" y2="20"/></svg>',
   settings:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
 };
+const activeTab=(tab==='learn'||tab==='lib')?'study':tab;
 document.getElementById('tb').innerHTML=TABS.map(t=>
 // safe-innerhtml: TABS is a hardcoded array of tab definitions (id/label/icon); _svgIcons is a hardcoded map; no user input
-`<button class="${t.id===tab?'on':''}" onclick="go('${t.id}')" role="tab" aria-selected="${t.id===tab?'true':'false'}" aria-label="${t.l}" style="transition:all .15s ease"><span class="ic">${_svgIcons[t.id]||t.ic}</span>${t.l}</button>`
+`<button class="${t.id===activeTab?'on':''}" onclick="go('${t.id}')" role="tab" aria-selected="${t.id===activeTab?'true':'false'}" aria-label="${t.l}" style="transition:all .15s ease"><span class="ic">${_svgIcons[t.id]||t.ic}</span>${t.l}</button>`
 ).join('');
 }
 function go(t){tab=t;renderTabs();render()}
@@ -7164,6 +7167,20 @@ function initPostLoginRestore(){
 // Expose pure helpers for tests (no-op in production usage).
 Object.assign(window,{ _restoreSuppressKey, _restoreIsFreshState, _restoreShouldPrompt, peekCloudBackup, applyRestorePayload, initPostLoginRestore });
 
+function renderStudyTools(){
+  const tool=['search','cards','meds','chat'].includes(studyTool)?studyTool:'search';
+  const bar='<div class="study-subnav" role="tablist" aria-label="Study tools">'+
+    [{id:'search',l:'Search'},{id:'cards',l:'Cards'},{id:'meds',l:'Meds'},{id:'chat',l:'Chat'}].map(function(t){
+      return '<button type="button" role="tab" aria-selected="'+(tool===t.id?'true':'false')+'" class="study-subnav__btn '+(tool===t.id?'on':'')+'" onclick="studyTool=\''+t.id+'\';render()">'+t.l+'</button>';
+    }).join('')+'</div>';
+  let body='';
+  if(tool==='cards')body=renderFlash();
+  else if(tool==='meds')body=renderMedBasket();
+  else if(tool==='chat')body=renderChat();
+  else body=renderSearch();
+  return bar+body;
+}
+
 function render(){
 // v10.64.88: microtask defer (Option A from PR #195 audit). Defers DOM rebuild
 // to the next tick so click events finish propagating before element detachment.
@@ -7185,20 +7202,12 @@ case'learn':
   // live together in one horizontally-scrollable pill bar. Existing onclick handlers
   // `tab='lib';libSec='haz-pdf'` still work via case 'lib' alias below.
   {const _learnPills=[
-    {id:'today', mode:'learn', ic:'☑', l:'Today'},
-    {id:'study', mode:'learn', ic:'📝', l:'Topic Notes'},
-    {id:'notes', mode:'learn', ic:'✎', l:'Personal Notes'},
-    {id:'flash', mode:'learn', ic:'🃏', l:'Cards'},
-    {id:'meds', mode:'learn', ic:'Rx', l:'Meds'},
-    {id:'chat', mode:'learn', ic:'AI', l:'Chat'},
-    {id:'haz-pdf',mode:'lib',  ic:'📕', l:'Hazzard'},
-    {id:'harrison',mode:'lib', ic:'📗', l:'Harrison'},
-    {id:'grs8',  mode:'lib',   ic:'📙', l:'GRS8'},
-    {id:'laws',  mode:'lib',   ic:'⚖️', l:'Laws'},
-    {id:'articles',mode:'lib', ic:'📄', l:'Articles'},
-    {id:'exams', mode:'lib',   ic:'📝', l:'Exams'}
+    {id:'today', mode:'learn', ic:'T', l:'Today'},
+    {id:'haz-pdf',mode:'lib',   ic:'R', l:'Read'},
+    {id:'notes', mode:'learn', ic:'N', l:'Notes'},
+    {id:'tools', mode:'learn', ic:'X', l:'Tools'}
   ];
-  const _curId = _studyMode==='learn' ? learnSub : libSec;
+  const _curId = _studyMode==='learn' ? (learnSub==='study'?'notes':learnSub) : 'haz-pdf';
   let _subBar='<div class="study-subnav" role="tablist" aria-label="Study sections">';
   _learnPills.forEach(p=>{
     const _on = (p.id===_curId);
@@ -7213,21 +7222,18 @@ case'learn':
     _body = renderLibraryBody(); // lib body without its own header+sub-bar
   } else {
     if(learnSub==='today')_body=renderStudyDashboard();
-    else if(learnSub==='study')_body=renderStudy();
-    else if(learnSub==='notes')_body=renderNotes();
-    else if(learnSub==='flash')_body=renderFlash();
-    else if(learnSub==='meds')_body=renderMedBasket();
-    else if(learnSub==='chat')_body=renderChat();
+    else if(learnSub==='study'||learnSub==='notes')_body=renderStudy()+renderNotes();
+    else if(learnSub==='tools'||learnSub==='flash'||learnSub==='meds'||learnSub==='chat')_body=renderStudyTools();
     else _body=renderStudyDashboard();
   }
   el.innerHTML=_subBar+_body;}break; // safe-innerhtml: _subBar is built from a hardcoded pill array (no user input)
-case'study':_studyMode='learn';tab='learn';learnSub=openNote!==null?'study':'today';el.innerHTML='';render();break;
+case'study':_studyMode='learn';tab='learn';learnSub=openNote!==null?'notes':'today';el.innerHTML='';render();break;
 case'notes':_studyMode='learn';tab='learn';learnSub='notes';el.innerHTML='';render();break;
-case'flash':tab='learn';learnSub='flash';el.innerHTML='';render();break;
+case'flash':tab='learn';learnSub='tools';studyTool='cards';el.innerHTML='';render();break;
 case'lib':_studyMode='lib';tab='learn';render();break; // v10.54.0: alias to merged Study tab
-case'meds':case'calc':_studyMode='learn';tab='learn';learnSub='meds';el.innerHTML='';render();break; // v10.62.1: calc alias preserved
-case'chat':_studyMode='learn';tab='learn';learnSub='chat';el.innerHTML='';render();break;
-case'search':el.innerHTML=renderSearch();break;
+case'meds':case'calc':_studyMode='learn';tab='learn';learnSub='tools';studyTool='meds';el.innerHTML='';render();break; // v10.62.1: calc alias preserved
+case'chat':_studyMode='learn';tab='learn';learnSub='tools';studyTool='chat';el.innerHTML='';render();break;
+case'search':_studyMode='learn';tab='learn';learnSub='tools';studyTool='search';el.innerHTML='';render();break;
 case'track':
   // Save session summary when switching to track tab
   if(!_sessionSaved&&(_sessionOk+_sessionNo)>=5){
@@ -7236,7 +7242,8 @@ case'track':
   el.innerHTML=renderTrack();break;
 case'more':
   if(moreSub==='search'){tab='search';el.innerHTML='';render();break;}
-  if(['meds','notes','chat'].includes(moreSub)){_studyMode='learn';tab='learn';learnSub=moreSub;el.innerHTML='';render();break;}
+  if(moreSub==='notes'){_studyMode='learn';tab='learn';learnSub='notes';el.innerHTML='';render();break;}
+  if(['meds','chat'].includes(moreSub)){_studyMode='learn';tab='learn';learnSub='tools';studyTool=moreSub;el.innerHTML='';render();break;}
   if(moreSub==='feedback'){tab='settings';settingsSub='feedback';el.innerHTML='';render();break;}
   tab='settings';settingsSub='settings';el.innerHTML='';render();break;
 case'feedback':tab='settings';settingsSub='feedback';el.innerHTML='';render();break;
@@ -7246,7 +7253,7 @@ case'settings':
     '<button onclick="settingsSub=\''+s.id+'\';render()" style="flex:1;padding:8px 10px;border:none;border-radius:10px;font-size:11px;font-weight:'+(settingsSub===s.id?'700':'500')+';cursor:pointer;background:'+(settingsSub===s.id?'#fff':'transparent')+';color:'+(settingsSub===s.id?'#0f172a':'#64748b')+';box-shadow:'+(settingsSub===s.id?'0 1px 3px rgba(0,0,0,.1)':'none')+'">'+s.l+'</button>'
   ).join('')+'</div>';
   el.innerHTML=_settingsBar+(settingsSub==='feedback'?renderFeedback():renderSettings());}break; // safe-innerhtml: settings tab labels are hardcoded
-case'book':case'syl':_studyMode='lib';tab='learn';el.innerHTML='';render();break; // v10.54.0
+case'book':case'syl':_studyMode='lib';tab='learn';libSec='haz-pdf';el.innerHTML='';render();break; // v10.54.0
 default:tab='quiz';el.innerHTML=renderQuiz();break;
 }
 // Ward modal
@@ -7379,8 +7386,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.175';
+const APP_VERSION='10.64.176';
 const CHANGELOG={
+'10.64.176':['ui(ia): align the Study shell with the ecosystem four-tab navigation. Study now owns Today, Read, Notes, and Tools while legacy search, cards, meds, chat, note, and library links remain routed into Study. Track stays analytics-only and Settings stays the utility/account home. No question content, answer keys, explanations, source mappings, or audit queues changed. Trinity 10.64.175 to 10.64.176.'],
 '10.64.175':['fix(content): resolve the remaining Geri bot queue image-dependent text-only item idx 3696 without changing its key. The stem now includes the Harrison Ch 66 blood-smear finding for severe iron-deficiency anemia (microcytic/hypochromic red cells with anisopoikilocytosis), so the question is answerable when the figure is unavailable. Source anchor checked before edit: Harrison 22e Ch 66, Figure 66-4 caption. Added a regression guard. Trinity 10.64.174 to 10.64.175.'],
 '10.64.174':['ui(mobile-controls): replace the remaining horizontal-only Quiz advanced-filter strip and Study section strip with responsive mobile grids so controls no longer render half-hidden at a saved RTL scroll offset. Desktop keeps compact pill rows. No question data or clinical content touched. Bumped package/app/SW cache markers 10.64.173 to 10.64.174.'],
 '10.64.173':['fix(images): wire the Claude Geri image-dependent queue hip-fracture item to the live May 2024 subspecialty Supabase object and clear its stale imgDep warning after confirming the figure asset displays. Added a regression guard for the reviewed image queue. No answer keys, options, explanations, or clinical wording changed. Bumped package/app/SW cache markers 10.64.172 to 10.64.173.'],
