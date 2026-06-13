@@ -287,13 +287,22 @@ jobs:
       # adding network latency to the test suite.
       - name: Verify Pnimit+Mishpacha sections vs IM/FM manifests
         run: |
+          changed=""
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             git fetch origin "${{ github.base_ref }}" --depth=1
             changed="$(git diff --name-only FETCH_HEAD HEAD)"
-            if ! printf '%s\n' "$changed" | grep -Eq '^(data/syllabus_data\.json|data/questions\.json|data/\.corpus_manifest\.json)$'; then
-              echo "Skipping cross-repo syllabus sync: no corpus/syllabus files changed in this PR."
-              exit 0
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            before="${{ github.event.before }}"
+            if [ "$before" != "0000000000000000000000000000000000000000" ]; then
+              git fetch origin "$before" --depth=1 || true
+              changed="$(git diff --name-only "$before" HEAD || git diff-tree --no-commit-id --name-only -r HEAD)"
+            else
+              changed="$(git diff-tree --no-commit-id --name-only -r HEAD)"
             fi
+          fi
+          if ! printf '%s\n' "$changed" | grep -Eq '^(data/syllabus_data\.json|data/questions\.json|data/\.corpus_manifest\.json)$'; then
+            echo "Skipping cross-repo syllabus sync: no corpus/syllabus files changed."
+            exit 0
           fi
           node scripts/regen_cross_repo_syllabus.cjs --check
 
