@@ -188,7 +188,7 @@ button.pill{font-family:inherit;font-size:11px;font-weight:600;line-height:inher
 .qo.ok{border-color:rgb(var(--em));background:#ecfdf5;color:rgb(var(--green-fg))}
 .qo.no{border-color:rgb(var(--red));background:rgb(var(--red-bg));color:rgb(var(--red-fg))}
 .qo.dim{border-color:#f1f5f9;color:#cbd5e1}
-.btn{padding:7px 18px;border-radius:12px;font-size:12px;font-weight:700;transition:.15s;display:inline-block}
+.btn{padding:7px 18px;border-radius:12px;font-size:12px;font-weight:700;transition:.15s;display:inline-flex;align-items:center;justify-content:center;min-height:44px!important;box-sizing:border-box}
 .btn:disabled{opacity:.35}
 .btn-p{background:var(--app-primary);color:var(--app-on-primary)}
 .btn-d{background:rgb(var(--sl8));color:#fff}
@@ -221,7 +221,7 @@ button.pill{font-family:inherit;font-size:11px;font-weight:600;line-height:inher
 .badge-r{background:rgb(var(--red-bg));color:#dc2626}
 .badge-y{background:rgb(var(--yellow-bg));color:#d97706}
 .badge-g{background:#ecfdf5;color:#059669}
-.calc-in{width:100%;border:1px solid rgb(var(--brd));border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:8px}
+.calc-in{width:100%;border:1px solid rgb(var(--brd));border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:8px;min-height:44px;box-sizing:border-box}
 .calc-in:focus{outline:none;border-color:rgb(var(--sky))}
 .sec-t{font-size:16px;font-weight:700;color:rgb(var(--fg));margin-bottom:3px}
 .sec-s{font-size:10px;color:rgb(var(--fg2));margin-bottom:14px}
@@ -230,17 +230,18 @@ button.pill{font-family:inherit;font-size:11px;font-weight:600;line-height:inher
 @media(min-width:1024px){.ct{max-width:900px}.card{padding:16px}}
 .hdr-bar{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .hdr-titleblock{min-width:0;flex:1 1 auto}
-.dm-row{display:flex;align-items:center;gap:5px;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end;max-width:60%}
-.dm-btn{position:static;transform:none;font-size:16px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;padding:0;opacity:.9;background:rgba(255,255,255,0.12);border-radius:50%;border:none;cursor:pointer;color:#fff;flex:0 0 auto}
+.dm-row{display:flex;align-items:center;gap:6px;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end;max-width:64%}
+.dm-btn{position:static;transform:none;font-size:16px;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0;opacity:.9;background:rgba(255,255,255,0.12);border-radius:50%;border:none;cursor:pointer;color:#fff;flex:0 0 auto}
 .dm-btn:hover{opacity:1;background:rgba(0,0,0,0.12)}
 body.dark .dm-btn{background:rgba(255,255,255,0.08);color:#fff}
 body.dark .dm-btn:hover{background:rgba(255,255,255,0.18)}
 .dm-btn:active{transform:scale(.92)}
-/* v10.64.94 phone header declutter: inline h1 22px + 5x36px buttons at top:50% (centered) collide with title AND the timestamp <p> on ≤480px viewports. Anchor buttons to a fixed top below the safe-area inset (not centered), shrink to 32px, tighten the inline right: offsets, override inline h1 to 17px, hide redundant Local-only sync pill (account chip + Settings tab convey same info). Desktop ≥481px unchanged — placed AFTER the base .dm-btn rule so the canonical white-on-tint contrast rule (a11yIssue125 regex guard) stays the first match. */
+/* v10.64.180: keep header toolbar controls at the mobile 44px touch target while preserving the flex header from v10.64.139. */
 @media(max-width:480px){
   .hdr h1{font-size:17px!important;font-weight:700!important;letter-spacing:-.02em!important;line-height:1.25!important}
   .hdr h1 span:not(#headerVer){display:none!important}
-  .dm-btn{width:30px!important;height:30px!important;font-size:13px!important}
+  .dm-row{gap:5px!important;max-width:68%!important}
+  .dm-btn{width:44px!important;height:44px!important;font-size:14px!important}
   .dm-btn:active{transform:scale(.92)!important}
   #syncPill{display:none!important}
 }
@@ -248,7 +249,7 @@ body.dark .dm-btn:hover{background:rgba(255,255,255,0.18)}
 .qo{min-height:44px;display:flex;align-items:center}
 .ck{min-height:44px}
 .topic{min-height:44px}
-.pill{min-height:32px;display:inline-flex;align-items:center}
+.pill{min-height:44px!important;display:inline-flex;align-items:center}
 .btn:active{transform:scale(.96)}
 .qo:active:not(.lk){transform:scale(.99)}
 .stat .l{font-size:10px}
@@ -273,7 +274,7 @@ body.dark .streak-badge{background:#451a03;border-color:rgb(var(--yellow-fg))}
 @media print{.tabs,.hdr,.dm-btn,button{display:none !important}.ct{padding:0;max-width:100%}.card{break-inside:avoid;border:1px solid #ccc;margin-bottom:8px}.ab{max-height:none !important}.stat,.stats{break-inside:avoid}body{background:rgb(var(--card-bg));color:#000;font-size:12pt}}
 .fade-in{animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.share-btn{font-size:13px;padding:2px 6px;opacity:.5;cursor:pointer;border:none;background:none}
+.share-btn{font-size:15px;min-width:44px;min-height:44px;padding:0;opacity:.5;cursor:pointer;border:none;background:none;display:inline-flex;align-items:center;justify-content:center;border-radius:50%}
 .share-btn:hover{opacity:1}
 .empty{text-align:center;padding:32px 16px;color:rgb(var(--fg3));font-size:12px;line-height:1.7}
 .img-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
@@ -372,7 +373,7 @@ body.dark .aging-row .path-cell{background:#450a0a;color:#fca5a5}
 body.dark .distractor-highlight{background:rgb(var(--bg2)) !important;border-color:rgb(var(--fg3)) !important}
 
 /* ===== SPEECH BUTTON ===== */
-.speech-btn{font-size:18px;padding:4px;opacity:.5;cursor:pointer;border:none;background:none;transition:.15s}
+.speech-btn{font-size:18px;min-width:44px;min-height:44px;padding:0;opacity:.5;cursor:pointer;border:none;background:none;transition:.15s;display:inline-flex;align-items:center;justify-content:center;border-radius:50%}
 .speech-btn:hover,.speech-btn.speaking{opacity:1}
 .speech-btn.speaking{animation:pulse-speak 1s infinite}
 @keyframes pulse-speak{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
@@ -455,7 +456,7 @@ body.dark .chat-disclaimer{background:#422006;border-color:rgb(var(--yellow-fg))
 .quiz-filter-summary__actions{display:grid;grid-template-columns:1fr;min-width:118px}
 .quiz-filter-summary__actions .btn{width:100%;white-space:nowrap}
 .quiz-filter-pills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;overflow:visible;mask-image:none;-webkit-mask-image:none;padding-bottom:0}
-.quiz-filter-pills .pill{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:6px 8px;text-align:center;white-space:normal;line-height:1.25}
+.quiz-filter-pills .pill{display:inline-flex;align-items:center;justify-content:center;min-height:44px!important;padding:6px 8px;text-align:center;white-space:normal;line-height:1.25}
 }
 
 /* ===== TRACK TAB — class-driven rebuild (v10.60.0) =====
@@ -757,7 +758,7 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .track-daily__step-num{width:22px;height:22px;border-radius:999px;background:rgb(var(--bg2));color:rgb(var(--fg2));font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .track-daily__step-title{font-size:11px;color:rgb(var(--fg));overflow-wrap:anywhere}
 .track-daily__step-meta{font-size:9px;color:rgb(var(--fg3));margin-top:2px}
-.track-daily__btn{font-size:10px;padding:5px 10px;border:none;border-radius:8px;cursor:pointer;min-height:34px;font-weight:700;white-space:nowrap}
+.track-daily__btn{font-size:10px;padding:5px 10px;border:none;border-radius:8px;cursor:pointer;min-height:44px;font-weight:700;white-space:nowrap}
 .track-daily__btn--primary{background:rgb(var(--blue-bg));color:#3b82f6}
 .track-daily__btn--secondary{background:#ede9fe;color:#7c3aed}
 .track-daily__btn--good{background:#dcfce7;color:rgb(var(--green-fg))}
@@ -818,7 +819,7 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .track-plan__topic-acc--neutral{background:rgba(148,163,184,.12);color:#94a3b8}
 .track-plan__topic-hrs{color:rgb(var(--fg3));font-size:9px;white-space:nowrap}
 .track-plan__actions{display:flex;gap:6px;padding:0 8px 8px 30px;flex-wrap:wrap;direction:ltr;justify-content:flex-start}
-.track-plan__action{font-size:9px;padding:4px 8px;border:1px solid rgb(var(--brd));border-radius:7px;background:rgb(var(--card-bg));cursor:pointer;white-space:nowrap;min-height:30px}
+.track-plan__action{font-size:9px;padding:4px 8px;border:1px solid rgb(var(--brd));border-radius:7px;background:rgb(var(--card-bg));cursor:pointer;white-space:nowrap;min-height:44px}
 .track-plan__action--haz{color:#b45309}
 .track-plan__action--note{color:#0D7377}
 .track-plan__action--quiz{color:#3b82f6}
@@ -848,13 +849,13 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .track-version-footer__sig{margin-top:6px}
 .study-dashboard__head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
 .study-dashboard__grid{display:grid;gap:10px}
-.study-dashboard__jump{font-size:10px;padding:7px 12px;border:1px solid rgb(var(--brd));border-radius:10px;background:rgb(var(--card-bg));color:rgb(var(--fg2));font-weight:700;cursor:pointer;white-space:nowrap}
+.study-dashboard__jump{font-size:10px;min-height:44px;padding:7px 12px;border:1px solid rgb(var(--brd));border-radius:10px;background:rgb(var(--card-bg));color:rgb(var(--fg2));font-weight:700;cursor:pointer;white-space:nowrap}
 .study-subnav{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 6px;margin-bottom:12px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.study-subnav__btn{flex:0 0 auto;padding:7px 14px;border:1px solid rgb(var(--brd));border-radius:999px;font-size:11px;font-weight:500;cursor:pointer;background:rgb(var(--card-bg));color:rgb(var(--fg2));white-space:nowrap;transition:all .15s ease}
+.study-subnav__btn{flex:0 0 auto;min-height:44px;padding:7px 14px;border:1px solid rgb(var(--brd));border-radius:999px;font-size:11px;font-weight:500;cursor:pointer;background:rgb(var(--card-bg));color:rgb(var(--fg2));white-space:nowrap;transition:all .15s ease}
 .study-subnav__btn.on{border-color:rgb(var(--sl8));background:rgb(var(--sl8));color:#fff;font-weight:700}
 @media(max-width:480px){
 .study-subnav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;overflow:visible;padding:0;margin-bottom:12px}
-.study-subnav__btn{width:100%;min-height:40px;padding:7px 8px;white-space:normal;line-height:1.2}
+.study-subnav__btn{width:100%;min-height:44px;padding:7px 8px;white-space:normal;line-height:1.2}
 }
 .settings-utilities{padding:14px;margin-top:12px}
 .settings-utilities__title{font-weight:700;font-size:12px;margin-bottom:6px}
@@ -871,7 +872,7 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .settings-data__grid--secondary{margin-top:8px}
 .settings-data__btn{min-height:44px;border-radius:9px;font-size:11px;font-weight:800}
 .settings-data__danger{margin-top:8px;border-top:1px solid rgb(var(--brd));padding-top:8px}
-.settings-data__danger summary{cursor:pointer;font-size:10px;font-weight:800;color:rgb(var(--fg2));list-style:none;min-height:36px;display:flex;align-items:center;justify-content:center}
+.settings-data__danger summary{cursor:pointer;font-size:10px;font-weight:800;color:rgb(var(--fg2));list-style:none;min-height:44px;display:flex;align-items:center;justify-content:center}
 .settings-data__danger summary::-webkit-details-marker{display:none}
 .settings-data__danger .btn{width:100%;min-height:44px;font-size:11px}
 .settings-data__foot{font-size:9px;color:rgb(var(--fg3));text-align:center;margin-top:8px;line-height:1.5}
@@ -913,7 +914,8 @@ body.dark .track-reread__row,body.dark .track-bk__row{border-bottom-color:#33415
 .track-activity__legend-dot--high{background:#15803d}
 .settings-view{max-width:100%;overflow-x:hidden}
 .settings-view .card{max-width:100%;overflow-wrap:anywhere}
-.settings-view input,.settings-view select{max-width:100%;min-width:0}
+.settings-view input,.settings-view select{max-width:100%;min-width:0;min-height:44px;box-sizing:border-box}
+.settings-view input[type=range]{padding-block:12px}
 .settings-data-actions,.settings-cloud-actions,.settings-api-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
 .settings-api-key-box{min-width:0;overflow-wrap:anywhere}
 .sp-plan-summary{padding:14px;background:rgb(var(--green-bg));border:1px solid rgb(var(--green-brd));border-radius:12px;margin:12px 0;color:rgb(var(--fg))}
@@ -3255,7 +3257,7 @@ if(timedMode&&!ans){
 <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
   <div id="timed-bar" style="height:100%;width:${Math.round(timedSec/90*100)}%;background:${timedSec>45?'#10b981':timedSec>22?'#f59e0b':'#ef4444'};border-radius:3px;transition:width .9s linear"></div>
 </div>
-<button onclick="pauseTimed()" style="font-size:9px;padding:2px 7px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:6px;cursor:pointer;white-space:nowrap" aria-label="${timedPaused?'Resume timer':'Pause timer'}">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
+<button onclick="pauseTimed()" style="font-size:9px;padding:2px 10px;min-height:44px;background:rgb(var(--bg2));border:1px solid rgb(var(--brd));border-radius:8px;cursor:pointer;white-space:nowrap" aria-label="${timedPaused?'Resume timer':'Pause timer'}">${timedPaused?'▶ המשך':'⏸ עצור'}</button>
 </div>`;
 }
 const topicName=q.ti>=0&&TOPICS[q.ti]?TOPICS[q.ti]:'';
@@ -3264,12 +3266,12 @@ h+=`<div style="display:flex;justify-content:space-between;align-items:center;ma
 <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">${_cf?'<span title="Chronic difficulty — read the chapter instead of drilling" style="font-size:14px;cursor:default">🔴</span>':''}${isExamTrap(pool[qi])?'<span title="Exam trap — many people pick the same wrong answer" style="font-size:12px;cursor:default">🪤</span>':''}<span class="tag-year" style="background:${q.t==='Hazzard'?'#faf5ff':'#eff6ff'};color:${q.t==='Hazzard'?'#7c3aed':'#1d4ed8'};font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">${q.t==='Hazzard'?'🤖 AI — Hazzard\'s':'📝 '+q.t}</span>${topicName?`<span class="tag-topic" style="background:rgb(var(--green-bg));color:rgb(var(--green-fg));font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">${topicName}</span>`:''}${(()=>{const ref=TOPIC_REF[q.ti];if(!ref)return '';if(ref.s==='haz')return `<span onclick="tab='lib';libSec='haz-pdf';render();" style="background:#fef3c7;color:rgb(var(--yellow-fg));font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer" title="Open Hazzard PDFs">📕 ${ref.l}</span>`;return '';})()}</div>
 <div style="display:flex;align-items:center;gap:8px">
 <button onclick="speakQuestion()" class="speech-btn${isSpeaking?' speaking':''}" title="Read aloud" aria-label="Read question aloud">🔊</button>
-<button onclick="shareQ()" id="shbtn" class="share-btn" title="Share" aria-label="Share question">📋</button><button onclick="toggleQNote()" style="font-size:14px;width:34px;height:34px;min-height:34px;background:${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-bg))':'rgb(var(--bg2))'};color:${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-fg))':'rgb(var(--fg2))'};border:1px solid ${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-fg))':'rgb(var(--brd))'};border-radius:50%;cursor:pointer;display:inline-flex;align-items:center;justify-content:center" title="Note for this question" aria-label="Note for this question">✎</button><button onclick="toggleBk()" style="font-size:14px;width:34px;height:34px;min-height:34px;background:${bk?'rgb(var(--yellow-bg))':'rgb(var(--bg2))'};color:${bk?'rgb(var(--yellow-fg))':'rgb(var(--fg2))'};border:1px solid ${bk?'rgb(var(--yellow-fg))':'rgb(var(--brd))'};border-radius:50%;cursor:pointer;display:inline-flex;align-items:center;justify-content:center" title="Bookmark" aria-label="${bk?'Remove bookmark':'Bookmark question'}">${bk?'★':'☆'}</button>
+<button onclick="shareQ()" id="shbtn" class="share-btn" title="Share" aria-label="Share question">📋</button><button onclick="toggleQNote()" style="font-size:14px;width:44px;height:44px;min-height:44px;background:${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-bg))':'rgb(var(--bg2))'};color:${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-fg))':'rgb(var(--fg2))'};border:1px solid ${(S.qnotes&&S.qnotes[pool[qi]])?'rgb(var(--yellow-fg))':'rgb(var(--brd))'};border-radius:50%;cursor:pointer;display:inline-flex;align-items:center;justify-content:center" title="Note for this question" aria-label="Note for this question">✎</button><button onclick="toggleBk()" style="font-size:14px;width:44px;height:44px;min-height:44px;background:${bk?'rgb(var(--yellow-bg))':'rgb(var(--bg2))'};color:${bk?'rgb(var(--yellow-fg))':'rgb(var(--fg2))'};border:1px solid ${bk?'rgb(var(--yellow-fg))':'rgb(var(--brd))'};border-radius:50%;cursor:pointer;display:inline-flex;align-items:center;justify-content:center" title="Bookmark" aria-label="${bk?'Remove bookmark':'Bookmark question'}">${bk?'★':'☆'}</button>
 <span style="color:rgb(var(--fg3));font-size:10px">${qi+1}/${pool.length}</span>
 </div></div>`;
 h+=`<p class="heb" data-qidx="${pool[qi]}" style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:${q.img?'10':'16'}px" dir="${heDir(qLang(q,'q'))}">${sanitize(qLang(q,'q'))}</p>`;
 if(S.qnotes&&S.qnotes[pool[qi]]){h+=`<div style="margin:0 0 12px;padding:8px 10px;background:rgb(var(--yellow-bg));border-right:3px solid rgb(var(--yellow-fg));border-radius:8px;font-size:11px;line-height:1.6;color:rgb(var(--fg));text-align:right;cursor:pointer" dir="${heDir(S.qnotes[pool[qi]])}" onclick="toggleQNote()" title="Click to edit">📝 ${sanitize(S.qnotes[pool[qi]])}</div>`;}
-if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative"><img src="${sanitize(q.img)}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy" onerror="if(this._f)return;this._f=1;this.style.display='none';this.insertAdjacentHTML('afterend','<div class=&quot;img-fail-ph&quot; style=&quot;padding:14px;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;font-size:11px;color:#92400e;text-align:center&quot;>📷 תמונה זו טרם הועלתה למערכת</div>')"><button onclick="event.stopPropagation();removeQImage(${pool[qi]})" aria-label="הסר תמונה" title="הסר תמונה" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer">✕</button>${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:right;line-height:1.4">⚠️ שאלה תלוית-תמונה: ההסבר עלול להיות שגוי. <button onclick="event.stopPropagation();markImgDepVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;background:#92400e;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-right:6px">✓ מאומת</button></div>':''}</div>`;}
+if(q.img){h+=`<div style="margin-bottom:14px;text-align:center;position:relative"><img src="${sanitize(q.img)}" alt="Question image" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid rgb(var(--brd));cursor:pointer" onclick="viewImg(this.src)" loading="lazy" onerror="if(this._f)return;this._f=1;this.style.display='none';this.insertAdjacentHTML('afterend','<div class=&quot;img-fail-ph&quot; style=&quot;padding:14px;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;font-size:11px;color:#92400e;text-align:center&quot;>📷 תמונה זו טרם הועלתה למערכת</div>')"><button onclick="event.stopPropagation();removeQImage(${pool[qi]})" aria-label="הסר תמונה" title="הסר תמונה" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:12px;cursor:pointer">✕</button>${q.imgDep?'<div style="margin-top:6px;padding:6px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;font-size:10px;color:#92400e;text-align:right;line-height:1.4">⚠️ שאלה תלוית-תמונה: ההסבר עלול להיות שגוי. <button onclick="event.stopPropagation();markImgDepVerified(${pool[qi]})" style="font-size:9px;padding:3px 8px;min-height:44px;background:#92400e;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-right:6px">✓ מאומת</button></div>':''}</div>`;}
 const _shuf=getOptShuffle(pool[qi],q);
 _shuf.forEach((origI,dispJ)=>{
 const o=qLang(q,'o')[origI];
@@ -3448,7 +3450,7 @@ if(ans&&!examMode&&q.ref){
       const _fg=_isHaz?'rgb(var(--red-fg))':'rgb(var(--blue-fg))';
       const _book=_isHaz?'Hazzard':'Harrison';
       const _titleAttr=String(rc.raw).replace(/"/g,'&quot;');
-      h+=`<button type="button" onclick="event.stopPropagation();openRefCitation('${rc.src}',${rc.ch})" title="${_titleAttr} — open in-app reader" aria-label="Open ${_book} chapter ${rc.ch} in reader" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:5px 10px;min-height:32px;background:${_bg};color:${_fg};border:1px solid ${_brd};border-radius:8px;cursor:pointer;text-decoration:none;line-height:1.3">${_emoji} ${_book} Ch ${rc.ch}${rc.title?` <span style="font-weight:400;opacity:0.85;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle" dir="auto">— ${sanitize(rc.title)}</span>`:''}</button>`;
+      h+=`<button type="button" onclick="event.stopPropagation();openRefCitation('${rc.src}',${rc.ch})" title="${_titleAttr} — open in-app reader" aria-label="Open ${_book} chapter ${rc.ch} in reader" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:5px 10px;min-height:44px;background:${_bg};color:${_fg};border:1px solid ${_brd};border-radius:8px;cursor:pointer;text-decoration:none;line-height:1.3">${_emoji} ${_book} Ch ${rc.ch}${rc.title?` <span style="font-weight:400;opacity:0.85;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle" dir="auto">— ${sanitize(rc.title)}</span>`:''}</button>`;
     });
     h+=`</div>`;
   }
@@ -6452,7 +6454,7 @@ h+='<div style="font-weight:700;font-size:13px">🔔 תזכורות חזרה י�
 h+='<div style="font-size:11px;color:rgb(var(--fg2));margin-top:4px;line-height:1.5">התראה יומית ב-07:00 אם יש שאלות מוכנות לחזרה (FSRS).</div>';
 h+=permHint;
 h+='</div>';
-h+='<button onclick="toggleNotifOptIn()" '+(canToggle?'':'disabled ')+'aria-pressed="'+optIn+'" style="background:'+(optIn?'#059669':'#cbd5e1')+';color:#fff;border:none;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:700;cursor:'+(canToggle?'pointer':'not-allowed')+';opacity:'+(canToggle?'1':'.5')+'">'+(optIn?'פעיל':'כבוי')+'</button>';
+h+='<button onclick="toggleNotifOptIn()" '+(canToggle?'':'disabled ')+'aria-pressed="'+optIn+'" style="background:'+(optIn?'#059669':'#cbd5e1')+';color:#fff;border:none;border-radius:999px;padding:6px 14px;min-height:44px;font-size:11px;font-weight:700;cursor:'+(canToggle?'pointer':'not-allowed')+';opacity:'+(canToggle?'1':'.5')+'">'+(optIn?'פעיל':'כבוי')+'</button>';
 h+='</div></div>';
 // v10.48.0: Account, Study Plan, Data Management, API Key all moved here from Track tab.
 // Track was overloaded with Settings content; users couldn't find login. Mirror of Pnimit/FM Settings layout.
@@ -6470,7 +6472,7 @@ h+=`<details class="settings-credentials">
 </summary>
 <div class="settings-credentials__body">`;
 if(!_storedKey){
-  h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;font-size:10px;color:rgb(var(--green-fg));margin-bottom:10px">✅ AI פועל דרך שרת proxy — לא צריך מפתח אישי. אפשר להוסיף כגיבוי. <a href="https://console.anthropic.com/keys" target="_blank" style="color:#d97706;font-weight:700">קבל מפתח ↗</a></div>';
+  h+='<div style="padding:8px 10px;background:#ecfdf5;border:1px solid rgb(var(--green-brd));border-radius:8px;font-size:10px;color:rgb(var(--green-fg));margin-bottom:10px">✅ AI פועל דרך שרת proxy — לא צריך מפתח אישי. אפשר להוסיף כגיבוי. <a href="https://console.anthropic.com/keys" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;min-height:44px;color:#d97706;font-weight:700">קבל מפתח ↗</a></div>';
   h+='<div class="settings-credentials__row">';
   h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-..." class="calc-in" style="flex:1;margin:0;font-size:11px" aria-label="Claude API key">';
   h+='<button class="btn btn-p" style="font-size:11px" onclick="_apiKeySaveFromInput()" aria-label="שמור — save API key">שמור</button>';
@@ -7330,8 +7332,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.179';
+const APP_VERSION='10.64.180';
 const CHANGELOG={
+'10.64.180':['ui(a11y): finish the Geri mobile touch-target pass. Header toolbar buttons, Quiz speech/share/note/bookmark/timer controls, Study subnav/jump controls, Track compact actions, Settings form fields, sliders, and account/data controls now meet the 44px mobile target without changing clinical content or navigation logic. No question content, answer keys, explanations, source mappings, or audit queues changed. Trinity 10.64.179 to 10.64.180.'],
 '10.64.179':['ui(settings/study-plan): further declutter Settings after mobile review. Data Management is now split into primary backup/export, secondary restore/import, and a collapsed reset danger area; AI credentials are a compact optional disclosure next to account state; study-plan hour/mock sliders update their visible numbers while dragging; generated study-plan topics now show mapped source chapters from the existing question-to-chapter map (Hazzard/Harrison/GRS8) and include them in calendar export. No clinical question content, keys, explanations, source mappings, or audit queues changed. Trinity 10.64.178 to 10.64.179.'],
 '10.64.178':['ui(settings/study-plan): remove the dead Settings Feedback subtab and route legacy feedback links back to Settings. The generated exam-date study schedule now hides empty weeks, uses compact class-driven week/topic rows, and de-duplicates repeated acronym labels such as USPSTF in mixed Hebrew/English topic titles. No clinical question content, keys, explanations, source mappings, or audit queues changed. Trinity 10.64.177 to 10.64.178.'],
 '10.64.177':['refactor(library): server-side textbook grounding. Harrison and Hazzard chapter summaries and quiz generation now send a ground book plus chapter directive to the Toranot proxy, which injects the chapter text from a private store and returns only the answer. The bundled verbatim chapter JSON (harrison_chapters.json and data/hazzard_chapters.json) is replaced by title-only index files (harrison_index.json and data/hazzard_index.json) used for navigation, and the in-app reader shows a grounded AI summary on demand instead of full chapter text. This removes copyrighted full-text distribution from the repo and the client. Trinity 10.64.176 to 10.64.177.'],
