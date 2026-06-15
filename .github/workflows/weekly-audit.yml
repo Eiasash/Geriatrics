@@ -46,7 +46,15 @@ jobs:
                   errors.append(f'Q{i}: invalid topic index (must be 0..{topic_count-1})')
               if not q.get('t'):
                   errors.append(f'Q{i}: missing year field')
-              if not q.get('ref'):
+              # SZMC-Rescue Qs are intentionally unsourced: bespoke Israeli-context
+              # content with no real textbook source, left empty per the
+              # anti-fabrication rule (CLAUDE.md; #307 recovered the only 5 with a
+              # genuine _refs_orig). The vitest suite already allows empty refs
+              # (dataIntegrity.test.js: "empty ref allowed"); this exemption keeps the
+              # weekly audit consistent. The bounded invariant — empty ref ⟹ SZMC-Rescue
+              # — is pinned in tests/rescueRefExemption.test.js so a non-rescue ref loss
+              # is still caught on every CI run.
+              if not q.get('ref') and q.get('t') != 'SZMC-Rescue':
                   errors.append(f'Q{i}: missing citation (ref)')
           if errors:
               print(f'ERRORS ({len(errors)}):')
