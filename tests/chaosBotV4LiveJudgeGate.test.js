@@ -63,12 +63,12 @@ describe.skipIf(!LIVE)('chaosBotV4 LIVE judge-call gate (CHAOS_LIVE_SMOKE=1)', (
     const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'r3-judge-gate-'));
     execFileSync('node', [BOT], {
       cwd: ROOT,
-      timeout: 170_000,
+      timeout: 180_000,
       encoding: 'utf8',
       stdio: 'inherit',
       env: {
         ...process.env,
-        CHAOS_DURATION_MS: '120000',     // 2-min attempt budget
+        CHAOS_DURATION_MS: '60000',      // 1-min budget — a 45s smoke makes ~11 judge calls; keeps total well under the spawn timeout
         CHAOS_COST_CAP_USD: '1.0',       // safety cap (smoke costs ~$0.05)
         CHAOS_USERS: '1',
         CHAOS_MODEL: 'claude-sonnet-4-6',
@@ -88,5 +88,5 @@ describe.skipIf(!LIVE)('chaosBotV4 LIVE judge-call gate (CHAOS_LIVE_SMOKE=1)', (
       .filter((a) => a.type === 'ai-judge').length;
 
     expect(judgeCalls, 'bot is inert (0 judge calls) — live label likely drifted from the selector').toBeGreaterThan(0);
-  }, 200_000);
+  }, 210_000);
 });

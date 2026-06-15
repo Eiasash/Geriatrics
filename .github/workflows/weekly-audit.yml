@@ -241,14 +241,27 @@ jobs:
               print(f'OK: CLAUDE.md references v{ver}')
           PYEOF
 
-  # AUDIT-8 #332 live judge-call gate (tests/chaosBotV4LiveJudgeGate.test.js):
-  # the v4 chaos bot locates the practice surface by live aria-labels, so an
-  # a11y/i18n label edit can silently zero its judge calls (cf. #290). The gate's
-  # cheap structural pins (selector contract + judge-counter existence) already
-  # run in normal ci.yml on every push. The LIVE smoke is intentionally NOT a
-  # weekly job: this scheduled run provides no AI credentials (no CHAOS_USE_PROXY
-  # / API key), so the bot could never complete judge calls and only timed out
-  # (spawnSync ETIMEDOUT @170s), red-flagging the weekly audit every run without
-  # measuring anything. Per its own docstring it is a MANUAL R3 pre-flight — run
-  # before firing an R3 chaos run:
-  #   CHAOS_LIVE_SMOKE=1 npx vitest run tests/chaosBotV4LiveJudgeGate.test.js
+  # AUDIT-8 #332 live judge-call gate — catches the "inert bot" failure class
+  # LOUDLY. The v4 bot finds the practice surface by live aria-labels; an a11y/i18n
+  # label edit (cf. #290) can silently zero its judge calls — a class the cheap
+  # structural pins in ci.yml CANNOT catch (only a live DOM run can). The bot
+  # defaults to proxy mode (TORANOT_DEFAULT_SECRET fallback), so this scheduled run
+  # needs no API key. The per-run budget is kept short (CHAOS_DURATION_MS=60000 in
+  # the test) so it finishes well within the execFileSync timeout — the earlier
+  # ETIMEDOUT was a 120s-budget-vs-170s-timeout margin bug, not missing creds
+  # (#397 removed the job on a wrong premise; this restores + fixes it).
+  live-judge-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Live judge-call gate (fails loud if the bot is inert)
+        env:
+          CHAOS_LIVE_SMOKE: '1'
+        run: npx vitest run tests/chaosBotV4LiveJudgeGate.test.js
