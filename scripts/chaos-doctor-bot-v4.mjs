@@ -1156,7 +1156,7 @@ async function main() {
     await browser.close().catch(() => {});
   }
   report.finishedAt = nowIso();
-  if (findingsStream) findingsStream.end();
+  if (findingsStream) await new Promise((res) => findingsStream.end(res));
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const jsonPath = path.join(CONFIG.reportDir, `chaos-doctor-v4-${stamp}.json`);
   const mdPath = path.join(CONFIG.reportDir, `chaos-doctor-v4-${stamp}.md`);
@@ -1170,4 +1170,9 @@ async function main() {
 // Allow this module to be imported (extractJson is exported for unit testing)
 // without auto-running main.
 const isMain = import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('chaos-doctor-bot-v4.mjs');
-if (isMain) main().catch((e) => { console.error(e); process.exitCode = 1; });
+if (isMain) {
+  main().then(
+    () => process.exit(0),
+    (e) => { console.error(e); process.exit(1); },
+  );
+}
