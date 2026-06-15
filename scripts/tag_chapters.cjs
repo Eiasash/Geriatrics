@@ -37,7 +37,14 @@ const HAR_PATH = fs.existsSync(path.join(ROOT, 'harrison_chapters.json'))
   ? path.join(ROOT, 'harrison_chapters.json')
   : path.join(ROOT, 'harrison_index.json');
 const GRS_PATH = path.join(ROOT, 'data/grs8_chapters.json');
-const OUT_PATH = path.join(ROOT, 'data/question_chapters.json');
+// Output path; overridable via QCHAP_OUT so isolation tests write to a temp
+// file instead of clobbering the shared tracked data/question_chapters.json
+// (otherwise the truncate+write races parallel vitest files reading it →
+// intermittent empty read. Mirrors regen_derived --check 'must not dirty the
+// worktree'). Default is unchanged for the regen pipeline.
+const OUT_PATH = process.env.QCHAP_OUT
+  ? path.resolve(ROOT, process.env.QCHAP_OUT)
+  : path.join(ROOT, 'data/question_chapters.json');
 
 const VERBOSE = process.argv.includes('--verbose');
 

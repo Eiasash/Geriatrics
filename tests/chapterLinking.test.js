@@ -16,9 +16,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, rmSync } from 'fs';
 import { resolve } from 'path';
 import { execSync } from 'child_process';
+import { tmpdir } from 'os';
 
 const rootDir = resolve(import.meta.dirname, '..');
 const html = readFileSync(resolve(rootDir, 'shlav-a-mega.html'), 'utf-8');
@@ -91,11 +92,24 @@ describe('data/question_chapters.json shape', () => {
 });
 
 describe('scripts/tag_chapters.cjs idempotency', () => {
-  it('running the tagger twice produces byte-identical output', () => {
+  it('tagger reproduces the committed question_chapters.json (idempotent)', () => {
     const before = readFileSync(qcPath, 'utf-8');
-    execSync('node scripts/tag_chapters.cjs', { cwd: rootDir, stdio: 'pipe' });
-    const after = readFileSync(qcPath, 'utf-8');
-    expect(after).toBe(before);
+    // Write the fresh tagger output to a per-process temp file via QCHAP_OUT
+    // instead of clobbering the shared tracked data/question_chapters.json —
+    // clobbering it races parallel test files reading the same path (truncate
+    // window → intermittent empty read → spurious red CI). Same assertion.
+    const tmpOut = resolve(tmpdir(), `qchap-${process.pid}-${Date.now()}.json`);
+    try {
+      execSync('node scripts/tag_chapters.cjs', {
+        cwd: rootDir,
+        stdio: 'pipe',
+        env: { ...process.env, QCHAP_OUT: tmpOut },
+      });
+      const after = readFileSync(tmpOut, 'utf-8');
+      expect(after).toBe(before);
+    } finally {
+      try { rmSync(tmpOut, { force: true }); } catch {}
+    }
   });
 });
 
