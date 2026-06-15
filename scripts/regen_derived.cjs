@@ -78,7 +78,12 @@ function runTagger(scriptPath, label) {
   if (!fs.existsSync(scriptPath)) {
     throw new Error(`${label}: script not found at ${scriptPath}`);
   }
-  const r = spawnSync('node', [scriptPath], { cwd: ROOT, encoding: 'utf-8' });
+  // Strip QCHAP_OUT so a stray value in the env can't redirect tag_chapters.cjs
+  // to a temp path and let the drift check pass a stale committed file — that
+  // override is for the isolation test only. (Codex P2 #396)
+  const env = { ...process.env };
+  delete env.QCHAP_OUT;
+  const r = spawnSync('node', [scriptPath], { cwd: ROOT, encoding: 'utf-8', env });
   if (r.status !== 0) {
     throw new Error(`${label} exited ${r.status}\nstdout: ${r.stdout}\nstderr: ${r.stderr}`);
   }
