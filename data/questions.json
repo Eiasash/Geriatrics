@@ -1898,6 +1898,10 @@
 "שבץ במנגנון artery to artery embolism יקרה בדרך כלל בכלי דם עם חסימה מוקדמת של"
 ],
 "c": 3,
+"c_accept": [
+2,
+3
+],
 "t": "2021-Dec",
 "ti": 20,
 "allow_dup": true,
@@ -2113,6 +2117,12 @@
 "יעילות הטיפול עולה במתן יחד עם מעכבי כולין אסטרז"
 ],
 "c": 3,
+"c_accept": [
+0,
+1,
+2,
+3
+],
 "t": "2021-Dec",
 "ti": 6,
 "ref": "Hazzard Ch 59 — DEMENTIA INCLUDING ALZHEIMER DISEASE · Harrison Ch 433 — Approach to the Patient with Neurologic Disease",
@@ -2397,6 +2407,10 @@
 "מדובר בשינוי פיזיולוגי. מומלצת בדיקה חוזרת בעוד שנה"
 ],
 "c": 0,
+"c_accept": [
+0,
+2
+],
 "t": "2021-Dec",
 "ti": 22,
 "ref": "Hazzard Ch 40 — APPLIED CLINICAL GEROSCIENCE· Harrison Ch 66 — Anemia and Polycythemia",
@@ -2734,6 +2748,10 @@
 "עודף ויטמין D מעלה סיכון לזיהומים בדרכי הנשימה"
 ],
 "c": 0,
+"c_accept": [
+0,
+2
+],
 "t": "2021-Dec",
 "ti": 27,
 "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION· Harrison Ch 50 — Unintentional Weight Loss",
@@ -3406,6 +3424,10 @@
 "ניתן לקבלו למחלקה שיקומית בתנאי שמסכים ומשתף פעולה בטיפול"
 ],
 "c": 3,
+"c_accept": [
+2,
+3
+],
 "t": "2021-Dec",
 "ti": 36,
 "ref": "Hazzard Ch 55 — REHABILITATION",
