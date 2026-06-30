@@ -1,16 +1,20 @@
 /**
  * SZMC-Rescue ref exemption — bounded invariant guard.
  *
- * The 75 SZMC-Rescue questions are intentionally unsourced: bespoke
- * Israeli-context content with no real textbook source, left with an empty
- * `ref` per the anti-fabrication rule (CLAUDE.md; #307 recovered the only 5
- * that had a genuine `_refs_orig`). Auto-attaching the topic-default chapter
- * from question_chapters.json would BE the fabrication the policy forbids
- * (that map is "reliable as a floor… does NOT carry per-Q curatorial
- * specificity" — q.ref rebuild caveat 2026-05-13).
+ * The SZMC-Rescue batch was originally 75 intentionally-unsourced questions
+ * (bespoke Israeli-context, no textbook source, empty `ref` per the
+ * anti-fabrication rule; #307 recovered the only 5 with a genuine `_refs_orig`).
+ * The 3C content-audit (v10.64.184) re-examined them and found 72 ARE
+ * textbook-groundable — those received CONTENT-derived refs (chapter assigned
+ * from each question's clinical content, NOT the question_chapters.json
+ * topic-default floor, which WOULD be the fabrication the policy forbids:
+ * "reliable as a floor… does NOT carry per-Q curatorial specificity" — q.ref
+ * rebuild caveat 2026-05-13). The exemption now bounds to the 3 genuinely
+ * Israel-specific items (end-of-life law, decisional capacity, driving fitness)
+ * that have no textbook home and stay unsourced.
  *
  * weekly-audit.yml used to require `ref` on every question, so it failed
- * weekly on these 75. That check is now exempt for `t === 'SZMC-Rescue'`.
+ * weekly on these. That check is now exempt for `t === 'SZMC-Rescue'`.
  *
  * This test moves the *real* guard onto every CI run: the exemption must stay
  * BOUNDED — an empty/missing ref is allowed ONLY on SZMC-Rescue questions. If a
