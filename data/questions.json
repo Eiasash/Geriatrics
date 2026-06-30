@@ -80,7 +80,7 @@
 "c": 2,
 "t": "2024-Sep-Basic",
 "ti": 24,
-"ref": "הריסון פרק 310, עמ' 2305",
+"ref": "Harrison Ch 322 — Chronic Kidney Disease",
 "tis": [
 24
 ]
@@ -775,7 +775,7 @@
 "c": 3,
 "t": "2020",
 "ti": 6,
-"ref": "HAZZARD pp. 993, 998-999, 1011",
+"ref": "Hazzard Ch 59 — DEMENTIA INCLUDING ALZHEIMER DISEASE · pp. 993, 998-999, 1011",
 "tis": [
 6,
 7
@@ -1711,7 +1711,7 @@
 "c": 1,
 "t": "2020",
 "ti": 27,
-"ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
+"ref": "Harrison Ch 315 — Sepsis and Septic Shock",
 "tis": [
 27,
 24
@@ -2337,7 +2337,7 @@
 "c": 0,
 "t": "2021-Dec",
 "ti": 23,
-"ref": "Hazzard Ch 59 — DEMENTIA INCLUDING ALZHEIMER DISEASE · Harrison Ch 433 — Approach to the Patient with Neurologic Disease",
+"ref": "Harrison Ch 388 — Approach to the Patient with Endocrine Disorders",
 "tis": [
 23,
 8,
@@ -8558,7 +8558,7 @@
 "c": 1,
 "ti": 31,
 "t": "Hazzard",
-"ref": "Hazzard 8e Ch on Sleep Disorders in Older Adults",
+"ref": "Hazzard Ch 44 — SLEEP DISORDERS",
 "tis": [
 31,
 13,
@@ -58181,7 +58181,7 @@
 "c": 0,
 "t": "2022-Jun-Basic",
 "ti": 3,
-"ref": "הזארד עמ' 695-696",
+"ref": "Hazzard Ch 42 — FRAILTY · עמ' 695-696",
 "tis": [
 3
 ]
@@ -58385,7 +58385,7 @@
 "t": "2022-Jun-Basic",
 "ti": 4,
 "allow_dup": true,
-"ref": "הזארד עמ' 730",
+"ref": "Hazzard Ch 43 — FALLS · עמ' 730",
 "tis": [
 4,
 36,
@@ -62698,7 +62698,7 @@
 "ti": 20,
 "img": "https://krmlzwwelqvlfslwltol.supabase.co/storage/v1/object/public/question-images/geri_2024_may_basic_q4.png",
 "allow_dup": true,
-"ref": "הריסון פרק 422, עמ' 3280",
+"ref": "Harrison Ch 438 — Ischemic Stroke",
 "tis": [
 20,
 37
@@ -64469,7 +64469,7 @@
 "c": 1,
 "t": "2024-May-Basic",
 "ti": 26,
-"ref": "הריסון פרק 294, עמ' 2197 (תמונה294-1)",
+"ref": "Harrison Ch 79 — Infections in Patients with Cancer",
 "tis": [
 26,
 27
@@ -64676,7 +64676,7 @@
 "c": 3,
 "t": "2024-May-Basic",
 "ti": 27,
-"ref": "הריסון פרק 66, עמ' 463",
+"ref": "Harrison Ch 315 — Sepsis and Septic Shock",
 "tis": [
 27
 ]
@@ -64811,7 +64811,7 @@
 "c": 0,
 "t": "2024-May-Basic",
 "ti": 24,
-"ref": "הריסון פרק 310, עמ' 2300",
+"ref": "Harrison Ch 322 — Chronic Kidney Disease",
 "tis": [
 24,
 27,
@@ -64865,7 +64865,7 @@
 "t": "2024-May-Basic",
 "ti": 20,
 "img": "https://krmlzwwelqvlfslwltol.supabase.co/storage/v1/object/public/question-images/geri_2024_may_basic_q131.png",
-"ref": "הריסון פרק 240, עמ' 1830",
+"ref": "Harrison Ch 438 — Ischemic Stroke",
 "tis": [
 20,
 41,
@@ -64966,7 +64966,7 @@
 "c": 2,
 "t": "2024-May-Basic",
 "ti": 23,
-"ref": "הריסון פרק 54 עמ' 358 + פרק 240 עמ' 1830",
+"ref": "Harrison Ch 388 — Approach to the Patient with Endocrine Disorders",
 "tis": [
 23,
 41,
@@ -65196,7 +65196,7 @@
 "c": 3,
 "t": "2024-May-Basic",
 "ti": 24,
-"ref": "הריסון פרק 310, עמ' 2299",
+"ref": "Harrison Ch 321 — Acute Kidney Injury",
 "tis": [
 24,
 38,
@@ -65796,7 +65796,7 @@
 "t": "2024-Sep-Basic",
 "ti": 20,
 "allow_dup": true,
-"ref": "הריסון פרק 422, עמ' 3280",
+"ref": "Harrison Ch 438 — Ischemic Stroke",
 "tis": [
 20
 ]
@@ -68030,7 +68030,7 @@
 "t": "2025-Jun-Basic",
 "ti": 20,
 "allow_dup": true,
-"ref": "הריסון פרק 422, עמ' 3280",
+"ref": "Harrison Ch 438 — Ischemic Stroke",
 "tis": [
 20,
 36
@@ -68849,7 +68849,7 @@
 "t": "2025-Jun-Basic",
 "ti": 41,
 "img": "https://krmlzwwelqvlfslwltol.supabase.co/storage/v1/object/public/question-images/geri_2025_jun_basic_q108.png",
-"ref": "הריסון פרק 240, עמ' 1830 (Tab 240-1)",
+"ref": "Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
 "tis": [
 41,
 39,
@@ -68994,7 +68994,7 @@
 "t": "2025-Jun-Basic",
 "ti": 17,
 "img": "https://krmlzwwelqvlfslwltol.supabase.co/storage/v1/object/public/question-images/geri_2025_jun_basic_q116.png",
-"ref": "הריסון פרק 240, עמ' 1830",
+"ref": "Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
 "tis": [
 17,
 39
@@ -69137,7 +69137,7 @@
 "t": "2025-Jun-Basic",
 "ti": 24,
 "allow_dup": true,
-"ref": "הריסון פרק 310, עמ' 2303 (Tab 310-2)",
+"ref": "Harrison Ch 322 — Chronic Kidney Disease",
 "tis": [
 24
 ]
@@ -69439,7 +69439,7 @@
 "t": "2025-Jun-Basic",
 "ti": 17,
 "allow_dup": true,
-"ref": "הריסון פרק 137, עמ' 1096 (Tab 137-2)",
+"ref": "Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
 "tis": [
 17
 ]
@@ -69565,7 +69565,7 @@
 "t": "2025-Jun-Basic",
 "ti": 27,
 "allow_dup": true,
-"ref": "הריסון פרק 74, עמ' 562-3",
+"ref": "Harrison Ch 315 — Sepsis and Septic Shock",
 "tis": [
 27,
 26
@@ -70544,7 +70544,7 @@
 "t": "2022-Jun-Subspec",
 "ti": 3,
 "allow_dup": true,
-"ref": "הזארד עמ' 695-696",
+"ref": "Hazzard Ch 42 — FRAILTY · עמ' 695-696",
 "tis": [
 3,
 18
@@ -70751,7 +70751,7 @@
 "t": "2022-Jun-Subspec",
 "ti": 4,
 "allow_dup": true,
-"ref": "הזארד עמ' 730",
+"ref": "Hazzard Ch 43 — FALLS · עמ' 730",
 "tis": [
 4,
 35,
@@ -76255,7 +76255,7 @@
 "t": "2024-Sep-Subspec",
 "ti": 20,
 "allow_dup": true,
-"ref": "הריסון פרק 422, עמ' 3280",
+"ref": "Harrison Ch 438 — Ischemic Stroke",
 "tis": [
 20
 ]
@@ -81266,7 +81266,7 @@
 "c": 1,
 "t": "2024-Sep-Basic",
 "ti": 41,
-"ref": "הריסון פרק 240, עמ' 1830 (תמונה7)",
+"ref": "Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
 "tis": [
 41,
 8,
@@ -81284,7 +81284,7 @@
 "c": 2,
 "t": "2024-Sep-Basic",
 "ti": 21,
-"ref": "הריסון פרק 284, עמ' 2132",
+"ref": "Harrison Ch 295 — Approach to the Patient with Disease of the Respiratory System",
 "tis": [
 21,
 17
@@ -81318,7 +81318,7 @@
 "c": 3,
 "t": "2024-Sep-Basic",
 "ti": 24,
-"ref": "הריסון פרק 310, עמ' 2304",
+"ref": "Harrison Ch 321 — Acute Kidney Injury",
 "tis": [
 24
 ]
@@ -81386,7 +81386,7 @@
 "c": 0,
 "t": "2024-Sep-Basic",
 "ti": 12,
-"ref": "הריסון פרק 321, עמ' 2382",
+"ref": "Harrison Ch 49 — Diarrhea and Constipation",
 "tis": [
 12,
 39
@@ -81544,7 +81544,7 @@
 "c": 1,
 "t": "2024-Sep-Basic",
 "ti": 27,
-"ref": "הריסון פרק 66, עמ' 463",
+"ref": "Harrison Ch 315 — Sepsis and Septic Shock",
 "tis": [
 27,
 44
@@ -81581,7 +81581,7 @@
 "c": 1,
 "t": "2024-Sep-Basic",
 "ti": 24,
-"ref": "הריסון פרק 310, עמ' 2300",
+"ref": "Harrison Ch 322 — Chronic Kidney Disease",
 "tis": [
 24,
 8
@@ -81598,7 +81598,7 @@
 "c": 2,
 "t": "2024-Sep-Basic",
 "ti": 17,
-"ref": "הריסון פרק 239, עמ' 1821-1822",
+"ref": "Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
 "tis": [
 17
 ]
@@ -81787,7 +81787,7 @@
 "c": 1,
 "t": "2024-Sep-Basic",
 "ti": 27,
-"ref": "הריסון פרק 74, עמ' 558",
+"ref": "Harrison Ch 133 — Infective Endocarditis",
 "tis": [
 27,
 26
@@ -81822,7 +81822,7 @@
 "c": 1,
 "t": "2024-Sep-Basic",
 "ti": 5,
-"ref": "הריסון פרק 54 עמ' 357 + פרק 240 עמ' 1831 (תמונה9)",
+"ref": "Harrison Ch 433 — Approach to the Patient with Neurologic Disease",
 "tis": [
 5,
 41
