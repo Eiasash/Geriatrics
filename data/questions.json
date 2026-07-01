@@ -84072,7 +84072,9 @@
 "ref": "Hazzard Ch 49 — MUSCLE AGING AND SARCOPENIA",
 "tis": [
 3
-]
+],
+"broken": true,
+"broken_reason": "3C A-tier: malformed — every option uses wrong EWGSOP2 thresholds (women ASMI <5.5 not <6.0; women grip <16 stated as <13 in a distractor) and keys 'severe' using hospitalization as a performance proxy (not an EWGSOP2 criterion); no clean correct option. Retired pending rework."
 },
 {
 "q": "גבר בן 68 ספורטאי לשעבר, BMI 28, תלונה על עייפות בהליכה ממושכת. BIA מראה מסת שריר תקינה, אך מבחן כיסא-עמידה 5 פעמים (5-STS) נמשך 16.0 שניות. מה המסקנה הנכונה?",
@@ -85605,7 +85607,7 @@
 "כל שעה בשכיבה, כל 30 דקות בישיבה",
 "כל שעתיים בשכיבה, כל 15 דקות בישיבה"
 ],
-"c": 3,
+"c": 0,
 "t": "AI-2026-hy",
 "ti": 10,
 "ref": "Hazzard Ch 46 — PRESSURE INJURIES",
@@ -87678,7 +87680,7 @@
 "o": [
 "Roflumilast (מעכב PDE-4)",
 "N-acetylcysteine במינון גבוה",
-"Azithromycin 500 mg יומיומי ללא הגבלת זמן",
+"Azithromycin 250 mg יומיומי ללא הגבלת זמן",
 "Theophylline בעלת-שחרור ממושך"
 ],
 "c": 0,
@@ -90137,7 +90139,7 @@
 "עדשות מגדלות (high-plus spectacle-mounted magnifiers) עם תאורה מוגברת לקריאה מקרוב",
 "עדשות פריזמה (prism relocation lenses) להזזת תמונה מחוץ לסקוטומה המרכזית"
 ],
-"c": 3,
+"c": 1,
 "t": "AI-2026-hy",
 "ti": 37,
 "ref": "Hazzard Ch 33 — LOW VISION: ASSESSMENT AND REHABILITATION",
