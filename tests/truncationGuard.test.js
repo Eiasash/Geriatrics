@@ -39,7 +39,7 @@ const REPO = path.resolve(__dirname, '..');
 
 // Baseline as of v10.64.126 (cancer cluster regen, PR #4 of rollout).
 // Rollout history: 766 → 706 (dementia v122) → 704 (carryover-clear v123)
-// → 653 (infections v124) → 616 (polypharmacy v125) → 580 (cancer v126).
+// → 653 (infections v124) → 616 (polypharmacy v125) → 580 (cancer v126) → 542 (v10.64.187). v10.64.188: 519 → 542 (+23 = 2025-Jun-Subspec re-tags that copy 25 existing already-flagged explanations; NOT new truncations — the 150 enriched basic + 9 net-new authored explanations introduced zero new flags).
 // Four consecutive clean regens (124+ stems consecutive 0-failure streak).
 // v10.64.126: cancer median 1789 chars, 100% in 1500-2100 band. Topic-
 // density char-distribution framing broke on out-of-sample data (cancer
@@ -48,7 +48,7 @@ const REPO = path.resolve(__dirname, '..');
 // word-target dominates topic-density for output shape. Delirium + parkinson
 // predictions remain sealed for stress-testing.
 // Update only when a future regen batch tightens the count further.
-const TRUNCATION_BASELINE = 519;
+const TRUNCATION_BASELINE = 542;
 
 // Mirror of scripts/scan_truncated_explanations.mjs detectTruncation. Hebrew
 // chars expressed as Unicode escapes (א-ת for alef-tav, ״ for

@@ -37,9 +37,9 @@ describe('v10.64.51-57 — multi-axis filter system', () => {
       expect(TOPICS.length).toBe(46);
     });
 
-    it('EXAM_YEARS array extracts to 11 entries', () => {
+    it('EXAM_YEARS array extracts to 14 entries', () => {
       expect(EXAM_YEARS).toBeTruthy();
-      expect(EXAM_YEARS.length).toBe(11); // v10.64.150: was 13; '2021-Jun'+'2023-Sep' removed (not real sittings, retagged)
+      expect(EXAM_YEARS.length).toBe(14); // v10.64.150: was 13; '2021-Jun'+'2023-Sep' removed (not real sittings, retagged)
     });
 
     it('every EXAM_YEARS tag exists in actual question data', () => {
