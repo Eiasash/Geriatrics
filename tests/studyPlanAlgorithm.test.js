@@ -67,11 +67,11 @@ describe('study_plan algorithm — JS↔Python cross-language fixture (Geri)', (
     // cross-language alignment. The values below are what the JS algorithm
     // produces today (live-captured via the same vm-context the test uses).
     expect(top5.map((t) => ({ id: t.id, freq: t.frequency_pct, hours: t.hours }))).toEqual([
-      { id:  8, freq: 7.89, hours: 6.0 },
-      { id: 26, freq: 4.84, hours: 4.3 },
-      { id:  6, freq: 4.68, hours: 4.2 },
-      { id:  5, freq: 4.54, hours: 4.1 },
-      { id: 27, freq: 4.12, hours: 3.7 },
+      { id:  8, freq: 7.49, hours: 6.0 },
+      { id:  6, freq: 5.16, hours: 4.6 },
+      { id: 26, freq: 4.67, hours: 4.2 },
+      { id:  5, freq: 4.33, hours: 3.9 },
+      { id: 27, freq: 4.09, hours: 3.7 },
     ]);
   });
 
@@ -119,15 +119,15 @@ describe('study_plan algorithm — JS↔Python cross-language fixture (Geri)', (
     // Re-derived 2026-06-06 after v10.64.156 syllabus refresh — see top-5 test above.
     // (Python reference comparison delta from v10.64.18 era no longer applicable
     // until generate_study_plan.py is re-run on the +474 AI-2026-hy syllabus.)
-    const expected = [6.0, 6.1, 6.1, 6.0, 6.1, 6.0, 6.1, 6.1, 6.1, 6.1, 5.8, 5.9, 6.1, 6.0, 4.2, 0.0];
+    const expected = [6.0, 6.1, 6.0, 6.0, 6.1, 5.8, 6.1, 6.1, 6.1, 6.0, 5.8, 6.1, 6.1, 5.6, 5.0, 0.0]; // v10.64.187: refreshed after +150 2026-Jun-Basic shifted Geri topic frequencies
     expect(out.used.length).toBe(expected.length);
     for (let i = 0; i < expected.length; i++) {
       expect(Math.abs(out.used[i] - expected[i])).toBeLessThan(1e-9);
     }
     // Hard invariants that hold in BOTH implementations.
-    // Sum updated 2026-06-06 (88.4 with 3823-question syllabus → 88.7 with
+    // Sum updated 2026-06-06 (88.7 pre-2026 → 88.6 after +150 2026-Jun-Basic;
     // refreshed 4297-question per-topic frequencies post the +474 AI-2026-hy merge).
-    expect(out.used.reduce((s, u) => s + u, 0)).toBeCloseTo(88.7, 9);
+    expect(out.used.reduce((s, u) => s + u, 0)).toBeCloseTo(88.9, 9);
   });
 
   test('schedule: every topic placed exactly once across all weeks', () => {

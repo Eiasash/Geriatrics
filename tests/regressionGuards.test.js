@@ -84,7 +84,7 @@ describe('questions.json — formatting quality', () => {
   let questions;
   // Only past-exam sessions suffer PDF-extraction artifacts.
   // Hazzard/Harrison/Hazzard-suppl are AI-generated and immune.
-  const PAST_EXAM_TAGS = ['2020', '2021-Dec', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun-Basic'];
+  const PAST_EXAM_TAGS = ['2020', '2021-Dec', '2022-Jun-Subspec', '2022-Jun-Basic', '2022-Jun-orphan', '2023-Jun-Subspec', '2023-Jun-Basic', '2023-Jun-orphan', '2024-May-Subspec', '2024-May-Basic', '2024-Sep-Subspec', '2024-Sep-Basic', '2024-orphan', '2025-Jun-Basic', '2026-Jun-Basic', '2026-Jun-Subspec', '2025-Jun-Subspec'];
   beforeAll(() => { questions = loadQuestions(); });
 
   // Catches "בן58" → should be "בן 58". Geriatrics has a legacy backlog
@@ -286,6 +286,10 @@ describe('questions.json — structural invariants', () => {
       // v10.11: real 2025-Jun Geri Stage A Basic (150 Qs) — per IMA post-appeal key 15314
       // v10.33: removed '2025-Jun' (219 condensed paraphrases — internal answer-key conflicts) and '2025-Jun-Subspec' (100 Qs that were 99 dupes of Basic + 1 misfiled real-Basic Q12). See CHANGELOG['10.33'].
       '2025-Jun-Basic',
+      // v10.64.187: real 2026-Jun Geri Stage A Basic (150 Qs) — IMA post-appeal key run 138
+      '2026-Jun-Basic',
+      '2026-Jun-Subspec',
+      '2025-Jun-Subspec',
       // Content sources
       'Hazzard', 'Harrison', 'Exam',
       // Split from 2025-א theory-type questions
@@ -355,6 +359,9 @@ describe('questions.json — per-session counts locked', () => {
     '2024-Sep-Basic': 150,
     '2024-orphan': 0,
     '2025-Jun-Basic': 150,
+    '2026-Jun-Basic': 150,
+    '2026-Jun-Subspec': 100,
+    '2025-Jun-Subspec': 100,
     'Exam': 24,
     'Harrison': 294,
     'Hazzard': 1852,
@@ -366,8 +373,8 @@ describe('questions.json — per-session counts locked', () => {
     expect(count).toBe(n);
   });
 
-  test('total question count is exactly 4297 (v10.64.156: +474 AI-2026-hy MCQs, 1 of 475 auto-deleted)', () => {
-    expect(questions.length).toBe(4297);
+  test('total question count is exactly 4647 (v10.64.188: +100 2026-Jun-Subspec +100 2025-Jun-Subspec)', () => {
+    expect(questions.length).toBe(4647);
   });
 });
 

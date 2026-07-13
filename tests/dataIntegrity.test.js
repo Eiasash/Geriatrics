@@ -304,6 +304,9 @@ describe("cross-file referential integrity", () => {
       "2024-May-Basic", "2024-May-Subspec",
       "2024-Sep-Basic", "2024-Sep-Subspec",
       "2025-Jun-Basic",
+      "2026-Jun-Basic",
+      "2026-Jun-Subspec",
+      "2025-Jun-Subspec",
       // Non-exam content sources
       "Hazzard", "Harrison", "Hazzard-suppl", "GRS8", "Exam",
       // v10.64.127: SZMC-Rescue — 80 MCQs rescued from abandoned-prototype folders,
@@ -573,6 +576,8 @@ describe("cross-file referential integrity", () => {
         // Israeli MOH / clinical guidance + Israeli statutes / government / statistical sources
         "חוזר", "חוק", "מכון", "משרד", "אפוטרופוס", "הלשכה", "הר\"י", "למ\"ס",
         "MOH", "Circular", "Director-General",
+        // v10.64.187: canonical source types from the official 2026 Geri מראה מקום
+        "מאמר", "BEERS", "Beers", "שנתון", "נוהל", "FIM", "הפעלת", "קבלת",
       ].join("|"),
       "i",
     );
