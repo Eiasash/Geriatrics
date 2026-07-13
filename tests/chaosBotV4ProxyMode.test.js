@@ -43,7 +43,7 @@ describe('chaos-doctor-bot v4 — proxy-mode pins', () => {
   });
 
   it('proxy mode falls back to documented secret if TORANOT_API_SECRET is unset', () => {
-    expect(SRC).toMatch(/TORANOT_DEFAULT_SECRET\s*=\s*'shlav-a-mega-1f97f311d307-2026'/);
+    expect(SRC).toMatch(/TORANOT_DEFAULT_SECRET\s*=\s*'toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2'/);
     expect(SRC).toMatch(/KEY\s*=\s*process\.env\.TORANOT_API_SECRET\s*\|\|\s*TORANOT_DEFAULT_SECRET/);
   });
 

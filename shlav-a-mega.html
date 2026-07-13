@@ -7336,8 +7336,9 @@ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=
 
 
 // ===== FEEDBACK & DIAGNOSTICS =====
-const APP_VERSION='10.64.187';
+const APP_VERSION='10.64.188';
 const CHANGELOG={
+'10.64.188':['security: rotated the shared Toranot AI-proxy secret (x-api-secret header) after the 2026-07-13 weekly audit flagged it as hardcoded client-visible plaintext, unchanged since introduction. Coordinated rotation across Geriatrics/InternalMedicine/FamilyMedicine + the Netlify-side proxy config, so the previous value is now invalid everywhere. Note: this invalidates anyone who scraped the old value, but does not change the underlying architecture — the new value is embedded in client code and repo docs the same way the old one was, since this is a public static-site repo with no server-authenticated user session. A real fix needs per-user tokens, not a shared static secret. No question content, answer keys, or explanations touched.'],
 '10.64.187':['chore(weekly-audit): fix loading-skeleton + Study Plan stale question count (3,743 -> 4,297, the current bank size — the last audit only bumped syllabus_data.json, missing these two UI fallback literals), and make sw.js trimCache() evict every entry over the cap in one pass instead of one-per-call (was approaching the cap asymptotically on a burst of cache writes). No question content, answer keys, or explanations touched. Trinity 10.64.186 to 10.64.187.'],
 '10.64.186':['data(3C A-tier): 4 highest-confidence source-cited corrections. FLIP 3931 pressure-injury repositioning c=3->c=0 (q1h chair caregiver-repositioning per EPUAP/NPUAP + notes.json; q15min is independent wheelchair self-shift, not this scenario). FLIP 4213 AMD central-scotoma distance aid c=3->c=1 (bioptic telescope; prism relocation is field-expansion for peripheral loss, not central scotoma — Hazzard Ch33 Table 33-6). Note: the auditor mislabeled this idx 4214; actual 4214 is a correct cardiac RCRI question, left untouched. RETIRE 3836 (broken — all options carry wrong EWGSOP2 thresholds; no clean correct option). SAFETY 4060 azithromycin option 500mg/day->250mg/day (matches its own explanation; ALBERT/GOLD 2023; QTc/ototoxicity). Explanations realigned. Trinity 10.64.185 to 10.64.186.'],
 '10.64.185':['data(3C tranche-2): source-cited answer-key/stem corrections in AI-2026-hy. FLIPS: 3832 TUG c->0 (>=12s screening, AGS/BGS+STEADI; was >=20s, contradicted 3825/3849); 3845 sarcopenia c->3 probable (low grip + normal DXA, EWGSOP2 2019) + option relabel; 3892 c_accept->[2] (stem=lifelong). TEXT/STEM: 3894 mirtazapine agonism->antagonism; 3837 5-STS 14.2->16s + EWGSOP2 >15s; 3847 ASMI 7.0->6.5 + <7.26->EWGSOP2 <7.0; 3896 absolute->highest-risk CI. RETIRE: 3835 malformed (broken). Explanations aligned. Trinity 10.64.184 to 10.64.185.'],
@@ -8291,7 +8292,7 @@ function getTopicTrend(ti){
 
 // ===== SHARED AI PROXY =====
 const AI_PROXY='https://toranot.netlify.app/api/claude';
-const AI_SECRET='shlav-a-mega-1f97f311d307-2026';
+const AI_SECRET='toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2';
 // Per-call AbortController (was singleton in v10.38.1; cancelled in-flight peers,
 // breaking bulk explainWithAI). Concurrent callers no longer cancel each other.
 async function callAI(messages,maxTokens=400,model='sonnet',ground=null){

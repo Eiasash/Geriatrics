@@ -149,7 +149,7 @@ describe('proxy-client — direct fallback mode', () => {
 describe('proxy-client — exports', () => {
   it('exports PROXY_URL and PROXY_SECRET as fixed constants', () => {
     expect(PROXY_URL).toBe('https://toranot.netlify.app/api/claude');
-    expect(PROXY_SECRET).toBe('shlav-a-mega-1f97f311d307-2026');
+    expect(PROXY_SECRET).toBe('toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2');
   });
 
   it('exports ProxyError, callClaudeWithRetry, and _classifyError', () => {
