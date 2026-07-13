@@ -260,7 +260,7 @@
     // Dynamic counts from cached syllabus (falls back to literals if syllabus
     // hasn't loaded yet on first render — pre-warm at line 185 makes this rare).
     const _gs = _SYLLABUS && _SYLLABUS.Geri;
-    const _qCount = (_gs && _gs.total_questions_analyzed) || 3743;
+    const _qCount = (_gs && _gs.total_questions_analyzed) || 4297;
     const _tCount = (_gs && Array.isArray(_gs.topics) && _gs.topics.length) || 46;
     const _qFmt = _qCount.toLocaleString('en-US');
 

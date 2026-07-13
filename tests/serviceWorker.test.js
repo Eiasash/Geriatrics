@@ -185,10 +185,13 @@ describe("sw.js — Supabase image caching", () => {
     expect(swContent).toMatch(/MAX_IMG_CACHE_ENTRIES\s*=\s*\d+/);
   });
 
-  it("has trimCache helper that evicts oldest entry", () => {
+  it("has trimCache helper that atomically evicts all entries over the cap", () => {
+    // v10.64.187: was a single cache.delete(keys[0]) per call, so a cache that
+    // grew far past `max` in one burst approached the cap asymptotically
+    // instead of enforcing it. Now loops until every entry over `max` is gone.
     expect(swContent).toContain("trimCache");
     expect(swContent).toMatch(/cache\.keys\(\)/);
-    expect(swContent).toMatch(/cache\.delete\(keys\[0\]\)/);
+    expect(swContent).toMatch(/for\(let i=0;i<keys\.length-max;i\+\+\)cache\.delete\(keys\[i\]\)/);
   });
 
   it("calls trimCache after caching a new image", () => {
