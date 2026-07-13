@@ -24,7 +24,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import process from 'node:process';
 
 const TORANOT_URL = 'https://toranot.netlify.app/api/claude';
-const TORANOT_DEFAULT_SECRET = 'shlav-a-mega-1f97f311d307-2026';
+const TORANOT_DEFAULT_SECRET = 'toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2';
 const KEY = process.env.TORANOT_API_SECRET || TORANOT_DEFAULT_SECRET;
 const MODEL = 'claude-opus-4-7';
 

@@ -34,7 +34,7 @@ import urllib.request
 import urllib.error
 
 PROXY_URL = "https://toranot.netlify.app/api/claude"
-PROXY_SECRET = "shlav-a-mega-1f97f311d307-2026"
+PROXY_SECRET = "toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2"
 ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_VERSION = "2023-06-01"
 
