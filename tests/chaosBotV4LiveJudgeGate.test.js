@@ -63,7 +63,7 @@ describe.skipIf(!LIVE)('chaosBotV4 LIVE judge-call gate (CHAOS_LIVE_SMOKE=1)', (
     const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'r3-judge-gate-'));
     execFileSync('node', [BOT], {
       cwd: ROOT,
-      timeout: 180_000,
+      timeout: 400_000, // bot real runtime ~351s (Playwright launch + 60s budget + slow judge API calls) — 180s was too tight (ETIMEDOUT)
       encoding: 'utf8',
       stdio: 'inherit',
       env: {
@@ -88,5 +88,5 @@ describe.skipIf(!LIVE)('chaosBotV4 LIVE judge-call gate (CHAOS_LIVE_SMOKE=1)', (
       .filter((a) => a.type === 'ai-judge').length;
 
     expect(judgeCalls, 'bot is inert (0 judge calls) — live label likely drifted from the selector').toBeGreaterThan(0);
-  }, 210_000);
+  }, 420_000); // must exceed the 400s execFileSync spawn timeout so vitest does not kill the bot first
 });
