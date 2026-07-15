@@ -12,8 +12,12 @@ describe('AI Proxy Routing', () => {
     expect(html).toContain("const AI_PROXY='https://toranot.netlify.app/api/claude'");
   });
 
-  it('has AI_SECRET for proxy authentication', () => {
-    expect(html).toMatch(/const AI_SECRET='[^']+'/);
+  it('authenticates the proxy with an anonymous Supabase JWT (no shared secret)', () => {
+    // P0 cutover (runbook §3): the client-shipped AI_SECRET was removed; the
+    // proxy is now authenticated with an anonymous Supabase session JWT minted
+    // by getProxyBearer(). Guard against the shared secret ever coming back.
+    expect(html).not.toMatch(/const AI_SECRET='[^']+'/);
+    expect(html).toContain('async function getProxyBearer(');
   });
 
   it('callAI tries proxy first before direct API', () => {
@@ -26,8 +30,12 @@ describe('AI Proxy Routing', () => {
     expect(proxyIdx).toBeLessThan(directIdx);
   });
 
-  it('sends x-api-secret header to proxy', () => {
-    expect(html).toContain("'x-api-secret':AI_SECRET");
+  it('sends the Authorization: Bearer JWT header to the proxy', () => {
+    // P0 cutover: replaces the x-api-secret shared-secret header with the
+    // anonymous Supabase session JWT resolved by getProxyBearer().
+    expect(html).not.toContain("'x-api-secret':AI_SECRET");
+    expect(html).toContain('const _authz=await getProxyBearer();');
+    expect(html).toContain("'Authorization':_authz");
   });
 
   it('callAI falls back to user API key when proxy fails', () => {
