@@ -17,7 +17,9 @@ import { readFileSync } from "fs";
 import { createHash } from "crypto";
 import { join } from "path";
 
-const CANONICAL_FSRS_MD5 = "71f9f2d406a1935911e86612439ea58a";
+// 2026-07-18: FSRS difficulty mean-reversion anchor corrected to D0_Easy
+// (fsrsInitNew(4).d); reschedules cards toward canonical FSRS-4.5.
+const CANONICAL_FSRS_MD5 = "7cb675ea3865d8accdc7bcd3a0cc5fa8";
 
 describe("FSRS canonical drift guard", () => {
   it("shared/fsrs.js md5 matches the pinned canonical value", () => {

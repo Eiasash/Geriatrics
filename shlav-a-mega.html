@@ -1427,12 +1427,18 @@ if(typeof window!=='undefined'){
   window.addEventListener('offline',()=>{updateSyncPill();});
 }
 (function updateStreak(){
-const today=new Date().toISOString().slice(0,10);
+// G7 (2026-07-18): S.streak must reflect REAL study activity, not app-opens.
+// Previously the streak was bumped merely for opening the app on consecutive
+// days, and "today" came from toISOString() (UTC), which drifts across the local
+// midnight boundary. Now "today" is the LOCAL date and S.streak mirrors the
+// activity-based getStudyStreak() (consecutive days with dailyAct[key].q>0),
+// so opening the app without studying can never inflate the streak.
+const now=new Date();
+const today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
 if(S.lastDay===today)return;
-const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);
-if(S.lastDay===yest)S.streak++;
-else if(S.lastDay!==today)S.streak=1;
-S.lastDay=today;save();
+S.lastDay=today;
+S.streak=getStudyStreak();
+save();
 })();
 
 // ===== INDEXEDDB MIGRATION =====
@@ -3502,7 +3508,13 @@ if(!q.e&&Array.isArray(EX)&&EX[pool[qi]])q.e=EX[pool[qi]];
 h+=`<div style="padding:12px;margin-top:10px;border:1px solid rgb(var(--brd));border-radius:12px;background:rgb(var(--bg2))">
 <div style="font-weight:700;font-size:11px;margin-bottom:8px">🔬 Distractor Autopsy — למה כל תשובה שגויה</div>`;
 if(_dist){
-  q.o.forEach((opt,i)=>{
+  // G6 (2026-07-18): iterate autopsy rows in getOptShuffle DISPLAY order so the
+  // per-option rows line up with the shuffled quiz options and the correct-answer
+  // explanation's display-letter references (remapExplanationLetters below). The
+  // markers still key off the ORIGINAL index i (isOk/sel/_dist[i]) so scoring is
+  // unaffected — this is a display-ordering fix only.
+  getOptShuffle(_qIdx,q).forEach((i)=>{
+    const opt=q.o[i];
     const _isCorrect=isOk(q,i);
     const _isUserPick=(i===sel);
     const _rationale=_dist[i];
@@ -8367,6 +8379,23 @@ signal
 });
 if(pr.ok){const d=await pr.json();return d.content?.[0]?.text||'';}
 console.warn('Proxy status:',pr.status);
+// G8 (2026-07-18): a 401/403 means the cached anonymous JWT was revoked (but not
+// yet expired), so getProxyBearer would keep returning the stale token for up to
+// ~1h. Invalidate the cached JWT and retry the proxy ONCE with a freshly minted
+// bearer. If the retry also fails, fall through to the personal-key path exactly
+// as before. Never touches the user's personal API key.
+if(pr.status===401||pr.status===403){
+  try{localStorage.removeItem('samega_proxy_jwt');}catch(_){}
+  const _authz2=await getProxyBearer();
+  const pr2=await fetch(AI_PROXY,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':_authz2},
+    body:JSON.stringify(ground?{model,max_tokens:maxTokens,messages,ground}:{model,max_tokens:maxTokens,messages}),
+    signal
+  });
+  if(pr2.ok){const d=await pr2.json();return d.content?.[0]?.text||'';}
+  console.warn('Proxy retry status:',pr2.status);
+}
 }catch(e){
 if(e&&e.name==='AbortError')throw e;
 console.warn('Proxy:',e.message);
