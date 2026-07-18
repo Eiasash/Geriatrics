@@ -108,7 +108,12 @@ describe('shlav-a-mega.html wiring', () => {
   });
 
   it('assigns REG from the loader results', () => {
-    expect(html).toMatch(/varName\s*===\s*['"]REG['"]\s*\)\s*REG\s*=\s*results/);
+    // 2026-07-15 (G3): the aux loader switched from Promise.all to Promise.allSettled
+    // so a single 404 no longer rejects the batch. Each fulfilled file's value is
+    // assigned via the `_v = _res.value` intermediate; rejected files keep their default.
+    expect(html).toMatch(/Promise\.allSettled/);
+    expect(html).toMatch(/const\s+_v\s*=\s*_res\.value/);
+    expect(html).toMatch(/varName\s*===\s*['"]REG['"]\s*\)\s*REG\s*=\s*_v/);
   });
 
   it('has a regulatory branch in buildPool', () => {
