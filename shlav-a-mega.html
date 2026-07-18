@@ -1306,7 +1306,12 @@ const LS='samega';
     try{const raw=localStorage.getItem(k);if(!raw)continue;const s=JSON.parse(raw);if(!s||(typeof s==='object'&&s.__tagMigrationV1))continue;walk(s);if(typeof s==='object'&&!Array.isArray(s))s.__tagMigrationV1=true;localStorage.setItem(k,JSON.stringify(s));}catch(e){/* corrupt — skip */}
   }
 })();
-let S=JSON.parse(localStorage.getItem(LS)||'null')||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,chat:[],studyMode:false,sp:{},spOpen:false,qnotes:{},gnotes:''};
+// G2-audit fix (2026-07-15): this was the one localStorage read not wrapped in try/catch —
+// corrupt storage threw a SyntaxError at module top -> permanent white screen. Fall back to
+// the default state object on any parse error (or literal null).
+let S;
+try{S=JSON.parse(localStorage.getItem(LS)||'null');}catch(e){console.warn('State parse failed, using defaults:',e&&e.message);S=null;}
+S=S||{ck:{},qOk:0,qNo:0,bk:{},notes:{},sr:{},fci:0,fcFlip:false,streak:0,lastDay:null,chat:[],studyMode:false,sp:{},spOpen:false,qnotes:{},gnotes:''};
 if(!S.qnotes)S.qnotes={};
 if(typeof S.gnotes!=='string')S.gnotes='';
 if(!S.chat)S.chat=[];
@@ -1575,7 +1580,11 @@ const _dataPromise = (async function loadDataArrays() {
   };
   try {
     const entries = Object.entries(files);
-    const results = await Promise.all(
+    // G3-audit fix (2026-07-15): aux data is resilient. A single 404 must NOT reject the
+    // whole batch or trip the fatal "Error loading data" overlay -- questions load separately
+    // via _qzPromise and must keep working even if an aux file is missing. Switched from
+    // Promise.all to Promise.allSettled; each rejected file keeps its module-top default.
+    const settled = await Promise.allSettled(
       entries.map(([varName, fileName]) =>
         fetch(basePath + fileName).then(r => {
           if (!r.ok) throw new Error(varName + ': ' + r.status);
@@ -1584,13 +1593,19 @@ const _dataPromise = (async function loadDataArrays() {
       )
     );
     entries.forEach(([varName], i) => {
-      if (varName === 'TK') TK = results[i];
-      else if (varName === 'NOTES') NOTES = results[i];
-      else if (varName === 'DRUGS') DRUGS = results[i];
-      else if (varName === 'FLASH') FLASH = results[i];
-      else if (varName === 'TABS') TABS = results[i];
-      else if (varName === 'QCHAPS') QCHAPS = results[i] || {};
-      else if (varName === 'REG') REG = results[i];
+      const _res = settled[i];
+      if (_res.status !== 'fulfilled') {
+        console.warn('aux data load skipped (' + varName + '):', _res.reason && _res.reason.message);
+        return; // keep existing default for this var (declared at module top)
+      }
+      const _v = _res.value;
+      if (varName === 'TK') TK = _v;
+      else if (varName === 'NOTES') NOTES = _v;
+      else if (varName === 'DRUGS') DRUGS = _v;
+      else if (varName === 'FLASH') FLASH = _v;
+      else if (varName === 'TABS') TABS = _v;
+      else if (varName === 'QCHAPS') QCHAPS = _v || {};
+      else if (varName === 'REG') REG = _v;
       });
     _dataReady = true;
     // Build NOTES_BY_TI map so NOTES lookup is by topic-name match, not
@@ -2545,7 +2560,9 @@ else{S.qNo++;
   S.wrongQs[pool[qi]]={ts:Date.now(),streak:0};
   // Feature 1: store wrong reason later via onclick
   const _apk='autopsy_'+pool[qi];
-  if(!_exCache[_apk]){setTimeout(()=>aiAutopsy(pool[qi]),400);}
+  // G4-audit fix (2026-07-15): gate on !examMode. aiAutopsy is a paid AI call whose result
+  // is never displayed in exam/mock mode, so scheduling it there just burns tokens.
+  if(!examMode&&!_exCache[_apk]){setTimeout(()=>aiAutopsy(pool[qi]),400);}
 }
 save();render();
 }
@@ -2977,8 +2994,12 @@ function checkMockIntercept(){
   if(ans||sel===null)return;
   const qIdx=pool[qi];const q=QZ[qIdx];const correct=isOk(q,sel);
   if(mockExamResults&&q.ti>=0){
-    if(correct)mockExamResults.byTopic[q.ti].ok++;
-    else {mockExamResults.byTopic[q.ti].no++; (mockExamResults.wrongIdxs=mockExamResults.wrongIdxs||[]).push(qIdx);}
+    // G1-audit fix (2026-07-15): byTopic is seeded from EXAM_FREQ (40 buckets) but TOPICS
+    // has 46, so a year-tag mock question with ti>=40 has no bucket. Guard the increment
+    // so it only writes when the bucket exists (leave wrongIdxs / _mockAnswered unchanged).
+    const _bt=mockExamResults.byTopic[q.ti];
+    if(correct){if(_bt)_bt.ok++;}
+    else {if(_bt)_bt.no++; (mockExamResults.wrongIdxs=mockExamResults.wrongIdxs||[]).push(qIdx);}
     _mockAnswered++;
   }
 }
