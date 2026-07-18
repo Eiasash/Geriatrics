@@ -21,7 +21,8 @@ describe('AI Proxy Routing', () => {
   });
 
   it('callAI tries proxy first before direct API', () => {
-    const callAIBlock = html.slice(html.indexOf('async function callAI('), html.indexOf('async function callAI(') + 2000);
+    const _cs = html.indexOf('async function callAI(');
+    const callAIBlock = html.slice(_cs, html.indexOf('}finally{clearTimeout(_timeoutId);}', _cs));
     // Proxy fetch comes before direct API fetch
     const proxyIdx = callAIBlock.indexOf('AI_PROXY');
     const directIdx = callAIBlock.indexOf('api.anthropic.com');
@@ -39,7 +40,10 @@ describe('AI Proxy Routing', () => {
   });
 
   it('callAI falls back to user API key when proxy fails', () => {
-    const callAIBlock = html.slice(html.indexOf('async function callAI('), html.indexOf('async function callAI(') + 2000);
+    // Slice the whole callAI body (grew with the G8 proxy-401 re-mint/retry block,
+    // 2026-07-18) up to its finally-clause, rather than a fixed char window.
+    const _cs = html.indexOf('async function callAI(');
+    const callAIBlock = html.slice(_cs, html.indexOf('}finally{clearTimeout(_timeoutId);}', _cs));
     expect(callAIBlock).toContain('getApiKey()');
     expect(callAIBlock).toContain("throw new Error('no_key')");
   });

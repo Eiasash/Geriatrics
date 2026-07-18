@@ -23,6 +23,13 @@ const FSRS_W=[0.40255,1.18385,3.1262,15.4722,7.2102,0.5316,1.0651,0.06362,
 const FSRS_DECAY=-0.5;
 const FSRS_FACTOR=19/81;
 const FSRS_RETENTION=0.90; // target 90% retention
+// Canonical FSRS-4.5 initial difficulty for rating "Easy" (rating 4 -> r=3):
+// D0_Easy = clamp(FSRS_W[4] - e^(FSRS_W[5]*3) + 1) ~= 3.28. Used as the difficulty
+// mean-reversion anchor in fsrsUpdate(). 2026-07-18 correction: fsrsUpdate previously
+// reverted difficulty toward FSRS_W[4] (~7.21), which inflated D over repeated reviews
+// and, because stability growth carries an (11-D) factor, roughly halved interval
+// growth. Reverting toward D0_Easy matches canonical FSRS-4.5 and fsrsInitNew(4).d.
+const FSRS_D0_EASY=Math.min(10,Math.max(1,FSRS_W[4]-Math.exp(FSRS_W[5]*3)+1));
 
 function fsrsR(t,s){
   if(!s||s<=0)return 0;
@@ -54,7 +61,7 @@ function fsrsUpdate(s,d,rPrev,rating){
     newS=Math.max(0.1,newS);
   }
   const deltaD=-FSRS_W[6]*(rating-3);
-  const mr=FSRS_W[7]*(FSRS_W[4]-d);
+  const mr=FSRS_W[7]*(FSRS_D0_EASY-d); // 2026-07-18: revert toward D0_Easy (~3.28), not FSRS_W[4] (~7.21)
   newD=Math.min(10,Math.max(1,d+deltaD+mr));
   return{s:newS,d:newD};
 }
