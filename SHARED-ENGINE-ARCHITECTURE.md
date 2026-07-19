@@ -113,7 +113,7 @@ export default {
   LEADERBOARD_TABLE: 'shlav_leaderboard',
   
   AI_PROXY: 'https://toranot.netlify.app/api/claude',
-  AI_SECRET: 'toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2',
+  AI_SECRET: 'RETIRED_PROXY_SECRET_2026_07_19',
   
   FEATURES: {
     hazzardReader: true,

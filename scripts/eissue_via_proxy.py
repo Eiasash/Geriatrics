@@ -10,7 +10,7 @@ Checkpoints every 50 Qs so interrupted runs can resume.
 import json, os, sys, time, concurrent.futures, urllib.request, urllib.error
 
 PROXY = "https://toranot.netlify.app/api/claude"
-SECRET = "toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2"
+SECRET = "RETIRED_PROXY_SECRET_2026_07_19"
 QS_PATH = "data/questions.json"
 OUT_PATH = "geri_eissue_decisions.json"
 CHECKPOINT = "geri_eissue_checkpoint.json"

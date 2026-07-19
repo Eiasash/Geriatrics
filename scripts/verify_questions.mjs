@@ -28,7 +28,7 @@
 import fs from 'fs';
 
 const TORANOT_URL = 'https://toranot.netlify.app/api/claude';
-const TORANOT_DEFAULT_SECRET = 'toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2';
+const TORANOT_DEFAULT_SECRET = 'RETIRED_PROXY_SECRET_2026_07_19';
 const KEY = process.env.TORANOT_API_SECRET || TORANOT_DEFAULT_SECRET;
 const MODEL = process.env.VERIFY_MODEL || 'claude-sonnet-4-6';
 const CONCURRENCY = Number(process.env.VERIFY_CONCURRENCY || 6);

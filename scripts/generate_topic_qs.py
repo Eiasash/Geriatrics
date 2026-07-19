@@ -10,7 +10,7 @@ Generates ~12 per bucket → expect ~30+ accepted after strict validation.
 import json, sys, time, concurrent.futures, urllib.request, urllib.error, re, hashlib
 
 PROXY = "https://toranot.netlify.app/api/claude"
-SECRET = "toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2"
+SECRET = "RETIRED_PROXY_SECRET_2026_07_19"
 QS_PATH = "data/questions.json"
 
 BUCKETS = {

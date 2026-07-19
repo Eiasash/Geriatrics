@@ -49,7 +49,7 @@ Single-file Hebrew RTL PWA for Israeli geriatrics board exam prep (שלב א׳).
 
 ## AI Routing
 ALL AI calls go through `callAI(messages, maxTokens, model)`:
-1. **Proxy first:** `POST toranot.netlify.app/api/claude` with `x-api-secret: toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2`
+1. **Proxy first:** `POST toranot.netlify.app/api/claude` with `x-api-secret: RETIRED_PROXY_SECRET_2026_07_19`
 2. **Fallback:** Direct Anthropic API with personal key from `localStorage('samega_apikey')`
 3. **Model aliases:** `sonnet` → `claude-sonnet-4-6`, `opus` → `claude-opus-4-6`, `haiku` → `claude-haiku-4-5-20251001`
 

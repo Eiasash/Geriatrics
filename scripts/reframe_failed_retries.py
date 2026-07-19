@@ -12,7 +12,7 @@ Writes .audit_logs/reframe_retries.json with per-question outcome.
 import json, sys, time, concurrent.futures, urllib.request, urllib.error, os, re
 
 PROXY = "https://toranot.netlify.app/api/claude"
-SECRET = "toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2"
+SECRET = "RETIRED_PROXY_SECRET_2026_07_19"
 
 # Reuse the prompts from existing scripts
 sys.path.insert(0, 'scripts')

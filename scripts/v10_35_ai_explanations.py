@@ -13,7 +13,7 @@ import urllib.request
 import urllib.error
 
 PROXY = 'https://toranot.netlify.app/api/claude'
-SECRET = 'toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2'
+SECRET = 'RETIRED_PROXY_SECRET_2026_07_19'
 WORKERS = 6
 MAX_RETRIES = 2
 TIMEOUT = 60
