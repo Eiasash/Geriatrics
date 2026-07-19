@@ -29,7 +29,7 @@
  */
 
 const PROXY_URL = 'https://toranot.netlify.app/api/claude';
-const PROXY_SECRET = 'toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2';
+const PROXY_SECRET = 'RETIRED_PROXY_SECRET_2026_07_19';
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
 

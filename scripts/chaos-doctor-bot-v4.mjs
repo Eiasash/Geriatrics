@@ -112,7 +112,7 @@ const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 const TORANOT_URL = 'https://toranot.netlify.app/api/claude';
 // v10.64.114: documented Toranot proxy secret for Geri — same value used by
 // scripts/generate_distractors.cjs (this is the contract, not a credential).
-const TORANOT_DEFAULT_SECRET = 'toranot-proxy-34207b1d12f35873d7f22d8ca0388b2a-r2';
+const TORANOT_DEFAULT_SECRET = 'RETIRED_PROXY_SECRET_2026_07_19';
 // v10.64.131: model default branches on mode after the USE_PROXY flip.
 // Proxy accepts 'opus' alias (resolves to current opus server-side); direct mode
 // needs a canonical Anthropic model ID. CHAOS_MODEL env overrides both.
