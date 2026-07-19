@@ -3232,28 +3232,19 @@ function remapExplanationLetters(text,shuf){
     if(i===-1||inv[i]===undefined)return orig;
     return arr[inv[i]];
   };
-  // (1) Latin "B"/"Answer C" — ASCII word boundaries work fine here.
-  // (2) Hebrew "תשובה ב'" form — letter directly after "תשובה" + optional whitespace.
-  // (3) Hebrew bare label "א'/ג'/ד' שגויה" — letter+geresh used as bullet label.
-  //     Lookbehind (?<![א-ת]) excludes mid-word gershayim like "מג'ורי" (Major)
-  //     where Hebrew letters precede the apostrophe. Lookahead requires geresh
-  //     followed by whitespace/punct/EOL so foreign-sound markers like
-  //     "ג'נטיקה" (genetics — letter+geresh+more Hebrew) are also rejected.
-  // Single regex with alternation prevents double-remap of the same letter.
-  // v10.64.22 — was missing form (3), making explanations show wrong letter
-  //   refs whenever the option-shuffle moved labels (e.g., "אקו (תשובה ב')"
-  //   stayed as ב' even after echo got shuffled to display position ד').
-  // Lookahead `(?=[^א-ת]|$)` = "next char is not a Hebrew letter (or EOL)".
-  // Catches: geresh `'`, whitespace, ASCII letters, punct, EOL.
-  // Excludes: another Hebrew letter (so "תשובה בא" / "ג'נטיקה" stay untouched).
-  // Generalized in v10.64.23 — was a narrower char class missing
-  // "תשובה אcorrect" form (Hebrew letter directly followed by Latin).
-  return text
-    .replace(/\b([A-E])\b/g,(m,l)=>remap(l,latin))
-    .replace(
-      /(?:(תשובה\s*)([א-ה])(?=[^א-ת]|$)|(?<![א-ת])([א-ה])(['׳’])(?=[^א-ת]|$))/g,
-      (m,p,l1,l2,ger)=>p?p+remap(l1,heb):remap(l2,heb)+ger
-    );
+  // REMOVED (G5, 2026-07-18): the unguarded Latin `\b[A-E]\b` remap corrupted
+  // clinical tokens ("vitamin D"->"vitamin A", "hepatitis B", "34.2°C" C,
+  // "class A", SARC-F "**C**"...); the bare Hebrew label `[א-ה]'` could corrupt
+  // "יום ב'"/"שלב ג'"/"דרגה א'". A prior analysis proved no free-text regex can
+  // separate real bare-letter refs from such tokens, so BOTH bare forms are gone.
+  // Bare, un-anchored letter refs are now HELD (left byte-for-byte): the correct
+  // option is already marked green (isOk), so a desynced letter is
+  // confusing-but-not-wrong, whereas a corrupted clinical token is unacceptable.
+  // G5 (2026-07-18): remap ONLY where a letter is UNAMBIGUOUSLY an option ref —
+  // anchored to an explicit option keyword. In those contexts a clinical token
+  // can never appear, so the orig->display translation is provably safe.
+  const KW=/(תשוב(?:ה|ות)(?:\s+נכונה)?|סעיף|אפשרות|מסיח|[Aa]nswer|[Oo]ption|[Cc]hoice)(\s*)(?:([א-ה])(['׳’]?)(?=[^א-ת]|$)|([A-E])(?![A-Za-z]))/g;
+  return text.replace(KW,(m,kw,ws,hl,ger,ll)=>hl!==undefined?kw+ws+remap(hl,heb)+(ger||''):kw+ws+remap(ll,latin));
 }
 function getOptShuffle(qIdx,q){
   // Return stable shuffle for this question in this session

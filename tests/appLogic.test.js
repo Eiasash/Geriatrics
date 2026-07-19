@@ -17,6 +17,11 @@ const FSRS_W = [
 const FSRS_DECAY = -0.5;
 const FSRS_FACTOR = 19 / 81;
 const FSRS_RETENTION = 0.90;
+// Canonical FSRS-4.5 initial difficulty for rating "Easy" (~3.28 = fsrsInitNew(4).d).
+// 2026-07-18 correction (matches shared/fsrs.js): fsrsUpdate mean-reverts difficulty
+// toward this D0_Easy anchor, NOT toward FSRS_W[4] (~7.21) which inflated D over
+// repeated reviews and (via the (11-D) stability factor) roughly halved interval growth.
+const FSRS_D0_EASY = Math.min(10, Math.max(1, FSRS_W[4] - Math.exp(FSRS_W[5] * 3) + 1));
 
 // ─── Extracted pure functions ─────────────────────────────────────────────────
 
@@ -53,7 +58,7 @@ function fsrsUpdate(s, d, rPrev, rating) {
     newS = Math.max(0.1, newS);
   }
   const deltaD = -FSRS_W[6] * (rating - 3);
-  const mr = FSRS_W[7] * (FSRS_W[4] - d);
+  const mr = FSRS_W[7] * (FSRS_D0_EASY - d); // revert toward D0_Easy (~3.28), not FSRS_W[4] (~7.21)
   newD = Math.min(10, Math.max(1, d + deltaD + mr));
   return { s: newS, d: newD };
 }
@@ -304,13 +309,23 @@ describe("FSRS-4.5 — fsrsUpdate", () => {
     expect(s).toBeGreaterThanOrEqual(0.1);
   });
 
-  it("mean reversion pulls difficulty toward W[4]", () => {
-    // Very high difficulty should decrease toward center
+  it("mean reversion pulls difficulty toward D0_Easy (~3.28), not FSRS_W[4]", () => {
+    // 2026-07-18: anchor corrected to D0_Easy (= fsrsInitNew(4).d ~3.28) to match
+    // canonical FSRS-4.5 and shared/fsrs.js. It previously reverted toward FSRS_W[4] (~7.21).
+    expect(FSRS_D0_EASY).toBeCloseTo(3.28, 1);
+    // Very high difficulty decreases toward the anchor
     const { d: d1 } = fsrsUpdate(5, 10, 0.9, 3);
     expect(d1).toBeLessThan(10);
-    // Very low difficulty should increase toward center
+    // Very low difficulty increases toward the anchor
     const { d: d2 } = fsrsUpdate(5, 1, 0.9, 3);
     expect(d2).toBeGreaterThan(1);
+    // Discriminating check: at d = FSRS_W[4] (~7.21) with rating=3 (deltaD=0) the
+    // corrected anchor pulls difficulty DOWN; the old FSRS_W[4] anchor would leave it flat.
+    const { d: d3 } = fsrsUpdate(5, FSRS_W[4], 0.9, 3);
+    expect(d3).toBeLessThan(FSRS_W[4]);
+    // A card already at the anchor stays put (rating=3 => deltaD=0, mr=0).
+    const { d: d4 } = fsrsUpdate(5, FSRS_D0_EASY, 0.9, 3);
+    expect(d4).toBeCloseTo(FSRS_D0_EASY, 5);
   });
 });
 
