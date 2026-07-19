@@ -18647,7 +18647,7 @@
 "לנסות clamping של ה-PEG כדי להעריך את תגובתה",
 "להחליף את ה-mitts ב-pharmaceutical restraint"
 ],
-"c": 1,
+"c": 2,
 "t": "Hazzard",
 "ti": 34,
 "ref": "Hazzard Ch 7 — DECISION MAKING AND ADVANCE CARE PLANNING: WHAT MATTERS MOST· Harrison Ch 433 — Approach to the Patient with Neurologic Disease",
@@ -18699,7 +18699,7 @@
 "הגברת חמצן ל-4L וביצוע ABG",
 "התחלת ceftriaxone 1g יומי ושליחת תרבית שתן"
 ],
-"c": 2,
+"c": 3,
 "t": "Hazzard",
 "ti": 5,
 "ref": "Hazzard Ch 58 — DELIRIUM",
@@ -21181,7 +21181,7 @@
 "שחרור ישיר הביתה עם home health אינטנסיבי",
 "שהות ב-SNF עם ביצוע התאמות בבית במהלך האשפוז"
 ],
-"c": 3,
+"c": 1,
 "t": "Hazzard",
 "ti": 35,
 "ref": "Hazzard Ch 17 — COMMUNITY-BASED LONG-TERM SERVICES AND SUPPORT, AND HOME-BASED MEDICAL CARE",
@@ -21856,7 +21856,7 @@
 "Lorazepam 0.5mg qhs PRN",
 "Melatonin 3mg qhs"
 ],
-"c": 0,
+"c": 3,
 "t": "Hazzard",
 "ti": 6,
 "ref": "Hazzard Ch 60 — BEHAVIORAL SYMPTOMS OF DEMENTIA AND PSYCHOACTIVE DRUG THERAPY",
@@ -22090,7 +22090,7 @@
 "לפנות להערכה של hospice",
 "לפנות לבדיקה נוירופסיכולוגית"
 ],
-"c": 0,
+"c": 1,
 "t": "Hazzard",
 "ti": 7,
 "ref": "Hazzard Ch 65 — MAJOR DEPRESSION",
@@ -22219,7 +22219,7 @@
 "מעבר למשטר של basal insulin בלבד",
 "התחלת sitagliptin כאלטרנטיבה בטוחה יותר"
 ],
-"c": 0,
+"c": 1,
 "t": "Hazzard",
 "ti": 22,
 "ref": "Hazzard Ch 40 — APPLIED CLINICAL GEROSCIENCE",
@@ -22297,7 +22297,7 @@
 "התחלת IV hydration בבית",
 "מעבר ל-fentanyl patch 12mcg/hr"
 ],
-"c": 3,
+"c": 1,
 "t": "Hazzard",
 "ti": 28,
 "ref": "Hazzard Ch 67 — PALLIATIVE CARE AND SPECIAL MANAGEMENT ISSUES",
@@ -23127,7 +23127,7 @@
 "לבצע intubation אם BiPAP נכשל, כיוון שהמטופל אינו DNI",
 "emergency family meeting לבירור goals of care"
 ],
-"c": 0,
+"c": 3,
 "t": "Hazzard",
 "ti": 34,
 "ref": "Hazzard Ch 7 — DECISION MAKING AND ADVANCE CARE PLANNING: WHAT MATTERS MOST",
@@ -24525,7 +24525,7 @@
 "הערכים וההעדפות שהמטופלת הביעה בעבר",
 "המלצות רפואיות לתוצאות קליניות אופטימליות"
 ],
-"c": 2,
+"c": 1,
 "t": "Hazzard",
 "ti": 32,
 "ref": "Hazzard Ch 26 — LEGAL ISSUES· Harrison Ch 50 — Unintentional Weight Loss",
@@ -25534,7 +25534,7 @@
 "המשך alprazolam בתקופה הפרי-אופרטיבית",
 "מעבר ל-clonazepam בעל פעילות ממושכת"
 ],
-"c": 1,
+"c": 2,
 "t": "Hazzard",
 "ti": 38,
 "ref": "Hazzard Ch 27 — PERIOPERATIVE CARE: EVALUATION AND MANAGEMENT",
@@ -25975,7 +25975,7 @@
 "Ethics consultation לפתרון הקונפליקט בין ה-directive לבין ה-surrogate",
 "ניסיון מוגבל בזמן של תזונה דרך NG tube להערכת tolerance"
 ],
-"c": 0,
+"c": 3,
 "t": "Hazzard",
 "ti": 34,
 "ref": "Hazzard Ch 7 — DECISION MAKING AND ADVANCE CARE PLANNING: WHAT MATTERS MOST· Harrison Ch 433 — Approach to the Patient with Neurologic Disease",
@@ -26467,7 +26467,7 @@
 "Clotrimazole troches 10 mg פעמים 5 ביום",
 "Fluconazole 400 mg loading dose, לאחר מכן 200 mg ביום"
 ],
-"c": 0,
+"c": 1,
 "t": "Hazzard",
 "ti": 27,
 "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION· Harrison Ch 50 — Unintentional Weight Loss",
@@ -26907,7 +26907,7 @@
 "Mannitol 1-2 g/kg IV",
 "Topical therapy בלבד (timolol, brimonidine, latanoprost)"
 ],
-"c": 2,
+"c": 0,
 "t": "Hazzard",
 "ti": 37,
 "ref": "Hazzard Ch 33 — LOW VISION: ASSESSMENT AND REHABILITATION",
@@ -28406,7 +28406,7 @@
 "Quetiapine 12.5 mg QHS",
 "Zolpidem 5 mg QHS"
 ],
-"c": 2,
+"c": 0,
 "t": "Hazzard",
 "ti": 5,
 "ref": "Hazzard Ch 58 — DELIRIUM · Harrison Ch 433 — Approach to the Patient with Neurologic Disease",
@@ -30140,7 +30140,7 @@
 "Polysomnography להערכת central sleep apnea",
 "הפסקת zolpidem ומעקב אחר withdrawal"
 ],
-"c": 0,
+"c": 1,
 "t": "Hazzard",
 "ti": 13,
 "ref": "Hazzard Ch 44 — SLEEP DISORDERS",
@@ -30658,7 +30658,7 @@
 "התחל scheduled toileting כל שעתיים",
 "הזמן urodynamic studies"
 ],
-"c": 1,
+"c": 2,
 "t": "Hazzard",
 "ti": 11,
 "ref": "Hazzard Ch 47 — INCONTINENCE",
@@ -30761,7 +30761,7 @@
 "להפסיק lisinopril ולבדוק מחדש קריאטינין תוך 48 שעות",
 "להמשיך את הטיפול הנוכחי ולעקוב"
 ],
-"c": 2,
+"c": 3,
 "t": "Hazzard",
 "ti": 11,
 "ref": "Hazzard Ch 38 — BENIGN PROSTATE DISORDERS",
@@ -33040,7 +33040,7 @@
 "הוספת midodrine 2.5 mg TID",
 "מעבר ל-metoprolol בנטילת ערב"
 ],
-"c": 1,
+"c": 3,
 "t": "Hazzard",
 "ti": 36,
 "ref": "Hazzard Ch 55 — REHABILITATION",
@@ -34641,7 +34641,7 @@
 "ביצוע head CT ו-lumbar puncture",
 "הפחתת levofloxacin ל-250mg daily"
 ],
-"c": 0,
+"c": 3,
 "t": "Hazzard",
 "ti": 5,
 "ref": "Hazzard Ch 58 — DELIRIUM · Harrison Ch 433 — Approach to the Patient with Neurologic Disease",
@@ -37884,7 +37884,7 @@
 "המשך הטיפול הנוכחי עם ספירת כדורים (pill counts)",
 "הפחתה של morphine ב-50% כעונש"
 ],
-"c": 2,
+"c": 1,
 "t": "Hazzard",
 "ti": 14,
 "ref": "Hazzard Ch 68 — PAIN MANAGEMENT · Harrison Ch 14 — Pain: Pathophysiology and Management",
@@ -40037,7 +40037,7 @@
 "דחה טיפול ב-statin בשל dementia וfall risk",
 "התחל pravastatin 20 mg ביום"
 ],
-"c": 3,
+"c": 2,
 "t": "Hazzard",
 "ti": 17,
 "ref": "Hazzard Ch 74 — CORONARY HEART DISEASE AND DYSLIPIDEMIA · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
@@ -40371,7 +40371,7 @@
 "Hypoglycemia הנגרמת על ידי memantine",
 "Insulinoma סמוי"
 ],
-"c": 0,
+"c": 1,
 "t": "Hazzard",
 "ti": 8,
 "ref": "Hazzard Ch 22 — MEDICATION PRESCRIBING AND DE-PRESCRIBING· Harrison Ch 316 — Cardiogenic Shock and Pulmonary Edema",
@@ -41068,7 +41068,7 @@
 "רשום flecainide 100 mg PRN לאפיזודות",
 "התחל diltiazem 180 mg daily"
 ],
-"c": 1,
+"c": 3,
 "t": "Hazzard",
 "ti": 41,
 "ref": "Hazzard Ch 77 — CARDIAC ARRHYTHMIAS · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
@@ -42390,7 +42390,7 @@
 "התחל long-term oxygen therapy",
 "הפנה להערכה להשתלת ריאות"
 ],
-"c": 2,
+"c": 0,
 "t": "Hazzard",
 "ti": 21,
 "ref": "Hazzard Ch 81 — CHRONIC OBSTRUCTIVE PULMONARY DISEASE · Harrison Ch 295 — Approach to the Patient with Disease of the Respiratory System",
@@ -42597,7 +42597,7 @@
 "הוספת teriparatide 20mcg יומי",
 "העלאת מינון alendronate ל-140mg שבועי"
 ],
-"c": 2,
+"c": 1,
 "t": "Hazzard",
 "ti": 15,
 "ref": "Hazzard Ch 51 — OSTEOPOROSIS· Harrison Ch 295 — Approach to the Patient with Disease of the Respiratory System",
@@ -42753,7 +42753,7 @@
 "Apixaban 2.5 mg BID",
 "Aspirin 81 mg ליום בשילוב clopidogrel 75 mg ליום"
 ],
-"c": 1,
+"c": 0,
 "t": "Hazzard",
 "ti": 41,
 "ref": "Hazzard Ch 77 — CARDIAC ARRHYTHMIAS · Harrison Ch 286 — ST-Segment Elevation Myocardial Infarction",
@@ -43347,7 +43347,7 @@
 "Alvimopan 12 mg PO BID",
 "Metoclopramide 10 mg IV q6h"
 ],
-"c": 2,
+"c": 1,
 "t": "Hazzard",
 "ti": 38,
 "ref": "Hazzard Ch 27 — PERIOPERATIVE CARE: EVALUATION AND MANAGEMENT· Harrison Ch 49 — Diarrhea and Constipation",
@@ -43997,7 +43997,7 @@
 "Lactulose retention enema",
 "Surgical consultation"
 ],
-"c": 0,
+"c": 3,
 "t": "Hazzard",
 "ti": 12,
 "ref": "Hazzard Ch 87 — CONSTIPATION · Harrison Ch 49 — Diarrhea and Constipation",
@@ -44075,7 +44075,7 @@
 "Phosphate enema כעת",
 "Lactulose 30mL PO BID"
 ],
-"c": 1,
+"c": 3,
 "t": "Hazzard",
 "ti": 12,
 "ref": "Hazzard Ch 87 — CONSTIPATION · Harrison Ch 49 — Diarrhea and Constipation",
@@ -44101,7 +44101,7 @@
 "התחלת methylnaltrexone injections",
 "הוספת prune juice 8oz ביום"
 ],
-"c": 0,
+"c": 1,
 "t": "Hazzard",
 "ti": 12,
 "ref": "Hazzard Ch 87 — CONSTIPATION · Harrison Ch 49 — Diarrhea and Constipation",
@@ -44153,7 +44153,7 @@
 "חוקני מי ברז יומיים שיינתנו על ידי אשתו",
 "הפניה לניתוח colostomy"
 ],
-"c": 1,
+"c": 2,
 "t": "Hazzard",
 "ti": 12,
 "ref": "Hazzard Ch 87 — CONSTIPATION· Harrison Ch 433 — Approach to the Patient with Neurologic Disease",
@@ -44334,7 +44334,7 @@
 "האכלה דרך NG tube",
 "טיפול אינטנסיבי בבליעה עם פתולוג תקשורת (speech pathologist)"
 ],
-"c": 2,
+"c": 3,
 "t": "Hazzard",
 "ti": 42,
 "ref": "Hazzard Ch 31 — DISORDERS OF SWALLOWING · Harrison Ch 50 — Unintentional Weight Loss",
@@ -44542,7 +44542,7 @@
 "היסטוריית falls המעידה על frailty",
 "Cognitive impairment"
 ],
-"c": 2,
+"c": 1,
 "t": "Hazzard",
 "ti": 26,
 "ref": "Hazzard Ch 89 — BREAST DISEASE · Harrison Ch 84 — Breast Cancer",
@@ -45547,7 +45547,7 @@
 "הפסקה מיידית של sertraline ו-hydrochlorothiazide",
 "Tolvaptan 15 mg ביום"
 ],
-"c": 0,
+"c": 2,
 "t": "Hazzard",
 "ti": 8,
 "ref": "Hazzard Ch 22 — MEDICATION PRESCRIBING AND DE-PRESCRIBING· Harrison Ch 79 — Infections in Patients with Cancer",
@@ -46704,7 +46704,7 @@
 "התחל deferoxamine 40 mg/kg SC 5 לילות בשבוע",
 "בצע cardiac MRI לפני ההחלטה על chelation"
 ],
-"c": 0,
+"c": 1,
 "t": "Hazzard",
 "ti": 25,
 "ref": "Hazzard Ch 95 — HEMATOLOGIC MALIGNANCIES (LEUKEMIA/LYMPHOMA) AND PLASMA CELL DISORDERS · Harrison Ch 66 — Anemia and Polycythemia",
@@ -47921,7 +47921,7 @@
 "תוסף זנב הסוס (Horsetail supplement)",
 "פירות הוות'ורן (Hawthorne berry)"
 ],
-"c": 0,
+"c": 2,
 "t": "Hazzard",
 "ti": 8,
 "ref": "Hazzard Ch 22 — MEDICATION PRESCRIBING AND DE-PRESCRIBING· Harrison Ch 388 — Approach to the Patient with Endocrine Disorders",
@@ -48101,7 +48101,7 @@
 "המשך מינון apixaban הנוכחי ללא שינויים",
 "דיון ב-comfort-focused care לנוכח הפרוגנוזה"
 ],
-"c": 3,
+"c": 2,
 "t": "Hazzard",
 "ti": 4,
 "ref": "Hazzard Ch 7 — DECISION MAKING AND ADVANCE CARE PLANNING: WHAT MATTERS MOST",
@@ -51282,7 +51282,7 @@
 "מעבר ל-hydromorphone 0.5 mg IV q4h",
 "התחלת fentanyl patch 12 mcg/hr"
 ],
-"c": 2,
+"c": 3,
 "t": "Harrison",
 "ti": 14,
 "ref": "Hazzard Ch 68 — PAIN MANAGEMENT· Harrison Ch 79 — Infections in Patients with Cancer",
@@ -52677,7 +52677,7 @@
 "High-intensity statin הגורם ל-cognitive effects",
 "Drug interaction בין donepezil ל-ticagrelor"
 ],
-"c": 1,
+"c": 2,
 "t": "Harrison",
 "ti": 8,
 "ref": "Hazzard Ch 22 — MEDICATION PRESCRIBING AND DE-PRESCRIBING· Harrison Ch 285 — Non-ST-Segment Elevation Acute Coronary Syndromes",
@@ -53709,7 +53709,7 @@
 "מעבר ל-fidaxomicin 200 mg PO BID",
 "הפנייה דחופה לייעוץ כירורגי לקולקטומיה"
 ],
-"c": 3,
+"c": 1,
 "t": "Harrison",
 "ti": 27,
 "ref": "Hazzard Ch 3 — IMMUNOLOGY AND INFLAMMATION · Harrison Ch 315 — Sepsis and Septic Shock",
@@ -54453,7 +54453,7 @@
 "העלאת furosemide ל-120mg BID",
 "התחלת sodium bicarbonate 650mg TID"
 ],
-"c": 1,
+"c": 3,
 "t": "Harrison",
 "ti": 24,
 "ref": "Hazzard Ch 83 — KIDNEY DISEASES · Harrison Ch 322 — Chronic Kidney Disease",
@@ -54683,7 +54683,7 @@
 "הוספת docusate sodium 100 mg BID",
 "התחלת polyethylene glycol 3350 17 g ביום"
 ],
-"c": 3,
+"c": 0,
 "t": "Harrison",
 "ti": 12,
 "ref": "Hazzard Ch 87 — CONSTIPATION · Harrison Ch 49 — Diarrhea and Constipation",
