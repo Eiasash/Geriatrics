@@ -732,6 +732,12 @@
   #week .today h3{font-size:21px}
   #week .today .split div b{color:var(--accent)}
   #week .today button{background:var(--accent);border-color:var(--accent);border-radius:3px}
+  /* the three dashboard actions: accent block, all text in paper white — the ink text was unreadable on orange */
+  #week .today .acts .act{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+  #week .today .acts .act b,#week .today .acts .act span{color:var(--paper)}
+  #week .today .acts .act b{opacity:.85}
+  #week .today .acts .act:hover{background:var(--ink);border-color:var(--ink)}
+  body.dark #week .today .acts .act,body.dark #week .today .acts .act b,body.dark #week .today .acts .act span{color:#12161a}
   #week .today button[data-on="1"]{background:var(--paper);color:var(--start);border-color:var(--start)}
 
   /* the fourteen-day streak: chunkier, and it fills with colour */
