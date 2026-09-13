@@ -21,8 +21,15 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     timeout-minutes: 1
+    env:
+      HAS_PAT: ${{ secrets.AUTO_AUDIT_DISPATCH_PAT != '' }}
     steps:
+      - name: Skip cleanly when the dispatch PAT is not configured
+        if: env.HAS_PAT != 'true'
+        run: echo "AUTO_AUDIT_DISPATCH_PAT is not set — nothing to dispatch; the auto-audit cron still runs."
       - name: Dispatch to auto-audit
+        if: env.HAS_PAT == 'true'
+        continue-on-error: true   # a bad or expired PAT must not paint the merge red
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.AUTO_AUDIT_DISPATCH_PAT }}
