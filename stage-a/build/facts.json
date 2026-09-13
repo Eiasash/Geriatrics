@@ -1,0 +1,430 @@
+{
+ "_about": "Each fact is a literal substring that must appear in the rendered text of the named section. Every entry was checked against the Hazzard 8th-edition chapter (or the named paper) on 2026-09-13. If a test fails, either the section changed or the fact did — go back to the source before editing either.",
+ "facts": [
+  {
+   "sec": "thyroid",
+   "src": "ch 98 Figure 98-4",
+   "text": "treat at a persistent TSH of 10 or higher"
+  },
+  {
+   "sec": "thyroid",
+   "src": "ch 98 Figure 98-4",
+   "text": "consider treating at 7.0–9.9"
+  },
+  {
+   "sec": "thyroid",
+   "src": "ch 98 p1552",
+   "text": "as high as 4–6 mU/L over 80"
+  },
+  {
+   "sec": "thyroid",
+   "src": "ch 98",
+   "text": "200–400 µg"
+  },
+  {
+   "sec": "thyroid",
+   "src": "ch 98",
+   "text": "intravenous hydrocortisone first"
+  },
+  {
+   "sec": "osteo",
+   "src": "ch 51",
+   "text": "3 to 5 years of antiresorptive therapy"
+  },
+  {
+   "sec": "osteo",
+   "src": "ch 51",
+   "text": "12 months after the last dose"
+  },
+  {
+   "sec": "osteo",
+   "src": "ch 51",
+   "text": "0.001–0.01%"
+  },
+  {
+   "sec": "osteo",
+   "src": "ch 51",
+   "text": "half of patients refracture within 10 years, and half of those within 2 years"
+  },
+  {
+   "sec": "osteo",
+   "src": "ch 51",
+   "text": "1200–1500 mg/day"
+  },
+  {
+   "sec": "syncope",
+   "src": "ch 45",
+   "text": "with or without symptoms"
+  },
+  {
+   "sec": "syncope",
+   "src": "ch 45",
+   "text": "fludrocortisone 0.1–0.5 mg daily"
+  },
+  {
+   "sec": "syncope",
+   "src": "ch 45",
+   "text": "50% of those with unexplained syncope"
+  },
+  {
+   "sec": "syncope",
+   "src": "ch 45",
+   "text": "85–90%"
+  },
+  {
+   "sec": "copd",
+   "src": "ch 81",
+   "text": "37.7% by GOLD against 15.4% by Z-score"
+  },
+  {
+   "sec": "copd",
+   "src": "ch 81 Table 81-11",
+   "text": "more than 16 hours a day"
+  },
+  {
+   "sec": "copd",
+   "src": "ch 81",
+   "text": "delirium is more common above 60 mg daily"
+  },
+  {
+   "sec": "copd",
+   "src": "ch 81",
+   "text": "3 to 7 days"
+  },
+  {
+   "sec": "copd",
+   "src": "ch 81",
+   "text": "above 45 L/min"
+  },
+  {
+   "sec": "constip",
+   "src": "ch 87",
+   "text": "acute disimpaction"
+  },
+  {
+   "sec": "constip",
+   "src": "ch 87",
+   "text": "sorbitol are equally effective and sorbitol is much cheaper"
+  },
+  {
+   "sec": "constip",
+   "src": "ch 87",
+   "text": "52% against 35%"
+  },
+  {
+   "sec": "hipfx",
+   "src": "ch 53",
+   "text": "within 21 days of the fracture"
+  },
+  {
+   "sec": "pain",
+   "src": "ch 68",
+   "text": "50 morphine milligram equivalents a day"
+  },
+  {
+   "sec": "pain",
+   "src": "ch 68",
+   "text": "high doses of potent"
+  },
+  {
+   "sec": "pain",
+   "src": "ch 68",
+   "text": "HLA-B*1502 and HLA-A*3101"
+  },
+  {
+   "sec": "falls",
+   "src": "ch 43",
+   "text": "even when deficient"
+  },
+  {
+   "sec": "falls",
+   "src": "ch 43",
+   "text": "23% fewer falls"
+  },
+  {
+   "sec": "falls",
+   "src": "ch 43",
+   "text": "27%"
+  },
+  {
+   "sec": "delirium",
+   "src": "ch 58",
+   "text": "preventable in up to 50%"
+  },
+  {
+   "sec": "delirium",
+   "src": "ch 58",
+   "text": "posterior alpha rhythm"
+  },
+  {
+   "sec": "delirium",
+   "src": "ch 58",
+   "text": "3- to 12-fold"
+  },
+  {
+   "sec": "sleep",
+   "src": "ch 44",
+   "text": "ferritin is under 75"
+  },
+  {
+   "sec": "stroke",
+   "src": "ch 62",
+   "text": "for 21"
+  },
+  {
+   "sec": "stroke",
+   "src": "ch 62",
+   "text": "8.2% vs 11.7%"
+  },
+  {
+   "sec": "stroke",
+   "src": "ch 62",
+   "text": "no NIHSS threshold in ch 62"
+  },
+  {
+   "sec": "stroke",
+   "src": "ch 55",
+   "text": "depression in 15–70%"
+  },
+  {
+   "sec": "hipfx",
+   "src": "ch 53",
+   "text": "18% of women and 36% of men"
+  },
+  {
+   "sec": "hipfx",
+   "src": "ch 53",
+   "text": "21 to 31 days"
+  },
+  {
+   "sec": "hipfx",
+   "src": "ch 27",
+   "text": "below 7 g/dL"
+  },
+  {
+   "sec": "hipfx",
+   "src": "FOCUS NEJM 2011",
+   "text": "8 g/dL"
+  },
+  {
+   "sec": "hipfx",
+   "src": "ch 53 Figure 53-5",
+   "text": "balance and gait plateau at about 9 months"
+  },
+  {
+   "sec": "ra",
+   "src": "ch 101",
+   "text": "65% of LORA positive, no PMR patient positive"
+  },
+  {
+   "sec": "ra",
+   "src": "ch 100",
+   "text": "12.5–25 mg prednisone daily"
+  },
+  {
+   "sec": "ra",
+   "src": "ch 100",
+   "text": "not delayed beyond one week"
+  },
+  {
+   "sec": "ra",
+   "src": "ch 101",
+   "text": "holding methotrexate for 2 weeks"
+  },
+  {
+   "sec": "mistreat",
+   "src": "ch 48",
+   "text": "4.6–13%"
+  },
+  {
+   "sec": "mistreat",
+   "src": "ch 48",
+   "text": "1 in 24 cases"
+  },
+  {
+   "sec": "mistreat",
+   "src": "ch 48",
+   "text": "threefold"
+  },
+  {
+   "sec": "periop",
+   "src": "ch 27",
+   "text": "25–30% of all perioperative deaths are cardiac"
+  },
+  {
+   "sec": "periop",
+   "src": "ch 27",
+   "text": "3 months after a DVT or PE"
+  },
+  {
+   "sec": "diabetes",
+   "src": "ch 99",
+   "text": "about 27%"
+  },
+  {
+   "sec": "cognition",
+   "src": "ch 57",
+   "text": "10–15% a year"
+  },
+  {
+   "sec": "cognition",
+   "src": "ch 57",
+   "text": "83% improved in gait and 46% in memory"
+  },
+  {
+   "sec": "frailty",
+   "src": "ch 42",
+   "text": "9.6% vs 5.2%"
+  },
+  {
+   "sec": "incont",
+   "src": "ch 47",
+   "text": "Over 200 mL is abnormal"
+  },
+  {
+   "sec": "pressure",
+   "src": "ch 46",
+   "text": "75% of stage 2 wounds heal within 60 days"
+  },
+  {
+   "sec": "parkinson",
+   "src": "ch 61",
+   "text": "1–2% of people over 60"
+  },
+  {
+   "sec": "bpsd",
+   "src": "ch 60",
+   "text": "98%"
+  },
+  {
+   "sec": "dementia",
+   "src": "ch 59",
+   "text": "12-fold"
+  },
+  {
+   "sec": "dementia",
+   "src": "ch 59",
+   "text": "55%"
+  },
+  {
+   "sec": "hipfx",
+   "src": "FOCUS NEJM 2011 (paper read)",
+   "text": "34.7% vs 35.2%"
+  },
+  {
+   "sec": "hipfx",
+   "src": "REGAIN NEJM 2021 (paper read)",
+   "text": "incidence of delirium was similar"
+  },
+  {
+   "sec": "syncope",
+   "src": "Kattah Stroke 2009 (paper read)",
+   "text": "100% sensitive and 96% specific"
+  },
+  {
+   "sec": "syncope",
+   "src": "Kaufmann Neurology 2014 (paper read)",
+   "text": "11.2 vs 3.9 mmHg"
+  },
+  {
+   "sec": "thyroid",
+   "src": "ETA 2018 (paper read)",
+   "text": "glucocorticoids can be added from the start"
+  },
+  {
+   "sec": "depression",
+   "src": "ch 65",
+   "text": "10 or higher"
+  },
+  {
+   "sec": "depression",
+   "src": "ch 65",
+   "text": "antidepressants do not help it"
+  },
+  {
+   "sec": "depression",
+   "src": "ch 65",
+   "text": "response over 80%, remission over 60%"
+  },
+  {
+   "sec": "depression",
+   "src": "ch 65",
+   "text": "SSRIs, SNRIs and mirtazapine over 2 to 4 weeks"
+  },
+  {
+   "sec": "hf",
+   "src": "ch 76",
+   "text": "QRS 150 ms or more"
+  },
+  {
+   "sec": "hf",
+   "src": "ch 76",
+   "text": "HR 0.79"
+  },
+  {
+   "sec": "hf",
+   "src": "ch 76",
+   "text": "over 500 pg/mL"
+  },
+  {
+   "sec": "hf",
+   "src": "ch 76",
+   "text": "readmissions down 42%"
+  },
+  {
+   "sec": "rehab",
+   "src": "ch 55",
+   "text": "involved leg and the cane go down first"
+  },
+  {
+   "sec": "rehab",
+   "src": "ch 55",
+   "text": "no hip flexion beyond 90"
+  },
+  {
+   "sec": "cognition",
+   "src": "ch 57",
+   "text": "hyperreflexia"
+  },
+  {
+   "sec": "cognition",
+   "src": "ch 57",
+   "text": "syntax, vocabulary and semantic knowledge are preserved"
+  },
+  {
+   "sec": "bpsd",
+   "src": "ch 63",
+   "text": "tau in nearly half"
+  },
+  {
+   "sec": "parkinson",
+   "src": "ch 63",
+   "text": "older age at motor onset, bradykinesia"
+  },
+  {
+   "sec": "constip",
+   "src": "ch 87",
+   "text": "nitric oxide and acetylcholine"
+  },
+  {
+   "sec": "syncope",
+   "src": "ch 45",
+   "text": "blunts baroreflex sensitivity"
+  },
+  {
+   "sec": "copd",
+   "src": "ch 81",
+   "text": "Sputum culture is not needed in a routine"
+  },
+  {
+   "sec": "thyroid",
+   "src": "ch 98",
+   "text": "taller-than-wide"
+  },
+  {
+   "sec": "diabetes",
+   "src": "ch 99",
+   "text": "every 2 to 3 years"
+  }
+ ]
+}

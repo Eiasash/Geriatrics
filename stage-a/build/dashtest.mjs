@@ -1,0 +1,15 @@
+import { JSDOM } from 'jsdom'; import fs from 'fs';
+const html=fs.readFileSync('geriatrics-stage-a.html','utf8'); const errs=[];
+const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,beforeParse(w){const m={};w.storage={get:async k=>{if(!(k in m))throw new Error('x');return{key:k,value:m[k]}},set:async(k,v)=>{m[k]=v;return{key:k,value:v}}};w.requestIdleCallback=f=>setTimeout(f,0);w.addEventListener('error',e=>errs.push(e.message));}});
+await new Promise(r=>setTimeout(r,1500)); const w=dom.window,d=w.document;
+console.log('read label:', d.getElementById('goReadLab').textContent);
+d.getElementById('goRead').click(); console.log('goRead ->', [...d.querySelectorAll('main section.on')].map(s=>s.id));
+w.eval('show("week")'); d.getElementById('goDrill').click(); console.log('goDrill ->', d.querySelector('main section.on').id, '|', d.getElementById('dfilter').textContent.trim());
+w.eval('show("week")'); d.getElementById('goMock').click(); await new Promise(r=>setTimeout(r,500)); console.log('goMock ->', d.querySelector('main section.on').id, '| mockCard hidden:', d.getElementById('mockCard').hidden, '| mockN', w.eval('mockN'));
+w.eval('show("falls"); annotateSection("falls")');
+const t=d.querySelector('#falls .tscroll table td'); t.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));
+console.log('modal open:', !d.getElementById('tblModal').hidden, '| title:', d.getElementById('tmTitle').textContent.slice(0,60), '| rows:', d.querySelectorAll('#tmBody tr').length);
+d.getElementById('tmClose').click(); await new Promise(r=>setTimeout(r,100));
+console.log('modal closed:', d.getElementById('tblModal').hidden, '| still on falls:', d.getElementById('falls').classList.contains('on'));
+console.log('details on home:', [...d.querySelectorAll('#week details.wkmore summary')].map(x=>x.textContent));
+console.log('errors', errs.length, errs[0]||''); process.exit(0);
