@@ -18,3 +18,6 @@ Rule: when `facts.mjs` fails, go back to the chapter; never edit the fact to mak
 
 ## Reporting a problem
 The ⚑ button in the top bar captures the section, position, viewport and last script error; *Open a GitHub issue* pre-fills it in this repo.
+
+## CI
+`.github/workflows/stage-a-ci.yml` runs the five guards on every push that touches `stage-a/`. The main app's CI does not scan this folder.
