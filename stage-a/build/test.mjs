@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom';
 import fs from 'fs';
 
-const html = fs.readFileSync('geriatrics-stage-a.html', 'utf8');
+const html = fs.readFileSync(process.argv[2] || 'geriatrics-stage-a.html', 'utf8');
 const store = {};
 const errs = [];
 

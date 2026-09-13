@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom'; import fs from 'fs';
-const html=fs.readFileSync('geriatrics-stage-a.html','utf8'); const errs=[];
+const html=fs.readFileSync(process.argv[2]||'geriatrics-stage-a.html','utf8'); const errs=[];
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,beforeParse(w){
   const m={}; w.storage={get:async k=>{if(!(k in m))throw new Error('missing');return{key:k,value:m[k]}},set:async(k,v)=>{m[k]=v;return{key:k,value:v}}};
   w.requestIdleCallback=f=>setTimeout(f,0); w.addEventListener('error',e=>errs.push(e.message)); w.console.error=(...a)=>errs.push('console.error '+a.join(' '));}});

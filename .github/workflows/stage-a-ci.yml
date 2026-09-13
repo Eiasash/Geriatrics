@@ -1,0 +1,37 @@
+name: stage-a CI
+
+# Runs only when the Stage A console changes. The main app's CI does not
+# scan stage-a/ (its checkers hardcode shlav-a-mega.html), so this is the
+# console's only automated gate.
+
+on:
+  push:
+    branches: [main]
+    paths: ['stage-a/**']
+  pull_request:
+    paths: ['stage-a/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults: { run: { working-directory: stage-a/build } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm i --no-save jsdom@24
+      - name: test.mjs — 178 checks
+        run: node test.mjs ../index.html
+      - name: audit.mjs — structural sweep
+        run: node audit.mjs ../index.html | tee audit.txt && ! grep -vE 'none|: +0 *$|^$|search index|^[a-z]' audit.txt | grep -q .
+      - name: facts.mjs — chapter-verified strings
+        run: node facts.mjs ../index.html
+      - name: sweep.mjs — every section, every link
+        run: node sweep.mjs ../index.html
+      - name: dashtest.mjs — dashboard, table pop-out
+        run: node dashtest.mjs ../index.html

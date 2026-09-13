@@ -197,13 +197,14 @@
   #tblModal,#rptModal{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column}
   #tblModal[hidden],#rptModal[hidden]{display:none}
   #rptModal .tm-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--ink);font-family:var(--sans);font-size:13px}
-  #rptModal .tm-bar button{font-family:var(--sans);font-size:13px;padding:8px 14px;min-height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:2px;cursor:pointer}
+  #rptModal .tm-bar button{font-family:var(--sans);font-size:13px;padding:8px 14px;min-height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:2px;cursor:pointer;flex:none;white-space:nowrap}
   #rptModal .tm-body{flex:1;overflow:auto;padding:14px}
   #tblModal .tm-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;
       border-bottom:1px solid var(--ink);font-family:var(--sans);font-size:13px}
   #tblModal .tm-bar b{font-family:var(--mono);font-size:12px;color:var(--mute)}
   #tblModal .tm-bar button{font-family:var(--sans);font-size:13px;padding:8px 14px;min-height:40px;background:var(--ink);
-      color:var(--paper);border:1px solid var(--ink);border-radius:2px;cursor:pointer}
+      color:var(--paper);border:1px solid var(--ink);border-radius:2px;cursor:pointer;flex:none;white-space:nowrap}
+  #tblModal .tm-bar b{flex:1;min-width:0}
   #tblModal .tm-body{flex:1;overflow:auto;padding:12px 14px 40px;-webkit-overflow-scrolling:touch}
   #tblModal .tm-body table{width:100%;min-width:0;font-size:15.5px;line-height:1.5;cursor:default}
   #tblModal .tm-body td,#tblModal .tm-body th{padding:10px 8px;vertical-align:top;border-bottom:1px solid var(--rule)}
@@ -10141,6 +10142,13 @@ function weekTags(){
   return [...t];
 }
 
+/* ---------- offline: a worker scoped to this folder only. A more specific scope wins over the
+   Q-bank's root-scope worker, so an offline visit to /stage-a/ gets this page, not that shell.
+   Registered only when served over http(s) from a folder that has sw.js beside it. ---------- */
+if('serviceWorker' in navigator && /^https?:/.test(location.protocol) && /\/stage-a\/?$/.test(location.pathname)){
+  navigator.serviceWorker.register('./sw.js', {scope:'./'}).catch(()=>{});
+}
+
 /* ---------- the anchor: home button, and a report dialog that captures where you are ---------- */
 const BUILD = 'geriatrics-stage-a · 13 Sep 2026 · 44 sections';
 const REPO_ISSUES = 'https://github.com/Eiasash/Geriatrics/issues/new';
@@ -10156,7 +10164,7 @@ document.getElementById('homeBtn').addEventListener('click', ()=>{ show('week');
     return [BUILD, 'section: ' + id + (SECNAME[id] ? ' (' + SECNAME[id] + ')' : ''),
       vis ? 'near heading: ' + vis.h.textContent.trim().slice(0,70) : '',
       'scroll: ' + Math.round(window.scrollY) + 'px · viewport ' + window.innerWidth + '×' + window.innerHeight,
-      'week: ' + (VIEW && VIEW.n != null ? VIEW.n : '?') + ' · ' + new Date().toISOString().slice(0,16),
+      'week: ' + (VIEW ? (ALLW.indexOf(VIEW) + 1) + ' of ' + ALLW.length + ' (' + (VIEW.k || '') + ', from ' + (VIEW.a || '') + ')' : '?') + ' · ' + new Date().toISOString().slice(0,16),
       'ua: ' + navigator.userAgent.slice(0,90),
       lastErr ? 'last error: ' + lastErr : 'no script errors this session'].filter(Boolean).join('\n');
   }
