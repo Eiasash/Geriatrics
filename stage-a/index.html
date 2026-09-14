@@ -194,11 +194,11 @@
   /* ---- table pop-out: tap a table to read it full-screen, close to land back where you were ---- */
   .tscroll table{cursor:zoom-in}
   .tm-hint{font-family:var(--sans);font-size:11px;color:var(--mute);margin:-14px 0 16px;text-align:right}
-  #tblModal,#rptModal{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column}
-  #tblModal[hidden],#rptModal[hidden]{display:none}
-  #rptModal .tm-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--ink);font-family:var(--sans);font-size:13px}
-  #rptModal .tm-bar button{font-family:var(--sans);font-size:13px;padding:8px 14px;min-height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:2px;cursor:pointer;flex:none;white-space:nowrap}
-  #rptModal .tm-body{flex:1;overflow:auto;padding:14px}
+  #tblModal,#rptModal,#hlModal,#notesModal{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column}
+  #tblModal[hidden],#rptModal[hidden],#hlModal[hidden],#notesModal[hidden]{display:none}
+  #rptModal .tm-bar,#hlModal .tm-bar,#notesModal .tm-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--ink);font-family:var(--sans);font-size:13px}
+  #rptModal .tm-bar button,#hlModal .tm-bar button,#notesModal .tm-bar button{font-family:var(--sans);font-size:13px;padding:8px 14px;min-height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:2px;cursor:pointer;flex:none;white-space:nowrap}
+  #rptModal .tm-body,#hlModal .tm-body,#notesModal .tm-body{flex:1;overflow:auto;padding:14px}
   #tblModal .tm-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;
       border-bottom:1px solid var(--ink);font-family:var(--sans);font-size:13px}
   #tblModal .tm-bar b{font-family:var(--mono);font-size:12px;color:var(--mute)}
@@ -467,6 +467,55 @@
     background:var(--paper);border:1px solid var(--rule);border-radius:2px;cursor:pointer;color:var(--ink)}
   .disp button[aria-pressed="true"]{border-color:var(--ink);background:var(--soft)}
 
+  /* ---- display popover: reachable from every section, not only the home page ---- */
+  .dispbtn{display:none}
+  @media (max-width:900px){
+    .dispbtn{display:flex;align-items:center;justify-content:center;width:46px;min-height:46px;flex:none;
+      font-family:var(--sans);font-size:15px;font-weight:600;background:var(--paper);border:1px solid var(--ink);
+      border-radius:2px;color:var(--ink);cursor:pointer}
+  }
+  #dispPop{position:fixed;left:12px;right:12px;bottom:14px;z-index:57;background:var(--paper);border:1px solid var(--ink);
+    border-radius:4px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.28);font-family:var(--sans)}
+  #dispPop[hidden]{display:none}
+  #dispPop .hd{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--mute);margin-bottom:8px}
+  #dispPop .hd button{font-family:var(--sans);font-size:12.5px;padding:6px 12px;min-height:36px;background:var(--ink);
+    color:var(--paper);border:1px solid var(--ink);border-radius:2px;cursor:pointer}
+  @media (min-width:901px){ #dispPop{left:16px;right:auto;bottom:auto;top:70px;width:320px} }
+
+  /* ---- highlights and personal notes ---- */
+  mark.hl{background:#ffe08a;color:inherit;padding:0 1px;cursor:pointer;border-bottom:1px dotted #a07800}
+  mark.hl.hasnote{background:#ffcf5c}
+  mark.hl.hasnote::after{content:"\270E";font-size:.7em;vertical-align:super;margin-left:2px;color:#7a5a00}
+  body.dark mark.hl{background:#5c4e1a;color:#f2ead0;border-bottom-color:#c9a94a}
+  body.dark mark.hl.hasnote{background:#7d6620}
+  body.dark mark.hl.hasnote::after{color:#f0d070}
+  mark.hl.flash{outline:2px solid var(--stop);outline-offset:2px}
+  #hlBar{position:fixed;z-index:58;display:flex;gap:6px;background:var(--ink);color:var(--paper);padding:6px;
+    border-radius:4px;box-shadow:0 6px 22px rgba(0,0,0,.3)}
+  #hlBar[hidden]{display:none}
+  #hlBar button{font-family:var(--sans);font-size:13px;padding:8px 12px;min-height:38px;background:none;
+    border:1px solid var(--paper);border-radius:2px;color:var(--paper);cursor:pointer;white-space:nowrap}
+  .mynotes{margin:30px 0 0;border-top:1px dashed var(--rule);padding-top:12px}
+  .mynotes summary{cursor:pointer;font-family:var(--sans);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+  .mynotes summary .cnt{color:var(--ink);margin-left:6px}
+  .mynotes textarea{width:100%;box-sizing:border-box;font:inherit;font-size:.95em;line-height:1.5;padding:10px;
+    border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:2px;margin-top:10px;min-height:110px}
+  .mynotes .hlist{margin:10px 0 0;padding:0;list-style:none;max-width:72ch}
+  .mynotes .hlist li{font-size:.92em;padding:7px 0;border-bottom:1px solid var(--rule);cursor:pointer}
+  .mynotes .hlist li q{quotes:"\201C" "\201D"}
+  .mynotes .hlist li i{color:var(--mute);font-style:normal;display:block;font-size:.92em;margin-top:2px}
+  .mynotes .mnbar{display:flex;gap:12px;align-items:center;margin-top:8px;font-family:var(--sans);font-size:12.5px}
+  .mynotes .mnbar button{background:none;border:0;padding:0;color:var(--stop);font:inherit;text-decoration:underline;
+    text-underline-offset:3px;cursor:pointer}
+  #ntBody h3{font-family:var(--sans);font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin:18px 0 6px}
+  #ntBody h3 button{background:none;border:0;padding:0 0 0 8px;color:var(--stop);font:inherit;text-transform:none;
+    letter-spacing:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+  #ntBody .nt{white-space:pre-wrap;border-left:3px solid var(--rule);padding:2px 0 2px 12px;margin:6px 0;max-width:72ch}
+  #ntBody ul{margin:4px 0 0;padding:0 0 0 18px}
+  #ntBody li{margin:4px 0}
+  #ntBody li i{color:var(--mute);font-style:normal}
+
   /* ---- in-section jump chips ---- */
   .toc{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 22px;padding:0 0 14px;border-bottom:1px solid var(--rule)}
   .toc button{font-family:var(--sans);font-size:12px;padding:6px 10px;min-height:34px;background:none;
@@ -518,7 +567,8 @@
 
   @media print{
     nav,#sheet,.railshow,.topicbtn,#hits,.today,.timer,.secfoot,.toc,.drillbar,.cbtns,.cfoot,
-    .disp,#bkWrap,.chips,.qlog,.spark,.wopen{display:none!important}
+    .disp,#bkWrap,.chips,.qlog,.spark,.wopen,#hlBar,#dispPop,.dispbtn,.mynotes .mnbar{display:none!important}
+    mark.hl{background:#eee}
     .wrap{display:block;max-width:none}
     main{padding:0}
     body{font-size:11pt;background:#fff}
@@ -2660,6 +2710,7 @@ The first sentence of text is active and visible right at the 200px boundary, re
   <h1>Stage&nbsp;A<br>Geriatrics</h1>
   <p class="sub">Before Sheba · February 2027</p>
   <button class="railhide" id="railHide" type="button" title="Hide this list">&laquo; hide the list</button>
+  <button class="railhide" id="dispBtnRail" type="button" title="Text size and dark mode" style="margin-left:14px">Aa &middot; display</button>
   <div class="srch"><input id="q" type="search" placeholder="Search all sections" autocomplete="off" aria-label="Search all sections"></div>
   <div class="anchorbar" id="anchorBar">
     <button class="homebtn" id="homeBtn" type="button" aria-label="Home">&#8962;</button>
@@ -2667,6 +2718,7 @@ The first sentence of text is active and visible right at the 200px boundary, re
       <span id="topicNow">This week</span><span class="glabel">topics &#9662;</span>
     </button>
     <button class="rptbtn" id="rptBtn" type="button" aria-label="Report a problem" title="Report a problem">&#9873;</button>
+    <button class="dispbtn" id="dispBtn" type="button" aria-label="Display: text size and dark mode" title="Text size and dark mode">Aa</button>
   </div>
   <div class="btns" id="rail">
     <div class="gwrap open" data-g="now"><button class="grp" type="button" aria-expanded="true">Now</button><div class="gitems">
@@ -2814,8 +2866,8 @@ The first sentence of text is active and visible right at the 200px boundary, re
     <button id="bkBtn" type="button" class="lnk">Backup &amp; restore progress</button>
   </div>
   <h2>Display</h2>
-  <div class="disp" id="dispRow">
-    <button id="dkBtn" type="button">dark</button>
+  <div class="disp disprow" id="dispRow">
+    <button id="dkBtn" type="button" data-dk>dark</button>
     <span>text size</span>
     <button type="button" data-fs="s">S</button>
     <button type="button" data-fs="m">M</button>
@@ -5331,10 +5383,27 @@ The first sentence of text is active and visible right at the 200px boundary, re
   <p class="lede">Rank 6, 3.7%. It is also the syndrome that most other topics feed into &mdash;
   medication review, orthostasis, cognition, vision, sarcopenia and bone health all arrive here.</p>
 
-  <h2>The numbers the chapter opens with</h2>
+  <h2>What a fall is, and why the chapter treats it as a syndrome</h2>
   <p>Ch 43 defines a fall as <b>an event that results in a person coming to rest inadvertently on the
   ground, floor or other lower level</b> &mdash; the WHO wording, and the definition a stem will use.
-  The incidence figures sit in its Key Clinical Points, which is exactly where this paper draws from.</p>
+  Two things follow from the definition. It says nothing about cause, so a syncopal collapse, a trip on
+  a rug and a slow slide off a chair are all falls; and it says nothing about injury, so the fall that
+  hurt nobody still counts, and still predicts the next one.</p>
+  <p>The reason the chapter is organised around <i>risk factors</i> rather than <i>diagnoses</i> is that
+  staying upright is the product of several systems working at once &mdash; a brain that is awake and
+  attending, a heart that keeps the brain perfused when the body stands, sensory input from eyes, inner
+  ear and the soles of the feet, muscles strong enough to correct a lurch, and joints and feet that do
+  not hurt. In a young adult any one of these can fail and the others cover for it. In an older adult
+  several are marginal at once, so a small extra load &mdash; a new sedative, a night-time urgency, a
+  darker room &mdash; tips the whole system. That is why a fall is a symptom, not a diagnosis, and why
+  the causes are usually multiple and additive in the same patient. It is also why single-factor fixes
+  disappoint and the multifactorial assessment is the examined answer.</p>
+
+  <h2>The numbers the chapter opens with</h2>
+  <p>The incidence figures sit in the chapter's Key Clinical Points, which is exactly where this paper
+  draws from. The pattern to understand rather than memorise: the rate rises with age and with
+  frailty of the setting, so it is lowest in the community and highest where the frailest people are
+  concentrated.</p>
   <div class="tscroll"><table>
     <thead><tr><th>Setting</th><th>Annual fall incidence</th></tr></thead><tbody>
     <tr><td>Community, 65 and over</td><td class="n">32&ndash;40%</td></tr>
@@ -5343,153 +5412,114 @@ The first sentence of text is active and visible right at the 200px boundary, re
     <tr><td>General hospital</td><td class="n">2%</td></tr>
     <tr><td><b>Acute geriatric ward</b></td><td class="n"><b>27%</b></td></tr>
   </tbody></table></div>
-  <ul>
-    <li><b>37&ndash;56%</b> of falls cause a minor injury; <b>10&ndash;15%</b> cause a major one</li>
-    <li>Falls are the <b>leading cause of injury-related hospitalisation</b> in people 65 and over,
-    and account for <b>14% of emergency admissions</b> and <b>4% of all hospital admissions</b> in
-    that age group</li>
-    <li>A fall without injury still costs: fear of falling, activity restriction, deconditioning,
-    frailty &mdash; the cycle described further down this page</li>
-  </ul>
-  <p class="note">The one to hold is <b>27% on an acute geriatric ward against 2% in a general
-  hospital</b>. Your ward is the highest-incidence setting in the chapter, and a stem contrasting
-  settings is asking whether you know that.</p>
+  <p>The hospital pair is the counter-intuitive one and the one to hold: <b>27% on an acute geriatric
+  ward against 2% in a general hospital</b>. The general-hospital figure is diluted by every young
+  surgical and obstetric patient in the denominator; the geriatric-ward figure is what happens when
+  you concentrate delirium, new drugs, unfamiliar rooms and weak legs in one place. Your ward is the
+  highest-incidence setting in the chapter, and a stem contrasting settings is asking whether you know
+  that.</p>
+  <p>Most falls do not cause serious harm &mdash; <b>37&ndash;56%</b> cause a minor injury and
+  <b>10&ndash;15%</b> a major one &mdash; but because falls are so common, the small fraction that
+  injure adds up to falls being the <b>leading cause of injury-related hospitalisation</b> in people 65
+  and over, and to <b>14% of emergency admissions</b> and <b>4% of all hospital admissions</b> in that
+  age group. And a fall without injury still costs: it seeds fear of falling, which produces activity
+  restriction, which produces deconditioning and frailty, which produces the next fall &mdash; the
+  cycle described further down this page.</p>
 
   <h2>Screening: three questions</h2>
-  <p>Ask everyone 65 and over, annually: <b>have you fallen in the past year</b> (and if so, how many
-  times and were you injured), <b>do you feel unsteady</b> when standing or walking, and <b>do you
-  worry about falling</b>. Any yes triggers assessment. Fear of falling is not a soft finding &mdash;
-  it predicts activity restriction, deconditioning and further falls.</p>
+  <p>Not everyone needs the full assessment, so the chapter's approach is a cheap screen that
+  identifies who does. Ask everyone 65 and over, once a year: <b>have you fallen in the past year</b>
+  (and if so, how many times and were you injured), <b>do you feel unsteady</b> when standing or
+  walking, and <b>do you worry about falling</b>. A single yes is enough to trigger the assessment.</p>
+  <p>The third question surprises people. Fear of falling is not a soft finding to be reassured away:
+  it predicts activity restriction, deconditioning and further falls independently of whether the
+  person has actually fallen, and it is treatable. Asking about it is part of the screen for exactly
+  that reason.</p>
 
-  <h2>Gait and balance assessment</h2>
-  <div class="tscroll"><table><tbody>
-    <tr><td><b>Timed Up and Go</b></td><td>Rise from a chair, walk 3 m, turn, return, sit. Around
-      <b>12 seconds or more</b> is the commonly used threshold for further assessment. Watch the
-      quality of the turn, not just the clock</td></tr>
-    <tr><td><b>30-second chair stand</b></td><td>Lower-limb strength; sensitive to sarcopenia</td></tr>
-    <tr><td><b>4-stage balance test</b></td><td>Progressive narrowing of base to tandem and
-      single-leg stance</td></tr>
-    <tr><td><b>Gait speed</b></td><td>Under <b>0.8 m/s</b> marks impaired mobility and is part of the
-      sarcopenia definition; it also predicts mortality and surgical outcome</td></tr>
-    <tr><td><b>SPPB</b></td><td>Balance, gait speed and chair stands combined into one score &mdash;
-      the research standard, and useful when you want a number to follow over time</td></tr>
-  </tbody></table></div>
-
-  <h2>The multifactorial assessment</h2>
-  <div class="tscroll"><table>
-    <thead><tr><th>Domain</th><th>What to look for</th></tr></thead><tbody>
-    <tr><td><b>Medications</b></td><td>The most modifiable cause. FRIDs &mdash; fall-risk-increasing
-      drugs &mdash; are STOPP Section K in full: benzodiazepines, Z-drugs, antipsychotics,
-      antidepressants, antiepileptics, opioids, first-generation antihistamines, vasodilators with a
-      postural drop, alpha blockers, centrally-acting antihypertensives, antimuscarinics. Beers Table 3
-      adds anticholinergics as a class, new in 2023</td></tr>
-    <tr><td><b>Orthostatic hypotension</b></td><td>A fall of <b>20 mmHg systolic or 10 mmHg
-      diastolic</b> within 3 minutes of standing. Measure it properly: supine for 5 minutes, then at
-      1 and 3 minutes standing. Consider postprandial hypotension separately</td></tr>
-    <tr><td><b>Syncope and cardiac causes</b></td><td>An unexplained fall with amnesia for the event
-      is syncope until proven otherwise. Arrhythmia, aortic stenosis, carotid sinus hypersensitivity
-      &mdash; the last is where pacing occasionally helps</td></tr>
-    <tr><td><b>Neurological</b></td><td>Parkinsonism, peripheral neuropathy, cervical myelopathy,
-      stroke, cerebellar disease, NPH &mdash; and cognitive impairment, which roughly doubles risk and
-      undermines every intervention that requires remembering</td></tr>
-    <tr><td><b>Vision</b></td><td>Acuity, cataract, and specifically <b>bifocals or varifocals
-      outdoors</b>, which distort depth on steps</td></tr>
-    <tr><td><b>Feet and footwear</b></td><td>Deformity, pain, ulceration; backless slippers</td></tr>
-    <tr><td><b>Sarcopenia and nutrition</b></td><td>Grip strength, muscle mass, protein intake,
-      vitamin D status</td></tr>
-    <tr><td><b>Continence</b></td><td>Urgency and nocturia produce rushed transfers in the dark</td></tr>
-    <tr><td><b>Environment</b></td><td>Rugs, cables, lighting, bathroom grab rails, bed and chair
-      height, stairs</td></tr>
-  </tbody></table></div>
-
-  <h2>What works</h2>
-  <aside class="pearl"><b>Exam pearl</b><p>If the stem lists four drugs and one recent fall, the answer is almost never a new drug &mdash; it is stopping one. Medication review is the fastest fall intervention you can deliver in a single visit &mdash; though an Epley for BPPV and the right walking aid also work that day.</p></aside>
-  <ul>
-    <li><b>Exercise is the intervention with the strongest evidence</b> &mdash; and it must include
-    <b>balance and functional training</b>, not walking alone. The named programmes are <b>Otago</b>
-    (home-based, progressive strength and balance) and <b>tai chi</b>. Dose and progression matter:
-    across 64 RCTs, well-designed exercise gave <b>23% fewer falls</b>, most where balance is highly
-    challenged and there are <b>three or more hours a week</b>, effective at 75 and over and whoever delivers
-    it. Exercise alone works in Parkinson disease and cognitive impairment but <b>not in long-term stroke
-    survivors or the recently discharged</b> &mdash; one home programme after hospital <i>raised</i> falls by
-    43% &mdash; where it must sit inside a multifactorial plan. In residential care, twice-weekly resistance
-    and balance training for 25 weeks cut falls by 55%. The 2023 committee answer to &ldquo;single most
-    effective&rdquo; was exercise</li>
-    <li><b>Medication review and deprescribing</b>, targeting the FRID list</li>
-    <li><b>Home hazard assessment by an occupational therapist</b>, with the benefit concentrated in
-    those at high risk and after a fall &mdash; generic advice leaflets do not work</li>
-    <li><b>Vitamin D</b> &mdash; ch 43 is blunter than START H5: current mega-trials show supplementation
-    <b>does not improve physical function or prevent falls in community-dwelling older adults, even when
-    deficient</b>; it may reduce falls in residential care, which is the only setting the chapter's summary
-    endorses it for. High-dose intermittent bolus dosing increased falls. Two sittings have asked exactly
-    this (2023, 2024)</li>
-    <li><b>Cataract surgery</b> for the first eye; <b>single-lens distance glasses</b> for outdoor
-    walking in regular varifocal wearers</li>
-    <li><b>Treat the orthostasis</b>: withdraw the offending drug first, then non-pharmacological
-    measures &mdash; slow rising, compression, adequate salt and fluid, head-up sleeping &mdash;
-    before midodrine or fludrocortisone</li>
-    <li><b>Pacing</b> for documented cardioinhibitory carotid sinus syndrome with unexplained falls</li>
-  </ul>
-  <div class="callout"><p><b>What does not work, and is examinable as such:</b> education or advice
-  alone, vitamin D in the replete, hip protectors (adherence collapses), and <b>physical restraints
-  and bedrails, which increase injury</b> rather than preventing it. Alarms have not shown benefit.
-  Sitters are a staffing decision, not an evidence-based intervention.</p></div>
-
-  <h2>After the fall</h2>
-  <aside class="pearl"><b>Exam pearl</b><p>&ldquo;Found on the floor, cannot say how long&rdquo; is a long lie until proven otherwise: check creatine kinase, creatinine, temperature and the sacrum before anything else.</p></aside>
-  <ul>
-    <li><b>Head injury on an anticoagulant</b> &mdash; a low threshold for CT, and remember delayed
-    subdural presentation weeks later</li>
-    <li><b>Long lie</b> &mdash; rhabdomyolysis, AKI, pressure injury, hypothermia, dehydration.
-    Ask how long they were on the floor and whether they could get up; inability to rise is an
-    independent predictor of poor outcome</li>
-    <li><b>Occult fracture</b> &mdash; hip fracture with a normal radiograph needs MRI or CT if the
-    patient cannot weight-bear. Also pubic rami, vertebrae, and the proximal humerus</li>
-    <li><b>Bone health follow-through</b> &mdash; a fragility fracture is itself the indication for
-    osteoporosis treatment, and START H4 covers it. The fall clinic that does not address bone has
-    done half the job</li>
-    <li><b>Fear of falling and post-fall syndrome</b> &mdash; address it explicitly or the exercise
-    programme will not be done</li>
-  </ul>
-
-  <h2>The Israeli layer</h2>
-  <p>Inpatient falls-risk scoring is routine on Israeli wards and drives documentation as much as
-  care. Community fall-prevention and physiotherapy run through the kupot; home adaptation and
-  personal-care hours come through <span class="he">חוק ביטוח סיעוד</span> via
-  <span class="he">ביטוח לאומי</span>, which is often the practical answer to
-  &ldquo;what would you actually arrange for this patient?&rdquo;. Recurrent unexplained falls also
-  bear on fitness to drive.</p>
-
-
-  <h2>The multifactorial assessment, as it is examined</h2>
-  <p>A fall is a symptom, not a diagnosis, and the chapter is organised around the idea that the causes
-  are multiple and additive in the same patient. The assessment is a fixed list, and a stem that omits
-  three of its components is testing whether you know the list.</p>
+  <h2>The multifactorial assessment, and what each part is looking for</h2>
+  <p>The assessment is a fixed list, and a stem that omits three of its components is testing whether
+  you know the list. But each item is there because of a mechanism, and knowing the mechanism is what
+  lets you pick the right intervention on the next stem.</p>
+  <p><b>The fall itself.</b> Circumstances, the activity at the time, any prodrome, a witness account,
+  loss of consciousness, injury, and &mdash; the two questions most often skipped &mdash; <b>whether
+  they could get up</b> and how long they were down. Inability to rise is an independent predictor of
+  poor outcome, and a fall with amnesia for the event is syncope until proven otherwise, which moves
+  the work-up from the gait lab to the ECG machine.</p>
+  <p><b>Drugs.</b> The single most modifiable factor. Every fall-risk-increasing drug (FRID), the total
+  count, and anything started in the last fortnight &mdash; a drug that has been tolerated for years is
+  a weaker suspect than one begun last week. The FRID list is STOPP Section K in full: benzodiazepines,
+  Z-drugs, antipsychotics, antidepressants, antiepileptics, opioids, first-generation antihistamines,
+  vasodilators with a postural drop, alpha blockers, centrally-acting antihypertensives,
+  antimuscarinics. Beers Table 3 adds anticholinergics as a class, new in 2023. The mechanisms are two:
+  sedation and slowed reaction time on the one hand, and a postural drop in blood pressure on the
+  other; a few drugs do both.</p>
+  <p><b>Orthostatic hypotension.</b> When you stand, blood pools in the legs and the baroreflex has
+  to tighten the arteries and speed the heart within seconds to keep the brain perfused. Ageing blunts
+  that reflex, and vasodilators, diuretics, alpha blockers and dehydration blunt it further. The
+  definition is a fall of <b>20 mmHg systolic or 10 mmHg diastolic</b> within 3 minutes of standing.
+  Measure it properly &mdash; supine for 5 minutes, then at 1 and 3 minutes standing &mdash; because a
+  single seated reading misses it, and consider postprandial hypotension separately, since the drop
+  after a meal comes from blood diverted to the gut and occurs at a different time of day.</p>
+  <p><b>Syncope and cardiac causes.</b> Arrhythmia, aortic stenosis and carotid sinus
+  hypersensitivity all present as unexplained falls in older people, because the warning symptoms a
+  younger patient would report are often absent or forgotten. Lying and standing blood pressure, pulse,
+  murmurs and an ECG belong in every assessment; carotid sinus massage is the test for unexplained
+  falls, and cardioinhibitory carotid sinus syndrome is the one place where pacing helps.</p>
+  <p><b>Neurological.</b> Parkinsonism, peripheral neuropathy, cervical myelopathy, stroke, cerebellar
+  disease and normal-pressure hydrocephalus each damage a different part of the balance system: the
+  generation of steps, the sensory feedback from the feet, the corticospinal pathway, or the
+  coordination of the whole. Cognitive impairment roughly doubles risk, partly because attention is
+  what lets a marginal system compensate, and it undermines every intervention that requires
+  remembering to do something. Vision is examined here too, including the visual fields.</p>
+  <p><b>Vision.</b> Acuity and cataract, but specifically <b>bifocals or varifocals outdoors</b>: the
+  reading segment sits in the lower part of the lens, which is exactly where the eye looks when
+  stepping down a kerb, so the kerb is seen through the wrong prescription and its depth is
+  misjudged.</p>
+  <p><b>Musculoskeletal, feet and footwear.</b> Proximal muscle strength (the muscles that get you out
+  of a chair), painful joints, foot deformity, pain and ulceration, and backless slippers &mdash; the
+  most ignored item on the list.</p>
+  <p><b>Sarcopenia and nutrition.</b> Grip strength, muscle mass, protein intake and vitamin D status.
+  Weak muscles cannot correct a stumble, and the chair-stand tests below are the bedside way of
+  finding that out.</p>
+  <p><b>Continence.</b> Urgency and nocturia produce rushed transfers in the dark, which combines three
+  risks &mdash; hurry, poor light and orthostasis on rising from bed &mdash; in a single trip to the
+  toilet.</p>
+  <p><b>Environment and function.</b> Rugs, cables, lighting, bathroom grab rails, bed and chair
+  height and stairs, assessed in the home by an occupational therapist; ADL and IADL; alcohol; fear
+  of falling.</p>
   <div class="tscroll"><table>
     <thead><tr><th>Domain</th><th>What to elicit or measure</th></tr></thead><tbody>
-    <tr><td><b>The fall itself</b></td><td>Circumstances, activity at the time, prodrome, witness account, loss of consciousness, injury, <b>whether they could get up</b>, how long they were down, and how many falls in the past year</td></tr>
-    <tr><td><b>Drugs</b></td><td>Every fall-risk-increasing drug, the total count, and anything started in the last fortnight. The single most modifiable factor</td></tr>
-    <tr><td><b>Gait and balance</b></td><td>Timed Up and Go, gait speed, 5-times sit-to-stand, Berg or Tinetti where a fuller assessment is warranted</td></tr>
+    <tr><td><b>The fall itself</b></td><td>Circumstances, activity, prodrome, witness, loss of consciousness, injury, <b>could they get up</b>, time on the floor, number of falls in the year</td></tr>
+    <tr><td><b>Drugs</b></td><td>Every FRID, the total count, anything started in the last fortnight</td></tr>
+    <tr><td><b>Gait and balance</b></td><td>Timed Up and Go, gait speed, 5-times sit-to-stand; Berg or Tinetti where a fuller assessment is warranted</td></tr>
     <tr><td><b>Cardiovascular</b></td><td>Lying and standing blood pressure at 1 and 3 minutes, pulse, murmurs, ECG; carotid sinus massage in unexplained falls</td></tr>
     <tr><td><b>Neurological</b></td><td>Cognition, parkinsonism, peripheral neuropathy, proprioception, cervical myelopathy, vision including visual fields</td></tr>
-    <tr><td><b>Musculoskeletal</b></td><td>Proximal muscle strength, painful joints, foot problems and footwear &mdash; the most ignored item on the list</td></tr>
-    <tr><td><b>Environment and function</b></td><td>Home hazards assessed by an occupational therapist, ADL and IADL, continence, alcohol, fear of falling</td></tr>
+    <tr><td><b>Musculoskeletal</b></td><td>Proximal strength, painful joints, feet and footwear</td></tr>
+    <tr><td><b>Environment and function</b></td><td>Home hazards by an occupational therapist, ADL and IADL, continence, alcohol, fear of falling</td></tr>
   </tbody></table></div>
-  <p class="note">The three-question screen used in practice &mdash; have you fallen in the past year,
-  do you feel unsteady, do you worry about falling &mdash; identifies who needs the full assessment. A
-  single yes is enough.</p>
 
-  <h2>The bedside measures, with their numbers</h2>
+  <h2>The bedside measures, and what each one actually tests</h2>
+  <p>Gait and balance testing is the part of the assessment that turns a history into a measurement.
+  The tests differ in what they load. The <b>Timed Up and Go</b> (rise from a chair, walk 3 m, turn,
+  return, sit) samples strength, gait and balance in one manoeuvre, and the quality of the turn is as
+  informative as the time on the clock. <b>Gait speed</b> over a short course is the purest single
+  predictor: below <b>0.8 m/s</b> marks impaired mobility and is part of the sarcopenia definition,
+  and it predicts mortality and surgical outcome; below <b>0.6 m/s</b> the person is unlikely to
+  cross a road safely or live alone without help. The <b>5-times sit-to-stand</b> and the
+  <b>30-second chair stand</b> isolate lower-limb strength without a dynamometer. The
+  <b>4-stage balance test</b> narrows the base progressively to tandem and single-leg stance. The
+  <b>SPPB</b> combines balance, gait speed and chair stands into one score &mdash; the research
+  standard, and useful when you want a number to follow over time &mdash; and the <b>Berg Balance
+  Scale</b> is the longer instrument used in rehabilitation.</p>
   <div class="tscroll"><table>
     <thead><tr><th>Test</th><th>Threshold in common use</th><th>What it tells you</th></tr></thead><tbody>
-    <tr><td>Timed Up and Go</td><td class="n">about 12 seconds <span class="wn">(convention)</span></td><td>Global mobility; the quality of the turn is as informative as the time. <b>Hazzard ch 43 declines to give a cut-point at all</b> &mdash; see the note below</td></tr>
+    <tr><td>Timed Up and Go</td><td class="n">about 12 seconds <span class="wn">(convention)</span></td><td>Global mobility; watch the turn. <b>Hazzard ch 43 declines to give a cut-point</b> &mdash; see below</td></tr>
     <tr><td>Usual gait speed</td><td class="n">&lt;0.8 m/s</td><td>Impaired mobility, part of the sarcopenia definition, predicts mortality and surgical outcome</td></tr>
     <tr><td></td><td class="n">&lt;0.6 m/s</td><td>Unlikely to cross a road safely or live alone without help</td></tr>
     <tr><td>5-times sit-to-stand</td><td class="n">&gt;12&ndash;15 seconds</td><td>Lower-limb strength, without a dynamometer</td></tr>
     <tr><td>Short Physical Performance Battery</td><td class="n">&le;8 of 12</td><td>Gait speed, balance and chair stands combined; strong outcome predictor</td></tr>
     <tr><td>Berg Balance Scale</td><td class="n">&lt;45 of 56</td><td>Balance impairment; longer, used in rehabilitation</td></tr>
   </tbody></table></div>
-
   <div class="callout"><p><b>The TUG cut-point is a convention, and the exam's own textbook says so.</b>
   Twelve seconds comes from CDC STEADI and is what most services use. Hazzard ch 43 reports a
   systematic review of 25 studies finding the predictive value of the TUG for falls in
@@ -5498,20 +5528,80 @@ The first sentence of text is active and visible right at the 200px boundary, re
   a test with a threshold. On a stem sourced to Hazzard, the safe answer is that a slow TUG triggers
   assessment rather than establishing risk.</p></div>
 
+  <h2>What works, and why</h2>
+  <aside class="pearl"><b>Exam pearl</b><p>If the stem lists four drugs and one recent fall, the answer is almost never a new drug &mdash; it is stopping one. Medication review is the fastest fall intervention you can deliver in a single visit &mdash; though an Epley for BPPV and the right walking aid also work that day.</p></aside>
+  <p><b>Exercise is the intervention with the strongest evidence</b>, and the reason is mechanical: the
+  thing that stops a stumble becoming a fall is a fast, strong corrective step, and that is trainable.
+  It must include <b>balance and functional training</b>, not walking alone &mdash; walking builds
+  endurance, not the reactive balance that prevents falls. The named programmes are <b>Otago</b>
+  (home-based, progressive strength and balance) and <b>tai chi</b>. Dose and progression matter:
+  across 64 RCTs, well-designed exercise gave <b>23% fewer falls</b>, most where balance is highly
+  challenged and there are <b>three or more hours a week</b>, effective at 75 and over and whoever
+  delivers it. Exercise alone works in Parkinson disease and cognitive impairment but <b>not in
+  long-term stroke survivors or the recently discharged</b> &mdash; one home programme after hospital
+  <i>raised</i> falls by 43%, presumably by getting deconditioned people moving before their other
+  risks had been addressed &mdash; so in those groups it must sit inside a multifactorial plan. In
+  residential care, twice-weekly resistance and balance training for 25 weeks cut falls by 55%. The
+  2023 committee answer to &ldquo;single most effective&rdquo; was exercise.</p>
+  <p><b>Medication review and deprescribing</b>, targeting the FRID list, is the fastest intervention
+  and the one with no adherence problem. <b>Home hazard assessment by an occupational therapist</b>
+  works, with the benefit concentrated in those at high risk and after a fall; generic advice leaflets
+  do not, because the problem is rarely that the patient does not know rugs are dangerous.</p>
+  <p><b>Vitamin D</b> is where ch 43 is blunter than START H5: current mega-trials show supplementation
+  <b>does not improve physical function or prevent falls in community-dwelling older adults, even when
+  deficient</b>; it may reduce falls in residential care, which is the only setting the chapter's
+  summary endorses it for. High-dose intermittent bolus dosing <i>increased</i> falls. Two sittings
+  have asked exactly this (2023, 2024).</p>
+  <p>The remaining interventions are targeted at a single mechanism found on assessment, which is the
+  point of doing the assessment: <b>cataract surgery</b> for the first eye and <b>single-lens distance
+  glasses</b> for outdoor walking in regular varifocal wearers; <b>treating the orthostasis</b> &mdash;
+  withdraw the offending drug first, then slow rising, compression, adequate salt and fluid and
+  head-up sleeping, before midodrine or fludrocortisone; and <b>pacing</b> for documented
+  cardioinhibitory carotid sinus syndrome with unexplained falls.</p>
+  <div class="callout"><p><b>What does not work, and is examinable as such:</b> education or advice
+  alone, vitamin D in the replete, hip protectors (adherence collapses), and <b>physical restraints
+  and bedrails, which increase injury</b> rather than preventing it. Alarms have not shown benefit.
+  Sitters are a staffing decision, not an evidence-based intervention.</p></div>
+
+  <h2>After the fall</h2>
+  <aside class="pearl"><b>Exam pearl</b><p>&ldquo;Found on the floor, cannot say how long&rdquo; is a long lie until proven otherwise: check creatine kinase, creatinine, temperature and the sacrum before anything else.</p></aside>
+  <p>The post-fall assessment is a search for the injuries that hide. <b>Head injury on an
+  anticoagulant</b> needs a low threshold for CT, and a subdural can present weeks later, after
+  everyone has stopped thinking about the fall. A <b>long lie</b> &mdash; hours on the floor &mdash;
+  causes rhabdomyolysis from muscle compressed under body weight, acute kidney injury from the
+  myoglobin, pressure injury over the same bony points, hypothermia and dehydration; ask how long they
+  were down and whether they could get up. An <b>occult fracture</b> is the hip fracture with a normal
+  radiograph: if the patient cannot weight-bear, it needs MRI or CT, and the pubic rami, vertebrae and
+  proximal humerus break the same way. Then the <b>bone health follow-through</b>: a fragility fracture
+  is itself the indication for osteoporosis treatment, and START H4 covers it &mdash; the fall clinic
+  that does not address bone has done half the job. Finally <b>fear of falling and post-fall
+  syndrome</b>, addressed explicitly, or the exercise programme will not be done.</p>
+
   <h2>Fear of falling, and the cycle it drives</h2>
   <p>Present in roughly half of fallers and in a substantial number who have never fallen. It is not
   simply prudence: it produces activity restriction, then deconditioning, then more falls, and it
-  independently predicts functional decline and institutionalisation. It is <b>treatable</b> &mdash;
-  exercise programmes, particularly tai chi and Otago, and cognitive-behavioural approaches, both
-  improve it. Asking about it is one of the three screening questions for exactly this reason.</p>
+  independently predicts functional decline and institutionalisation. The cycle runs on a plausible
+  logic &mdash; if walking is dangerous, walk less &mdash; that happens to be wrong, because the
+  muscles and balance that were protecting the person waste in the process. It is <b>treatable</b>:
+  exercise programmes, particularly tai chi and Otago, and cognitive-behavioural approaches both
+  improve it.</p>
 
   <h2>Restraints, bedrails and alarms</h2>
   <div class="callout"><p>All three <b>increase</b> injury rather than reducing it. Physical restraints
   cause pressure injury, delirium, deconditioning, incontinence, aspiration and strangulation, and they
-  do not prevent falls. Bedrails convert a low fall into a high one. Bed and chair alarms have been
-  tested in randomised trials and do not reduce falls. What works is the multifactorial programme, and
-  in the ward context that means supervised toileting, sensible bed height, visible call bell, footwear,
-  lighting and the medication review.</p></div>
+  do not prevent falls, because a restrained patient who wants to get up still tries. Bedrails convert
+  a low fall into a high one. Bed and chair alarms have been tested in randomised trials and do not
+  reduce falls. What works is the multifactorial programme, and in the ward context that means
+  supervised toileting, sensible bed height, visible call bell, footwear, lighting and the medication
+  review.</p></div>
+
+  <h2>The Israeli layer</h2>
+  <p>Inpatient falls-risk scoring is routine on Israeli wards and drives documentation as much as
+  care. Community fall-prevention and physiotherapy run through the kupot; home adaptation and
+  personal-care hours come through <span class="he">חוק ביטוח סיעוד</span> via
+  <span class="he">ביטוח לאומי</span>, which is often the practical answer to
+  &ldquo;what would you actually arrange for this patient?&rdquo;. Recurrent unexplained falls also
+  bear on fitness to drive.</p>
 </section>
 
 
@@ -8833,6 +8923,44 @@ The first sentence of text is active and visible right at the 200px boundary, re
     </div>
   </div>
 </div>
+<div id="dispPop" hidden role="dialog" aria-label="Display settings">
+  <div class="hd"><span>Display</span><button type="button" id="dispPopClose">Close</button></div>
+  <div class="disp disprow">
+    <button type="button" data-dk>dark</button>
+    <span>text size</span>
+    <button type="button" data-fs="s">S</button>
+    <button type="button" data-fs="m">M</button>
+    <button type="button" data-fs="l">L</button>
+    <button type="button" data-fs="xl">XL</button>
+  </div>
+</div>
+<div id="hlBar" hidden>
+  <button type="button" id="hlMark">highlight</button>
+  <button type="button" id="hlNote">highlight + note</button>
+</div>
+<div id="hlModal" hidden role="dialog" aria-modal="true" aria-label="Highlight">
+  <div class="tm-bar"><b>Highlight</b><button type="button" id="hlClose">Close</button></div>
+  <div class="tm-body">
+    <p class="note" id="hlSec" style="margin-top:0"></p>
+    <blockquote id="hlQuote" style="margin:0 0 12px;padding:6px 0 6px 14px;border-left:3px solid #d9b640"></blockquote>
+    <textarea id="hlText" rows="5" style="width:100%;font:inherit;padding:8px;box-sizing:border-box" placeholder="Your remark on this passage"></textarea>
+    <div class="tbtns" style="margin-top:10px">
+      <button type="button" id="hlSave">Save</button>
+      <button type="button" id="hlDel" class="lnk">Remove highlight</button>
+      <span class="savedtag" id="hlDone">saved</span>
+    </div>
+  </div>
+</div>
+<div id="notesModal" hidden role="dialog" aria-modal="true" aria-label="My notes and highlights">
+  <div class="tm-bar"><b>My notes &amp; highlights</b><button type="button" id="ntClose">Close</button></div>
+  <div class="tm-body">
+    <div class="tbtns" style="margin-bottom:8px">
+      <button type="button" id="ntCopy">Copy everything as text</button>
+      <span class="savedtag" id="ntDone">copied</span>
+    </div>
+    <div id="ntBody"></div>
+  </div>
+</div>
 <div id="tblModal" hidden role="dialog" aria-modal="true" aria-label="Table, enlarged">
   <div class="tm-bar"><b id="tmTitle">Table</b><button type="button" id="tmClose">Close</button></div>
   <div class="tm-body" id="tmBody"></div>
@@ -10103,7 +10231,7 @@ document.querySelectorAll('.wopen').forEach(b=>{
 
 /* ---------- backup ---------- */
 const BKEYS = ['geri:weeks-done','geri:days','geri:missed','geri:qlog','geri:notes','geri:timer',
-  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock'];
+  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes'];
 document.getElementById('bkBtn').addEventListener('click', async ()=>{
   const wrap = document.getElementById('bkWrap');
   wrap.classList.toggle('on');
@@ -10156,7 +10284,7 @@ if('serviceWorker' in navigator && /^https?:/.test(location.protocol) && /\/stag
 }
 
 /* ---------- the anchor: home button, and a report dialog that captures where you are ---------- */
-const BUILD = 'geriatrics-stage-a · 13 Sep 2026 · 44 sections';
+const BUILD = 'geriatrics-stage-a · 14 Sep 2026 · 44 sections';
 const REPO_ISSUES = 'https://github.com/Eiasash/Geriatrics/issues/new';
 let lastErr = '';
 window.addEventListener('error', e=>{ lastErr = (e.message || String(e)) + (e.lineno ? ' @' + e.lineno : ''); });
@@ -10193,6 +10321,203 @@ document.getElementById('homeBtn').addEventListener('click', ()=>{ show('week');
     flash();
   });
   note.addEventListener('input', ()=>{ document.getElementById('rptIssue').href = issueHref(); });
+})();
+
+/* =========================================================
+   highlights and personal notes — select a passage, mark it, add a remark;
+   a notes box under every section; one index of all of it. Stored with the rest
+   of the progress, included in Backup. A highlight is anchored by its text and
+   its ordinal in the section (the third "orthostatic hypotension"), so it survives
+   a reload and small edits elsewhere on the page; if the passage itself is
+   rewritten the highlight is dropped, not misplaced.
+   ========================================================= */
+const HLKEY = 'geri:hl', SNKEY = 'geri:secnotes';
+let HL = {}, SN = {};
+function hlSave(){ try{ window.storage.set(HLKEY, JSON.stringify(HL)); }catch(e){} }
+function snSave(){ try{ window.storage.set(SNKEY, JSON.stringify(SN)); }catch(e){} }
+function hlNodes(sec){
+  const w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT, {acceptNode:n=>{
+    const p = n.parentElement; if(!p) return NodeFilter.FILTER_REJECT;
+    return p.closest('.secfoot,.mynotes,script,style,textarea') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; }});
+  const out = []; let n; while((n = w.nextNode())) out.push(n); return out;
+}
+function hlPattern(t){ return new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+'), 'g'); }
+function hlUnwrap(hid){
+  document.querySelectorAll('mark.hl[data-hid="'+hid+'"]').forEach(m=>{
+    const p = m.parentNode; while(m.firstChild) p.insertBefore(m.firstChild, m); p.removeChild(m); p.normalize();
+  });
+}
+function hlWrap(sec, s, e, h){
+  const nodes = hlNodes(sec); let pos = 0;
+  for(const n of nodes){
+    const L = n.data.length, a = pos, b = pos + L; pos = b;
+    if(b <= s || a >= e) continue;
+    let node = n;
+    if(s > a) node = node.splitText(s - a);
+    if(e < b) node.splitText(e - Math.max(s, a));
+    if(!node.data.trim()) continue;
+    const m = document.createElement('mark'); m.className = 'hl' + (h.n ? ' hasnote' : '');
+    m.dataset.hid = h.id; if(h.n) m.title = h.n;
+    node.parentNode.insertBefore(m, node); m.appendChild(node);
+  }
+}
+function hlApplyOne(h){
+  const sec = document.getElementById(h.sec); if(!sec) return false;
+  if(sec.querySelector('mark.hl[data-hid="'+h.id+'"]')) return true;
+  const full = hlNodes(sec).map(n=>n.data).join('');
+  const re = hlPattern(h.t); let m, k = 0;
+  while((m = re.exec(full))){ if(k === h.i){ hlWrap(sec, m.index, m.index + m[0].length, h); return true; } k++; if(!m[0].length) re.lastIndex++; }
+  return false;
+}
+function hlPaintSec(id){
+  (HL[id] || []).forEach(h=>{ if(!h.sec) h.sec = id; hlApplyOne(h); });
+  const p = document.querySelector('.mynotes[data-sec="'+id+'"]'); if(p) notesPaint(p);
+}
+function hlNote(hid){ for(const id in HL){ const h = (HL[id]||[]).find(x=>x.id === hid); if(h) return h; } return null; }
+function hlSetNote(hid, text){
+  const h = hlNote(hid); if(!h) return; h.n = text;
+  document.querySelectorAll('mark.hl[data-hid="'+hid+'"]').forEach(m=>{ m.classList.toggle('hasnote', !!text); if(text) m.title = text; else m.removeAttribute('title'); });
+  hlSave(); const p = document.querySelector('.mynotes[data-sec="'+h.sec+'"]'); if(p) notesPaint(p);
+}
+function hlRemove(hid){
+  const h = hlNote(hid); if(!h) return;
+  HL[h.sec] = (HL[h.sec]||[]).filter(x=>x.id !== hid); if(!HL[h.sec].length) delete HL[h.sec];
+  hlUnwrap(hid); hlSave(); const p = document.querySelector('.mynotes[data-sec="'+h.sec+'"]'); if(p) notesPaint(p);
+}
+/* ---- creating one from the current selection ---- */
+function hlFromSelection(withNote){
+  const sel = window.getSelection(); if(!sel || sel.rangeCount === 0 || sel.isCollapsed) return null;
+  const r = sel.getRangeAt(0);
+  const sec = document.querySelector('main section.on'); if(!sec || !sec.contains(r.commonAncestorContainer)) return null;
+  const el = r.commonAncestorContainer.nodeType === 1 ? r.commonAncestorContainer : r.commonAncestorContainer.parentElement;
+  if(el.closest('.secfoot,.mynotes,textarea,input,.toc')) return null;
+  const raw = r.toString(); const t = raw.trim(); if(t.length < 2 || t.length > 700) return null;
+  const pre = document.createRange(); pre.setStart(sec, 0); pre.setEnd(r.startContainer, r.startOffset);
+  const start = pre.toString().length + (raw.length - raw.replace(/^\s+/, '').length);
+  const full = hlNodes(sec).map(n=>n.data).join('');
+  const re = hlPattern(t); let m, i = 0, found = -1;
+  while((m = re.exec(full))){ if(m.index === start){ found = i; break; } if(m.index > start) break; i++; if(!m[0].length) re.lastIndex++; }
+  if(found < 0){ found = 0; const re2 = hlPattern(t); let k = 0, mm; while((mm = re2.exec(full))){ if(mm.index <= start) found = k; k++; if(!mm[0].length) re2.lastIndex++; } }
+  const h = {id: 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), sec: sec.id, t, i: found, n: '', c: new Date().toISOString().slice(0,10)};
+  (HL[sec.id] = HL[sec.id] || []).push(h);
+  sel.removeAllRanges();
+  hlApplyOne(h); hlSave();
+  const p = document.querySelector('.mynotes[data-sec="'+sec.id+'"]'); if(p) notesPaint(p);
+  if(withNote) hlOpen(h.id);
+  return h;
+}
+/* ---- the floating bar that follows a selection ---- */
+(function(){
+  const bar = document.getElementById('hlBar'); if(!bar) return;
+  let tmr;
+  function place(){
+    const sel = window.getSelection();
+    if(!sel || sel.rangeCount === 0 || sel.isCollapsed){ bar.hidden = true; return; }
+    const r = sel.getRangeAt(0); const sec = document.querySelector('main section.on');
+    if(!sec || !sec.contains(r.commonAncestorContainer)){ bar.hidden = true; return; }
+    const el = r.commonAncestorContainer.nodeType === 1 ? r.commonAncestorContainer : r.commonAncestorContainer.parentElement;
+    if(el.closest('.secfoot,.mynotes,textarea,input,.toc') || r.toString().trim().length < 2){ bar.hidden = true; return; }
+    const rect = r.getBoundingClientRect(); bar.hidden = false;
+    const bw = bar.offsetWidth || 220, bh = bar.offsetHeight || 50;
+    let x = rect.left + rect.width/2 - bw/2; x = Math.max(8, Math.min(x, window.innerWidth - bw - 8));
+    let y = rect.bottom + 10; if(y + bh > window.innerHeight - 8) y = rect.top - bh - 10;
+    y = Math.max(8, Math.min(y, window.innerHeight - bh - 8));
+    bar.style.left = x + 'px'; bar.style.top = y + 'px';
+  }
+  document.addEventListener('selectionchange', ()=>{ clearTimeout(tmr); tmr = setTimeout(place, 260); });
+  window.addEventListener('scroll', ()=>{ if(!bar.hidden) place(); }, {passive:true});
+  document.getElementById('hlMark').addEventListener('click', ()=>{ hlFromSelection(false); bar.hidden = true; });
+  document.getElementById('hlNote').addEventListener('click', ()=>{ hlFromSelection(true); bar.hidden = true; });
+})();
+/* ---- tapping a highlight opens its note ---- */
+let hlCur = null;
+function hlOpen(hid){
+  const h = hlNote(hid); if(!h) return; hlCur = hid;
+  document.getElementById('hlSec').textContent = (SECNAME[h.sec] || h.sec) + (h.c ? ' · ' + h.c : '');
+  document.getElementById('hlQuote').textContent = h.t;
+  document.getElementById('hlText').value = h.n || '';
+  document.getElementById('hlModal').hidden = false; document.body.classList.add('tm-open');
+  if(!h.n) document.getElementById('hlText').focus();
+}
+(function(){
+  const modal = document.getElementById('hlModal'); if(!modal) return;
+  const close = ()=>{ modal.hidden = true; document.body.classList.remove('tm-open'); hlCur = null; };
+  document.addEventListener('click', e=>{ const m = e.target.closest('mark.hl'); if(m && m.dataset.hid) hlOpen(m.dataset.hid); });
+  document.getElementById('hlClose').addEventListener('click', close);
+  document.getElementById('hlSave').addEventListener('click', ()=>{
+    if(hlCur) hlSetNote(hlCur, document.getElementById('hlText').value.trim());
+    const t = document.getElementById('hlDone'); t.classList.add('on'); setTimeout(()=>{ t.classList.remove('on'); close(); }, 500);
+  });
+  document.getElementById('hlDel').addEventListener('click', ()=>{ if(hlCur && confirm('Remove this highlight and its note?')){ hlRemove(hlCur); close(); } });
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && !modal.hidden) close(); });
+})();
+/* ---- the notes panel under each section ---- */
+function buildNotesPanel(id){
+  const d = document.createElement('details'); d.className = 'mynotes'; d.dataset.sec = id;
+  d.innerHTML = '<summary>My notes on this section<span class="cnt"></span></summary>' +
+    '<textarea placeholder="Your own notes on this section. Select any passage above to highlight it or attach a remark. Saved on this device and included in Backup."></textarea>' +
+    '<ul class="hlist"></ul>' +
+    '<div class="mnbar"><span class="savedtag">saved</span><button type="button" class="allnotes">all my notes &amp; highlights</button></div>';
+  const ta = d.querySelector('textarea'); let tmr;
+  ta.addEventListener('input', ()=>{ clearTimeout(tmr); tmr = setTimeout(()=>{
+    SN[id] = ta.value; if(!ta.value.trim()) delete SN[id]; snSave();
+    const t = d.querySelector('.savedtag'); t.classList.add('on'); setTimeout(()=>t.classList.remove('on'), 1200); notesCount(d); }, 500); });
+  d.querySelector('.allnotes').addEventListener('click', notesIndex);
+  d.querySelector('.hlist').addEventListener('click', e=>{
+    const li = e.target.closest('li[data-hid]'); if(!li) return;
+    const m = document.querySelector('mark.hl[data-hid="'+li.dataset.hid+'"]');
+    if(m){ m.scrollIntoView({block:'center', behavior:'smooth'}); m.classList.add('flash'); setTimeout(()=>m.classList.remove('flash'), 1600); }
+  });
+  return d;
+}
+function notesCount(d){
+  const id = d.dataset.sec; const n = (HL[id]||[]).length + ((SN[id]||'').trim() ? 1 : 0);
+  d.querySelector('.cnt').textContent = n ? '(' + n + ')' : '';
+}
+function notesPaint(d){
+  const id = d.dataset.sec; const ta = d.querySelector('textarea');
+  if(document.activeElement !== ta) ta.value = SN[id] || '';
+  d.querySelector('.hlist').innerHTML = (HL[id]||[]).map(h=>'<li data-hid="'+h.id+'"><q>' + escHtml(h.t.length > 160 ? h.t.slice(0,160) + '…' : h.t) + '</q>' +
+    (h.n ? '<i>' + escHtml(h.n) + '</i>' : '') + '</li>').join('');
+  notesCount(d);
+}
+/* ---- everything in one place ---- */
+function notesIndex(){
+  const body = document.getElementById('ntBody'); const ids = CONTENT.filter(id=>(HL[id]||[]).length || (SN[id]||'').trim());
+  body.innerHTML = ids.length ? ids.map(id=>'<h3>' + escHtml(SECNAME[id] || id) + '<button type="button" data-go="'+id+'">open</button></h3>' +
+    ((SN[id]||'').trim() ? '<div class="nt">' + escHtml(SN[id]) + '</div>' : '') +
+    ((HL[id]||[]).length ? '<ul>' + HL[id].map(h=>'<li data-hid="'+h.id+'">' + escHtml(h.t) + (h.n ? ' <i>— ' + escHtml(h.n) + '</i>' : '') + '</li>').join('') + '</ul>' : '')).join('')
+    : '<p class="note">Nothing yet. Select a passage in any section to highlight it, or write in the notes box at the bottom of a section.</p>';
+  document.getElementById('notesModal').hidden = false; document.body.classList.add('tm-open');
+}
+function notesAsText(){
+  return CONTENT.filter(id=>(HL[id]||[]).length || (SN[id]||'').trim()).map(id=>
+    '## ' + (SECNAME[id] || id) + '\n' + ((SN[id]||'').trim() ? SN[id].trim() + '\n' : '') +
+    (HL[id]||[]).map(h=>'> ' + h.t + (h.n ? '\n  ' + h.n : '')).join('\n') + '\n').join('\n');
+}
+(function(){
+  const modal = document.getElementById('notesModal'); if(!modal) return;
+  const close = ()=>{ modal.hidden = true; document.body.classList.remove('tm-open'); };
+  document.getElementById('ntClose').addEventListener('click', close);
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && !modal.hidden) close(); });
+  document.getElementById('ntBody').addEventListener('click', e=>{
+    const go = e.target.closest('button[data-go]'); const li = e.target.closest('li[data-hid]');
+    if(go){ close(); show(go.dataset.go); window.scrollTo({top:0}); return; }
+    if(li){ const h = hlNote(li.dataset.hid); if(!h) return; close(); show(h.sec);
+      setTimeout(()=>{ const m = document.querySelector('mark.hl[data-hid="'+h.id+'"]'); if(m){ m.scrollIntoView({block:'center'}); m.classList.add('flash'); setTimeout(()=>m.classList.remove('flash'), 1600); } }, 120); }
+  });
+  document.getElementById('ntCopy').addEventListener('click', async ()=>{
+    const txt = notesAsText();
+    try{ await navigator.clipboard.writeText(txt); }catch(e){ prompt('Copy this:', txt); }
+    const t = document.getElementById('ntDone'); t.classList.add('on'); setTimeout(()=>t.classList.remove('on'), 1400);
+  });
+})();
+/* ---- load, then paint every section once the footers and panels exist ---- */
+(async()=>{
+  try{ const r = await window.storage.get(HLKEY); HL = JSON.parse(r.value) || {}; }catch(e){ HL = {}; }
+  try{ const r = await window.storage.get(SNKEY); SN = JSON.parse(r.value) || {}; }catch(e){ SN = {}; }
+  const paintAll = ()=>{ CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){ console.error('highlight', id, e); } }); };
+  if(document.querySelector('.mynotes')) idle(paintAll); else setTimeout(()=>idle(paintAll), 300);
 })();
 
 /* ---------- table pop-out ---------- */
@@ -10379,6 +10704,7 @@ CONTENT.forEach(id=>{
     '<button type="button" class="pr">print this section</button>' +
     '<button type="button" class="hm">&#8962; home</button>' +
     '<span class="sfnote">'+name+(VERIFIED[id] ? ' · checked against '+VERIFIED[id] : '')+'</span>';
+  sec.appendChild(buildNotesPanel(id));
   sec.appendChild(foot);
   foot.querySelector('.mark').addEventListener('click',()=>toggleRead(id));
   const dr = foot.querySelector('.dr');
@@ -10539,21 +10865,33 @@ function paintDisp(){
   document.body.classList.toggle('dark', !!disp.dark);
   document.documentElement.classList.toggle('dark', !!disp.dark);
   ['s','m','l','xl'].forEach(k=>document.body.classList.toggle('fs-'+k, disp.fs===k));
-  const dk = document.getElementById('dkBtn');
-  if(dk){
+  document.querySelectorAll('.disprow button[data-dk]').forEach(dk=>{
     dk.setAttribute('aria-pressed', disp.dark ? 'true':'false');
     dk.textContent = disp.dark ? 'light' : 'dark';
-    document.querySelectorAll('#dispRow button[data-fs]').forEach(b=>
-      b.setAttribute('aria-pressed', b.dataset.fs===disp.fs ? 'true':'false'));
-  }
+  });
+  document.querySelectorAll('.disprow button[data-fs]').forEach(b=>
+    b.setAttribute('aria-pressed', b.dataset.fs===disp.fs ? 'true':'false'));
   try{ window.storage.set(DISPKEY, JSON.stringify(disp)); }catch(e){}
 }
+/* one handler for every display row — the one on the home page and the one in the popover */
+document.querySelectorAll('.disprow').forEach(row=>{
+  row.addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    if(b.hasAttribute('data-dk')){ disp.dark = !disp.dark; paintDisp(); }
+    else if(b.dataset.fs){ disp.fs = b.dataset.fs; paintDisp(); }
+  });
+});
+/* the popover itself: Aa in the phone anchor bar, "Aa · display" in the desktop rail */
 (function(){
-  const row = document.getElementById('dispRow');
-  if(!row) return;
-  row.querySelector('#dkBtn').addEventListener('click',()=>{ disp.dark = !disp.dark; paintDisp(); });
-  row.querySelectorAll('button[data-fs]').forEach(b=>
-    b.addEventListener('click',()=>{ disp.fs = b.dataset.fs; paintDisp(); }));
+  const pop = document.getElementById('dispPop'); if(!pop) return;
+  const close = ()=>{ pop.hidden = true; };
+  ['dispBtn','dispBtnRail'].forEach(id=>{ const b = document.getElementById(id);
+    if(b) b.addEventListener('click', ()=>{ pop.hidden = !pop.hidden; if(!pop.hidden) paintDisp(); }); });
+  document.getElementById('dispPopClose').addEventListener('click', close);
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && !pop.hidden) close(); });
+  document.addEventListener('click', e=>{
+    if(pop.hidden || pop.contains(e.target) || e.target.closest('#dispBtn,#dispBtnRail')) return; close();
+  });
 })();
 
 /* =========================================================
@@ -11197,7 +11535,7 @@ function annotateSection(id){
       box.className = 'fnotes';
       box.innerHTML = '<b>Abbreviations used on this page</b><dl>' +
         used.sort().map(k=>'<dt>'+k+'</dt><dd>'+ABBR[k]+'</dd>').join('') + '</dl>';
-      const foot = sec.querySelector(':scope > .secfoot');
+      const foot = sec.querySelector(':scope > .mynotes') || sec.querySelector(':scope > .secfoot');
       if(foot) sec.insertBefore(box, foot); else sec.appendChild(box);
     }
 }

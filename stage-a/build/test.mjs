@@ -455,6 +455,36 @@ ok('table captions do not simply repeat the heading above',
      w.eval('CONTENT').filter(id => !w.eval('VERIFIED')[id]).join(','));
 }
 
+// ---- v12 (14 Sep): display reachable from any section; highlights and per-section notes ----
+ok('display popover exists with both controls', !!d.querySelector('#dispPop button[data-dk]') && d.querySelectorAll('#dispPop button[data-fs]').length === 4);
+ok('Aa button in the phone anchor bar and in the desktop rail', !!d.getElementById('dispBtn') && !!d.getElementById('dispBtnRail'));
+d.querySelector('#dispPop button[data-fs="s"]').click();
+ok('popover text-size click applies and syncs the home row', d.body.classList.contains('fs-s') &&
+   d.querySelector('#dispRow button[data-fs="s"]').getAttribute('aria-pressed') === 'true');
+d.querySelector('#dispPop button[data-dk]').click();
+ok('popover dark toggle mirrors the home button label', d.body.classList.contains('dark') && d.getElementById('dkBtn').textContent === 'light');
+d.querySelector('#dispPop button[data-dk]').click(); d.querySelector('#dispRow button[data-fs="m"]').click();
+ok('a notes panel under every content section', d.querySelectorAll('.mynotes').length === d.querySelectorAll('.secfoot').length,
+   d.querySelectorAll('.mynotes').length + ' panels');
+ok('notes panels sit above the footer', [...d.querySelectorAll('.mynotes')].every(p=>p.nextElementSibling && p.nextElementSibling.classList.contains('secfoot')));
+ok('highlights and section notes are in the backup key list', w.eval("BKEYS.includes('geri:hl') && BKEYS.includes('geri:secnotes')"));
+w.eval(`HL = {falls:[{id:'t1', sec:'falls', t:'fear of falling', i:1, n:'second one', c:'2026-09-14'}]}; hlPaintSec('falls');`);
+const hlm = d.querySelectorAll('#falls mark.hl[data-hid="t1"]');
+ok('a stored highlight re-anchors to its ordinal occurrence', hlm.length >= 1 && hlm[0].classList.contains('hasnote'), hlm.length + ' marks');
+ok('re-anchored text matches the stored text', [...hlm].map(m=>m.textContent).join('').replace(/\s+/g,' ') === 'fear of falling');
+ok('the ordinal picked the second occurrence, not the first', (()=>{ const full = w.eval("hlNodes(document.getElementById('falls')).map(n=>n.data).join('')");
+   const first = full.indexOf('fear of falling'); const r = d.createRange(); r.setStart(d.getElementById('falls'),0); r.setEndBefore(hlm[0]); return r.toString().length > first; })());
+w.eval("hlRemove('t1')");
+ok('removing a highlight unwraps it', d.querySelectorAll('#falls mark.hl').length === 0);
+ok('a highlight whose passage no longer exists is dropped, not misplaced',
+   w.eval(`HL = {falls:[{id:'t2', sec:'falls', t:'this sentence is not on the page', i:0, n:''}]}; hlPaintSec('falls'); document.querySelectorAll('#falls mark.hl').length === 0`));
+w.eval("HL = {}");
+const nta = d.querySelector('.mynotes[data-sec="falls"] textarea');
+nta.value = 'ask about vitamin D'; nta.dispatchEvent(new w.Event('input'));
+await new Promise(r => setTimeout(r, 700));
+ok('section note persists', 'geri:secnotes' in store && /vitamin D/.test(store['geri:secnotes']), store['geri:secnotes']);
+ok('the notes index lists it', (w.eval("notesAsText()")).indexOf('vitamin D') >= 0);
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 
