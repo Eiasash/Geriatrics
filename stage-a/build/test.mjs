@@ -525,6 +525,32 @@ w.eval("show('week')");
 ok('swatch colour rules carry an id so the bar button rule cannot flatten them',
    /#hlBar \.swatch \.sw-y/.test(html) && /#hlBar \.swatch button\.sw\{/.test(html.replace(/,#hlModal \.swatch button\.sw/,'')));
 
+// ---- v12d: stopwatch mode, collapsible timer, end button, persistent scroll ----
+ok('an end button sits with the top button', !!d.getElementById('toEnd') && !!d.getElementById('toTop'));
+w.eval("show('falls')");
+ok('the stopwatch is a separate clock, not a flag on the day', w.eval("typeof SW === 'object' && SW.on === false && typeof T.p === 'number'"));
+w.eval("swSetMode(true)");
+ok('switching to the stopwatch relabels the pill and hides the phase control',
+   d.getElementById('mtPhase').textContent === 'stopwatch' && d.getElementById('mtSkip').hidden === true);
+w.eval("T = {p:1, left:900, run:true, ts:Date.now(), d:TODAY}; swSetMode(false); swSetMode(true)");
+ok('turning the stopwatch on pauses the day rather than letting both run', w.eval("T.run === false && T.p === 1"));
+w.eval("swToggleRun()");
+ok('the stopwatch runs', w.eval("SW.run === true"));
+w.eval("swToggleRun()");
+ok('and pauses where it was', w.eval("SW.run === false"));
+w.eval("swReset()");
+ok('reset takes it to zero', w.eval("swMs() < 50") && /^0?0:00$/.test(d.getElementById('mtClock').textContent));
+w.eval("swSetMode(false)");
+ok('the day comes back exactly where it was left', w.eval("T.p === 1 && Math.round(T.left) === 900"));
+ok('the stopwatch is in the backup key list', w.eval("BKEYS.includes('geri:stopwatch')"));
+d.getElementById('miniT').classList.add('open'); d.getElementById('mtShut').click();
+ok('collapse shrinks the pill to its handle', d.getElementById('miniT').classList.contains('shut') && !d.getElementById('miniT').classList.contains('open'));
+d.getElementById('mtMore').click();
+ok('tapping the handle opens it again', !d.getElementById('miniT').classList.contains('shut'));
+ok('scroll position is stored per section and persisted', w.eval("typeof scrollAt === 'object' && typeof scrollFrac === 'object' && SCKEY === 'geri:scroll'"));
+w.eval("scrollAt.falls = 1234; scrollFrac.falls = 0.5; rememberScroll; restoreScroll('falls')");
+ok('restoring a section reads its stored offset', w.eval("scrollAt.falls === 1234"));
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 

@@ -523,8 +523,13 @@
   #miniT button.pri{background:var(--paper);color:var(--ink);font-weight:600}
   #miniT.run b{color:#ffd28a}
   #miniT .more{display:none}
-  #miniT.open .more{display:flex;gap:6px}
+  #miniT.open .more{display:flex;gap:6px;flex-wrap:wrap}
   #miniT.open{border-radius:14px;flex-wrap:wrap;padding-bottom:8px}
+  #miniT.shut{padding:6px;gap:0}
+  #miniT.shut b,#miniT.shut .ph,#miniT.shut #mtGo,#miniT.shut .more{display:none}
+  #miniT.shut #mtMore{border-radius:50%;width:38px;min-width:38px;padding:0}
+  #miniT.shut.run #mtMore{background:#ffd28a;color:#1b1b1b;border-color:#ffd28a}
+  #miniT .mode{font-size:11px;opacity:.7;width:100%;padding-top:2px}
   @media (min-width:901px){ #miniT{left:auto;right:18px;bottom:18px} }
   /* backup, reachable from any section */
   #bkModal .tm-body #bkWrap{display:block;margin:0}
@@ -692,6 +697,15 @@
   /* ---- v7: mobile and performance ---- */
   section{scroll-margin-top:16px}
   h2,h3{scroll-margin-top:20px}
+  .toend{display:none;position:fixed;right:14px;bottom:calc(60px + env(safe-area-inset-bottom));
+    z-index:45;font-family:var(--sans);font-size:calc(12px*var(--fs,1));line-height:1;padding:11px 12px;
+    background:var(--ink);color:var(--paper);border:0;border-radius:22px;cursor:pointer;
+    box-shadow:0 2px 10px rgba(0,0,0,.18);align-items:center;gap:5px}
+  body.dark .toend{color:#12161a}
+  .toend[hidden]{display:none}
+  .toend span{font-size:calc(11px*var(--fs,1));letter-spacing:.03em}
+  @media (max-width:900px){ .toend{display:flex} }
+  @media print{ .toend{display:none!important} }
   .totop{display:none;position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));
     z-index:45;font-family:var(--sans);font-size:calc(12px*var(--fs,1));line-height:1;padding:11px 12px;
     background:var(--ink);color:var(--paper);border:0;border-radius:22px;cursor:pointer;
@@ -2755,6 +2769,7 @@ The first sentence of text is active and visible right at the 200px boundary, re
 </head>
 <body>
 <button class="railshow" id="railShow" type="button" title="Show the list">&raquo;</button>
+<button class="toend" id="toEnd" type="button" aria-label="Jump to the end of this section">&darr;<span>end</span></button>
 <button class="totop" id="toTop" type="button" aria-label="Back to top" hidden>&uarr;<span>top</span></button>
 <div class="wrap">
 <nav>
@@ -2874,6 +2889,7 @@ The first sentence of text is active and visible right at the 200px boundary, re
       <button id="tGo" type="button">Start</button>
       <button id="tSkip" type="button" class="lnk">Skip to next phase</button>
       <button id="tReset" type="button" class="lnk">Reset the day</button>
+      <button id="tMode" type="button" class="lnk">Plain stopwatch instead</button>
     </div>
   </div>
 
@@ -9064,9 +9080,12 @@ The first sentence of text is active and visible right at the 200px boundary, re
   <button type="button" class="pri" id="mtGo">Start</button>
   <button type="button" id="mtMore" aria-label="More timer controls">&#8943;</button>
   <span class="more">
+    <button type="button" id="mtMode">plain stopwatch</button>
     <button type="button" id="mtSkip">next phase</button>
-    <button type="button" id="mtReset">reset the day</button>
+    <button type="button" id="mtReset">reset</button>
+    <button type="button" id="mtShut">collapse</button>
     <button type="button" id="mtHide">hide</button>
+    <span class="mode" id="mtModeLab"></span>
   </span>
 </div>
 <div id="bkModal" hidden role="dialog" aria-modal="true" aria-label="Backup and restore">
@@ -9867,18 +9886,53 @@ const btns = document.querySelectorAll('#rail button[data-t]');
 /* The one entry point for changing section. Everything that must happen, in order.
    Declared here; the things it touches are defined further down but exist before it
    is ever called. */
-/* where the reader was in each section, so coming back does not mean starting over */
-const scrollAt = {};
+/* where the reader was in each section, so coming back does not mean starting over.
+   Kept on the device too, so it survives closing the tab — the position is stored as a
+   fraction of the section's height as well as in pixels, so a text-size change does not
+   land you in the wrong place. */
+const SCKEY = 'geri:scroll';
+let scrollAt = {};
+let scrollFrac = {};
+let scSaveTmr = null;
+function scPersist(){
+  clearTimeout(scSaveTmr);
+  scSaveTmr = setTimeout(()=>{ scSaveTmr = null; try{ window.storage.set(SCKEY, JSON.stringify({y:scrollAt, f:scrollFrac})); }catch(e){} }, 400);
+}
+function docH(){ return Math.max(1, document.documentElement.scrollHeight - window.innerHeight); }
 function rememberScroll(){
   const cur = [...document.querySelectorAll('main section.on')][0];
-  if(cur) scrollAt[cur.id] = window.scrollY;
+  if(!cur) return;
+  scrollAt[cur.id] = window.scrollY;
+  scrollFrac[cur.id] = window.scrollY / docH();
+  scPersist();
 }
+let scTick = false;
+addEventListener('scroll', ()=>{ if(scTick) return; scTick = true;
+  requestAnimationFrame(()=>{ rememberScroll(); scTick = false; }); }, {passive:true});
+addEventListener('pagehide', rememberScroll);
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden) rememberScroll(); });
 function restoreScroll(id){
   const y = scrollAt[id] || 0;
+  const f = scrollFrac[id];
   /* two frames: the first lets the hash anchor jump happen, the second lets the
      newly shown section lay out so the scroll is not clamped to the old height */
-  requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo({top:y})));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    /* if the page is now a different height (bigger text, a table opened), the stored
+       pixel offset is wrong; the fraction is closer. Take the pixel value when the two
+       agree, the fraction when they do not. */
+    let t = y;
+    if(f != null){ const byFrac = f * docH(); if(Math.abs(byFrac - y) > window.innerHeight * 0.6) t = byFrac; }
+    window.scrollTo({top:t});
+  }));
 }
+(async()=>{
+  try{ const r = await window.storage.get(SCKEY); const v = JSON.parse(r.value);
+    if(v && v.y){ scrollAt = v.y; scrollFrac = v.f || {}; }
+  }catch(e){}
+  /* on a cold start the section is already showing, so put the reader back where they were */
+  const cur = [...document.querySelectorAll('main section.on')][0];
+  if(cur && scrollAt[cur.id] && window.scrollY < 40) restoreScroll(cur.id);
+})();
 
 /* same thing, but without writing the hash — used when the hash is already right */
 function showQuiet(id){ const h = location.hash; show(id); if(location.hash !== h) history.replaceState(null,'',h || location.pathname); }
@@ -10245,20 +10299,67 @@ function beep(){
     o.start(); o.stop(c.currentTime+.95);
   }catch(e){}
 }
+/* ---- plain stopwatch: no phases, no day, counts up, pause and resume ----
+   A second clock rather than a mode flag on the first, so switching back and forth
+   never loses the 75/35/10 day's position. */
+const SWKEY = 'geri:stopwatch';
+let SW = {on:false, ms:0, run:false, ts:0};
+function swSave(){ try{ window.storage.set(SWKEY, JSON.stringify(SW)); }catch(e){} }
+function swMs(){ return SW.run ? SW.ms + (Date.now() - SW.ts) : SW.ms; }
+function hhmmss(ms){
+  const s = Math.max(0, Math.floor(ms/1000));
+  const h = Math.floor(s/3600);
+  return (h ? h + ':' + String(Math.floor(s%3600/60)).padStart(2,'0') : String(Math.floor(s/60)).padStart(2,'0'))
+    + ':' + String(s%60).padStart(2,'0');
+}
+function swToggleRun(){
+  if(SW.run){ SW.ms = swMs(); SW.run = false; } else { SW.ts = Date.now(); SW.run = true; }
+  swSave(); tPaint();
+}
+function swReset(){ SW.ms = 0; SW.ts = Date.now(); swSave(); tPaint(); }
+function swSetMode(on){
+  SW.on = on;
+  if(on && T.run){ T.left = tLeft(); T.run = false; tSave(); }      /* don't leave the other one ticking */
+  if(!on && SW.run){ SW.ms = swMs(); SW.run = false; }
+  swSave(); tPaint();
+}
 function mtPaint(l){
   const box = document.getElementById('miniT'); if(!box) return;
   const home = (document.querySelector('main section.on')||{}).id === 'week';
   const done = T.p >= PH.length;
   box.hidden = home || mtOff;
-  box.classList.toggle('run', T.run);
-  document.getElementById('mtClock').textContent = done ? '--:--' : mmss(l);
-  document.getElementById('mtPhase').textContent = done ? 'day done' : PH[T.p].n.toLowerCase() + ' · ' + (T.p+1) + '/3';
-  document.getElementById('mtGo').textContent = done ? 'Again' : T.run ? 'Pause' : (l < PH[T.p].s ? 'Resume' : 'Start');
+  const running = SW.on ? SW.run : T.run;
+  box.classList.toggle('run', running);
+  if(SW.on){
+    document.getElementById('mtClock').textContent = hhmmss(swMs());
+    document.getElementById('mtPhase').textContent = 'stopwatch';
+    document.getElementById('mtGo').textContent = SW.run ? 'Pause' : (swMs() > 0 ? 'Resume' : 'Start');
+  } else {
+    document.getElementById('mtClock').textContent = done ? '--:--' : mmss(l);
+    document.getElementById('mtPhase').textContent = done ? 'day done' : PH[T.p].n.toLowerCase() + ' · ' + (T.p+1) + '/3';
+    document.getElementById('mtGo').textContent = done ? 'Again' : T.run ? 'Pause' : (l < PH[T.p].s ? 'Resume' : 'Start');
+  }
+  document.getElementById('mtMode').textContent = SW.on ? 'back to the 75/35/10 day' : 'plain stopwatch';
+  document.getElementById('mtSkip').hidden = SW.on;
+  document.getElementById('mtReset').textContent = SW.on ? 'reset to zero' : 'reset the day';
+  document.getElementById('mtModeLab').textContent = SW.on
+    ? 'Counting up. The 75/35/10 day is paused where you left it.'
+    : '';
+  const tm = document.getElementById('tMode');
+  if(tm) tm.textContent = SW.on ? 'Back to the 75/35/10 day' : 'Plain stopwatch instead';
 }
 let mtOff = false;
 function tPaint(){
   const l = tLeft();
   mtPaint(l);
+  if(SW.on){
+    elClock.textContent = hhmmss(swMs());
+    elPhase.textContent = 'Plain stopwatch — the day is paused';
+    elFill.style.width = '0%';
+    elGo.textContent = SW.run ? 'Pause' : (swMs() > 0 ? 'Resume' : 'Start');
+    elTimer.classList.toggle('run', SW.run);
+    return;
+  }
   elClock.textContent = mmss(l);
   elPhase.textContent = T.p>=PH.length
     ? 'Day complete'
@@ -10277,11 +10378,13 @@ function tAdvance(){
   tSave(); tPaint(); beep();
 }
 function tick(){
+  if(SW.on && SW.run){ mtOff = false; tPaint(); return; }
   if(T.run && tLeft()<=0) tAdvance();
   else if(T.run){ mtOff = false; tPaint(); }
 }
 setInterval(tick, 500);
 elGo.addEventListener('click',()=>{
+  if(SW.on){ swToggleRun(); return; }
   if(T.p>=PH.length){ T={p:0,left:PH[0].s,run:false,ts:0,d:TODAY}; tSave(); tPaint(); return; }
   if(T.run){ T.left = tLeft(); T.run=false; }
   else { T.ts = Date.now(); T.run=true; }
@@ -10291,10 +10394,16 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
 /* the floating copy drives the same state; the big timer on the home page follows it */
 (function(){
   const box = document.getElementById('miniT'); if(!box) return;
-  document.getElementById('mtGo').addEventListener('click',()=>{ elGo.click(); });
-  document.getElementById('mtMore').addEventListener('click',()=>box.classList.toggle('open'));
+  document.getElementById('mtGo').addEventListener('click',()=>{ if(SW.on) swToggleRun(); else elGo.click(); });
+  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); });
+  document.getElementById('mtShut').addEventListener('click',()=>{ box.classList.remove('open'); box.classList.add('shut'); });
+  document.getElementById('mtMore').addEventListener('click',()=>{
+    if(box.classList.contains('shut')){ box.classList.remove('shut'); return; }
+    box.classList.toggle('open');
+  });
   document.getElementById('mtSkip').addEventListener('click',()=>{ if(T.p<PH.length) tAdvance(); box.classList.remove('open'); });
   document.getElementById('mtReset').addEventListener('click',()=>{
+    if(SW.on){ swReset(); box.classList.remove('open'); return; }
     if(!confirm('Reset the day back to the start of the 75-minute chapter block?')) return;
     T={p:0,left:PH[0].s,run:false,ts:0,d:TODAY}; tSave(); tPaint(); box.classList.remove('open');
   });
@@ -10305,11 +10414,13 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
 document.getElementById('tReset').addEventListener('click',()=>{
   T={p:0,left:PH[0].s,run:false,ts:0,d:TODAY}; tSave(); tPaint();
 });
+document.getElementById('tMode').addEventListener('click',()=>{ swSetMode(!SW.on); });
 (async()=>{
   try{
     const r = await window.storage.get(TKEY); const v = JSON.parse(r.value);
     if(v && v.d === TODAY){ T = v; if(T.run && tLeft()<=0){ T.run=false; T.left=0; } }
   }catch(e){}
+  try{ const r = await window.storage.get(SWKEY); const v = JSON.parse(r.value); if(v) SW = v; }catch(e){}
   tPaint();
 })();
 
@@ -10400,7 +10511,7 @@ document.querySelectorAll('.wopen').forEach(b=>{
 
 /* ---------- backup ---------- */
 const BKEYS = ['geri:weeks-done','geri:days','geri:missed','geri:qlog','geri:notes','geri:timer',
-  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark'];
+  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch'];
 /* One backup block, kept in a dialog so it is reachable from the bottom of every
    section as well as from the home page. Moving the node rather than copying it
    means there is still only one textarea and one set of handlers. */
@@ -10464,7 +10575,7 @@ if('serviceWorker' in navigator && /^https?:/.test(location.protocol) && /\/stag
 }
 
 /* ---------- the anchor: home button, and a report dialog that captures where you are ---------- */
-const BUILD = 'geriatrics-stage-a · 14 Sep 2026 c · 44 sections';
+const BUILD = 'geriatrics-stage-a · 14 Sep 2026 d · 44 sections';
 const REPO_ISSUES = 'https://github.com/Eiasash/Geriatrics/issues/new';
 let lastErr = '';
 window.addEventListener('error', e=>{ lastErr = (e.message || String(e)) + (e.lineno ? ' @' + e.lineno : ''); });
@@ -11405,6 +11516,14 @@ document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) refresh
     requestAnimationFrame(()=>{ b.hidden = scrollY < 700; tick = false; });
   }, {passive:true});
   b.addEventListener('click', ()=>scrollTo({top:0, behavior:'smooth'}));
+  /* and its twin: to the bottom of the section you are reading */
+  const e = document.getElementById('toEnd');
+  if(e) e.addEventListener('click', ()=>{
+    const sec = document.querySelector('main section.on');
+    const foot = sec && sec.querySelector(':scope > .secfoot');
+    if(foot) foot.scrollIntoView({block:'end', behavior:'smooth'});
+    else scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'});
+  });
 })();
 
 /* ---------- mark the tables that actually overflow, so the edge fades ---------- */
