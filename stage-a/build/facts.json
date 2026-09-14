@@ -1,5 +1,5 @@
 {
- "_about": "Each fact is a literal substring that must appear in the rendered text of the named section. Every entry was checked against the Hazzard 8th-edition chapter (or the named paper) on 2026-09-13. If a test fails, either the section changed or the fact did — go back to the source before editing either.",
+ "_about": "Each fact is a literal substring that must appear in the rendered text of the named section. Every entry was checked against the Hazzard 8th-edition chapter (or the named paper) on 2026-09-13 (falls entries re-verified against ch 43 on 2026-09-14). If a test fails, either the section changed or the fact did — go back to the source before editing either.",
  "facts": [
   {
    "sec": "thyroid",
@@ -425,6 +425,46 @@
    "sec": "diabetes",
    "src": "ch 99",
    "text": "every 2 to 3 years"
+  },
+  {
+   "sec": "falls",
+   "src": "ch 43",
+   "text": "two- to threefold"
+  },
+  {
+   "sec": "falls",
+   "src": "ch 43",
+   "text": "18-cm step"
+  },
+  {
+   "sec": "falls",
+   "src": "ch 43",
+   "text": "rate ratio 0.98"
+  },
+  {
+   "sec": "falls",
+   "src": "ch 43",
+   "text": "52%"
+  },
+  {
+   "sec": "falls",
+   "src": "ch 43",
+   "text": "35–45% of injurious falls"
+  },
+  {
+   "sec": "falls",
+   "src": "ch 43",
+   "text": "39% in high-risk groups"
+  },
+  {
+   "sec": "falls",
+   "src": "ch 43",
+   "text": "increased them by about 50%"
+  },
+  {
+   "sec": "falls",
+   "src": "ch 43",
+   "text": "Alcohol consumption"
   }
  ]
 }
