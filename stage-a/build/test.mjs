@@ -502,6 +502,29 @@ d.getElementById('resumeClear').click();
 ok('clearing hides the strip', d.getElementById('resume').hidden && w.eval("BM === null"));
 ok('every abbreviation mark has a matching footnote term in its section', [...d.querySelectorAll('abbr.abbr')].every(a => { const s = a.closest('section'); const k = a.textContent.replace(/\*$/, '').trim(); return s && [...s.querySelectorAll('.fnotes dt')].some(dt => dt.textContent.trim() === k); }));
 
+// ---- v12c: backup anywhere, floating timer, swatch colours ----
+ok('every section footer offers backup & restore', [...d.querySelectorAll('.secfoot')].every(f=>f.querySelector('.bk')));
+ok('backup lives in a dialog and has one textarea only', !!d.getElementById('bkModal') && d.querySelectorAll('#bkText').length === 1);
+await w.eval("bkOpen()"); await new Promise(r=>setTimeout(r,200));
+ok('opening from a section moves the one backup block into the dialog',
+   d.getElementById('bkWrap').parentNode === d.getElementById('bkModalBody') && !d.getElementById('bkModal').hidden);
+w.eval("bkClose()");
+ok('the floating timer is hidden on the home page', (w.eval("show('week')"), d.getElementById('miniT').hidden));
+w.eval("show('falls'); mtOff = false; tPaint()");
+ok('the floating timer shows on a section, with clock, phase and a control', !d.getElementById('miniT').hidden &&
+   /^\d\d:\d\d$/.test(d.getElementById('mtClock').textContent) && /1\/3/.test(d.getElementById('mtPhase').textContent));
+d.getElementById('mtGo').click();
+ok('its button starts the same timer the home page drives', w.eval("T.run === true") && d.getElementById('tGo').textContent === 'Pause');
+d.getElementById('mtGo').click();
+ok('and pauses it', w.eval("T.run === false") && d.getElementById('mtGo').textContent === 'Resume');
+d.getElementById('mtHide').click();
+ok('hide dismisses it until the next section change', d.getElementById('miniT').hidden);
+w.eval("show('sleep')");
+ok('changing section brings it back', !d.getElementById('miniT').hidden);
+w.eval("show('week')");
+ok('swatch colour rules carry an id so the bar button rule cannot flatten them',
+   /#hlBar \.swatch \.sw-y/.test(html) && /#hlBar \.swatch button\.sw\{/.test(html.replace(/,#hlModal \.swatch button\.sw/,'')));
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 

@@ -194,11 +194,11 @@
   /* ---- table pop-out: tap a table to read it full-screen, close to land back where you were ---- */
   .tscroll table{cursor:zoom-in}
   .tm-hint{font-family:var(--sans);font-size:calc(11px*var(--fs,1));color:var(--mute);margin:-14px 0 16px;text-align:right}
-  #tblModal,#rptModal,#hlModal,#notesModal{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column}
-  #tblModal[hidden],#rptModal[hidden],#hlModal[hidden],#notesModal[hidden]{display:none}
-  #rptModal .tm-bar,#hlModal .tm-bar,#notesModal .tm-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--ink);font-family:var(--sans);font-size:calc(13px*var(--fs,1))}
-  #rptModal .tm-bar button,#hlModal .tm-bar button,#notesModal .tm-bar button{font-family:var(--sans);font-size:calc(13px*var(--fs,1));padding:8px 14px;min-height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:2px;cursor:pointer;flex:none;white-space:nowrap}
-  #rptModal .tm-body,#hlModal .tm-body,#notesModal .tm-body{flex:1;overflow:auto;padding:14px}
+  #tblModal,#rptModal,#hlModal,#notesModal,#bkModal{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column}
+  #tblModal[hidden],#rptModal[hidden],#hlModal[hidden],#notesModal[hidden],#bkModal[hidden]{display:none}
+  #rptModal .tm-bar,#hlModal .tm-bar,#notesModal .tm-bar,#bkModal .tm-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--ink);font-family:var(--sans);font-size:calc(13px*var(--fs,1))}
+  #rptModal .tm-bar button,#hlModal .tm-bar button,#notesModal .tm-bar button,#bkModal .tm-bar button{font-family:var(--sans);font-size:calc(13px*var(--fs,1));padding:8px 14px;min-height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:2px;cursor:pointer;flex:none;white-space:nowrap}
+  #rptModal .tm-body,#hlModal .tm-body,#notesModal .tm-body,#bkModal .tm-body{flex:1;overflow:auto;padding:14px}
   #tblModal .tm-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;
       border-bottom:1px solid var(--ink);font-family:var(--sans);font-size:calc(13px*var(--fs,1))}
   #tblModal .tm-bar b{font-family:var(--mono);font-size:calc(12px*var(--fs,1));color:var(--mute)}
@@ -495,14 +495,40 @@
   body.dark mark.hl.c-o{background:#6a4420} body.dark mark.hl.c-u{background:none}
   body.dark mark.hl.hasnote::after{color:#f0d070}
   .swatch{display:inline-flex;gap:6px;align-items:center}
-  .swatch button.sw{width:30px;height:30px;min-height:30px;padding:0;border-radius:50%;border:2px solid transparent;cursor:pointer}
-  .swatch button.sw[aria-pressed="true"]{border-color:var(--paper);outline:2px solid var(--ink)}
-  .sw-y{background:#ffe08a} .sw-g{background:#c6efc4} .sw-b{background:#c7e2ff} .sw-p{background:#ffd0e2} .sw-o{background:#ffd9b0}
-  .sw-u{background:var(--paper);border-color:var(--ink)!important;position:relative}
-  .sw-u::after{content:"";position:absolute;left:6px;right:6px;bottom:7px;border-bottom:2px solid var(--stop)}
+  /* these need an id in the selector: #hlBar button{background:none} would otherwise win */
+  #hlBar .swatch button.sw,#hlModal .swatch button.sw{width:32px;height:32px;min-height:32px;min-width:32px;padding:0;
+    border-radius:50%;border:2px solid rgba(0,0,0,.28);cursor:pointer;flex:none;box-sizing:border-box}
+  #hlBar .swatch button.sw[aria-pressed="true"],#hlModal .swatch button.sw[aria-pressed="true"]{
+    border-color:#fff;box-shadow:0 0 0 2px var(--stop)}
+  #hlBar .swatch .sw-y,#hlModal .swatch .sw-y{background:#ffe08a}
+  #hlBar .swatch .sw-g,#hlModal .swatch .sw-g{background:#c6efc4}
+  #hlBar .swatch .sw-b,#hlModal .swatch .sw-b{background:#c7e2ff}
+  #hlBar .swatch .sw-p,#hlModal .swatch .sw-p{background:#ffd0e2}
+  #hlBar .swatch .sw-o,#hlModal .swatch .sw-o{background:#ffd9b0}
+  #hlBar .swatch .sw-u,#hlModal .swatch .sw-u{background:#fff;position:relative}
+  #hlBar .swatch .sw-u::after,#hlModal .swatch .sw-u::after{content:"";position:absolute;left:6px;right:6px;bottom:8px;
+    border-bottom:2px solid #b41426}
   #hlBar{flex-wrap:wrap;max-width:calc(100vw - 16px)}
   #hlBar .swatch{padding:0 4px}
   #hlModal .swatch{margin:10px 0}
+  /* floating session timer — on every section except the home page */
+  #miniT{position:fixed;left:10px;bottom:14px;z-index:56;font-family:var(--sans);background:var(--ink);color:var(--paper);
+    border-radius:22px;box-shadow:0 6px 22px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;
+    max-width:calc(100vw - 20px)}
+  #miniT[hidden]{display:none}
+  #miniT b{font-family:var(--mono);font-size:15px;letter-spacing:.02em;min-width:56px}
+  #miniT .ph{font-size:11.5px;opacity:.75;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #miniT button{font-family:var(--sans);font-size:12.5px;min-height:34px;padding:6px 10px;border-radius:17px;cursor:pointer;
+    background:none;border:1px solid var(--paper);color:var(--paper);white-space:nowrap}
+  #miniT button.pri{background:var(--paper);color:var(--ink);font-weight:600}
+  #miniT.run b{color:#ffd28a}
+  #miniT .more{display:none}
+  #miniT.open .more{display:flex;gap:6px}
+  #miniT.open{border-radius:14px;flex-wrap:wrap;padding-bottom:8px}
+  @media (min-width:901px){ #miniT{left:auto;right:18px;bottom:18px} }
+  /* backup, reachable from any section */
+  #bkModal .tm-body #bkWrap{display:block;margin:0}
+  .secfoot .bk{}
   /* reading bookmark */
   #resume{border:1px solid var(--ink);border-left:6px solid var(--stop);border-radius:2px;padding:12px 14px;margin:0 0 18px;
     font-family:var(--sans);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
@@ -595,7 +621,7 @@
 
   @media print{
     nav,#sheet,.railshow,.topicbtn,#hits,.today,.timer,.secfoot,.toc,.drillbar,.cbtns,.cfoot,
-    .disp,#bkWrap,.chips,.qlog,.spark,.wopen,#hlBar,#dispPop,.dispbtn,.mynotes .mnbar{display:none!important}
+    .disp,#bkWrap,.chips,.qlog,.spark,.wopen,#hlBar,#dispPop,.dispbtn,.mynotes .mnbar,#miniT{display:none!important}
     mark.hl{background:#eee}
     .wrap{display:block;max-width:none}
     main{padding:0}
@@ -9032,6 +9058,21 @@ The first sentence of text is active and visible right at the 200px boundary, re
     <button type="button" id="bmGo" hidden>resume</button>
   </div>
 </div>
+<div id="miniT" hidden>
+  <b id="mtClock">75:00</b>
+  <span class="ph" id="mtPhase"></span>
+  <button type="button" class="pri" id="mtGo">Start</button>
+  <button type="button" id="mtMore" aria-label="More timer controls">&#8943;</button>
+  <span class="more">
+    <button type="button" id="mtSkip">next phase</button>
+    <button type="button" id="mtReset">reset the day</button>
+    <button type="button" id="mtHide">hide</button>
+  </span>
+</div>
+<div id="bkModal" hidden role="dialog" aria-modal="true" aria-label="Backup and restore">
+  <div class="tm-bar"><b>Backup &amp; restore progress</b><button type="button" id="bkClose">Close</button></div>
+  <div class="tm-body" id="bkModalBody"></div>
+</div>
 <div id="hlBar" hidden>
   <span class="swatch" role="group" aria-label="Highlight colour"><button type="button" class="sw sw-y" data-c="y" title="yellow"></button><button type="button" class="sw sw-g" data-c="g" title="green"></button><button type="button" class="sw sw-b" data-c="b" title="blue"></button><button type="button" class="sw sw-p" data-c="p" title="pink"></button><button type="button" class="sw sw-o" data-c="o" title="orange"></button><button type="button" class="sw sw-u" data-c="u" title="underline only"></button></span>
   <button type="button" id="hlMark">highlight</button>
@@ -9861,6 +9902,7 @@ function show(id){
   if(location.hash.slice(1) !== id) location.hash = id;            /* deep link, Back */
   restoreScroll(id);                                               /* back where you were */
   requestAnimationFrame(markScrollers);                            /* table overflow  */
+  document.dispatchEvent(new Event('sectionshown'));               /* floating timer   */
   try{ window.storage.set('geri:tab', id); }catch(e){}
 }
 btns.forEach(b=>b.addEventListener('click',()=>{ show(b.dataset.t); }));
@@ -10203,8 +10245,20 @@ function beep(){
     o.start(); o.stop(c.currentTime+.95);
   }catch(e){}
 }
+function mtPaint(l){
+  const box = document.getElementById('miniT'); if(!box) return;
+  const home = (document.querySelector('main section.on')||{}).id === 'week';
+  const done = T.p >= PH.length;
+  box.hidden = home || mtOff;
+  box.classList.toggle('run', T.run);
+  document.getElementById('mtClock').textContent = done ? '--:--' : mmss(l);
+  document.getElementById('mtPhase').textContent = done ? 'day done' : PH[T.p].n.toLowerCase() + ' · ' + (T.p+1) + '/3';
+  document.getElementById('mtGo').textContent = done ? 'Again' : T.run ? 'Pause' : (l < PH[T.p].s ? 'Resume' : 'Start');
+}
+let mtOff = false;
 function tPaint(){
   const l = tLeft();
+  mtPaint(l);
   elClock.textContent = mmss(l);
   elPhase.textContent = T.p>=PH.length
     ? 'Day complete'
@@ -10224,7 +10278,7 @@ function tAdvance(){
 }
 function tick(){
   if(T.run && tLeft()<=0) tAdvance();
-  else if(T.run) tPaint();
+  else if(T.run){ mtOff = false; tPaint(); }
 }
 setInterval(tick, 500);
 elGo.addEventListener('click',()=>{
@@ -10234,6 +10288,20 @@ elGo.addEventListener('click',()=>{
   tSave(); tPaint();
 });
 document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length) tAdvance(); });
+/* the floating copy drives the same state; the big timer on the home page follows it */
+(function(){
+  const box = document.getElementById('miniT'); if(!box) return;
+  document.getElementById('mtGo').addEventListener('click',()=>{ elGo.click(); });
+  document.getElementById('mtMore').addEventListener('click',()=>box.classList.toggle('open'));
+  document.getElementById('mtSkip').addEventListener('click',()=>{ if(T.p<PH.length) tAdvance(); box.classList.remove('open'); });
+  document.getElementById('mtReset').addEventListener('click',()=>{
+    if(!confirm('Reset the day back to the start of the 75-minute chapter block?')) return;
+    T={p:0,left:PH[0].s,run:false,ts:0,d:TODAY}; tSave(); tPaint(); box.classList.remove('open');
+  });
+  document.getElementById('mtHide').addEventListener('click',()=>{ mtOff = true; box.classList.remove('open'); box.hidden = true; });
+  /* it comes back on the next section change, and whenever the clock is running */
+  document.addEventListener('sectionshown', ()=>{ mtOff = false; tPaint(); });
+})();
 document.getElementById('tReset').addEventListener('click',()=>{
   T={p:0,left:PH[0].s,run:false,ts:0,d:TODAY}; tSave(); tPaint();
 });
@@ -10333,14 +10401,25 @@ document.querySelectorAll('.wopen').forEach(b=>{
 /* ---------- backup ---------- */
 const BKEYS = ['geri:weeks-done','geri:days','geri:missed','geri:qlog','geri:notes','geri:timer',
   'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark'];
-document.getElementById('bkBtn').addEventListener('click', async ()=>{
-  const wrap = document.getElementById('bkWrap');
-  wrap.classList.toggle('on');
-  if(!wrap.classList.contains('on')) return;
+/* One backup block, kept in a dialog so it is reachable from the bottom of every
+   section as well as from the home page. Moving the node rather than copying it
+   means there is still only one textarea and one set of handlers. */
+async function bkFill(){
   const out = {};
   for(const k of BKEYS){ try{ const r = await window.storage.get(k); out[k]=r.value; }catch(e){} }
   document.getElementById('bkText').value = JSON.stringify(out, null, 1);
-});
+}
+async function bkOpen(){
+  const wrap = document.getElementById('bkWrap'), body = document.getElementById('bkModalBody');
+  if(wrap.parentNode !== body) body.appendChild(wrap);
+  wrap.classList.add('on');
+  document.getElementById('bkModal').hidden = false; document.body.classList.add('tm-open');
+  await bkFill();
+}
+function bkClose(){ document.getElementById('bkModal').hidden = true; document.body.classList.remove('tm-open'); }
+document.getElementById('bkBtn').addEventListener('click', bkOpen);
+document.getElementById('bkClose').addEventListener('click', bkClose);
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && !document.getElementById('bkModal').hidden) bkClose(); });
 document.getElementById('bkCopy').addEventListener('click', async ()=>{
   const t = document.getElementById('bkText');
   try{ await navigator.clipboard.writeText(t.value); }catch(e){ t.select(); }
@@ -10385,7 +10464,7 @@ if('serviceWorker' in navigator && /^https?:/.test(location.protocol) && /\/stag
 }
 
 /* ---------- the anchor: home button, and a report dialog that captures where you are ---------- */
-const BUILD = 'geriatrics-stage-a · 14 Sep 2026 b · 44 sections';
+const BUILD = 'geriatrics-stage-a · 14 Sep 2026 c · 44 sections';
 const REPO_ISSUES = 'https://github.com/Eiasash/Geriatrics/issues/new';
 let lastErr = '';
 window.addEventListener('error', e=>{ lastErr = (e.message || String(e)) + (e.lineno ? ' @' + e.lineno : ''); });
@@ -10909,11 +10988,13 @@ CONTENT.forEach(id=>{
     (n ? '<button type="button" class="dr" data-tag="'+tag+'">drill these '+n+' cards</button>' : '') +
     '<button type="button" class="pq" data-sec="' + id + '" hidden>past questions</button>' +
     '<button type="button" class="pr">print this section</button>' +
+    '<button type="button" class="bk">backup &amp; restore</button>' +
     '<button type="button" class="hm">&#8962; home</button>' +
     '<span class="sfnote">'+name+(VERIFIED[id] ? ' · checked against '+VERIFIED[id] : '')+'</span>';
   sec.appendChild(buildNotesPanel(id));
   sec.appendChild(foot);
   foot.querySelector('.mark').addEventListener('click',()=>toggleRead(id));
+  foot.querySelector('.bk').addEventListener('click',()=>bkOpen());
   const dr = foot.querySelector('.dr');
   if(dr) dr.addEventListener('click',()=>{
     setFilter({mode:'tag', tag:tag, label:TAGNAME[tag]||name});
