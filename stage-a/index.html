@@ -486,11 +486,38 @@
 
   /* ---- highlights and personal notes ---- */
   mark.hl{background:#ffe08a;color:inherit;padding:0 1px;cursor:pointer;border-bottom:1px dotted #a07800}
-  mark.hl.hasnote{background:#ffcf5c}
+  mark.hl.c-g{background:#c6efc4;border-bottom-color:#2f7d2b} mark.hl.c-b{background:#c7e2ff;border-bottom-color:#2b62a8}
+  mark.hl.c-p{background:#ffd0e2;border-bottom-color:#b0306a} mark.hl.c-o{background:#ffd9b0;border-bottom-color:#b5621a}
+  mark.hl.c-u{background:none;border-bottom:2px solid var(--stop)}
   mark.hl.hasnote::after{content:"\270E";font-size:.7em;vertical-align:super;margin-left:2px;color:#7a5a00}
   body.dark mark.hl{background:#5c4e1a;color:#f2ead0;border-bottom-color:#c9a94a}
-  body.dark mark.hl.hasnote{background:#7d6620}
+  body.dark mark.hl.c-g{background:#2e5a2c} body.dark mark.hl.c-b{background:#274a72} body.dark mark.hl.c-p{background:#6a2e48}
+  body.dark mark.hl.c-o{background:#6a4420} body.dark mark.hl.c-u{background:none}
   body.dark mark.hl.hasnote::after{color:#f0d070}
+  .swatch{display:inline-flex;gap:6px;align-items:center}
+  .swatch button.sw{width:30px;height:30px;min-height:30px;padding:0;border-radius:50%;border:2px solid transparent;cursor:pointer}
+  .swatch button.sw[aria-pressed="true"]{border-color:var(--paper);outline:2px solid var(--ink)}
+  .sw-y{background:#ffe08a} .sw-g{background:#c6efc4} .sw-b{background:#c7e2ff} .sw-p{background:#ffd0e2} .sw-o{background:#ffd9b0}
+  .sw-u{background:var(--paper);border-color:var(--ink)!important;position:relative}
+  .sw-u::after{content:"";position:absolute;left:6px;right:6px;bottom:7px;border-bottom:2px solid var(--stop)}
+  #hlBar{flex-wrap:wrap;max-width:calc(100vw - 16px)}
+  #hlBar .swatch{padding:0 4px}
+  #hlModal .swatch{margin:10px 0}
+  /* reading bookmark */
+  #resume{border:1px solid var(--ink);border-left:6px solid var(--stop);border-radius:2px;padding:12px 14px;margin:0 0 18px;
+    font-family:var(--sans);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  #resume[hidden]{display:none}
+  #resume .lab{font-size:calc(11px*var(--fs,1));letter-spacing:.08em;text-transform:uppercase;color:var(--mute);width:100%}
+  #resume .where{flex:1;min-width:200px;font-size:calc(14px*var(--fs,1))}
+  #resume .where b{display:block;font-size:calc(15px*var(--fs,1))}
+  #resume .where q{color:var(--mute);quotes:"\201C" "\201D"}
+  #resume button{font-family:var(--sans);font-size:calc(14px*var(--fs,1));padding:10px 16px;min-height:44px;cursor:pointer;border-radius:2px}
+  #resume #resumeGo{background:var(--ink);color:var(--paper);border:1px solid var(--ink)}
+  #resume #resumeClear{background:none;border:0;color:var(--mute);text-decoration:underline;text-underline-offset:3px;padding:6px}
+  .bm-flash{outline:2px solid var(--stop);outline-offset:4px}
+  #dispPop .bm{border-top:1px solid var(--rule);margin-top:10px;padding-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px}
+  #dispPop .bm button{font-family:var(--sans);font-size:12.5px;padding:8px 12px;min-height:38px;background:none;border:1px solid var(--ink);border-radius:2px;color:var(--ink);cursor:pointer}
+  #dispPop .bm .cur{color:var(--mute);flex:1;min-width:140px}
   mark.hl.flash{outline:2px solid var(--stop);outline-offset:2px}
   #hlBar{position:fixed;z-index:58;display:flex;gap:6px;background:var(--ink);color:var(--paper);padding:6px;
     border-radius:4px;box-shadow:0 6px 22px rgba(0,0,0,.3)}
@@ -2791,6 +2818,12 @@ The first sentence of text is active and visible right at the 200px boundary, re
 
 <!-- ============ THIS WEEK ============ -->
 <section id="week" class="on">
+  <div id="resume" hidden>
+    <div class="lab">Where you stopped reading</div>
+    <div class="where"><b id="resumeSec"></b><q id="resumeText"></q></div>
+    <button type="button" id="resumeGo">resume</button>
+    <button type="button" id="resumeClear">clear</button>
+  </div>
   <div class="today" id="today">
     <div class="lab">Today</div>
     <h3 id="tdTopic">&mdash;</h3>
@@ -8993,16 +9026,24 @@ The first sentence of text is active and visible right at the 200px boundary, re
     <button type="button" data-fs="l">L</button>
     <button type="button" data-fs="xl">XL</button>
   </div>
+  <div class="bm">
+    <button type="button" id="bmHere">mark my place here</button>
+    <span class="cur" id="bmCur">no bookmark yet</span>
+    <button type="button" id="bmGo" hidden>resume</button>
+  </div>
 </div>
 <div id="hlBar" hidden>
+  <span class="swatch" role="group" aria-label="Highlight colour"><button type="button" class="sw sw-y" data-c="y" title="yellow"></button><button type="button" class="sw sw-g" data-c="g" title="green"></button><button type="button" class="sw sw-b" data-c="b" title="blue"></button><button type="button" class="sw sw-p" data-c="p" title="pink"></button><button type="button" class="sw sw-o" data-c="o" title="orange"></button><button type="button" class="sw sw-u" data-c="u" title="underline only"></button></span>
   <button type="button" id="hlMark">highlight</button>
-  <button type="button" id="hlNote">highlight + note</button>
+  <button type="button" id="hlNote">+ note</button>
+  <button type="button" id="hlHere" title="Mark this as where you stopped reading">stop here</button>
 </div>
 <div id="hlModal" hidden role="dialog" aria-modal="true" aria-label="Highlight">
   <div class="tm-bar"><b>Highlight</b><button type="button" id="hlClose">Close</button></div>
   <div class="tm-body">
     <p class="note" id="hlSec" style="margin-top:0"></p>
     <blockquote id="hlQuote" style="margin:0 0 12px;padding:6px 0 6px 14px;border-left:3px solid #d9b640"></blockquote>
+    <span class="swatch" role="group" aria-label="Highlight colour"><button type="button" class="sw sw-y" data-c="y" title="yellow"></button><button type="button" class="sw sw-g" data-c="g" title="green"></button><button type="button" class="sw sw-b" data-c="b" title="blue"></button><button type="button" class="sw sw-p" data-c="p" title="pink"></button><button type="button" class="sw sw-o" data-c="o" title="orange"></button><button type="button" class="sw sw-u" data-c="u" title="underline only"></button></span>
     <textarea id="hlText" rows="5" style="width:100%;font:inherit;padding:8px;box-sizing:border-box" placeholder="Your remark on this passage"></textarea>
     <div class="tbtns" style="margin-top:10px">
       <button type="button" id="hlSave">Save</button>
@@ -10291,7 +10332,7 @@ document.querySelectorAll('.wopen').forEach(b=>{
 
 /* ---------- backup ---------- */
 const BKEYS = ['geri:weeks-done','geri:days','geri:missed','geri:qlog','geri:notes','geri:timer',
-  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes'];
+  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark'];
 document.getElementById('bkBtn').addEventListener('click', async ()=>{
   const wrap = document.getElementById('bkWrap');
   wrap.classList.toggle('on');
@@ -10344,7 +10385,7 @@ if('serviceWorker' in navigator && /^https?:/.test(location.protocol) && /\/stag
 }
 
 /* ---------- the anchor: home button, and a report dialog that captures where you are ---------- */
-const BUILD = 'geriatrics-stage-a · 14 Sep 2026 · 44 sections';
+const BUILD = 'geriatrics-stage-a · 14 Sep 2026 b · 44 sections';
 const REPO_ISSUES = 'https://github.com/Eiasash/Geriatrics/issues/new';
 let lastErr = '';
 window.addEventListener('error', e=>{ lastErr = (e.message || String(e)) + (e.lineno ? ' @' + e.lineno : ''); });
@@ -10416,7 +10457,7 @@ function hlWrap(sec, s, e, h){
     if(s > a) node = node.splitText(s - a);
     if(e < b) node.splitText(e - Math.max(s, a));
     if(!node.data.trim()) continue;
-    const m = document.createElement('mark'); m.className = 'hl' + (h.n ? ' hasnote' : '');
+    const m = document.createElement('mark'); m.className = 'hl' + (h.c && h.c !== 'y' ? ' c-' + h.c : '') + (h.n ? ' hasnote' : '');
     m.dataset.hid = h.id; if(h.n) m.title = h.n;
     node.parentNode.insertBefore(m, node); m.appendChild(node);
   }
@@ -10458,13 +10499,22 @@ function hlFromSelection(withNote){
   const re = hlPattern(t); let m, i = 0, found = -1;
   while((m = re.exec(full))){ if(m.index === start){ found = i; break; } if(m.index > start) break; i++; if(!m[0].length) re.lastIndex++; }
   if(found < 0){ found = 0; const re2 = hlPattern(t); let k = 0, mm; while((mm = re2.exec(full))){ if(mm.index <= start) found = k; k++; if(!mm[0].length) re2.lastIndex++; } }
-  const h = {id: 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), sec: sec.id, t, i: found, n: '', c: new Date().toISOString().slice(0,10)};
+  const h = {id: 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), sec: sec.id, t, i: found, n: '', c: hlColour, d: new Date().toISOString().slice(0,10)};
   (HL[sec.id] = HL[sec.id] || []).push(h);
   sel.removeAllRanges();
   hlApplyOne(h); hlSave();
   const p = document.querySelector('.mynotes[data-sec="'+sec.id+'"]'); if(p) notesPaint(p);
   if(withNote) hlOpen(h.id);
   return h;
+}
+/* ---- colour: last used is the default; swatches live in the bar and in the note dialog ---- */
+let hlColour = 'y';
+try{ hlColour = localStorage.getItem('geri:hlcolour') || 'y'; }catch(e){}
+function paintSwatches(root, c){ root.querySelectorAll('.swatch button.sw').forEach(b=>b.setAttribute('aria-pressed', b.dataset.c === c ? 'true' : 'false')); }
+function hlSetColour(hid, c){
+  const h = hlNote(hid); if(!h) return; h.c = c;
+  document.querySelectorAll('mark.hl[data-hid="'+hid+'"]').forEach(m=>{ m.className = 'hl' + (c !== 'y' ? ' c-' + c : '') + (h.n ? ' hasnote' : ''); });
+  hlSave();
 }
 /* ---- the floating bar that follows a selection ---- */
 (function(){
@@ -10486,6 +10536,12 @@ function hlFromSelection(withNote){
   }
   document.addEventListener('selectionchange', ()=>{ clearTimeout(tmr); tmr = setTimeout(place, 260); });
   window.addEventListener('scroll', ()=>{ if(!bar.hidden) place(); }, {passive:true});
+  paintSwatches(bar, hlColour);
+  bar.querySelector('.swatch').addEventListener('click', e=>{ const b = e.target.closest('button.sw'); if(!b) return;
+    hlColour = b.dataset.c; paintSwatches(bar, hlColour); try{ localStorage.setItem('geri:hlcolour', hlColour); }catch(x){} });
+  document.getElementById('hlHere').addEventListener('click', ()=>{ const sel = window.getSelection();
+    const r = sel && sel.rangeCount ? sel.getRangeAt(0) : null; const el = r ? (r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentElement) : null;
+    bmSet(el); if(sel) sel.removeAllRanges(); bar.hidden = true; });
   document.getElementById('hlMark').addEventListener('click', ()=>{ hlFromSelection(false); bar.hidden = true; });
   document.getElementById('hlNote').addEventListener('click', ()=>{ hlFromSelection(true); bar.hidden = true; });
 })();
@@ -10493,7 +10549,8 @@ function hlFromSelection(withNote){
 let hlCur = null;
 function hlOpen(hid){
   const h = hlNote(hid); if(!h) return; hlCur = hid;
-  document.getElementById('hlSec').textContent = (SECNAME[h.sec] || h.sec) + (h.c ? ' · ' + h.c : '');
+  document.getElementById('hlSec').textContent = (SECNAME[h.sec] || h.sec) + (h.d ? ' · ' + h.d : '');
+  paintSwatches(document.getElementById('hlModal'), h.c || 'y');
   document.getElementById('hlQuote').textContent = h.t;
   document.getElementById('hlText').value = h.n || '';
   document.getElementById('hlModal').hidden = false; document.body.classList.add('tm-open');
@@ -10504,6 +10561,8 @@ function hlOpen(hid){
   const close = ()=>{ modal.hidden = true; document.body.classList.remove('tm-open'); hlCur = null; };
   document.addEventListener('click', e=>{ const m = e.target.closest('mark.hl'); if(m && m.dataset.hid) hlOpen(m.dataset.hid); });
   document.getElementById('hlClose').addEventListener('click', close);
+  modal.querySelector('.swatch').addEventListener('click', e=>{ const b = e.target.closest('button.sw'); if(!b || !hlCur) return;
+    hlSetColour(hlCur, b.dataset.c); paintSwatches(modal, b.dataset.c); });
   document.getElementById('hlSave').addEventListener('click', ()=>{
     if(hlCur) hlSetNote(hlCur, document.getElementById('hlText').value.trim());
     const t = document.getElementById('hlDone'); t.classList.add('on'); setTimeout(()=>{ t.classList.remove('on'); close(); }, 500);
@@ -10578,6 +10637,94 @@ function notesAsText(){
   try{ const r = await window.storage.get(SNKEY); SN = JSON.parse(r.value) || {}; }catch(e){ SN = {}; }
   const paintAll = ()=>{ CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){ console.error('highlight', id, e); } }); };
   if(document.querySelector('.mynotes')) idle(paintAll); else setTimeout(()=>idle(paintAll), 300);
+})();
+
+/* =========================================================
+   reading bookmark — "I stopped here". One place, anchored like a highlight
+   (section + the opening text of a block + its ordinal), shown on the home page.
+   ========================================================= */
+const BMKEY = 'geri:bookmark';
+let BM = null;
+function bmBlockOf(el){
+  if(!el) return null;
+  const b = el.closest('p,li,h2,h3,td,th,blockquote,aside,.callout');
+  return b && b.closest('main section') && !b.closest('.secfoot,.mynotes,.toc,.fnotes') ? b : null;
+}
+function bmTopBlock(){
+  const sec = document.querySelector('main section.on'); if(!sec) return null;
+  const top = 120; let best = null;
+  for(const b of sec.querySelectorAll('p,li,h2,h3,blockquote,aside,.callout')){
+    if(b.closest('.secfoot,.mynotes,.toc,.fnotes')) continue;
+    const r = b.getBoundingClientRect(); if(r.height === 0) continue;
+    if(r.bottom > top){ best = b; break; }
+  }
+  return best;
+}
+function bmText(b){ return (b.textContent || '').replace(/\s+/g,' ').trim().slice(0, 90); }
+function bmSet(el){
+  const b = bmBlockOf(el) || bmTopBlock(); if(!b) return;
+  const sec = b.closest('main section'); const t = bmText(b); if(!t) return;
+  let i = 0; for(const x of sec.querySelectorAll('p,li,h2,h3,td,th,blockquote,aside,.callout')){ if(x === b) break; if(bmText(x) === t) i++; }
+  BM = {sec: sec.id, t, i, d: new Date().toISOString().slice(0,16).replace('T',' ')};
+  try{ window.storage.set(BMKEY, JSON.stringify(BM)); }catch(e){}
+  bmPaint();
+  b.classList.add('bm-flash'); setTimeout(()=>b.classList.remove('bm-flash'), 1400);
+  const tag = document.createElement('div'); tag.className = 'savedtag on'; tag.textContent = 'place marked';
+  tag.style.cssText = 'position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:59;background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:3px;font-family:var(--sans);font-size:13px';
+  document.body.appendChild(tag); setTimeout(()=>tag.remove(), 1300);
+}
+function bmFind(){
+  if(!BM) return null; const sec = document.getElementById(BM.sec); if(!sec) return null;
+  let k = 0;
+  for(const x of sec.querySelectorAll('p,li,h2,h3,td,th,blockquote,aside,.callout')){ if(bmText(x) === BM.t){ if(k === BM.i) return x; k++; } }
+  return null;
+}
+function bmGo(){
+  if(!BM) return; const b = bmFind();
+  show(BM.sec);
+  /* show() restores the section's remembered scroll a couple of frames later; set that memory to the
+     bookmark and scroll there ourselves once layout has settled, so the two agree */
+  setTimeout(()=>{ const x = b || bmFind(); if(x){ const y = Math.max(0, x.getBoundingClientRect().top + window.scrollY - 110);
+    if(typeof scrollAt === 'object') scrollAt[BM.sec] = y; window.scrollTo({top:y});
+    x.classList.add('bm-flash'); setTimeout(()=>x.classList.remove('bm-flash'), 1800); } else window.scrollTo({top:0}); }, 160);
+}
+function bmPaint(){
+  const box = document.getElementById('resume'); const cur = document.getElementById('bmCur'); const go = document.getElementById('bmGo');
+  if(BM && SECNAME[BM.sec]){
+    box.hidden = false;
+    document.getElementById('resumeSec').textContent = SECNAME[BM.sec] + (BM.d ? ' · ' + BM.d : '');
+    document.getElementById('resumeText').textContent = BM.t.length > 80 ? BM.t.slice(0,80) + '…' : BM.t;
+    cur.textContent = SECNAME[BM.sec] + ' — "' + BM.t.slice(0,40) + (BM.t.length > 40 ? '…' : '') + '"'; go.hidden = false;
+  } else { box.hidden = true; cur.textContent = 'no bookmark yet'; go.hidden = true; }
+}
+(async()=>{
+  try{ const r = await window.storage.get(BMKEY); BM = JSON.parse(r.value); }catch(e){ BM = null; }
+  bmPaint();
+  document.getElementById('resumeGo').addEventListener('click', bmGo);
+  document.getElementById('bmGo').addEventListener('click', ()=>{ document.getElementById('dispPop').hidden = true; bmGo(); });
+  document.getElementById('resumeClear').addEventListener('click', ()=>{ BM = null; try{ window.storage.delete(BMKEY); }catch(e){} bmPaint(); });
+  document.getElementById('bmHere').addEventListener('click', ()=>{ document.getElementById('dispPop').hidden = true; setTimeout(()=>bmSet(null), 60); });
+})();
+
+/* ---- abbreviation: tap the term to jump to its meaning, tap the meaning to come back ---- */
+(function(){
+  let back = null;
+  function flash(el){ el.classList.add('bm-flash'); setTimeout(()=>el.classList.remove('bm-flash'), 1600); }
+  document.addEventListener('click', e=>{
+    const a = e.target.closest('abbr.abbr');
+    if(a){
+      const sec = a.closest('section'); if(!sec) return; const key = a.textContent.replace(/\*$/, '').trim();
+      const dt = [...sec.querySelectorAll('.fnotes dt')].find(d=>d.textContent.trim() === key); if(!dt) return;
+      e.preventDefault(); e.stopPropagation(); back = a; dt.scrollIntoView({block:'center', behavior:'smooth'}); flash(dt); return;
+    }
+    const dt = e.target.closest('.fnotes dt');
+    if(dt){
+      const sec = dt.closest('section'); const key = dt.textContent.trim();
+      const target = (back && back.isConnected && back.closest('section') === sec) ? back
+        : [...sec.querySelectorAll('abbr.abbr')].find(x=>x.textContent.replace(/\*$/, '').trim() === key);
+      if(!target) return; target.scrollIntoView({block:'center', behavior:'smooth'}); flash(target); back = null;
+    }
+  }, true);   /* capture: an abbreviation inside a table must not open the table pop-out */
 })();
 
 /* ---------- table pop-out ---------- */
@@ -12656,7 +12803,9 @@ main section:not(#week):not(#plan):not(#papers):not(#drill) h2{
 }
 
 /* v20 — abbreviation marks and their footnotes; table provenance */
-abbr.abbr{ text-decoration:none; border-bottom:1px dotted var(--accent); cursor:help }
+abbr.abbr{ text-decoration:none; border-bottom:1px dotted var(--accent); cursor:pointer }
+.fnotes dt{ cursor:pointer } .fnotes dt::after{ content:" \21A9"; color:var(--accent); font-size:.85em; opacity:.7 }
+.fnotes dt:hover::after{ opacity:1 } .fnotes dt.bm-flash,abbr.abbr.bm-flash{ outline:2px solid var(--stop); outline-offset:3px }
 abbr.abbr sup{ font-size:.62em; color:var(--accent); font-weight:700; margin-left:1px }
 p.tsrc{ font-size:calc(11.5px*var(--fs,1)); line-height:1.45; color:var(--mute); margin:-6px 0 24px;
   padding:6px 0 0 14px; text-indent:-14px; max-inline-size:62ch }

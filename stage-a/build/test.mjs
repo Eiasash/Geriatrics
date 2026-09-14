@@ -485,6 +485,23 @@ await new Promise(r => setTimeout(r, 700));
 ok('section note persists', 'geri:secnotes' in store && /vitamin D/.test(store['geri:secnotes']), store['geri:secnotes']);
 ok('the notes index lists it', (w.eval("notesAsText()")).indexOf('vitamin D') >= 0);
 
+// ---- v12b: highlight colours, reading bookmark, abbreviation jump ----
+ok('highlight bar and note dialog each carry six swatches', d.querySelectorAll('#hlBar .swatch button.sw').length === 6 && d.querySelectorAll('#hlModal .swatch button.sw').length === 6);
+w.eval(`HL = {falls:[{id:'c1', sec:'falls', t:'fear of falling', i:0, n:'', c:'g'}]}; hlPaintSec('falls');`);
+ok('a stored colour becomes a class on the mark', !!d.querySelector('#falls mark.hl[data-hid="c1"].c-g'));
+w.eval("hlSetColour('c1','b')");
+ok('changing the colour repaints every mark for that highlight', !!d.querySelector('#falls mark.hl[data-hid="c1"].c-b') && !d.querySelector('#falls mark.hl[data-hid="c1"].c-g'));
+w.eval("hlRemove('c1'); HL = {}");
+const bmP = [...d.querySelectorAll('#falls p')].find(p => /Cataract surgery/.test(p.textContent));
+w.eval("show('falls')"); w.bmSet(bmP);
+ok('bookmark stores section, opening text and ordinal', w.eval("BM && BM.sec === 'falls' && /^Vision/.test(BM.t) && BM.i === 0"), JSON.stringify(w.eval("BM")));
+ok('bookmark resolves back to the same block', w.eval("bmFind()") === bmP);
+ok('home page shows the resume strip with the section name', !d.getElementById('resume').hidden && /43 Falls/.test(d.getElementById('resumeSec').textContent));
+ok('bookmark is in the backup key list', w.eval("BKEYS.includes('geri:bookmark')"));
+d.getElementById('resumeClear').click();
+ok('clearing hides the strip', d.getElementById('resume').hidden && w.eval("BM === null"));
+ok('every abbreviation mark has a matching footnote term in its section', [...d.querySelectorAll('abbr.abbr')].every(a => { const s = a.closest('section'); const k = a.textContent.replace(/\*$/, '').trim(); return s && [...s.querySelectorAll('.fnotes dt')].some(dt => dt.textContent.trim() === k); }));
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 
