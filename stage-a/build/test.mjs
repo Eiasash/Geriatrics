@@ -890,6 +890,34 @@ ok('and the same calendar week keeps the same key, so its note is stable', (()=>
   return two === true;
 })());
 
+ok('a highlight sitting on an abbreviation opens its note, not the footnote',
+   /if\(a && !e\.target\.closest\('mark\.hl'\)\)\{/.test(html));
+ok('but a bare abbreviation still jumps to its footnote', (()=>{
+  const a = d.querySelector('#falls abbr.abbr');
+  if(!a) return false;
+  const key = a.textContent.replace(/\*$/, '').trim();
+  const dt = [...d.querySelector('#falls').querySelectorAll('.fnotes dt')].find(x=>x.textContent.trim() === key);
+  return !!dt;                       /* the pairing the handler depends on still holds */
+})());
+ok('drilling the week falls back to missed cards when the week has no chapters of its own',
+   /const hasChapters = VIEW && VIEW\.items && VIEW\.items\.length;/.test(html) &&
+   /\{mode:'missed', tag:null, label:'Missed cards only'\}/.test(html));
+ok('and still filters to the week when there are chapters', (()=>{
+  w.eval("VIEW = curWeek()");
+  d.getElementById('goDrill').click();
+  return w.eval("filter.mode") === 'week';
+})());
+ok('the consolidation week survives the week card, the chips and the tag lookup', (()=>{
+  const r = w.eval(`(()=>{const real=currentWeek; window.currentWeek=()=>null; const V=curWeek();
+    const save=VIEW; VIEW=V; let out={};
+    try{ renderWeek(); out.render=1; }catch(e){ out.render=0; }
+    try{ out.tags=weekTags().length; }catch(e){ out.tags=-1; }
+    try{ out.dates=weekDates(V).length; }catch(e){ out.dates=-1; }
+    try{ paintChips(); out.chips=1; }catch(e){ out.chips=0; }
+    VIEW=save; window.currentWeek=real; return out;})()`);
+  return r.render === 1 && r.tags === 0 && r.dates === 7 && r.chips === 1;
+})());
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 

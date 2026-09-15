@@ -11167,7 +11167,9 @@ function bmPaint(){
   function flash(el){ el.classList.add('bm-flash'); setTimeout(()=>el.classList.remove('bm-flash'), 1600); }
   document.addEventListener('click', e=>{
     const a = e.target.closest('abbr.abbr');
-    if(a){
+    /* a highlight on top of an abbreviation belongs to the highlight: its note is
+       reachable nowhere else, while the footnote is one tap away on any other use */
+    if(a && !e.target.closest('mark.hl')){
       /* The table pop-out clones the table into a dialog outside every <section>, so an
          abbreviation tapped in there has no section to look in and used to do nothing.
          Fall back to the section on screen, and close the pop-out first — otherwise the
@@ -11238,7 +11240,13 @@ document.getElementById('goRead').addEventListener('click',()=>{
   else { show('plan'); window.scrollTo({top:0}); }
 });
 document.getElementById('goDrill').addEventListener('click',()=>{
-  setFilter({mode:'week',tag:null,label:'This week\u2019s chapters'});
+  /* past the reading schedule the week has no chapters of its own; filtering to them
+     lands on an empty deck, so drill what was missed instead — which is the point of
+     the consolidation period anyway */
+  const hasChapters = VIEW && VIEW.items && VIEW.items.length;
+  setFilter(hasChapters
+    ? {mode:'week', tag:null, label:'This week\u2019s chapters'}
+    : {mode:'missed', tag:null, label:'Missed cards only'});
   show('drill'); window.scrollTo({top:0});
 });
 document.getElementById('goMock').addEventListener('click',()=>{
