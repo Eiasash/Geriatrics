@@ -628,7 +628,14 @@ ok('coming back to the tab re-reads the highlights, notes and bookmark, not only
    /await window\.storage\.get\(HLKEY\)/.test(code.split('async function refreshFromStorage')[1].split('\n}')[0]) &&
    /await window\.storage\.get\(SNKEY\)/.test(code.split('async function refreshFromStorage')[1].split('\n}')[0]));
 ok('a highlight deleted in another tab is unwrapped, not left on screen',
-   /document\.querySelectorAll\('mark\.hl'\)\.forEach\(m=>hlUnwrap\(m\.dataset\.hid\)\);\s*\n\s*HL = v;/.test(code));
+   /document\.querySelectorAll\('mark\.hl'\)\.forEach\(m=>hlUnwrap\(m\.dataset\.hid\)\);\s*\n\s*HL = merged;/.test(code));
+ok('coming back to the tab MERGES the disk copy rather than assigning it over foreground work',
+   /const merged = mergeHL\(v, seen, HL\);/.test(code) && /SN = mergeSN\(v, seen, SN\);/.test(code));
+ok('and the refresh waits behind the save chain so it cannot interleave with a save',
+   /if\(typeof saveChain !== 'undefined'\) try\{ await saveChain; \}catch\(e\)\{\}/.test(code));
+ok('a refused save says so instead of leaving the highlight looking saved',
+   /function notSaved\(\)\{/.test(code) && /else if\(blob !== JSON\.stringify\(stored\)\) notSaved\(\);/.test(code) &&
+   /now - notSavedAt < 4000/.test(code));
 ok('leaving the tab is actually wired to the flush, both ways', (()=>{
   /* behavioural: dispatch the real events rather than matching their handler text */
   const p = d.querySelector('.mynotes[data-sec="falls"]');
@@ -1052,6 +1059,90 @@ ok('and behaviourally: a highlight added between queueing and resolving survives
 ok('the synchronous teardown write stands down when the host supplies its own storage',
    /if\(!storageIsLocal\) return false;/.test(code) && /let storageIsLocal = false;/.test(code) &&
    /storageIsLocal = false;\s*\/\* the memory fallback/.test(html));
+
+// ---- quota: what happens when the disk refuses the write ----
+// The stub has had infinite space all along, so every catch path in the file has been
+// untested. Fail the Nth write and check the difference between "failed loudly and left
+// the data alone" and "failed silently while looking fine".
+{
+  const alerts = [], confirms = [];
+  const realAlert = w.alert, realConfirm = w.confirm, realSet = w.storage.set;
+  let writes = 0, failFrom = -1;
+  w.alert = m => alerts.push(String(m));
+  w.confirm = m => { confirms.push(String(m)); return true; };
+  /* background timers write too (the session timer saves every tick). Failing those
+     produces an unhandled rejection that has nothing to do with the path under test, so
+     the refusal is scoped to the keys each case is actually exercising. */
+  let failKeys = null;
+  w.storage.set = async (k, v) => {
+    const inScope = !failKeys || failKeys.includes(k);
+    if(failFrom > 0 && inScope && ++writes >= failFrom) throw new Error('QuotaExceededError');
+    return realSet(k, v);
+  };
+  const reset = (n, keys) => { writes = 0; failFrom = n; failKeys = keys || null; alerts.length = 0; confirms.length = 0; };
+
+  // 1. the undo copy cannot be written: warn, and honour a refusal to go on
+  reset(1);
+  /* the scope question comes first — accept it, and refuse only the undo-copy warning */
+  w.confirm = m => { confirms.push(String(m)); return !/Could not keep an undo copy/.test(m); };
+  store['geri:days'] = '["KEEP"]';
+  d.getElementById('bkText').value = JSON.stringify({'geri:days':'["NEW"]'});
+  d.getElementById('bkRestore').click();
+  await new Promise(r=>setTimeout(r,120));
+  failFrom = -1;
+  ok('quota: a failed undo copy is announced and the restore can be refused',
+     confirms.some(c=>/Could not keep an undo copy/.test(c)) && store['geri:days'] === '["KEEP"]',
+     confirms.join(' | '));
+  w.confirm = m => { confirms.push(String(m)); return true; };
+
+  // 2. the rollback itself cannot be written: say so rather than promising safety
+  reset(-1);
+  store['geri:days'] = '["BEFORE"]';
+  await w.eval("bkRollbackSave()");
+  reset(1, ['geri:weeks-done','geri:days','geri:qlog']);   /* the snapshot lands; the first restore write does not */
+  d.getElementById('bkText').value = JSON.stringify({'geri:days':'["NEW"]','geri:qlog':'{}'});
+  d.getElementById('bkRestore').click();
+  await new Promise(r=>setTimeout(r,200));
+  failFrom = -1;
+  ok('quota: when the rollback also fails the alert says so instead of "untouched"',
+     alerts.some(a=>/putting things back/.test(a)) && !alerts.some(a=>/progress is untouched/.test(a)),
+     alerts.join(' | '));
+
+  // 3. a highlight that cannot be saved must not advance SEEN, and must say so
+  reset(1, ['geri:hl']);
+  w.eval("HL = {falls:[{id:'q1', sec:'falls', t:'fear of falling', i:0, n:'', c:'y'}]}; HLSEEN = '{}'");
+  const p3 = w.eval("hlSave()");
+  await new Promise(r=>setTimeout(r,80));
+  failFrom = -1;                      /* disarm before anything else writes */
+  try{ await p3; }catch(e){}
+  ok('quota: a refused highlight save leaves SEEN where it was', !/q1/.test(w.eval("HLSEEN")), w.eval("HLSEEN"));
+  ok('quota: and it tells the reader, rather than leaving it looking saved', (()=>{
+    /* the page contains the words "not saved" elsewhere; assert the toast itself */
+    const before = [...d.body.children].length;
+    w.eval("notSavedAt = 0; notSaved();");
+    const toast = [...d.body.children].find(e=>/Storage is full/.test(e.textContent));
+    return !!toast && [...d.body.children].length > before;
+  })());
+
+  // 4. the synchronous teardown write, with localStorage itself refusing
+  reset(-1);
+  /* jsdom does not let the instance method be shadowed, so patch the prototype */
+  const proto = Object.getPrototypeOf(w.localStorage);
+  const realLS = proto.setItem;
+  proto.setItem = () => { throw new Error('QuotaExceededError'); };
+  let threw = false;
+  /* writeNow only reaches localStorage when localStorage is what backs the store, which
+     is not the case under the injected stub — call it directly so the catch is exercised */
+  let returned = null;
+  try{ returned = w.eval("storageIsLocal = true; const r = writeNow('geri:probe','x'); storageIsLocal = false; r"); }
+  catch(e){ threw = true; w.eval("storageIsLocal = false"); }
+  proto.setItem = realLS;
+  ok('quota: a refused synchronous write reports failure instead of throwing out of the teardown handler',
+     !threw && returned === false, 'threw=' + threw + ' returned=' + returned);
+
+  w.alert = realAlert; w.confirm = realConfirm; w.storage.set = realSet;
+  w.eval("HL = {}; HLSEEN = '{}'");
+}
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));

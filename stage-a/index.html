@@ -10747,6 +10747,19 @@ let HL = {}, SN = {};
    ========================================================= */
 let HLSEEN = '{}', SNSEEN = '{}';
 let saveChain = Promise.resolve();
+/* The one-per-session alert means every later refused write is silent while the
+   highlight stays on screen, which reads as saved. A brief line instead: no modal, but
+   the reader can tell that what they are looking at is not on disk. */
+let notSavedAt = 0;
+function notSaved(){
+  const now = Date.now(); if(now - notSavedAt < 4000) return; notSavedAt = now;
+  const t = document.createElement('div');
+  t.textContent = 'Storage is full — that was not saved';
+  t.style.cssText = 'position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:99;' +
+    'background:var(--stop);color:#fff;padding:9px 14px;border-radius:3px;' +
+    'font-family:var(--sans);font-size:calc(13px*var(--fs,1));box-shadow:0 6px 22px rgba(0,0,0,.3)';
+  document.body.appendChild(t); setTimeout(()=>t.remove(), 4000);
+}
 function seenSet(key, blob){ if(key === HLKEY) HLSEEN = blob; else SNSEEN = blob; }
 function seenGet(key){ return key === HLKEY ? HLSEEN : SNSEEN; }
 
@@ -10811,6 +10824,7 @@ function mergeSave(key, getMine, mergeFn, apply){
        entries still look like additions made here, and are re-asserted rather than
        mistaken for the other tab's deletions. */
     if(landed) seenSet(key, blob);
+    else if(blob !== JSON.stringify(stored)) notSaved();   /* only when something was actually lost */
     if(apply) try{ apply(merged); }catch(e){}
   }).catch(()=>{});
   return saveChain;
@@ -11820,6 +11834,9 @@ document.addEventListener('keydown', e=>{
    and never a page reload — that would throw away the drill order and the scroll. */
 async function refreshFromStorage(){
   if(typeof mockOn !== 'undefined' && mockOn) return;
+  /* behind the same chain the saves use, so a read cannot land between a save's read and
+     its write and hand the merge a copy that is already stale */
+  if(typeof saveChain !== 'undefined') try{ await saveChain; }catch(e){}
   try{ const r = await window.storage.get(READKEY); readSet = new Set(asList(r.value, 'chapters read')); }catch(e){}
   try{ const r = await window.storage.get(DKEY);    days    = new Set(JSON.parse(r.value)); }catch(e){}
   try{ const r = await window.storage.get(MKEY);    missed  = new Set(JSON.parse(r.value)); }catch(e){}
@@ -11837,14 +11854,21 @@ async function refreshFromStorage(){
     try{
       const r = await window.storage.get(HLKEY); const v = JSON.parse(r.value);
       if(v && typeof v === 'object'){
+        /* merge, do not assign: the read above is a macrotask, and anything highlighted
+           while it was in flight is in HL now and would be erased by an assignment */
+        let seen = {}; try{ seen = JSON.parse(HLSEEN); }catch(e){}
+        const merged = mergeHL(v, seen, HL);
         document.querySelectorAll('mark.hl').forEach(m=>hlUnwrap(m.dataset.hid));
-        HL = v; HLSEEN = JSON.stringify(v); CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){} });
+        HL = merged; HLSEEN = JSON.stringify(v);
+        CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){} });
       }
     }catch(e){}
   }
   if(typeof SN === 'object'){
     try{ const r = await window.storage.get(SNKEY); const v = JSON.parse(r.value);
-      if(v && typeof v === 'object'){ SN = v; SNSEEN = JSON.stringify(v);
+      if(v && typeof v === 'object'){
+        let seen = {}; try{ seen = JSON.parse(SNSEEN); }catch(e){}
+        SN = mergeSN(v, seen, SN); SNSEEN = JSON.stringify(v);
         document.querySelectorAll('.mynotes').forEach(p=>{ try{ notesPaint(p); }catch(e){} }); }
     }catch(e){}
   }
