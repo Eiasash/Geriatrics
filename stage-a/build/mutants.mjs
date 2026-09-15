@@ -390,6 +390,26 @@ const M = [
    "    const i = pqPool.findIndex(p => pqKey(p) === v.k); if(i >= 0) pqIdx = i;\n",
    "",
    "come back after a reload"],
+  /* --- brackets and stylesheet junk, 16/09 --- */
+  ["the MUSCOL option is garbled again",
+   "\"MUSCOL (PARACETAMOL, ORPHENADRINE)\"",
+   "\"PARACETAMOL, ORPHENADRINE) )MUSCOL\"",
+   "MUSCOL option reads brand"],
+
+  ["the external-beam bracket is mirrored again",
+   "חיצוני (external beam radiation therapy)",
+   "חיצוני external beam radiation therapy) )",
+   "external-beam option has its bracket"],
+
+  ["the FDA bracket is mirrored again",
+   "האמריקאי (FDA) למצב המתואר",
+   "האמריקאי FDA)) למצב המתואר",
+   "FDA option has its bracket"],
+
+  ["pasted prose back in the stylesheet",
+   "/* (removed 16/09:",
+   "- Viewport Budget & Geometry Verification\n/* (removed 16/09:",
+   "no pasted prose left"],
 ];
 
 if(STATIC){

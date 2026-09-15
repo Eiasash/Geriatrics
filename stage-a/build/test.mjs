@@ -1576,5 +1576,16 @@ ok('the COMBODEX option reads brand (ingredients), same characters reordered',
   d.querySelector('#pfYear button[data-y="all"]').click();
 }
 
+/* ---- brackets mirrored by the PDF extraction (three certain ones); stylesheet junk ---- */
+{
+  const has = (y, n, text) => w.eval(`(()=>{ const q = PQ.find(p => p.y === ${JSON.stringify(y)} && +p.n === ${n}); return !!q && q.o.indexOf(${JSON.stringify(text)}) >= 0; })()`);
+  ok('the MUSCOL option reads brand (ingredients)', has('2021-12', 98, 'MUSCOL (PARACETAMOL, ORPHENADRINE)'));
+  ok('the external-beam option has its bracket the right way round',
+     w.eval(`PQ.some(p => p.y === '2021-12' && +p.n === 26 && p.o.some(o => o.endsWith('\u05d7\u05d9\u05e6\u05d5\u05e0\u05d9 (external beam radiation therapy)')))`));
+  ok('the FDA option has its bracket the right way round',
+     w.eval(`PQ.some(p => p.y === '2023-06' && +p.n === 10 && p.o.some(o => o.indexOf('(FDA) ') >= 0))`));
+}
+ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/.test(code));
+
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);
