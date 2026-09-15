@@ -9161,7 +9161,9 @@ function storageTrouble(msg){
         'next time. Download a backup from This week if you want to keep it.');
 }
 
+let storageIsLocal = false;   /* is window.storage our own localStorage shim? */
 if(!window.storage){
+  storageIsLocal = true;
   window.storage = {
     async get(k){ const v = localStorage.getItem(k);
       if(v === null) throw new Error('missing'); return {key:k, value:v}; },
@@ -9170,6 +9172,7 @@ if(!window.storage){
   try{ localStorage.setItem('geri:probe','1'); localStorage.removeItem('geri:probe'); }
   catch(e){
     const mem = {};
+    storageIsLocal = false;        /* the memory fallback is not localStorage either */
     window.storage = {
       volatile: true,          /* nothing survives a reload — restore must refuse */
       async get(k){ if(!(k in mem)) throw new Error('missing'); return {key:k, value:mem[k]}; },
@@ -10617,16 +10620,28 @@ async function bkApply(o, haveUndo){
     catch(e){ ok = false; }
     if(ok) continue;
     if(haveUndo){
-      try{ const v = JSON.parse((await window.storage.get(ROLLKEY)).value);
+      /* The rollback writes can fail for exactly the reason the restore failed — the disk
+         is full. Swallowing that made the reassurance below a lie, which is worse than the
+         corruption it was covering. Check each one and say what actually happened. */
+      let rolled = 0, failed = [];
+      try{
+        const v = JSON.parse((await window.storage.get(ROLLKEY)).value);
         for(const j of touched){
-          try{
-            /* a key the user did not have before the restore has to be emptied, not
-               skipped — leaving it behind is exactly the mixture we are rolling back */
-            await window.storage.set(j, (j in v) ? v[j] : '');
-          }catch(e){}
-        } }catch(e){}
-      alert('Storage refused to save "' + k + '" partway through, so nothing was changed. ' +
-            'Free some space and try again — your progress is untouched.');
+          const want = (j in v) ? v[j] : '';   /* a key not there before has to be emptied */
+          let back = null;
+          try{ await window.storage.set(j, want); back = await window.storage.get(j); }catch(e){}
+          if(back && back.value === want) rolled++; else failed.push(j);
+        }
+      }catch(e){ failed = touched.slice(); }
+      if(!failed.length){
+        alert('Storage refused to save "' + k + '" partway through, so nothing was changed. ' +
+              'Free some space and try again — your progress is untouched.');
+      } else {
+        alert('Storage refused to save "' + k + '" partway through, and putting things back ' +
+              'failed too (' + failed.length + ' of ' + touched.length + ' item' +
+              (touched.length > 1 ? 's' : '') + '). Free some space, then use "Undo the last ' +
+              'restore". Do not trust what is on screen until you have.');
+      }
     } else {
       alert('Storage refused to save "' + k + '" partway through, and there was no undo copy. ' +
             'Some items may have changed. Download a backup before doing anything else.');
@@ -10772,8 +10787,14 @@ function mergeSN(stored, seen, mine){
   }
   return out;
 }
-function mergeSave(key, mine, mergeFn, apply){
+/* `mine` is a GETTER, not a value. The apply callback reassigns HL/SN to the merged
+   object, so a task queued before that reassignment would otherwise hold the old object
+   and write it back over anything added since — invisible in the suite, where the stub
+   resolves in the same tick, and entirely possible on a phone where a real write takes
+   a macrotask and taps land in between. */
+function mergeSave(key, getMine, mergeFn, apply){
   saveChain = saveChain.then(async()=>{
+    const mine = getMine();
     let stored = null;
     try{ const r = await window.storage.get(key); stored = JSON.parse(r.value); }catch(e){ stored = null; }
     let seen = {}; try{ seen = JSON.parse(seenGet(key)); }catch(e){ seen = {}; }
@@ -10800,7 +10821,7 @@ function hlRepaintAll(merged){
   CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){} });
 }
 function hlSave(){
-  return mergeSave(HLKEY, HL, mergeHL, merged=>{
+  return mergeSave(HLKEY, ()=>HL, mergeHL, merged=>{
     /* if the merge brought in another tab's highlights, show them here too */
     if(JSON.stringify(merged) === JSON.stringify(HL)) return;
     const sel = window.getSelection();
@@ -10819,7 +10840,7 @@ function hlSave(){
   });
 }
 function snSave(){
-  return mergeSave(SNKEY, SN, mergeSN, merged=>{ SN = merged;
+  return mergeSave(SNKEY, ()=>SN, mergeSN, merged=>{ SN = merged;
     document.querySelectorAll('.mynotes').forEach(p=>{ try{ notesPaint(p); }catch(e){} }); });
 }
 /* This runs once per highlight per repaint, over every text node in the section, so it
@@ -11841,6 +11862,10 @@ async function refreshFromStorage(){
    teardown; everywhere else the normal storage layer applies, since it is what the host
    may have replaced. */
 function writeNow(key, value){
+  /* only when localStorage is what the storage layer is actually backed by. If a host
+     supplied its own window.storage — a WebView bridging to a native database — writing
+     to localStorage puts the note somewhere the host will never read back. */
+  if(!storageIsLocal) return false;
   try{ localStorage.setItem(key, value); return true; }catch(e){ return false; }
 }
 function flushPending(urgent){

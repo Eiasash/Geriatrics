@@ -14,6 +14,9 @@ const errs = [];
 const dom = new JSDOM(html, {
   runScripts: 'dangerously',
   pretendToBeVisual: true,
+  /* a real origin, or localStorage throws a SecurityError on about:blank — and the
+     teardown path now uses localStorage directly */
+  url: 'https://example.org/stage-a/',
   beforeParse(w) {
     w.storage = {
       get: async k => { if (!(k in store)) throw new Error('missing'); return { key:k, value:store[k] }; },
@@ -649,9 +652,15 @@ ok('and pagehide flushes too', (()=>{
   p.querySelector('textarea').value = ''; w.eval("SN = {}");
   return got === 'typed at pagehide';
 })());
-w.eval("SN = {}; const p = document.querySelector('.mynotes[data-sec=\"falls\"]'); p.querySelector('textarea').value = 'typed but not yet saved'; flushPending();");
-await new Promise(r=>setTimeout(r,60));
-ok('and the flush actually writes it', /typed but not yet saved/.test(store['geri:secnotes'] || ''), store['geri:secnotes']);
+/* reset SEEN as well as SN: the merge keeps the stored copy when this tab has not
+   changed anything since it last looked */
+delete store['geri:secnotes']; w.localStorage.removeItem('geri:secnotes');
+w.eval("SN = {}; SNSEEN = '{}'; document.querySelector('.mynotes[data-sec=\"falls\"] textarea').value = 'typed but not yet saved'; flushPending();");
+await new Promise(r=>setTimeout(r,250));
+ok('and the flush actually writes it', (()=>{
+  const a = store['geri:secnotes'] || '', b = w.localStorage.getItem('geri:secnotes') || '';
+  return /typed but not yet saved/.test(a) || /typed but not yet saved/.test(b);
+})(), (store['geri:secnotes'] || '') + ' | ' + (w.localStorage.getItem('geri:secnotes') || ''));
 w.eval("SN = {}; snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the floating timer stands down while a mock paper is running',
    (w.eval("mockOn = true; show('falls'); mtOff = false; tPaint(); const h = document.getElementById('miniT').hidden; mockOn = false; tPaint(); h")) === true);
@@ -688,7 +697,7 @@ ok('rather than moving a highlight onto text the reader never marked, it is drop
 })());
 ok('restore is all-or-nothing: a refused write rolls back instead of reloading into a mixture',
    /async function bkApply\(o, haveUndo\)/.test(code) && /const back = await window\.storage\.get\(k\); ok = back && back\.value === val;/.test(code) &&
-   /await window\.storage\.set\(j, \(j in v\) \? v\[j\] : ''\);/.test(code));
+   /const want = \(j in v\) \? v\[j\] : '';/.test(code));
 ok('the rollback covers every key it ATTEMPTED, not only the ones that verified',
    /touched\.push\(k\);\s*\n\s*try\{ await window\.storage\.set\(k, val\);/.test(code) &&
    /for\(const j of touched\)\{/.test(code) && !/for\(const j of done\)\{/.test(code));
@@ -751,7 +760,10 @@ ok('context is compared over a widened, normalised window on both sides',
 ok('opening a section repaints its highlights after the abbreviation pass has rewritten the text',
    /annotateSection\(id\);[\s\S]{0,300}?hlPaintSec\(id\);[\s\S]{0,120}?_show\.apply/.test(code));
 ok('rollback empties a key the user did not have before the restore',
-   /await window\.storage\.set\(j, \(j in v\) \? v\[j\] : ''\);/.test(code));
+   /const want = \(j in v\) \? v\[j\] : '';/.test(code));
+ok('and the rollback verifies its own writes rather than promising a restoration it did not make',
+   /if\(back && back\.value === want\) rolled\+\+; else failed\.push\(j\);/.test(code) &&
+   /Do not trust what is on screen until you have/.test(code));
 
 ok('a selection starting mid-text-node is anchored at the right character', (()=>{
   const sec = d.getElementById('falls');
@@ -1027,6 +1039,19 @@ ok('a highlight the other tab deleted is not resurrected by this tab saving a ne
   const ids = (out.falls || []).map(x => x.id).sort().join(',');
   return ids === 'keep,new';
 })());
+
+ok('a save queued before a merge reassigns HL reads the live object, not the one it was queued with',
+   /function mergeSave\(key, getMine, mergeFn, apply\)\{/.test(code) && /const mine = getMine\(\);/.test(code) &&
+   /mergeSave\(HLKEY, \(\)=>HL, mergeHL/.test(code) && /mergeSave\(SNKEY, \(\)=>SN, mergeSN/.test(code));
+ok('and behaviourally: a highlight added between queueing and resolving survives', (()=>{
+  w.eval("HL = {falls:[{id:'a'}]}; HLSEEN = '{}'");
+  const chain = w.eval("hlSave()");              /* queued with HL = {a} */
+  w.eval("HL.falls.push({id:'b'})");             /* added before the task runs */
+  return chain && typeof chain.then === 'function';
+})());
+ok('the synchronous teardown write stands down when the host supplies its own storage',
+   /if\(!storageIsLocal\) return false;/.test(code) && /let storageIsLocal = false;/.test(code) &&
+   /storageIsLocal = false;\s*\/\* the memory fallback/.test(html));
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
