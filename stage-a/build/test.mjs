@@ -1452,7 +1452,9 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
     beforeParse(w2){ pinClock(w2);
       w2.storage = { get: async k => { if(!(k in st)) throw new Error('missing'); return {key:k, value:st[k]}; },
                      set: async (k,v) => { st[k] = v; return {key:k, value:v}; } }; } });
-    await new Promise(r => setTimeout(r, 500)); return dm; };
+    /* poll for the script to have run, rather than a fixed wait that a busy CI runner can outrun */
+    for(let t = 0; t < 100 && !dm.window.document.getElementById('ppIntroBtn'); t++) await new Promise(r => setTimeout(r, 50));
+    await new Promise(r => setTimeout(r, 100)); return dm; };
   const st1 = {}; const dom1 = await page(st1);
   dom1.window.eval("show('papers')"); await new Promise(r => setTimeout(r, 30));
   const i1 = dom1.window.document.querySelector('#papers .callout'), b1 = dom1.window.document.getElementById('ppIntroBtn');
