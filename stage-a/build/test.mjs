@@ -844,6 +844,17 @@ ok('the initial read folds the stored copy in rather than assigning over what is
 ok('a merge repaint waits for a live selection to end before unwrapping its text nodes',
    /if\(sel && sel\.rangeCount && !sel\.isCollapsed\)\{/.test(html) && /document\.addEventListener\('selectionchange', go\);/.test(html));
 
+// ---- workflow pass, 15 Sep ----
+ok('a missed question offers a jump to the chapter it came from',
+   /class="chgo pqgo" data-sec="/.test(html) && /jump\.addEventListener\('click', \(\)=>\{ show\(jump\.dataset\.sec\)/.test(html));
+ok('the read-but-not-retained list is keyed by number, not by the string Object.keys gives',
+   /const sec = sectionForChapter\(Number\(c\)\);/.test(html) &&
+   /data-sec="' \+ sectionForChapter\(Number\(c\)\) \+ '"/.test(html));
+ok('it only counts chapters actually marked read, with enough questions behind it',
+   /readSet\.has\(sec\) && by\[c\]\.n >= 4 && \(by\[c\]\.n - by\[c\]\.w\) \/ by\[c\]\.n < 0\.65/.test(html));
+ok('a finished paper logs the day\u2019s score itself, scaled to the 50 the sparkline uses',
+   /if\(rows\.length >= 25\)\{ qlog\[TODAY\] = Math\.round\(right \/ rows\.length \* 50\); saveQ\(\); paintQ\(\); \}/.test(html));
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 
