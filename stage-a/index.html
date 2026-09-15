@@ -7331,23 +7331,27 @@ The first sentence of text is active and visible right at the 200px boundary, re
   prevented or delayed. These are the Commission's own weighted figures, which is what a question
   citing this paper is likely to be built on.</p>
   <div class="tscroll"><table class="wide">
-    <thead><tr><th>Risk factor</th><th>Relative risk</th><th>Weighted PAF</th></tr></thead><tbody>
-    <tr><td><b>Hearing loss</b></td><td class="n">1.4</td><td class="n"><b>7%</b></td></tr>
-    <tr><td><b>High LDL cholesterol</b> &mdash; new in 2024</td><td class="n">1.3</td><td class="n"><b>7%</b></td></tr>
-    <tr><td>Less education</td><td class="n">1.6</td><td class="n">5%</td></tr>
-    <tr><td>Social isolation</td><td class="n">1.6</td><td class="n">5%</td></tr>
-    <tr><td>Depression</td><td class="n">2.2</td><td class="n">3%</td></tr>
-    <tr><td>Traumatic brain injury</td><td class="n">1.7</td><td class="n">3%</td></tr>
-    <tr><td>Air pollution</td><td class="n">1.1</td><td class="n">3%</td></tr>
-    <tr><td>Physical inactivity</td><td class="n">1.2</td><td class="n">2%</td></tr>
-    <tr><td>Smoking</td><td class="n">1.3</td><td class="n">2%</td></tr>
-    <tr><td>Diabetes</td><td class="n">1.7</td><td class="n">2%</td></tr>
-    <tr><td>Hypertension</td><td class="n">1.2</td><td class="n">2%</td></tr>
-    <tr><td><b>Untreated vision loss</b> &mdash; new in 2024</td><td class="n">1.5</td><td class="n">2%</td></tr>
-    <tr><td>Obesity</td><td class="n">1.3</td><td class="n">1%</td></tr>
-    <tr><td>Excessive alcohol &mdash; over 21 UK units a week</td><td class="n">1.2</td><td class="n">1%</td></tr>
-    <tr><td><b>All fourteen</b></td><td class="n">&mdash;</td><td class="n"><b>45%</b></td></tr>
+    <thead><tr><th>Risk factor</th><th>Life stage</th><th>Prevalence</th><th>Relative risk</th><th>Weighted PAF</th></tr></thead><tbody>
+    <tr><td><b>Hearing loss</b></td><td>midlife</td><td class="n">59.0%</td><td class="n">1.4</td><td class="n"><b>7%</b></td></tr>
+    <tr><td><b>High LDL cholesterol</b> &mdash; new in 2024</td><td>midlife</td><td class="n">76.5%</td><td class="n">1.3</td><td class="n"><b>7%</b></td></tr>
+    <tr><td>Less education</td><td><b>early life</b></td><td class="n">23.2%</td><td class="n">1.6</td><td class="n">5%</td></tr>
+    <tr><td>Social isolation</td><td>late life</td><td class="n">24.0%</td><td class="n">1.6</td><td class="n">5%</td></tr>
+    <tr><td>Depression</td><td>midlife</td><td class="n">7.2%</td><td class="n"><b>2.2</b></td><td class="n">3%</td></tr>
+    <tr><td>Traumatic brain injury</td><td>midlife</td><td class="n">12.1%</td><td class="n">1.7</td><td class="n">3%</td></tr>
+    <tr><td>Air pollution</td><td>late life</td><td class="n">75.0%</td><td class="n">1.1</td><td class="n">3%</td></tr>
+    <tr><td>Physical inactivity</td><td>midlife</td><td class="n">27.5%</td><td class="n">1.2</td><td class="n">2%</td></tr>
+    <tr><td>Smoking</td><td>midlife</td><td class="n">22.3%</td><td class="n">1.3</td><td class="n">2%</td></tr>
+    <tr><td>Diabetes</td><td>midlife</td><td class="n">9.3%</td><td class="n">1.7</td><td class="n">2%</td></tr>
+    <tr><td>Hypertension</td><td>midlife</td><td class="n">31.1%</td><td class="n">1.2</td><td class="n">2%</td></tr>
+    <tr><td><b>Untreated vision loss</b> &mdash; new in 2024</td><td>late life</td><td class="n">12.7%</td><td class="n">1.5</td><td class="n">2%</td></tr>
+    <tr><td>Obesity</td><td>midlife</td><td class="n">13.0%</td><td class="n">1.3</td><td class="n">1%</td></tr>
+    <tr><td>Excessive alcohol &mdash; over 21 UK units a week</td><td>midlife</td><td class="n">13.3%</td><td class="n">1.2</td><td class="n">1%</td></tr>
+    <tr><td><b>All fourteen</b></td><td>&mdash;</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="n"><b>45%</b></td></tr>
   </tbody></table></div>
+  <p class="note">The Commission groups the fourteen by life stage, and a stem can ask which stage a
+  factor belongs to: <b>one early-life factor</b> (education), <b>ten midlife</b>, and <b>three late-life</b>
+  (social isolation, air pollution, untreated vision loss). The prevalence column is the other half of
+  the arithmetic &mdash; PAF is driven by it, not by the relative risk.</p>
   <div class="callout"><p><b>Two things that are easy to get backwards.</b> Depression has the highest
   relative risk of the fourteen (2.2) but a small attributable fraction, because it is uncommon; hearing
   loss has a modest relative risk (1.4) and the largest fraction, because 59% of the population has it.
@@ -11354,7 +11358,7 @@ const VERIFIED = {
   sleep:'Hazzard ch 44 · 13 Sep 2026', incont:'Hazzard ch 47 · 13 Sep 2026',
   pressure:'Hazzard ch 46 · 13 Sep 2026', rehab:'Hazzard ch 55 + EBRSR · 13 Sep 2026',
   parkinson:'Hazzard ch 61 · 13 Sep 2026', frailty:'Hazzard ch 42 · 13 Sep 2026',
-  cognition:'Hazzard ch 57 · 13 Sep 2026', dysphagia:'Hazzard ch 31 · 13 Sep 2026',
+  cognition:'Hazzard ch 57 + Lancet Commission 2024 · 15 Sep 2026', dysphagia:'Hazzard ch 31 · 13 Sep 2026',
   periop:'Hazzard ch 27 · 13 Sep 2026', backpain:'Hazzard ch 102 · 13 Sep 2026',
   diabetes:'Hazzard ch 99 + ADA 2026 · 13 Sep 2026',
   beers:'AGS Beers 2023 (paper)', ss:'STOPP/START v3 (paper)', alt:'AGS Alternatives 2025 (paper)',
