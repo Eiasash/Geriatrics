@@ -9856,27 +9856,34 @@ function search(term){
   buildIndex();
   try{ if(!pqReady) pqLoad(); indexPapers(); }catch(e){}
   if(term.length < 3){ hits.classList.remove('on'); hits.innerHTML=''; return; }
-  const re = new RegExp(esc(term),'i');
+  /* several words match as AND, in any order ("delirium haloperidol"); passages holding the
+     exact phrase come first */
+  const words = term.trim().split(/\s+/).filter(Boolean);
+  const re = new RegExp(esc(term.trim()),'i');
+  const res = words.map(w => new RegExp(esc(w),'i'));
   const seen = new Set();
   const found = [];
-  for(let i = 0; i < INDEX.length && found.length < 30; i++){
-    const x = INDEX[i];
-    if(!re.test(x.t)) continue;
-    const sig = x.sec + '|' + x.t;
-    if(seen.has(sig)) continue;
-    seen.add(sig); found.push(x);
+  for(const pass of [x => re.test(x.t), x => res.every(r => r.test(x.t))]){
+    for(let i = 0; i < INDEX.length && found.length < 30; i++){
+      const x = INDEX[i];
+      if(!pass(x)) continue;
+      const sig = x.sec + '|' + x.t;
+      if(seen.has(sig)) continue;
+      seen.add(sig); found.push(x);
+    }
   }
   if(!found.length){
     hits.innerHTML = `<div class="none">Nothing for &ldquo;${escHtml(term)}&rdquo;.</div>`;
     hits.classList.add('on'); return;
   }
   hits.innerHTML = found.map((x,i)=>{
-    const p = x.t.search(re);
+    const p0 = x.t.search(re), p = p0 >= 0 ? p0 : Math.max(0, x.t.search(res[0]));
     const from = Math.max(0, p-45);
     let snip = (from?'…':'') + x.t.slice(from, from+190) + (x.t.length>from+190?'…':'');
     /* escape first, then mark: the match is re-found on the escaped text so a term
        containing & or < still highlights */
-    snip = escHtml(snip).replace(new RegExp(esc(escHtml(term)), 'i'), m=>`<mark>${m}</mark>`);
+    snip = escHtml(snip);
+    for(const w of words) snip = snip.replace(new RegExp(esc(escHtml(w)), 'gi'), m=>`<mark>${m}</mark>`);
     return `<button type="button" data-i="${i}"><span>${SECNAME[x.sec]||x.sec}</span>${snip}</button>`;
   }).join('');
   hits.classList.add('on');
@@ -10638,7 +10645,7 @@ document.querySelectorAll('.wopen').forEach(b=>{
 
 /* ---------- backup ---------- */
 const BKEYS = ['geri:weeks-done','geri:days','geri:missed','geri:qlog','geri:notes','geri:timer',
-  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch','geri:scroll','geri:hlcolour','geri:rail','geri:tab','geri:ppintro'];
+  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch','geri:scroll','geri:hlcolour','geri:rail','geri:tab','geri:ppintro','geri:pqpos'];
 /* One backup block, kept in a dialog so it is reachable from the bottom of every
    section as well as from the home page. Moving the node rather than copying it
    means there is still only one textarea and one set of handlers. */
@@ -12612,6 +12619,25 @@ function pqFilter(){
   }
   return p;
 }
+/* the filters and the question on screen survive a reload (Android drops the tab often) */
+const PQPOSKEY = 'geri:pqpos';
+let pqPosReady = false;
+function pqSavePos(){
+  if(!pqPosReady || pqMockAns || !pqPool.length) return;
+  const p = pqPool[pqIdx % pqPool.length];
+  try{ window.storage.set(PQPOSKEY, JSON.stringify({y:pqYear, s:pqScope, c:pqChap, k:pqKey(p)})); }catch(e){}
+}
+function pqRestorePos(v){
+  if(v && typeof v === 'object'){
+    if(v.y === 'all' || YEARS.indexOf(v.y) >= 0) pqYear = v.y;
+    if(['all','recent','week','unseen','wrong'].indexOf(v.s) >= 0) pqScope = v.s;
+    if(v.c === 'all' || /^ch:\d+$/.test(v.c) || (typeof v.c === 'string' && document.getElementById(v.c))) pqChap = v.c;
+    pqPaintFilters(); pqBuild();
+    const i = pqPool.findIndex(p => pqKey(p) === v.k); if(i >= 0) pqIdx = i;
+    pqPosReady = true; pqRender();
+  }
+  pqPosReady = true;
+}
 let pqMockAns = null;          /* while reviewing a mock: pqKey -> the letter given ('' = blank) */
 function pqBuild(keepIdx){
   pqMockAns = null;
@@ -12641,6 +12667,7 @@ function pqRender(){
       ? '<span class="pqmock">in the mock &mdash; ' + (pqMockAns.get(pqKey(p))
           ? 'you: <b>' + escHtml(pqMockAns.get(pqKey(p))) + '</b>' : 'you left it blank') +
         ' &middot; key: <b>' + escHtml(p.a.split('').join(' / ')) + '</b></span>' : '');
+  pqSavePos();
   document.getElementById('pqProg').textContent = (pqIdx % pqPool.length + 1) + ' of ' + pqPool.length;
   document.getElementById('pqStem').textContent = p.q;
   document.getElementById('pqOpts').innerHTML = p.o.map((o,i)=>
@@ -12847,11 +12874,16 @@ function pqLoad(){
   pqReady = true;
   YEARS = [...new Set(PQ.map(p=>p.y))].sort();
   pqPaintFilters(); pqBuild(); pqRender(); pqStats();
+  if(pqPosWant !== undefined) pqRestorePos(pqPosWant);
   if(typeof wirePaperButtons === 'function') wirePaperButtons();
   if(typeof indexPapers === 'function' && indexBuilt) indexPapers();
 }
+let pqPosWant;               /* undefined until read; null when nothing was stored */
 (async()=>{
   try{ const r = await window.storage.get(PKEY); pqDone = JSON.parse(r.value) || {}; }catch(e){}
+  try{ const r = await window.storage.get(PQPOSKEY); pqPosWant = JSON.parse(r.value); }catch(e){ pqPosWant = null; }
+  /* the papers may already have been opened (a cold start straight onto them) */
+  if(pqReady) pqRestorePos(pqPosWant);
   idle(pqLoad);
 })();
 /* =========================================================

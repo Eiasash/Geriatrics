@@ -1546,5 +1546,35 @@ w.eval("show('week')");
 ok('the COMBODEX option reads brand (ingredients), same characters reordered',
    w.eval(`(()=>{ const q = PQ.find(p => p.y === '2021-12' && +p.n === 98); return q ? q.o.indexOf('COMBODEX (PARACETAMOL, IBUPROFEN)') >= 0 : false; })()`));
 
+/* ---- group 6: search and remembered past-paper place ---- */
+{
+  const q = d.getElementById('q');
+  q.value = 'delirium haloperidol'; w.eval("search('delirium haloperidol')");
+  const hitsTxt = [...d.querySelectorAll('#hits button')].map(b => b.textContent.toLowerCase());
+  const marks = d.querySelectorAll('#hits button mark').length;
+  ok('two words search as AND, in any order, each word marked',
+     hitsTxt.length > 0 && hitsTxt.every(t => t.includes('delirium') && t.includes('haloperidol')) && marks >= 2 * hitsTxt.length,
+     hitsTxt.length + ' hits, ' + marks + ' marks');
+  w.eval("search('')"); q.value = '';
+}
+{
+  w.eval("show('papers')");
+  d.querySelector('#pfYear button[data-y="2024-05"]').click();
+  const saved = JSON.parse(store['geri:pqpos'] || '{}');
+  const key = w.eval('pqKey(pqPool[pqIdx % pqPool.length])');
+  const st = {'geri:pqpos': JSON.stringify({y:'2024-05', s:'unseen', c:'all', k:saved.k})};
+  const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2);
+      w2.storage = { get: async k => { if(!(k in st)) throw new Error('missing'); return {key:k, value:st[k]}; },
+                     set: async (k,v) => { st[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dm.window.document.getElementById('ppIntroBtn'); t++) await new Promise(r => setTimeout(r, 50));
+  dm.window.eval("show('papers')"); await new Promise(r => setTimeout(r, 400));
+  const back = dm.window.eval("({y:pqYear, s:pqScope, k: pqPool.length ? pqKey(pqPool[pqIdx % pqPool.length]) : ''})");
+  dm.window.close();
+  ok('past-paper filters and the question on screen come back after a reload',
+     saved.y === '2024-05' && saved.k === key && back.y === '2024-05' && back.s === 'unseen' && back.k === saved.k, JSON.stringify({saved, back}));
+  d.querySelector('#pfYear button[data-y="all"]').click();
+}
+
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);

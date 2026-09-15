@@ -375,6 +375,21 @@ const M = [
    "\"COMBODEX (PARACETAMOL, IBUPROFEN)\"",
    "\"IBUPROFEN) (PARACETAMOL, COMBODEX\"",
    "COMBODEX option reads brand"],
+  /* --- group 6: search and remembered place, 16/09 --- */
+  ["search goes back to exact phrase only",
+   "  for(const pass of [x => re.test(x.t), x => res.every(r => r.test(x.t))]){",
+   "  for(const pass of [x => re.test(x.t)]){",
+   "two words search as AND"],
+
+  ["past-paper place is never saved",
+   "  pqSavePos();\n",
+   "",
+   "come back after a reload"],
+
+  ["the saved question is not put back on screen",
+   "    const i = pqPool.findIndex(p => pqKey(p) === v.k); if(i >= 0) pqIdx = i;\n",
+   "",
+   "come back after a reload"],
 ];
 
 if(STATIC){
