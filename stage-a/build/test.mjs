@@ -551,6 +551,16 @@ ok('scroll position is stored per section and persisted', w.eval("typeof scrollA
 w.eval("scrollAt.falls = 1234; scrollFrac.falls = 0.5; rememberScroll; restoreScroll('falls')");
 ok('restoring a section reads its stored offset', w.eval("scrollAt.falls === 1234"));
 
+// ---- audit fixes, 14 Sep ----
+ok('the table pop-out ignores highlights and abbreviations', /if\(t\.closest\('mark\.hl, abbr\.abbr'\)\) return;/.test(html));
+ok('resume writes both the pixel offset and the fraction, so the plausibility check cannot undo the jump',
+   /scrollAt\[BM\.sec\] = y; scrollFrac\[BM\.sec\] = y \/ docH\(\)/.test(html));
+ok('scroll positions and the highlight colour are backed up', w.eval("BKEYS.includes('geri:scroll') && BKEYS.includes('geri:hlcolour')"));
+ok('the colour preference goes through the storage shim, not localStorage directly', !/localStorage\.(get|set)Item\('geri:hlcolour'/.test(html));
+w.eval("HL = {falls:[{id:'i1',sec:'falls',t:'fear of falling',i:0,n:'',c:'y'}]}; hlPaintSec('falls'); hlPaintSec('falls'); hlPaintSec('falls')");
+ok('repainting a section does not duplicate its highlights', d.querySelectorAll('#falls mark.hl[data-hid="i1"]').length === 1);
+w.eval("HL = {}");
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 

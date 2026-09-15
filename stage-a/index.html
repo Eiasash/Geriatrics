@@ -518,7 +518,7 @@
   #miniT[hidden]{display:none}
   #miniT b{font-family:var(--mono);font-size:15px;letter-spacing:.02em;min-width:56px}
   #miniT .ph{font-size:11.5px;opacity:.75;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  #miniT button{font-family:var(--sans);font-size:12.5px;min-height:34px;padding:6px 10px;border-radius:17px;cursor:pointer;
+  #miniT button{font-family:var(--sans);font-size:12.5px;min-height:40px;padding:8px 12px;border-radius:20px;cursor:pointer;
     background:none;border:1px solid var(--paper);color:var(--paper);white-space:nowrap}
   #miniT button.pri{background:var(--paper);color:var(--ink);font-weight:600}
   #miniT.run b{color:#ffd28a}
@@ -10511,7 +10511,7 @@ document.querySelectorAll('.wopen').forEach(b=>{
 
 /* ---------- backup ---------- */
 const BKEYS = ['geri:weeks-done','geri:days','geri:missed','geri:qlog','geri:notes','geri:timer',
-  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch'];
+  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch','geri:scroll','geri:hlcolour'];
 /* One backup block, kept in a dialog so it is reachable from the bottom of every
    section as well as from the home page. Moving the node rather than copying it
    means there is still only one textarea and one set of handlers. */
@@ -10699,7 +10699,8 @@ function hlFromSelection(withNote){
 }
 /* ---- colour: last used is the default; swatches live in the bar and in the note dialog ---- */
 let hlColour = 'y';
-try{ hlColour = localStorage.getItem('geri:hlcolour') || 'y'; }catch(e){}
+(async()=>{ try{ const r = await window.storage.get('geri:hlcolour'); if(r && r.value) { hlColour = r.value;
+  const bar = document.getElementById('hlBar'); if(bar) paintSwatches(bar, hlColour); } }catch(e){} })();
 function paintSwatches(root, c){ root.querySelectorAll('.swatch button.sw').forEach(b=>b.setAttribute('aria-pressed', b.dataset.c === c ? 'true' : 'false')); }
 function hlSetColour(hid, c){
   const h = hlNote(hid); if(!h) return; h.c = c;
@@ -10728,7 +10729,7 @@ function hlSetColour(hid, c){
   window.addEventListener('scroll', ()=>{ if(!bar.hidden) place(); }, {passive:true});
   paintSwatches(bar, hlColour);
   bar.querySelector('.swatch').addEventListener('click', e=>{ const b = e.target.closest('button.sw'); if(!b) return;
-    hlColour = b.dataset.c; paintSwatches(bar, hlColour); try{ localStorage.setItem('geri:hlcolour', hlColour); }catch(x){} });
+    hlColour = b.dataset.c; paintSwatches(bar, hlColour); try{ window.storage.set('geri:hlcolour', hlColour); }catch(x){} });
   document.getElementById('hlHere').addEventListener('click', ()=>{ const sel = window.getSelection();
     const r = sel && sel.rangeCount ? sel.getRangeAt(0) : null; const el = r ? (r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentElement) : null;
     bmSet(el); if(sel) sel.removeAllRanges(); bar.hidden = true; });
@@ -10875,7 +10876,8 @@ function bmGo(){
   /* show() restores the section's remembered scroll a couple of frames later; set that memory to the
      bookmark and scroll there ourselves once layout has settled, so the two agree */
   setTimeout(()=>{ const x = b || bmFind(); if(x){ const y = Math.max(0, x.getBoundingClientRect().top + window.scrollY - 110);
-    if(typeof scrollAt === 'object') scrollAt[BM.sec] = y; window.scrollTo({top:y});
+    if(typeof scrollAt === 'object'){ scrollAt[BM.sec] = y; scrollFrac[BM.sec] = y / docH(); scPersist(); }
+    window.scrollTo({top:y});
     x.classList.add('bm-flash'); setTimeout(()=>x.classList.remove('bm-flash'), 1800); } else window.scrollTo({top:0}); }, 160);
 }
 function bmPaint(){
@@ -10943,6 +10945,7 @@ function bmPaint(){
     if(open) return;
     const t = e.target;
     if(t.closest('button, a, input, select, textarea, #tblModal')) return;
+    if(t.closest('mark.hl, abbr.abbr')) return;   /* those have their own meaning */
     const wrap = t.closest('main section .tscroll');
     if(wrap) openTable(wrap);
   });
