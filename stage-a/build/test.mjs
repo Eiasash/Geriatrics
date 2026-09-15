@@ -663,6 +663,14 @@ ok('rather than moving a highlight onto text the reader never marked, it is drop
 ok('restore is all-or-nothing: a refused write rolls back instead of reloading into a mixture',
    /async function bkApply\(o, haveUndo\)/.test(html) && /const back = await window\.storage\.get\(k\); ok = back && back\.value === val;/.test(html) &&
    /await window\.storage\.set\(j, \(j in v\) \? v\[j\] : ''\);/.test(html));
+ok('the rollback covers every key it ATTEMPTED, not only the ones that verified',
+   /touched\.push\(k\);\s*\n\s*try\{ await window\.storage\.set\(k, val\);/.test(html) &&
+   /for\(const j of touched\)\{/.test(html) && !/for\(const j of done\)\{/.test(html));
+ok('the pre-restore snapshot is awaited, so it cannot read keys the restore is mid-way through writing',
+   /await bkSnapshot\('replaced'\);/.test(html));
+ok('the mock result is written before the line that reads it back repaints',
+   /async function mockFinish\(auto\)\{/.test(html) &&
+   /try\{ await window\.storage\.set\(MKKEY, JSON\.stringify\(/.test(html));
 ok('both restore paths go through it', (html.match(/await bkApply\(o, safe/g)||[]).length === 2);
 ok('the highlight walk skips by tag and caches the verdict per element', /const HLSKIP = \{SCRIPT:1, STYLE:1, TEXTAREA:1\}/.test(html) && /memo\.set\(el, false\); return false;/.test(html));
 ok('the section is walked once per highlight, not twice', /hlWrap\(sec, pick\.at, pick\.at \+ pick\.len, h, nodes\)/.test(html));

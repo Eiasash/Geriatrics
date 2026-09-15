@@ -10606,16 +10606,19 @@ async function bkApply(o, haveUndo){
      in place and the device is neither state. The confirm above says what will be
      cleared, and the undo copy covers a change of mind. */
   const keys = BKEYS.slice();
-  const done = [];
+  const touched = [];          /* every key we ATTEMPTED, not every key that verified */
   for(const k of keys){
     const val = (k in o) ? o[k] : '';
     let ok = false;
+    /* the write may land and the read-back still disagree; from the rollback's point of
+       view the key has been touched either way, so it goes on the list before the attempt */
+    touched.push(k);
     try{ await window.storage.set(k, val); const back = await window.storage.get(k); ok = back && back.value === val; }
     catch(e){ ok = false; }
-    if(ok){ done.push(k); continue; }
+    if(ok) continue;
     if(haveUndo){
       try{ const v = JSON.parse((await window.storage.get(ROLLKEY)).value);
-        for(const j of done){
+        for(const j of touched){
           try{
             /* a key the user did not have before the restore has to be emptied, not
                skipped — leaving it behind is exactly the mixture we are rolling back */
@@ -12840,7 +12843,7 @@ function mockStart(){
   mockPaint();
   seeEl(document.getElementById('mockCard'));
 }
-function mockFinish(auto){
+async function mockFinish(auto){
   if(!mockOn) return;
   if(!auto){
     const left = mockQs.length - Object.keys(mockAns).length;
@@ -12888,7 +12891,7 @@ function mockFinish(auto){
   /* the day's question block logs itself — scaled to the 50 the sparkline is drawn in */
   if(rows.length >= 25){ qlog[TODAY] = Math.round(right / rows.length * 50); saveQ(); paintQ(); }
   pqSave(); pqStats();
-  try{ window.storage.set(MKKEY, JSON.stringify(
+  try{ await window.storage.set(MKKEY, JSON.stringify(
     {when:new Date().toISOString().slice(0,10), n:rows.length, right:right})); }catch(e){}
   try{ window.storage.set(RUNKEY, ''); }catch(e){}
   paintLastMock();
@@ -13060,7 +13063,9 @@ document.getElementById('bkFile').addEventListener('change', async e=>{
   if(!await bkConfirmScope(o)) return;
   const safe = await bkRollbackSave();
   if(!safe && !confirm('Could not keep an undo copy — storage refused it. Replace anyway?')) return;
-  bkSnapshot('replaced');   /* best effort; the undo above is the real safety net */
+  /* async, and it reads every key — unawaited it races the writes below and the file it
+     offers you is half the old state and half the new one */
+  await bkSnapshot('replaced');
   if(!await bkApply(o, safe)) return;
   location.reload();
 });
