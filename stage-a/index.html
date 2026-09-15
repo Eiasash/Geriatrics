@@ -10835,6 +10835,19 @@ function mergeSave(key, getMine, mergeFn, apply){
   }).catch(()=>{});
   return saveChain;
 }
+/* repaint now, or as soon as the reader has finished selecting */
+function hlRepaintWhenIdle(merged){
+  const sel = window.getSelection();
+  if(sel && sel.rangeCount && !sel.isCollapsed){
+    const go = ()=>{ const s2 = window.getSelection();
+      if(s2 && s2.rangeCount && !s2.isCollapsed) return;
+      document.removeEventListener('selectionchange', go);
+      try{ hlRepaintAll(merged); }catch(e){} };
+    document.addEventListener('selectionchange', go);
+    return;
+  }
+  hlRepaintAll(merged);
+}
 function hlRepaintAll(merged){
   document.querySelectorAll('mark.hl').forEach(m=>hlUnwrap(m.dataset.hid));
   HL = merged;
@@ -10844,19 +10857,8 @@ function hlSave(){
   return mergeSave(HLKEY, ()=>HL, mergeHL, merged=>{
     /* if the merge brought in another tab's highlights, show them here too */
     if(JSON.stringify(merged) === JSON.stringify(HL)) return;
-    const sel = window.getSelection();
-    if(sel && sel.rangeCount && !sel.isCollapsed){
-      /* repainting unwraps the marks and normalises their text nodes — the very nodes a
-         live selection is anchored to. Hold it until the reader has finished dragging. */
-      HL = merged;
-      const go = ()=>{ const s = window.getSelection();
-        if(s && s.rangeCount && !s.isCollapsed) return;
-        document.removeEventListener('selectionchange', go);
-        try{ hlRepaintAll(merged); }catch(e){} };
-      document.addEventListener('selectionchange', go);
-      return;
-    }
-    hlRepaintAll(merged);
+    HL = merged;
+    hlRepaintWhenIdle(merged);
   });
 }
 function snSave(){
@@ -11875,9 +11877,10 @@ async function refreshBody(){
            while it was in flight is in HL now and would be erased by an assignment */
         let seen = {}; try{ seen = JSON.parse(HLSEEN); }catch(e){}
         const merged = mergeHL(v, seen, HL);
-        document.querySelectorAll('mark.hl').forEach(m=>hlUnwrap(m.dataset.hid));
         HL = merged; HLSEEN = JSON.stringify(v);
-        CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){} });
+        /* same hold as hlSave: repainting unwraps the marks and normalises their text
+           nodes, and coming back to the tab mid-drag would destroy a live selection */
+        hlRepaintWhenIdle(merged);
       }
     }catch(e){}
   }
@@ -12879,11 +12882,17 @@ function mockSaveRun(){
     q: mockQs.map(p=>p.y + '#' + p.n), a: mockAns, f: mockFlag, i: mockI,
     e: mockEnds, t: mockPerQ })); }catch(e){}
 }
+let lastMockPaint = 0;
 async function paintLastMock(){
   const el = document.getElementById('mockLast');
   if(!el) return;
+  /* two calls land close together — one at load, one when a paper finishes — and the
+     reads can resolve out of order, painting the older score over the newer one. Only
+     the most recent call is allowed to write to the element. */
+  const mine = ++lastMockPaint;
   try{
     const r = await window.storage.get(MKKEY);
+    if(mine !== lastMockPaint) return;
     const v = JSON.parse(r.value);
     if(v && v.n) el.innerHTML = 'Last mock: <b>' + v.right + ' / ' + v.n + '</b> (' +
       Math.round(v.right/v.n*100) + '%) on ' + v.when + '.';
@@ -13118,6 +13127,9 @@ async function bkConfirmScope(o){
     '\n\nRestoring returns the device to when the backup was taken, so those will be cleared. Continue?');
 }
 async function bkGather(){
+  /* a highlight made a moment ago is still queued on the save chain; reading storage now
+     would produce a backup that is missing it */
+  try{ await saveChain; }catch(e){}
   const out = {'geri:v': 1};   /* schema stamp; restore ignores unknown keys, so this is safe */
   for(const k of BKEYS){ try{ const r = await window.storage.get(k); out[k] = r.value; }catch(e){} }
   return out;

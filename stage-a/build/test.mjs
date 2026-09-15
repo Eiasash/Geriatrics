@@ -405,9 +405,18 @@ ok('last-mock line present', !!d.getElementById('mockLast'));
 w.eval('mockUnseen=1; mockN=10; mockPerQ=0;');
 d.getElementById('mockGo').click();
 await new Promise(r=>setTimeout(r,150));
-ok('unseen-only draw avoids answered questions',
-   w.eval('mockQs.every(p=>pqDone[pqKey(p)]===undefined)') || w.eval('mockQs.length')===10,
-   w.eval('mockQs.length')+' drawn');
+ok('unseen-only draw avoids answered questions', (()=>{
+  /* the old form had an escape hatch — "or the draw was 10 long", which it always is —
+     so it passed even when the filter was removed entirely */
+  const seeded = w.eval(`(()=>{
+    const pool = PQ.filter(x=>!x.im);
+    pool.slice(0, 40).forEach(x=>{ pqDone[pqKey(x)] = 1; });   /* mark 40 as answered */
+    mockN = 10; mockUnseen = 1; mockStart();
+    const bad = mockQs.filter(p=>pqDone[pqKey(p)] !== undefined).length;
+    return {drawn: mockQs.length, answeredInDraw: bad};
+  })()`);
+  return seeded.drawn > 0 && seeded.answeredInDraw === 0;
+})(), JSON.stringify(w.eval("mockQs.length")));
 ok('an in-progress mock is saved', 'geri:mockrun' in store && /"q":\[/.test(store['geri:mockrun']));
 d.querySelector('#mockOpts .pqo[data-l="\u05d0"]').click();
 await new Promise(r=>setTimeout(r,60));
@@ -920,7 +929,15 @@ ok('the initial read folds the stored copy in rather than assigning over what is
    /HL = Object\.keys\(HL\)\.length \? mergeHL\(stored, \{\}, HL\) : stored;/.test(code) &&
    /SN = Object\.keys\(SN\)\.length \? mergeSN\(stored, \{\}, SN\) : stored;/.test(code));
 ok('a merge repaint waits for a live selection to end before unwrapping its text nodes',
-   /if\(sel && sel\.rangeCount && !sel\.isCollapsed\)\{/.test(code) && /document\.addEventListener\('selectionchange', go\);/.test(code));
+   /function hlRepaintWhenIdle\(merged\)\{/.test(code) &&
+   /if\(sel && sel\.rangeCount && !sel\.isCollapsed\)\{/.test(code) &&
+   /document\.addEventListener\('selectionchange', go\);/.test(code));
+ok('and coming back to the tab uses the same hold, not a bare repaint',
+   /hlRepaintWhenIdle\(merged\);/.test(code) &&
+   (code.match(/hlRepaintWhenIdle\(merged\);/g)||[]).length === 2 &&
+   !/const merged = mergeHL\(v, seen, HL\);\s*\n\s*document\.querySelectorAll\('mark\.hl'\)/.test(code));
+ok('a backup waits for queued saves, so it cannot be written without a highlight just made',
+   /async function bkGather\(\)\{[\s\S]{0,200}?try\{ await saveChain; \}catch\(e\)\{\}/.test(code));
 
 // ---- workflow pass, 15 Sep ----
 ok('a missed question offers a jump to the chapter it came from',
@@ -935,9 +952,14 @@ ok('every one wrong flags even a small sample, which four-answered alone would h
    /\|\| \(t\.n >= 2 && t\.w === t\.n\)/.test(code));
 ok('named papers are counted one paper at a time, not lumped into a single source bucket',
    /const key = \(lab\.length >= 6 && /.test(code) && /function srcLabel\(src\)/.test(code));
-ok('and it reaches the third of the bank that carries no chapter number \u2014 law, papers, Beers',
-   /const PQSEC = \{'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'\};/.test(code) &&
-   /const sec = PQSEC\[x\.bk\]; if\(!sec\) return;/.test(code));
+ok('and it reaches the third of the bank that carries no chapter number \u2014 law, papers, Beers', (()=>{
+  /* behavioural: answer a law question, which carries no chapter, and require the jump */
+  const q = w.eval("JSON.stringify(PQ.find(x=>x.bk==='Law/MoH' && !x.ch))");
+  if(!q || q === 'undefined') return false;
+  w.eval("(()=>{const q=PQ.find(x=>x.bk==='Law/MoH' && !x.ch); pqPool=[q]; pqIdx=0; pqShown=false; pqRender(); pqShown=false; pqAnswer(q.a[0]);})()");
+  const btn = d.querySelector('#pqSrc .pqgo');
+  return !!btn && btn.dataset.sec === 'ethics';
+})());
 ok('the jump button and the metric read the same source map, so they cannot drift apart',
    /const tsec = p\.ch \? sectionForChapter\(p\.ch\) : \(PQSEC\[p\.bk\] \|\| ''\);/.test(code) &&
    (code.match(/'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'/g)||[]).length === 1);
@@ -1153,6 +1175,34 @@ ok('the synchronous teardown write stands down when the host supplies its own st
   w.alert = realAlert; w.confirm = realConfirm; w.storage.set = realSet;
   w.eval("HL = {}; HLSEEN = '{}'");
 }
+
+ok('two overlapping repaints of the last-mock line cannot paint the older score last',
+   /const mine = \+\+lastMockPaint;/.test(code) && /if\(mine !== lastMockPaint\) return;/.test(code));
+ok('the mock report, the schedule and the metric all survive an empty week', (()=>{
+  const r = w.eval(`(()=>{const real=currentWeek; window.currentWeek=()=>null; const save=VIEW; VIEW=curWeek();
+    let out={};
+    try{ pqScope='week'; pqBuild(); out.pool = pqPool.length; }catch(e){ out.pool=-1; }
+    try{ pqStats(); out.stats=1; }catch(e){ out.stats=0; }
+    pqScope='all'; pqBuild(); VIEW=save; window.currentWeek=real; return out;})()`);
+  return r.pool > 0 && r.stats === 1;
+})());
+
+ok('an unseen-only draw really excludes questions already answered', (()=>{
+  /* the mutation harness had this mutation with no guard behind it */
+  const r = w.eval(`(()=>{
+    if(typeof pqLoad === 'function') pqLoad();
+    const savedDone = pqDone, savedUnseen = mockUnseen;
+    const pool = PQ.filter(RECENT);
+    pqDone = {};
+    pool.slice(0, Math.max(0, pool.length - 12)).forEach(p => { pqDone[pqKey(p)] = 1; });
+    mockUnseen = true;
+    const drew = mockPick(8);
+    const anyAnswered = drew.some(p => pqDone[pqKey(p)] !== undefined);
+    pqDone = savedDone; mockUnseen = savedUnseen;
+    return {n: drew.length, anyAnswered};
+  })()`);
+  return r.n === 8 && r.anyAnswered === false;
+})());
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
