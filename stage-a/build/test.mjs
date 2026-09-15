@@ -737,6 +737,42 @@ ok('a selection starting mid-text-node is anchored at the right character', (()=
   return !!h && h.i === 3 && landedAt === target;
 })());
 
+// ---- sixth review follow-up, 15 Sep ----
+ok('navigating while a note is still in its debounce banks it first', (()=>{
+  const p = d.querySelector('.mynotes[data-sec="falls"]');
+  p.open = true; const ta = p.querySelector('textarea');
+  w.eval("SN = {}");
+  ta.value = 'half typed note'; ta.dispatchEvent(new w.Event('input'));
+  w.eval("show('falls')");                      /* repaint inside the debounce window */
+  const kept = ta.value === 'half typed note' && w.eval("SN.falls") === 'half typed note';
+  w.eval("SN = {}; snSave()");
+  return kept;
+})());
+ok('the flush is wired into show, not only into teardown',
+   /if\(typeof flushPending === 'function'\) flushPending\(\);[\s\S]{0,120}?annotateSection\(id\)/.test(html));
+ok('a tab whose notes box matches its own stale memory writes nothing on teardown', (()=>{
+  w.eval("SN = {falls:'STALE'}");
+  d.querySelectorAll('.mynotes').forEach(p=>{ const ta = p.querySelector('textarea');
+    if(ta) ta.value = w.eval("SN['" + p.dataset.sec + "'] || ''"); });
+  store['geri:secnotes'] = JSON.stringify({falls:'NEWER from the other tab'});
+  w.eval("flushPending()");
+  const kept = JSON.parse(store['geri:secnotes']).falls === 'NEWER from the other tab';
+  w.eval("SN = {}"); d.querySelectorAll('.mynotes textarea').forEach(t=>t.value = '');
+  return kept;
+})());
+ok('but a tab that genuinely typed something still writes it', (()=>{
+  const p = d.querySelector('.mynotes[data-sec="falls"]');
+  p.querySelector('textarea').value = 'typed here just now';
+  w.eval("flushPending()");
+  const got = JSON.parse(store['geri:secnotes'] || '{}').falls === 'typed here just now';
+  w.eval("SN = {}; snSave()"); p.querySelector('textarea').value = '';
+  return got;
+})());
+ok('the scroll position is written directly on teardown, not left behind a timer',
+   /clearTimeout\(scSaveTmr\); scSaveTmr = null;\s*\n\s*window\.storage\.set\(SCKEY/.test(html));
+ok('the pre-paint script only accepts a size it knows',
+   /\['s','m','l','xl'\]\.indexOf\(v\.fs\) >= 0/.test(html));
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 

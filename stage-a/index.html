@@ -2776,7 +2776,7 @@ The first sentence of text is active and visible right at the 200px boundary, re
   try{
     var v = JSON.parse(localStorage.getItem('geri:display') || '{}');
     if(v.dark){ document.documentElement.classList.add('dark'); document.body.classList.add('dark'); }
-    if(v.fs) document.body.classList.add('fs-' + v.fs);
+    if(['s','m','l','xl'].indexOf(v.fs) >= 0) document.body.classList.add('fs-' + v.fs);
   }catch(e){}
 })();
 </script>
@@ -11655,11 +11655,25 @@ async function refreshFromStorage(){
 function flushPending(){
   try{ if(typeof nTmr !== 'undefined' && nTmr){ clearTimeout(nTmr); nTmr = null;
     notes[VIEW.k] = nBox.value; window.storage.set(NKEY, JSON.stringify(notes)); } }catch(e){}
-  try{ document.querySelectorAll('.mynotes').forEach(p=>{
-    const id = p.dataset.sec, ta = p.querySelector('textarea');
-    if(ta && (SN[id] || '') !== ta.value){ SN[id] = ta.value; if(!ta.value.trim()) delete SN[id]; }
-  }); snSave(); }catch(e){}
-  try{ rememberScroll(); }catch(e){}
+  try{
+    /* write only if this tab actually has something newer. A background tab holds a
+       stale copy of SN, and saving it unconditionally on teardown would overwrite a
+       note another tab wrote in the meantime. */
+    let changed = false;
+    document.querySelectorAll('.mynotes').forEach(p=>{
+      const id = p.dataset.sec, ta = p.querySelector('textarea');
+      if(ta && (SN[id] || '') !== ta.value){
+        SN[id] = ta.value; if(!ta.value.trim()) delete SN[id]; changed = true;
+      }
+    });
+    if(changed) snSave();
+  }catch(e){}
+  try{
+    /* rememberScroll defers its write by 400ms, which never arrives during teardown */
+    rememberScroll();
+    clearTimeout(scSaveTmr); scSaveTmr = null;
+    window.storage.set(SCKEY, JSON.stringify({y:scrollAt, f:scrollFrac}));
+  }catch(e){}
 }
 addEventListener('pagehide', flushPending);
 document.addEventListener('visibilitychange', ()=>{
@@ -12114,6 +12128,9 @@ function annotateSection(id){
 (function(){
   const _show = window.show;
   window.show = function(id){
+    /* anything still sitting in a debounce has to be banked BEFORE the repaint below
+       reads it back out of storage, or navigating away silently discards it */
+    try{ if(typeof flushPending === 'function') flushPending(); }catch(e){}
     try{ annotateSection(id); }catch(e){}
     /* annotating changes the section's text, so anything anchored to it has to be
        re-tried afterwards — the background pass ran while the section was pristine */
