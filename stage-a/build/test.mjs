@@ -772,7 +772,16 @@ w.eval("SN = {}"); w.eval("SNSEEN = " + JSON.stringify(store['geri:secnotes'] ||
 d.querySelector('.mynotes[data-sec="falls"] textarea').value = '';
 w.eval("snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the scroll position is written directly on teardown, not left behind a timer',
-   /clearTimeout\(scSaveTmr\); scSaveTmr = null;\s*\n\s*window\.storage\.set\(SCKEY/.test(html));
+   /if\(blob !== scLastBlob\)\{\s*\n\s*clearTimeout\(scSaveTmr\); scSaveTmr = null;\s*\n\s*scLastBlob = blob;\s*\n\s*window\.storage\.set\(SCKEY, blob\);/.test(html));
+ok('but a navigation that moved nothing writes nothing', (()=>{
+  w.eval("scrollAt.falls = 1234; scrollFrac.falls = 0.5; scLastBlob = ''");
+  w.eval("flushPending()");
+  const first = store['geri:scroll'];
+  delete store['geri:scroll'];
+  w.eval("flushPending()");                 /* nothing changed since */
+  const second = store['geri:scroll'];
+  return !!first && second === undefined;
+})());
 ok('the pre-paint script only accepts a size it knows',
    /\['s','m','l','xl'\]\.indexOf\(v\.fs\) >= 0/.test(html));
 
@@ -917,6 +926,20 @@ ok('the consolidation week survives the week card, the chips and the tag lookup'
     VIEW=save; window.currentWeek=real; return out;})()`);
   return r.render === 1 && r.tags === 0 && r.dates === 7 && r.chips === 1;
 })());
+
+ok('the past-paper week filter does not empty the pool when the week has no chapters',
+   /if\(chs\.size\) p = p\.filter\(x=>x\.ch && chs\.has\(x\.ch\)\);/.test(html) &&
+   /\(\(VIEW && VIEW\.items\) \|\| \[\]\)\.forEach/.test(html));
+ok('every flashcard carries a tag and no tag points past the end of the deck', (()=>{
+  /* CARDTAG maps cards by hard-coded index, so inserting a card anywhere but the end
+     silently shifts every tag below it. Nothing in the file says so; this check is the
+     only thing that would catch it. */
+  const n = w.eval("QS.length"), tags = JSON.parse(w.eval("JSON.stringify(CARDTAG)"));
+  let untagged = 0, past = 0;
+  for(let i = 0; i < n; i++) if(!tags[i]) untagged++;
+  for(const k in tags) if(+k >= n) past++;
+  return untagged === 0 && past === 0;
+})(), w.eval("QS.length") + ' cards');
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));

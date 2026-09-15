@@ -9913,9 +9913,11 @@ const SCKEY = 'geri:scroll';
 let scrollAt = {};
 let scrollFrac = {};
 let scSaveTmr = null;
+let scLastBlob = '';          /* what was last written, so a no-op navigation stays a no-op */
 function scPersist(){
   clearTimeout(scSaveTmr);
-  scSaveTmr = setTimeout(()=>{ scSaveTmr = null; try{ window.storage.set(SCKEY, JSON.stringify({y:scrollAt, f:scrollFrac})); }catch(e){} }, 400);
+  scSaveTmr = setTimeout(()=>{ scSaveTmr = null;
+    try{ const b = JSON.stringify({y:scrollAt, f:scrollFrac}); scLastBlob = b; window.storage.set(SCKEY, b); }catch(e){} }, 400);
 }
 function docH(){ return Math.max(1, document.documentElement.scrollHeight - window.innerHeight); }
 function rememberScroll(){
@@ -11838,10 +11840,16 @@ function flushPending(){
     if(changed) snSave();
   }catch(e){}
   try{
-    /* rememberScroll defers its write by 400ms, which never arrives during teardown */
+    /* rememberScroll defers its write by 400ms, which never arrives during teardown, so
+       write directly — but only when the position has actually moved since the last
+       write. show() calls this on every navigation and most of them change nothing. */
     rememberScroll();
-    clearTimeout(scSaveTmr); scSaveTmr = null;
-    window.storage.set(SCKEY, JSON.stringify({y:scrollAt, f:scrollFrac}));
+    const blob = JSON.stringify({y:scrollAt, f:scrollFrac});
+    if(blob !== scLastBlob){
+      clearTimeout(scSaveTmr); scSaveTmr = null;
+      scLastBlob = blob;
+      window.storage.set(SCKEY, blob);
+    }
   }catch(e){}
 }
 addEventListener('pagehide', flushPending);
@@ -12349,10 +12357,11 @@ function pqFilter(){
     p = p.filter(x=>x.ch && chs.indexOf(x.ch) >= 0 && OLDED.indexOf(x.y) < 0);
   }
   if(pqScope === 'week'){
-    const tags = weekTags();
     const chs = new Set();
-    VIEW.items.forEach(x=>{ const m=(x.t||'').match(/ch\s*(\d+)/); if(m) chs.add(+m[1]); });
-    p = p.filter(x=>x.ch && chs.has(x.ch));
+    ((VIEW && VIEW.items) || []).forEach(x=>{ const m=(x.t||'').match(/ch\s*(\d+)/); if(m) chs.add(+m[1]); });
+    /* during the consolidation period the week has no chapters of its own; filtering to
+       them empties the pool, so leave it whole rather than dead-ending */
+    if(chs.size) p = p.filter(x=>x.ch && chs.has(x.ch));
   } else if(pqScope === 'unseen'){
     p = p.filter(x=>pqDone[pqKey(x)] === undefined);
   } else if(pqScope === 'wrong'){
