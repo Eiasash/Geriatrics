@@ -10240,6 +10240,9 @@ let VIEW = curWeek();
    NEW week and would leave the page on last week at exactly the Sunday->Monday boundary */
 let paintDay = today(), paintWeek = curWeek();
 function checkRollover(){
+  /* background writers stand down while a restore rewrites every key (as tSave and
+     flushPending already do); the page reloads when the restore finishes */
+  if(restoring) return false;
   const t = today();
   if(t === paintDay) return false;
   const followed = VIEW === paintWeek;
@@ -10473,6 +10476,7 @@ function tAdvance(){
   tSave(); tPaint(); beep();
 }
 function tick(){
+  if(restoring) return;
   checkRollover();
   if(SW.on && SW.run){ mtOff = false; tPaint(); return; }
   if(T.run && tLeft()<=0) tAdvance();

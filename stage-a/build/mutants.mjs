@@ -201,6 +201,16 @@ const M = [
    "  BM = {sec: sec.id, t, i, d: nowStamp()};",
    "  BM = {sec: sec.id, t, i, d: new Date().toISOString().slice(0,16).replace('T',' ')};",
    'stamps are local time'],
+
+  ['the midnight check writes during a restore',
+   "  if(restoring) return false;\n  const t = today();",
+   "  const t = today();",
+   'while a restore runs'],
+
+  ['the timer advances during a restore',
+   "function tick(){\n  if(restoring) return;\n",
+   "function tick(){\n",
+   'while a restore runs'],
 ];
 
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */

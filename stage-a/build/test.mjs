@@ -1316,5 +1316,21 @@ errs.slice(0,12).forEach(e=>console.log('  ' + e));
      w.eval('nowStamp()'));
 }
 
+/* ---- a restore in progress: the midnight check and the timer stand down ---- */
+{
+  const C = w.__stageaClock;
+  C.set('2026-11-20T23:59:00'); w.eval('checkRollover()');
+  const before = store['geri:days'];
+  w.eval("restoring = true; T = {p:PH.length-1, left:1, run:true, ts:Date.now(), d:today()}");
+  C.set('2026-11-21T00:00:30');
+  const rolled = w.eval('checkRollover()');
+  w.eval('tick()');
+  const heldDay = w.eval('paintDay'), heldT = w.eval('T.p');
+  w.eval("restoring = false; T = {p:0, left:PH[0].s, run:false, ts:0, d:today()}");
+  ok('while a restore runs, midnight and a timer reaching zero write nothing',
+     rolled === false && heldDay === '2026-11-20' && heldT === w.eval('PH.length-1') && store['geri:days'] === before,
+     'rolled=' + rolled + ' paintDay=' + heldDay + ' T.p=' + heldT);
+}
+
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);
