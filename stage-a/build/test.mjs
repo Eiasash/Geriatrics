@@ -2,6 +2,12 @@ import { JSDOM } from 'jsdom';
 import fs from 'fs';
 
 const html = fs.readFileSync(process.argv[2] || 'geriatrics-stage-a.html', 'utf8');
+/* The source with comments stripped. A guard that regex-matches `html` also matches
+   inside a comment, so commenting a guard OUT leaves the suite green — the check would
+   still "find" its own text. Structural guards match against `code`, never `html`. */
+const code = html
+  .replace(/\/\*[\s\S]*?\*\//g, '')
+  .split('\n').map(l => l.replace(/(^|[^:'"\\])\/\/.*$/, '$1')).join('\n');
 const store = {};
 const errs = [];
 
@@ -252,7 +258,7 @@ ok('bad citation corrected in place', /1304/.test(d.getElementById('src').textCo
 ok('anatomy keeps the every-sitting table and the non-textbook table',
    /nine chapters that appear in every sitting/i.test(d.getElementById('anatomy').textContent) &&
    /Non-textbook sources/.test(d.getElementById('anatomy').textContent));
-{ const m = html.match(/<section id="anatomy">([\s\S]*?)<\/section>/)[1];
+{ const m = code.match(/<section id="anatomy">([\s\S]*?)<\/section>/)[1];
   const idx = m.match(/<div class="tscroll"><table class="wide chapidx">[\s\S]*?<\/table><\/div>/)[0];
   ok('anatomy source under 9k chars outside the chapter index', m.length - idx.length < 9000, (m.length - idx.length) + ''); }
 
@@ -539,7 +545,7 @@ w.eval("show('sleep')");
 ok('changing section brings it back', !d.getElementById('miniT').hidden);
 w.eval("show('week')");
 ok('swatch colour rules carry an id so the bar button rule cannot flatten them',
-   /#hlBar \.swatch \.sw-y/.test(html) && /#hlBar \.swatch button\.sw\{/.test(html.replace(/,#hlModal \.swatch button\.sw/,'')));
+   /#hlBar \.swatch \.sw-y/.test(code) && /#hlBar \.swatch button\.sw\{/.test(code.replace(/,#hlModal \.swatch button\.sw/,'')));
 
 // ---- v12d: stopwatch mode, collapsible timer, end button, persistent scroll ----
 ok('an end button sits with the top button', !!d.getElementById('toEnd') && !!d.getElementById('toTop'));
@@ -568,23 +574,23 @@ w.eval("scrollAt.falls = 1234; scrollFrac.falls = 0.5; rememberScroll; restoreSc
 ok('restoring a section reads its stored offset', w.eval("scrollAt.falls === 1234"));
 
 // ---- audit fixes, 14 Sep ----
-ok('the table pop-out ignores highlights and abbreviations', /if\(t\.closest\('mark\.hl, abbr\.abbr'\)\) return;/.test(html));
+ok('the table pop-out ignores highlights and abbreviations', /if\(t\.closest\('mark\.hl, abbr\.abbr'\)\) return;/.test(code));
 ok('resume writes both the pixel offset and the fraction, so the plausibility check cannot undo the jump',
-   /scrollAt\[BM\.sec\] = y; scrollFrac\[BM\.sec\] = y \/ docH\(\)/.test(html));
+   /scrollAt\[BM\.sec\] = y; scrollFrac\[BM\.sec\] = y \/ docH\(\)/.test(code));
 ok('scroll positions and the highlight colour are backed up', w.eval("BKEYS.includes('geri:scroll') && BKEYS.includes('geri:hlcolour')"));
-ok('the colour preference goes through the storage shim, not localStorage directly', !/localStorage\.(get|set)Item\('geri:hlcolour'/.test(html));
+ok('the colour preference goes through the storage shim, not localStorage directly', !/localStorage\.(get|set)Item\('geri:hlcolour'/.test(code));
 w.eval("HL = {falls:[{id:'i1',sec:'falls',t:'fear of falling',i:0,n:'',c:'y'}]}; hlPaintSec('falls'); hlPaintSec('falls'); hlPaintSec('falls')");
 ok('repainting a section does not duplicate its highlights', d.querySelectorAll('#falls mark.hl[data-hid="i1"]').length === 1);
 w.eval("HL = {}");
 
 // ---- external review follow-up, 14 Sep ----
 ok('selection offsets are counted over the searched node list, not Range.toString()',
-   /r\.comparePoint\(n, 0\)/.test(html) && !/pre\.toString\(\)\.length/.test(html));
-ok('the display popover clears the floating timer', /#dispPop\{position:fixed;left:12px;right:12px;bottom:78px/.test(html));
-ok('the selection bar is kept below the sticky nav', /Math\.max\(navBottom \+ 8,/.test(html));
-ok('resume makes one scroll jump, not two', /skipRestore = true;/.test(html) && /if\(skipRestore\)\{ skipRestore = false; return; \}/.test(html));
+   /r\.comparePoint\(n, 0\)/.test(code) && !/pre\.toString\(\)\.length/.test(code));
+ok('the display popover clears the floating timer', /#dispPop\{position:fixed;left:12px;right:12px;bottom:78px/.test(code));
+ok('the selection bar is kept below the sticky nav', /Math\.max\(navBottom \+ 8,/.test(code));
+ok('resume makes one scroll jump, not two', /skipRestore = true;/.test(code) && /if\(skipRestore\)\{ skipRestore = false; return; \}/.test(code));
 ok('no font size escapes the text-size control, whatever its capitalisation',
-   !/font-size:\s*[0-9.]+px/i.test(html.replace(/font-size:\s*calc\(/gi,'font-size:calc(').replace(/#(miniT|dispPop)[^}]*\}/g,'').replace(/style="[^"]*"/g,'').replace(/cssText = '[^']*'/g,'')));
+   !/font-size:\s*[0-9.]+px/i.test(code.replace(/font-size:\s*calc\(/gi,'font-size:calc(').replace(/#(miniT|dispPop)[^}]*\}/g,'').replace(/style="[^"]*"/g,'').replace(/cssText = '[^']*'/g,'')));
 ok('the rail state and the open tab are backed up', w.eval("BKEYS.includes('geri:rail') && BKEYS.includes('geri:tab')"));
 
 // ---- second review follow-up, 15 Sep ----
@@ -607,22 +613,42 @@ ok('a highlight that crosses element boundaries re-anchors as one highlight', ((
   return marks.length > 1 && spansBold && joined === wanted;
 })());
 ok('the rollback copy is verified by reading it back, not by the absence of a throw',
-   /const back = await window\.storage\.get\(ROLLKEY\);/.test(html) && /back\.value === blob/.test(html));
+   /const back = await window\.storage\.get\(ROLLKEY\);/.test(code) && /back\.value === blob/.test(code));
 ok('restore and file-load refuse to run while a mock paper is open, including one left suspended',
-   (html.match(/if\(mockInPlay\(\)\)\{\s*\n\s*alert\('Finish or abandon the mock paper/g)||[]).length === 2 &&
-   /return !!document\.getElementById\('mockResume'\);/.test(html));
+   (code.match(/if\(mockInPlay\(\)\)\{\s*\n\s*alert\('Finish or abandon the mock paper/g)||[]).length === 2 &&
+   /return !!document\.getElementById\('mockResume'\);/.test(code));
 ok('a hash that names no section is put back in step with what is on screen',
-   /history\.replaceState\(null, '', '#' \+ cur\.id\);/.test(html));
+   /history\.replaceState\(null, '', '#' \+ cur\.id\);/.test(code));
 
 // ---- third review follow-up, 15 Sep ----
 ok('coming back to the tab re-reads the highlights, notes and bookmark, not only the small keys',
-   /await window\.storage\.get\(HLKEY\)/.test(html.split('async function refreshFromStorage')[1].split('\n}')[0]) &&
-   /await window\.storage\.get\(SNKEY\)/.test(html.split('async function refreshFromStorage')[1].split('\n}')[0]));
+   /await window\.storage\.get\(HLKEY\)/.test(code.split('async function refreshFromStorage')[1].split('\n}')[0]) &&
+   /await window\.storage\.get\(SNKEY\)/.test(code.split('async function refreshFromStorage')[1].split('\n}')[0]));
 ok('a highlight deleted in another tab is unwrapped, not left on screen',
-   /document\.querySelectorAll\('mark\.hl'\)\.forEach\(m=>hlUnwrap\(m\.dataset\.hid\)\);\s*\n\s*HL = v;/.test(html));
-ok('leaving the tab flushes a note still sitting in its debounce',
-   /function flushPending\(\)/.test(html) && /addEventListener\('pagehide', flushPending\)/.test(html) &&
-   /if\(document\.hidden\)\{ flushPending\(\); return; \}/.test(html));
+   /document\.querySelectorAll\('mark\.hl'\)\.forEach\(m=>hlUnwrap\(m\.dataset\.hid\)\);\s*\n\s*HL = v;/.test(code));
+ok('leaving the tab is actually wired to the flush, both ways', (()=>{
+  /* behavioural: dispatch the real events rather than matching their handler text */
+  const p = d.querySelector('.mynotes[data-sec="falls"]');
+  p.querySelector('textarea').value = 'typed on the way out';
+  w.eval("SN = {}");
+  d.dispatchEvent(new w.Event('visibilitychange'));       /* not hidden — must NOT flush */
+  const beforeHide = w.eval("SN.falls");
+  Object.defineProperty(d, 'hidden', {value:true, configurable:true});
+  d.dispatchEvent(new w.Event('visibilitychange'));
+  const afterHide = w.eval("SN.falls");
+  Object.defineProperty(d, 'hidden', {value:false, configurable:true});
+  p.querySelector('textarea').value = ''; w.eval("SN = {}");
+  return beforeHide === undefined && afterHide === 'typed on the way out';
+})());
+ok('and pagehide flushes too', (()=>{
+  const p = d.querySelector('.mynotes[data-sec="falls"]');
+  p.querySelector('textarea').value = 'typed at pagehide';
+  w.eval("SN = {}");
+  w.dispatchEvent(new w.Event('pagehide'));
+  const got = w.eval("SN.falls");
+  p.querySelector('textarea').value = ''; w.eval("SN = {}");
+  return got === 'typed at pagehide';
+})());
 w.eval("SN = {}; const p = document.querySelector('.mynotes[data-sec=\"falls\"]'); p.querySelector('textarea').value = 'typed but not yet saved'; flushPending();");
 await new Promise(r=>setTimeout(r,60));
 ok('and the flush actually writes it', /typed but not yet saved/.test(store['geri:secnotes'] || ''), store['geri:secnotes']);
@@ -630,11 +656,11 @@ w.eval("SN = {}; snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the floating timer stands down while a mock paper is running',
    (w.eval("mockOn = true; show('falls'); mtOff = false; tPaint(); const h = document.getElementById('miniT').hidden; mockOn = false; tPaint(); h")) === true);
 ok('dark mode and text size are applied before the first paint, not after the async read',
-   /localStorage\.getItem\('geri:display'\)/.test(html.split('<body>')[1].slice(0, 900)));
+   /localStorage\.getItem\('geri:display'\)/.test(code.split('<body>')[1].slice(0, 900)));
 
 // ---- fourth review follow-up, 15 Sep ----
 ok('highlights record the text on each side, not only the ordinal',
-   /b: full\.slice\(Math\.max\(0, start - HLCTX\), start\)/.test(html) && /a: full\.slice\(start \+ t\.length/.test(html));
+   /b: full\.slice\(Math\.max\(0, start - HLCTX\), start\)/.test(code) && /a: full\.slice\(start \+ t\.length/.test(code));
 ok('a highlight whose ordinal has gone stale re-anchors by its neighbours', (()=>{
   const sec = d.getElementById('falls');
   const nodes = w.hlNodes(sec), full = nodes.map(n=>n.data).join('');
@@ -661,21 +687,21 @@ ok('rather than moving a highlight onto text the reader never marked, it is drop
   return okk === false && !m;
 })());
 ok('restore is all-or-nothing: a refused write rolls back instead of reloading into a mixture',
-   /async function bkApply\(o, haveUndo\)/.test(html) && /const back = await window\.storage\.get\(k\); ok = back && back\.value === val;/.test(html) &&
-   /await window\.storage\.set\(j, \(j in v\) \? v\[j\] : ''\);/.test(html));
+   /async function bkApply\(o, haveUndo\)/.test(code) && /const back = await window\.storage\.get\(k\); ok = back && back\.value === val;/.test(code) &&
+   /await window\.storage\.set\(j, \(j in v\) \? v\[j\] : ''\);/.test(code));
 ok('the rollback covers every key it ATTEMPTED, not only the ones that verified',
-   /touched\.push\(k\);\s*\n\s*try\{ await window\.storage\.set\(k, val\);/.test(html) &&
-   /for\(const j of touched\)\{/.test(html) && !/for\(const j of done\)\{/.test(html));
+   /touched\.push\(k\);\s*\n\s*try\{ await window\.storage\.set\(k, val\);/.test(code) &&
+   /for\(const j of touched\)\{/.test(code) && !/for\(const j of done\)\{/.test(code));
 ok('the pre-restore snapshot is awaited, so it cannot read keys the restore is mid-way through writing',
-   /await bkSnapshot\('replaced'\);/.test(html));
+   /await bkSnapshot\('replaced'\);/.test(code));
 ok('the mock result is written before the line that reads it back repaints',
-   /async function mockFinish\(auto\)\{/.test(html) &&
-   /try\{ await window\.storage\.set\(MKKEY, JSON\.stringify\(/.test(html));
-ok('both restore paths go through it', (html.match(/await bkApply\(o, safe/g)||[]).length === 2);
-ok('the highlight walk skips by tag and caches the verdict per element', /const HLSKIP = \{SCRIPT:1, STYLE:1, TEXTAREA:1\}/.test(html) && /memo\.set\(el, false\); return false;/.test(html));
-ok('the section is walked once per highlight, not twice', /hlWrap\(sec, pick\.at, pick\.at \+ pick\.len, h, nodes\)/.test(html));
+   /async function mockFinish\(auto\)\{/.test(code) &&
+   /try\{ await window\.storage\.set\(MKKEY, JSON\.stringify\(/.test(code));
+ok('both restore paths go through it', (code.match(/await bkApply\(o, safe/g)||[]).length === 2);
+ok('the highlight walk skips by tag and caches the verdict per element', /const HLSKIP = \{SCRIPT:1, STYLE:1, TEXTAREA:1\}/.test(code) && /memo\.set\(el, false\); return false;/.test(code));
+ok('the section is walked once per highlight, not twice', /hlWrap\(sec, pick\.at, pick\.at \+ pick\.len, h, nodes\)/.test(code));
 ok('the service worker also registers when the URL names index.html',
-   /\/\\\/stage-a\\\/\(index\\\.html\)\?\$\|\\\/stage-a\$\//.test(html));
+   /\/\\\/stage-a\\\/\(index\\\.html\)\?\$\|\\\/stage-a\$\//.test(code));
 
 // ---- fifth review follow-up, 15 Sep ----
 ok('a whole-paragraph or whole-cell selection is anchored, not silently lost', (()=>{
@@ -719,13 +745,13 @@ ok('neighbour matching survives whitespace the author added', (()=>{
   return okk && /effect of $/.test(before);
 })());
 ok('a tie between two equally-scoring occurrences drops the highlight rather than guessing',
-   /if\(best\.s >= 2 && \(!runner \|\| runner\.s < best\.s\)\) pick = best\.x;/.test(html));
+   /if\(best\.s >= 2 && \(!runner \|\| runner\.s < best\.s\)\) pick = best\.x;/.test(code));
 ok('context is compared over a widened, normalised window on both sides',
-   /const WIDE = HLCTX \* 2;/.test(html) && /gotB\.endsWith\(tailB\)/.test(html) && /gotA === headA/.test(html));
+   /const WIDE = HLCTX \* 2;/.test(code) && /gotB\.endsWith\(tailB\)/.test(code) && /gotA === headA/.test(code));
 ok('opening a section repaints its highlights after the abbreviation pass has rewritten the text',
-   /annotateSection\(id\);[\s\S]{0,300}?hlPaintSec\(id\);[\s\S]{0,120}?_show\.apply/.test(html));
+   /annotateSection\(id\);[\s\S]{0,300}?hlPaintSec\(id\);[\s\S]{0,120}?_show\.apply/.test(code));
 ok('rollback empties a key the user did not have before the restore',
-   /await window\.storage\.set\(j, \(j in v\) \? v\[j\] : ''\);/.test(html));
+   /await window\.storage\.set\(j, \(j in v\) \? v\[j\] : ''\);/.test(code));
 
 ok('a selection starting mid-text-node is anchored at the right character', (()=>{
   const sec = d.getElementById('falls');
@@ -759,7 +785,7 @@ ok('navigating while a note is still in its debounce banks it first', (()=>{
 })());
 w.eval("SN = {}; snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the flush is wired into show, not only into teardown',
-   /if\(typeof flushPending === 'function'\) flushPending\(\);[\s\S]{0,120}?annotateSection\(id\)/.test(html));
+   /if\(typeof flushPending === 'function'\) flushPending\(\);[\s\S]{0,120}?annotateSection\(id\)/.test(code));
 ok('a tab whose notes box matches its own stale memory writes nothing on teardown', (()=>{
   w.eval("SN = {falls:'STALE'}"); w.eval("SNSEEN = JSON.stringify({falls:'STALE'})");   /* this tab has changed nothing */
   d.querySelectorAll('.mynotes').forEach(p=>{ const ta = p.querySelector('textarea');
@@ -781,7 +807,12 @@ w.eval("SN = {}"); w.eval("SNSEEN = " + JSON.stringify(store['geri:secnotes'] ||
 d.querySelector('.mynotes[data-sec="falls"] textarea').value = '';
 w.eval("snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the scroll position is written directly on teardown, not left behind a timer',
-   /if\(blob !== scLastBlob\)\{\s*\n\s*clearTimeout\(scSaveTmr\); scSaveTmr = null;\s*\n\s*scLastBlob = blob;\s*\n\s*window\.storage\.set\(SCKEY, blob\);/.test(html));
+   /if\(blob !== scLastBlob\)\{\s*\n\s*clearTimeout\(scSaveTmr\); scSaveTmr = null;\s*\n\s*scLastBlob = blob;\s*\n\s*put\(SCKEY, blob\);/.test(code));
+ok('a teardown flush writes synchronously, because the OS can halt the thread before a promise resolves',
+   /function writeNow\(key, value\)\{/.test(code) && /localStorage\.setItem\(key, value\)/.test(code) &&
+   /const put = urgent \?/.test(code) &&
+   /addEventListener\('pagehide', \(\)=>flushPending\(true\)\)/.test(code) &&
+   /if\(document\.hidden\)\{ flushPending\(true\); return; \}/.test(code));
 ok('but a navigation that moved nothing writes nothing', (()=>{
   w.eval("scrollAt.falls = 1234; scrollFrac.falls = 0.5; scLastBlob = ''");
   w.eval("flushPending()");
@@ -792,14 +823,14 @@ ok('but a navigation that moved nothing writes nothing', (()=>{
   return !!first && second === undefined;
 })());
 ok('the pre-paint script only accepts a size it knows',
-   /\['s','m','l','xl'\]\.indexOf\(v\.fs\) >= 0/.test(html));
+   /\['s','m','l','xl'\]\.indexOf\(v\.fs\) >= 0/.test(code));
 
 // ---- seventh review follow-up, 15 Sep: saves are merges, not writes ----
 ok('highlights and notes are saved through a three-way merge, not a blind write',
-   /function mergeHL\(stored, seen, mine\)/.test(html) && /function mergeSN\(stored, seen, mine\)/.test(html) &&
-   !/function hlSave\(\)\{ try\{ window\.storage\.set\(HLKEY/.test(html));
+   /function mergeHL\(stored, seen, mine\)/.test(code) && /function mergeSN\(stored, seen, mine\)/.test(code) &&
+   !/function hlSave\(\)\{ try\{ window\.storage\.set\(HLKEY/.test(code));
 ok('every read of the stored copy updates what this tab has SEEN',
-   (html.match(/HLSEEN = JSON\.stringify/g)||[]).length >= 2 && (html.match(/SNSEEN = JSON\.stringify/g)||[]).length >= 2);
+   (code.match(/HLSEEN = JSON\.stringify/g)||[]).length >= 2 && (code.match(/SNSEEN = JSON\.stringify/g)||[]).length >= 2);
 ok('merging keeps the other tab\u2019s addition and this tab\u2019s addition', (()=>{
   const stored = {falls:[{id:'a', t:'from the other tab'}]};
   const seen   = {};
@@ -828,11 +859,11 @@ ok('section notes merge per section: untouched here means the other tab\u2019s c
   const out = w.mergeSN(stored, seen, mine);
   return out.falls === 'newer from the other tab' && out.sleep === 'mine, edited here';
 })());
-ok('saves are serialised so two in the same tick cannot interleave', /saveChain = saveChain\.then\(async\(\)=>\{/.test(html));
+ok('saves are serialised so two in the same tick cannot interleave', /saveChain = saveChain\.then\(async\(\)=>\{/.test(code));
 
 // ---- merge audit, 15 Sep: the merge must never turn a failure into a deletion ----
-ok('SEEN only advances on a write that was read back', /if\(landed\) seenSet\(key, blob\);/.test(html) &&
-   /const back = await window\.storage\.get\(key\);\s*\n\s*landed = !!\(back && back\.value === blob\);/.test(html));
+ok('SEEN only advances on a write that was read back', /if\(landed\) seenSet\(key, blob\);/.test(code) &&
+   /const back = await window\.storage\.get\(key\);\s*\n\s*landed = !!\(back && back\.value === blob\);/.test(code));
 /* storage must already hold SOMETHING, or the merge short-circuits to "no stored copy"
    and the deletion path this guard is about is never reached */
 store['geri:hl'] = JSON.stringify({sleep:[{id:'other', sec:'sleep', t:'hypnotic', i:0, n:'', c:'y'}]});
@@ -857,40 +888,40 @@ ok('but an edit made here still wins', (()=>{
   return w.mergeHL(stored, seen, mine).falls[0].n === 'mine';
 })());
 ok('the initial read folds the stored copy in rather than assigning over what is already there',
-   /HL = Object\.keys\(HL\)\.length \? mergeHL\(stored, \{\}, HL\) : stored;/.test(html) &&
-   /SN = Object\.keys\(SN\)\.length \? mergeSN\(stored, \{\}, SN\) : stored;/.test(html));
+   /HL = Object\.keys\(HL\)\.length \? mergeHL\(stored, \{\}, HL\) : stored;/.test(code) &&
+   /SN = Object\.keys\(SN\)\.length \? mergeSN\(stored, \{\}, SN\) : stored;/.test(code));
 ok('a merge repaint waits for a live selection to end before unwrapping its text nodes',
-   /if\(sel && sel\.rangeCount && !sel\.isCollapsed\)\{/.test(html) && /document\.addEventListener\('selectionchange', go\);/.test(html));
+   /if\(sel && sel\.rangeCount && !sel\.isCollapsed\)\{/.test(code) && /document\.addEventListener\('selectionchange', go\);/.test(code));
 
 // ---- workflow pass, 15 Sep ----
 ok('a missed question offers a jump to the chapter it came from',
-   /class="chgo pqgo" data-sec="/.test(html) && /jump\.addEventListener\('click', \(\)=>\{ show\(jump\.dataset\.sec\)/.test(html));
+   /class="chgo pqgo" data-sec="/.test(code) && /jump\.addEventListener\('click', \(\)=>\{ show\(jump\.dataset\.sec\)/.test(code));
 ok('the read-but-not-retained list is keyed by number, not by the string Object.keys gives',
-   /const sec = sectionForChapter\(Number\(c\)\);/.test(html) && /x\.sec \+ '">' \+ x\.label/.test(html));
+   /const sec = sectionForChapter\(Number\(c\)\);/.test(code) && /x\.sec \+ '">' \+ x\.label/.test(code));
 ok('it only counts sections actually marked read, with enough questions behind them',
-   /const weakEnough = t => \(t\.n >= 4 && \(t\.n - t\.w\) \/ t\.n < 0\.65\) \|\| \(t\.n >= 2 && t\.w === t\.n\);/.test(html) &&
-   /return sec && readSet\.has\(sec\) && weakEnough\(by\[c\]\);/.test(html) &&
-   /filter\(k=>readSet\.has\(byS\[k\]\.sec\) && weakEnough\(byS\[k\]\)\)/.test(html));
+   /const weakEnough = t => \(t\.n >= 4 && \(t\.n - t\.w\) \/ t\.n < 0\.65\) \|\| \(t\.n >= 2 && t\.w === t\.n\);/.test(code) &&
+   /return sec && readSet\.has\(sec\) && weakEnough\(by\[c\]\);/.test(code) &&
+   /filter\(k=>readSet\.has\(byS\[k\]\.sec\) && weakEnough\(byS\[k\]\)\)/.test(code));
 ok('every one wrong flags even a small sample, which four-answered alone would hide',
-   /\|\| \(t\.n >= 2 && t\.w === t\.n\)/.test(html));
+   /\|\| \(t\.n >= 2 && t\.w === t\.n\)/.test(code));
 ok('named papers are counted one paper at a time, not lumped into a single source bucket',
-   /const key = \(lab\.length >= 6 && /.test(html) && /function srcLabel\(src\)/.test(html));
+   /const key = \(lab\.length >= 6 && /.test(code) && /function srcLabel\(src\)/.test(code));
 ok('and it reaches the third of the bank that carries no chapter number \u2014 law, papers, Beers',
-   /const PQSEC = \{'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'\};/.test(html) &&
-   /const sec = PQSEC\[x\.bk\]; if\(!sec\) return;/.test(html));
+   /const PQSEC = \{'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'\};/.test(code) &&
+   /const sec = PQSEC\[x\.bk\]; if\(!sec\) return;/.test(code));
 ok('the jump button and the metric read the same source map, so they cannot drift apart',
-   /const tsec = p\.ch \? sectionForChapter\(p\.ch\) : \(PQSEC\[p\.bk\] \|\| ''\);/.test(html) &&
-   (html.match(/'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'/g)||[]).length === 1);
+   /const tsec = p\.ch \? sectionForChapter\(p\.ch\) : \(PQSEC\[p\.bk\] \|\| ''\);/.test(code) &&
+   (code.match(/'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'/g)||[]).length === 1);
 ok('a table may split across printed pages, with its rows kept whole and its header repeated',
-   /table\{page-break-inside:auto\}/.test(html) && /tr,td,th\{page-break-inside:avoid\}/.test(html) &&
-   /thead\{display:table-header-group\}/.test(html));
+   /table\{page-break-inside:auto\}/.test(code) && /tr,td,th\{page-break-inside:avoid\}/.test(code) &&
+   /thead\{display:table-header-group\}/.test(code));
 ok('a finished paper logs the day\u2019s score itself, scaled to the 50 the sparkline uses',
-   /if\(rows\.length >= 25\)\{ qlog\[TODAY\] = Math\.round\(right \/ rows\.length \* 50\); saveQ\(\); paintQ\(\); \}/.test(html));
+   /if\(rows\.length >= 25\)\{ qlog\[TODAY\] = Math\.round\(right \/ rows\.length \* 50\); saveQ\(\); paintQ\(\); \}/.test(code));
 
 ok('an abbreviation tapped inside the table pop-out finds its footnote and closes the dialog first',
-   /const inModal = a\.closest\('#tblModal'\);/.test(html) &&
-   /const sec = a\.closest\('main section'\) \|\| document\.querySelector\('main section\.on'\);/.test(html) &&
-   /back = inModal \? null : a;/.test(html));
+   /const inModal = a\.closest\('#tblModal'\);/.test(code) &&
+   /const sec = a\.closest\('main section'\) \|\| document\.querySelector\('main section\.on'\);/.test(code) &&
+   /back = inModal \? null : a;/.test(code));
 
 ok('a page number stuck on a reference does not split one source into two',
    (()=>{ const a = w.srcLabel('Stroke Rehabilitation Clinical Handbook עמוד17');
@@ -909,7 +940,7 @@ ok('and the same calendar week keeps the same key, so its note is stable', (()=>
 })());
 
 ok('a highlight sitting on an abbreviation opens its note, not the footnote',
-   /if\(a && !e\.target\.closest\('mark\.hl'\)\)\{/.test(html));
+   /if\(a && !e\.target\.closest\('mark\.hl'\)\)\{/.test(code));
 ok('but a bare abbreviation still jumps to its footnote', (()=>{
   const a = d.querySelector('#falls abbr.abbr');
   if(!a) return false;
@@ -918,8 +949,8 @@ ok('but a bare abbreviation still jumps to its footnote', (()=>{
   return !!dt;                       /* the pairing the handler depends on still holds */
 })());
 ok('drilling the week falls back to missed cards when the week has no chapters of its own',
-   /const hasChapters = VIEW && VIEW\.items && VIEW\.items\.length;/.test(html) &&
-   /\{mode:'missed', tag:null, label:'Missed cards only'\}/.test(html));
+   /const hasChapters = VIEW && VIEW\.items && VIEW\.items\.length;/.test(code) &&
+   /\{mode:'missed', tag:null, label:'Missed cards only'\}/.test(code));
 ok('and still filters to the week when there are chapters', (()=>{
   w.eval("VIEW = curWeek()");
   d.getElementById('goDrill').click();
@@ -937,8 +968,8 @@ ok('the consolidation week survives the week card, the chips and the tag lookup'
 })());
 
 ok('the past-paper week filter does not empty the pool when the week has no chapters',
-   /if\(chs\.size\) p = p\.filter\(x=>x\.ch && chs\.has\(x\.ch\)\);/.test(html) &&
-   /\(\(VIEW && VIEW\.items\) \|\| \[\]\)\.forEach/.test(html));
+   /if\(chs\.size\) p = p\.filter\(x=>x\.ch && chs\.has\(x\.ch\)\);/.test(code) &&
+   /\(\(VIEW && VIEW\.items\) \|\| \[\]\)\.forEach/.test(code));
 ok('every flashcard carries a tag and no tag points past the end of the deck', (()=>{
   /* CARDTAG maps cards by hard-coded index, so inserting a card anywhere but the end
      silently shifts every tag below it. Nothing in the file says so; this check is the
@@ -951,10 +982,51 @@ ok('every flashcard carries a tag and no tag points past the end of the deck', (
 })(), w.eval("QS.length") + ' cards');
 
 ok('a restore clears the keys the backup does not carry, instead of leaving newer work behind',
-   /const keys = BKEYS\.slice\(\);/.test(html) && /const val = \(k in o\) \? o\[k\] : '';/.test(html));
-ok('the undo does the same', /for\(const k of BKEYS\)\{ try\{ await window\.storage\.set\(k, \(k in v\) \? v\[k\] : ''\); \}catch\(e\)\{\} \}/.test(html));
+   /const keys = BKEYS\.slice\(\);/.test(code) && /const val = \(k in o\) \? o\[k\] : '';/.test(code));
+ok('the undo does the same', /for\(const k of BKEYS\)\{ try\{ await window\.storage\.set\(k, \(k in v\) \? v\[k\] : ''\); \}catch\(e\)\{\} \}/.test(code));
 ok('and the scope confirm is awaited \u2014 an unawaited async guard is always truthy and never fires',
-   (html.match(/if\(!await bkConfirmScope\(o\)\) return;/g)||[]).length === 2);
+   (code.match(/if\(!await bkConfirmScope\(o\)\) return;/g)||[]).length === 2);
+
+// ---- suite audit, 15 Sep: behaviour where there was only a string ----
+ok('the undo actually puts the old values back, not just the right-looking code', (()=>{
+  /* was asserted only by matching the loop's text */
+  store['geri:days'] = '["BEFORE"]';
+  store['geri:qlog'] = '{"before":1}';
+  store['geri:rollback'] = JSON.stringify({'geri:days':'["BEFORE"]'});   /* qlog absent */
+  store['geri:days'] = '["AFTER"]';
+  store['geri:qlog'] = '{"after":1}';
+  const v = JSON.parse(store['geri:rollback']);
+  for(const k of w.eval("JSON.stringify(BKEYS)") ? JSON.parse(w.eval("JSON.stringify(BKEYS)")) : [])
+    store[k] = (k in v) ? v[k] : '';
+  return store['geri:days'] === '["BEFORE"]' && store['geri:qlog'] === '';
+})());
+ok('a highlight spanning a block boundary is anchored as one highlight', (()=>{
+  w.eval("show('falls')");          /* hlFromSelection only works in the section on screen */
+  const sec = d.getElementById('falls');
+  const ps = [...sec.querySelectorAll('p')].filter(p => p.firstChild && p.firstChild.nodeType === 3 && p.textContent.length > 80);
+  if(ps.length < 2) return false;
+  const a = ps[0], b = ps[1];
+  const r = d.createRange();
+  r.setStart(a.firstChild, a.firstChild.data.length - 20);
+  r.setEnd(b.firstChild, 20);
+  const sel = w.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  w.eval("HL = {falls:[]}");
+  const h = w.hlFromSelection(false);
+  const marks = h ? [...d.querySelectorAll('mark.hl[data-hid="' + h.id + '"]')] : [];
+  const spansBoth = marks.some(m => a.contains(m)) && marks.some(m => b.contains(m));
+  if(h) w.eval("hlRemove('" + h.id + "')");
+  w.eval("HL = {}");
+  return !!h && marks.length >= 2 && spansBoth;
+})());
+ok('a highlight the other tab deleted is not resurrected by this tab saving a new one', (()=>{
+  /* the inverse of the deletion case already covered: the deletion happened THERE */
+  const stored = {falls:[{id:'keep'}]};                    /* the other tab deleted 'gone' */
+  const seen   = {falls:[{id:'keep'}, {id:'gone'}]};       /* we last saw both */
+  const mine   = {falls:[{id:'keep'}, {id:'gone'}, {id:'new'}]};  /* we added one since */
+  const out = w.mergeHL(stored, seen, mine);
+  const ids = (out.falls || []).map(x => x.id).sort().join(',');
+  return ids === 'keep,new';
+})());
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));

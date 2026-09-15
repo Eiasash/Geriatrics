@@ -11834,9 +11834,20 @@ async function refreshFromStorage(){
   if(typeof pqStats === 'function' && pqReady) pqStats();
 }
 /* the other direction: leaving the tab must not drop a note still sitting in a debounce */
-function flushPending(){
+/* A write straight to localStorage, no promise involved. When the page is going away —
+   Android backgrounds the tab and can halt the JS thread outright — an async write is a
+   promise the OS may never let resolve, so the note you just typed is gone. localStorage
+   .setItem is synchronous and completes before the handler returns. Only used on
+   teardown; everywhere else the normal storage layer applies, since it is what the host
+   may have replaced. */
+function writeNow(key, value){
+  try{ localStorage.setItem(key, value); return true; }catch(e){ return false; }
+}
+function flushPending(urgent){
+  const put = urgent ? (k,v)=>{ if(!writeNow(k,v)) window.storage.set(k,v); }
+                     : (k,v)=>window.storage.set(k,v);
   try{ if(typeof nTmr !== 'undefined' && nTmr){ clearTimeout(nTmr); nTmr = null;
-    notes[VIEW.k] = nBox.value; window.storage.set(NKEY, JSON.stringify(notes)); } }catch(e){}
+    notes[VIEW.k] = nBox.value; put(NKEY, JSON.stringify(notes)); } }catch(e){}
   try{
     /* write only if this tab actually has something newer. A background tab holds a
        stale copy of SN, and saving it unconditionally on teardown would overwrite a
@@ -11848,7 +11859,19 @@ function flushPending(){
         SN[id] = ta.value; if(!ta.value.trim()) delete SN[id]; changed = true;
       }
     });
-    if(changed) snSave();
+    if(changed){
+      if(urgent){
+        /* snSave is a read-then-write merge across two awaits; on teardown do the same
+           merge synchronously off localStorage, which is readable without a promise */
+        try{
+          let stored = {}; try{ stored = JSON.parse(localStorage.getItem(SNKEY)) || {}; }catch(e){}
+          let seen = {}; try{ seen = JSON.parse(SNSEEN); }catch(e){}
+          const merged = mergeSN(stored, seen, SN);
+          const blob = JSON.stringify(merged);
+          if(writeNow(SNKEY, blob)){ SNSEEN = blob; SN = merged; } else snSave();
+        }catch(e){ snSave(); }
+      } else snSave();
+    }
   }catch(e){}
   try{
     /* rememberScroll defers its write by 400ms, which never arrives during teardown, so
@@ -11859,13 +11882,13 @@ function flushPending(){
     if(blob !== scLastBlob){
       clearTimeout(scSaveTmr); scSaveTmr = null;
       scLastBlob = blob;
-      window.storage.set(SCKEY, blob);
+      put(SCKEY, blob);
     }
   }catch(e){}
 }
-addEventListener('pagehide', flushPending);
+addEventListener('pagehide', ()=>flushPending(true));
 document.addEventListener('visibilitychange', ()=>{
-  if(document.hidden){ flushPending(); return; }
+  if(document.hidden){ flushPending(true); return; }
   refreshFromStorage();
 });
 
