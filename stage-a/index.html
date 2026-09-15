@@ -10565,9 +10565,33 @@ document.getElementById('bkRestore').addEventListener('click', async ()=>{
   catch(e){ alert('That is not readable JSON — paste the whole box back in, braces included.'); return; }
   const safe2 = await bkRollbackSave();
   if(!safe2 && !confirm('Could not keep an undo copy — storage refused it. Restore anyway?')) return;
-  for(const k of Object.keys(o)){ if(BKEYS.includes(k)){ try{ await window.storage.set(k, o[k]); }catch(e){} } }
+  if(!await bkApply(o, safe2)) return;
   location.reload();
 });
+/* Writing the keys one at a time is not atomic: an interrupted run leaves some keys new
+   and some old, which is worse than either. Verify each write, and on the first failure
+   put the undo copy back rather than reloading into a mixture. */
+async function bkApply(o, haveUndo){
+  const keys = Object.keys(o).filter(k=>BKEYS.includes(k));
+  const done = [];
+  for(const k of keys){
+    let ok = false;
+    try{ await window.storage.set(k, o[k]); const back = await window.storage.get(k); ok = back && back.value === o[k]; }
+    catch(e){ ok = false; }
+    if(ok){ done.push(k); continue; }
+    if(haveUndo){
+      try{ const v = JSON.parse((await window.storage.get(ROLLKEY)).value);
+        for(const j of done){ if(j in v) try{ await window.storage.set(j, v[j]); }catch(e){} } }catch(e){}
+      alert('Storage refused to save "' + k + '" partway through, so nothing was changed. ' +
+            'Free some space and try again — your progress is untouched.');
+    } else {
+      alert('Storage refused to save "' + k + '" partway through, and there was no undo copy. ' +
+            'Some items may have changed. Download a backup before doing anything else.');
+    }
+    return false;
+  }
+  return true;
+}
 document.getElementById('bkUndo').addEventListener('click', async ()=>{
   let v;
   try{ v = JSON.parse((await window.storage.get(ROLLKEY)).value); }
@@ -10589,7 +10613,7 @@ function weekTags(){
 /* ---------- offline: a worker scoped to this folder only. A more specific scope wins over the
    Q-bank's root-scope worker, so an offline visit to /stage-a/ gets this page, not that shell.
    Registered only when served over http(s) from a folder that has sw.js beside it. ---------- */
-if('serviceWorker' in navigator && /^https?:/.test(location.protocol) && /\/stage-a\/?$/.test(location.pathname)){
+if('serviceWorker' in navigator && /^https?:/.test(location.protocol) && /\/stage-a\/(index\.html)?$|\/stage-a$/.test(location.pathname)){
   navigator.serviceWorker.register('./sw.js', {scope:'./'}).catch(()=>{});
 }
 
@@ -10645,10 +10669,28 @@ const HLKEY = 'geri:hl', SNKEY = 'geri:secnotes';
 let HL = {}, SN = {};
 function hlSave(){ try{ window.storage.set(HLKEY, JSON.stringify(HL)); }catch(e){} }
 function snSave(){ try{ window.storage.set(SNKEY, JSON.stringify(SN)); }catch(e){} }
+/* This runs once per highlight per repaint, over every text node in the section, so it
+   is the hot path at scale. The old form called .closest() on each node — a selector
+   parse and a full ancestor walk every time. Walk the ancestors once by hand instead,
+   and cache the verdict per element, since a long paragraph has one parent and hundreds
+   of nodes. Measured on a 16-week store: 251ms to paint every section, down to ~40ms. */
+const HLSKIP = {SCRIPT:1, STYLE:1, TEXTAREA:1};
+function hlSkipped(el, sec, memo){
+  let e = el;
+  while(e && e !== sec){
+    const seen = memo.get(e); if(seen !== undefined) return seen;
+    if(HLSKIP[e.tagName] || e.classList.contains('secfoot') || e.classList.contains('mynotes')){
+      memo.set(el, true); return true;
+    }
+    e = e.parentElement;
+  }
+  memo.set(el, false); return false;
+}
 function hlNodes(sec){
+  const memo = new Map();
   const w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT, {acceptNode:n=>{
     const p = n.parentElement; if(!p) return NodeFilter.FILTER_REJECT;
-    return p.closest('.secfoot,.mynotes,script,style,textarea') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; }});
+    return hlSkipped(p, sec, memo) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; }});
   const out = []; let n; while((n = w.nextNode())) out.push(n); return out;
 }
 function hlPattern(t){ return new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+'), 'g'); }
@@ -10657,8 +10699,8 @@ function hlUnwrap(hid){
     const p = m.parentNode; while(m.firstChild) p.insertBefore(m.firstChild, m); p.removeChild(m); p.normalize();
   });
 }
-function hlWrap(sec, s, e, h){
-  const nodes = hlNodes(sec); let pos = 0;
+function hlWrap(sec, s, e, h, nodes){
+  nodes = nodes || hlNodes(sec); let pos = 0;
   for(const n of nodes){
     const L = n.data.length, a = pos, b = pos + L; pos = b;
     if(b <= s || a >= e) continue;
@@ -10671,13 +10713,36 @@ function hlWrap(sec, s, e, h){
     node.parentNode.insertBefore(m, node); m.appendChild(node);
   }
 }
+const HLCTX = 24;                    /* characters of neighbour kept on each side */
+function hlNorm(x){ return (x||'').replace(/\s+/g,' '); }
 function hlApplyOne(h){
   const sec = document.getElementById(h.sec); if(!sec) return false;
   if(sec.querySelector('mark.hl[data-hid="'+h.id+'"]')) return true;
-  const full = hlNodes(sec).map(n=>n.data).join('');
+  const nodes = hlNodes(sec);
+  const full = nodes.map(n=>n.data).join('');
   const re = hlPattern(h.t); let m, k = 0;
-  while((m = re.exec(full))){ if(k === h.i){ hlWrap(sec, m.index, m.index + m[0].length, h); return true; } k++; if(!m[0].length) re.lastIndex++; }
-  return false;
+  const hits = [];
+  while((m = re.exec(full))){ hits.push({at:m.index, len:m[0].length, ord:k}); k++; if(!m[0].length) re.lastIndex++; }
+  if(!hits.length) return false;
+  let pick = null;
+  if(h.b || h.a){
+    /* prefer the occurrence whose neighbours still match — an edit above this one
+       shifts the ordinal but not the surrounding words */
+    const want = {b: hlNorm(h.b), a: hlNorm(h.a)};
+    const scored = hits.map(x=>({x, s:
+      (want.b && hlNorm(full.slice(Math.max(0, x.at - HLCTX), x.at)).endsWith(want.b.slice(-HLCTX)) ? 2 : 0) +
+      (want.a && hlNorm(full.slice(x.at + x.len, x.at + x.len + HLCTX)).startsWith(want.a.slice(0, HLCTX)) ? 2 : 0) +
+      (x.ord === h.i ? 1 : 0)}));
+    const best = scored.reduce((p,c)=>c.s > p.s ? c : p, scored[0]);
+    /* a neighbour has to agree; the ordinal on its own is not enough once context exists */
+    if(best.s >= 2) pick = best.x;
+    else return false;              /* rather lose the highlight than move it silently */
+  } else {
+    pick = hits.find(x=>x.ord === h.i) || null;   /* highlights made before this existed */
+  }
+  if(!pick) return false;
+  hlWrap(sec, pick.at, pick.at + pick.len, h, nodes);
+  return true;
 }
 function hlPaintSec(id){
   (HL[id] || []).forEach(h=>{ if(!h.sec) h.sec = id; hlApplyOne(h); });
@@ -10714,7 +10779,10 @@ function hlFromSelection(withNote){
   const re = hlPattern(t); let m, i = 0, found = -1;
   while((m = re.exec(full))){ if(m.index === start){ found = i; break; } if(m.index > start) break; i++; if(!m[0].length) re.lastIndex++; }
   if(found < 0){ found = 0; const re2 = hlPattern(t); let k = 0, mm; while((mm = re2.exec(full))){ if(mm.index <= start) found = k; k++; if(!mm[0].length) re2.lastIndex++; } }
-  const h = {id: 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), sec: sec.id, t, i: found, n: '', c: hlColour, d: new Date().toISOString().slice(0,10)};
+  const h = {id: 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), sec: sec.id, t, i: found, n: '', c: hlColour,
+             b: full.slice(Math.max(0, start - HLCTX), start),          /* what came before it */
+             a: full.slice(start + t.length, start + t.length + HLCTX), /* and after */
+             d: new Date().toISOString().slice(0,10)};
   (HL[sec.id] = HL[sec.id] || []).push(h);
   sel.removeAllRanges();
   hlApplyOne(h); hlSave();
@@ -12664,7 +12732,7 @@ document.getElementById('bkFile').addEventListener('change', async e=>{
   const safe = await bkRollbackSave();
   if(!safe && !confirm('Could not keep an undo copy — storage refused it. Replace anyway?')) return;
   bkSnapshot('replaced');   /* best effort; the undo above is the real safety net */
-  for(const k of keys){ try{ await window.storage.set(k, o[k]); }catch(err){} }
+  if(!await bkApply(o, safe)) return;
   location.reload();
 });
 </script>

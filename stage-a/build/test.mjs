@@ -630,6 +630,43 @@ ok('the floating timer stands down while a mock paper is running',
 ok('dark mode and text size are applied before the first paint, not after the async read',
    /localStorage\.getItem\('geri:display'\)/.test(html.split('<body>')[1].slice(0, 900)));
 
+// ---- fourth review follow-up, 15 Sep ----
+ok('highlights record the text on each side, not only the ordinal',
+   /b: full\.slice\(Math\.max\(0, start - HLCTX\), start\)/.test(html) && /a: full\.slice\(start \+ t\.length/.test(html));
+ok('a highlight whose ordinal has gone stale re-anchors by its neighbours', (()=>{
+  const sec = d.getElementById('falls');
+  const nodes = w.hlNodes(sec), full = nodes.map(n=>n.data).join('');
+  const ii = []; let j = -1; while((j = full.indexOf('exercise', j+1)) >= 0) ii.push(j);
+  if(ii.length < 6) return false;
+  const at = ii[5];
+  const h = {id:'ctx1', sec:'falls', t:'exercise', i:3,        /* deliberately wrong ordinal */
+             b: full.slice(at-24, at), a: full.slice(at+8, at+32), n:'', c:'y'};
+  w.eval("HL = {falls:[]}");
+  const okk = w.hlApplyOne(h);
+  const m = d.querySelector('mark.hl[data-hid="ctx1"]');
+  if(!okk || !m) return false;
+  const para = m.parentElement.textContent.replace(/\s+/g,' ');
+  const landed = para.slice(Math.max(0, para.indexOf(m.textContent)-24), para.indexOf(m.textContent));
+  w.eval("hlUnwrap('ctx1'); HL = {}");
+  return landed.replace(/\s+/g,' ').trim() === h.b.replace(/\s+/g,' ').trim();
+})());
+ok('rather than moving a highlight onto text the reader never marked, it is dropped', (()=>{
+  const h = {id:'ctx2', sec:'falls', t:'exercise', i:3, b:'zzz nothing like this zzz', a:'nor this', n:'', c:'y'};
+  w.eval("HL = {falls:[]}");
+  const okk = w.hlApplyOne(h);
+  const m = d.querySelector('mark.hl[data-hid="ctx2"]');
+  w.eval("HL = {}");
+  return okk === false && !m;
+})());
+ok('restore is all-or-nothing: a refused write rolls back instead of reloading into a mixture',
+   /async function bkApply\(o, haveUndo\)/.test(html) && /const back = await window\.storage\.get\(k\); ok = back && back\.value === o\[k\];/.test(html) &&
+   /for\(const j of done\)\{ if\(j in v\) try\{ await window\.storage\.set\(j, v\[j\]\); \}catch\(e\)\{\} \}/.test(html));
+ok('both restore paths go through it', (html.match(/await bkApply\(o, safe/g)||[]).length === 2);
+ok('the highlight walk skips by tag and caches the verdict per element', /const HLSKIP = \{SCRIPT:1, STYLE:1, TEXTAREA:1\}/.test(html) && /memo\.set\(el, false\); return false;/.test(html));
+ok('the section is walked once per highlight, not twice', /hlWrap\(sec, pick\.at, pick\.at \+ pick\.len, h, nodes\)/.test(html));
+ok('the service worker also registers when the URL names index.html',
+   /\/\\\/stage-a\\\/\(index\\\.html\)\?\$\|\\\/stage-a\$\//.test(html));
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 
