@@ -9924,6 +9924,9 @@ addEventListener('scroll', ()=>{ if(scTick) return; scTick = true;
 addEventListener('pagehide', rememberScroll);
 document.addEventListener('visibilitychange', ()=>{ if(document.hidden) rememberScroll(); });
 let skipRestore = false;
+/* The two nested requestAnimationFrames are load-bearing: the first lets the newly
+   shown section paint, the second lets its height resolve, so the fraction below is
+   measured against the full page rather than a section the browser still thinks is 0px. */
 function restoreScroll(id){
   if(skipRestore){ skipRestore = false; return; }
   const y = scrollAt[id] || 0;
@@ -10673,13 +10676,93 @@ document.getElementById('homeBtn').addEventListener('click', ()=>{ show('week');
    ========================================================= */
 const HLKEY = 'geri:hl', SNKEY = 'geri:secnotes';
 let HL = {}, SN = {};
-function hlSave(){ try{ window.storage.set(HLKEY, JSON.stringify(HL)); }catch(e){} }
-function snSave(){ try{ window.storage.set(SNKEY, JSON.stringify(SN)); }catch(e){} }
+/* =========================================================
+   Saving highlights and section notes is a THREE-WAY MERGE, not a write.
+
+   Both are held in memory and written whole. Two tabs of the same browser share one
+   store, so a blind write from a tab holding an older copy deletes whatever the other
+   tab has done since — and that is not hypothetical: it erases work silently and is
+   only noticed on the next reload. Re-reading on visibilitychange (refreshFromStorage)
+   covers a tab that was hidden and came back; it does nothing for two windows both on
+   screen, or a tab that never lost focus.
+
+   So each save compares three things: what is in storage now, what this tab last saw
+   (SEEN), and what this tab holds. A difference between storage and SEEN is the other
+   tab's work and is kept; a difference between this tab and SEEN is ours and is applied.
+   That distinction is what lets a DELETION here be told apart from an ADDITION there —
+   without it, a merge would resurrect every highlight the user deleted.
+
+   Writes are chained through one promise so two saves in the same tick cannot interleave.
+   ========================================================= */
+let HLSEEN = '{}', SNSEEN = '{}';
+let saveChain = Promise.resolve();
+function seenSet(key, blob){ if(key === HLKEY) HLSEEN = blob; else SNSEEN = blob; }
+function seenGet(key){ return key === HLKEY ? HLSEEN : SNSEEN; }
+
+/* highlights: one list per section, each entry identified by h.id */
+function mergeHL(stored, seen, mine){
+  const out = {};
+  const secs = new Set([...Object.keys(stored || {}), ...Object.keys(mine || {})]);
+  for(const sec of secs){
+    const S = (stored && stored[sec]) || [], N = (seen && seen[sec]) || [], M = (mine && mine[sec]) || [];
+    const sMap = new Map(S.map(h=>[h.id, h])), nSet = new Set(N.map(h=>h.id)), mMap = new Map(M.map(h=>[h.id, h]));
+    const list = [];
+    for(const h of S){
+      if(mMap.has(h.id)) list.push(mMap.get(h.id));        /* both have it — ours may carry a new note or colour */
+      else if(!nSet.has(h.id)) list.push(h);               /* the other tab added it since we last looked */
+      /* else: we had it and dropped it — a deletion here, so it stays gone */
+    }
+    for(const h of M) if(!sMap.has(h.id) && !nSet.has(h.id)) list.push(h);   /* added here */
+    if(list.length) out[sec] = list;
+  }
+  return out;
+}
+/* section notes: one string per section, so the unit of comparison is the whole string */
+function mergeSN(stored, seen, mine){
+  const out = {};
+  const secs = new Set([...Object.keys(stored || {}), ...Object.keys(mine || {})]);
+  for(const sec of secs){
+    const S = (stored || {})[sec], N = (seen || {})[sec], M = (mine || {})[sec];
+    const changedHere = M !== N;
+    const v = changedHere ? M : S;
+    if(v != null && v !== '') out[sec] = v;
+  }
+  return out;
+}
+function mergeSave(key, mine, mergeFn, apply){
+  saveChain = saveChain.then(async()=>{
+    let stored = null;
+    try{ const r = await window.storage.get(key); stored = JSON.parse(r.value); }catch(e){ stored = null; }
+    let seen = {}; try{ seen = JSON.parse(seenGet(key)); }catch(e){ seen = {}; }
+    const merged = (stored && typeof stored === 'object') ? mergeFn(stored, seen, mine) : mine;
+    const blob = JSON.stringify(merged);
+    try{ await window.storage.set(key, blob); }catch(e){}
+    seenSet(key, blob);
+    if(apply) try{ apply(merged); }catch(e){}
+  }).catch(()=>{});
+  return saveChain;
+}
+function hlSave(){
+  return mergeSave(HLKEY, HL, mergeHL, merged=>{
+    /* if the merge brought in another tab's highlights, show them here too */
+    if(JSON.stringify(merged) === JSON.stringify(HL)) return;
+    document.querySelectorAll('mark.hl').forEach(m=>hlUnwrap(m.dataset.hid));
+    HL = merged;
+    CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){} });
+  });
+}
+function snSave(){
+  return mergeSave(SNKEY, SN, mergeSN, merged=>{ SN = merged;
+    document.querySelectorAll('.mynotes').forEach(p=>{ try{ notesPaint(p); }catch(e){} }); });
+}
 /* This runs once per highlight per repaint, over every text node in the section, so it
    is the hot path at scale. The old form called .closest() on each node — a selector
    parse and a full ancestor walk every time. Walk the ancestors once by hand instead,
    and cache the verdict per element, since a long paragraph has one parent and hundreds
    of nodes. Measured on a 16-week store: 251ms to paint every section, down to ~40ms. */
+/* Do NOT add MARK here. The walk deliberately reads straight through existing
+   highlights so the section's text reads as one continuous string; skipping them would
+   shift every offset by the length of the text already highlighted. */
 const HLSKIP = {SCRIPT:1, STYLE:1, TEXTAREA:1};
 function hlSkipped(el, sec, memo){
   let e = el;
@@ -10939,8 +11022,8 @@ function notesAsText(){
 })();
 /* ---- load, then paint every section once the footers and panels exist ---- */
 (async()=>{
-  try{ const r = await window.storage.get(HLKEY); HL = JSON.parse(r.value) || {}; }catch(e){ HL = {}; }
-  try{ const r = await window.storage.get(SNKEY); SN = JSON.parse(r.value) || {}; }catch(e){ SN = {}; }
+  try{ const r = await window.storage.get(HLKEY); HL = JSON.parse(r.value) || {}; HLSEEN = JSON.stringify(HL); }catch(e){ HL = {}; HLSEEN = '{}'; }
+  try{ const r = await window.storage.get(SNKEY); SN = JSON.parse(r.value) || {}; SNSEEN = JSON.stringify(SN); }catch(e){ SN = {}; SNSEEN = '{}'; }
   const paintAll = ()=>{ CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){ console.error('highlight', id, e); } }); };
   if(document.querySelector('.mynotes')) idle(paintAll); else setTimeout(()=>idle(paintAll), 300);
 })();
@@ -11635,13 +11718,13 @@ async function refreshFromStorage(){
       const r = await window.storage.get(HLKEY); const v = JSON.parse(r.value);
       if(v && typeof v === 'object'){
         document.querySelectorAll('mark.hl').forEach(m=>hlUnwrap(m.dataset.hid));
-        HL = v; CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){} });
+        HL = v; HLSEEN = JSON.stringify(v); CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){} });
       }
     }catch(e){}
   }
   if(typeof SN === 'object'){
     try{ const r = await window.storage.get(SNKEY); const v = JSON.parse(r.value);
-      if(v && typeof v === 'object'){ SN = v;
+      if(v && typeof v === 'object'){ SN = v; SNSEEN = JSON.stringify(v);
         document.querySelectorAll('.mynotes').forEach(p=>{ try{ notesPaint(p); }catch(e){} }); }
     }catch(e){}
   }
@@ -12127,6 +12210,10 @@ function annotateSection(id){
 /* annotate the section being opened, and the dashboard's chapters ahead of time */
 (function(){
   const _show = window.show;
+  /* DO NOT REORDER. flushPending banks anything still in a debounce, and has to run
+     before the repaint below reads the stored value back over it. annotateSection has to
+     run before hlPaintSec: it rewrites the section's text, and highlight offsets are
+     counted over that text. Flipping either pair silently loses user data. */
   window.show = function(id){
     /* anything still sitting in a debounce has to be banked BEFORE the repaint below
        reads it back out of storage, or navigating away silently discards it */

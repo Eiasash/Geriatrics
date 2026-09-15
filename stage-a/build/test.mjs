@@ -623,8 +623,9 @@ ok('leaving the tab flushes a note still sitting in its debounce',
    /function flushPending\(\)/.test(html) && /addEventListener\('pagehide', flushPending\)/.test(html) &&
    /if\(document\.hidden\)\{ flushPending\(\); return; \}/.test(html));
 w.eval("SN = {}; const p = document.querySelector('.mynotes[data-sec=\"falls\"]'); p.querySelector('textarea').value = 'typed but not yet saved'; flushPending();");
+await new Promise(r=>setTimeout(r,60));
 ok('and the flush actually writes it', /typed but not yet saved/.test(store['geri:secnotes'] || ''), store['geri:secnotes']);
-w.eval("SN = {}; snSave()");
+w.eval("SN = {}; snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the floating timer stands down while a mock paper is running',
    (w.eval("mockOn = true; show('falls'); mtOff = false; tPaint(); const h = document.getElementById('miniT').hidden; mockOn = false; tPaint(); h")) === true);
 ok('dark mode and text size are applied before the first paint, not after the async read',
@@ -745,33 +746,71 @@ ok('navigating while a note is still in its debounce banks it first', (()=>{
   ta.value = 'half typed note'; ta.dispatchEvent(new w.Event('input'));
   w.eval("show('falls')");                      /* repaint inside the debounce window */
   const kept = ta.value === 'half typed note' && w.eval("SN.falls") === 'half typed note';
-  w.eval("SN = {}; snSave()");
   return kept;
 })());
+w.eval("SN = {}; snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the flush is wired into show, not only into teardown',
    /if\(typeof flushPending === 'function'\) flushPending\(\);[\s\S]{0,120}?annotateSection\(id\)/.test(html));
 ok('a tab whose notes box matches its own stale memory writes nothing on teardown', (()=>{
-  w.eval("SN = {falls:'STALE'}");
+  w.eval("SN = {falls:'STALE'}"); w.SNSEEN = JSON.stringify({falls:'STALE'});   /* this tab has changed nothing */
   d.querySelectorAll('.mynotes').forEach(p=>{ const ta = p.querySelector('textarea');
     if(ta) ta.value = w.eval("SN['" + p.dataset.sec + "'] || ''"); });
   store['geri:secnotes'] = JSON.stringify({falls:'NEWER from the other tab'});
   w.eval("flushPending()");
-  const kept = JSON.parse(store['geri:secnotes']).falls === 'NEWER from the other tab';
-  w.eval("SN = {}"); d.querySelectorAll('.mynotes textarea').forEach(t=>t.value = '');
-  return kept;
+  return true;
 })());
-ok('but a tab that genuinely typed something still writes it', (()=>{
-  const p = d.querySelector('.mynotes[data-sec="falls"]');
-  p.querySelector('textarea').value = 'typed here just now';
-  w.eval("flushPending()");
-  const got = JSON.parse(store['geri:secnotes'] || '{}').falls === 'typed here just now';
-  w.eval("SN = {}; snSave()"); p.querySelector('textarea').value = '';
-  return got;
-})());
+await new Promise(r=>setTimeout(r,60));
+ok('and the newer note is still there afterwards',
+   JSON.parse(store['geri:secnotes']).falls === 'NEWER from the other tab', store['geri:secnotes']);
+w.eval("SN = {}; SNSEEN = '{}'"); d.querySelectorAll('.mynotes textarea').forEach(t=>t.value = '');
+d.querySelector('.mynotes[data-sec="falls"] textarea').value = 'typed here just now';
+w.eval("flushPending()");
+await new Promise(r=>setTimeout(r,60));
+ok('but a tab that genuinely typed something still writes it',
+   JSON.parse(store['geri:secnotes'] || '{}').falls === 'typed here just now', store['geri:secnotes']);
+w.eval("SN = {}"); w.SNSEEN = store['geri:secnotes'] || '{}';
+d.querySelector('.mynotes[data-sec="falls"] textarea').value = '';
+w.eval("snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the scroll position is written directly on teardown, not left behind a timer',
    /clearTimeout\(scSaveTmr\); scSaveTmr = null;\s*\n\s*window\.storage\.set\(SCKEY/.test(html));
 ok('the pre-paint script only accepts a size it knows',
    /\['s','m','l','xl'\]\.indexOf\(v\.fs\) >= 0/.test(html));
+
+// ---- seventh review follow-up, 15 Sep: saves are merges, not writes ----
+ok('highlights and notes are saved through a three-way merge, not a blind write',
+   /function mergeHL\(stored, seen, mine\)/.test(html) && /function mergeSN\(stored, seen, mine\)/.test(html) &&
+   !/function hlSave\(\)\{ try\{ window\.storage\.set\(HLKEY/.test(html));
+ok('every read of the stored copy updates what this tab has SEEN',
+   (html.match(/HLSEEN = JSON\.stringify/g)||[]).length >= 2 && (html.match(/SNSEEN = JSON\.stringify/g)||[]).length >= 2);
+ok('merging keeps the other tab\u2019s addition and this tab\u2019s addition', (()=>{
+  const stored = {falls:[{id:'a', t:'from the other tab'}]};
+  const seen   = {};
+  const mine   = {falls:[{id:'b', t:'from this tab'}]};
+  const out = w.mergeHL(stored, seen, mine);
+  const ids = (out.falls||[]).map(h=>h.id).sort().join(',');
+  return ids === 'a,b';
+})());
+ok('merging respects a deletion made here rather than resurrecting it', (()=>{
+  const stored = {falls:[{id:'a'}, {id:'b'}]};
+  const seen   = {falls:[{id:'a'}, {id:'b'}]};   /* we had both */
+  const mine   = {falls:[{id:'a'}]};             /* and deleted b */
+  const out = w.mergeHL(stored, seen, mine);
+  return (out.falls||[]).length === 1 && out.falls[0].id === 'a';
+})());
+ok('merging keeps this tab\u2019s edit to a highlight it shares with the other tab', (()=>{
+  const stored = {falls:[{id:'a', n:''}]};
+  const seen   = {falls:[{id:'a', n:''}]};
+  const mine   = {falls:[{id:'a', n:'my remark'}]};
+  return w.mergeHL(stored, seen, mine).falls[0].n === 'my remark';
+})());
+ok('section notes merge per section: untouched here means the other tab\u2019s copy wins', (()=>{
+  const stored = {falls:'newer from the other tab', sleep:'mine'};
+  const seen   = {falls:'older', sleep:'mine'};
+  const mine   = {falls:'older', sleep:'mine, edited here'};
+  const out = w.mergeSN(stored, seen, mine);
+  return out.falls === 'newer from the other tab' && out.sleep === 'mine, edited here';
+})());
+ok('saves are serialised so two in the same tick cannot interleave', /saveChain = saveChain\.then\(async\(\)=>\{/.test(html));
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
