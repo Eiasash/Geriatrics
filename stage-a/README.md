@@ -9,7 +9,7 @@ Single-file, offline-capable study site for the Israeli geriatrics Stage A board
 ## Guards
 ```
 cd build && npm i jsdom
-node test.mjs      # 305 checks
+node test.mjs      # 308 checks
 node audit.mjs     # structural sweep
 node facts.mjs     # 85 chapter-verified strings pinned to sections
 node sweep.mjs     # opens every section, clicks every link

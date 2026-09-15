@@ -10580,7 +10580,7 @@ document.getElementById('bkCopy').addEventListener('click', async ()=>{
   flash('bkSaved');
 });
 document.getElementById('bkRestore').addEventListener('click', async ()=>{
-  if(typeof mockOn !== 'undefined' && mockOn){
+  if(mockInPlay()){
     alert('Finish or abandon the mock paper first — restoring mid-paper would leave the two out of step.');
     return;
   }
@@ -10591,6 +10591,7 @@ document.getElementById('bkRestore').addEventListener('click', async ()=>{
   }
   let o; try{ o = JSON.parse(document.getElementById('bkText').value); }
   catch(e){ alert('That is not readable JSON — paste the whole box back in, braces included.'); return; }
+  if(!await bkConfirmScope(o)) return;
   const safe2 = await bkRollbackSave();
   if(!safe2 && !confirm('Could not keep an undo copy — storage refused it. Restore anyway?')) return;
   if(!await bkApply(o, safe2)) return;
@@ -10600,11 +10601,16 @@ document.getElementById('bkRestore').addEventListener('click', async ()=>{
    and some old, which is worse than either. Verify each write, and on the first failure
    put the undo copy back rather than reloading into a mixture. */
 async function bkApply(o, haveUndo){
-  const keys = Object.keys(o).filter(k=>BKEYS.includes(k));
+  /* Go over the whole key list, not just the file's keys. A key the file does not carry
+     has to be CLEARED, or restoring Monday's backup on Wednesday leaves Tuesday's work
+     in place and the device is neither state. The confirm above says what will be
+     cleared, and the undo copy covers a change of mind. */
+  const keys = BKEYS.slice();
   const done = [];
   for(const k of keys){
+    const val = (k in o) ? o[k] : '';
     let ok = false;
-    try{ await window.storage.set(k, o[k]); const back = await window.storage.get(k); ok = back && back.value === o[k]; }
+    try{ await window.storage.set(k, val); const back = await window.storage.get(k); ok = back && back.value === val; }
     catch(e){ ok = false; }
     if(ok){ done.push(k); continue; }
     if(haveUndo){
@@ -10631,7 +10637,9 @@ document.getElementById('bkUndo').addEventListener('click', async ()=>{
   try{ v = JSON.parse((await window.storage.get(ROLLKEY)).value); }
   catch(e){ alert('There is nothing to undo on this device.'); return; }
   if(!v || !confirm('Put back what was here before the last restore?')) return;
-  for(const k of BKEYS){ if(k in v){ try{ await window.storage.set(k, v[k]); }catch(e){} } }
+  /* same asymmetry as the restore: a key that did not exist before has to be emptied,
+     not skipped, or the undo leaves half of what it was undoing behind */
+  for(const k of BKEYS){ try{ await window.storage.set(k, (k in v) ? v[k] : ''); }catch(e){} }
   try{ await window.storage.set(ROLLKEY, ''); }catch(e){}
   location.reload();
 });
@@ -12995,6 +13003,27 @@ async function bkSnapshot(tag){
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
 }
+/* A restore returns the device to the moment the backup was taken, which means anything
+   recorded since has to go. Name it before doing it — a silent blanking is the kind of
+   thing you only notice a week later. */
+/* mockOn is false after a reload, but the paper is still in storage waiting to be
+   resumed — and finishing it later would dump its results onto the restored state. */
+function mockInPlay(){
+  if(typeof mockOn !== 'undefined' && mockOn) return true;
+  return !!document.getElementById('mockResume');
+}
+async function bkConfirmScope(o){
+  const missing = [];
+  for(const k of BKEYS){
+    if(k in o) continue;
+    try{ const r = await window.storage.get(k); if(r && r.value && r.value !== '{}' && r.value !== '[]') missing.push(k); }
+    catch(e){}
+  }
+  if(!missing.length) return true;
+  return confirm('That backup does not contain ' + missing.length + ' thing' + (missing.length > 1 ? 's' : '') +
+    ' you have on this device:\n\n' + missing.join(', ') +
+    '\n\nRestoring returns the device to when the backup was taken, so those will be cleared. Continue?');
+}
 async function bkGather(){
   const out = {'geri:v': 1};   /* schema stamp; restore ignores unknown keys, so this is safe */
   for(const k of BKEYS){ try{ const r = await window.storage.get(k); out[k] = r.value; }catch(e){} }
@@ -13012,7 +13041,7 @@ document.getElementById('bkDownload').addEventListener('click', async ()=>{
 document.getElementById('bkFile').addEventListener('change', async e=>{
   const file = e.target.files && e.target.files[0];
   if(!file) return;
-  if(typeof mockOn !== 'undefined' && mockOn){
+  if(mockInPlay()){
     alert('Finish or abandon the mock paper first — loading a file mid-paper would leave the two out of step.');
     e.target.value = ''; return;
   }
@@ -13028,6 +13057,7 @@ document.getElementById('bkFile').addEventListener('change', async e=>{
   }
   if(!confirm('Replace what is stored on THIS device with ' + keys.length + ' saved items from ' +
      file.name + '?\n\nWhat is here now is kept as a one-step undo, and also offered as a download.')) return;
+  if(!await bkConfirmScope(o)) return;
   const safe = await bkRollbackSave();
   if(!safe && !confirm('Could not keep an undo copy — storage refused it. Replace anyway?')) return;
   bkSnapshot('replaced');   /* best effort; the undo above is the real safety net */

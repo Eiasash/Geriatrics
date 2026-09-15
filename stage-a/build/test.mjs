@@ -608,8 +608,9 @@ ok('a highlight that crosses element boundaries re-anchors as one highlight', ((
 })());
 ok('the rollback copy is verified by reading it back, not by the absence of a throw',
    /const back = await window\.storage\.get\(ROLLKEY\);/.test(html) && /back\.value === blob/.test(html));
-ok('restore and file-load refuse to run while a mock paper is open',
-   (html.match(/if\(typeof mockOn !== 'undefined' && mockOn\)\{\s*\n\s*alert\('Finish or abandon the mock paper/g)||[]).length === 2);
+ok('restore and file-load refuse to run while a mock paper is open, including one left suspended',
+   (html.match(/if\(mockInPlay\(\)\)\{\s*\n\s*alert\('Finish or abandon the mock paper/g)||[]).length === 2 &&
+   /return !!document\.getElementById\('mockResume'\);/.test(html));
 ok('a hash that names no section is put back in step with what is on screen',
    /history\.replaceState\(null, '', '#' \+ cur\.id\);/.test(html));
 
@@ -660,7 +661,7 @@ ok('rather than moving a highlight onto text the reader never marked, it is drop
   return okk === false && !m;
 })());
 ok('restore is all-or-nothing: a refused write rolls back instead of reloading into a mixture',
-   /async function bkApply\(o, haveUndo\)/.test(html) && /const back = await window\.storage\.get\(k\); ok = back && back\.value === o\[k\];/.test(html) &&
+   /async function bkApply\(o, haveUndo\)/.test(html) && /const back = await window\.storage\.get\(k\); ok = back && back\.value === val;/.test(html) &&
    /await window\.storage\.set\(j, \(j in v\) \? v\[j\] : ''\);/.test(html));
 ok('both restore paths go through it', (html.match(/await bkApply\(o, safe/g)||[]).length === 2);
 ok('the highlight walk skips by tag and caches the verdict per element', /const HLSKIP = \{SCRIPT:1, STYLE:1, TEXTAREA:1\}/.test(html) && /memo\.set\(el, false\); return false;/.test(html));
@@ -940,6 +941,12 @@ ok('every flashcard carries a tag and no tag points past the end of the deck', (
   for(const k in tags) if(+k >= n) past++;
   return untagged === 0 && past === 0;
 })(), w.eval("QS.length") + ' cards');
+
+ok('a restore clears the keys the backup does not carry, instead of leaving newer work behind',
+   /const keys = BKEYS\.slice\(\);/.test(html) && /const val = \(k in o\) \? o\[k\] : '';/.test(html));
+ok('the undo does the same', /for\(const k of BKEYS\)\{ try\{ await window\.storage\.set\(k, \(k in v\) \? v\[k\] : ''\); \}catch\(e\)\{\} \}/.test(html));
+ok('and the scope confirm is awaited \u2014 an unawaited async guard is always truthy and never fires',
+   (html.match(/if\(!await bkConfirmScope\(o\)\) return;/g)||[]).length === 2);
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
