@@ -128,6 +128,27 @@ const M = [
    "  VIEW.items.forEach(x=>{ const c = chapInfo(x.t);",
    "  [].forEach(x=>{ const c = chapInfo(x.t);",
    'week-scoped drill has cards'],
+
+  /* --- from the outside review, 15/09: fixes that had a guard but no mutation --- */
+  ['backup misses a highlight queued on the save chain',
+   "  try{ await saveChain; }catch(e){}",
+   "  /* try{ await saveChain; }catch(e){} */",
+   'waits for queued saves'],
+
+  ['clearing the bookmark goes back to .delete, which the layer does not have',
+   "    try{ window.storage.set(BMKEY, ''); }catch(e){}",
+   "    try{ window.storage.delete(BMKEY); }catch(e){}",
+   'layer has no delete'],
+
+  ['restore leaves keys the backup does not carry',
+   "    const val = (k in o) ? o[k] : '';",
+   "    if(!(k in o)) continue; const val = o[k];",
+   'clears the keys the backup does not carry'],
+
+  ['teardown write fires even when the host supplies storage',
+   "  if(!storageIsLocal) return false;",
+   "  /* if(!storageIsLocal) return false; */",
+   'stands down when the host supplies its own storage'],
 ];
 
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
