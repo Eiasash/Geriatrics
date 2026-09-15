@@ -1339,7 +1339,10 @@ errs.slice(0,12).forEach(e=>console.log('  ' + e));
   w.alert = m => alerts.push(String(m)); w.confirm = () => true;
   store['geri:rollback'] = JSON.stringify({'geri:days':'["OLD"]'});
   store['geri:days'] = '["NOW"]';
-  w.storage.set = async (k, v) => { if(k === 'geri:days') throw new Error('QuotaExceededError'); return realSet(k, v); };
+  /* the write "succeeds" but does not land, so the read-back disagrees — the same failure path
+     as a refused write, without a throw that a background writer could turn into an unhandled
+     rejection (that crashed a CI run) */
+  w.storage.set = async (k, v) => (k === 'geri:days' ? {key:k, value:v} : realSet(k, v));
   d.getElementById('bkUndo').click();
   await new Promise(r => setTimeout(r, 200));
   w.storage.set = realSet; w.alert = realAlert; w.confirm = realConfirm;

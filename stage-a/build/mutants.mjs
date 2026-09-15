@@ -13,7 +13,10 @@
 import fs from 'fs';
 import { execFileSync } from 'child_process';
 
-const SRC = process.argv[2] || '../index.html';
+const SRC = process.argv.slice(2).find(a => !a.startsWith('--')) || '../index.html';
+/* --static: only check that every mutation still has exactly one target. Seconds instead of
+   minutes; run it before every commit — three pushes went red on a stale target */
+const STATIC = process.argv.includes('--static');
 const src = fs.readFileSync(SRC, 'utf8');
 const TMP = '/tmp/mutant.html';
 
@@ -85,8 +88,8 @@ const M = [
    'every one wrong flags'],
 
   ['jump loses the chapterless third of the bank',
-   "const tsec = p.ch ? sectionForChapter(p.ch) : (PQSEC[p.bk] || '');",
-   "const tsec = p.ch ? sectionForChapter(p.ch) : '';",
+   "sectionForChapter(p.ch) : '') : (PQSEC[p.bk] || '');",
+   "sectionForChapter(p.ch) : '') : '';",
    'third of the bank'],
 
   ['pre-paint script accepts any text size',
@@ -162,8 +165,8 @@ const M = [
    'returning to the tab after Sunday midnight'],
 
   ['the timer stops checking the date',
-   "function tick(){\n  checkRollover();\n",
-   "function tick(){\n",
+   "  if(restoring) return;\n  checkRollover();\n",
+   "  if(restoring) return;\n",
    'timer notices midnight'],
 
   ['a reading block past midnight credits the new day',
@@ -279,6 +282,15 @@ const M = [
    "remark, report and backup text boxes"],
 ];
 
+if(STATIC){
+  let bad = 0;
+  for(const [name, from] of M){
+    const n = src.split(from).length - 1;
+    if(n !== 1){ bad++; console.log((n ? 'AMBIG  ' : 'STALE  ') + name); }
+  }
+  console.log(M.length + ' mutations, ' + bad + ' stale or ambiguous');
+  process.exit(bad ? 1 : 0);
+}
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
 {
   let out = '';

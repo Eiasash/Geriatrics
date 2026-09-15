@@ -46,6 +46,8 @@ jobs:
       - name: dashtest.mjs — dashboard, table pop-out (exits non-zero on a runtime error)
         run: node dashtest.mjs ../index.html
 
+      - name: mutants.mjs --static — every mutation still has exactly one target (fails fast)
+        run: node mutants.mjs --static ../index.html
       - name: mutants.mjs — breakages the suite must catch
         # a green suite and a blind suite look the same; this proves the guards bite
         run: node mutants.mjs ../index.html
