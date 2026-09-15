@@ -874,6 +874,22 @@ ok('an abbreviation tapped inside the table pop-out finds its footnote and close
    /const sec = a\.closest\('main section'\) \|\| document\.querySelector\('main section\.on'\);/.test(html) &&
    /back = inModal \? null : a;/.test(html));
 
+ok('a page number stuck on a reference does not split one source into two',
+   (()=>{ const a = w.srcLabel('Stroke Rehabilitation Clinical Handbook עמוד17');
+          const b = w.srcLabel('Stroke Rehabilitation Clinical Handbook עמוד12');
+          return a === b && a === 'Stroke Rehabilitation Clinical Handbook'; })());
+ok('nor does a trailing full stop', w.srcLabel('חוק החולה הנוטה למות.') === w.srcLabel('חוק החולה הנוטה למות'));
+ok('but two different sources stay apart', w.srcLabel('Advanced Dementia') !== w.srcLabel('Management of Acute Hip Fracture'));
+ok('past the last scheduled week the block gets its own week, not week 16 again', (()=>{
+  const last = w.eval("ALLW[ALLW.length-1]");
+  const got = w.eval("(()=>{const r=currentWeek; window.currentWeek=()=>null; const a=curWeek(); window.currentWeek=r; return a;})()");
+  return got && got.post === true && got.k !== last.k && !!got.a && !!got.b;
+})());
+ok('and the same calendar week keeps the same key, so its note is stable', (()=>{
+  const two = w.eval("(()=>{const r=currentWeek; window.currentWeek=()=>null; const a=curWeek(), b=curWeek(); window.currentWeek=r; return a===b;})()");
+  return two === true;
+})());
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 

@@ -10190,10 +10190,26 @@ TNOW.textContent = 'This week';
 })();
 
 /* ---------- which week are we looking at ---------- */
+/* After the last scheduled week (3 Jan 2027) the reading block is over and the
+   consolidation period begins. Returning the last scheduled week instead latched VIEW
+   onto week 16 permanently: every note written from then until the exam would have
+   saved over week 16's note, and the day chips would still have shown late December.
+   Give the period its own weeks instead, keyed by the calendar so each gets a fresh
+   note and its own chips. */
+const CONSW = {};
+function consolidationWeek(){
+  const d = new Date(TODAY + 'T00:00:00');
+  const back = (d.getDay() + 6) % 7;                    /* Monday-start, as the schedule is */
+  const mon = new Date(d); mon.setDate(d.getDate() - back);
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  const a = iso(mon);
+  if(!CONSW[a]) CONSW[a] = {k:'post-' + a, a:a, b:iso(sun), items:[], post:true};
+  return CONSW[a];
+}
 function curWeek(){
   const cw = currentWeek();
   if(cw && cw.pre) return ALLW[0];
-  if(!cw) return ALLW[ALLW.length-1];
+  if(!cw) return consolidationWeek();
   return cw;
 }
 let VIEW = curWeek();
@@ -12622,12 +12638,23 @@ const CHFALLBACK = (function(){
   for(const sec in CHREF) m[CHREF[sec][0]] = sec;
   return m;
 })();
-/* the reference string as a short, readable name: drop the Hebrew lead-in
-   (המאמר / מאמר / חוזר …) and whatever runs past a readable length */
+/* The reference string as a short, readable name for one paper or statute. The strings
+   were transcribed by hand off the past papers, so the same source appears with a page
+   number stuck on the end ("… Clinical Handbook עמוד17" and "… עמוד12") or a trailing
+   full stop. Those are ONE source and must key as one, or the metric reports a paper
+   twice at half its true count each. Truncation is applied here and not separately at
+   render time on purpose: truncating only the label would split a source back apart by
+   its page number, which is the failure that matters — better to under-report than to
+   name the wrong paper. */
 function srcLabel(src){
   if(!src) return '';
   let t = String(src).replace(/\s+/g,' ').trim()
-    .replace(/^(המאמר|מאמר|חוזר|נוהל|הנחיות)\s*/,'').trim();
+    .replace(/^(המאמר|מאמר|חוזר|נוהל|הנחיות)\s*/,'').trim()
+    .replace(/(עמוד|עמ'?|דף)\s*\d+/g,'')
+    .replace(/\b(p|pp|page)\.?\s*\d+\b/gi,'')
+    .replace(/(טבלה|תמונה|Tab|Table)\s*\d+/gi,'')
+    .replace(/[\s.,;:\-\u2013]+$/,'')
+    .replace(/\s+/g,' ').trim();
   return t.length > 44 ? t.slice(0,44) + '\u2026' : t;
 }
 function sectionForChapter(n){
