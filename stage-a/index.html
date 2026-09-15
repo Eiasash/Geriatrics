@@ -475,7 +475,7 @@
       font-family:var(--sans);font-size:calc(15px*var(--fs,1));font-weight:600;background:var(--paper);border:1px solid var(--ink);
       border-radius:2px;color:var(--ink);cursor:pointer}
   }
-  #dispPop{position:fixed;left:12px;right:12px;bottom:14px;z-index:57;background:var(--paper);border:1px solid var(--ink);
+  #dispPop{position:fixed;left:12px;right:12px;bottom:78px;z-index:57;background:var(--paper);border:1px solid var(--ink);
     border-radius:4px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.28);font-family:var(--sans)}
   #dispPop[hidden]{display:none}
   #dispPop .hd{display:flex;justify-content:space-between;align-items:center;font-size:calc(11.5px*var(--fs,1));letter-spacing:.08em;
@@ -2426,7 +2426,7 @@ body.dark .pqo {
     Flex: 1 1 auto !important;
   }
   .ch-title-wrap .glabel {
-    Font-size: 10px !important;
+    Font-size: calc(10px*var(--fs,1)) !important;
     Font-weight: 800 !important;
     Letter-spacing: 0.05em !important;
     Text-transform: uppercase !important;
@@ -2438,7 +2438,7 @@ body.dark .pqo {
     Flex-shrink: 0 !important;
   }
   .ch-title-wrap .ch-title {
-    Font-size: 14px !important;
+    Font-size: calc(14px*var(--fs,1)) !important;
     Font-weight: 750 !important;
     Color: var(--ink) !important;
     White-space: nowrap !important;
@@ -2458,7 +2458,7 @@ body.dark .pqo {
     Display: inline-flex !important;
     Align-items: center !important;
     Justify-content: center !important;
-    Font-size: 12px !important;
+    Font-size: calc(12px*var(--fs,1)) !important;
     Font-weight: 700 !important;
     Border-radius: 6px !important;
     Border: 1px solid var(--rule) !important;
@@ -2518,7 +2518,7 @@ body.dark .pqo {
     Min-height: 40px !important;
     Padding: 8px 10px !important;
     Text-align: left !important;
-    Font-size: 13px !important;
+    Font-size: calc(13px*var(--fs,1)) !important;
     Font-weight: 600 !important;
     Color: var(--ink) !important;
     Background: none !important;
@@ -2540,7 +2540,7 @@ body.dark .pqo {
   /* Collapse spacing on chapter metadata and lede */
   Main section > .eyebrow + p.note {
     Margin: 2px 0 6px !important;
-    Font-size: 12px !important;
+    Font-size: calc(12px*var(--fs,1)) !important;
     Line-height: 1.35 !important;
     Color: var(--mute) !important;
   }
@@ -2548,7 +2548,7 @@ body.dark .pqo {
   Main section > .eyebrow + .lede {
     Padding: 10px 14px !important;
     Margin: 0 0 12px !important;
-    Font-size: 14px !important;
+    Font-size: calc(14px*var(--fs,1)) !important;
     Line-height: 1.5 !important;
     Border-left-width: 4px !important;
   }
@@ -2569,7 +2569,7 @@ body.dark .pqo {
     Gap: 10px !important;
   }
   .ch-title {
-    Font-size: 16px !important;
+    Font-size: calc(16px*var(--fs,1)) !important;
     Font-weight: 800 !important;
   }
   .ch-actions {
@@ -2600,7 +2600,7 @@ body.dark .pqo {
     Border: none !important;
     Padding: 8px 10px !important;
     Border-radius: 4px !important;
-    Font-size: 13px !important;
+    Font-size: calc(13px*var(--fs,1)) !important;
     Font-weight: 600 !important;
     Color: var(--ink) !important;
     Cursor: pointer !important;
@@ -9911,7 +9911,9 @@ addEventListener('scroll', ()=>{ if(scTick) return; scTick = true;
   requestAnimationFrame(()=>{ rememberScroll(); scTick = false; }); }, {passive:true});
 addEventListener('pagehide', rememberScroll);
 document.addEventListener('visibilitychange', ()=>{ if(document.hidden) rememberScroll(); });
+let skipRestore = false;
 function restoreScroll(id){
+  if(skipRestore){ skipRestore = false; return; }
   const y = scrollAt[id] || 0;
   const f = scrollFrac[id];
   /* two frames: the first lets the hash anchor jump happen, the second lets the
@@ -10511,7 +10513,7 @@ document.querySelectorAll('.wopen').forEach(b=>{
 
 /* ---------- backup ---------- */
 const BKEYS = ['geri:weeks-done','geri:days','geri:missed','geri:qlog','geri:notes','geri:timer',
-  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch','geri:scroll','geri:hlcolour'];
+  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch','geri:scroll','geri:hlcolour','geri:rail','geri:tab'];
 /* One backup block, kept in a dialog so it is reachable from the bottom of every
    section as well as from the home page. Moving the node rather than copying it
    means there is still only one textarea and one set of handlers. */
@@ -10683,8 +10685,14 @@ function hlFromSelection(withNote){
   const el = r.commonAncestorContainer.nodeType === 1 ? r.commonAncestorContainer : r.commonAncestorContainer.parentElement;
   if(el.closest('.secfoot,.mynotes,textarea,input,.toc')) return null;
   const raw = r.toString(); const t = raw.trim(); if(t.length < 2 || t.length > 700) return null;
-  const pre = document.createRange(); pre.setStart(sec, 0); pre.setEnd(r.startContainer, r.startOffset);
-  const start = pre.toString().length + (raw.length - raw.replace(/^\s+/, '').length);
+  /* count the offset over the same node list we search, not with Range.toString():
+     that inserts a newline at each block boundary and the two then disagree */
+  let start = 0;
+  for(const n of hlNodes(sec)){
+    if(n === r.startContainer){ start += r.startOffset; break; }
+    start += n.data.length;
+  }
+  start += raw.length - raw.replace(/^\s+/, '').length;
   const full = hlNodes(sec).map(n=>n.data).join('');
   const re = hlPattern(t); let m, i = 0, found = -1;
   while((m = re.exec(full))){ if(m.index === start){ found = i; break; } if(m.index > start) break; i++; if(!m[0].length) re.lastIndex++; }
@@ -10721,8 +10729,9 @@ function hlSetColour(hid, c){
     const rect = r.getBoundingClientRect(); bar.hidden = false;
     const bw = bar.offsetWidth || 220, bh = bar.offsetHeight || 50;
     let x = rect.left + rect.width/2 - bw/2; x = Math.max(8, Math.min(x, window.innerWidth - bw - 8));
+    const navBottom = (document.querySelector('nav')||{getBoundingClientRect:()=>({bottom:0})}).getBoundingClientRect().bottom;
     let y = rect.bottom + 10; if(y + bh > window.innerHeight - 8) y = rect.top - bh - 10;
-    y = Math.max(8, Math.min(y, window.innerHeight - bh - 8));
+    y = Math.max(navBottom + 8, Math.min(y, window.innerHeight - bh - 8));
     bar.style.left = x + 'px'; bar.style.top = y + 'px';
   }
   document.addEventListener('selectionchange', ()=>{ clearTimeout(tmr); tmr = setTimeout(place, 260); });
@@ -10872,6 +10881,7 @@ function bmFind(){
 }
 function bmGo(){
   if(!BM) return; const b = bmFind();
+  skipRestore = true;                 /* one jump, not two */
   show(BM.sec);
   /* show() restores the section's remembered scroll a couple of frames later; set that memory to the
      bookmark and scroll there ourselves once layout has settled, so the two agree */

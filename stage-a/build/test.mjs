@@ -561,6 +561,16 @@ w.eval("HL = {falls:[{id:'i1',sec:'falls',t:'fear of falling',i:0,n:'',c:'y'}]};
 ok('repainting a section does not duplicate its highlights', d.querySelectorAll('#falls mark.hl[data-hid="i1"]').length === 1);
 w.eval("HL = {}");
 
+// ---- external review follow-up, 14 Sep ----
+ok('selection offsets are counted over the searched node list, not Range.toString()',
+   /for\(const n of hlNodes\(sec\)\)\{\s*\n\s*if\(n === r\.startContainer\)/.test(html) && !/pre\.toString\(\)\.length/.test(html));
+ok('the display popover clears the floating timer', /#dispPop\{position:fixed;left:12px;right:12px;bottom:78px/.test(html));
+ok('the selection bar is kept below the sticky nav', /Math\.max\(navBottom \+ 8,/.test(html));
+ok('resume makes one scroll jump, not two', /skipRestore = true;/.test(html) && /if\(skipRestore\)\{ skipRestore = false; return; \}/.test(html));
+ok('no font size escapes the text-size control, whatever its capitalisation',
+   !/font-size:\s*[0-9.]+px/i.test(html.replace(/font-size:\s*calc\(/gi,'font-size:calc(').replace(/#(miniT|dispPop)[^}]*\}/g,'').replace(/style="[^"]*"/g,'').replace(/cssText = '[^']*'/g,'')));
+ok('the rail state and the open tab are backed up', w.eval("BKEYS.includes('geri:rail') && BKEYS.includes('geri:tab')"));
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 
