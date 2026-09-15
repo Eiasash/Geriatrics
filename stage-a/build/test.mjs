@@ -739,7 +739,7 @@ ok('rather than moving a highlight onto text the reader never marked, it is drop
   return okk === false && !m;
 })());
 ok('restore is all-or-nothing: a refused write rolls back instead of reloading into a mixture',
-   /async function bkApply\(o, haveUndo\)/.test(code) && /const back = await window\.storage\.get\(k\); ok = back && back\.value === val;/.test(code) &&
+   /async function bkApply\(o, haveUndo, undoing\)/.test(code) && /const back = await window\.storage\.get\(k\); ok = back && back\.value === val;/.test(code) &&
    /const want = \(j in v\) \? v\[j\] : '';/.test(code));
 ok('the rollback covers every key it ATTEMPTED, not only the ones that verified',
    /touched\.push\(k\);\s*\n\s*try\{ await window\.storage\.set\(k, val\);/.test(code) &&
@@ -1054,7 +1054,8 @@ ok('every flashcard carries a tag and no tag points past the end of the deck', (
 
 ok('a restore clears the keys the backup does not carry, instead of leaving newer work behind',
    /const keys = BKEYS\.slice\(\);/.test(code) && /const val = \(k in o\) \? o\[k\] : '';/.test(code));
-ok('the undo does the same', /for\(const k of BKEYS\)\{ try\{ await window\.storage\.set\(k, \(k in v\) \? v\[k\] : ''\); \}catch\(e\)\{\} \}/.test(code));
+/* the undo now goes through bkApply, so it clears the same keys and verifies the same way */
+ok('the undo does the same', /if\(!await bkApply\(v, false, true\)\) return;/.test(code));
 ok('and the scope confirm is awaited \u2014 an unawaited async guard is always truthy and never fires',
    (code.match(/if\(!await bkConfirmScope\(o\)\) return;/g)||[]).length === 2);
 
@@ -1330,6 +1331,37 @@ errs.slice(0,12).forEach(e=>console.log('  ' + e));
   ok('while a restore runs, midnight and a timer reaching zero write nothing',
      rolled === false && heldDay === '2026-11-20' && heldT === w.eval('PH.length-1') && store['geri:days'] === before,
      'rolled=' + rolled + ' paintDay=' + heldDay + ' T.p=' + heldT);
+}
+
+/* ---- undo through the verified writer; the report link; stamped errors ---- */
+{
+  const alerts = [], realAlert = w.alert, realConfirm = w.confirm, realSet = w.storage.set;
+  w.alert = m => alerts.push(String(m)); w.confirm = () => true;
+  store['geri:rollback'] = JSON.stringify({'geri:days':'["OLD"]'});
+  store['geri:days'] = '["NOW"]';
+  w.storage.set = async (k, v) => { if(k === 'geri:days') throw new Error('QuotaExceededError'); return realSet(k, v); };
+  d.getElementById('bkUndo').click();
+  await new Promise(r => setTimeout(r, 200));
+  w.storage.set = realSet; w.alert = realAlert; w.confirm = realConfirm;
+  ok('an undo that storage refuses stops, says so, and keeps the undo copy for another try',
+     !!store['geri:rollback'] && alerts.some(x => /partway through the undo/.test(x)), alerts.join(' | '));
+  store['geri:rollback'] = '';
+
+  d.getElementById('rptBtn').click();
+  const note = d.getElementById('rptNote');
+  note.value = '\u05d3\u05dc\u05d9\u05e8\u05d9\u05d5\u05dd '.repeat(600) + '\ud83d\ude00'.repeat(50);
+  note.dispatchEvent(new w.Event('input'));
+  const href = d.getElementById('rptIssue').href;
+  const body = decodeURIComponent(href.split('&body=')[1] || '');
+  ok('a long report note is cut so the issue link fits, keeping the context whole',
+     href.length < 6600 && /cut to fit a link/.test(body) && /section: /.test(body) && /no script errors|last error/.test(body),
+     href.length + ' chars');
+  note.value = ''; d.getElementById('rptClose').click();
+
+  w.__stageaClock.set('2026-12-01T09:15:00');
+  const ev = new w.Event('unhandledrejection'); ev.reason = new Error('stale-test'); w.dispatchEvent(ev);
+  ok('the last error in a report carries the time it happened', /^\[2026-12-01 09:15\] promise: stale-test/.test(w.eval('lastErr')), w.eval('lastErr'));
+  w.eval("lastErr = ''");
 }
 
 console.log("DONE");

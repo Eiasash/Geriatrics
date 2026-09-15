@@ -211,6 +211,21 @@ const M = [
    "function tick(){\n  if(restoring) return;\n",
    "function tick(){\n",
    'while a restore runs'],
+
+  ['undo clears its copy and reloads even when writes failed',
+   "  if(!await bkApply(v, false, true)) return;",
+   "  await bkApply(v, false, true);",
+   'keeps the undo copy for another try'],
+
+  ['the issue link carries the whole note again',
+   "    if(encodeURIComponent(body).length > LINKMAX){",
+   "    if(false){",
+   'issue link fits'],
+
+  ['a stale error is reported without its time',
+   "window.addEventListener('unhandledrejection', e=>{ lastErr = '[' + nowStamp() + '] promise: ' +",
+   "window.addEventListener('unhandledrejection', e=>{ lastErr = 'promise: ' +",
+   'carries the time it happened'],
 ];
 
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */

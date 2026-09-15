@@ -10663,11 +10663,11 @@ document.getElementById('bkRestore').addEventListener('click', async ()=>{
    and some old, which is worse than either. Verify each write, and on the first failure
    put the undo copy back rather than reloading into a mixture. */
 let restoring = false;         /* set while a restore is rewriting every key */
-async function bkApply(o, haveUndo){
+async function bkApply(o, haveUndo, undoing){
   restoring = true;
-  try{ return await bkApplyInner(o, haveUndo); } finally{ restoring = false; }
+  try{ return await bkApplyInner(o, haveUndo, undoing); } finally{ restoring = false; }
 }
-async function bkApplyInner(o, haveUndo){
+async function bkApplyInner(o, haveUndo, undoing){
   /* Go over the whole key list, not just the file's keys. A key the file does not carry
      has to be CLEARED, or restoring Monday's backup on Wednesday leaves Tuesday's work
      in place and the device is neither state. The confirm above says what will be
@@ -10706,6 +10706,9 @@ async function bkApplyInner(o, haveUndo){
               (touched.length > 1 ? 's' : '') + '). Free some space, then use "Undo the last ' +
               'restore". Do not trust what is on screen until you have.');
       }
+    } else if(undoing){
+      alert('Storage refused to save "' + k + '" partway through the undo. The undo copy is ' +
+            'kept: free some space, then press "Undo the last restore" again.');
     } else {
       alert('Storage refused to save "' + k + '" partway through, and there was no undo copy. ' +
             'Some items may have changed. Download a backup before doing anything else.');
@@ -10721,7 +10724,9 @@ document.getElementById('bkUndo').addEventListener('click', async ()=>{
   if(!v || !confirm('Put back what was here before the last restore?')) return;
   /* same asymmetry as the restore: a key that did not exist before has to be emptied,
      not skipped, or the undo leaves half of what it was undoing behind */
-  for(const k of BKEYS){ try{ await window.storage.set(k, (k in v) ? v[k] : ''); }catch(e){} }
+  /* through the same verified writer as a restore: a write that did not land stops the
+     undo and keeps the undo copy, instead of clearing it and reloading into a mixture */
+  if(!await bkApply(v, false, true)) return;
   try{ await window.storage.set(ROLLKEY, ''); }catch(e){}
   location.reload();
 });
@@ -10745,8 +10750,9 @@ if('serviceWorker' in navigator && /^https?:/.test(location.protocol) && /\/stag
 const BUILD = 'geriatrics-stage-a · 14 Sep 2026 d · 44 sections';
 const REPO_ISSUES = 'https://github.com/Eiasash/Geriatrics/issues/new';
 let lastErr = '';
-window.addEventListener('error', e=>{ lastErr = (e.message || String(e)) + (e.lineno ? ' @' + e.lineno : ''); });
-window.addEventListener('unhandledrejection', e=>{ lastErr = 'promise: ' + (e.reason && e.reason.message || String(e.reason)); });
+/* stamped, because the page lives for days and the last error may be an old one */
+window.addEventListener('error', e=>{ lastErr = '[' + nowStamp() + '] ' + (e.message || String(e)) + (e.lineno ? ' @' + e.lineno : ''); });
+window.addEventListener('unhandledrejection', e=>{ lastErr = '[' + nowStamp() + '] promise: ' + (e.reason && e.reason.message || String(e.reason)); });
 document.getElementById('homeBtn').addEventListener('click', ()=>{ show('week'); window.scrollTo({top:0}); });
 (function(){
   const modal = document.getElementById('rptModal'), ctx = document.getElementById('rptCtx'), note = document.getElementById('rptNote');
@@ -10761,7 +10767,23 @@ document.getElementById('homeBtn').addEventListener('click', ()=>{ show('week');
       lastErr ? 'last error: ' + lastErr : 'no script errors this session'].filter(Boolean).join('\n');
   }
   function report(){ return (note.value.trim() ? note.value.trim() + '\n\n' : '') + ctx.textContent; }
-  function issueHref(){ return REPO_ISSUES + '?title=' + encodeURIComponent('Console: ' + ((document.querySelector('main section.on')||{}).id||'')) + '&body=' + encodeURIComponent(report()); }
+  /* a long note makes the issue URL too long to open; the context block is what matters
+     for diagnosis, so it stays whole and the note is cut, whole characters only (slicing
+     through an emoji leaves half a surrogate, and encodeURIComponent throws on it) */
+  const LINKMAX = 6000;
+  function issueHref(){
+    const head = REPO_ISSUES + '?title=' + encodeURIComponent('Console: ' + ((document.querySelector('main section.on')||{}).id||'')) + '&body=';
+    let body = report();
+    if(encodeURIComponent(body).length > LINKMAX){
+      const ctxt = ctx.textContent, mark = '\n\n[cut to fit a link \u2014 use Copy for the whole report]';
+      let chars = Array.from(note.value.trim());
+      const fits = n => encodeURIComponent(chars.slice(0, n).join('') + mark + '\n\n' + ctxt).length <= LINKMAX;
+      let lo = 0, hi = chars.length;
+      while(lo < hi){ const mid = Math.ceil((lo + hi) / 2); if(fits(mid)) lo = mid; else hi = mid - 1; }
+      body = chars.slice(0, lo).join('') + mark + '\n\n' + ctxt;
+    }
+    return head + encodeURIComponent(body);
+  }
   function flash(){ const t = document.getElementById('rptDone'); t.classList.add('on'); setTimeout(()=>t.classList.remove('on'), 1400); }
   document.getElementById('rptBtn').addEventListener('click', ()=>{
     ctx.textContent = context(); modal.hidden = false; document.body.classList.add('tm-open'); note.focus();
