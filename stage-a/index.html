@@ -11146,9 +11146,23 @@ function bmPaint(){
   document.addEventListener('click', e=>{
     const a = e.target.closest('abbr.abbr');
     if(a){
-      const sec = a.closest('section'); if(!sec) return; const key = a.textContent.replace(/\*$/, '').trim();
+      /* The table pop-out clones the table into a dialog outside every <section>, so an
+         abbreviation tapped in there has no section to look in and used to do nothing.
+         Fall back to the section on screen, and close the pop-out first — otherwise the
+         footnote scrolls into view behind a full-screen dialog. */
+      const inModal = a.closest('#tblModal');
+      const sec = a.closest('main section') || document.querySelector('main section.on');
+      if(!sec) return;
+      const key = a.textContent.replace(/\*$/, '').trim();
       const dt = [...sec.querySelectorAll('.fnotes dt')].find(d=>d.textContent.trim() === key); if(!dt) return;
-      e.preventDefault(); e.stopPropagation(); back = a; dt.scrollIntoView({block:'center', behavior:'smooth'}); flash(dt); return;
+      e.preventDefault(); e.stopPropagation();
+      back = inModal ? null : a;        /* nothing to go back to once the clone is gone */
+      if(inModal){
+        const m = document.getElementById('tblModal');
+        if(m && !m.hidden){ const c = document.getElementById('tmClose'); if(c) c.click(); else { m.hidden = true; document.body.classList.remove('tm-open'); } }
+      }
+      setTimeout(()=>{ dt.scrollIntoView({block:'center', behavior:'smooth'}); flash(dt); }, inModal ? 60 : 0);
+      return;
     }
     const dt = e.target.closest('.fnotes dt');
     if(dt){

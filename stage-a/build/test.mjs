@@ -858,6 +858,11 @@ ok('and it reaches the third of the bank that carries no chapter number \u2014 l
 ok('a finished paper logs the day\u2019s score itself, scaled to the 50 the sparkline uses',
    /if\(rows\.length >= 25\)\{ qlog\[TODAY\] = Math\.round\(right \/ rows\.length \* 50\); saveQ\(\); paintQ\(\); \}/.test(html));
 
+ok('an abbreviation tapped inside the table pop-out finds its footnote and closes the dialog first',
+   /const inModal = a\.closest\('#tblModal'\);/.test(html) &&
+   /const sec = a\.closest\('main section'\) \|\| document\.querySelector\('main section\.on'\);/.test(html) &&
+   /back = inModal \? null : a;/.test(html));
+
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 
