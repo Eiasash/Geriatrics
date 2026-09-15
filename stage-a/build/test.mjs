@@ -579,7 +579,7 @@ w.eval("HL = {}");
 
 // ---- external review follow-up, 14 Sep ----
 ok('selection offsets are counted over the searched node list, not Range.toString()',
-   /for\(const n of hlNodes\(sec\)\)\{\s*\n\s*if\(n === r\.startContainer\)/.test(html) && !/pre\.toString\(\)\.length/.test(html));
+   /r\.comparePoint\(n, 0\)/.test(html) && !/pre\.toString\(\)\.length/.test(html));
 ok('the display popover clears the floating timer', /#dispPop\{position:fixed;left:12px;right:12px;bottom:78px/.test(html));
 ok('the selection bar is kept below the sticky nav', /Math\.max\(navBottom \+ 8,/.test(html));
 ok('resume makes one scroll jump, not two', /skipRestore = true;/.test(html) && /if\(skipRestore\)\{ skipRestore = false; return; \}/.test(html));
@@ -660,12 +660,82 @@ ok('rather than moving a highlight onto text the reader never marked, it is drop
 })());
 ok('restore is all-or-nothing: a refused write rolls back instead of reloading into a mixture',
    /async function bkApply\(o, haveUndo\)/.test(html) && /const back = await window\.storage\.get\(k\); ok = back && back\.value === o\[k\];/.test(html) &&
-   /for\(const j of done\)\{ if\(j in v\) try\{ await window\.storage\.set\(j, v\[j\]\); \}catch\(e\)\{\} \}/.test(html));
+   /await window\.storage\.set\(j, \(j in v\) \? v\[j\] : ''\);/.test(html));
 ok('both restore paths go through it', (html.match(/await bkApply\(o, safe/g)||[]).length === 2);
 ok('the highlight walk skips by tag and caches the verdict per element', /const HLSKIP = \{SCRIPT:1, STYLE:1, TEXTAREA:1\}/.test(html) && /memo\.set\(el, false\); return false;/.test(html));
 ok('the section is walked once per highlight, not twice', /hlWrap\(sec, pick\.at, pick\.at \+ pick\.len, h, nodes\)/.test(html));
 ok('the service worker also registers when the URL names index.html',
    /\/\\\/stage-a\\\/\(index\\\.html\)\?\$\|\\\/stage-a\$\//.test(html));
+
+// ---- fifth review follow-up, 15 Sep ----
+ok('a whole-paragraph or whole-cell selection is anchored, not silently lost', (()=>{
+  /* the offset walk used to look for the node that IS the start container, which is an
+     element whenever a whole block is selected — the offset then ran off the end */
+  const sec = d.getElementById('falls');
+  const p = [...sec.querySelectorAll('p')].find(x => x.textContent.length > 120);
+  const r = d.createRange(); r.selectNodeContents(p);
+  const sel = w.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  w.eval("HL = {falls:[]}");
+  const h = w.hlFromSelection(false);
+  const n = h ? d.querySelectorAll('mark.hl[data-hid="' + h.id + '"]').length : 0;
+  if(h) w.eval("hlRemove('" + h.id + "')");
+  w.eval("HL = {}");
+  return !!h && n > 0;
+})());
+ok('neighbour matching survives whitespace the author added', (()=>{
+  /* the failing direction is whitespace added to the PAGE, not to the stored context:
+     the candidate window then holds fewer letters than the stored neighbour and a
+     narrow window can never match it */
+  const sec = d.getElementById('falls');
+  const full0 = w.hlNodes(sec).map(n=>n.data).join('');
+  const ii = []; let j = -1; while((j = full0.indexOf('exercise', j+1)) >= 0) ii.push(j);
+  if(ii.length < 6) return false;
+  const at = ii[5];
+  const h = {id:'ws1', sec:'falls', t:'exercise', i:5, n:'', c:'y',
+             b: full0.slice(at-24, at), a: full0.slice(at+8, at+32)};
+  /* now the author reformats: every space near it becomes a newline plus indent */
+  const touched = [];
+  for(const n of w.hlNodes(sec)){
+    if(n.data.includes('the effect of')){ touched.push([n, n.data]); n.data = n.data.replace(/ /g, '\n      '); }
+  }
+  w.eval("HL = {falls:[]}");
+  const okk = w.hlApplyOne(h);
+  const m = d.querySelector('mark.hl[data-hid="ws1"]');
+  const para = m ? m.parentElement.textContent.replace(/\s+/g,' ') : '';
+  const before = m ? para.slice(Math.max(0, para.indexOf(m.textContent)-20), para.indexOf(m.textContent)) : '';
+  if(m) w.eval("hlUnwrap('ws1')");
+  touched.forEach(([n, d0]) => { n.data = d0; });
+  w.eval("HL = {}");
+  return okk && /effect of $/.test(before);
+})());
+ok('a tie between two equally-scoring occurrences drops the highlight rather than guessing',
+   /if\(best\.s >= 2 && \(!runner \|\| runner\.s < best\.s\)\) pick = best\.x;/.test(html));
+ok('context is compared over a widened, normalised window on both sides',
+   /const WIDE = HLCTX \* 2;/.test(html) && /gotB\.endsWith\(tailB\)/.test(html) && /gotA === headA/.test(html));
+ok('opening a section repaints its highlights after the abbreviation pass has rewritten the text',
+   /annotateSection\(id\);[\s\S]{0,300}?hlPaintSec\(id\);[\s\S]{0,120}?_show\.apply/.test(html));
+ok('rollback empties a key the user did not have before the restore',
+   /await window\.storage\.set\(j, \(j in v\) \? v\[j\] : ''\);/.test(html));
+
+ok('a selection starting mid-text-node is anchored at the right character', (()=>{
+  const sec = d.getElementById('falls');
+  const nodes = w.hlNodes(sec), full = nodes.map(n=>n.data).join('');
+  const ii = []; let j = -1; while((j = full.indexOf('exercise', j+1)) >= 0) ii.push(j);
+  if(ii.length < 4) return false;
+  const target = ii[3];
+  let pos = 0, node = null, off = 0;
+  for(const n of nodes){ if(pos + n.data.length > target){ node = n; off = target - pos; break; } pos += n.data.length; }
+  if(!node || off === 0) return false;                 /* must be mid-node to be the real test */
+  const r = d.createRange(); r.setStart(node, off); r.setEnd(node, off + 8);
+  const sel = w.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  w.eval("HL = {falls:[]}");
+  const h = w.hlFromSelection(false);
+  const m = h ? d.querySelector('mark.hl[data-hid="' + h.id + '"]') : null;
+  let landedAt = -1;
+  if(m){ let q = 0; for(const n of w.hlNodes(sec)){ if(m.contains(n)){ landedAt = q; break; } q += n.data.length; } }
+  if(h) w.eval("hlUnwrap('" + h.id + "')"); w.eval("HL = {}");
+  return !!h && h.i === 3 && landedAt === target;
+})());
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));

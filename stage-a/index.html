@@ -10581,7 +10581,13 @@ async function bkApply(o, haveUndo){
     if(ok){ done.push(k); continue; }
     if(haveUndo){
       try{ const v = JSON.parse((await window.storage.get(ROLLKEY)).value);
-        for(const j of done){ if(j in v) try{ await window.storage.set(j, v[j]); }catch(e){} } }catch(e){}
+        for(const j of done){
+          try{
+            /* a key the user did not have before the restore has to be emptied, not
+               skipped — leaving it behind is exactly the mixture we are rolling back */
+            await window.storage.set(j, (j in v) ? v[j] : '');
+          }catch(e){}
+        } }catch(e){}
       alert('Storage refused to save "' + k + '" partway through, so nothing was changed. ' +
             'Free some space and try again — your progress is untouched.');
     } else {
@@ -10728,15 +10734,24 @@ function hlApplyOne(h){
   if(h.b || h.a){
     /* prefer the occurrence whose neighbours still match — an edit above this one
        shifts the ordinal but not the surrounding words */
-    const want = {b: hlNorm(h.b), a: hlNorm(h.a)};
-    const scored = hits.map(x=>({x, s:
-      (want.b && hlNorm(full.slice(Math.max(0, x.at - HLCTX), x.at)).endsWith(want.b.slice(-HLCTX)) ? 2 : 0) +
-      (want.a && hlNorm(full.slice(x.at + x.len, x.at + x.len + HLCTX)).startsWith(want.a.slice(0, HLCTX)) ? 2 : 0) +
-      (x.ord === h.i ? 1 : 0)}));
-    const best = scored.reduce((p,c)=>c.s > p.s ? c : p, scored[0]);
-    /* a neighbour has to agree; the ordinal on its own is not enough once context exists */
-    if(best.s >= 2) pick = best.x;
-    else return false;              /* rather lose the highlight than move it silently */
+    /* take a wider raw window, normalise it, then compare the same number of characters
+       on each side — otherwise an added line break shortens one side and nothing matches */
+    const WIDE = HLCTX * 2;
+    const wantB = hlNorm(h.b), wantA = hlNorm(h.a);
+    const nb = Math.min(wantB.length, HLCTX), na = Math.min(wantA.length, HLCTX);
+    const tailB = wantB.slice(-nb), headA = wantA.slice(0, na);
+    const scored = hits.map(x=>{
+      const gotB = hlNorm(full.slice(Math.max(0, x.at - WIDE), x.at));
+      const gotA = hlNorm(full.slice(x.at + x.len, x.at + x.len + WIDE)).slice(0, na);
+      return {x, s: (nb && gotB.endsWith(tailB) ? 2 : 0) + (na && gotA === headA ? 2 : 0) + (x.ord === h.i ? 1 : 0)};
+    });
+    const sorted = scored.slice().sort((p,q)=>q.s - p.s);
+    const best = sorted[0], runner = sorted[1];
+    /* A neighbour has to agree, and it has to agree UNIQUELY. Two occurrences that score
+       the same tell us nothing about which one the reader marked, and picking the first
+       is the silent-misplacement failure this whole mechanism exists to prevent. */
+    if(best.s >= 2 && (!runner || runner.s < best.s)) pick = best.x;
+    else return false;
   } else {
     pick = hits.find(x=>x.ord === h.i) || null;   /* highlights made before this existed */
   }
@@ -10771,8 +10786,14 @@ function hlFromSelection(withNote){
      that inserts a newline at each block boundary and the two then disagree */
   let start = 0;
   for(const n of hlNodes(sec)){
+    /* The start container is an element whenever a whole paragraph or cell is selected,
+       so that test cannot stand on its own — but it has to come FIRST: for a text-node
+       start, the point (node, 0) sits before the range whenever the offset is non-zero,
+       and comparePoint would have us skip past the very node we start in. */
     if(n === r.startContainer){ start += r.startOffset; break; }
-    start += n.data.length;
+    let where; try{ where = r.comparePoint(n, 0); }catch(e){ where = -1; }
+    if(where < 0){ start += n.data.length; continue; }
+    break;
   }
   start += raw.length - raw.replace(/^\s+/, '').length;
   const full = hlNodes(sec).map(n=>n.data).join('');
@@ -12092,7 +12113,13 @@ function annotateSection(id){
 /* annotate the section being opened, and the dashboard's chapters ahead of time */
 (function(){
   const _show = window.show;
-  window.show = function(id){ try{ annotateSection(id); }catch(e){} return _show.apply(this, arguments); };
+  window.show = function(id){
+    try{ annotateSection(id); }catch(e){}
+    /* annotating changes the section's text, so anything anchored to it has to be
+       re-tried afterwards — the background pass ran while the section was pristine */
+    try{ if(typeof hlPaintSec === 'function') hlPaintSec(id); }catch(e){}
+    return _show.apply(this, arguments);
+  };
   defer(function(){
     const open = document.querySelector('main section.on');
     if(open) annotateSection(open.id);
