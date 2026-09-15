@@ -16,7 +16,7 @@ node sweep.mjs     # opens every section, clicks every link
 node dashtest.mjs  # dashboard and table pop-out; exits 1 on a runtime error
 node mutants.mjs   # breaks the file on purpose; every mutation must turn its named guard red
 ```
-The page clock is pinned (`build/clock.mjs`) so results do not depend on the day they run. Default is a reading week; `STAGEA_DATE=2027-01-12 node test.mjs` runs the consolidation period, `2026-08-30` the days before the block.
+The page clock is pinned (`build/clock.mjs`) so results do not depend on the day they run. Default is a reading week; `STAGEA_DATE=2027-01-12 node test.mjs` runs the consolidation period, `2026-08-30` the days before the block. CI runs everything in `TZ=Asia/Jerusalem`. `window.__stageaClock.set('2026-10-12T00:00:05')` moves the clock mid-test, which is how the midnight checks cross the day.
 Rule: when `facts.mjs` fails, go back to the chapter; never edit the fact to make it pass.
 
 ## Reporting a problem

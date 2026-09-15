@@ -12,8 +12,15 @@ if(!/^\d{4}-\d{2}-\d{2}$/.test(PIN)) throw new Error('STAGEA_DATE must be YYYY-M
 
 export function pinClock(w){
   const Real = w.Date;
-  const off = new Real(PIN + 'T10:00:00').getTime() - Real.now();
+  let off = new Real(PIN + 'T10:00:00').getTime() - Real.now();
   if(Number.isNaN(off)) throw new Error('STAGEA_DATE is not a real date: ' + PIN);
+  /* test-only handle: move the page's clock to a local date-time mid-session, e.g. to
+     cross midnight. The page itself never reads this. */
+  w.__stageaClock = { set(localDateTime){
+    const t = new Real(localDateTime).getTime();
+    if(Number.isNaN(t)) throw new Error('not a date-time: ' + localDateTime);
+    off = t - Real.now();
+  } };
   class Pinned extends Real {
     constructor(...a){ if(a.length) super(...a); else super(Real.now() + off); }
     static now(){ return Real.now() + off; }

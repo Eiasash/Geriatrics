@@ -9715,11 +9715,14 @@ document.getElementById('l3').innerHTML = SCHED.gap.map((w,i)=>weekRow(w,'c',i))
   })();
 
 /* ---------- countdown ---------- */
-(function(){
+/* counted from today's local midnight: dividing a raw millisecond gap by 24 h is off by
+   one for an hour a night across a daylight-saving change */
+function paintCountdown(){
   const exam = new Date('2027-02-01T00:00:00');
-  const d = Math.max(0, Math.ceil((exam - new Date())/86400000));
+  const d = Math.max(0, Math.round((exam - new Date().setHours(0,0,0,0))/86400000));
   document.getElementById('days').textContent = d;
-})();
+}
+paintCountdown();
 
 /* ---------- today: which week is it, and what is due ---------- */
 const ALLW = [
@@ -9729,13 +9732,17 @@ const ALLW = [
 ];
 function iso(d){ const p=n=>String(n).padStart(2,'0');
   return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
-const TODAY = iso(new Date());
+/* The date is read when it is needed, not once at load: a tab left open past midnight
+   used to keep writing to the day it was opened. checkRollover() repaints the screen when
+   the date moves, so what is shown and what is written agree. */
+function today(){ return iso(new Date()); }
 function currentWeek(){
-  for(const w of ALLW){ if(TODAY >= w.a && TODAY <= w.b) return w; }
-  if(TODAY < ALLW[0].a) return {pre:true, w:ALLW[0]};
+  const t = today();
+  for(const w of ALLW){ if(t >= w.a && t <= w.b) return w; }
+  if(t < ALLW[0].a) return {pre:true, w:ALLW[0]};
   return null;
 }
-(function(){
+function paintTodayPanel(){
   const cw = currentWeek();
   const topic = document.getElementById('tdTopic');
   const meta  = document.getElementById('tdMeta');
@@ -9757,7 +9764,8 @@ function currentWeek(){
   const end = new Date(cw.b+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
   meta.textContent = `Week ${idx} of ${ALLW.length} · ${hrs}h this week · runs to ${end}`
     + (cw.items[0].p ? ` · ${cw.items.map(x=>x.p+'%').join(' + ')} of past questions` : '');
-})();
+}
+paintTodayPanel();
 
 /* ---------- daily log ---------- */
 const DKEY = 'geri:days';
@@ -9777,12 +9785,12 @@ function streak(){
 function paintDays(){
   const w = last14();
   document.getElementById('dots').innerHTML = w.map(d=>
-    `<i class="${days.has(d)?'y':''} ${d===TODAY?'t':''}" title="${d}"></i>`).join('');
+    `<i class="${days.has(d)?'y':''} ${d===today()?'t':''}" title="${d}"></i>`).join('');
   const hit = w.filter(d=>days.has(d)).length;
   const st = streak();
   document.getElementById('adh').innerHTML =
     `<b>${hit}/14</b> days` + (st>1 ? ` · <b>${st}</b>-day run` : '');
-  const on = days.has(TODAY);
+  const on = days.has(today());
   btn.dataset.on = on ? '1' : '0';
   btn.textContent = on ? 'Done today' : 'Mark today done';
 }
@@ -9791,7 +9799,8 @@ async function saveDays(){
   catch(e){ console.error('could not save the daily log', e); }
 }
 btn.addEventListener('click',()=>{
-  days.has(TODAY) ? days.delete(TODAY) : days.add(TODAY);
+  const t = today();
+  days.has(t) ? days.delete(t) : days.add(t);
   paintDays(); saveDays();
 });
 (async()=>{
@@ -10207,7 +10216,7 @@ TNOW.textContent = 'This week';
    note and its own chips. */
 const CONSW = {};
 function consolidationWeek(){
-  const d = new Date(TODAY + 'T00:00:00');
+  const d = new Date(today() + 'T00:00:00');
   const back = (d.getDay() + 6) % 7;                    /* Monday-start, as the schedule is */
   const mon = new Date(d); mon.setDate(d.getDate() - back);
   const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
@@ -10222,6 +10231,30 @@ function curWeek(){
   return cw;
 }
 let VIEW = curWeek();
+/* what was painted, so a change of date can be noticed. paintWeek is the week that was
+   current at that paint: asking isCur(VIEW) after the date has moved compares against the
+   NEW week and would leave the page on last week at exactly the Sunday->Monday boundary */
+let paintDay = today(), paintWeek = curWeek();
+function checkRollover(){
+  const t = today();
+  if(t === paintDay) return false;
+  const followed = VIEW === paintWeek;
+  /* a week note typed in the last moments is still waiting on its debounce: put it under
+     the week it was written in before the view moves */
+  if(followed && nBox.value !== (notes[VIEW.k] || '')){
+    clearTimeout(nTmr); notes[VIEW.k] = nBox.value;
+    try{ window.storage.set(NKEY, JSON.stringify(notes)); }catch(e){}
+  }
+  paintDay = t; paintWeek = curWeek();
+  if(followed) VIEW = paintWeek;
+  /* a block not yet running belongs to the new day; a running one keeps the day it began */
+  if(!T.run && T.d !== t){ T.d = t; tSave(); }
+  paintCountdown(); paintTodayPanel();
+  renderWeek(); paintChips(); paintReadLab(); loadNote();
+  paintDays(); paintQ(); tPaint();
+  if(filter.mode === 'week') setFilter({mode:'week', tag:null, label:'This week\u2019s chapters'});
+  return true;
+}
 function isCur(w){ return w === curWeek(); }
 function dISO(s){ return new Date(s+'T00:00:00'); }
 function fmt(s,o){ return dISO(s).toLocaleDateString('en-GB', o||{day:'numeric',month:'short'}); }
@@ -10230,7 +10263,7 @@ function fmt(s,o){ return dISO(s).toLocaleDateString('en-GB', o||{day:'numeric',
 function renderWeek(){
   const w = VIEW, idx = ALLW.indexOf(w)+1;
   const hrs = w.items.reduce((a,b)=>a+b.h,0).toFixed(1);
-  const past = TODAY > ALLW[ALLW.length-1].b;
+  const past = today() > ALLW[ALLW.length-1].b;
   const vw = document.getElementById('wkViewing');
   if(isCur(w)){ vw.hidden = true; }
   else {
@@ -10300,7 +10333,7 @@ function paintChips(){
   document.getElementById('wkDays').innerHTML = ds.map(d=>{
     const dd = dISO(d);
     return '<button type="button" data-d="'+d+'" data-on="'+(days.has(d)?1:0)+
-      '" data-today="'+(d===TODAY?1:0)+'" data-fut="'+(d>TODAY?1:0)+'">'+
+      '" data-today="'+(d===today()?1:0)+'" data-fut="'+(d>today()?1:0)+'">'+
       dd.toLocaleDateString('en-GB',{weekday:'short'})+'<b>'+dd.getDate()+'</b></button>';
   }).join('');
   document.getElementById('wkDays').querySelectorAll('button').forEach(b=>
@@ -10325,7 +10358,7 @@ const PH = [
   {n:'Review every miss', s:10*60}
 ];
 const TKEY='geri:timer';
-let T = {p:0, left:PH[0].s, run:false, ts:0, d:TODAY};
+let T = {p:0, left:PH[0].s, run:false, ts:0, d:today()};
 const elClock=document.getElementById('tClock'), elPhase=document.getElementById('tPhase'),
       elFill=document.getElementById('tFill'), elGo=document.getElementById('tGo'),
       elTimer=document.getElementById('timer');
@@ -10419,19 +10452,25 @@ function tAdvance(){
   T.p++; T.run=false;
   if(T.p>=PH.length){
     T.left=0;
-    if(!days.has(TODAY)){ days.add(TODAY); saveDays(); paintDays(); }
+    const bd = T.d || today();
+    if(!days.has(bd)){ days.add(bd); saveDays(); paintDays(); }
   } else { T.left = PH[T.p].s; }
   tSave(); tPaint(); beep();
 }
 function tick(){
+  checkRollover();
   if(SW.on && SW.run){ mtOff = false; tPaint(); return; }
   if(T.run && tLeft()<=0) tAdvance();
   else if(T.run){ mtOff = false; tPaint(); }
 }
 setInterval(tick, 500);
+/* a backgrounded phone tab can sleep through midnight with its timers suspended, so the
+   date is also checked the moment the page is seen again */
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkRollover(); });
+addEventListener('pageshow', ()=>checkRollover());
 elGo.addEventListener('click',()=>{
   if(SW.on){ swToggleRun(); return; }
-  if(T.p>=PH.length){ T={p:0,left:PH[0].s,run:false,ts:0,d:TODAY}; tSave(); tPaint(); return; }
+  if(T.p>=PH.length){ T={p:0,left:PH[0].s,run:false,ts:0,d:today()}; tSave(); tPaint(); return; }
   if(T.run){ T.left = tLeft(); T.run=false; }
   else { T.ts = Date.now(); T.run=true; }
   tSave(); tPaint();
@@ -10451,20 +10490,20 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
   document.getElementById('mtReset').addEventListener('click',()=>{
     if(SW.on){ swReset(); box.classList.remove('open'); return; }
     if(!confirm('Reset the day back to the start of the 75-minute chapter block?')) return;
-    T={p:0,left:PH[0].s,run:false,ts:0,d:TODAY}; tSave(); tPaint(); box.classList.remove('open');
+    T={p:0,left:PH[0].s,run:false,ts:0,d:today()}; tSave(); tPaint(); box.classList.remove('open');
   });
   document.getElementById('mtHide').addEventListener('click',()=>{ mtOff = true; box.classList.remove('open'); box.hidden = true; });
   /* it comes back on the next section change, and whenever the clock is running */
   document.addEventListener('sectionshown', ()=>{ mtOff = false; tPaint(); });
 })();
 document.getElementById('tReset').addEventListener('click',()=>{
-  T={p:0,left:PH[0].s,run:false,ts:0,d:TODAY}; tSave(); tPaint();
+  T={p:0,left:PH[0].s,run:false,ts:0,d:today()}; tSave(); tPaint();
 });
 document.getElementById('tMode').addEventListener('click',()=>{ swSetMode(!SW.on); });
 (async()=>{
   try{
     const r = await window.storage.get(TKEY); const v = JSON.parse(r.value);
-    if(v && v.d === TODAY){ T = v; if(T.run && tLeft()<=0){ T.run=false; T.left=0; } }
+    if(v && v.d === today()){ T = v; if(T.run && tLeft()<=0){ T.run=false; T.left=0; } }
   }catch(e){}
   try{ const r = await window.storage.get(SWKEY); const v = JSON.parse(r.value); if(v) SW = v; }catch(e){}
   tPaint();
@@ -10490,14 +10529,14 @@ function paintQ(){
   document.getElementById('qLab').innerHTML =
     '<b>'+pct+'%</b> across the last '+(recent.length===1?'block':recent.length+' blocks')+
     ' · <b>'+keys.length+'</b> logged · today ' +
-    (qlog[TODAY]!=null ? '<b>'+qlog[TODAY]+'/50</b>' : 'not yet');
+    (qlog[today()]!=null ? '<b>'+qlog[today()]+'/50</b>' : 'not yet');
 }
 async function saveQ(){ try{ await window.storage.set(QKEY, JSON.stringify(qlog)); }catch(e){} }
 document.getElementById('qLog').addEventListener('click',()=>{
   const el = document.getElementById('qScore');
   const v = parseInt(el.value,10);
   if(isNaN(v) || v<0 || v>50){ el.focus(); return; }
-  qlog[TODAY]=v; el.value=''; saveQ(); paintQ(); flash('qSaved');
+  qlog[today()]=v; el.value=''; saveQ(); paintQ(); flash('qSaved');
 });
 document.getElementById('qScore').addEventListener('keydown',e=>{
   if(e.key==='Enter') document.getElementById('qLog').click();
@@ -10528,7 +10567,8 @@ nBox.addEventListener('input',()=>{
 /* ---------- pace ---------- */
 function paceLine(){
   const done = boxes.filter(b=>b.checked).length;
-  const elapsed = ALLW.filter(w=>TODAY > w.b).length;
+  const t = today();
+  const elapsed = ALLW.filter(w=>t > w.b).length;
   const left = ALLW.length - done;
   const d14 = (function(){ let n=0; const now=new Date();
     for(let i=0;i<14;i++){ const d=new Date(now); d.setDate(now.getDate()-i); if(days.has(iso(d))) n++; }
@@ -10996,7 +11036,7 @@ function hlFromSelection(withNote){
   const h = {id: 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), sec: sec.id, t, i: found, n: '', c: hlColour,
              b: full.slice(Math.max(0, start - HLCTX), start),          /* what came before it */
              a: full.slice(start + t.length, start + t.length + HLCTX), /* and after */
-             d: new Date().toISOString().slice(0,10)};
+             d: today()};
   (HL[sec.id] = HL[sec.id] || []).push(h);
   sel.removeAllRanges();
   hlApplyOne(h); hlSave();
@@ -12988,10 +13028,10 @@ async function mockFinish(auto){
   /* the misses feed the normal practice view */
   rows.forEach(r=>{ if(r.given) pqDone[pqKey(r.p)] = r.ok ? 1 : 0; });
   /* the day's question block logs itself — scaled to the 50 the sparkline is drawn in */
-  if(rows.length >= 25){ qlog[TODAY] = Math.round(right / rows.length * 50); saveQ(); paintQ(); }
+  if(rows.length >= 25){ qlog[today()] = Math.round(right / rows.length * 50); saveQ(); paintQ(); }
   pqSave(); pqStats();
   try{ await window.storage.set(MKKEY, JSON.stringify(
-    {when:new Date().toISOString().slice(0,10), n:rows.length, right:right})); }catch(e){}
+    {when:today(), n:rows.length, right:right})); }catch(e){}
   try{ window.storage.set(RUNKEY, ''); }catch(e){}
   paintLastMock();
   document.getElementById('mockAgain').addEventListener('click', mockStart);
@@ -13101,7 +13141,7 @@ async function bkSnapshot(tag){
   const blob = new Blob([JSON.stringify(await bkGather(), null, 1)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'geriatrics-' + tag + '-' + new Date().toISOString().slice(0,10) + '.json';
+  a.download = 'geriatrics-' + tag + '-' + today() + '.json';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
 }
@@ -13138,7 +13178,7 @@ document.getElementById('bkDownload').addEventListener('click', async ()=>{
   const blob = new Blob([JSON.stringify(await bkGather(), null, 1)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'geriatrics-progress-' + new Date().toISOString().slice(0,10) + '.json';
+  a.download = 'geriatrics-progress-' + today() + '.json';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
   flash('bkSaved');

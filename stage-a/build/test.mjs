@@ -39,7 +39,7 @@ let FAILS = 0;
 const ok = (label, cond, extra='') => { if(!cond) FAILS++;
   console.log((cond?'PASS  ':'FAIL  ') + label + (extra?'  — '+extra:'')); };
 
-ok('page clock is pinned to ' + PIN, w.eval('TODAY') === PIN, w.eval('TODAY'));
+ok('page clock is pinned to ' + PIN, w.eval('today()') === PIN, w.eval('today()'));
 /* where the pinned date sits in the schedule: pre / reading / post */
 const PHASE = w.eval("(()=>{ const c = currentWeek(); return !c ? 'post' : (c.pre ? 'pre' : 'reading'); })()");
 
@@ -583,7 +583,7 @@ ok('the stopwatch is a separate clock, not a flag on the day', w.eval("typeof SW
 w.eval("swSetMode(true)");
 ok('switching to the stopwatch relabels the pill and hides the phase control',
    d.getElementById('mtPhase').textContent === 'stopwatch' && d.getElementById('mtSkip').hidden === true);
-w.eval("T = {p:1, left:900, run:true, ts:Date.now(), d:TODAY}; swSetMode(false); swSetMode(true)");
+w.eval("T = {p:1, left:900, run:true, ts:Date.now(), d:today()}; swSetMode(false); swSetMode(true)");
 ok('turning the stopwatch on pauses the day rather than letting both run', w.eval("T.run === false && T.p === 1"));
 w.eval("swToggleRun()");
 ok('the stopwatch runs', w.eval("SW.run === true"));
@@ -984,7 +984,7 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
    /table\{page-break-inside:auto\}/.test(code) && /tr,td,th\{page-break-inside:avoid\}/.test(code) &&
    /thead\{display:table-header-group\}/.test(code));
 ok('a finished paper logs the day\u2019s score itself, scaled to the 50 the sparkline uses',
-   /if\(rows\.length >= 25\)\{ qlog\[TODAY\] = Math\.round\(right \/ rows\.length \* 50\); saveQ\(\); paintQ\(\); \}/.test(code));
+   /if\(rows\.length >= 25\)\{ qlog\[today\(\)\] = Math\.round\(right \/ rows\.length \* 50\); saveQ\(\); paintQ\(\); \}/.test(code));
 
 ok('an abbreviation tapped inside the table pop-out finds its footnote and closes the dialog first',
    /const inModal = a\.closest\('#tblModal'\);/.test(code) &&
@@ -1226,6 +1226,51 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
+
+/* ---- crossing midnight with the tab open: the page clock is moved mid-session ----
+   Absolute dates, so these hold at every STAGEA_DATE CI runs. */
+{
+  const C = w.__stageaClock;
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const settle = (dt, browsing) => { C.set(dt);
+    w.eval(`checkRollover(); VIEW = ${browsing ? 'ALLW[0]' : 'curWeek()'}; renderWeek(); paintChips(); loadNote();`); };
+
+  settle('2026-10-11T23:59:00', false);
+  C.set('2026-10-12T00:00:05');
+  d.dispatchEvent(new w.Event('visibilitychange'));      /* checked synchronously: no timer has run */
+  ok('returning to the tab after Sunday midnight moves the page to the new week',
+     w.eval('VIEW.a') === '2026-10-12' && !!d.querySelector('#wkDays [data-today="1"]'),
+     w.eval('VIEW.a + " paintDay=" + paintDay'));
+
+  settle('2026-10-18T23:59:00', false);
+  C.set('2026-10-19T00:00:05');
+  await wait(700);
+  ok('with the tab left in front, the timer notices midnight and moves to the new week',
+     w.eval('VIEW.a') === '2026-10-19', w.eval('VIEW.a'));
+
+  settle('2026-10-25T23:59:00', true);
+  C.set('2026-10-26T00:00:05');
+  await wait(700);
+  ok('a week being browsed stays put across midnight, and the day still rolls over',
+     w.eval('VIEW === ALLW[0]') && w.eval('paintDay') === '2026-10-26' && !d.getElementById('wkViewing').hidden,
+     w.eval('VIEW.a + " paintDay=" + paintDay'));
+
+  d.getElementById('tdBtn').click(); await wait(50);
+  ok('marking the day done after midnight writes the new day',
+     JSON.parse(store['geri:days'] || '[]').includes('2026-10-26'), store['geri:days']);
+
+  C.set('2026-11-02T23:50:00'); w.eval('checkRollover()');
+  w.eval('T = {p:PH.length-1, left:300, run:true, ts:Date.now(), d:today()}');
+  C.set('2026-11-03T00:00:30');
+  await wait(700);
+  ok('a reading block that runs past midnight is credited to the day it began',
+     w.eval("days.has('2026-11-02') && !days.has('2026-11-03')"), w.eval('[...days].slice(-3).join(",")'));
+
+  C.set('2026-10-07T00:30:00'); w.eval('paintCountdown()');
+  const want = (Date.UTC(2027,1,1) - Date.UTC(2026,9,7)) / 86400000;
+  ok('the countdown counts calendar days, not 24-hour blocks, at half past midnight',
+     d.getElementById('days').textContent === String(want), d.getElementById('days').textContent + ' vs ' + want);
+}
 
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);

@@ -149,6 +149,33 @@ const M = [
    "  if(!storageIsLocal) return false;",
    "  /* if(!storageIsLocal) return false; */",
    'stands down when the host supplies its own storage'],
+
+  /* --- midnight rollover (TODAY conversion, 15/09) --- */
+  ['rollover asks isCur after the date has already moved',
+   "  const followed = VIEW === paintWeek;",
+   "  const followed = isCur(VIEW);",
+   'returning to the tab after Sunday midnight'],
+
+  ['no date check when the tab is seen again',
+   "document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkRollover(); });",
+   "/* visibility hook removed */",
+   'returning to the tab after Sunday midnight'],
+
+  ['the timer stops checking the date',
+   "function tick(){\n  checkRollover();\n",
+   "function tick(){\n",
+   'timer notices midnight'],
+
+  ['a reading block past midnight credits the new day',
+   "    const bd = T.d || today();",
+   "    const bd = today();",
+   'credited to the day it began'],
+
+  /* only red in a timezone with daylight saving: CI runs in Asia/Jerusalem */
+  ['countdown divides raw milliseconds again',
+   "Math.round((exam - new Date().setHours(0,0,0,0))/86400000)",
+   "Math.ceil((exam - new Date())/86400000)",
+   'countdown counts calendar days'],
 ];
 
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
