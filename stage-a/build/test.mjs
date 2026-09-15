@@ -1504,5 +1504,43 @@ ok('tap targets are at least 44px on the mini-timer, mock controls, chapter pill
    /#miniT button, #mockPrev, #hlBar \.sw, #hlModal \.sw\{ min-width:44px !important \}/.test(code));
 ok('the header title keeps its name and the group label gives way first', /\.topicbtn \.glabel\{ flex:0 100 auto;/.test(code));
 
+/* ---- group 4: fewer taps ---- */
+{
+  const r = w.eval(`(()=>{ const sv = [VIEW, new Set(readSet)]; const out = {};
+    VIEW = ALLW[0]; const wk = weekChapters(); out.n = wk.length;
+    readSet = new Set([wk[0].sec]); paintReadLab();
+    out.lab = document.getElementById('goReadLab').textContent; out.want = 'Read ' + wk[1].t.match(/^ch\\s*\\d+/)[0];
+    document.getElementById('goRead').click(); out.opened = document.querySelector('main section.on').id; out.wantSec = wk[1].sec;
+    show(wk[0].sec); paintNextChap();
+    const nx = document.querySelector('#' + wk[0].sec + ' .secfoot .nx'); out.nxShown = nx && !nx.hidden; out.nxGo = nx && nx.dataset.go;
+    if(nx) nx.click(); out.afterNx = document.querySelector('main section.on').id;
+    show(wk[wk.length-1].sec); paintNextChap();
+    const last = document.querySelector('#' + wk[wk.length-1].sec + ' .secfoot .nx'); out.lastHidden = !last || last.hidden;
+    show('ethics'); paintNextChap(); const off = document.querySelector('#ethics .secfoot .nx'); out.offHidden = !off || off.hidden;
+    [VIEW, readSet] = sv; paintReadLab(); paintNextChap(); show('week'); return out; })()`);
+  ok('"Read ch N" opens the week\u2019s first unread chapter', r.n >= 2 && r.lab === r.want && r.opened === r.wantSec, JSON.stringify(r));
+  ok('a week chapter\u2019s footer offers the next one this week, and only then', r.nxShown && r.nxGo === r.wantSec && r.afterNx === r.wantSec && r.lastHidden && r.offHidden, JSON.stringify(r));
+}
+ok('the topics sheet carries all my notes, mark my place and resume',
+   !!d.querySelector('#sheetBody #shNotes') && !!d.querySelector('#sheetBody #shMark') && !!d.querySelector('#sheetBody #shResume') &&
+   (d.getElementById('shNotes').click(), !d.getElementById('notesModal').hidden));
+w.eval("document.getElementById('notesModal').hidden = true; document.body.classList.remove('tm-open')");
+ok('the header uses the short label where the full one clips', (w.eval("show('bpsd')"), d.getElementById('topicNow').textContent) === '60·63 Dementia behaviour & Rx');
+w.eval("show('week')");
+{
+  const load = async (st, dark) => { const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2);
+      w2.matchMedia = q => ({ matches: dark && /prefers-color-scheme: dark/.test(q), addEventListener(){}, removeEventListener(){} });
+      w2.storage = { get: async k => { if(!(k in st)) throw new Error('missing'); return {key:k, value:st[k]}; },
+                     set: async (k,v) => { st[k] = v; return {key:k, value:v}; } }; } });
+    for(let t = 0; t < 100 && !dm.window.document.getElementById('ppIntroBtn'); t++) await new Promise(r => setTimeout(r, 50));
+    await new Promise(r => setTimeout(r, 150)); const dk = dm.window.document.body.classList.contains('dark'); dm.window.close(); return dk; };
+  const firstDark = await load({}, true), chosenLight = await load({'geri:display':'{"dark":false,"fs":"m"}'}, true), firstLight = await load({}, false);
+  ok('the phone\u2019s dark setting is applied before the first paint, not after a light flash',
+     /if\(raw === null && window\.matchMedia && window\.matchMedia\('\(prefers-color-scheme: dark\)'\)\.matches\) v\.dark = true;/.test(code));
+  ok('the first open follows the phone\u2019s dark setting; a saved choice wins after that', firstDark && !chosenLight && !firstLight,
+     'firstDark=' + firstDark + ' chosenLight=' + chosenLight + ' firstLight=' + firstLight);
+}
+
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);

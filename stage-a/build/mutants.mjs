@@ -340,6 +340,36 @@ const M = [
    ".topicbtn .glabel{ flex:0 100 auto;",
    ".topicbtn .glabel{ flex:0 1 auto;",
    "header title keeps its name"],
+  /* --- group 4: fewer taps, 16/09 --- */
+  ["Read ch N opens the week's first chapter even when it is read",
+   "  const w = weekChapters(); return w.find(x => !(readSet && readSet.has(x.sec))) || w[0] || null;",
+   "  const w = weekChapters(); return w[0] || null;",
+   "first unread chapter"],
+
+  ["the footer never offers the next chapter",
+   "    b.hidden = !rb;",
+   "    b.hidden = true;",
+   "offers the next one this week"],
+
+  ["the topics sheet loses the notes and bookmark row",
+   "  SHBODY.appendChild(row);",
+   "",
+   "topics sheet carries all my notes"],
+
+  ["the header shows the full label that clips",
+   "    TNOW.textContent = b.dataset.short || b.firstChild.textContent.trim();",
+   "    TNOW.textContent = b.firstChild.textContent.trim();",
+   "short label where the full one clips"],
+
+  ["first open ignores the phone's dark setting",
+   "let disp = {dark: !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches), fs:'m'};",
+   "let disp = {dark:false, fs:'m'};",
+   "follows the phone"],
+
+  ["the pre-paint script paints light first and snaps to dark",
+   "    if(raw === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) v.dark = true;",
+   "",
+   "before the first paint"],
 ];
 
 if(STATIC){

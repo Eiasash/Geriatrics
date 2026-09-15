@@ -2776,7 +2776,10 @@ The first sentence of text is active and visible right at the 200px boundary, re
    the first paint, straight off the same key the rest of the app writes. */
 (function(){
   try{
-    var v = JSON.parse(localStorage.getItem('geri:display') || '{}');
+    var raw = localStorage.getItem('geri:display');
+    var v = JSON.parse(raw || '{}');
+    /* first open, nothing chosen yet: follow the phone's own light/dark setting */
+    if(raw === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) v.dark = true;
     if(v.dark){ document.documentElement.classList.add('dark'); document.body.classList.add('dark'); }
     if(['s','m','l','xl'].indexOf(v.fs) >= 0) document.body.classList.add('fs-' + v.fs);
   }catch(e){}
@@ -2823,7 +2826,7 @@ The first sentence of text is active and visible right at the 200px boundary, re
       <button data-t="dysphagia">31 Swallowing</button>
       <button data-t="delirium">58 Delirium</button>
       <button data-t="dementia">59 Dementia &mdash; diagnosis</button>
-      <button data-t="bpsd">60&middot;63 Dementia &mdash; behaviour &amp; treatment</button>
+      <button data-t="bpsd" data-short="60&middot;63 Dementia behaviour &amp; Rx">60&middot;63 Dementia &mdash; behaviour &amp; treatment</button>
       <button data-t="parkinson">61 Parkinson</button>
     </div></div>
     <div class="gwrap" data-g="tier2"><button class="grp" type="button" aria-expanded="false">Next tier &mdash; three of four</button><div class="gitems">
@@ -9990,7 +9993,8 @@ function show(id){
   if(act && act.scrollIntoView) act.scrollIntoView({inline:'center', block:'nearest'});
   const b = [...RAIL.querySelectorAll('button[data-t]')].find(x=>x.dataset.t===id);
   if(b){
-    TNOW.textContent = b.textContent.trim();
+    /* data-short where the full name clips at two lines in the header; the rail keeps the full name */
+    TNOW.textContent = b.dataset.short || b.firstChild.textContent.trim();
     const g = b.closest('.gwrap');
     if(g) document.querySelector('.topicbtn').style.setProperty('--accent', 'var(--c-' + g.dataset.g + ')');
   }
@@ -10135,6 +10139,17 @@ const RAIL  = document.getElementById('rail');
 const SHEET = document.getElementById('sheet');
 const SHBODY= document.getElementById('sheetBody');
 const TNOW  = document.getElementById('topicNow');
+/* the two reading tools reachable from any section without going home */
+(function(){
+  const row = document.createElement('div'); row.className = 'sheetacts';
+  row.innerHTML = '<button type="button" id="shNotes">all my notes</button>' +
+    '<button type="button" id="shMark">mark my place here</button>' +
+    '<button type="button" id="shResume">resume where I stopped</button>';
+  SHBODY.appendChild(row);
+  row.querySelector('#shNotes').addEventListener('click', ()=>{ closeSheet(); notesIndex(); });
+  row.querySelector('#shMark').addEventListener('click', ()=>{ closeSheet(); setTimeout(()=>bmSet(null), 0); });
+  row.querySelector('#shResume').addEventListener('click', ()=>{ closeSheet(); bmGo(); });
+})();
 RAIL.querySelectorAll('.gwrap').forEach(w=>{
   const wrap = document.createElement('div');
   wrap.className = w.className; wrap.dataset.g = w.dataset.g;
@@ -11384,8 +11399,16 @@ function bmPaint(){
 })();
 
 /* ---------- the three dashboard actions ---------- */
+/* the week's chapters in order, as {t, sec}; the first one whose section is not marked read */
+function weekChapters(){
+  return ((VIEW && VIEW.items) || []).map(x => ({t:x.t, sec:chapInfo(x.t).sec}))
+    .filter(x => x.sec && document.getElementById(x.sec));
+}
+function firstUnread(){
+  const w = weekChapters(); return w.find(x => !(readSet && readSet.has(x.sec))) || w[0] || null;
+}
 document.getElementById('goRead').addEventListener('click',()=>{
-  const first = (VIEW && VIEW.items && VIEW.items[0]) ? chapInfo(VIEW.items[0].t) : null;
+  const first = firstUnread();
   if(first && first.sec && document.getElementById(first.sec)){ show(first.sec); window.scrollTo({top:0}); }
   else { show('plan'); window.scrollTo({top:0}); }
 });
@@ -11410,7 +11433,8 @@ document.getElementById('goMock').addEventListener('click',()=>{
 });
 function paintReadLab(){
   const el = document.getElementById('goReadLab'); if(!el) return;
-  const first = (VIEW && VIEW.items && VIEW.items[0]) ? VIEW.items[0].t : '';
+  const fu = firstUnread();
+  const first = fu ? fu.t : ((VIEW && VIEW.items && VIEW.items[0]) ? VIEW.items[0].t : '');
   const m = first.match(/^ch\s*\d+/);
   el.textContent = m ? 'Read ' + m[0] : 'Read the chapter';
 }
@@ -11483,6 +11507,8 @@ const CONTENT = [...document.querySelectorAll('main section')]
   .map(s=>s.id).filter(id=>!SKIP.includes(id));
 function saveRead(){ try{ window.storage.set(READKEY, JSON.stringify([...readSet])); }catch(e){} }
 function paintRead(){
+  if(typeof paintReadLab === 'function') paintReadLab();
+  if(typeof paintNextChap === 'function') paintNextChap();
   [RAIL, SHBODY].forEach(root=>root.querySelectorAll('button[data-t]').forEach(b=>{
     const old = b.querySelector('.tick'); if(old) old.remove();
     if(readSet.has(b.dataset.t)){
@@ -11529,6 +11555,18 @@ const VERIFIED = {
   depression:'Hazzard ch 65 · 13 Sep 2026', hf:'Hazzard ch 76 · 13 Sep 2026'
 };
 
+/* "next this week" on a section's footer: shown only when the section is one of the week's
+   chapters and another follows it */
+function paintNextChap(){
+  const secs = [...new Set(weekChapters().map(x => x.sec))];
+  document.querySelectorAll('main section .secfoot .nx').forEach(b=>{
+    const id = b.closest('section').id, i = secs.indexOf(id), nxt = i >= 0 ? secs[i+1] : null;
+    const rb = nxt && RAIL.querySelector('button[data-t="' + nxt + '"]');
+    b.hidden = !rb;
+    if(rb){ b.dataset.go = nxt; b.textContent = 'next this week: ' + (rb.dataset.short || rb.firstChild.textContent.trim()) + ' \u2192'; }
+  });
+}
+document.addEventListener('sectionshown', ()=>paintNextChap());
 /* ---------- per-section footer: read, drill, print (deferred past first paint) ---------- */
 defer(function(){
 CONTENT.forEach(id=>{
@@ -11546,6 +11584,7 @@ CONTENT.forEach(id=>{
     '<button type="button" class="pr">print this section</button>' +
     '<button type="button" class="bk">backup &amp; restore</button>' +
     '<button type="button" class="hm">&#8962; home</button>' +
+    '<button type="button" class="nx" hidden></button>' +
     '<span class="sfnote">'+name+(VERIFIED[id] ? ' · checked against '+VERIFIED[id] : '')+'</span>';
   sec.appendChild(buildNotesPanel(id));
   sec.appendChild(foot);
@@ -11558,6 +11597,8 @@ CONTENT.forEach(id=>{
   });
   foot.querySelector('.pr').addEventListener('click',()=>window.print());
   foot.querySelector('.hm').addEventListener('click',()=>{ show('week'); window.scrollTo({top:0}); });
+  foot.querySelector('.nx').addEventListener('click', e=>{ const t = e.currentTarget.dataset.go;
+    if(t){ show(t); window.scrollTo({top:0}); } });
   foot.querySelector('.pq').addEventListener('click', ()=>openChapterPapers(id));
 });
 paintRead();
@@ -11704,7 +11745,8 @@ CONTENT.forEach(id=>{
 
 /* ---------- display settings ---------- */
 const DISPKEY = 'geri:display';
-let disp = {dark:false, fs:'m'};   /* light-first */
+/* until a choice is saved, follow the phone's setting; the first paint then saves it */
+let disp = {dark: !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches), fs:'m'};
 function paintDisp(){
   document.body.classList.toggle('dark', !!disp.dark);
   document.documentElement.classList.toggle('dark', !!disp.dark);
@@ -13775,6 +13817,12 @@ p.tsrc i{ font-style:italic }
 .fnotes dd{ margin:0; color:var(--mute) }
 @media (max-width:900px){ .fnotes dl{ grid-template-columns:1fr; gap:1px } .fnotes dd{ margin:0 0 8px } }
 @media print{ abbr.abbr{ border:0 } abbr.abbr sup{ color:#000 } }
+
+/* v23 — fewer taps */
+.sheetacts{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 12px }
+.sheetacts button{ min-height:44px; padding:8px 12px; background:transparent; color:var(--ink); border:1px solid var(--rule);
+  border-radius:3px; font-family:var(--sans); font-size:calc(13px*var(--fs,1)) }
+.secfoot .nx{ font-weight:600 }
 
 /* v22 — less clutter at XL. Tap targets at least 44px (mini-timer buttons were 40 high, mock
    "back" 37 wide, chapter action pills 40 high); the header title keeps its whole name and the
