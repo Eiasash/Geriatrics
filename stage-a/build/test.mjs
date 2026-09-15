@@ -752,7 +752,7 @@ w.eval("SN = {}; snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the flush is wired into show, not only into teardown',
    /if\(typeof flushPending === 'function'\) flushPending\(\);[\s\S]{0,120}?annotateSection\(id\)/.test(html));
 ok('a tab whose notes box matches its own stale memory writes nothing on teardown', (()=>{
-  w.eval("SN = {falls:'STALE'}"); w.SNSEEN = JSON.stringify({falls:'STALE'});   /* this tab has changed nothing */
+  w.eval("SN = {falls:'STALE'}"); w.eval("SNSEEN = JSON.stringify({falls:'STALE'})");   /* this tab has changed nothing */
   d.querySelectorAll('.mynotes').forEach(p=>{ const ta = p.querySelector('textarea');
     if(ta) ta.value = w.eval("SN['" + p.dataset.sec + "'] || ''"); });
   store['geri:secnotes'] = JSON.stringify({falls:'NEWER from the other tab'});
@@ -768,7 +768,7 @@ w.eval("flushPending()");
 await new Promise(r=>setTimeout(r,60));
 ok('but a tab that genuinely typed something still writes it',
    JSON.parse(store['geri:secnotes'] || '{}').falls === 'typed here just now', store['geri:secnotes']);
-w.eval("SN = {}"); w.SNSEEN = store['geri:secnotes'] || '{}';
+w.eval("SN = {}"); w.eval("SNSEEN = " + JSON.stringify(store['geri:secnotes'] || '{}'));
 d.querySelector('.mynotes[data-sec="falls"] textarea').value = '';
 w.eval("snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the scroll position is written directly on teardown, not left behind a timer',
@@ -811,6 +811,38 @@ ok('section notes merge per section: untouched here means the other tab\u2019s c
   return out.falls === 'newer from the other tab' && out.sleep === 'mine, edited here';
 })());
 ok('saves are serialised so two in the same tick cannot interleave', /saveChain = saveChain\.then\(async\(\)=>\{/.test(html));
+
+// ---- merge audit, 15 Sep: the merge must never turn a failure into a deletion ----
+ok('SEEN only advances on a write that was read back', /if\(landed\) seenSet\(key, blob\);/.test(html) &&
+   /const back = await window\.storage\.get\(key\);\s*\n\s*landed = !!\(back && back\.value === blob\);/.test(html));
+/* storage must already hold SOMETHING, or the merge short-circuits to "no stored copy"
+   and the deletion path this guard is about is never reached */
+store['geri:hl'] = JSON.stringify({sleep:[{id:'other', sec:'sleep', t:'hypnotic', i:0, n:'', c:'y'}]});
+w.eval("HL = {falls:[{id:'f1', sec:'falls', t:'fear of falling', i:0, n:'', c:'y'}]}; HLSEEN = JSON.stringify({sleep:[{id:'other', sec:'sleep', t:'hypnotic', i:0, n:'', c:'y'}]})");
+w.eval("window.__realset = window.storage.set; window.storage.set = async()=>undefined");
+await w.eval("hlSave()"); await new Promise(r=>setTimeout(r,60));
+ok('a refused save leaves SEEN where it was', !/f1/.test(w.eval("HLSEEN")), w.eval("HLSEEN"));
+w.eval("window.storage.set = window.__realset");
+await w.eval("hlSave()"); await new Promise(r=>setTimeout(r,60));
+ok('and the next save still carries the highlight, instead of reading it as a deletion',
+   ((JSON.parse(store['geri:hl'] || '{}').falls) || []).length === 1, store['geri:hl']);
+w.eval("HL = {}; HLSEEN = '{}'"); delete store['geri:hl'];
+ok('a highlight both tabs hold is taken from storage unless this tab changed it', (()=>{
+  const stored = {falls:[{id:'X', n:'note from the other tab'}]};
+  const seen   = {falls:[{id:'X', n:''}]};
+  const mine   = {falls:[{id:'X', n:''}, {id:'Y'}]};
+  const out = w.mergeHL(stored, seen, mine);
+  return out.falls.find(h=>h.id === 'X').n === 'note from the other tab' && !!out.falls.find(h=>h.id === 'Y');
+})());
+ok('but an edit made here still wins', (()=>{
+  const stored = {falls:[{id:'X', n:''}]}, seen = {falls:[{id:'X', n:''}]}, mine = {falls:[{id:'X', n:'mine'}]};
+  return w.mergeHL(stored, seen, mine).falls[0].n === 'mine';
+})());
+ok('the initial read folds the stored copy in rather than assigning over what is already there',
+   /HL = Object\.keys\(HL\)\.length \? mergeHL\(stored, \{\}, HL\) : stored;/.test(html) &&
+   /SN = Object\.keys\(SN\)\.length \? mergeSN\(stored, \{\}, SN\) : stored;/.test(html));
+ok('a merge repaint waits for a live selection to end before unwrapping its text nodes',
+   /if\(sel && sel\.rangeCount && !sel\.isCollapsed\)\{/.test(html) && /document\.addEventListener\('selectionchange', go\);/.test(html));
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));

@@ -10705,10 +10705,17 @@ function mergeHL(stored, seen, mine){
   const secs = new Set([...Object.keys(stored || {}), ...Object.keys(mine || {})]);
   for(const sec of secs){
     const S = (stored && stored[sec]) || [], N = (seen && seen[sec]) || [], M = (mine && mine[sec]) || [];
-    const sMap = new Map(S.map(h=>[h.id, h])), nSet = new Set(N.map(h=>h.id)), mMap = new Map(M.map(h=>[h.id, h]));
+    const sMap = new Map(S.map(h=>[h.id, h])), mMap = new Map(M.map(h=>[h.id, h]));
+    const nMap = new Map(N.map(h=>[h.id, h])), nSet = new Set(nMap.keys());
     const list = [];
     for(const h of S){
-      if(mMap.has(h.id)) list.push(mMap.get(h.id));        /* both have it — ours may carry a new note or colour */
+      if(mMap.has(h.id)){
+        /* both hold it. Take ours only if we changed it since we last looked — otherwise
+           ours is simply older, and pushing it would revert the other tab's edit. */
+        const mineH = mMap.get(h.id), seenH = nMap.get(h.id);
+        const changedHere = !seenH || JSON.stringify(mineH) !== JSON.stringify(seenH);
+        list.push(changedHere ? mineH : h);
+      }
       else if(!nSet.has(h.id)) list.push(h);               /* the other tab added it since we last looked */
       /* else: we had it and dropped it — a deletion here, so it stays gone */
     }
@@ -10736,19 +10743,43 @@ function mergeSave(key, mine, mergeFn, apply){
     let seen = {}; try{ seen = JSON.parse(seenGet(key)); }catch(e){ seen = {}; }
     const merged = (stored && typeof stored === 'object') ? mergeFn(stored, seen, mine) : mine;
     const blob = JSON.stringify(merged);
-    try{ await window.storage.set(key, blob); }catch(e){}
-    seenSet(key, blob);
+    let landed = false;
+    try{
+      await window.storage.set(key, blob);
+      const back = await window.storage.get(key);
+      landed = !!(back && back.value === blob);
+    }catch(e){ landed = false; }
+    /* Only a confirmed write may advance SEEN. If it failed, or another tab wrote over
+       us between our set and our read, SEEN stays where it was — so on the next save our
+       entries still look like additions made here, and are re-asserted rather than
+       mistaken for the other tab's deletions. */
+    if(landed) seenSet(key, blob);
     if(apply) try{ apply(merged); }catch(e){}
   }).catch(()=>{});
   return saveChain;
+}
+function hlRepaintAll(merged){
+  document.querySelectorAll('mark.hl').forEach(m=>hlUnwrap(m.dataset.hid));
+  HL = merged;
+  CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){} });
 }
 function hlSave(){
   return mergeSave(HLKEY, HL, mergeHL, merged=>{
     /* if the merge brought in another tab's highlights, show them here too */
     if(JSON.stringify(merged) === JSON.stringify(HL)) return;
-    document.querySelectorAll('mark.hl').forEach(m=>hlUnwrap(m.dataset.hid));
-    HL = merged;
-    CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){} });
+    const sel = window.getSelection();
+    if(sel && sel.rangeCount && !sel.isCollapsed){
+      /* repainting unwraps the marks and normalises their text nodes — the very nodes a
+         live selection is anchored to. Hold it until the reader has finished dragging. */
+      HL = merged;
+      const go = ()=>{ const s = window.getSelection();
+        if(s && s.rangeCount && !s.isCollapsed) return;
+        document.removeEventListener('selectionchange', go);
+        try{ hlRepaintAll(merged); }catch(e){} };
+      document.addEventListener('selectionchange', go);
+      return;
+    }
+    hlRepaintAll(merged);
   });
 }
 function snSave(){
@@ -11022,8 +11053,18 @@ function notesAsText(){
 })();
 /* ---- load, then paint every section once the footers and panels exist ---- */
 (async()=>{
-  try{ const r = await window.storage.get(HLKEY); HL = JSON.parse(r.value) || {}; HLSEEN = JSON.stringify(HL); }catch(e){ HL = {}; HLSEEN = '{}'; }
-  try{ const r = await window.storage.get(SNKEY); SN = JSON.parse(r.value) || {}; SNSEEN = JSON.stringify(SN); }catch(e){ SN = {}; SNSEEN = '{}'; }
+  /* Anything made between page load and this read is already in HL/SN. Assigning over it
+     would erase it, so fold the stored copy in with the same merge the saves use. */
+  try{
+    const r = await window.storage.get(HLKEY); const stored = JSON.parse(r.value) || {};
+    HLSEEN = JSON.stringify(stored);
+    HL = Object.keys(HL).length ? mergeHL(stored, {}, HL) : stored;
+  }catch(e){ HLSEEN = '{}'; }
+  try{
+    const r = await window.storage.get(SNKEY); const stored = JSON.parse(r.value) || {};
+    SNSEEN = JSON.stringify(stored);
+    SN = Object.keys(SN).length ? mergeSN(stored, {}, SN) : stored;
+  }catch(e){ SNSEEN = '{}'; }
   const paintAll = ()=>{ CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){ console.error('highlight', id, e); } }); };
   if(document.querySelector('.mynotes')) idle(paintAll); else setTimeout(()=>idle(paintAll), 300);
 })();
