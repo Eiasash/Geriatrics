@@ -848,10 +848,13 @@ ok('a merge repaint waits for a live selection to end before unwrapping its text
 ok('a missed question offers a jump to the chapter it came from',
    /class="chgo pqgo" data-sec="/.test(html) && /jump\.addEventListener\('click', \(\)=>\{ show\(jump\.dataset\.sec\)/.test(html));
 ok('the read-but-not-retained list is keyed by number, not by the string Object.keys gives',
-   /const sec = sectionForChapter\(Number\(c\)\);/.test(html) &&
-   /data-sec="' \+ sectionForChapter\(Number\(c\)\) \+ '"/.test(html));
-ok('it only counts chapters actually marked read, with enough questions behind it',
-   /readSet\.has\(sec\) && by\[c\]\.n >= 4 && \(by\[c\]\.n - by\[c\]\.w\) \/ by\[c\]\.n < 0\.65/.test(html));
+   /const sec = sectionForChapter\(Number\(c\)\);/.test(html) && /x\.sec \+ '">' \+ x\.label/.test(html));
+ok('it only counts sections actually marked read, with enough questions behind them',
+   /const weakEnough = t => t\.n >= 4 && \(t\.n - t\.w\) \/ t\.n < 0\.65;/.test(html) &&
+   /return sec && readSet\.has\(sec\) && weakEnough\(by\[c\]\);/.test(html) &&
+   /filter\(sec=>readSet\.has\(sec\) && weakEnough\(byS\[sec\]\)\)/.test(html));
+ok('and it reaches the third of the bank that carries no chapter number \u2014 law, papers, Beers',
+   /const BKSEC = \{'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'\};/.test(html));
 ok('a finished paper logs the day\u2019s score itself, scaled to the 50 the sparkline uses',
    /if\(rows\.length >= 25\)\{ qlog\[TODAY\] = Math\.round\(right \/ rows\.length \* 50\); saveQ\(\); paintQ\(\); \}/.test(html));
 

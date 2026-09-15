@@ -12398,6 +12398,18 @@ function pqStats(){
       '</td><td class="n">' + ok + '</td><td class="n">' +
       (done.length ? Math.round(ok/done.length*100) + '%' : '&mdash;') + '</td></tr>';
   }).join('');
+  /* a question with no chapter still belongs somewhere: Law/MoH is the ethics section,
+     the named papers are the sources section, Beers is its own. Without this the block
+     examined most reliably of all — 4 to 7 questions every sitting — is invisible here. */
+  const BKSEC = {'Law/MoH':'ethics', 'Article':'src', 'Beers':'beers'};
+  const byS = {};
+  PQ.forEach(x=>{
+    if(x.ch || OLDED.indexOf(x.y) >= 0) return;
+    const sec = BKSEC[x.bk]; if(!sec) return;
+    const v = pqDone[pqKey(x)]; if(v === undefined) return;
+    byS[sec] = byS[sec] || {n:0, w:0, bk:x.bk};
+    byS[sec].n++; if(!v) byS[sec].w++;
+  });
   const by = {};
   PQ.forEach(x=>{
     if(!x.ch || OLDED.indexOf(x.y) >= 0) return;
@@ -12411,16 +12423,20 @@ function pqStats(){
      readSet from "mark as read", by[] from pqDone. A chapter you have not read yet and
      are failing is expected and is left out — this list is only about reading that did
      not stick, which is the thing worth acting on. */
+  const weakEnough = t => t.n >= 4 && (t.n - t.w) / t.n < 0.65;
   const stuck = Object.keys(by).filter(c=>{
     /* Object.keys gives strings; SECCH holds numbers, and indexOf does not coerce */
     const sec = sectionForChapter(Number(c));
-    return sec && readSet.has(sec) && by[c].n >= 4 && (by[c].n - by[c].w) / by[c].n < 0.65;
-  }).sort((a,b)=>by[b].w - by[a].w).slice(0, 3);
+    return sec && readSet.has(sec) && weakEnough(by[c]);
+  }).map(c=>({sec:sectionForChapter(Number(c)), label:'ch ' + c, t:by[c]}))
+   .concat(Object.keys(byS).filter(sec=>readSet.has(sec) && weakEnough(byS[sec]))
+     .map(sec=>({sec, label:byS[sec].bk, t:byS[sec]})))
+   .sort((a,b)=>b.t.w - a.t.w).slice(0, 3);
   const sm = document.getElementById('pqStuck');
   if(sm) sm.innerHTML = stuck.length
     ? '<b class="stop">Read, but not retained.</b> Marked read and still under 65%: ' +
-      stuck.map(c=>'<button type="button" class="lnk stuckgo" data-sec="' + sectionForChapter(Number(c)) + '">ch ' + c +
-        ' (' + (by[c].n - by[c].w) + ' of ' + by[c].n + ')</button>').join(', ') +
+      stuck.map(x=>'<button type="button" class="lnk stuckgo" data-sec="' + x.sec + '">' + x.label +
+        ' (' + (x.t.n - x.t.w) + ' of ' + x.t.n + ')</button>').join(', ') +
       '. Re-reading these beats new chapters.'
     : '';
   if(sm) sm.querySelectorAll('.stuckgo').forEach(b=>b.addEventListener('click', ()=>{
