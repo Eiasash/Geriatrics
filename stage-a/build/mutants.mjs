@@ -226,6 +226,21 @@ const M = [
    "window.addEventListener('unhandledrejection', e=>{ lastErr = '[' + nowStamp() + '] promise: ' +",
    "window.addEventListener('unhandledrejection', e=>{ lastErr = 'promise: ' +",
    'carries the time it happened'],
+
+  ['the week scope matches earlier-edition chapter numbers again',
+   "    if(chs.size) p = p.filter(x=>x.ch && chs.has(x.ch) && OLDED.indexOf(x.y) < 0);",
+   "    if(chs.size) p = p.filter(x=>x.ch && chs.has(x.ch));",
+   'never serves earlier-edition questions'],
+
+  ['a single-chapter hold is not understood by the filter',
+   "    const chs = /^ch:\\d+$/.test(pqChap) ? [+pqChap.slice(3)] : secChapters(pqChap);",
+   "    const chs = secChapters(pqChap);",
+   'single weak chapter holds'],
+
+  ['an earlier-edition question jumps to a section by its old chapter number',
+   "  const tsec = p.ch ? (OLDED.indexOf(p.y) < 0 ? sectionForChapter(p.ch) : '') : (PQSEC[p.bk] || '');",
+   "  const tsec = p.ch ? sectionForChapter(p.ch) : (PQSEC[p.bk] || '');",
+   'no jump to an 8th-edition section'],
 ];
 
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */

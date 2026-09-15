@@ -978,7 +978,7 @@ ok('and it reaches the third of the bank that carries no chapter number \u2014 l
   return !!btn && btn.dataset.sec === 'ethics';
 })());
 ok('the jump button and the metric read the same source map, so they cannot drift apart',
-   /const tsec = p\.ch \? sectionForChapter\(p\.ch\) : \(PQSEC\[p\.bk\] \|\| ''\);/.test(code) &&
+   /: \(PQSEC\[p\.bk\] \|\| ''\);/.test(code) &&
    (code.match(/'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'/g)||[]).length === 1);
 ok('a table may split across printed pages, with its rows kept whole and its header repeated',
    /table\{page-break-inside:auto\}/.test(code) && /tr,td,th\{page-break-inside:avoid\}/.test(code) &&
@@ -1039,7 +1039,7 @@ ok('the consolidation week survives the week card, the chips and the tag lookup'
 })());
 
 ok('the past-paper week filter does not empty the pool when the week has no chapters',
-   /if\(chs\.size\) p = p\.filter\(x=>x\.ch && chs\.has\(x\.ch\)\);/.test(code) &&
+   /if\(chs\.size\) p = p\.filter\(x=>x\.ch && chs\.has\(x\.ch\)/.test(code) &&
    /\(\(VIEW && VIEW\.items\) \|\| \[\]\)\.forEach/.test(code));
 ok('every flashcard carries a tag and no tag points past the end of the deck', (()=>{
   /* CARDTAG maps cards by hard-coded index, so inserting a card anywhere but the end
@@ -1362,6 +1362,23 @@ errs.slice(0,12).forEach(e=>console.log('  ' + e));
   const ev = new w.Event('unhandledrejection'); ev.reason = new Error('stale-test'); w.dispatchEvent(ev);
   ok('the last error in a report carries the time it happened', /^\[2026-12-01 09:15\] promise: stale-test/.test(w.eval('lastErr')), w.eval('lastErr'));
   w.eval("lastErr = ''");
+}
+
+/* ---- past papers: earlier-edition chapter numbers, and a single-chapter hold ---- */
+{
+  const r = w.eval(`(()=>{ const sv = [VIEW, pqScope, pqChap, pqYear]; const out = {};
+    pqYear = 'all'; pqChap = 'all'; pqScope = 'week';
+    /* weeks with chapter numbers only; a week without them keeps the whole bank on purpose */
+    out.oldInWeek = ALLW.filter(wk => wk.items.some(x => /ch\\s*\\d+/.test(x.t || '')))
+      .filter(wk => { VIEW = wk; return pqFilter().some(x => OLDED.indexOf(x.y) >= 0); }).length;
+    pqScope = 'unseen'; pqChap = 'ch:63';
+    const q = pqFilter(); out.chHeld = q.length > 0 && q.every(x => x.ch === 63 && OLDED.indexOf(x.y) < 0); out.n = q.length;
+    [VIEW, pqScope, pqChap, pqYear] = sv; return out; })()`);
+  ok('the week scope never serves earlier-edition questions by their old chapter numbers', r.oldInWeek === 0, r.oldInWeek + ' weeks leak');
+  ok('a single weak chapter holds while the scope changes', r.chHeld, r.n + ' questions');
+  ok('the weakest-chapters button holds the chapter as a filter', /pqChap = 'ch:' \+ b\.dataset\.ch;/.test(code));
+  ok('an earlier-edition question has no jump to an 8th-edition section',
+     /const tsec = p\.ch \? \(OLDED\.indexOf\(p\.y\) < 0 \? sectionForChapter\(p\.ch\) : ''\)/.test(code));
 }
 
 console.log("DONE");

@@ -12538,7 +12538,8 @@ function pqFilter(){
   if(pqChap !== 'all'){
     /* a chapter constraint composes with whatever status scope is chosen, instead of
        being replaced by it */
-    const chs = secChapters(pqChap);
+    /* a section id, or 'ch:N' for a single chapter (the weakest-chapters buttons) */
+    const chs = /^ch:\d+$/.test(pqChap) ? [+pqChap.slice(3)] : secChapters(pqChap);
     p = p.filter(x=>x.ch && chs.indexOf(x.ch) >= 0 && OLDED.indexOf(x.y) < 0);
   }
   if(pqScope === 'week'){
@@ -12546,7 +12547,9 @@ function pqFilter(){
     ((VIEW && VIEW.items) || []).forEach(x=>{ const m=(x.t||'').match(/ch\s*(\d+)/); if(m) chs.add(+m[1]); });
     /* during the consolidation period the week has no chapters of its own; filtering to
        them empties the pool, so leave it whole rather than dead-ending */
-    if(chs.size) p = p.filter(x=>x.ch && chs.has(x.ch));
+    /* the 2020–2022 papers carry chapter numbers from the earlier edition; matching them
+       against this week's 8th-edition chapters serves the wrong questions */
+    if(chs.size) p = p.filter(x=>x.ch && chs.has(x.ch) && OLDED.indexOf(x.y) < 0);
   } else if(pqScope === 'unseen'){
     p = p.filter(x=>pqDone[pqKey(x)] === undefined);
   } else if(pqScope === 'wrong'){
@@ -12609,7 +12612,8 @@ function pqAnswer(letter){
   const src = p.src ? p.src : 'no reference given in the table';
   /* a third of the bank has no chapter number; those questions are the hardest to hunt
      down by hand, so map their source to a section the same way the metric does */
-  const tsec = p.ch ? sectionForChapter(p.ch) : (PQSEC[p.bk] || '');
+  /* an earlier-edition chapter number points at the wrong 8th-edition section: no jump */
+  const tsec = p.ch ? (OLDED.indexOf(p.y) < 0 ? sectionForChapter(p.ch) : '') : (PQSEC[p.bk] || '');
   const chp = (p.ch ? ' &mdash; chapter ' + p.ch + (p.pg ? ', p' + p.pg : '') : '') +
     (tsec ? ' <button type="button" class="chgo pqgo" data-sec="' + tsec + '">open the notes</button>' : '');
   document.getElementById('pqSrc').innerHTML =
@@ -12700,11 +12704,10 @@ function pqStats(){
     '<div class="wb"><button type="button" data-ch="' + c + '">these questions</button></div>').join('')
     : '<p class="note" style="grid-column:1/4">No wrong answers on a chapter-referenced question yet.</p>';
   el.querySelectorAll('button').forEach(b=>b.addEventListener('click', ()=>{
-    pqScope = 'all'; pqChap = 'all'; pqPaintFilters();
-    pqPool = shuffle(PQ.filter(x=>x.ch == b.dataset.ch && !x.im && OLDED.indexOf(x.y) < 0));
-    pqIdx = 0;
-    document.getElementById('pqPool').innerHTML = '<b>' + pqPool.length + '</b> questions on chapter ' + b.dataset.ch;
-    pqRender(); window.scrollTo({top:0});
+    /* held as a filter, not a one-off pool, so the scope buttons work inside the chapter
+       instead of silently dropping it */
+    pqScope = 'all'; pqChap = 'ch:' + b.dataset.ch; pqPaintFilters();
+    pqBuild(); pqRender(); window.scrollTo({top:0});
   }));
 }
 function pqPaintFilters(){
@@ -12717,7 +12720,8 @@ function pqPaintFilters(){
     if(pqChap === 'all') ch.hidden = true;
     else {
       ch.hidden = false;
-      const lab = (RAIL.querySelector('button[data-t="' + pqChap + '"]') || {}).textContent || pqChap;
+      const lab = /^ch:\d+$/.test(pqChap) ? 'chapter ' + pqChap.slice(3)
+        : ((RAIL.querySelector('button[data-t="' + pqChap + '"]') || {}).textContent || pqChap);
       ch.innerHTML = 'Held to <b>' + lab.trim() + '</b> &mdash; the filters below work inside it. ' +
         '<button type="button" class="lnk" id="pqDropChap">drop the chapter</button>';
       const d = document.getElementById('pqDropChap');
