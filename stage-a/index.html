@@ -2768,6 +2768,18 @@ The first sentence of text is active and visible right at the 200px boundary, re
 </style>
 </head>
 <body>
+<script>
+/* Dark mode and text size are read asynchronously with everything else, which is late
+   enough to paint the page light and small first and then snap. Apply them here, before
+   the first paint, straight off the same key the rest of the app writes. */
+(function(){
+  try{
+    var v = JSON.parse(localStorage.getItem('geri:display') || '{}');
+    if(v.dark){ document.documentElement.classList.add('dark'); document.body.classList.add('dark'); }
+    if(v.fs) document.body.classList.add('fs-' + v.fs);
+  }catch(e){}
+})();
+</script>
 <button class="railshow" id="railShow" type="button" title="Show the list">&raquo;</button>
 <button class="toend" id="toEnd" type="button" aria-label="Jump to the end of this section">&darr;<span>end</span></button>
 <button class="totop" id="toTop" type="button" aria-label="Back to top" hidden>&uarr;<span>top</span></button>
@@ -10329,7 +10341,8 @@ function mtPaint(l){
   const box = document.getElementById('miniT'); if(!box) return;
   const home = (document.querySelector('main section.on')||{}).id === 'week';
   const done = T.p >= PH.length;
-  box.hidden = home || mtOff;
+  /* during a mock paper the paper's own clock is the one that matters */
+  box.hidden = home || mtOff || (typeof mockOn !== 'undefined' && mockOn);
   const running = SW.on ? SW.run : T.run;
   box.classList.toggle('run', running);
   if(SW.on){
@@ -11525,11 +11538,45 @@ async function refreshFromStorage(){
     const done = new Set(JSON.parse(r.value));
     boxes.forEach(b=>{ b.checked = done.has(b.dataset.k); });
   }catch(e){}
+  /* highlights, section notes and the bookmark are held in memory and written whole,
+     so a stale copy here silently overwrites what another tab wrote. Re-read them and
+     repaint, unwrapping first so a highlight deleted in the other tab really goes. */
+  if(typeof HL === 'object'){
+    try{
+      const r = await window.storage.get(HLKEY); const v = JSON.parse(r.value);
+      if(v && typeof v === 'object'){
+        document.querySelectorAll('mark.hl').forEach(m=>hlUnwrap(m.dataset.hid));
+        HL = v; CONTENT.forEach(id=>{ try{ hlPaintSec(id); }catch(e){} });
+      }
+    }catch(e){}
+  }
+  if(typeof SN === 'object'){
+    try{ const r = await window.storage.get(SNKEY); const v = JSON.parse(r.value);
+      if(v && typeof v === 'object'){ SN = v;
+        document.querySelectorAll('.mynotes').forEach(p=>{ try{ notesPaint(p); }catch(e){} }); }
+    }catch(e){}
+  }
+  try{ const r = await window.storage.get(BMKEY); const v = JSON.parse(r.value);
+    if(v && v.sec){ BM = v; bmPaint(); } }catch(e){}
   paintRead(); paintDays(); paint(); paintQ();
   if(typeof paintWeak === 'function') paintWeak();
   if(typeof pqStats === 'function' && pqReady) pqStats();
 }
-document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) refreshFromStorage(); });
+/* the other direction: leaving the tab must not drop a note still sitting in a debounce */
+function flushPending(){
+  try{ if(typeof nTmr !== 'undefined' && nTmr){ clearTimeout(nTmr); nTmr = null;
+    notes[VIEW.k] = nBox.value; window.storage.set(NKEY, JSON.stringify(notes)); } }catch(e){}
+  try{ document.querySelectorAll('.mynotes').forEach(p=>{
+    const id = p.dataset.sec, ta = p.querySelector('textarea');
+    if(ta && (SN[id] || '') !== ta.value){ SN[id] = ta.value; if(!ta.value.trim()) delete SN[id]; }
+  }); snSave(); }catch(e){}
+  try{ rememberScroll(); }catch(e){}
+}
+addEventListener('pagehide', flushPending);
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden){ flushPending(); return; }
+  refreshFromStorage();
+});
 
 /* ---------- back to top on long sections ---------- */
 (function(){

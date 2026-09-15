@@ -86,7 +86,13 @@ const chip = d.querySelectorAll('#wkDays button')[2];
 const before = store['geri:days'];
 chip.click();
 await new Promise(r=>setTimeout(r,50));
-ok('chip toggle writes geri:days', store['geri:days'] !== before, store['geri:days']);
+ok('chip toggle writes geri:days with the day actually in it', (()=>{
+  /* the old form only asserted the string changed — writing '[]' would have passed
+     while wiping the whole reading history */
+  let v; try{ v = JSON.parse(store['geri:days']); }catch(e){ return false; }
+  return Array.isArray(v) && v.length > 0 && v.every(x => /^\d{4}-\d{2}-\d{2}$/.test(x))
+    && store['geri:days'] !== before;
+})(), store['geri:days']);
 ok('chip toggle repaints dots', d.querySelectorAll('#dots i.y').length >= 0);
 ok('chip toggle updates the count label', /of 6/.test(d.getElementById('wkDaysLab').textContent),
    d.getElementById('wkDaysLab').textContent);
@@ -489,7 +495,11 @@ const nta = d.querySelector('.mynotes[data-sec="falls"] textarea');
 nta.value = 'ask about vitamin D'; nta.dispatchEvent(new w.Event('input'));
 await new Promise(r => setTimeout(r, 700));
 ok('section note persists', 'geri:secnotes' in store && /vitamin D/.test(store['geri:secnotes']), store['geri:secnotes']);
-ok('the notes index lists it', (w.eval("notesAsText()")).indexOf('vitamin D') >= 0);
+w.eval("notesIndex()");
+ok('the notes index renders into the dialog, not just into the helper',
+   /vitamin D/.test(d.getElementById('ntBody').textContent) && !d.getElementById('notesModal').hidden);
+w.eval("document.getElementById('notesModal').hidden = true; document.body.classList.remove('tm-open')");
+ok('and the copy-as-text helper agrees with it', (w.eval("notesAsText()")).indexOf('vitamin D') >= 0);
 
 // ---- v12b: highlight colours, reading bookmark, abbreviation jump ----
 ok('highlight bar and note dialog each carry six swatches', d.querySelectorAll('#hlBar .swatch button.sw').length === 6 && d.querySelectorAll('#hlModal .swatch button.sw').length === 6);
@@ -602,6 +612,23 @@ ok('restore and file-load refuse to run while a mock paper is open',
    (html.match(/if\(typeof mockOn !== 'undefined' && mockOn\)\{\s*\n\s*alert\('Finish or abandon the mock paper/g)||[]).length === 2);
 ok('a hash that names no section is put back in step with what is on screen',
    /history\.replaceState\(null, '', '#' \+ cur\.id\);/.test(html));
+
+// ---- third review follow-up, 15 Sep ----
+ok('coming back to the tab re-reads the highlights, notes and bookmark, not only the small keys',
+   /await window\.storage\.get\(HLKEY\)/.test(html.split('async function refreshFromStorage')[1].split('\n}')[0]) &&
+   /await window\.storage\.get\(SNKEY\)/.test(html.split('async function refreshFromStorage')[1].split('\n}')[0]));
+ok('a highlight deleted in another tab is unwrapped, not left on screen',
+   /document\.querySelectorAll\('mark\.hl'\)\.forEach\(m=>hlUnwrap\(m\.dataset\.hid\)\);\s*\n\s*HL = v;/.test(html));
+ok('leaving the tab flushes a note still sitting in its debounce',
+   /function flushPending\(\)/.test(html) && /addEventListener\('pagehide', flushPending\)/.test(html) &&
+   /if\(document\.hidden\)\{ flushPending\(\); return; \}/.test(html));
+w.eval("SN = {}; const p = document.querySelector('.mynotes[data-sec=\"falls\"]'); p.querySelector('textarea').value = 'typed but not yet saved'; flushPending();");
+ok('and the flush actually writes it', /typed but not yet saved/.test(store['geri:secnotes'] || ''), store['geri:secnotes']);
+w.eval("SN = {}; snSave()");
+ok('the floating timer stands down while a mock paper is running',
+   (w.eval("mockOn = true; show('falls'); mtOff = false; tPaint(); const h = document.getElementById('miniT').hidden; mockOn = false; tPaint(); h")) === true);
+ok('dark mode and text size are applied before the first paint, not after the async read',
+   /localStorage\.getItem\('geri:display'\)/.test(html.split('<body>')[1].slice(0, 900)));
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
