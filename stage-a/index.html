@@ -11841,7 +11841,7 @@ function next(){
   if(pos >= order.length){ summary(); return; }
   render();
   /* after a long answer the buttons sit low; the next question would open above the view */
-  if(card.getBoundingClientRect().top < 0) seeEl(card);
+  cardIntoView(card);
 }
 function setFilter(f){
   filter = f;
@@ -13074,8 +13074,10 @@ function mockClock(){
 function mockStart(){
   /* a paper left part-way is still waiting (the resume link); starting a new one throws it
      away, so ask first — the home tile and "Start the mock" both came through here silently */
-  if(!mockOn && document.getElementById('mockResume') &&
-     !confirm('A mock you left part-way is still waiting. Start a new paper and discard it?')) return;
+  /* running now (mockOn) or left part-way (the resume link): either way, ask first — the home
+     tile can be tapped mid-paper and used to start a new one over it */
+  if((mockOn || document.getElementById('mockResume')) &&
+     !confirm('An unfinished mock is still waiting. Start a new paper and discard it?')) return;
   pqLoad();
   mockQs = mockPick(mockN);
   if(!mockQs.length) return;
@@ -13770,7 +13772,7 @@ p.tsrc i{ font-style:italic }
 
 /* v21 — question flow. --navh is the sticky nav's height, kept current by script, so a card
    scrolled into view lands below the nav and the mock's header can stick just under it. */
-#pqCard, #mockCard, #drill .card{ scroll-margin-top:calc(var(--navh, 135px) + 8px) }
+#pqCard, #mockCard, #mockReport, #dsum, #drill .card{ scroll-margin-top:calc(var(--navh, 135px) + 8px) }
 #mockCard .pqhead{ position:sticky; top:var(--navh, 135px); z-index:4; background:var(--paper);
   padding-block:6px; margin-inline:-2px }
 .pqmock{ display:block; margin:0 0 8px; font-size:calc(13px*var(--fs,1)) }

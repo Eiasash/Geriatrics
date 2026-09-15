@@ -252,12 +252,12 @@ const M = [
    "lands on the match"],
 
   ["the next drill card opens above the view",
-   "  if(card.getBoundingClientRect().top < 0) seeEl(card);\n",
+   "  cardIntoView(card);\n",
    "",
    "next card is brought into view"],
 
   ["a mock left part-way is discarded without asking",
-   "  if(!mockOn && document.getElementById('mockResume') &&\n     !confirm('A mock you left part-way is still waiting. Start a new paper and discard it?')) return;\n",
+   "  if((mockOn || document.getElementById('mockResume')) &&\n     !confirm('An unfinished mock is still waiting. Start a new paper and discard it?')) return;\n",
    "",
    "asks before discarding"],
 
@@ -310,6 +310,16 @@ const M = [
    "  b.textContent = mockPerQ ? (50 * mockPerQ) + ' min' : 'untimed';",
    "  b.textContent = '35 min';",
    "home mock tile states the time"],
+  /* --- Gemini round 4, 16/09 --- */
+  ["a running mock is replaced without asking",
+   "  if((mockOn || document.getElementById('mockResume')) &&",
+   "  if((document.getElementById('mockResume')) &&",
+   "while one is running asks first"],
+
+  ["the mock report scrolls under the nav",
+   "#pqCard, #mockCard, #mockReport, #dsum, #drill .card{",
+   "#pqCard, #mockCard, #drill .card{",
+   "report and drill summary land below"],
 ];
 
 if(STATIC){

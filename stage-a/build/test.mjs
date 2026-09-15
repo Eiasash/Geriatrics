@@ -1388,8 +1388,7 @@ errs.slice(0,12).forEach(e=>console.log('  ' + e));
 ok('a search hit skips the scroll restore, so it lands on the match',
    /skipRestore = true;\s*\n\s*show\(x\.sec\);/.test(code));
 ok('after Got it / Missed it the next card is brought into view if it opened above',
-   /render\(\);\s*\n[^\n]*\n\s*if\(card\.getBoundingClientRect\(\)\.top < 0\) seeEl\(card\);/.test(code) ||
-   /render\(\);\s*\n\s*if\(card\.getBoundingClientRect\(\)\.top < 0\) seeEl\(card\);/.test(code));
+   /render\(\);\s*\n[^\n]*\n\s*cardIntoView\(card\);/.test(code));
 {
   const confirms = [], realConfirm = w.confirm;
   w.confirm = m => { confirms.push(String(m)); return false; };
@@ -1397,7 +1396,7 @@ ok('after Got it / Missed it the next card is brought into view if it opened abo
   w.eval('mockOn = false; mockQs = []');
   w.eval('mockStart()');
   ok('starting a mock asks before discarding one left part-way',
-     confirms.some(c => /left part-way/.test(c)) && w.eval('mockOn') === false && w.eval('mockQs.length') === 0, confirms.join(' | '));
+     confirms.some(c => /unfinished mock/.test(c)) && w.eval('mockOn') === false && w.eval('mockQs.length') === 0, confirms.join(' | '));
   fake.remove(); w.confirm = realConfirm;
 }
 {
@@ -1482,6 +1481,18 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
   ok('the home mock tile states the time the mock clock actually runs', /^100 min \| 50-question mock · exam pace$/.test(atPace) && /^100:00 left$/.test(clock) && /^untimed/.test(untimed),
      atPace + ' / ' + clock + ' / ' + untimed);
 }
+
+/* ---- Gemini round 4 ---- */
+{
+  const confirms = [], realConfirm = w.confirm;
+  w.confirm = m => { confirms.push(String(m)); return false; };
+  w.eval("mockOn = true; mockQs = [{marker:1}]");
+  w.eval('mockStart()');
+  ok('starting a mock while one is running asks first, and a refusal keeps the running paper',
+     confirms.some(c => /unfinished mock/.test(c)) && w.eval('mockQs.length === 1 && mockQs[0].marker === 1'), confirms.join(' | '));
+  w.eval('mockOn = false; mockQs = []; clearInterval(mockTick)'); w.confirm = realConfirm;
+}
+ok('the mock report and drill summary land below the nav too', /#pqCard, #mockCard, #mockReport, #dsum, #drill \.card\{ scroll-margin-top:/.test(code));
 
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);
