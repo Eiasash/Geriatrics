@@ -624,15 +624,25 @@ ok('a hash that names no section is put back in step with what is on screen',
    /history\.replaceState\(null, '', '#' \+ cur\.id\);/.test(code));
 
 // ---- third review follow-up, 15 Sep ----
-ok('coming back to the tab re-reads the highlights, notes and bookmark, not only the small keys',
-   /await window\.storage\.get\(HLKEY\)/.test(code.split('async function refreshFromStorage')[1].split('\n}')[0]) &&
-   /await window\.storage\.get\(SNKEY\)/.test(code.split('async function refreshFromStorage')[1].split('\n}')[0]));
+ok('coming back to the tab re-reads the highlights, notes and bookmark, not only the small keys', (()=>{
+  const body = code.split('async function refreshBody')[1] || '';
+  return /await window\.storage\.get\(HLKEY\)/.test(body) && /await window\.storage\.get\(SNKEY\)/.test(body) &&
+         /await window\.storage\.get\(BMKEY\)/.test(body);
+})());
+ok('the refresh is queued ON the save chain, not merely awaited behind it',
+   /saveChain = saveChain\.then\(\(\)=>refreshBody\(\)\.catch\(\(\)=>\{\}\)\);/.test(code));
+ok('background writers stand down while a restore is rewriting every key',
+   /let restoring = false;/.test(code) && /if\(restoring\) return;\s*\/\* a restore is rewriting/.test(html) &&
+   /if\(restoring\) return saveChain;/.test(code) &&
+   /function tSave\(\)\{ if\(restoring\) return;/.test(code) &&
+   /restoring = true;/.test(code) && /finally\{ restoring = false; \}/.test(code));
+ok('clearing the bookmark reaches storage — the layer has no delete, only get and set',
+   /try\{ window\.storage\.set\(BMKEY, ''\); \}catch\(e\)\{\}/.test(code) && !/window\.storage\.delete\(/.test(code));
 ok('a highlight deleted in another tab is unwrapped, not left on screen',
    /document\.querySelectorAll\('mark\.hl'\)\.forEach\(m=>hlUnwrap\(m\.dataset\.hid\)\);\s*\n\s*HL = merged;/.test(code));
 ok('coming back to the tab MERGES the disk copy rather than assigning it over foreground work',
    /const merged = mergeHL\(v, seen, HL\);/.test(code) && /SN = mergeSN\(v, seen, SN\);/.test(code));
-ok('and the refresh waits behind the save chain so it cannot interleave with a save',
-   /if\(typeof saveChain !== 'undefined'\) try\{ await saveChain; \}catch\(e\)\{\}/.test(code));
+
 ok('a refused save says so instead of leaving the highlight looking saved',
    /function notSaved\(\)\{/.test(code) && /else if\(blob !== JSON\.stringify\(stored\)\) notSaved\(\);/.test(code) &&
    /now - notSavedAt < 4000/.test(code));

@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '20' }
       - run: npm i --no-save jsdom@24
-      - name: test.mjs — 178 checks
+      - name: test.mjs — 330 checks
         run: node test.mjs ../index.html
       - name: audit.mjs — structural sweep (fails on any runtime error)
         run: |
@@ -37,3 +37,7 @@ jobs:
         run: node sweep.mjs ../index.html
       - name: dashtest.mjs — dashboard, table pop-out
         run: node dashtest.mjs ../index.html
+
+      - name: mutants.mjs — ten breakages the suite must catch
+        # a green suite and a blind suite look the same; this proves the guards bite
+        run: node mutants.mjs ../index.html

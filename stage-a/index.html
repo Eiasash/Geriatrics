@@ -10329,7 +10329,7 @@ let T = {p:0, left:PH[0].s, run:false, ts:0, d:TODAY};
 const elClock=document.getElementById('tClock'), elPhase=document.getElementById('tPhase'),
       elFill=document.getElementById('tFill'), elGo=document.getElementById('tGo'),
       elTimer=document.getElementById('timer');
-function tSave(){ try{ window.storage.set(TKEY, JSON.stringify(T)); }catch(e){} }
+function tSave(){ if(restoring) return; try{ window.storage.set(TKEY, JSON.stringify(T)); }catch(e){} }
 function mmss(s){ s=Math.max(0,Math.round(s));
   return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
 function tLeft(){ return T.run ? T.left - (Date.now()-T.ts)/1000 : T.left; }
@@ -10603,7 +10603,12 @@ document.getElementById('bkRestore').addEventListener('click', async ()=>{
 /* Writing the keys one at a time is not atomic: an interrupted run leaves some keys new
    and some old, which is worse than either. Verify each write, and on the first failure
    put the undo copy back rather than reloading into a mixture. */
+let restoring = false;         /* set while a restore is rewriting every key */
 async function bkApply(o, haveUndo){
+  restoring = true;
+  try{ return await bkApplyInner(o, haveUndo); } finally{ restoring = false; }
+}
+async function bkApplyInner(o, haveUndo){
   /* Go over the whole key list, not just the file's keys. A key the file does not carry
      has to be CLEARED, or restoring Monday's backup on Wednesday leaves Tuesday's work
      in place and the device is neither state. The confirm above says what will be
@@ -10806,6 +10811,7 @@ function mergeSN(stored, seen, mine){
    resolves in the same tick, and entirely possible on a phone where a real write takes
    a macrotask and taps land in between. */
 function mergeSave(key, getMine, mergeFn, apply){
+  if(restoring) return saveChain;   /* see flushPending */
   saveChain = saveChain.then(async()=>{
     const mine = getMine();
     let stored = null;
@@ -11205,7 +11211,13 @@ function bmPaint(){
   bmPaint();
   document.getElementById('resumeGo').addEventListener('click', bmGo);
   document.getElementById('bmGo').addEventListener('click', ()=>{ document.getElementById('dispPop').hidden = true; bmGo(); });
-  document.getElementById('resumeClear').addEventListener('click', ()=>{ BM = null; try{ window.storage.delete(BMKEY); }catch(e){} bmPaint(); });
+  document.getElementById('resumeClear').addEventListener('click', ()=>{
+    BM = null;
+    /* the storage layer has get and set only — .delete threw into the catch and the
+       bookmark stayed on disk. An empty value is what every loader treats as absent. */
+    try{ window.storage.set(BMKEY, ''); }catch(e){}
+    bmPaint();
+  });
   document.getElementById('bmHere').addEventListener('click', ()=>{ document.getElementById('dispPop').hidden = true; setTimeout(()=>bmSet(null), 60); });
 })();
 
@@ -11832,11 +11844,16 @@ document.addEventListener('keydown', e=>{
    Two devices cannot collide (each has its own storage), but two tabs can. On coming
    back to the tab, re-read the small keys and repaint. Never while a mock is running,
    and never a page reload — that would throw away the drill order and the scroll. */
-async function refreshFromStorage(){
-  if(typeof mockOn !== 'undefined' && mockOn) return;
-  /* behind the same chain the saves use, so a read cannot land between a save's read and
-     its write and hand the merge a copy that is already stale */
-  if(typeof saveChain !== 'undefined') try{ await saveChain; }catch(e){}
+function refreshFromStorage(){
+  if(typeof mockOn !== 'undefined' && mockOn) return Promise.resolve();
+  if(restoring) return Promise.resolve();
+  /* ON the chain, not merely behind it: awaiting it only guarantees the saves queued so
+     far have finished, and a save queued a moment later would then run alongside these
+     reads. Queueing puts them in line. */
+  saveChain = saveChain.then(()=>refreshBody().catch(()=>{}));
+  return saveChain;
+}
+async function refreshBody(){
   try{ const r = await window.storage.get(READKEY); readSet = new Set(asList(r.value, 'chapters read')); }catch(e){}
   try{ const r = await window.storage.get(DKEY);    days    = new Set(JSON.parse(r.value)); }catch(e){}
   try{ const r = await window.storage.get(MKEY);    missed  = new Set(JSON.parse(r.value)); }catch(e){}
@@ -11893,6 +11910,7 @@ function writeNow(key, value){
   try{ localStorage.setItem(key, value); return true; }catch(e){ return false; }
 }
 function flushPending(urgent){
+  if(restoring) return;        /* a restore is rewriting everything; do not write over it */
   const put = urgent ? (k,v)=>{ if(!writeNow(k,v)) window.storage.set(k,v); }
                      : (k,v)=>window.storage.set(k,v);
   try{ if(typeof nTmr !== 'undefined' && nTmr){ clearTimeout(nTmr); nTmr = null;
