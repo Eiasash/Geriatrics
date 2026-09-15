@@ -10247,12 +10247,20 @@ function checkRollover(){
   }
   paintDay = t; paintWeek = curWeek();
   if(followed) VIEW = paintWeek;
-  /* a block not yet running belongs to the new day; a running one keeps the day it began */
-  if(!T.run && T.d !== t){ T.d = t; tSave(); }
+  /* the reading block: one finished yesterday starts fresh; one never touched moves to the
+     new day; one running or paused part-way keeps the day it began, so a pause across
+     midnight does not move the credit */
+  if(T.d !== t){
+    if(T.p >= PH.length){ T = {p:0, left:PH[0].s, run:false, ts:0, d:t}; tSave(); }
+    else if(!T.run && T.p === 0 && T.left === PH[0].s){ T.d = t; tSave(); }
+  }
   paintCountdown(); paintTodayPanel();
   renderWeek(); paintChips(); paintReadLab(); loadNote();
   paintDays(); paintQ(); tPaint();
-  if(filter.mode === 'week') setFilter({mode:'week', tag:null, label:'This week\u2019s chapters'});
+  /* re-dealing the week's deck resets the round; if the drill is on screen, leave the round
+     alone — "another round" deals from the new week anyway */
+  if(filter.mode === 'week' && !document.getElementById('drill').classList.contains('on'))
+    setFilter({mode:'week', tag:null, label:'This week\u2019s chapters'});
   return true;
 }
 function isCur(w){ return w === curWeek(); }

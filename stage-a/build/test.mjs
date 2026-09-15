@@ -1272,5 +1272,31 @@ errs.slice(0,12).forEach(e=>console.log('  ' + e));
      d.getElementById('days').textContent === String(want), d.getElementById('days').textContent + ' vs ' + want);
 }
 
+/* ---- the reading block and the drill across midnight ---- */
+{
+  const C = w.__stageaClock;
+  C.set('2026-11-09T23:59:00'); w.eval('checkRollover()');
+  w.eval("T = {p:PH.length, left:0, run:false, ts:0, d:today()}");
+  C.set('2026-11-10T00:00:05'); w.eval('checkRollover()');
+  ok('a block finished yesterday starts fresh on the new day, not as already done',
+     w.eval("T.p === 0 && T.left === PH[0].s && T.d === '2026-11-10'"), w.eval('JSON.stringify(T)'));
+
+  C.set('2026-11-10T23:50:00'); w.eval('checkRollover()');
+  w.eval("T = {p:1, left:100, run:false, ts:0, d:today()}");
+  C.set('2026-11-11T00:00:05'); w.eval('checkRollover()');
+  ok('a block paused part-way across midnight keeps the day it began',
+     w.eval("T.p === 1 && T.d === '2026-11-10'"), w.eval('JSON.stringify(T)'));
+
+  w.eval("T = {p:0, left:PH[0].s, run:false, ts:0, d:'2026-11-11'}");
+  C.set('2026-11-12T00:00:05'); w.eval('checkRollover()');
+  ok('an untouched block moves to the new day', w.eval("T.d") === '2026-11-12', w.eval('T.d'));
+
+  C.set('2026-11-15T23:59:00'); w.eval("checkRollover(); VIEW = curWeek(); show('drill'); setFilter({mode:'week', tag:null, label:'x'}); render(); pos = 2;");
+  C.set('2026-11-16T00:00:05'); w.eval('checkRollover()');
+  ok('midnight does not re-deal the drill round on screen', w.eval('pos') === 2 && w.eval('VIEW.a') === '2026-11-16',
+     'pos=' + w.eval('pos') + ' view=' + w.eval('VIEW.a'));
+  w.eval("show('week')");
+}
+
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);

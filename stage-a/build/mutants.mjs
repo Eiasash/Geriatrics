@@ -176,6 +176,21 @@ const M = [
    "Math.round((exam - new Date().setHours(0,0,0,0))/86400000)",
    "Math.ceil((exam - new Date())/86400000)",
    'countdown counts calendar days'],
+
+  ['a block finished yesterday carries over as already done',
+   "    if(T.p >= PH.length){ T = {p:0, left:PH[0].s, run:false, ts:0, d:t}; tSave(); }",
+   "    if(T.p >= PH.length){ T.d = t; tSave(); }",
+   'finished yesterday starts fresh'],
+
+  ['a paused block moves its credit to the new day',
+   "    else if(!T.run && T.p === 0 && T.left === PH[0].s){ T.d = t; tSave(); }",
+   "    else if(!T.run){ T.d = t; tSave(); }",
+   'paused part-way across midnight'],
+
+  ['midnight re-deals the drill round on screen',
+   "  if(filter.mode === 'week' && !document.getElementById('drill').classList.contains('on'))",
+   "  if(filter.mode === 'week')",
+   'does not re-deal the drill round'],
 ];
 
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
