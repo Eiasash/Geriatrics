@@ -9736,6 +9736,10 @@ function iso(d){ const p=n=>String(n).padStart(2,'0');
    used to keep writing to the day it was opened. checkRollover() repaints the screen when
    the date moves, so what is shown and what is written agree. */
 function today(){ return iso(new Date()); }
+/* local date and time for stamps a person reads (bookmark, report); toISOString is UTC,
+   which in Israel shows a bookmark set at 23:30 as 20:30 or 21:30 */
+function nowStamp(){ const d = new Date(), p = n => String(n).padStart(2,'0');
+  return iso(d) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()); }
 function currentWeek(){
   const t = today();
   for(const w of ALLW){ if(t >= w.a && t <= w.b) return w; }
@@ -10270,6 +10274,9 @@ function fmt(s,o){ return dISO(s).toLocaleDateString('en-GB', o||{day:'numeric',
 /* ---------- render the week card ---------- */
 function renderWeek(){
   const w = VIEW, idx = ALLW.indexOf(w)+1;
+  /* a week with no chapters (the consolidation period) has nothing for the drill's week
+     toggle to deal; hide it rather than open an empty deck */
+  const cwk = document.getElementById('cweek'); if(cwk) cwk.hidden = !w.items.length;
   const hrs = w.items.reduce((a,b)=>a+b.h,0).toFixed(1);
   const past = today() > ALLW[ALLW.length-1].b;
   const vw = document.getElementById('wkViewing');
@@ -10745,7 +10752,7 @@ document.getElementById('homeBtn').addEventListener('click', ()=>{ show('week');
     return [BUILD, 'section: ' + id + (SECNAME[id] ? ' (' + SECNAME[id] + ')' : ''),
       vis ? 'near heading: ' + vis.h.textContent.trim().slice(0,70) : '',
       'scroll: ' + Math.round(window.scrollY) + 'px · viewport ' + window.innerWidth + '×' + window.innerHeight,
-      'week: ' + (VIEW ? (ALLW.indexOf(VIEW) + 1) + ' of ' + ALLW.length + ' (' + (VIEW.k || '') + ', from ' + (VIEW.a || '') + ')' : '?') + ' · ' + new Date().toISOString().slice(0,16),
+      'week: ' + (VIEW ? (ALLW.indexOf(VIEW) + 1) + ' of ' + ALLW.length + ' (' + (VIEW.k || '') + ', from ' + (VIEW.a || '') + ')' : '?') + ' · ' + nowStamp(),
       'ua: ' + navigator.userAgent.slice(0,90),
       lastErr ? 'last error: ' + lastErr : 'no script errors this session'].filter(Boolean).join('\n');
   }
@@ -11222,7 +11229,7 @@ function bmSet(el){
   const b = bmBlockOf(el) || bmTopBlock(); if(!b) return;
   const sec = b.closest('main section'); const t = bmText(b); if(!t) return;
   let i = 0; for(const x of sec.querySelectorAll('p,li,h2,h3,td,th,blockquote,aside,.callout')){ if(x === b) break; if(bmText(x) === t) i++; }
-  BM = {sec: sec.id, t, i, d: new Date().toISOString().slice(0,16).replace('T',' ')};
+  BM = {sec: sec.id, t, i, d: nowStamp()};
   try{ window.storage.set(BMKEY, JSON.stringify(BM)); }catch(e){}
   bmPaint();
   b.classList.add('bm-flash'); setTimeout(()=>b.classList.remove('bm-flash'), 1400);

@@ -1298,5 +1298,23 @@ errs.slice(0,12).forEach(e=>console.log('  ' + e));
   w.eval("show('week')");
 }
 
+/* ---- consolidation: the drill's week toggle; local time on stamps a person reads ---- */
+{
+  const save = w.eval('VIEW');
+  w.eval("VIEW = {k:'post-test', a:'2027-01-04', b:'2027-01-10', items:[], post:true}; renderWeek()");
+  const hiddenEmpty = d.getElementById('cweek').hidden;
+  w.eval("VIEW = ALLW[0]; renderWeek()");
+  const shownFull = !d.getElementById('cweek').hidden;
+  w.eval("VIEW = curWeek(); renderWeek(); paintChips(); loadNote();");
+  ok('the drill\u2019s week toggle is hidden for a week with no chapters and shown for one with them',
+     hiddenEmpty && shownFull, 'empty hidden=' + hiddenEmpty + ' full shown=' + shownFull);
+
+  w.__stageaClock.set('2026-10-20T23:30:00');
+  ok('bookmark and report stamps are local time, not UTC',
+     w.eval('nowStamp()') === '2026-10-20 23:30' &&
+     /BM = \{sec: sec\.id, t, i, d: nowStamp\(\)\};/.test(code) && !/toISOString\(\)\.slice\(0,16\)/.test(code),
+     w.eval('nowStamp()'));
+}
+
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);

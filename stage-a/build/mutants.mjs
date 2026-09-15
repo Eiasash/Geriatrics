@@ -191,6 +191,16 @@ const M = [
    "  if(filter.mode === 'week' && !document.getElementById('drill').classList.contains('on'))",
    "  if(filter.mode === 'week')",
    'does not re-deal the drill round'],
+
+  ['the drill\u2019s week toggle shows in the consolidation period again',
+   "  const cwk = document.getElementById('cweek'); if(cwk) cwk.hidden = !w.items.length;",
+   "  const cwk = document.getElementById('cweek');",
+   'week toggle is hidden for a week with no chapters'],
+
+  ['the bookmark is stamped in UTC again',
+   "  BM = {sec: sec.id, t, i, d: nowStamp()};",
+   "  BM = {sec: sec.id, t, i, d: new Date().toISOString().slice(0,16).replace('T',' ')};",
+   'stamps are local time'],
 ];
 
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
