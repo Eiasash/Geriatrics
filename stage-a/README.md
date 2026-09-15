@@ -9,15 +9,18 @@ Single-file, offline-capable study site for the Israeli geriatrics Stage A board
 ## Guards
 ```
 cd build && npm i jsdom
-node test.mjs      # 335 checks, then node mutants.mjs — ten breakages the suite must catch
+node test.mjs      # behaviour suite; exits 1 on any FAIL
 node audit.mjs     # structural sweep
-node facts.mjs     # 85 chapter-verified strings pinned to sections
+node facts.mjs     # chapter-verified strings pinned to sections
 node sweep.mjs     # opens every section, clicks every link
+node dashtest.mjs  # dashboard and table pop-out; exits 1 on a runtime error
+node mutants.mjs   # breaks the file on purpose; every mutation must turn its named guard red
 ```
+The page clock is pinned (`build/clock.mjs`) so results do not depend on the day they run. Default is a reading week; `STAGEA_DATE=2027-01-12 node test.mjs` runs the consolidation period, `2026-08-30` the days before the block.
 Rule: when `facts.mjs` fails, go back to the chapter; never edit the fact to make it pass.
 
 ## Reporting a problem
 The ⚑ button in the top bar captures the section, position, viewport and last script error; *Open a GitHub issue* pre-fills it in this repo.
 
 ## CI
-`.github/workflows/stage-a-ci.yml` runs the five guards on every push that touches `stage-a/`. The main app's CI does not scan this folder.
+`.github/workflows/stage-a-ci.yml` runs all six guards, the suite at three dates, on every push that touches `stage-a/`. The main app's CI does not scan this folder.

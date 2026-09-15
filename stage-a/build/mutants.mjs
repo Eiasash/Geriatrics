@@ -1,5 +1,6 @@
-/* Ten mutations, each targeting a defect this project actually produced, each paired
-   with the guard that must catch it.
+/* Mutations, each targeting a defect this project actually produced, each paired
+   with the guard that must catch it. The suite runs with the page clock pinned (clock.mjs),
+   so a result here does not depend on the day CI runs.
 
    A green suite and a blind suite look identical. Three times in this cycle a guard
    passed against a file with the bug reinstated — because it matched a string that
@@ -117,6 +118,16 @@ const M = [
    "tagR(231,232,'hf');",
    "tagR(231,236,'hf');",
    'every flashcard carries a tag'],
+
+  ['the dashboard drill never finds the week\u2019s chapters',
+   "  const hasChapters = VIEW && VIEW.items && VIEW.items.length;",
+   "  const hasChapters = 0;",
+   'still filters to the week when there are chapters'],
+
+  ['the drill\u2019s week filter comes up empty',
+   "  VIEW.items.forEach(x=>{ const c = chapInfo(x.t);",
+   "  [].forEach(x=>{ const c = chapInfo(x.t);",
+   'week-scoped drill has cards'],
 ];
 
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
@@ -131,47 +142,6 @@ const M = [
     process.exit(1);
   }
   console.log('baseline green: ' + out.split('\n').filter(l => l.startsWith('PASS')).length + ' checks\n');
-}
-
-/* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
-{
-  let out = '';
-  try{ out = execFileSync('node', ['test.mjs', SRC], {encoding:'utf8'}); }
-  catch(e){ out = (e.stdout || '') + (e.stderr || ''); }
-  const fails = out.split('\n').filter(l => l.startsWith('FAIL'));
-  if(fails.length || !/DONE/.test(out)){
-    console.log('BASELINE IS NOT GREEN — nothing below can be trusted');
-    fails.forEach(f => console.log('   ' + f));
-    process.exit(1);
-  }
-  console.log('baseline green: ' + out.split('\n').filter(l => l.startsWith('PASS')).length + ' checks\n');
-}
-
-/* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
-{
-  let out = '';
-  try{ out = execFileSync('node', ['test.mjs', SRC], {encoding:'utf8'}); }
-  catch(e){ out = (e.stdout || '') + (e.stderr || ''); }
-  const fails = out.split('\n').filter(l => l.startsWith('FAIL'));
-  if(fails.length || !/DONE/.test(out)){
-    console.log('BASELINE IS NOT GREEN — nothing below means anything');
-    fails.forEach(f => console.log('   ' + f));
-    process.exit(1);
-  }
-  console.log('baseline green: ' + out.split('\n').filter(l => l.startsWith('PASS')).length + ' checks\n');
-}
-
-/* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
-{
-  let out=''; try{ out = execFileSync('node', ['test.mjs', SRC], {encoding:'utf8'}); }
-  catch(e){ out = (e.stdout||'') + (e.stderr||''); }
-  const fails = out.split('\n').filter(l=>l.startsWith('FAIL'));
-  if(fails.length || !/DONE/.test(out)){
-    console.log('BASELINE IS NOT GREEN — fix the suite before trusting anything below');
-    fails.forEach(f=>console.log('   '+f));
-    process.exit(1);
-  }
-  console.log('baseline green: ' + out.split('\n').filter(l=>l.startsWith('PASS')).length + ' checks\n');
 }
 
 let bad = 0;

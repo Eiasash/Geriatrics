@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 import fs from 'fs';
+import { PIN, pinClock } from './clock.mjs';
 
 const html = fs.readFileSync(process.argv[2] || 'geriatrics-stage-a.html', 'utf8');
 /* The source with comments stripped. A guard that regex-matches `html` also matches
@@ -18,6 +19,7 @@ const dom = new JSDOM(html, {
      teardown path now uses localStorage directly */
   url: 'https://example.org/stage-a/',
   beforeParse(w) {
+    pinClock(w);
     w.storage = {
       get: async k => { if (!(k in store)) throw new Error('missing'); return { key:k, value:store[k] }; },
       set: async (k,v) => { store[k]=v; return {key:k,value:v}; }
@@ -31,7 +33,15 @@ const dom = new JSDOM(html, {
 const w = dom.window, d = w.document;
 await new Promise(r => setTimeout(r, 400));
 
-const ok = (label, cond, extra='') => console.log((cond?'PASS  ':'FAIL  ') + label + (extra?'  — '+extra:''));
+/* counts failures so the process exit code carries them. Before this, a FAIL line still
+   exited 0, and CI only went red on a failing check because mutants.mjs re-ran the suite */
+let FAILS = 0;
+const ok = (label, cond, extra='') => { if(!cond) FAILS++;
+  console.log((cond?'PASS  ':'FAIL  ') + label + (extra?'  — '+extra:'')); };
+
+ok('page clock is pinned to ' + PIN, w.eval('TODAY') === PIN, w.eval('TODAY'));
+/* where the pinned date sits in the schedule: pre / reading / post */
+const PHASE = w.eval("(()=>{ const c = currentWeek(); return !c ? 'post' : (c.pre ? 'pre' : 'reading'); })()");
 
 // structure
 ok('week section exists', !!d.getElementById('week'));
@@ -70,7 +80,10 @@ ok('sheet starts hidden', d.getElementById('sheet').hidden);
 // week view rendered
 ok('week card has chapters', d.querySelectorAll('#wkChaps .chap').length > 0,
    d.querySelectorAll('#wkChaps .chap').length + ' rows');
-ok('week head filled', /—/.test(d.getElementById('wkHead').textContent), d.getElementById('wkHead').textContent);
+ok('week head filled', PHASE === 'post'
+     ? d.getElementById('wkHead').textContent === 'The reading block is over'
+     : /—/.test(d.getElementById('wkHead').textContent),
+   PHASE + ': ' + d.getElementById('wkHead').textContent);
 ok('day chips rendered', d.querySelectorAll('#wkDays button').length === 7,
    d.querySelectorAll('#wkDays button').length + ' chips');
 ok('coming-up rendered', d.getElementById('nextup').innerHTML.length > 40);
@@ -127,12 +140,16 @@ const QS = w.eval('QS.length'), TG = w.eval('CARDTAG.filter(Boolean).length');
 ok('card count', QS === 233, QS + ' cards');
 ok('every card tagged', TG === QS, TG + ' tagged');
 ok('drill renders a card', d.getElementById('cq').textContent.length > 10);
+/* past the schedule the current week has no chapters by design, so the week filter is
+   checked on the last reading week instead — what it guards is that the filter finds cards */
+if(PHASE === 'post') w.eval('VIEW = ALLW[ALLW.length-1]');
 d.getElementById('cweek').click();
 const lab = d.getElementById('cweeklab').textContent;
 ok('week-scoped drill labelled', lab.length > 10, lab);
 const pos = d.getElementById('cpos').textContent;
 ok('week-scoped drill has cards', /of \d+/.test(pos), pos);
 d.getElementById('cweek').click();
+if(PHASE === 'post') w.eval('VIEW = curWeek()');
 ok('toggling back restores the full deck', /233 cards available/.test(d.getElementById('dfilter').textContent),
    d.getElementById('dfilter').textContent);
 
@@ -1003,9 +1020,12 @@ ok('drilling the week falls back to missed cards when the week has no chapters o
    /const hasChapters = VIEW && VIEW\.items && VIEW\.items\.length;/.test(code) &&
    /\{mode:'missed', tag:null, label:'Missed cards only'\}/.test(code));
 ok('and still filters to the week when there are chapters', (()=>{
-  w.eval("VIEW = curWeek()");
+  /* a week that has chapters on every date, not whatever week the run date lands in */
+  w.eval("VIEW = ALLW[0]");
   d.getElementById('goDrill').click();
-  return w.eval("filter.mode") === 'week';
+  const m = w.eval("filter.mode");
+  w.eval("VIEW = curWeek()");
+  return m === 'week';
 })());
 ok('the consolidation week survives the week card, the chips and the tag lookup', (()=>{
   const r = w.eval(`(()=>{const real=currentWeek; window.currentWeek=()=>null; const V=curWeek();
@@ -1208,4 +1228,4 @@ console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
 
 console.log("DONE");
-process.exit(0);
+process.exit(FAILS ? 1 : 0);

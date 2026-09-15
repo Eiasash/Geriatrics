@@ -25,8 +25,14 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '20' }
       - run: npm i --no-save jsdom@24
-      - name: test.mjs — 330 checks
+      - name: test.mjs — behaviour suite (exits non-zero on any FAIL; page clock pinned to a reading week)
         run: node test.mjs ../index.html
+      - name: test.mjs — same suite before the block and in the consolidation period
+        # the schedule changes what the page shows by date; these catch a check that only
+        # holds in a reading week before the calendar gets there
+        run: |
+          STAGEA_DATE=2026-08-30 node test.mjs ../index.html
+          STAGEA_DATE=2027-01-12 node test.mjs ../index.html
       - name: audit.mjs — structural sweep (fails on any runtime error)
         run: |
           node audit.mjs ../index.html | tee audit.txt
@@ -35,9 +41,9 @@ jobs:
         run: node facts.mjs ../index.html
       - name: sweep.mjs — every section, every link
         run: node sweep.mjs ../index.html
-      - name: dashtest.mjs — dashboard, table pop-out
+      - name: dashtest.mjs — dashboard, table pop-out (exits non-zero on a runtime error)
         run: node dashtest.mjs ../index.html
 
-      - name: mutants.mjs — ten breakages the suite must catch
+      - name: mutants.mjs — breakages the suite must catch
         # a green suite and a blind suite look the same; this proves the guards bite
         run: node mutants.mjs ../index.html

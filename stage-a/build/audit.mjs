@@ -1,6 +1,6 @@
-import { JSDOM } from 'jsdom'; import fs from 'fs';
+import { JSDOM } from 'jsdom'; import { pinClock } from './clock.mjs'; import fs from 'fs';
 const html=fs.readFileSync(process.argv[2]||'geriatrics-stage-a.html','utf8'); const store={}; const errs=[];
-const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,beforeParse(w){
+const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,beforeParse(w){pinClock(w);
   w.storage={get:async k=>{if(!(k in store))throw 0;return{key:k,value:store[k]}},set:async(k,v)=>{store[k]=v;return{key:k,value:v}}};
   w.addEventListener('error',e=>errs.push(e.message));
 }});
