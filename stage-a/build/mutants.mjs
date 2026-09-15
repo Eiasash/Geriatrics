@@ -18,7 +18,6 @@ const SRC = process.argv.slice(2).find(a => !a.startsWith('--')) || '../index.ht
    minutes; run it before every commit — three pushes went red on a stale target */
 const STATIC = process.argv.includes('--static');
 const src = fs.readFileSync(SRC, 'utf8');
-const TMP = '/tmp/mutant.html';
 
 const M = [
   ['teardown write goes back through the async layer',
@@ -415,34 +414,37 @@ if(STATIC){
   console.log('baseline green: ' + out.split('\n').filter(l => l.startsWith('PASS')).length + ' checks\n');
 }
 
-let bad = 0;
-for(const [name, from, to, needle] of M){
-  const hits = src.split(from).length - 1;
-  if(hits === 0){
-    console.log('STALE  ' + name + '  — the code it mutates has moved; update this mutation');
-    bad++; continue;
-  }
-  if(hits > 1){
+/* in parallel, one temp file per mutation: 70-odd sequential suite runs took ~10 minutes */
+const { execFile } = await import('child_process');
+const os = await import('os');
+const WORKERS = Math.max(1, Math.min(M.length, +(process.env.MUTANT_WORKERS || os.cpus().length)));
+const runSuite = file => new Promise(res => execFile('node', ['test.mjs', file],
+  {encoding:'utf8', maxBuffer: 64 * 1024 * 1024}, (err, stdout, stderr) => res((stdout || '') + (err ? (stderr || '') : ''))));
+const results = new Array(M.length);
+let next = 0;
+async function worker(){
+  while(next < M.length){
+    const i = next++; const [name, from, to, needle] = M[i];
+    const hits = src.split(from).length - 1;
+    if(hits === 0){ results[i] = 'STALE  ' + name + '  \u2014 the code it mutates has moved; update this mutation'; continue; }
     /* replace() takes the first occurrence only: with two, the mutation may land on dead
        text and leave the live code intact, which reports a blind suite that is not blind */
-    console.log('AMBIG  ' + name + '  — target appears ' + hits + ' times; make it unique');
-    bad++; continue;
-  }
-  fs.writeFileSync(TMP, src.replace(from, to));
-  let out = '';
-  try{ out = execFileSync('node', ['test.mjs', TMP], {encoding:'utf8'}); }
-  catch(e){ out = (e.stdout || '') + (e.stderr || ''); }
-  const lines = out.split('\n');
-  const caught = lines.some(l => l.startsWith('FAIL') && l.includes(needle));
-  const passes = lines.filter(l => l.startsWith('PASS')).length;
-  if(caught && passes < 50){
+    if(hits > 1){ results[i] = 'AMBIG  ' + name + '  \u2014 target appears ' + hits + ' times; make it unique'; continue; }
+    const tmp = '/tmp/mutant-' + process.pid + '-' + i + '.html';
+    fs.writeFileSync(tmp, src.replace(from, to));
+    const out = await runSuite(tmp);
+    fs.unlinkSync(tmp);
+    const lines = out.split('\n');
+    const caught = lines.some(l => l.startsWith('FAIL') && l.includes(needle));
+    const passes = lines.filter(l => l.startsWith('PASS')).length;
     /* the file stopped parsing, so everything failed. That is not the guard biting. */
-    console.log('BROKE  ' + name + '  — mutation broke the parse (' + passes + ' passed); it proves nothing');
-    bad++; continue;
+    if(caught && passes < 50) results[i] = 'BROKE  ' + name + '  \u2014 mutation broke the parse (' + passes + ' passed); it proves nothing';
+    else results[i] = (caught ? 'CAUGHT ' : 'MISSED ') + name;
   }
-  console.log((caught ? 'CAUGHT ' : 'MISSED ') + name);
-  if(!caught) bad++;
 }
-fs.existsSync(TMP) && fs.unlinkSync(TMP);
-console.log('\n' + (M.length - bad) + ' of ' + M.length + ' mutations caught');
+const t0 = Date.now();
+await Promise.all(Array.from({length: WORKERS}, worker));
+let bad = 0;
+for(const r of results){ console.log(r); if(!r.startsWith('CAUGHT')) bad++; }
+console.log('\n' + (M.length - bad) + ' of ' + M.length + ' mutations caught (' + WORKERS + ' workers, ' + Math.round((Date.now()-t0)/1000) + ' s)');
 process.exit(bad ? 1 : 0);
