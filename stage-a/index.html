@@ -10539,6 +10539,10 @@ document.getElementById('bkCopy').addEventListener('click', async ()=>{
   flash('bkSaved');
 });
 document.getElementById('bkRestore').addEventListener('click', async ()=>{
+  if(typeof mockOn !== 'undefined' && mockOn){
+    alert('Finish or abandon the mock paper first — restoring mid-paper would leave the two out of step.');
+    return;
+  }
   if(window.storage.volatile){
     alert('This browser is blocking storage, so nothing survives a reload — restoring here ' +
           'would throw the file away. Keep the backup and open the page somewhere that can save.');
@@ -11040,6 +11044,13 @@ window.addEventListener('hashchange', ()=>{
   const el = document.getElementById(id);
   if(el && el.tagName === 'SECTION' && !el.classList.contains('on')){
     show(id);
+    return;
+  }
+  if(!el || el.tagName !== 'SECTION'){
+    /* the hash names nothing we can show; put it back in step with what is on screen
+       rather than leaving the URL pointing somewhere that does not exist */
+    const cur = document.querySelector('main section.on');
+    if(cur) history.replaceState(null, '', '#' + cur.id);
   }
 });
 
@@ -12553,8 +12564,14 @@ const ROLLKEY = 'geri:rollback';
    browser may silently refuse. The download is a convenience on top of it. */
 async function bkRollbackSave(){
   const cur = await bkGather();
-  try{ await window.storage.set(ROLLKEY, JSON.stringify(cur)); return true; }
-  catch(e){ return false; }
+  const blob = JSON.stringify(cur);
+  try{
+    await window.storage.set(ROLLKEY, blob);
+    /* the shim reports a refused write by returning undefined, not by throwing, so
+       "it did not throw" is not evidence the undo copy exists — read it back */
+    const back = await window.storage.get(ROLLKEY);
+    return !!(back && back.value === blob);
+  }catch(e){ return false; }
 }
 async function bkSnapshot(tag){
   const blob = new Blob([JSON.stringify(await bkGather(), null, 1)], {type:'application/json'});
@@ -12581,6 +12598,10 @@ document.getElementById('bkDownload').addEventListener('click', async ()=>{
 document.getElementById('bkFile').addEventListener('change', async e=>{
   const file = e.target.files && e.target.files[0];
   if(!file) return;
+  if(typeof mockOn !== 'undefined' && mockOn){
+    alert('Finish or abandon the mock paper first — loading a file mid-paper would leave the two out of step.');
+    e.target.value = ''; return;
+  }
   let o;
   try{ o = JSON.parse(await file.text()); }
   catch(err){ alert('That file is not readable JSON.'); return; }

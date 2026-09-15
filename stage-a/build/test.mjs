@@ -346,9 +346,15 @@ for(let k=0;k<25;k++){
 w.eval('mockFinish(true)');
 await new Promise(r=>setTimeout(r,120));
 ok('mock report appears', !d.getElementById('mockReport').hidden);
-ok('mock report scores out of the right total',
-   /\/ 25/.test(d.getElementById('mockReport').textContent),
-   d.getElementById('mockReport').textContent.slice(0,30));
+ok('mock report scores out of the right total', (()=>{
+  /* the old form matched "/ 25" anywhere in the report — a date or the blank count
+     would satisfy it. Parse the actual fraction and check both halves. */
+  const el = [...d.getElementById('mockReport').querySelectorAll('*')]
+    .find(e => /^\s*\d+\s*\/\s*\d+\s*$/.test(e.textContent));
+  if(!el) return false;
+  const m = el.textContent.match(/^\s*(\d+)\s*\/\s*(\d+)\s*$/);
+  return Number(m[2]) === 25 && Number(m[1]) >= 0 && Number(m[1]) <= 25;
+})(), d.getElementById('mockReport').textContent.slice(0,40));
 ok('mock breaks the score down by source',
    d.querySelectorAll('#mockReport tbody tr').length > 1,
    d.querySelectorAll('#mockReport tbody tr').length + ' source rows');
@@ -570,6 +576,32 @@ ok('resume makes one scroll jump, not two', /skipRestore = true;/.test(html) && 
 ok('no font size escapes the text-size control, whatever its capitalisation',
    !/font-size:\s*[0-9.]+px/i.test(html.replace(/font-size:\s*calc\(/gi,'font-size:calc(').replace(/#(miniT|dispPop)[^}]*\}/g,'').replace(/style="[^"]*"/g,'').replace(/cssText = '[^']*'/g,'')));
 ok('the rail state and the open tab are backed up', w.eval("BKEYS.includes('geri:rail') && BKEYS.includes('geri:tab')"));
+
+// ---- second review follow-up, 15 Sep ----
+ok('a highlight that crosses element boundaries re-anchors as one highlight', (()=>{
+  /* the earlier guard only used a phrase inside one text node, which is the easy case.
+     This one spans a <b>, which is what a real selection usually does. */
+  const sec = d.getElementById('falls');
+  const p = [...sec.querySelectorAll('p')].find(x => x.querySelector('b') && x.textContent.length > 200);
+  if(!p) return false;
+  const bb = p.querySelector('b');
+  const r = d.createRange(); r.setStart(p.firstChild, 0); r.setEnd(bb.firstChild, Math.min(6, bb.firstChild.length));
+  const sel = w.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  const h = w.hlFromSelection(false);
+  if(!h) return false;
+  const marks = [...d.querySelectorAll('mark.hl[data-hid="' + h.id + '"]')];
+  const joined = marks.map(m => m.textContent).join('').replace(/\s+/g, ' ').trim();
+  const wanted = h.t.replace(/\s+/g, ' ').trim();
+  const spansBold = marks.some(m => m.closest('b'));
+  w.eval("hlRemove('" + h.id + "')");
+  return marks.length > 1 && spansBold && joined === wanted;
+})());
+ok('the rollback copy is verified by reading it back, not by the absence of a throw',
+   /const back = await window\.storage\.get\(ROLLKEY\);/.test(html) && /back\.value === blob/.test(html));
+ok('restore and file-load refuse to run while a mock paper is open',
+   (html.match(/if\(typeof mockOn !== 'undefined' && mockOn\)\{\s*\n\s*alert\('Finish or abandon the mock paper/g)||[]).length === 2);
+ok('a hash that names no section is put back in step with what is on screen',
+   /history\.replaceState\(null, '', '#' \+ cur\.id\);/.test(html));
 
 console.log('\nerrors captured:', errs.length);
 errs.slice(0,12).forEach(e=>console.log('  ' + e));
