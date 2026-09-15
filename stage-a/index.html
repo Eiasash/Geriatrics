@@ -9889,6 +9889,9 @@ function search(term){
       show('drill'); hits.classList.remove('on'); qbox.value='';
       window.scrollTo({top:0}); return;
     }
+    /* show() restores the section's old scroll two frames later, which cancelled the jump
+       to the match */
+    skipRestore = true;
     show(x.sec);
     hits.classList.remove('on'); qbox.value='';
     const d = x.el.closest('details'); if(d) d.open = true;
@@ -11837,6 +11840,8 @@ function next(){
   pos++;
   if(pos >= order.length){ summary(); return; }
   render();
+  /* after a long answer the buttons sit low; the next question would open above the view */
+  if(card.getBoundingClientRect().top < 0) seeEl(card);
 }
 function setFilter(f){
   filter = f;
@@ -12620,7 +12625,7 @@ function pqAnswer(letter){
     (ok ? '<b class="go">correct</b>' : '<b class="stop">wrong</b>') +
     ' &middot; key: <b>' + p.a.split('').join(' / ') + '</b>' +
     (p.a.length > 1 ? ' (more than one letter accepted)' : '') +
-    '<br><span class="he" dir="rtl">' + escHtml(src) + '</span>' + chp +
+    '<br><span class="he" dir="rtl">' + escHtml(srcSpaced(src)) + '</span>' + chp +
     (p.bk ? ' &middot; ' + escHtml(p.bk) : '');
   const jump = document.querySelector('#pqSrc .pqgo');
   if(jump) jump.addEventListener('click', ()=>{ show(jump.dataset.sec); window.scrollTo({top:0}); });
@@ -12787,6 +12792,12 @@ function asList(raw, what){
   if(Array.isArray(v)) return v;
   storageTrouble('One saved item (' + what + ') is corrupted and was ignored.');
   return [];
+}
+/* the source table was extracted from a PDF and lost its spaces between Hebrew and digits
+   ("הזארד46696תמונה2"); in a right-to-left line the glued digits jump to the wrong end.
+   Display only: the stored text is left as extracted. */
+function srcSpaced(t){
+  return String(t).replace(/([\u0590-\u05FF])(\d)/g, '$1 $2').replace(/(\d)([\u0590-\u05FF])/g, '$1 $2');
 }
 function seeEl(el){ if(el && typeof el.scrollIntoView === 'function') el.scrollIntoView({block:'start'}); }
 let papersIndexed = false;
@@ -13014,6 +13025,10 @@ function mockClock(){
   if(left <= 0) mockFinish(true);
 }
 function mockStart(){
+  /* a paper left part-way is still waiting (the resume link); starting a new one throws it
+     away, so ask first — the home tile and "Start the mock" both came through here silently */
+  if(!mockOn && document.getElementById('mockResume') &&
+     !confirm('A mock you left part-way is still waiting. Start a new paper and discard it?')) return;
   pqLoad();
   mockQs = mockPick(mockN);
   if(!mockQs.length) return;
@@ -13043,7 +13058,8 @@ async function mockFinish(auto){
   rows.forEach(r=>{
     const b = r.p.bk || 'Other';
     byBk[b] = byBk[b] || [0,0]; byBk[b][1]++; if(r.ok) byBk[b][0]++;
-    if(r.p.ch){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }
+    /* per chapter, only what was answered: a blank is not evidence about the chapter */
+    if(r.p.ch && r.given){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }
   });
   const weak = Object.keys(byCh).filter(c=>byCh[c][1] - byCh[c][0] >= 2)
     .sort((a,b)=>(byCh[b][1]-byCh[b][0])-(byCh[a][1]-byCh[a][0]));
@@ -13058,17 +13074,20 @@ async function mockFinish(auto){
       Object.keys(byBk).sort((a,b)=>byBk[b][1]-byBk[a][1]).map(b=>
         '<tr><td>' + b + '</td><td class="n">' + byBk[b][0] + '</td><td class="n">' + byBk[b][1] + '</td></tr>'
       ).join('') + '</tbody></table></div>' +
-    (weak.length ? '<p class="note">Two or more wrong in one chapter: ' +
+    (weak.length ? '<p class="note">Two or more answered wrong in one chapter: ' +
       weak.map(c=>{
         const sec = sectionForChapter(c);
-        const txt = 'ch ' + c + ' (' + (byCh[c][1]-byCh[c][0]) + ' of ' + byCh[c][1] + ')';
+        const txt = 'ch ' + c + ' (' + (byCh[c][1]-byCh[c][0]) + ' wrong of ' + byCh[c][1] + ' answered)';
         return sec
           ? '<button type="button" class="lnk weakgo" data-sec="' + sec + '">' + txt + '</button>'
           : '<b>' + txt + '</b>';
       }).join(', ') +
       '. Those are chapters to re-read, not cards to redo \u2014 tap one to open it.</p>' : '') +
-    '<div class="cbtns"><button type="button" id="mockReview">go through the ' +
-      rows.filter(r=>!r.ok).length + ' you missed</button>' +
+    '<div class="cbtns">' +
+      (rows.some(r=>r.given && !r.ok) ? '<button type="button" id="mockReview">go through the ' +
+        rows.filter(r=>r.given && !r.ok).length + ' you got wrong</button>' : '') +
+      (rows.some(r=>!r.given) ? '<button type="button" id="mockBlanks">the ' +
+        rows.filter(r=>!r.given).length + ' left blank</button>' : '') +
       '<button type="button" id="mockAgain" class="ok">another paper</button></div>';
   /* the misses feed the normal practice view */
   rows.forEach(r=>{ if(r.given) pqDone[pqKey(r.p)] = r.ok ? 1 : 0; });
@@ -13083,16 +13102,18 @@ async function mockFinish(auto){
   mockReport.querySelectorAll('.weakgo').forEach(b=>{
     b.addEventListener('click', ()=>{ show(b.dataset.sec); window.scrollTo({top:0}); });
   });
-  document.getElementById('mockReview').addEventListener('click', ()=>{
-    const miss = rows.filter(r=>!r.ok).map(r=>r.p);
-    if(!miss.length) return;
-    pqPool = shuffle(miss); pqIdx = 0;
+  const review = (list, what) => {
+    if(!list.length) return;
+    pqPool = shuffle(list); pqIdx = 0;
     document.getElementById('mockReport').hidden = true;
     document.getElementById('pqCard').hidden = false;
-    document.getElementById('pqPool').innerHTML = '<b>' + miss.length + '</b> questions you missed in the mock';
+    document.getElementById('pqPool').innerHTML = '<b>' + list.length + '</b> questions ' + what;
     pqRender();
     seeEl(document.getElementById('pqCard'));
-  });
+  };
+  const rv = document.getElementById('mockReview'), bl = document.getElementById('mockBlanks');
+  if(rv) rv.addEventListener('click', ()=>review(rows.filter(r=>r.given && !r.ok).map(r=>r.p), 'you got wrong in the mock'));
+  if(bl) bl.addEventListener('click', ()=>review(rows.filter(r=>!r.given).map(r=>r.p), 'you left blank in the mock'));
   seeEl(el);
 }
 document.querySelectorAll('#mockBar [data-mn]').forEach(b=>b.addEventListener('click',()=>{
@@ -13690,6 +13711,21 @@ p.tsrc i{ font-style:italic }
 .fnotes dd{ margin:0; color:var(--mute) }
 @media (max-width:900px){ .fnotes dl{ grid-template-columns:1fr; gap:1px } .fnotes dd{ margin:0 0 8px } }
 @media print{ abbr.abbr{ border:0 } abbr.abbr sup{ color:#000 } }
+
+/* v20 — dark-mode contrast. The accents are bright in dark mode (--c-now #FFA92E, --start
+   #43D9A3, --stop #FF7A7A), so text laid on them is the dark paper colour, not white:
+   white on #FFA92E measured 1.91:1. */
+body.dark #week #tdBtn, body.dark #week #tGo, body.dark #week #qLog,
+body.dark .pf button[aria-pressed="true"], body.dark .cbtns button.ok, body.dark .cbtns button.no,
+body.dark .secfoot button.mark.readon, body.dark .ch-actions summary.ebgo:hover{ color:var(--paper) !important }
+/* the mock's start button lost its fill to .pf button and read #12161a on #141110 (1.03:1) */
+.pf button.mockgo{ background:var(--c-now); border-color:var(--c-now); color:#fff }
+body.dark .pf button.mockgo{ color:var(--paper) }
+/* text boxes that kept the browser's white in dark mode */
+body.dark #hlText, body.dark #rptNote, body.dark #bkText{ background:var(--surface); color:var(--ink); border:1px solid var(--rule) }
+/* the backup dialog's second button was an unstyled native button */
+.tbtns button:not(:first-child):not(.lnk){ font-family:var(--sans); font-size:calc(13.5px*var(--fs,1)); padding:9px 18px;
+  border-radius:3px; background:transparent; color:var(--ink); border:1px solid var(--rule); min-height:40px }
 </style>
 </body>
 </html>

@@ -241,6 +241,42 @@ const M = [
    "  const tsec = p.ch ? (OLDED.indexOf(p.y) < 0 ? sectionForChapter(p.ch) : '') : (PQSEC[p.bk] || '');",
    "  const tsec = p.ch ? sectionForChapter(p.ch) : (PQSEC[p.bk] || '');",
    'no jump to an 8th-edition section'],
+
+  /* --- render-check round, 16/09 --- */
+  ["a search hit restores the old scroll over the match",
+   "    skipRestore = true;\n    show(x.sec);",
+   "    show(x.sec);",
+   "lands on the match"],
+
+  ["the next drill card opens above the view",
+   "  if(card.getBoundingClientRect().top < 0) seeEl(card);\n",
+   "",
+   "next card is brought into view"],
+
+  ["a mock left part-way is discarded without asking",
+   "  if(!mockOn && document.getElementById('mockResume') &&\n     !confirm('A mock you left part-way is still waiting. Start a new paper and discard it?')) return;\n",
+   "",
+   "asks before discarding"],
+
+  ["blanks count as wrong in the chapter tally",
+   "    if(r.p.ch && r.given){",
+   "    if(r.p.ch){",
+   "keeps blanks apart"],
+
+  ["the source line is shown as extracted",
+   "escHtml(srcSpaced(src))",
+   "escHtml(src)",
+   "spaces Hebrew and digits"],
+
+  ["white text on bright accents in dark mode",
+   "body.dark .secfoot button.mark.readon, body.dark .ch-actions summary.ebgo:hover{ color:var(--paper) !important }",
+   "body.dark .secfoot button.mark.readon, body.dark .ch-actions summary.ebgo:hover{ }",
+   "dark text on the bright accents"],
+
+  ["dark text boxes stay browser-white",
+   "body.dark #hlText, body.dark #rptNote, body.dark #bkText{ background:var(--surface);",
+   "body.dark #hlTextX{ background:var(--surface);",
+   "remark, report and backup text boxes"],
 ];
 
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */

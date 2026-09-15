@@ -1381,5 +1381,49 @@ errs.slice(0,12).forEach(e=>console.log('  ' + e));
      /const tsec = p\.ch \? \(OLDED\.indexOf\(p\.y\) < 0 \? sectionForChapter\(p\.ch\) : ''\)/.test(code));
 }
 
+/* ---- render-check round: search landing, drill scroll, mock blanks, paused mock, source line, dark contrast ---- */
+ok('a search hit skips the scroll restore, so it lands on the match',
+   /skipRestore = true;\s*\n\s*show\(x\.sec\);/.test(code));
+ok('after Got it / Missed it the next card is brought into view if it opened above',
+   /render\(\);\s*\n[^\n]*\n\s*if\(card\.getBoundingClientRect\(\)\.top < 0\) seeEl\(card\);/.test(code) ||
+   /render\(\);\s*\n\s*if\(card\.getBoundingClientRect\(\)\.top < 0\) seeEl\(card\);/.test(code));
+{
+  const confirms = [], realConfirm = w.confirm;
+  w.confirm = m => { confirms.push(String(m)); return false; };
+  const fake = d.createElement('button'); fake.id = 'mockResume'; d.body.appendChild(fake);
+  w.eval('mockOn = false; mockQs = []');
+  w.eval('mockStart()');
+  ok('starting a mock asks before discarding one left part-way',
+     confirms.some(c => /left part-way/.test(c)) && w.eval('mockOn') === false && w.eval('mockQs.length') === 0, confirms.join(' | '));
+  fake.remove(); w.confirm = realConfirm;
+}
+{
+  w.confirm = () => true;
+  w.eval('mockN = 50; mockStart()');
+  const n = w.eval('mockQs.length');
+  /* five answered wrong and at least two left blank, all on one chapter, so the tally shows
+     whether blanks were counted against it */
+  w.eval("(()=>{ const c58 = PQ.filter(p => p.ch === 58 && !p.im).slice(0, 8); const rest = mockQs.filter(p => c58.indexOf(p) < 0); mockQs = c58.concat(rest).slice(0, 50); mockAns = {}; })()");
+  w.eval("for(let i=0;i<5;i++){ const p = mockQs[i]; mockAns[i] = 'אבגד'.split('').find(x => p.a.indexOf(x) < 0) || 'ה'; }");
+  await w.eval('mockFinish()');
+  await new Promise(r => setTimeout(r, 50));
+  const rv = d.getElementById('mockReview'), bl = d.getElementById('mockBlanks');
+  const note = [...d.querySelectorAll('#mockReport .note')].map(x => x.textContent).join(' ');
+  const counts = [...note.matchAll(/\((\d+) wrong of (\d+) answered\)/g)].map(m => +m[2]);
+  ok('the mock report keeps blanks apart from wrong answers',
+     n === 50 && rv && /go through the 5 you got wrong/.test(rv.textContent) && bl && /the 45 left blank/.test(bl.textContent) &&
+     /\(5 wrong of 5 answered\)/.test(note) && counts.every(c => c <= 5), (rv && rv.textContent) + ' | ' + (bl && bl.textContent) + ' | ' + note.slice(0, 80));
+  w.confirm = () => true;
+}
+ok('the source line spaces Hebrew and digits apart for display',
+   w.eval("srcSpaced('\u05d4\u05d6\u05d0\u05e8\u05d346696\u05ea\u05de\u05d5\u05e0\u05d42')") === '\u05d4\u05d6\u05d0\u05e8\u05d3 46696 \u05ea\u05de\u05d5\u05e0\u05d4 2' &&
+   /escHtml\(srcSpaced\(src\)\)/.test(code));
+ok('dark mode lays dark text on the bright accents, and the mock button keeps a fill',
+   /body\.dark #week #tdBtn, body\.dark #week #tGo, body\.dark #week #qLog,\s*\n?\s*body\.dark \.pf button\[aria-pressed="true"\][^{]*\{ color:var\(--paper\) !important \}/.test(code) &&
+   /\.pf button\.mockgo\{ background:var\(--c-now\)/.test(code));
+ok('dark mode styles the remark, report and backup text boxes, and the backup Copy button',
+   /body\.dark #hlText, body\.dark #rptNote, body\.dark #bkText\{ background:var\(--surface\)/.test(code) &&
+   /\.tbtns button:not\(:first-child\):not\(\.lnk\)\{/.test(code));
+
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);
