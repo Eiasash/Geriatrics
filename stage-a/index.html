@@ -10619,7 +10619,7 @@ document.querySelectorAll('.wopen').forEach(b=>{
 
 /* ---------- backup ---------- */
 const BKEYS = ['geri:weeks-done','geri:days','geri:missed','geri:qlog','geri:notes','geri:timer',
-  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch','geri:scroll','geri:hlcolour','geri:rail','geri:tab'];
+  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch','geri:scroll','geri:hlcolour','geri:rail','geri:tab','geri:ppintro'];
 /* One backup block, kept in a dialog so it is reachable from the bottom of every
    section as well as from the home page. Moving the node rather than copying it
    means there is still only one textarea and one set of handlers. */
@@ -12564,7 +12564,9 @@ function pqFilter(){
   }
   return p;
 }
+let pqMockAns = null;          /* while reviewing a mock: pqKey -> the letter given ('' = blank) */
 function pqBuild(keepIdx){
+  pqMockAns = null;
   pqPool = shuffle(pqFilter());
   if(!keepIdx) pqIdx = 0;
   document.getElementById('pqPool').innerHTML = pqPool.length
@@ -12586,7 +12588,11 @@ function pqRender(){
   const old = OLDED.indexOf(p.y) >= 0;
   document.getElementById('pqWho').innerHTML =
     escHtml(p.y) + ' &middot; question ' + escHtml(p.n) + (old ? ' &middot; <span class="wn">earlier edition</span>' : '') +
-    (p.flag ? ' &middot; <span class="wn">an option did not extract cleanly</span>' : '');
+    (p.flag ? ' &middot; <span class="wn">an option did not extract cleanly</span>' : '') +
+    (pqMockAns && pqMockAns.has(pqKey(p))
+      ? '<span class="pqmock">in the mock &mdash; ' + (pqMockAns.get(pqKey(p))
+          ? 'you: <b>' + escHtml(pqMockAns.get(pqKey(p))) + '</b>' : 'you left it blank') +
+        ' &middot; key: <b>' + escHtml(p.a.split('').join(' / ')) + '</b></span>' : '');
   document.getElementById('pqProg').textContent = (pqIdx % pqPool.length + 1) + ' of ' + pqPool.length;
   document.getElementById('pqStem').textContent = p.q;
   document.getElementById('pqOpts').innerHTML = p.o.map((o,i)=>
@@ -12632,7 +12638,7 @@ function pqAnswer(letter){
   document.getElementById('pqFoot').hidden = false;
   pqStats();
 }
-function pqNext(){ pqIdx++; pqRender(); }
+function pqNext(){ pqIdx++; pqRender(); cardIntoView(document.getElementById('pqCard')); }
 function pqStats(){
   const keys = Object.keys(pqDone);
   const tot = keys.length, right = keys.filter(k=>pqDone[k]).length;
@@ -12749,6 +12755,27 @@ function pqPaintFilters(){
 }
 document.getElementById('pqNext').addEventListener('click', pqNext);
 document.getElementById('pqSkip').addEventListener('click', pqNext);
+/* the long introduction to the past papers is read once; after the first visit it folds
+   behind a link so the question card is not pushed a screen down */
+const PPKEY = 'geri:ppintro';
+(async()=>{
+  const intro = document.querySelector('#papers .callout'); if(!intro) return;
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'lnk'; btn.id = 'ppIntroBtn';
+  btn.textContent = 'What is here and what is not \u203a';
+  intro.parentNode.insertBefore(btn, intro);
+  const open = yes => { intro.hidden = !yes; btn.hidden = yes; };
+  let seen = false;
+  try{ const r = await window.storage.get(PPKEY); seen = r.value === '1'; }catch(e){}
+  open(!seen);
+  btn.addEventListener('click', ()=>open(true));
+  if(!seen){
+    const mark = () => { if(!document.querySelector('#papers.on')) return;
+      try{ window.storage.set(PPKEY, '1'); }catch(e){}
+      document.removeEventListener('sectionshown', mark); };
+    document.addEventListener('sectionshown', mark); mark();
+  }
+})();
 document.addEventListener('keydown', e=>{
   if(!document.getElementById('papers').classList.contains('on')) return;
   if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
@@ -12799,6 +12826,16 @@ function asList(raw, what){
 function srcSpaced(t){
   return String(t).replace(/([\u0590-\u05FF])(\d)/g, '$1 $2').replace(/(\d)([\u0590-\u05FF])/g, '$1 $2');
 }
+/* bring a card back under the sticky nav when its top has scrolled out of sight */
+function cardIntoView(el){
+  if(!el || el.hidden) return;
+  const nav = document.querySelector('nav');
+  const edge = nav ? nav.getBoundingClientRect().bottom : 0;
+  if(el.getBoundingClientRect().top < edge) seeEl(el);
+}
+function setNavH(){ const nav = document.querySelector('nav');
+  if(nav) document.documentElement.style.setProperty('--navh', Math.round(nav.getBoundingClientRect().height) + 'px'); }
+addEventListener('resize', setNavH); setTimeout(setNavH, 0);
 function seeEl(el){ if(el && typeof el.scrollIntoView === 'function') el.scrollIntoView({block:'start'}); }
 let papersIndexed = false;
 function indexPapers(){
@@ -13010,6 +13047,7 @@ function mockPaint(){
       mockAns[mockI] = b.dataset.l;
       if(mockI < mockQs.length - 1){ mockI++; mockPaint(); } else mockPaint();
     }));
+  cardIntoView(document.getElementById('mockCard'));
   const done = Object.keys(mockAns).length;
   document.getElementById('mockLeft').innerHTML =
     '<b>' + done + '</b> answered · <b>' + (mockQs.length - done) + '</b> left' +
@@ -13105,9 +13143,17 @@ async function mockFinish(auto){
   const review = (list, what) => {
     if(!list.length) return;
     pqPool = shuffle(list); pqIdx = 0;
+    pqMockAns = new Map(rows.map(r => [pqKey(r.p), r.given || '']));
     document.getElementById('mockReport').hidden = true;
     document.getElementById('pqCard').hidden = false;
-    document.getElementById('pqPool').innerHTML = '<b>' + list.length + '</b> questions ' + what;
+    document.getElementById('pqPool').innerHTML = '<b>' + list.length + '</b> questions ' + what +
+      ' &middot; <button type="button" class="lnk" id="pqBackReport">back to the report</button>';
+    document.getElementById('pqBackReport').addEventListener('click', ()=>{
+      pqMockAns = null;
+      document.getElementById('pqCard').hidden = true;
+      document.getElementById('mockReport').hidden = false;
+      seeEl(document.getElementById('mockReport'));
+    });
     pqRender();
     seeEl(document.getElementById('pqCard'));
   };
@@ -13711,6 +13757,14 @@ p.tsrc i{ font-style:italic }
 .fnotes dd{ margin:0; color:var(--mute) }
 @media (max-width:900px){ .fnotes dl{ grid-template-columns:1fr; gap:1px } .fnotes dd{ margin:0 0 8px } }
 @media print{ abbr.abbr{ border:0 } abbr.abbr sup{ color:#000 } }
+
+/* v21 — question flow. --navh is the sticky nav's height, kept current by script, so a card
+   scrolled into view lands below the nav and the mock's header can stick just under it. */
+#pqCard, #mockCard, #drill .card{ scroll-margin-top:calc(var(--navh, 135px) + 8px) }
+#mockCard .pqhead{ position:sticky; top:var(--navh, 135px); z-index:4; background:var(--paper);
+  padding-block:6px; margin-inline:-2px }
+.pqmock{ display:block; margin:0 0 8px; font-size:calc(13px*var(--fs,1)) }
+#ppIntroBtn{ margin:0 0 10px }
 
 /* v20 — dark-mode contrast. The accents are bright in dark mode (--c-now #FFA92E, --start
    #43D9A3, --stop #FF7A7A), so text laid on them is the dark paper colour, not white:

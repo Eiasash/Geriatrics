@@ -1428,5 +1428,46 @@ ok('dark mode styles the remark, report and backup text boxes, and the backup Co
    /body\.dark #hlText, body\.dark #rptNote, body\.dark #bkText\{ background:var\(--surface\)/.test(code) &&
    /\.tbtns button:not\(:first-child\):not\(\.lnk\)\{/.test(code));
 
+/* ---- group 1: question flow ---- */
+ok('next/skip brings the question card back under the nav', /function pqNext\(\)\{ pqIdx\+\+; pqRender\(\); cardIntoView\(document\.getElementById\('pqCard'\)\); \}/.test(code));
+ok('each mock question is kept in view after an answer or next/back', /cardIntoView\(document\.getElementById\('mockCard'\)\);/.test(code));
+ok('the mock header (question n of N, time left) sticks under the nav', /#mockCard \.pqhead\{ position:sticky; top:var\(--navh, 135px\)/.test(code));
+{
+  w.confirm = () => true;
+  w.eval('mockN = 50; mockStart()');
+  w.eval("(()=>{ const q = mockQs[0]; mockAns[0] = 'אבגד'.split('').find(x => q.a.indexOf(x) < 0) || 'ה'; })()");
+  await w.eval('mockFinish()'); await new Promise(r => setTimeout(r, 50));
+  d.getElementById('mockReview').click();
+  const line = (d.querySelector('#pqWho .pqmock') || {}).textContent || '';
+  const back = d.getElementById('pqBackReport');
+  const hadBack = !!back; if(back) back.click();
+  ok('mock review shows your answer against the key, with a link back to the report',
+     /you: \S+ · key: \S+/.test(line) && hadBack && !d.getElementById('mockReport').hidden && d.getElementById('pqCard').hidden, line);
+  w.eval('pqBuild(); pqRender()'); d.getElementById('pqCard').hidden = false;
+  ok('leaving the review clears the mock answers from the question card', !d.querySelector('#pqWho .pqmock'));
+}
+{
+  /* fresh pages: this suite's own restore tests clear every backup key, the flag included */
+  const page = async st => { const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2);
+      w2.storage = { get: async k => { if(!(k in st)) throw new Error('missing'); return {key:k, value:st[k]}; },
+                     set: async (k,v) => { st[k] = v; return {key:k, value:v}; } }; } });
+    await new Promise(r => setTimeout(r, 500)); return dm; };
+  const st1 = {}; const dom1 = await page(st1);
+  dom1.window.eval("show('papers')"); await new Promise(r => setTimeout(r, 30));
+  const i1 = dom1.window.document.querySelector('#papers .callout'), b1 = dom1.window.document.getElementById('ppIntroBtn');
+  const firstVisitOpen = i1 && !i1.hidden && b1 && b1.hidden && st1['geri:ppintro'] === '1';
+  dom1.window.close();
+  const st2 = {'geri:ppintro':'1'};
+  const dom2 = await page(st2);
+  const i2 = dom2.window.document.querySelector('#papers .callout'), b2 = dom2.window.document.getElementById('ppIntroBtn');
+  const folded = i2 && i2.hidden && b2 && !b2.hidden;
+  if(b2) b2.click();
+  const reopens = i2 && !i2.hidden;
+  dom2.window.close();
+  ok('the papers intro is open on the first visit and folded behind a link after it', firstVisitOpen && folded && reopens,
+     'first=' + firstVisitOpen + ' folded=' + folded + ' reopens=' + reopens);
+}
+
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);

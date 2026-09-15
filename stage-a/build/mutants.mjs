@@ -280,6 +280,31 @@ const M = [
    "body.dark #hlText, body.dark #rptNote, body.dark #bkText{ background:var(--surface);",
    "body.dark #hlTextX{ background:var(--surface);",
    "remark, report and backup text boxes"],
+  /* --- group 1: question flow, 16/09 --- */
+  ["next/skip leaves the new question above the view",
+   "function pqNext(){ pqIdx++; pqRender(); cardIntoView(document.getElementById('pqCard')); }",
+   "function pqNext(){ pqIdx++; pqRender(); }",
+   "next/skip brings the question card"],
+
+  ["the mock stops keeping its question in view",
+   "  cardIntoView(document.getElementById('mockCard'));\n",
+   "",
+   "each mock question is kept in view"],
+
+  ["the mock header scrolls away",
+   "#mockCard .pqhead{ position:sticky; top:var(--navh, 135px);",
+   "#mockCard .pqhead{ top:var(--navh, 135px);",
+   "mock header (question n of N, time left) sticks"],
+
+  ["review loses your answer against the key",
+   "    pqMockAns = new Map(rows.map(r => [pqKey(r.p), r.given || '']));\n",
+   "",
+   "your answer against the key"],
+
+  ["the papers intro never folds",
+   "  open(!seen);",
+   "  open(true);",
+   "folded behind a link"],
 ];
 
 if(STATIC){
