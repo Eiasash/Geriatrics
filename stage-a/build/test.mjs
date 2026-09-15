@@ -850,11 +850,22 @@ ok('a missed question offers a jump to the chapter it came from',
 ok('the read-but-not-retained list is keyed by number, not by the string Object.keys gives',
    /const sec = sectionForChapter\(Number\(c\)\);/.test(html) && /x\.sec \+ '">' \+ x\.label/.test(html));
 ok('it only counts sections actually marked read, with enough questions behind them',
-   /const weakEnough = t => t\.n >= 4 && \(t\.n - t\.w\) \/ t\.n < 0\.65;/.test(html) &&
+   /const weakEnough = t => \(t\.n >= 4 && \(t\.n - t\.w\) \/ t\.n < 0\.65\) \|\| \(t\.n >= 2 && t\.w === t\.n\);/.test(html) &&
    /return sec && readSet\.has\(sec\) && weakEnough\(by\[c\]\);/.test(html) &&
-   /filter\(sec=>readSet\.has\(sec\) && weakEnough\(byS\[sec\]\)\)/.test(html));
+   /filter\(k=>readSet\.has\(byS\[k\]\.sec\) && weakEnough\(byS\[k\]\)\)/.test(html));
+ok('every one wrong flags even a small sample, which four-answered alone would hide',
+   /\|\| \(t\.n >= 2 && t\.w === t\.n\)/.test(html));
+ok('named papers are counted one paper at a time, not lumped into a single source bucket',
+   /const key = \(lab\.length >= 6 && /.test(html) && /function srcLabel\(src\)/.test(html));
 ok('and it reaches the third of the bank that carries no chapter number \u2014 law, papers, Beers',
-   /const BKSEC = \{'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'\};/.test(html));
+   /const PQSEC = \{'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'\};/.test(html) &&
+   /const sec = PQSEC\[x\.bk\]; if\(!sec\) return;/.test(html));
+ok('the jump button and the metric read the same source map, so they cannot drift apart',
+   /const tsec = p\.ch \? sectionForChapter\(p\.ch\) : \(PQSEC\[p\.bk\] \|\| ''\);/.test(html) &&
+   (html.match(/'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'/g)||[]).length === 1);
+ok('a table may split across printed pages, with its rows kept whole and its header repeated',
+   /table\{page-break-inside:auto\}/.test(html) && /tr,td,th\{page-break-inside:avoid\}/.test(html) &&
+   /thead\{display:table-header-group\}/.test(html));
 ok('a finished paper logs the day\u2019s score itself, scaled to the 50 the sparkline uses',
    /if\(rows\.length >= 25\)\{ qlog\[TODAY\] = Math\.round\(right \/ rows\.length \* 50\); saveQ\(\); paintQ\(\); \}/.test(html));
 

@@ -635,7 +635,9 @@
     section.on{display:block!important}
     details{border:0} details .body{display:block!important}
     a{text-decoration:none;color:#000}
-    table{page-break-inside:avoid}
+    table{page-break-inside:auto}
+    tr,td,th{page-break-inside:avoid}
+    thead{display:table-header-group}   /* headers repeat on the next page */
     h2{page-break-after:avoid}
   }
 
@@ -12289,6 +12291,9 @@ function annotateSection(id){
 /* ---------- the deck is indexed inside buildIndex(), lazily ---------- */
 document.getElementById('q').addEventListener('focus', buildIndex, {once:true});
 idle(buildIndex);
+/* source -> section, for questions that carry no chapter number. Used by the jump
+   button and by the read-but-not-retained metric; keep them agreeing. */
+const PQSEC = {'Law/MoH':'ethics', 'Article':'src', 'Beers':'beers'};
 let PQ = [];
 const PQ_TOTAL = 786;
 let pqReady = false;
@@ -12380,9 +12385,11 @@ function pqAnswer(letter){
     b.disabled = true;
   });
   const src = p.src ? p.src : 'no reference given in the table';
-  const tsec = p.ch ? sectionForChapter(p.ch) : '';
-  const chp = p.ch ? ' &mdash; chapter ' + p.ch + (p.pg ? ', p' + p.pg : '') +
-    (tsec ? ' <button type="button" class="chgo pqgo" data-sec="' + tsec + '">open the notes</button>' : '') : '';
+  /* a third of the bank has no chapter number; those questions are the hardest to hunt
+     down by hand, so map their source to a section the same way the metric does */
+  const tsec = p.ch ? sectionForChapter(p.ch) : (PQSEC[p.bk] || '');
+  const chp = (p.ch ? ' &mdash; chapter ' + p.ch + (p.pg ? ', p' + p.pg : '') : '') +
+    (tsec ? ' <button type="button" class="chgo pqgo" data-sec="' + tsec + '">open the notes</button>' : '');
   document.getElementById('pqSrc').innerHTML =
     (ok ? '<b class="go">correct</b>' : '<b class="stop">wrong</b>') +
     ' &middot; key: <b>' + p.a.split('').join(' / ') + '</b>' +
@@ -12415,14 +12422,20 @@ function pqStats(){
   /* a question with no chapter still belongs somewhere: Law/MoH is the ethics section,
      the named papers are the sources section, Beers is its own. Without this the block
      examined most reliably of all — 4 to 7 questions every sitting — is invisible here. */
-  const BKSEC = {'Law/MoH':'ethics', 'Article':'src', 'Beers':'beers'};
+  /* Grouping every named paper into one "src" bucket hides which paper failed: 0 of 3 on
+     one and 4 of 4 on another averages to a pass, and sends you to re-read the one you
+     already know. The reference string names the paper, so group by that and keep the
+     section only for the jump. */
   const byS = {};
   PQ.forEach(x=>{
     if(x.ch || OLDED.indexOf(x.y) >= 0) return;
-    const sec = BKSEC[x.bk]; if(!sec) return;
+    const sec = PQSEC[x.bk]; if(!sec) return;
     const v = pqDone[pqKey(x)]; if(v === undefined) return;
-    byS[sec] = byS[sec] || {n:0, w:0, bk:x.bk};
-    byS[sec].n++; if(!v) byS[sec].w++;
+    const lab = srcLabel(x.src);
+    /* some reference strings are a bare page number or similar — not a paper name */
+    const key = (lab.length >= 6 && /[A-Za-z\u0590-\u05FF]{3}/.test(lab)) ? lab : x.bk;
+    byS[key] = byS[key] || {n:0, w:0, sec:sec};
+    byS[key].n++; if(!v) byS[key].w++;
   });
   const by = {};
   PQ.forEach(x=>{
@@ -12437,14 +12450,17 @@ function pqStats(){
      readSet from "mark as read", by[] from pqDone. A chapter you have not read yet and
      are failing is expected and is left out — this list is only about reading that did
      not stick, which is the thing worth acting on. */
-  const weakEnough = t => t.n >= 4 && (t.n - t.w) / t.n < 0.65;
+  /* four answered and under 65%, OR every one of at least two wrong — without the second
+     clause, 0 of 3 on a chapter is invisible because the sample is "too small", which is
+     exactly backwards: getting all of them wrong is the clearest signal there is. */
+  const weakEnough = t => (t.n >= 4 && (t.n - t.w) / t.n < 0.65) || (t.n >= 2 && t.w === t.n);
   const stuck = Object.keys(by).filter(c=>{
     /* Object.keys gives strings; SECCH holds numbers, and indexOf does not coerce */
     const sec = sectionForChapter(Number(c));
     return sec && readSet.has(sec) && weakEnough(by[c]);
   }).map(c=>({sec:sectionForChapter(Number(c)), label:'ch ' + c, t:by[c]}))
-   .concat(Object.keys(byS).filter(sec=>readSet.has(sec) && weakEnough(byS[sec]))
-     .map(sec=>({sec, label:byS[sec].bk, t:byS[sec]})))
+   .concat(Object.keys(byS).filter(k=>readSet.has(byS[k].sec) && weakEnough(byS[k]))
+     .map(k=>({sec:byS[k].sec, label:k, t:byS[k]})))
    .sort((a,b)=>b.t.w - a.t.w).slice(0, 3);
   const sm = document.getElementById('pqStuck');
   if(sm) sm.innerHTML = stuck.length
@@ -12606,6 +12622,14 @@ const CHFALLBACK = (function(){
   for(const sec in CHREF) m[CHREF[sec][0]] = sec;
   return m;
 })();
+/* the reference string as a short, readable name: drop the Hebrew lead-in
+   (המאמר / מאמר / חוזר …) and whatever runs past a readable length */
+function srcLabel(src){
+  if(!src) return '';
+  let t = String(src).replace(/\s+/g,' ').trim()
+    .replace(/^(המאמר|מאמר|חוזר|נוהל|הנחיות)\s*/,'').trim();
+  return t.length > 44 ? t.slice(0,44) + '\u2026' : t;
+}
 function sectionForChapter(n){
   secChapters('');                       /* force SECCH to build */
   for(const sec in SECCH){ if(SECCH[sec].indexOf(n) >= 0) return sec; }
