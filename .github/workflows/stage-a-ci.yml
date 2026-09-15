@@ -18,7 +18,7 @@ permissions:
 jobs:
   guards:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     # the phone runs in Israel time; daylight-saving bugs only show in a zone that has it
     env: { TZ: Asia/Jerusalem }
     defaults: { run: { working-directory: stage-a/build } }
