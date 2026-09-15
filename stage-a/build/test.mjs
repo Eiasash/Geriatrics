@@ -1542,5 +1542,9 @@ w.eval("show('week')");
      'firstDark=' + firstDark + ' chosenLight=' + chosenLight + ' firstLight=' + firstLight);
 }
 
+/* ---- group 5: answer options garbled by the right-to-left PDF extraction ---- */
+ok('the COMBODEX option reads brand (ingredients), same characters reordered',
+   w.eval(`(()=>{ const q = PQ.find(p => p.y === '2021-12' && +p.n === 98); return q ? q.o.indexOf('COMBODEX (PARACETAMOL, IBUPROFEN)') >= 0 : false; })()`));
+
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);

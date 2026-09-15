@@ -370,6 +370,11 @@ const M = [
    "    if(raw === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) v.dark = true;",
    "",
    "before the first paint"],
+  /* --- group 5: extraction-garbled options, 16/09 --- */
+  ["the COMBODEX option is garbled again",
+   "\"COMBODEX (PARACETAMOL, IBUPROFEN)\"",
+   "\"IBUPROFEN) (PARACETAMOL, COMBODEX\"",
+   "COMBODEX option reads brand"],
 ];
 
 if(STATIC){
