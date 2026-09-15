@@ -1469,5 +1469,17 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
      'first=' + firstVisitOpen + ' folded=' + folded + ' reopens=' + reopens);
 }
 
+/* ---- group 2: the home mock tile matches the mock clock ---- */
+{
+  const tile = () => d.querySelector('#goMock b').textContent + ' | ' + d.querySelector('#goMock span').textContent;
+  w.eval('mockPerQ = 2; paintMockTile()');
+  const atPace = tile();
+  const clock = (w.eval('mockOn = false; mockN = 50; mockEnds = Date.now() + mockN * mockPerQ * 60000; mockClock()'), d.getElementById('mockClock').textContent);
+  w.eval('mockPerQ = 0; paintMockTile()'); const untimed = tile();
+  w.eval('mockPerQ = 2; paintMockTile(); mockEnds = 0');
+  ok('the home mock tile states the time the mock clock actually runs', /^100 min \| 50-question mock · exam pace$/.test(atPace) && /^100:00 left$/.test(clock) && /^untimed/.test(untimed),
+     atPace + ' / ' + clock + ' / ' + untimed);
+}
+
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);

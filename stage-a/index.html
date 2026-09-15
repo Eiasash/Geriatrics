@@ -12968,6 +12968,15 @@ function wirePaperButtons(){
 /* ---------- 2. the mock paper ---------- */
 const MKKEY = 'geri:mock', RUNKEY = 'geri:mockrun';
 let mockN = 100, mockPerQ = 2, mockUnseen = 0, mockOn = false;
+/* the home tile starts a 50-question mock on the same clock the mock runs (exam pace,
+   mockPerQ minutes a question); it said "35 min", the daily goal, while the clock read 100:00 */
+function paintMockTile(){
+  const b = document.querySelector('#goMock b'), sp = document.querySelector('#goMock span');
+  if(!b || !sp) return;
+  b.textContent = mockPerQ ? (50 * mockPerQ) + ' min' : 'untimed';
+  sp.textContent = mockPerQ ? '50-question mock \u00b7 exam pace' : '50-question mock';
+}
+paintMockTile();
 let mockQs = [], mockAns = {}, mockFlag = {}, mockI = 0, mockEnds = 0, mockTick = null;
 /* the measured source mix, 2023–2026 */
 const MIX = [['Hazzard',81],['Law/MoH',5],['Article',5],['Harrison',4],['Brookdale',2],['Beers',1],['Other',2]];
@@ -13176,6 +13185,7 @@ document.querySelectorAll('#mockBar [data-mt]').forEach(b=>b.addEventListener('c
   mockPerQ = +b.dataset.mt;
   document.querySelectorAll('#mockBar [data-mt]').forEach(x=>
     x.setAttribute('aria-pressed', x === b ? 'true':'false'));
+  paintMockTile();
 }));
 document.getElementById('mockGo').addEventListener('click', mockStart);
 document.getElementById('mockNext').addEventListener('click', ()=>{

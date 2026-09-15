@@ -305,6 +305,11 @@ const M = [
    "  open(!seen);",
    "  open(true);",
    "folded behind a link"],
+  /* --- group 2: mock timing, 16/09 --- */
+  ["the home tile goes back to the daily 35 minutes",
+   "  b.textContent = mockPerQ ? (50 * mockPerQ) + ' min' : 'untimed';",
+   "  b.textContent = '35 min';",
+   "home mock tile states the time"],
 ];
 
 if(STATIC){
