@@ -561,7 +561,10 @@ ok('opening from a section moves the one backup block into the dialog',
    d.getElementById('bkWrap').parentNode === d.getElementById('bkModalBody') && !d.getElementById('bkModal').hidden);
 w.eval("bkClose()");
 ok('the floating timer is hidden on the home page', (w.eval("show('week')"), d.getElementById('miniT').hidden));
-w.eval("show('falls'); mtOff = false; tPaint()");
+w.eval("show('falls'); mtOff = false; T = {p:0, left:PH[0].s, run:false, ts:0, d:today()}; tPaint()");
+/* it stays out of the way until the block is in use (group 3); paused part-way counts as in use */
+ok('the floating timer stays hidden on a section while the block is untouched', d.getElementById('miniT').hidden);
+w.eval("T.left = PH[0].s - 5; tPaint()");
 ok('the floating timer shows on a section, with clock, phase and a control', !d.getElementById('miniT').hidden &&
    /^\d\d:\d\d$/.test(d.getElementById('mtClock').textContent) && /1\/3/.test(d.getElementById('mtPhase').textContent));
 d.getElementById('mtGo').click();
@@ -1493,6 +1496,13 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
   w.eval('mockOn = false; mockQs = []; clearInterval(mockTick)'); w.confirm = realConfirm;
 }
 ok('the mock report and drill summary land below the nav too', /#pqCard, #mockCard, #mockReport, #dsum, #drill \.card\{ scroll-margin-top:/.test(code));
+
+/* ---- group 3: less clutter at XL ---- */
+ok('only one of the top/end buttons shows at a time', /if\(en\) en\.hidden = !b\.hidden;/.test(code));
+ok('tap targets are at least 44px on the mini-timer, mock controls, chapter pills and swatches',
+   /#miniT button, #mockPrev, #mockNext, #mockFlag, \.ebgo\.ebgo, \.toc-item\.toc-item, #hlBar \.sw, #hlModal \.sw, \.pf button\{ min-height:44px !important \}/.test(code) &&
+   /#miniT button, #mockPrev, #hlBar \.sw, #hlModal \.sw\{ min-width:44px !important \}/.test(code));
+ok('the header title keeps its name and the group label gives way first', /\.topicbtn \.glabel\{ flex:0 100 auto;/.test(code));
 
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);

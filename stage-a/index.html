@@ -10427,8 +10427,12 @@ function mtPaint(l){
   const home = (document.querySelector('main section.on')||{}).id === 'week';
   const done = T.p >= PH.length;
   /* during a mock paper the paper's own clock is the one that matters */
-  box.hidden = home || mtOff || (typeof mockOn !== 'undefined' && mockOn);
   const running = SW.on ? SW.run : T.run;
+  /* only while in use: running, or paused part-way so it can be resumed from any section;
+     an untouched or finished block keeps it out of the way (it covered ~50px at XL) */
+  const inUse = SW.on ? (SW.run || swMs() > 0)
+                      : (T.run || (!done && (T.p > 0 || T.left < PH[T.p].s)));
+  box.hidden = home || mtOff || !inUse || (typeof mockOn !== 'undefined' && mockOn);
   box.classList.toggle('run', running);
   if(SW.on){
     document.getElementById('mtClock').textContent = hhmmss(swMs());
@@ -12054,7 +12058,9 @@ document.addEventListener('visibilitychange', ()=>{
   let tick = false;
   addEventListener('scroll', ()=>{
     if(tick) return; tick = true;
-    requestAnimationFrame(()=>{ b.hidden = scrollY < 700; tick = false; });
+    /* one button at a time: "end" until you are well into the section, then "top" */
+    requestAnimationFrame(()=>{ b.hidden = scrollY < 700; const en = document.getElementById('toEnd');
+      if(en) en.hidden = !b.hidden; tick = false; });
   }, {passive:true});
   b.addEventListener('click', ()=>scrollTo({top:0, behavior:'smooth'}));
   /* and its twin: to the bottom of the section you are reading */
@@ -13769,6 +13775,15 @@ p.tsrc i{ font-style:italic }
 .fnotes dd{ margin:0; color:var(--mute) }
 @media (max-width:900px){ .fnotes dl{ grid-template-columns:1fr; gap:1px } .fnotes dd{ margin:0 0 8px } }
 @media print{ abbr.abbr{ border:0 } abbr.abbr sup{ color:#000 } }
+
+/* v22 — less clutter at XL. Tap targets at least 44px (mini-timer buttons were 40 high, mock
+   "back" 37 wide, chapter action pills 40 high); the header title keeps its whole name and the
+   group label gives way first. */
+#miniT button, #mockPrev, #mockNext, #mockFlag, .ebgo.ebgo, .toc-item.toc-item, #hlBar .sw, #hlModal .sw, .pf button{ min-height:44px !important }
+#miniT button, #mockPrev, #hlBar .sw, #hlModal .sw{ min-width:44px !important }
+.topicbtn #topicNow{ flex:0 1 auto; min-width:0; white-space:normal; line-height:1.15;
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden }   /* two lines rather than cut off */
+.topicbtn .glabel{ flex:0 100 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
 
 /* v21 — question flow. --navh is the sticky nav's height, kept current by script, so a card
    scrolled into view lands below the nav and the mock's header can stick just under it. */

@@ -320,6 +320,26 @@ const M = [
    "#pqCard, #mockCard, #mockReport, #dsum, #drill .card{",
    "#pqCard, #mockCard, #drill .card{",
    "report and drill summary land below"],
+  /* --- group 3: less clutter at XL, 16/09 --- */
+  ["the mini-timer shows even when the block is untouched",
+   "  box.hidden = home || mtOff || !inUse || (typeof mockOn !== 'undefined' && mockOn);",
+   "  box.hidden = home || mtOff || (typeof mockOn !== 'undefined' && mockOn);",
+   "stays hidden on a section while the block is untouched"],
+
+  ["top and end both show again",
+   "      if(en) en.hidden = !b.hidden; tick = false; });",
+   "      tick = false; });",
+   "only one of the top/end buttons"],
+
+  ["tap targets back under 44px",
+   "#miniT button, #mockPrev, #hlBar .sw, #hlModal .sw{ min-width:44px !important }",
+   "#miniT button{ }",
+   "tap targets are at least 44px"],
+
+  ["the header title truncates again",
+   ".topicbtn .glabel{ flex:0 100 auto;",
+   ".topicbtn .glabel{ flex:0 1 auto;",
+   "header title keeps its name"],
 ];
 
 if(STATIC){
