@@ -366,6 +366,14 @@
   /* next up */
   .nx{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:2px 14px;padding:10px 0;
     border-bottom:1px solid var(--rule);align-items:baseline}
+  /* the class also names the "next this week" chapter-footer button, created hidden and only
+     unhidden when a next chapter exists (paintNextChap). Without this, the last chapter of a
+     week showed an empty square next to "home": the hidden attribute has no visual effect on
+     its own once an author rule sets display, and .nx{display:grid} is exactly such a rule —
+     the browser's [hidden]{display:none} default loses to it regardless of source order,
+     because author rules beat UA rules of equal specificity. Same trap as .toend/.totop
+     earlier this session, on a button that never got the guard. */
+  .nx[hidden]{display:none}
   .nx:last-child{border-bottom:0}
   .nx .d{font-family:var(--sans);font-size:calc(12px*var(--fs,1));color:var(--mute);font-variant-numeric:tabular-nums}
   .nx .t{font-size:calc(15px*var(--fs,1))}
@@ -574,21 +582,26 @@
   #dispPop .bm button{font-family:var(--sans);font-size:calc(12.5px*var(--fs,1));padding:8px 12px;min-height:38px;background:none;border:1px solid var(--ink);border-radius:2px;color:var(--ink);cursor:pointer}
   #dispPop .bm .cur{color:var(--mute);flex:1;min-width:140px}
   mark.hl.flash{outline:2px solid var(--stop);outline-offset:2px}
-  /* Docked to the bottom edge, not floated under the selection. Floating put a slab over the
-     two lines next to what you had just selected — the thing you were reading — and it moved
-     on every selectionchange, including the one Chrome fires when its own contextual search
-     expands the selection to a phrase, so the bar jumped too. Docked, it covers nothing near
-     the text and never repositions.
-     It is the page's own paper with a rule border and ink text, not a black slab. */
-  /* One row, docked, at most ~56px at XL: 40px buttons + 6px top/bottom padding + the 1px
-     border = 53px. Text buttons in muted ink, not the loud primary "highlight" a pill of that
-     size would otherwise need. */
-  #hlBar{position:fixed;z-index:58;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;
-    justify-content:center;flex-wrap:nowrap;background:var(--paper);color:var(--ink);
-    padding:6px calc(10px + env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom));
-    border-top:1px solid var(--rule);box-shadow:0 -2px 14px rgba(0,0,0,.10)}
-  body.dark #hlBar{background:var(--surface);color:var(--ink);border-top-color:var(--rule);
-    box-shadow:0 -2px 14px rgba(0,0,0,.45)}
+  /* Docked under the header, not at the bottom edge — moved there after a real-phone
+     regression (16 Sep). Bottom-docking fixed the original floating-under-the-selection
+     problem, but the bar was then invisible whenever Chrome opened its own "Touch to Search"
+     definition sheet: that is native browser UI, always anchored to the bottom of the screen,
+     and native UI always paints above the page — a web page cannot render on top of it.
+     Reproduced the touch-selection path directly and the JS/CSS were doing exactly what they
+     should (bar.hidden correctly false, display:flex, the right rect) — the two were simply
+     occupying the same screen real estate, and Chrome's own chrome wins that contest by
+     definition. The top has nothing else that claims it: Android's floating Copy/Define
+     toolbar anchors to the selection itself, not to a fixed screen region, so it does not
+     have the same standing collision with a bar fixed at the top.
+     --navh already exists — setNavH() keeps it current for the past-papers sticky header
+     — and is reused here rather than measured a second time. The 130px fallback is roughly
+     what it measures at XL before the first paint. */
+  #hlBar{position:fixed;z-index:58;left:0;right:0;top:calc(var(--navh, 130px) + env(safe-area-inset-top));
+    display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:nowrap;
+    background:var(--paper);color:var(--ink);padding:8px calc(10px + env(safe-area-inset-left)) 6px;
+    border-bottom:1px solid var(--rule);box-shadow:0 2px 14px rgba(0,0,0,.10)}
+  body.dark #hlBar{background:var(--surface);color:var(--ink);border-bottom-color:var(--rule);
+    box-shadow:0 2px 14px rgba(0,0,0,.45)}
   #hlBar[hidden]{display:none}
   /* display:none, not opacity: an invisible timer that still takes the tap is the same trap
      the jump row hit */
@@ -11908,6 +11921,11 @@ function paintDisp(){
   document.body.classList.toggle('dark', !!disp.dark);
   document.documentElement.classList.toggle('dark', !!disp.dark);
   ['s','m','l','xl'].forEach(k=>document.body.classList.toggle('fs-'+k, disp.fs===k));
+  /* nav grows a line at a larger text size, and setNavH only listens for 'resize' — a font
+     change fires no such event, so --navh (and the highlight bar docked under it) went stale
+     the moment the reader picked XL. Reading a rect forces the layout setNavH needs, so
+     calling it here, right after the class that changes the height, is enough. */
+  setNavH();
   document.querySelectorAll('.disprow button[data-dk]').forEach(dk=>{
     dk.setAttribute('aria-pressed', disp.dark ? 'true':'false');
     dk.textContent = disp.dark ? 'light' : 'dark';

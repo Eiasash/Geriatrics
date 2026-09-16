@@ -525,10 +525,31 @@ const M = [
    "",
    'reduced motion drops the transition'],
 
+  ['a text-size change stops re-measuring nav, going stale at XL',
+   "  setNavH();\n  document.querySelectorAll('.disprow button[data-dk]').forEach(dk=>{",
+   "  document.querySelectorAll('.disprow button[data-dk]').forEach(dk=>{",
+   'calls setNavH, so a text-size change'],
+
+  /* --- regression, real phone: bottom-docked bar hidden by Chrome, and the empty nx, 16 Sep --- */
+  ['the bar goes back to the bottom edge, under Chrome\u2019s own contextual sheet',
+   "top:calc(var(--navh, 130px) + env(safe-area-inset-top));",
+   "bottom:0;",
+   'under nav, not at the bottom edge'],
+
+  ['a second, redundant writer of --navh creeps back in',
+   "if(nav) document.documentElement.style.setProperty('--navh', Math.round(nav.getBoundingClientRect().height) + 'px'); }",
+   "if(nav) document.documentElement.style.setProperty('--navh', Math.round(nav.getBoundingClientRect().height) + 'px'); document.documentElement.style.setProperty('--navh', '999px'); }",
+   'the one existing measurer, not a second one'],
+
+  ['the next-chapter button loses its hidden guard, and shows empty again',
+   "  .nx[hidden]{display:none}",
+   "",
+   'genuinely display:none'],
+
   /* --- less invasive chrome, and clean selection handling, 16 Sep --- */
   ['the selection bar goes back to a black fill in light mode',
-   "  #hlBar{position:fixed;z-index:58;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;\n    justify-content:center;flex-wrap:nowrap;background:var(--paper);color:var(--ink);",
-   "  #hlBar{position:fixed;z-index:58;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;\n    justify-content:center;flex-wrap:nowrap;background:var(--ink);color:var(--paper);",
+   "  #hlBar{position:fixed;z-index:58;left:0;right:0;top:calc(var(--navh, 130px) + env(safe-area-inset-top));\n    display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:nowrap;\n    background:var(--paper);color:var(--ink);",
+   "  #hlBar{position:fixed;z-index:58;left:0;right:0;top:calc(var(--navh, 130px) + env(safe-area-inset-top));\n    display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:nowrap;\n    background:var(--ink);color:var(--paper);",
    'not a fixed dark fill'],
 
   ['the floating timer goes back to a black pill',

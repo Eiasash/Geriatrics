@@ -623,11 +623,75 @@ w.eval("HL = {}");
 ok('selection offsets are counted over the searched node list, not Range.toString()',
    /r\.comparePoint\(n, 0\)/.test(code) && !/pre\.toString\(\)\.length/.test(code));
 ok('the display popover clears the floating timer', /#dispPop\{position:fixed;left:12px;right:12px;bottom:78px/.test(code));
-/* superseded: the bar is docked to the bottom edge now, so there is nothing to keep clear of
-   the nav — and nothing that positions it at all */
-ok('the selection bar is docked to the bottom edge rather than positioned near the selection',
-   /#hlBar\{position:fixed;z-index:58;left:0;right:0;bottom:0;/.test(code) &&
+/* superseded twice: first by the bottom dock, then — after the bottom dock collided with
+   Chrome's own bottom sheet on a real phone — by the top dock under nav. Nothing positions
+   the bar near the selection either way. */
+ok('the selection bar is docked under the header, not positioned near the selection',
+   /#hlBar\{position:fixed;z-index:58;left:0;right:0;top:calc\(var\(--navh, 130px\) \+ env\(safe-area-inset-top\)\);/.test(code) &&
    !/Math\.max\(navBottom \+ 8,/.test(code) && !/bar\.style\.left = x \+ 'px'/.test(code));
+
+/* ---- --navh went stale at a larger text size, uncovered while fixing the dock, 16 Sep ----
+   setNavH only listens for 'resize'; nav grows a line at XL and nothing told it to remeasure,
+   so the bar docked 12px short of clearing nav at the size Eias actually reads at. Reading a
+   rect forces the layout setNavH needs, so calling it from paintDisp, right after the class
+   that changes nav's height, is enough — no new observer needed. */
+ok('paintDisp calls setNavH, so a text-size change re-measures nav without waiting for resize',
+   /function paintDisp\(\)\{[\s\S]{0,400}?setNavH\(\);/.test(code));
+{
+  const navEl3 = d.querySelector('nav');
+  let h3 = 100;
+  navEl3.getBoundingClientRect = () => ({height: h3, width: 390, top:0, left:0, right:390, bottom:h3});
+  w.eval('paintDisp()');
+  const before3 = d.documentElement.style.getPropertyValue('--navh');
+  h3 = 160;                                      /* the text-size switch that grew nav */
+  w.eval('paintDisp()');
+  const after3 = d.documentElement.style.getPropertyValue('--navh');
+  ok('picking XL text grows --navh without waiting for a resize event',
+     before3 === '100px' && after3 === '160px', 'before=' + before3 + ' after=' + after3);
+  delete navEl3.getBoundingClientRect;
+  w.eval('setNavH()');
+}
+
+/* ---- regression, real phone, 16 Sep: the bar was invisible behind Chrome's own sheet ---- */
+{
+  ok('the docked bar sits under nav, not at the bottom edge where Chrome\u2019s own contextual sheet lives',
+     /top:calc\(var\(--navh, 130px\) \+ env\(safe-area-inset-top\)\);/.test(code) &&
+     !/#hlBar\{[^}]*bottom:0/.test(code));
+  /* --navh already existed — setNavH(), wired for the past-papers sticky header — and is
+     reused here rather than measured a second time. Confirmed there is exactly one writer. */
+  ok('nav\u2019s height for --navh is written by the one existing measurer, not a second one',
+     (code.match(/document\.documentElement\.style\.setProperty\('--navh',/g) || []).length === 1 &&
+     /function setNavH\(\)\{ const nav = document\.querySelector\('nav'\);/.test(code));
+  /* behavioural: the existing measurer's own real path still lands on the custom property */
+  const navEl2 = d.querySelector('nav');
+  navEl2.getBoundingClientRect = () => ({height: 140, width: 390, top:0, left:0, right:390, bottom:140});
+  w.dispatchEvent(new w.Event('resize'));
+  ok('measuring nav writes its real height into --navh',
+     d.documentElement.style.getPropertyValue('--navh') === '140px',
+     d.documentElement.style.getPropertyValue('--navh'));
+  delete navEl2.getBoundingClientRect;
+}
+
+/* ---- the empty square next to home, real phone, 16 Sep ---- */
+ok('the chapter-footer "next this week" button is actually hidden when it carries no label',
+   /\.nx\[hidden\]\{display:none\}/.test(code));
+{
+  /* behavioural: paintNextChap's own hidden=true, with the guard rule in place, must compute
+     to display:none — jsdom does resolve simple author rules like this one.
+     Past the reading schedule (the consolidation period, and the two pinned dates either side
+     of it) weekChapters() is empty — falls back to a fixed chapter known to have no successor
+     in ITS OWN week regardless of the pinned date, so this does not depend on the calendar. */
+  w.eval("show('falls')");
+  const secs = w.eval("[...new Set(weekChapters().map(x=>x.sec))]");
+  const lastSec = secs.length ? secs[secs.length - 1] : 'falls';
+  w.eval(`show('${lastSec}')`);
+  w.eval('paintNextChap()');                     /* weekChapters() may differ from falls\u2019s own week; repaint against it */
+  const nx = d.querySelector('#' + lastSec + ' .secfoot .nx');
+  ok('a chapter with no next chapter this week hides its next-chapter button, and it is genuinely display:none',
+     !!nx && nx.hidden === true && w.getComputedStyle(nx).display === 'none',
+     nx ? ('hidden=' + nx.hidden + ' display=' + w.getComputedStyle(nx).display) : 'no .nx found for ' + lastSec);
+  w.eval("show('week')");
+}
 
 /* ---- less invasive chrome, 16 Sep: no black slab, one compact row, timer/row stand down ---- */
 {
@@ -635,17 +699,17 @@ ok('the selection bar is docked to the bottom edge rather than positioned near t
      page's own paper/surface tokens, with an ink-on-page border, not var(--ink) as a
      background (which is what made both the bar and the timer near-black in both themes). */
   ok('the selection bar takes its colour from the page, not a fixed dark fill',
-     /#hlBar\{position:fixed;z-index:58;left:0;right:0;bottom:0;[\s\S]{0,200}?background:var\(--paper\);color:var\(--ink\);/.test(code) &&
+     /#hlBar\{position:fixed;z-index:58;left:0;right:0;top:calc\(var\(--navh, 130px\)[\s\S]{0,200}?background:var\(--paper\);color:var\(--ink\);/.test(code) &&
      /body\.dark #hlBar\{background:var\(--surface\);color:var\(--ink\);/.test(code));
   ok('the floating timer takes its colour from the page too, with a dark-mode border of its own',
      /#miniT\{position:fixed;left:10px;bottom:14px;z-index:56;font-family:var\(--sans\);background:var\(--surface\);color:var\(--ink\);/.test(code) &&
      /body\.dark #miniT\{border-color:#3d3530\}/.test(code) &&
      !/#miniT\{[\s\S]{0,200}?background:var\(--ink\)/.test(code));
 
-  /* one row, budgeted at XL: 40px buttons + 6px top/bottom padding + the 1px border */
+  /* one row, budgeted at XL: 40px buttons + 8px top/6px bottom padding + the 1px border = 55 */
   ok('the selection bar is budgeted to stay in one row at the largest text size',
      /#hlBar button\{font-family:var\(--sans\);font-size:calc\(12px\*var\(--fs,1\)\);min-height:40px;padding:6px 10px;/.test(code) &&
-     /padding:6px calc\(10px \+ env\(safe-area-inset-left\)\) calc\(6px \+ env\(safe-area-inset-bottom\)\);/.test(code));
+     /padding:8px calc\(10px \+ env\(safe-area-inset-left\)\) 6px;/.test(code));
   /* jsdom does no layout, so the ~56px height budget is verified by measurement in Chromium
      (reported separately), not asserted here as a number this harness cannot compute */
   const bar = d.getElementById('hlBar');
@@ -2176,6 +2240,11 @@ ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
       w2.storage = { get: async k => { if(!(k in st)) throw new Error('missing'); return {key:k, value:st[k]}; },
                      set: async (k,v) => { st[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm.window.document.getElementById('ppIntroBtn'); t++) await new Promise(r => setTimeout(r, 50));
+  /* pqBuild() reshuffles the pool on every load, so an un-stubbed Math.random can — by pure
+     chance — land the saved key at index 0 even with the restore line gone, and let a real
+     regression through as a lucky PASS. Pinned to a fixed, non-identity permutation (always
+     swap with index 0) so the guard is deciding on the restore line, not on a coin flip. */
+  dm.window.Math.random = () => 0;
   dm.window.eval("show('papers')"); await new Promise(r => setTimeout(r, 400));
   const back = dm.window.eval("({y:pqYear, s:pqScope, k: pqPool.length ? pqKey(pqPool[pqIdx % pqPool.length]) : ''})");
   dm.window.close();
