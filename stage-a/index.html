@@ -730,14 +730,18 @@
      hidden, so this collapses to the normal position on the home page. */
   .jumprow.above{bottom:calc(16px + var(--minih, 0px) + 10px + env(safe-area-inset-bottom))}
   @media (prefers-reduced-motion: reduce){ .jumprow{transition:none} }
+  /* Arrows only, no words: with the labels the pair was ~145px wide and covered two lines of
+     text at the right edge at XL, three with the timer under it. The arrow scales with --fs
+     like everything else; the 44px minimums keep the tap target whatever the text size, and
+     with no text to set the width the button stays square. The name a screen reader reads
+     lives in aria-label, which is also what the guards match on. */
   .toend,.totop{display:flex;position:static;
-    font-family:var(--sans);font-size:calc(12px*var(--fs,1));line-height:1;padding:11px 12px;
+    font-family:var(--sans);font-size:calc(17px*var(--fs,1));line-height:1;padding:0;
     min-height:44px;min-width:44px;justify-content:center;
     background:var(--ink);color:var(--paper);border:0;border-radius:22px;cursor:pointer;
     box-shadow:0 2px 10px rgba(0,0,0,.18);align-items:center;gap:5px}
   body.dark .toend,body.dark .totop{color:#12161a}
   .toend[hidden],.totop[hidden]{display:none}
-  .toend span,.totop span{font-size:calc(11px*var(--fs,1));letter-spacing:.03em}
   .tscroll{position:relative}
   .tscroll.over::after{content:"";position:absolute;top:0;right:0;width:26px;height:100%;
     pointer-events:none;background:linear-gradient(to left,var(--paper),transparent)}
@@ -2181,12 +2185,15 @@ body.dark .secfoot button.mark.readon {
   border-color: var(--stop) !important;
   color: var(--stop) !important;
 }
-/* Back to Top Floating Button */
+/* Back to Top Floating Button.
+   No padding here: this block predates the icon-only buttons and its
+   padding:12px 16px !important beat the shared padding:0, so the top button came out
+   46x50 next to the end button's 44x44 — a taller pill in a row of two. The shared rule
+   sizes both now; the rest of this block is appearance only. */
 .totop {
   background: var(--ink) !important;
   color: var(--paper) !important;
   border-radius: 24px !important;
-  padding: 12px 16px !important;
   font-weight: 700 !important;
   border: 1px solid var(--rule) !important;
 }
@@ -2671,8 +2678,8 @@ body.dark .pqo {
 </script>
 <button class="railshow" id="railShow" type="button" title="Show the list">&raquo;</button>
 <div class="jumprow" id="jumpRow">
-<button class="toend" id="toEnd" type="button" aria-label="Jump to the end of this section">&darr;<span>end</span></button>
-<button class="totop" id="toTop" type="button" aria-label="Back to top" hidden>&uarr;<span>top</span></button>
+<button class="toend" id="toEnd" type="button" aria-label="Jump to end">&darr;</button>
+<button class="totop" id="toTop" type="button" aria-label="Back to top" hidden>&uarr;</button>
 </div>
 <div class="wrap">
 <nav>

@@ -1521,6 +1521,28 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   ok('both jump buttons keep a 44px tap target',
      /min-height:44px;min-width:44px;justify-content:center;/.test(code));
 
+  /* Arrows only: with the words the pair was ~145px wide and covered two lines of text at the
+     right edge at XL. Nothing visible but the glyph, and the name a screen reader reads moves
+     entirely into aria-label — so this also checks the buttons are still nameable, because an
+     icon-only control with no accessible name is the usual way this change goes wrong. */
+  {
+    const e = d.getElementById('toEnd'), tp = d.getElementById('toTop');
+    const txt = x => x.textContent.replace(/[\s\u200e\u200f]/g, '');
+    ok('the jump buttons show an arrow and no words',
+       txt(e) === '\u2193' && txt(tp) === '\u2191' &&
+       e.querySelectorAll('span').length === 0 && tp.querySelectorAll('span').length === 0,
+       JSON.stringify([txt(e), txt(tp), e.innerHTML, tp.innerHTML]));
+    ok('and each still carries the name a screen reader reads',
+       e.getAttribute('aria-label') === 'Jump to end' && tp.getAttribute('aria-label') === 'Back to top',
+       e.getAttribute('aria-label') + ' / ' + tp.getAttribute('aria-label'));
+    /* the .totop appearance block must not set padding: with !important it beat the shared
+       padding:0 and made one of a matched pair of buttons a taller pill */
+    ok('the back-to-top override no longer sizes the button, so the pair matches',
+       !/\.totop \{[^}]*padding:/.test(code));
+    ok('the arrow scales with the text-size control like everything else',
+       /\.toend,\.totop\{display:flex;position:static;\n\s*font-family:var\(--sans\);font-size:calc\(17px\*var\(--fs,1\)\);line-height:1;padding:0;/.test(code));
+  }
+
   /* nothing over the answer options: Past papers carries both the single-question drill
      and the mock, so the one section id covers both surfaces */
   w.eval("show('falls')");

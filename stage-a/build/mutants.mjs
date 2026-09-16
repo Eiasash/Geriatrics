@@ -523,6 +523,27 @@ const M = [
    "",
    'reduced motion drops the transition'],
 
+  /* --- icon-only jump buttons, 16 Sep --- */
+  ['the back-to-top override sizes the button again, breaking the matched pair',
+   "  border-radius: 24px !important;\n  font-weight: 700 !important;",
+   "  border-radius: 24px !important;\n  padding: 12px 16px !important;\n  font-weight: 700 !important;",
+   'no longer sizes the button'],
+
+  ['the jump buttons get their words back, and cover the text again',
+   '<button class="toend" id="toEnd" type="button" aria-label="Jump to end">&darr;</button>',
+   '<button class="toend" id="toEnd" type="button" aria-label="Jump to end">&darr;<span>end</span></button>',
+   'arrow and no words'],
+
+  ['an icon-only button loses the name a screen reader reads',
+   'aria-label="Back to top" hidden>&uarr;</button>',
+   'hidden>&uarr;</button>',
+   'name a screen reader reads'],
+
+  ['the arrow stops scaling with the text-size control',
+   "    font-family:var(--sans);font-size:calc(17px*var(--fs,1));line-height:1;padding:0;",
+   "    font-family:var(--sans);font-size:17px;line-height:1;padding:0;",
+   'arrow scales with the text-size control'],
+
   /* --- text size on body, and the row stepping over the timer, 16 Sep --- */
   ['--fs goes back to being scoped to main, leaving every overlay unscaled',
    "  body{--fs:1}",
