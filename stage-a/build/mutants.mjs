@@ -523,6 +523,57 @@ const M = [
    "",
    'reduced motion drops the transition'],
 
+  /* --- final Gemini round, 16 Sep --- */
+  ['dark mode answer feedback loses to the plain-option rule again',
+   "body.dark .pqo.right {\n  background: #1b2a25 !important;",
+   "body.dark .pqo.right {\n  background: #1b2a25;",
+   'answered option its own background'],
+
+  ['the highlight save binds the object it was queued with, not the live one',
+   "  saveChain = saveChain.then(async()=>{\n    const mine = getMine();",
+   "  const mine = getMine();\n  saveChain = saveChain.then(async()=>{",
+   'added between queueing and resolving survives'],
+
+  ['the timer height stops being watched, so --minih goes stale on a wrap',
+   "  if(miniT && typeof ResizeObserver === 'function') new ResizeObserver(measureTimer).observe(miniT);",
+   "  void measureTimer;",
+   'height is watched'],
+
+  ['the timer is not re-measured when the section changes either',
+   "  document.addEventListener('sectionshown', ()=>{ jumpRowFor(); measureJumpRow(); measureTimer(); });",
+   "  document.addEventListener('sectionshown', ()=>{ jumpRowFor(); measureJumpRow(); });",
+   'no attribute change still updates'],
+
+  ['coming back to the tab stops re-reading the timer',
+   "  try{ const r = await window.storage.get(TKEY); const v = JSON.parse(r.value);\n    if(v && v.d === today()){ T = v; if(T.run && tLeft() <= 0){ T.run = false; T.left = 0; } } }catch(e){}",
+   "  void TKEY;",
+   'another tab moved on is picked up'],
+
+  ['a timer from another day is restored on refresh',
+   "    if(v && v.d === today()){ T = v; if(T.run && tLeft() <= 0){ T.run = false; T.left = 0; } } }catch(e){}",
+   "    if(v){ T = v; } }catch(e){}",
+   'from another day is left where it is'],
+
+  ['the mock writes the reader\u2019s log again',
+   "    mlog[today()] = Math.round(right / rows.length * 50);\n    saveML(); paintQ();",
+   "    qlog[today()] = Math.round(right / rows.length * 50);\n    saveQ(); paintQ();",
+   'writes its own log'],
+
+  ['the mock log is left out of the backup',
+   "'geri:qlog','geri:mocklog',",
+   "'geri:qlog',",
+   'own key, loaded on boot'],
+
+  ['a day with both scores plots the higher one',
+   "  if(has(a) && has(b)) return Math.min(a, b);",
+   "  if(has(a) && has(b)) return Math.max(a, b);",
+   'plots the lower of them'],
+
+  ['only one of the two day scores is shown again',
+   "  if(mock != null) parts.push('mock: <b>'+mock+'/50</b>');",
+   "  if(mock != null && mine == null) parts.push('mock: <b>'+mock+'/50</b>');",
+   'both scores are shown'],
+
   /* --- icon-only jump buttons, 16 Sep --- */
   ['the back-to-top override sizes the button again, breaking the matched pair',
    "  border-radius: 24px !important;\n  font-weight: 700 !important;",

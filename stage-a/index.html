@@ -2424,6 +2424,18 @@ body.dark .pqo {
   background: var(--surface) !important;
   border-color: var(--rule) !important;
 }
+/* ...but an answered option is not a plain option. The rule above is (0,2,1) !important and
+   beat .pqo.right / .pqo.wrong at (0,2,0) !important, so in dark mode the only thing that
+   changed after answering was the text colour: the right option kept the plain surface
+   background and the rule border. These are (0,3,1) !important and win. */
+body.dark .pqo.right {
+  background: #1b2a25 !important;
+  border-color: var(--start) !important;
+}
+body.dark .pqo.wrong {
+  background: #2b1d20 !important;
+  border-color: var(--stop) !important;
+}
 
   /* ============ v17 — collapsed chapter header ============ */
 /* ==========================================================================
@@ -10557,24 +10569,45 @@ document.getElementById('tMode').addEventListener('click',()=>{ swSetMode(!SW.on
 /* ---------- the 50 questions ---------- */
 const QKEY='geri:qlog';
 let qlog = {};
+/* The mock's own day score, kept apart from the hand-typed log so both stay visible and
+   neither overwrites the other. Same 0-50 scale; written only for mocks of 25 questions or
+   more. Note: qlog entries written by the mock BEFORE this split are indistinguishable from
+   hand-typed ones and are left exactly as they are. */
+const MQKEY = 'geri:mocklog';
+let mlog = {};
+async function saveML(){ try{ await window.storage.set(MQKEY, JSON.stringify(mlog)); }catch(e){} }
 function flash(id){ const e=document.getElementById(id); e.classList.add('on');
   setTimeout(()=>e.classList.remove('on'), 1200); }
+/* One number per day for the sparkline, out of two possible sources. Where a day has both a
+   typed score and a mock score it plots the LOWER of them — Eias's scrutiny rule: the day
+   reads as the stricter of the two self-assessments. Where it has one, that one. */
+function dayScore(d){
+  const a = qlog[d], b = mlog[d];
+  const has = x => typeof x === 'number';
+  if(has(a) && has(b)) return Math.min(a, b);
+  return has(a) ? a : (has(b) ? b : null);
+}
 function paintQ(){
-  const keys = Object.keys(qlog).sort();
+  const keys = [...new Set([...Object.keys(qlog), ...Object.keys(mlog)])].sort();
   const last = keys.slice(-12);
   document.getElementById('qSpark').innerHTML = last.map(d=>{
-    const v = qlog[d], h = Math.max(4, Math.round(v/50*46));
+    const v = dayScore(d), h = Math.max(4, Math.round(v/50*46));
     const cls = v>=40 ? 'hi' : v<30 ? 'lo' : '';
     return '<i class="'+cls+'" style="height:'+h+'px" title="'+d+' — '+v+'/50"></i>';
   }).join('');
   if(!keys.length){ document.getElementById('qLab').textContent='Nothing logged yet.'; return; }
-  const recent = last.map(d=>qlog[d]);
+  const recent = last.map(d=>dayScore(d));
   const avg = (recent.reduce((a,b)=>a+b,0)/recent.length);
   const pct = Math.round(avg/50*100);
+  /* both numbers for today, each part dropped when it is not there */
+  const mine = qlog[today()], mock = mlog[today()];
+  const parts = [];
+  if(mine != null) parts.push('you: <b>'+mine+'/50</b>');
+  if(mock != null) parts.push('mock: <b>'+mock+'/50</b>');
   document.getElementById('qLab').innerHTML =
     '<b>'+pct+'%</b> across the last '+(recent.length===1?'block':recent.length+' blocks')+
     ' · <b>'+keys.length+'</b> logged · today ' +
-    (qlog[today()]!=null ? '<b>'+qlog[today()]+'/50</b>' : 'not yet');
+    (parts.length ? parts.join(' · ') : 'not yet');
 }
 async function saveQ(){ try{ await window.storage.set(QKEY, JSON.stringify(qlog)); }catch(e){} }
 document.getElementById('qLog').addEventListener('click',()=>{
@@ -10588,6 +10621,7 @@ document.getElementById('qScore').addEventListener('keydown',e=>{
 });
 (async()=>{
   try{ const r = await window.storage.get(QKEY); qlog = JSON.parse(r.value)||{}; }catch(e){}
+  try{ const r = await window.storage.get(MQKEY); mlog = JSON.parse(r.value)||{}; }catch(e){}
   paintQ();
 })();
 
@@ -10641,7 +10675,7 @@ document.querySelectorAll('.wopen').forEach(b=>{
 });
 
 /* ---------- backup ---------- */
-const BKEYS = ['geri:weeks-done','geri:days','geri:missed','geri:qlog','geri:notes','geri:timer',
+const BKEYS = ['geri:weeks-done','geri:days','geri:missed','geri:qlog','geri:mocklog','geri:notes','geri:timer',
   'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch','geri:scroll','geri:hlcolour','geri:rail','geri:tab','geri:ppintro','geri:pqpos'];
 /* One backup block, kept in a dialog so it is reachable from the bottom of every
    section as well as from the home page. Moving the node rather than copying it
@@ -11997,6 +12031,7 @@ async function refreshBody(){
   try{ const r = await window.storage.get(MKEY);    missed  = new Set(JSON.parse(r.value)); }catch(e){}
   try{ const r = await window.storage.get(PKEY);    pqDone  = JSON.parse(r.value) || {};   }catch(e){}
   try{ const r = await window.storage.get(QKEY);    qlog    = JSON.parse(r.value) || {};   }catch(e){}
+  try{ const r = await window.storage.get(MQKEY);   mlog    = JSON.parse(r.value) || {};   }catch(e){}
   try{
     const r = await window.storage.get(KEY);
     const done = new Set(JSON.parse(r.value));
@@ -12030,6 +12065,14 @@ async function refreshBody(){
   }
   try{ const r = await window.storage.get(BMKEY); const v = JSON.parse(r.value);
     if(v && v.sec){ BM = v; bmPaint(); } }catch(e){}
+  /* the timer and the stopwatch are held in memory and written whole, exactly like the
+     highlights: a tab that slept through a block still holds the old T, and its next save
+     puts that back over whatever the other tab advanced. Re-read both, with the same
+     same-day check the loader uses so yesterday's timer is not restored. */
+  try{ const r = await window.storage.get(TKEY); const v = JSON.parse(r.value);
+    if(v && v.d === today()){ T = v; if(T.run && tLeft() <= 0){ T.run = false; T.left = 0; } } }catch(e){}
+  try{ const r = await window.storage.get(SWKEY); const v = JSON.parse(r.value); if(v) SW = v; }catch(e){}
+  tPaint();
   paintRead(); paintDays(); paint(); paintQ();
   if(typeof paintWeak === 'function') paintWeak();
   if(typeof pqStats === 'function' && pqReady) pqStats();
@@ -12133,6 +12176,11 @@ document.addEventListener('visibilitychange', ()=>{
   addEventListener('resize', ()=>{ measureJumpRow(); measureTimer(); }, {passive:true});
   /* the timer appears and collapses on its own clock, not on anything we already listen to */
   if(miniT) new MutationObserver(measureTimer).observe(miniT, {attributes:true, attributeFilter:['hidden','class']});
+  /* the attribute watch is not enough on its own: the mode line flips between "plain
+     stopwatch" and "back to the 75/35/10 day" and the clock text changes, so the box can grow
+     a line taller with no attribute changing at all — --minih would go stale and the row
+     could sit back down on the timer. This catches the height itself. */
+  if(miniT && typeof ResizeObserver === 'function') new ResizeObserver(measureTimer).observe(miniT);
   jumpRowFor(); measureJumpRow(); measureTimer();
   /* Out of the way while the reader is moving, back about 600 ms after they stop. One
      debounced timer and one class write per burst — no per-frame work, and nothing that
@@ -13271,7 +13319,12 @@ async function mockFinish(auto){
   /* the misses feed the normal practice view */
   rows.forEach(r=>{ if(r.given) pqDone[pqKey(r.p)] = r.ok ? 1 : 0; });
   /* the day's question block logs itself — scaled to the 50 the sparkline is drawn in */
-  if(rows.length >= 25){ qlog[today()] = Math.round(right / rows.length * 50); saveQ(); paintQ(); }
+  if(rows.length >= 25){
+    /* its own log, never qlog: the typed score and the mock score are two different claims
+       about the day and both stay visible. The sparkline reconciles them in dayScore(). */
+    mlog[today()] = Math.round(right / rows.length * 50);
+    saveML(); paintQ();
+  }
   pqSave(); pqStats();
   try{ await window.storage.set(MKKEY, JSON.stringify(
     {when:today(), n:rows.length, right:right})); }catch(e){}

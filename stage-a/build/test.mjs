@@ -990,8 +990,126 @@ ok('the jump button and the metric read the same source map, so they cannot drif
 ok('a table may split across printed pages, with its rows kept whole and its header repeated',
    /table\{page-break-inside:auto\}/.test(code) && /tr,td,th\{page-break-inside:avoid\}/.test(code) &&
    /thead\{display:table-header-group\}/.test(code));
-ok('a finished paper logs the day\u2019s score itself, scaled to the 50 the sparkline uses',
-   /if\(rows\.length >= 25\)\{ qlog\[today\(\)\] = Math\.round\(right \/ rows\.length \* 50\); saveQ\(\); paintQ\(\); \}/.test(code));
+/* ---- dark mode showed no answer feedback, 16 Sep ----
+   body.dark .pqo is (0,2,1) !important and beat .pqo.right / .pqo.wrong at (0,2,0) !important,
+   so after answering in dark the right option kept the plain surface background and the rule
+   border; only the text changed colour. The fix is a (0,3,1) !important pair.
+   jsdom does not resolve these rules at all — it returns rgba(0,0,0,0) for every .pqo — so
+   this guard is structural and the computed colours are checked in Chromium instead. */
+{
+  const at = re => { const m = code.match(re); return m ? code.indexOf(m[0]) : -1; };
+  const plain = at(/body\.dark \.pqo \{[\s\S]*?\}/);
+  const right = at(/body\.dark \.pqo\.right \{[\s\S]*?\}/);
+  const wrong = at(/body\.dark \.pqo\.wrong \{[\s\S]*?\}/);
+  ok('dark mode gives an answered option its own background and border, not the plain one',
+     right > -1 && wrong > -1 &&
+     /body\.dark \.pqo\.right \{\s*background: #1b2a25 !important;\s*border-color: var\(--start\) !important;/.test(code) &&
+     /body\.dark \.pqo\.wrong \{\s*background: #2b1d20 !important;\s*border-color: var\(--stop\) !important;/.test(code),
+     'right@' + right + ' wrong@' + wrong);
+  /* same specificity would make source order decide, so pin that too */
+  ok('and those rules sit after the plain-option rule they have to beat',
+     plain > -1 && right > plain && wrong > plain, 'plain@' + plain + ' right@' + right);
+}
+
+/* ---- the timer can change height without any attribute changing, 16 Sep ---- */
+ok('the timer\u2019s height is watched, not just its attributes',
+   /if\(miniT && typeof ResizeObserver === 'function'\) new ResizeObserver\(measureTimer\)\.observe\(miniT\);/.test(code) &&
+   /new MutationObserver\(measureTimer\)\.observe\(miniT, \{attributes:true/.test(code));
+{
+  /* the mode line flips between "plain stopwatch" and "back to the 75/35/10 day" and the clock
+     text changes; neither touches an attribute, so without this the box can grow a line and
+     --minih goes stale. jsdom has no ResizeObserver, so drive measureTimer the way one would. */
+  const mt = d.getElementById('miniT'), row = d.getElementById('jumpRow');
+  mt.hidden = false;
+  let h = 56;
+  mt.getBoundingClientRect = () => ({height: h, width: 269, top:774, left:10, right:279, bottom:830});
+  mt.getClientRects = () => (mt.hidden ? [] : [mt.getBoundingClientRect()]);
+  w.eval("show('falls')");
+  const before = d.documentElement.style.getPropertyValue('--minih');
+  h = 88;                                        /* the mode line wrapped it a row taller */
+  mt.dispatchEvent(new w.Event('resize'));        /* no attribute changed */
+  const stale = d.documentElement.style.getPropertyValue('--minih');
+  w.eval("show('falls')");                        /* whatever re-measures must pick it up */
+  const after = d.documentElement.style.getPropertyValue('--minih');
+  ok('a height change with no attribute change still updates --minih',
+     before === '56px' && after === '88px',
+     'before=' + before + ' on-resize=' + stale + ' after=' + after);
+  delete mt.getBoundingClientRect; delete mt.getClientRects;
+  mt.hidden = true; w.eval("show('week')");
+}
+
+/* ---- a sleeping tab could write its stale timer back, 16 Sep ---- */
+/* Scoped to refreshBody on purpose: the boot loader contains almost the same two lines, so an
+   unscoped regex matched THOSE and stayed green with the re-read deleted from refreshBody. */
+{
+  const body = (code.match(/async function refreshBody\(\)\{[\s\S]*?\n\}/) || [''])[0];
+  ok('coming back to the tab re-reads the timer and the stopwatch, not just the rest',
+     /window\.storage\.get\(TKEY\)/.test(body) && /window\.storage\.get\(SWKEY\)/.test(body) &&
+     /v\.d === today\(\)/.test(body) && /tPaint\(\);/.test(body),
+     'refreshBody ' + body.length + ' chars, TKEY=' + /window\.storage\.get\(TKEY\)/.test(body));
+}
+{
+  /* behaviourally: another tab advances the timer, this one refreshes and must show theirs */
+  store['geri:timer'] = JSON.stringify({p:2, left:123, run:false, ts:0, d:w.eval('today()')});
+  store['geri:stopwatch'] = JSON.stringify({on:true, run:false, ms:4567, ts:0});
+  await w.eval('refreshBody()');
+  ok('a timer another tab moved on is picked up, not overwritten',
+     w.eval('T.p') === 2 && Math.round(w.eval('T.left')) === 123 && w.eval('SW.ms') === 4567,
+     'T.p=' + w.eval('T.p') + ' left=' + w.eval('T.left') + ' SW.ms=' + w.eval('SW.ms'));
+  /* yesterday's timer must not come back — the loader's own rule */
+  store['geri:timer'] = JSON.stringify({p:1, left:999, run:false, ts:0, d:'1999-01-01'});
+  await w.eval('refreshBody()');
+  ok('but a timer from another day is left where it is',
+     Math.round(w.eval('T.left')) === 123, 'left=' + w.eval('T.left'));
+  w.eval("SW = {on:false, run:false, ms:0, ts:0}; swSetMode(false)");
+}
+
+/* ---- the mock keeps its own day log, 16 Sep ----
+   The mock used to write into qlog, so a paper could silently replace a score the reader had
+   typed. It now writes geri:mocklog and qlog stays the hand-typed log only; both are shown,
+   and the sparkline plots the lower of the two for a day that has both. */
+{
+  ok('a finished paper writes its own log, not the reader\u2019s',
+     /mlog\[today\(\)\] = Math\.round\(right \/ rows\.length \* 50\);/.test(code) &&
+     /saveML\(\); paintQ\(\);/.test(code) &&
+     !/qlog\[today\(\)\] = Math\.round\(right/.test(code));
+  ok('the only thing that writes qlog is the reader typing a score',
+     (code.match(/qlog\[today\(\)\]\s*=/g) || []).length === 1 &&
+     /qlog\[today\(\)\]=v; el\.value=''; saveQ\(\);/.test(code));
+  ok('the mock log has its own key, loaded on boot and re-read on refresh, and is backed up',
+     /const MQKEY = 'geri:mocklog';/.test(code) &&
+     (code.match(/window\.storage\.get\(MQKEY\)/g) || []).length === 2 &&
+     /'geri:qlog','geri:mocklog'/.test(code));
+
+  /* the reconciliation is run, not re-implemented: dayScore is the real function */
+  const day = (a, b) => w.eval(`(()=>{ const qa = qlog, ma = mlog;
+    qlog = {}; mlog = {};
+    ${''}
+    if(${a === null ? 'false' : 'true'}) qlog['d'] = ${a === null ? 0 : a};
+    if(${b === null ? 'false' : 'true'}) mlog['d'] = ${b === null ? 0 : b};
+    const out = dayScore('d'); qlog = qa; mlog = ma; return out; })()`);
+  ok('a day with both scores plots the lower of them', day(44, 30) === 30 && day(30, 44) === 30,
+     day(44, 30) + ' / ' + day(30, 44));
+  ok('a day with only one score plots that one', day(37, null) === 37 && day(null, 41) === 41,
+     day(37, null) + ' / ' + day(null, 41));
+  ok('a day with neither has no score', day(null, null) === null, String(day(null, null)));
+
+  /* both numbers on screen, each part dropped when it is absent */
+  const lab = (a, b) => w.eval(`(()=>{ const qa = qlog, ma = mlog, t = today();
+    qlog = {}; mlog = {};
+    if(${a === null ? 'false' : 'true'}) qlog[t] = ${a === null ? 0 : a};
+    if(${b === null ? 'false' : 'true'}) mlog[t] = ${b === null ? 0 : b};
+    paintQ(); const out = document.getElementById('qLab').innerHTML;
+    qlog = qa; mlog = ma; paintQ(); return out; })()`);
+  const both = lab(44, 30);
+  ok('both scores are shown when the day has both',
+     /you: <b>44\/50<\/b>/.test(both) && /mock: <b>30\/50<\/b>/.test(both), both.slice(-90));
+  const onlyMine = lab(44, null), onlyMock = lab(null, 30);
+  ok('only the part that exists is shown',
+     /you: <b>44/.test(onlyMine) && !/mock:/.test(onlyMine) &&
+     /mock: <b>30/.test(onlyMock) && !/you:/.test(onlyMock),
+     onlyMine.slice(-60) + '  ||  ' + onlyMock.slice(-60));
+}
 
 ok('an abbreviation tapped inside the table pop-out finds its footnote and closes the dialog first',
    /const inModal = a\.closest\('#tblModal'\);/.test(code) &&
@@ -1110,12 +1228,24 @@ ok('a highlight the other tab deleted is not resurrected by this tab saving a ne
 ok('a save queued before a merge reassigns HL reads the live object, not the one it was queued with',
    /function mergeSave\(key, getMine, mergeFn, apply\)\{/.test(code) && /const mine = getMine\(\);/.test(code) &&
    /mergeSave\(HLKEY, \(\)=>HL, mergeHL/.test(code) && /mergeSave\(SNKEY, \(\)=>SN, mergeSN/.test(code));
-ok('and behaviourally: a highlight added between queueing and resolving survives', (()=>{
+/* This used to assert only that hlSave() returned a thenable, which is true of the broken
+   version too — it proved nothing about the merge it is named for. Await the chain and read
+   what actually landed in storage. */
+{
+  /* HL must be REASSIGNED here, not appended to. Appending mutates the same object, so a save
+     that wrongly bound it at queue time still sees the new entry and the check passes either
+     way — which is exactly how the first two versions of this guard stayed green against the
+     broken code. refreshBody reassigns (HL = merged), so that is the real scenario. */
+  delete store[w.eval('HLKEY')];
   w.eval("HL = {falls:[{id:'a'}]}; HLSEEN = '{}'");
-  const chain = w.eval("hlSave()");              /* queued with HL = {a} */
-  w.eval("HL.falls.push({id:'b'})");             /* added before the task runs */
-  return chain && typeof chain.then === 'function';
-})());
+  const chain = w.eval("hlSave()");                        /* queued while HL is the {a} object */
+  w.eval("HL = {falls:[{id:'a'},{id:'b'}]}");              /* reassigned before the task runs */
+  await chain;
+  let ids = [];
+  try{ ids = (JSON.parse(store[w.eval('HLKEY')]).falls || []).map(x => x.id).sort(); }catch(e){}
+  ok('and behaviourally: a highlight added between queueing and resolving survives',
+     ids.join(',') === 'a,b', JSON.stringify(ids) + ' stored=' + (store[w.eval('HLKEY')] || '(nothing)'));
+}
 ok('the synchronous teardown write stands down when the host supplies its own storage',
    /if\(!storageIsLocal\) return false;/.test(code) && /let storageIsLocal = false;/.test(code) &&
    /storageIsLocal = false;\s*\/\* the memory fallback/.test(html));
