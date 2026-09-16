@@ -516,7 +516,7 @@ const M = [
   ['a focused jump button fades out from under the keyboard again',
    "    if(!faded && !row.contains(document.activeElement)){ row.classList.add('fade'); faded = true; }",
    "    if(!faded){ row.classList.add('fade'); faded = true; }",
-   'does not fade out from under the keyboard'],
+   'already holds focus never fades'],
 
   ['reduced motion loses its carve-out',
    "  @media (prefers-reduced-motion: reduce){ .jumprow{transition:none} }",
@@ -573,7 +573,18 @@ if(STATIC){
     const n = src.split(from).length - 1;
     if(n !== 1){ bad++; console.log((n ? 'AMBIG  ' : 'STALE  ') + name); }
   }
-  console.log(M.length + ' mutations, ' + bad + ' stale or ambiguous');
+  /* A needle that matches no guard label can never be reported as CAUGHT, so the mutation is
+     dead weight and the suite is blind where it claims cover. Run 65 lost 17 minutes to
+     exactly this: a guard was reworded here and its mutation kept pointing at the old label.
+     The target check above would not have noticed — the code it mutates was untouched. */
+  /* the suite writes non-ASCII in guard labels as \uXXXX escapes, so decode before comparing
+     or every needle holding a real curly apostrophe reports a false miss */
+  const suite = fs.readFileSync('test.mjs', 'utf8')
+    .replace(/\\u([0-9a-fA-F]{4})/g, (m, h) => String.fromCharCode(parseInt(h, 16)));
+  for(const [name, , , needle] of M){
+    if(!suite.includes(needle)){ bad++; console.log('NEEDLE ' + name + '  — no guard label contains "' + needle + '"'); }
+  }
+  console.log(M.length + ' mutations, ' + bad + ' stale, ambiguous or unmatched');
   process.exit(bad ? 1 : 0);
 }
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
