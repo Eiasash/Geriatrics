@@ -1599,6 +1599,18 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
     const rows = n.querySelectorAll('tbody tr');
     return rows.length === expectRows ? n.textContent : null;
   };
+  /* a section (bpsd) can carry more than one Key Clinical Points table, one per chapter;
+     match the h2 by its trailing "ch N" rather than just the first hit */
+  const kcp2 = (secId, chapLabel, expectRows) => {
+    const sec = d.getElementById(secId);
+    const h2 = [...sec.querySelectorAll('h2')].find(h => new RegExp('Key Clinical Points.*' + chapLabel).test(h.textContent));
+    if (!h2) return null;
+    let n = h2.nextElementSibling;
+    while (n && !n.classList.contains('tscroll')) n = n.nextElementSibling;
+    if (!n) return null;
+    const rows = n.querySelectorAll('tbody tr');
+    return rows.length === expectRows ? n.textContent : null;
+  };
   const falls46 = kcp('falls', 5);
   ok('falls Key Clinical Points table (ch 43), 5 rows',
      !!falls46 && /carotid sinus hypersensitivity/.test(falls46) && /expedited cataract extraction/.test(falls46));
@@ -1617,6 +1629,15 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
   const deliriumKcp = kcp('delirium', 8);
   ok('delirium Key Clinical Points table (ch 58), 8 rows',
      !!deliriumKcp && /unrecognised in up to 70%/.test(deliriumKcp) && /two-thirds of delirium cases/.test(deliriumKcp));
+  const bpsd60Kcp = kcp2('bpsd', 'ch 60', 7);
+  ok('bpsd Key Clinical Points table for ch 60, 7 rows',
+     !!bpsd60Kcp && /up to 98% of patients with dementia/.test(bpsd60Kcp) && /reassess the risk\/benefit ratio regularly/.test(bpsd60Kcp));
+  const bpsd63Kcp = kcp2('bpsd', 'ch 63', 6);
+  ok('bpsd Key Clinical Points table for ch 63, 6 rows',
+     !!bpsd63Kcp && /preserved oculocephalic reflex/.test(bpsd63Kcp) && /behavioural-variant frontotemporal dementia/.test(bpsd63Kcp));
+  const parkinsonKcp = kcp('parkinson', 6);
+  ok('parkinson Key Clinical Points table (ch 61), 6 rows',
+     !!parkinsonKcp && /gold standard for diagnosing Parkinson disease remains autopsy/.test(parkinsonKcp) && /medication-refractory tremor/.test(parkinsonKcp));
 }
 
 console.log("DONE");

@@ -441,6 +441,21 @@ const M = [
    "    <tr><td class=\"n\">8</td><td>Nonpharmacologic strategies are the preferred treatment; medications are reserved for more severe symptoms that threaten medical management or patient safety.</td></tr>\n",
    "",
    "delirium Key Clinical Points table"],
+
+  ["bpsd ch 60 Key Clinical Points table loses its last row",
+   "    <tr><td class=\"n\">7</td><td>If medication is started, titrate slowly, use the lowest effective dose, and reassess the risk/benefit ratio regularly.</td></tr>\n",
+   "",
+   "bpsd Key Clinical Points table for ch 60"],
+
+  ["bpsd ch 63 Key Clinical Points table loses its last row",
+   "    <tr><td class=\"n\">6</td><td>A history of falls and dysphagia with abnormal vertical gaze but a preserved oculocephalic reflex suggests progressive supranuclear palsy.</td></tr>\n",
+   "",
+   "bpsd Key Clinical Points table for ch 63"],
+
+  ["parkinson Key Clinical Points table loses its last row",
+   "    <tr><td class=\"n\">6</td><td>Deep brain stimulation is typically indicated for patients with difficult motor complications and medication-refractory tremor.</td></tr>\n",
+   "",
+   "parkinson Key Clinical Points table"],
 ];
 
 if(STATIC){

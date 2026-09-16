@@ -1,5 +1,5 @@
 {
-  "_about": "Each fact is a literal substring that must appear in the rendered text of the named section. Every entry was checked against the Hazzard 8th-edition chapter (or the named paper) on 2026-09-13 (falls entries re-verified against ch 43 on 2026-09-14). If a test fails, either the section changed or the fact did — go back to the source before editing either. Key Clinical Points recap tables for ch 43, 44, 46 added and pinned 2026-09-16. Batch 2 (ch 47, 55, 58) added and pinned 2026-09-16.",
+  "_about": "Each fact is a literal substring that must appear in the rendered text of the named section. Every entry was checked against the Hazzard 8th-edition chapter (or the named paper) on 2026-09-13 (falls entries re-verified against ch 43 on 2026-09-14). If a test fails, either the section changed or the fact did — go back to the source before editing either. Key Clinical Points recap tables for ch 43, 44, 46 added and pinned 2026-09-16. Batch 2 (ch 47, 55, 58) added and pinned 2026-09-16. Batch 3 (ch 60, 61, 63) added and pinned 2026-09-16; ch 58 point 7 wording corrected to 'varying levels of alertness'.",
   "facts": [
     {
       "sec": "thyroid",
@@ -585,6 +585,51 @@
       "sec": "delirium",
       "src": "ch 58",
       "text": "Nonpharmacologic strategies are the preferred treatment"
+    },
+    {
+      "sec": "bpsd",
+      "src": "ch 60",
+      "text": "up to 98% of patients with dementia"
+    },
+    {
+      "sec": "bpsd",
+      "src": "ch 60",
+      "text": "reassess the risk/benefit ratio regularly"
+    },
+    {
+      "sec": "bpsd",
+      "src": "ch 60",
+      "text": "systematised delusions"
+    },
+    {
+      "sec": "bpsd",
+      "src": "ch 63",
+      "text": "preserved oculocephalic reflex"
+    },
+    {
+      "sec": "bpsd",
+      "src": "ch 63",
+      "text": "30% of Parkinson disease patients develop dementia"
+    },
+    {
+      "sec": "bpsd",
+      "src": "ch 63",
+      "text": "behavioural-variant frontotemporal dementia"
+    },
+    {
+      "sec": "parkinson",
+      "src": "ch 61",
+      "text": "gold standard for diagnosing Parkinson disease remains autopsy"
+    },
+    {
+      "sec": "parkinson",
+      "src": "ch 61",
+      "text": "more than 1 in 100 people over age 60"
+    },
+    {
+      "sec": "parkinson",
+      "src": "ch 61",
+      "text": "medication-refractory tremor"
     }
   ]
 }
