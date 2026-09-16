@@ -1606,6 +1606,19 @@ w.eval("show('week')");
 ok('the COMBODEX option reads brand (ingredients), same characters reordered',
    w.eval(`(()=>{ const q = PQ.find(p => p.y === '2021-12' && +p.n === 98); return q ? q.o.indexOf('COMBODEX (PARACETAMOL, IBUPROFEN)') >= 0 : false; })()`));
 
+/* ---- bracket fixes read from the IMA papers, 16 Sep ----
+   2023 al q_pdf 644204_… page 23 and 2020 al q_pdf 644194_… page 37, both rendered and read.
+   Only the one bracket in each option was changed; the spacing quirks in the sibling options
+   are what the paper shows and are left alone. */
+ok('2023-06 q72 option 4 carries the paper\u2019s bracket: DPI (DRY POWDER INHALER)',
+   w.eval(`(()=>{ const q = PQ.find(p => p.y === '2023-06' && +p.n === 72);
+     return q ? q.o[3].endsWith('DPI (DRY POWDER INHALER)') : false; })()`),
+   w.eval(`(()=>{ const q = PQ.find(p => p.y === '2023-06' && +p.n === 72); return q ? q.o[3].slice(-34) : 'no such question'; })()`));
+ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
+   w.eval(`(()=>{ const q = PQ.find(p => p.y === '2020' && +p.n === 90);
+     return q ? q.o[0].startsWith('METRONIDAZOLE (FLAGYL) ') : false; })()`),
+   w.eval(`(()=>{ const q = PQ.find(p => p.y === '2020' && +p.n === 90); return q ? q.o[0] : 'no such question'; })()`));
+
 /* ---- group 6: search and remembered past-paper place ---- */
 {
   const q = d.getElementById('q');

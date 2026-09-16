@@ -492,6 +492,17 @@ const M = [
    "    if(off) void 0;",
    'still measured on Past papers'],
 
+  /* --- bracket fixes read from the IMA papers, 16 Sep --- */
+  ['2023-06 q72 option 4 loses the paper\u2019s bracket again',
+   "\u05d1 - DPI (DRY POWDER INHALER)",
+   "\u05d1 - DPI DRY POWDER INHALER))",
+   'carries the paper\u2019s bracket: DPI'],
+
+  ['2020 q90 option 1 loses the paper\u2019s bracket again',
+   "METRONIDAZOLE (FLAGYL) \u05e4\u05d5\u05de\u05d9",
+   "METRONIDAZOLE FLAGYL) )\u05e4\u05d5\u05de\u05d9",
+   'carries the paper\u2019s bracket: METRONIDAZOLE'],
+
   /* --- outside review, 16 Sep --- */
   ['search highlighting goes back to one replace per word, marking its own markup',
    "    if(words.length) snip = snip.replace(\n      new RegExp(words.map(w=>esc(escHtml(w))).sort((a,b)=>b.length-a.length).join('|'), 'gi'),\n      m=>`<mark>${m}</mark>`);",
