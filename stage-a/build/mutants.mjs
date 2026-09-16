@@ -491,6 +491,12 @@ const M = [
    "    if(off) row.classList.remove('off');",
    "    if(off) void 0;",
    'still measured on Past papers'],
+
+  /* --- outside review, 16 Sep --- */
+  ['search highlighting goes back to one replace per word, marking its own markup',
+   "    if(words.length) snip = snip.replace(\n      new RegExp(words.map(w=>esc(escHtml(w))).sort((a,b)=>b.length-a.length).join('|'), 'gi'),\n      m=>`<mark>${m}</mark>`);",
+   "    for(const w of words) snip = snip.replace(new RegExp(esc(escHtml(w)), 'gi'), m=>`<mark>${m}</mark>`);",
+   'survives a second word that matches the markup it injects'],
 ];
 
 if(STATIC){

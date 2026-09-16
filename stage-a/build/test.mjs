@@ -1616,6 +1616,25 @@ ok('the COMBODEX option reads brand (ingredients), same characters reordered',
      hitsTxt.length > 0 && hitsTxt.every(t => t.includes('delirium') && t.includes('haloperidol')) && marks >= 2 * hitsTxt.length,
      hitsTxt.length + ' hits, ' + marks + ' marks');
   w.eval("search('')"); q.value = '';
+
+  /* Outside review, 16 Sep: highlighting ran one replace per word, so a later word matched
+     inside the <mark> tags an earlier word had just injected. "delirium mark" produced
+     <<mark>mark</mark>>delirium</<mark>mark</mark>>, and any second word that is a substring
+     of "mark" (a, ar, k, ma) garbled the snippet the same way. One pass over the snippet now. */
+  for(const term of ['delirium mark', 'risk a']){
+    q.value = term; w.eval("search('" + term + "')");
+    const els = [...d.querySelectorAll('#hits button')];
+    /* the comment check is not cosmetic: the parser turns the broken "</<mark>mark</mark>>"
+       into a comment node, which balances the <mark> counts and hides the damage. Correct
+       highlighting is escaped text plus <mark> elements and never produces a comment. */
+    const bad = els.filter(b => /<</.test(b.innerHTML) || /<m</.test(b.innerHTML) ||
+      b.innerHTML.includes('<!--') || /(^|[^&])(&lt;|<)\/?mark(&gt;|>)/.test(b.textContent) ||
+      (b.innerHTML.match(/<mark>/g) || []).length !== (b.innerHTML.match(/<\/mark>/g) || []).length);
+    ok('search highlighting survives a second word that matches the markup it injects: "' + term + '"',
+       els.length > 0 && bad.length === 0,
+       els.length + ' hits, ' + bad.length + ' garbled' + (bad[0] ? ': ' + bad[0].innerHTML.slice(0, 90) : ''));
+    w.eval("search('')"); q.value = '';
+  }
 }
 {
   w.eval("show('papers')");

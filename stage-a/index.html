@@ -9843,7 +9843,15 @@ function search(term){
     /* escape first, then mark: the match is re-found on the escaped text so a term
        containing & or < still highlights */
     snip = escHtml(snip);
-    for(const w of words) snip = snip.replace(new RegExp(esc(escHtml(w)), 'gi'), m=>`<mark>${m}</mark>`);
+    /* one pass over the snippet, not one per word: replacing word by word let a later word
+       match inside the <mark> tags an earlier word had just injected, so "delirium mark"
+       produced <<mark>mark</mark>>delirium... Any second word that is a substring of "mark"
+       (a, ar, k, ma) garbled the snippet. Longest alternative first so the longer word wins
+       where two overlap. words is never empty here — a whitespace-only term would make the
+       alternation match the empty string at every position. */
+    if(words.length) snip = snip.replace(
+      new RegExp(words.map(w=>esc(escHtml(w))).sort((a,b)=>b.length-a.length).join('|'), 'gi'),
+      m=>`<mark>${m}</mark>`);
     return `<button type="button" data-i="${i}"><span>${SECNAME[x.sec]||x.sec}</span>${snip}</button>`;
   }).join('');
   hits.classList.add('on');
