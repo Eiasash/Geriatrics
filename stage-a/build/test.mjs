@@ -990,6 +990,96 @@ ok('the jump button and the metric read the same source map, so they cannot drif
 ok('a table may split across printed pages, with its rows kept whole and its header repeated',
    /table\{page-break-inside:auto\}/.test(code) && /tr,td,th\{page-break-inside:avoid\}/.test(code) &&
    /thead\{display:table-header-group\}/.test(code));
+/* ---- the place follows progress, 16 Sep ----
+   Marking a chapter read, or finishing its drill, used to leave the bookmark pointing at the
+   old spot inside the chapter just finished. It now moves to the top of the next unread week
+   chapter, or clears when the week is done so resume goes home. */
+{
+  /* the real week can hold a single chapter at some pinned dates, and a one-chapter week can
+     only ever test the "week done" branch. Drive a known three-chapter week instead, and put
+     the real one back afterwards. */
+  const realWC = w.eval("(()=>{ window._realWeekChapters = weekChapters; weekChapters = ()=>[{sec:'falls',t:'ch 43 Falls'},{sec:'sleep',t:'ch 44 Sleep'},{sec:'delirium',t:'ch 58 Delirium'}]; return !!window._realWeekChapters; })()");
+  const wk = w.eval("weekChapters().map(x=>x.sec)");
+  const bm = () => w.eval("BM ? BM.sec : null");
+  ok('the week used for these checks has enough chapters to move between',
+     realWC === true && wk.length === 3, JSON.stringify(wk));
+  w.eval("readSet = new Set(); BM = null;");
+  w.eval(`toggleRead('${wk[0]}')`);
+  const afterFirst = bm();
+  ok('marking a chapter read moves the place to the next unread chapter this week',
+     afterFirst === wk[1], 'read ' + wk[0] + ' -> ' + afterFirst + ' (wanted ' + wk[1] + ')');
+  /* un-marking must not drag it back into the chapter just re-opened */
+  w.eval(`toggleRead('${wk[0]}')`);
+  ok('un-marking a chapter leaves the place where it moved to', bm() === wk[1], String(bm()));
+  /* a place set by hand wins, until the next completion */
+  w.eval(`BM = {sec:'${wk[0]}', t:'hand placed', i:0, d:'x'}`);
+  ok('a place marked by hand is kept', bm() === wk[0], String(bm()));
+  w.eval(`readSet = new Set(); toggleRead('${wk[0]}')`);
+  ok('and the next completion moves it on again', bm() === wk[1], String(bm()));
+  /* finishing a chapter's own cards counts the same as marking it read */
+  w.eval("readSet = new Set(); BM = null;");
+  ok('finishing a chapter\u2019s drill moves the place on too',
+     /if\(filter\.mode === 'tag' && SECFORTAG\[filter\.tag\] && typeof bmAdvance === 'function'\) bmAdvance\(\);/.test(code));
+  w.eval(`readSet = new Set(${JSON.stringify(wk)});`);
+  w.eval("bmAdvance()");
+  ok('with the week finished the place clears, so resume goes home', bm() === null, String(bm()));
+  w.eval("readSet = new Set(); BM = null;");
+  w.eval("weekChapters = window._realWeekChapters;");
+  w.eval("paintRead();");
+}
+
+/* ---- the floating timer, one tap, 16 Sep ---- */
+{
+  const box = d.getElementById('miniT'), go = d.getElementById('mtGo');
+  const cls = () => box.className;
+  w.eval("show('falls'); mtOff = false; T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint()");
+  box.classList.remove('shut','open');
+  /* pause and resume: one tap each, from the compact bar, without the menu */
+  go.click();
+  const ranAfterOne = w.eval('T.run');
+  ok('one tap on the compact bar starts or resumes the day, with no menu in the way',
+     ranAfterOne === true && !box.classList.contains('open'), 'run=' + ranAfterOne + ' ' + cls());
+  go.click();
+  ok('and one tap pauses it again', w.eval('T.run') === false, 'run=' + w.eval('T.run'));
+  /* The menu must never be what a pause has to go through. Checked in stopwatch mode on
+     purpose: in day mode the button forwards to the home-page Go, whose synthetic click has a
+     target outside the timer, so the outside-tap handler closes the menu too and would mask
+     whether this handler did its own job. */
+  w.eval("swSetMode(true)");
+  box.classList.remove('shut'); box.classList.add('open');
+  go.click();
+  ok('pausing from an open menu closes the menu rather than leaving it up',
+     !box.classList.contains('open'), cls());
+  w.eval("swSetMode(false); SW = {on:false, run:false, ms:0, ts:0};");
+  /* collapse and expand: one tap each, on the clock and on the collapsed bar */
+  box.classList.remove('open','shut');
+  d.getElementById('mtClock').click();
+  ok('one tap on the clock collapses the timer', box.classList.contains('shut'), cls());
+  box.click();
+  ok('and one tap on the collapsed timer brings it back', !box.classList.contains('shut'), cls());
+  /* the collapse button still works and is not undone by the bar\u2019s own handler */
+  box.classList.remove('shut'); d.getElementById('mtShut').click();
+  ok('the collapse button in the menu still collapses, and stays collapsed',
+     box.classList.contains('shut') && !box.classList.contains('open'), cls());
+  box.classList.remove('shut');
+  /* every action in the menu closes it behind itself */
+  box.classList.add('open'); d.getElementById('mtMode').click();
+  const modeClosed = !box.classList.contains('open');
+  w.eval("swSetMode(false)");
+  box.classList.add('open'); d.getElementById('mtSkip').click();
+  const skipClosed = !box.classList.contains('open');
+  ok('an action taken in the menu closes it', modeClosed && skipClosed,
+     'mode=' + modeClosed + ' skip=' + skipClosed);
+  /* and tapping the page closes it */
+  box.classList.add('open');
+  d.body.dispatchEvent(new w.MouseEvent('click', {bubbles:true}));
+  ok('tapping outside the menu closes it', !box.classList.contains('open'), cls());
+  box.classList.remove('open','shut');
+  /* left part-way through the block on purpose: the timer only shows while the block is in
+     use, and the height guard further down needs a visible box to measure */
+  w.eval("T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint(); show('week')");
+}
+
 /* ---- dark mode showed no answer feedback, 16 Sep ----
    body.dark .pqo is (0,2,1) !important and beat .pqo.right / .pqo.wrong at (0,2,0) !important,
    so after answering in dark the right option kept the plain surface background and the rule

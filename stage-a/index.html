@@ -525,7 +525,8 @@
     border-radius:22px;box-shadow:0 6px 22px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;
     max-width:calc(100vw - 20px)}
   #miniT[hidden]{display:none}
-  #miniT b{font-family:var(--mono);font-size:calc(15px*var(--fs,1));letter-spacing:.02em;min-width:56px}
+  #miniT b{font-family:var(--mono);font-size:calc(15px*var(--fs,1));letter-spacing:.02em;min-width:56px;cursor:pointer}
+  #miniT .ph{cursor:pointer}
   #miniT .ph{font-size:calc(11.5px*var(--fs,1));opacity:.75;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #miniT button{font-family:var(--sans);font-size:calc(12.5px*var(--fs,1));min-height:40px;padding:8px 12px;border-radius:20px;cursor:pointer;
     background:none;border:1px solid var(--paper);color:var(--paper);white-space:nowrap}
@@ -10536,12 +10537,34 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
 /* the floating copy drives the same state; the big timer on the home page follows it */
 (function(){
   const box = document.getElementById('miniT'); if(!box) return;
-  document.getElementById('mtGo').addEventListener('click',()=>{ if(SW.on) swToggleRun(); else elGo.click(); });
-  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); });
+  /* One tap, always. Pause/Resume acts immediately and closes the menu rather than opening
+     it; it never needs the menu to be open first. */
+  document.getElementById('mtGo').addEventListener('click',()=>{
+    box.classList.remove('open');
+    if(SW.on) swToggleRun(); else elGo.click();
+  });
+  /* every action inside the menu closes it behind itself */
+  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); box.classList.remove('open'); });
   document.getElementById('mtShut').addEventListener('click',()=>{ box.classList.remove('open'); box.classList.add('shut'); });
   document.getElementById('mtMore').addEventListener('click',()=>{
     if(box.classList.contains('shut')){ box.classList.remove('shut'); return; }
     box.classList.toggle('open');
+  });
+  /* Tapping the clock or the phase label collapses the bar, and tapping the collapsed bar
+     anywhere brings it back — one tap each way, instead of going through the menu. The
+     collapse action stays in the menu too, so a keyboard user loses nothing: the clock is
+     text, not a control. */
+  box.addEventListener('click', e=>{
+    /* buttons own their own behaviour: without this the collapse button's own click bubbles
+       up here, is read as "a tap on a collapsed bar", and immediately re-opens it */
+    if(e.target.closest('button')) return;
+    if(box.classList.contains('shut')){ box.classList.remove('shut'); return; }
+    if(e.target.closest('#mtClock, .ph')){ box.classList.remove('open'); box.classList.add('shut'); }
+  });
+  /* tapping anywhere else on the page closes the menu */
+  document.addEventListener('click', e=>{
+    if(!box.classList.contains('open') || box.contains(e.target)) return;
+    box.classList.remove('open');
   });
   document.getElementById('mtSkip').addEventListener('click',()=>{ if(T.p<PH.length) tAdvance(); box.classList.remove('open'); });
   document.getElementById('mtReset').addEventListener('click',()=>{
@@ -11323,6 +11346,32 @@ function bmSet(el){
   tag.style.cssText = 'position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:59;background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:3px;font-family:var(--sans);font-size:calc(13px*var(--fs,1))';
   document.body.appendChild(tag); setTimeout(()=>tag.remove(), 1300);
 }
+/* Progress moves the place on. Marking a chapter read, or finishing its drill, means the old
+   spot inside it is no longer where to pick up: the bookmark jumps to the top of the next
+   week chapter that is still unread, or clears when the week is done, which puts "resume" back
+   to home. Marking a place by hand still wins — it simply overwrites BM, until the next
+   completion. Un-marking read never calls this, so it cannot drag the place backwards. */
+function bmFirstBlockOf(secId){
+  const sec = document.getElementById(secId); if(!sec) return null;
+  for(const b of sec.querySelectorAll('p,li,h2,h3,blockquote,aside,.callout')){
+    if(b.closest('.secfoot,.mynotes,.toc,.fnotes')) continue;
+    if(bmText(b)) return b;
+  }
+  return null;
+}
+function bmAdvance(){
+  const w = (typeof weekChapters === 'function') ? weekChapters() : [];
+  const nx = w.find(x => !(readSet && readSet.has(x.sec)));
+  if(!nx || !document.getElementById(nx.sec)){
+    BM = null;                                   /* week done — resume goes home */
+    try{ window.storage.set(BMKEY, ''); }catch(e){}
+    bmPaint(); return;
+  }
+  const b = bmFirstBlockOf(nx.sec); if(!b) return;
+  BM = {sec: nx.sec, t: bmText(b), i: 0, d: nowStamp()};
+  try{ window.storage.set(BMKEY, JSON.stringify(BM)); }catch(e){}
+  bmPaint();
+}
 function bmFind(){
   if(!BM) return null; const sec = document.getElementById(BM.sec); if(!sec) return null;
   let k = 0;
@@ -11564,8 +11613,11 @@ function paintRead(){
   if(typeof renderWeek === 'function' && document.getElementById('wkChaps').children.length) renderWeek();
 }
 function toggleRead(id){
-  readSet.has(id) ? readSet.delete(id) : readSet.add(id);
+  const was = readSet.has(id);
+  was ? readSet.delete(id) : readSet.add(id);
   saveRead(); paintRead();
+  /* only on the way in: un-marking a chapter must not drag the bookmark back into it */
+  if(!was && typeof bmAdvance === 'function') bmAdvance();
 }
 
 /* ---------- which sections were checked line-by-line against their source, and when ---------- */
@@ -11880,6 +11932,9 @@ function render(){
 }
 function summary(){
   card.hidden = true; dSum.hidden = false;
+  /* finishing a chapter's own cards counts as progress on that chapter, same as marking it
+     read: the place moves on to the next unread chapter this week */
+  if(filter.mode === 'tag' && SECFORTAG[filter.tag] && typeof bmAdvance === 'function') bmAdvance();
   const n = order.length, pct = Math.round(rGot/n*100);
   dSum.innerHTML =
     '<div class="big">' + rGot + ' of ' + n + '</div>' +

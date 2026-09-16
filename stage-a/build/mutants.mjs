@@ -137,9 +137,11 @@ const M = [
    "  /* try{ await saveChain; }catch(e){} */",
    'waits for queued saves'],
 
+  /* the target carries the line above it: bmAdvance clears the bookmark the same way when the
+     week is done, so the bare set() line appears twice now */
   ['clearing the bookmark goes back to .delete, which the layer does not have',
-   "    try{ window.storage.set(BMKEY, ''); }catch(e){}",
-   "    try{ window.storage.delete(BMKEY); }catch(e){}",
+   "    BM = null;\n    /* the storage layer has get and set only \u2014 .delete threw into the catch and the\n       bookmark stayed on disk. An empty value is what every loader treats as absent. */\n    try{ window.storage.set(BMKEY, ''); }catch(e){}",
+   "    BM = null;\n    try{ window.storage.delete(BMKEY); }catch(e){}",
    'layer has no delete'],
 
   ['restore leaves keys the backup does not carry',
@@ -522,6 +524,60 @@ const M = [
    "  @media (prefers-reduced-motion: reduce){ .jumprow{transition:none} }",
    "",
    'reduced motion drops the transition'],
+
+  /* --- the place follows progress, and the timer is one tap, 16 Sep --- */
+  ['marking a chapter read leaves the place inside the chapter just finished',
+   "  if(!was && typeof bmAdvance === 'function') bmAdvance();",
+   "  void was;",
+   'moves the place to the next unread chapter'],
+
+  ['un-marking a chapter drags the place back into it',
+   "  const was = readSet.has(id);\n  was ? readSet.delete(id) : readSet.add(id);",
+   "  const was = false;\n  readSet.has(id) ? readSet.delete(id) : readSet.add(id);",
+   'un-marking a chapter leaves the place'],
+
+  /* the old fallback: firstUnread() returns w[0] when everything is read, which would park
+     the place back on the first chapter instead of clearing it. Mutating the guard clause
+     itself crashed the page on the undefined chapter and proved nothing. */
+  ['the place parks on the first chapter instead of clearing when the week is done',
+   "  const nx = w.find(x => !(readSet && readSet.has(x.sec)));",
+   "  const nx = w.find(x => !(readSet && readSet.has(x.sec))) || w[0];",
+   'the place clears, so resume goes home'],
+
+  ['finishing a chapter\u2019s drill no longer moves the place',
+   "  if(filter.mode === 'tag' && SECFORTAG[filter.tag] && typeof bmAdvance === 'function') bmAdvance();",
+   "  void SECFORTAG;",
+   'drill moves the place on too'],
+
+  ['pause has to go through the menu again',
+   "    box.classList.remove('open');\n    if(SW.on) swToggleRun(); else elGo.click();",
+   "    box.classList.add('open');\n    if(SW.on) swToggleRun(); else elGo.click();",
+   'closes the menu rather than leaving it up'],
+
+  ['a tap on the clock stops collapsing the timer',
+   "    if(e.target.closest('#mtClock, .ph')){ box.classList.remove('open'); box.classList.add('shut'); }",
+   "    void e;",
+   'tap on the clock collapses'],
+
+  ['the collapsed timer cannot be tapped open again',
+   "    if(box.classList.contains('shut')){ box.classList.remove('shut'); return; }\n    if(e.target.closest('#mtClock, .ph'))",
+   "    if(false){ box.classList.remove('shut'); return; }\n    if(e.target.closest('#mtClock, .ph'))",
+   'collapsed timer brings it back'],
+
+  ['the collapse button is undone by the bar\u2019s own handler again',
+   "    if(e.target.closest('button')) return;",
+   "    void e.target;",
+   'collapse button in the menu still collapses'],
+
+  ['switching mode leaves the menu open',
+   "  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); box.classList.remove('open'); });",
+   "  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); });",
+   'action taken in the menu closes it'],
+
+  ['tapping the page no longer closes the menu',
+   "    if(!box.classList.contains('open') || box.contains(e.target)) return;\n    box.classList.remove('open');",
+   "    return;",
+   'tapping outside the menu closes it'],
 
   /* --- final Gemini round, 16 Sep --- */
   ['dark mode answer feedback loses to the plain-option rule again',
