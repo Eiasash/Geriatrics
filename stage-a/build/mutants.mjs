@@ -329,7 +329,7 @@ const M = [
 
 
   ["tap targets back under 44px",
-   "#miniT button, #mockPrev, #hlBar .sw, #hlModal .sw{ min-width:44px !important }",
+   "#miniT button, #mockPrev, #hlModal .sw{ min-width:44px !important }",
    "#miniT button{ }",
    "tap targets are at least 44px"],
 
@@ -524,6 +524,40 @@ const M = [
    "  @media (prefers-reduced-motion: reduce){ .jumprow{transition:none} }",
    "",
    'reduced motion drops the transition'],
+
+  /* --- less invasive chrome, and clean selection handling, 16 Sep --- */
+  ['the selection bar goes back to a black fill in light mode',
+   "  #hlBar{position:fixed;z-index:58;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;\n    justify-content:center;flex-wrap:nowrap;background:var(--paper);color:var(--ink);",
+   "  #hlBar{position:fixed;z-index:58;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;\n    justify-content:center;flex-wrap:nowrap;background:var(--ink);color:var(--paper);",
+   'not a fixed dark fill'],
+
+  ['the floating timer goes back to a black pill',
+   "  #miniT{position:fixed;left:10px;bottom:14px;z-index:56;font-family:var(--sans);background:var(--surface);color:var(--ink);",
+   "  #miniT{position:fixed;left:10px;bottom:14px;z-index:56;font-family:var(--sans);background:var(--ink);color:var(--paper);",
+   'takes its colour from the page too'],
+
+  ['the two secondary actions get a second row again',
+   "  <button type=\"button\" id=\"hlMore\" aria-haspopup=\"true\" aria-expanded=\"false\" aria-label=\"More highlight actions\">&#8943;</button>\n  <span class=\"hlmore\" hidden>\n    <button type=\"button\" id=\"hlNote\">+ note</button>\n    <button type=\"button\" id=\"hlHere\" title=\"Mark this as where you stopped reading\">stop here</button>\n  </span>",
+   "  <button type=\"button\" id=\"hlNote\">+ note</button>\n  <button type=\"button\" id=\"hlHere\" title=\"Mark this as where you stopped reading\">stop here</button>\n  <button type=\"button\" id=\"hlMore\" aria-haspopup=\"true\" aria-expanded=\"false\" aria-label=\"More highlight actions\" hidden></button>\n  <span class=\"hlmore\" hidden></span>",
+   'behind an overflow toggle'],
+
+  ['the timer and jump row stop standing down for the selection bar',
+   "    if(mt) mt.classList.toggle('hl-off', up);\n    if(row) row.classList.toggle('hl-off', up);",
+   "    void up;",
+   'stands the timer and the jump row down'],
+
+  /* this line is reached from two paths: a real selectionchange clearing (place -> paintChrome)
+     and a direct action inside the overflow (hlNote/hlHere's own click handlers call
+     paintChrome() too). The click path is what the existing guard below already exercises. */
+  ['the overflow menu no longer closes behind an action taken inside it',
+   "    if(!up) more.hidden = true;",
+   "    if(false) more.hidden = true;",
+   'closes the whole bar, overflow included'],
+
+  ['a selectionchange handler starts mutating the selection again',
+   "  function paintChrome(){\n    const up = hlBarShown();",
+   "  function paintChrome(){\n    window.getSelection().removeAllRanges();\n    const up = hlBarShown();",
+   'mutates the DOM or the Selection while a selection is live'],
 
   /* --- the place follows progress, and the timer is one tap, 16 Sep --- */
   ['marking a chapter read leaves the place inside the chapter just finished',

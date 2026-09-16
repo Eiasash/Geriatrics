@@ -623,7 +623,123 @@ w.eval("HL = {}");
 ok('selection offsets are counted over the searched node list, not Range.toString()',
    /r\.comparePoint\(n, 0\)/.test(code) && !/pre\.toString\(\)\.length/.test(code));
 ok('the display popover clears the floating timer', /#dispPop\{position:fixed;left:12px;right:12px;bottom:78px/.test(code));
-ok('the selection bar is kept below the sticky nav', /Math\.max\(navBottom \+ 8,/.test(code));
+/* superseded: the bar is docked to the bottom edge now, so there is nothing to keep clear of
+   the nav — and nothing that positions it at all */
+ok('the selection bar is docked to the bottom edge rather than positioned near the selection',
+   /#hlBar\{position:fixed;z-index:58;left:0;right:0;bottom:0;/.test(code) &&
+   !/Math\.max\(navBottom \+ 8,/.test(code) && !/bar\.style\.left = x \+ 'px'/.test(code));
+
+/* ---- less invasive chrome, 16 Sep: no black slab, one compact row, timer/row stand down ---- */
+{
+  /* neither surface is a plain black or near-black ink fill: both take their colour from the
+     page's own paper/surface tokens, with an ink-on-page border, not var(--ink) as a
+     background (which is what made both the bar and the timer near-black in both themes). */
+  ok('the selection bar takes its colour from the page, not a fixed dark fill',
+     /#hlBar\{position:fixed;z-index:58;left:0;right:0;bottom:0;[\s\S]{0,200}?background:var\(--paper\);color:var\(--ink\);/.test(code) &&
+     /body\.dark #hlBar\{background:var\(--surface\);color:var\(--ink\);/.test(code));
+  ok('the floating timer takes its colour from the page too, with a dark-mode border of its own',
+     /#miniT\{position:fixed;left:10px;bottom:14px;z-index:56;font-family:var\(--sans\);background:var\(--surface\);color:var\(--ink\);/.test(code) &&
+     /body\.dark #miniT\{border-color:#3d3530\}/.test(code) &&
+     !/#miniT\{[\s\S]{0,200}?background:var\(--ink\)/.test(code));
+
+  /* one row, budgeted at XL: 40px buttons + 6px top/bottom padding + the 1px border */
+  ok('the selection bar is budgeted to stay in one row at the largest text size',
+     /#hlBar button\{font-family:var\(--sans\);font-size:calc\(12px\*var\(--fs,1\)\);min-height:40px;padding:6px 10px;/.test(code) &&
+     /padding:6px calc\(10px \+ env\(safe-area-inset-left\)\) calc\(6px \+ env\(safe-area-inset-bottom\)\);/.test(code));
+  /* jsdom does no layout, so the ~56px height budget is verified by measurement in Chromium
+     (reported separately), not asserted here as a number this harness cannot compute */
+  const bar = d.getElementById('hlBar');
+  bar.hidden = true;
+
+  /* + note and stop here live behind an overflow, not a second row */
+  ok('the two secondary actions are behind an overflow toggle, not a second row',
+     /<button type="button" id="hlMore" aria-haspopup="true" aria-expanded="false"/.test(html) &&
+     /<span class="hlmore" hidden>\s*<button type="button" id="hlNote">/.test(html));
+  const more = d.querySelector('.hlmore'), moreBtn = d.getElementById('hlMore');
+  ok('the overflow starts closed', more.hidden === true && moreBtn.getAttribute('aria-expanded') === 'false');
+  moreBtn.click();
+  ok('one tap opens it', more.hidden === false, more.hidden);
+  d.getElementById('hlNote').click();
+  ok('taking an action inside it closes the whole bar, overflow included',
+     bar.hidden === true && more.hidden === true, 'bar.hidden=' + bar.hidden + ' more.hidden=' + more.hidden);
+
+  /* the timer and the jump row stand down while the bar is up, by display:none, and return
+     when the selection clears — this is the same trap the fade guard exists for: an
+     invisible control that still eats the tap */
+  ok('showing the bar is display:none on the timer and the row, never opacity',
+     /#miniT\.hl-off,\.jumprow\.hl-off\{display:none!important\}/.test(code));
+
+  /* behavioural: a real selection, through the actual debounced handler, drives the bar and
+     the chrome underneath it — not a hand-set class */
+  w.eval("show('falls')");
+  const mt = d.getElementById('miniT'), row = d.getElementById('jumpRow');
+  const par = [...d.querySelectorAll('#falls p')].find(x => (x.textContent||'').trim().length > 60);
+  const tn = [...par.childNodes].find(n => n.nodeType === 3 && n.textContent.trim().length > 20);
+  let r = d.createRange(); r.setStart(tn, 2); r.setEnd(tn, 12);
+  let sel = w.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  d.dispatchEvent(new w.Event('selectionchange'));
+  await new Promise(res => setTimeout(res, 320));           /* the 260ms debounce, for real */
+  ok('a live selection shows the bar and stands the timer and the jump row down',
+     bar.hidden === false && mt.classList.contains('hl-off') && row.classList.contains('hl-off'),
+     'bar.hidden=' + bar.hidden + ' mt=' + mt.className + ' row=' + row.className);
+  sel.removeAllRanges();
+  d.dispatchEvent(new w.Event('selectionchange'));
+  await new Promise(res => setTimeout(res, 320));
+  ok('clearing the selection hides the bar and brings the timer and the jump row back',
+     bar.hidden === true && !mt.classList.contains('hl-off') && !row.classList.contains('hl-off'),
+     'bar.hidden=' + bar.hidden + ' mt=' + mt.className + ' row=' + row.className);
+}
+
+/* ---- selection integrity while the bar is up, 16 Sep ----
+   Eias's own evidence: Chrome's own contextual search widened a selection to a recognised
+   phrase and opened its own "Touch to Search" sheet at the same moment the highlight bar
+   showed. That is Chrome's feature reacting to the selection, not this app — confirmed below,
+   both structurally (neither selectionchange handler in this file touches the DOM or the
+   Selection while a selection is live) and behaviourally (the selection is provably unchanged
+   after the bar appears). The docking in the block above is what stops the bar's own
+   repositioning from compounding whatever Chrome does; it was never the cause of Chrome's
+   widening and this file does not try to suppress Chrome's menu. */
+{
+  const handlers = [...code.matchAll(/addEventListener\('selectionchange',/g)];
+  ok('exactly two selectionchange handlers exist in the file, both accounted for below',
+     handlers.length === 2, handlers.length);
+  /* The extraction is scoped to the four functions that actually run on a selectionchange —
+     go() directly, and place()/placeCore()/paintChrome() via the second handler's
+     setTimeout(place). A wider net (the whole enclosing IIFE, say) would also sweep in
+     hlHere's own click handler two lines later, which DOES call sel.removeAllRanges() — by
+     design, on a deliberate tap, not on a selectionchange — and a guard that could not tell
+     the difference would be exactly the kind of false positive this suite keeps tripping on. */
+  const fnSrc = name => (code.match(new RegExp('function ' + name + '\\([^)]*\\)\\{[\\s\\S]*?\\n  \\}')) || [''])[0];
+  const goSrc = (code.match(/const go = \(\)=>\{[\s\S]*?\};/) || [''])[0];
+  const placeLine = (code.match(/function place\(\)\{ placeCore\(\); paintChrome\(\); \}/) || [''])[0];
+  const bodies = fnSrc('placeCore') + placeLine + fnSrc('paintChrome') + goSrc;
+  ok('every selectionchange-path function was actually found in the source',
+     [fnSrc('placeCore'), placeLine, fnSrc('paintChrome'), goSrc].every(x => x.length > 20),
+     JSON.stringify([fnSrc('placeCore').length, placeLine.length, fnSrc('paintChrome').length, goSrc.length]));
+  const mutators = /\.addRange\(|\.removeAllRanges\(\)|\.modify\(|\.scrollIntoView\(|appendChild|insertBefore|\.innerHTML\s*=|\.wrap\(|\bfocus\(\)/g;
+  const hits = [...bodies.matchAll(mutators)].map(m => m[0]);
+  /* hlRepaintAll DOES rewrap marks, but go() only calls it after confirming the selection has
+     COLLAPSED (the early return above it) — never while one is live — so it correctly does
+     not appear as a direct call inside this scoped source and is not itself scanned. */
+  ok('no selectionchange handler mutates the DOM or the Selection while a selection is live',
+     hits.length === 0, hits.join(', ') || '(none found)');
+
+  /* behavioural proof, matching what was seen on the phone: the selection itself does not
+     move because of anything in this file */
+  const par2 = [...d.querySelectorAll('#falls p')].find(x => (x.textContent||'').trim().length > 60);
+  const tn2 = [...par2.childNodes].find(n => n.nodeType === 3 && n.textContent.trim().length > 20);
+  const r2 = d.createRange(); r2.setStart(tn2, 2); r2.setEnd(tn2, 12);
+  const sel2 = w.getSelection(); sel2.removeAllRanges(); sel2.addRange(r2);
+  const before = {text: sel2.toString(), start: sel2.anchorOffset, end: sel2.focusOffset};
+  d.dispatchEvent(new w.Event('selectionchange'));
+  await new Promise(res => setTimeout(res, 320));
+  const after = {text: sel2.toString(), start: sel2.anchorOffset, end: sel2.focusOffset};
+  ok('the selection\u2019s start and end are unchanged once the bar has appeared',
+     JSON.stringify(before) === JSON.stringify(after), JSON.stringify({before, after}));
+  sel2.removeAllRanges(); d.dispatchEvent(new w.Event('selectionchange'));
+  await new Promise(res => setTimeout(res, 320));
+}
+
 ok('resume makes one scroll jump, not two', /skipRestore = true;/.test(code) && /if\(skipRestore\)\{ skipRestore = false; return; \}/.test(code));
 ok('no font size escapes the text-size control, whatever its capitalisation',
    !/font-size:\s*[0-9.]+px/i.test(code.replace(/font-size:\s*calc\(/gi,'font-size:calc(').replace(/#(miniT|dispPop)[^}]*\}/g,'').replace(/style="[^"]*"/g,'').replace(/cssText = '[^']*'/g,'')));
@@ -1929,8 +2045,14 @@ ok('the end and top buttons are shown together while reading, not one swapping f
 }
 
 ok('tap targets are at least 44px on the mini-timer, mock controls, chapter pills and swatches',
-   /#miniT button, #mockPrev, #mockNext, #mockFlag, \.ebgo\.ebgo, \.toc-item\.toc-item, #hlBar \.sw, #hlModal \.sw, \.pf button\{ min-height:44px !important \}/.test(code) &&
-   /#miniT button, #mockPrev, #hlBar \.sw, #hlModal \.sw\{ min-width:44px !important \}/.test(code));
+   /#miniT button, #mockPrev, #mockNext, #mockFlag, \.ebgo\.ebgo, \.toc-item\.toc-item, #hlModal \.sw, \.pf button\{ min-height:44px !important \}/.test(code) &&
+   /#miniT button, #mockPrev, #hlModal \.sw\{ min-width:44px !important \}/.test(code));
+/* the docked row's swatch is a 26px dot with a 44px hit area around it, so it is out of the
+   blanket rule above and carries its own — the dot must stay small or the row will not hold
+   six colours and three actions at XL, and the hit area must stay 44px regardless */
+ok('a docked swatch is a small dot with a full-size tap area around it',
+   /#hlBar \.swatch button\.sw\{width:26px;height:26px;min-height:26px;min-width:26px;/.test(code) &&
+   /#hlBar \.swatch button\.sw::before\{content:"";position:absolute;left:50%;top:50%;\n\s*width:44px;height:44px;transform:translate\(-50%,-50%\)\}/.test(code));
 ok('the header title keeps its name and the group label gives way first', /\.topicbtn \.glabel\{ flex:0 100 auto;/.test(code));
 
 /* ---- group 4: fewer taps ---- */

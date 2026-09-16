@@ -507,6 +507,13 @@
   /* these need an id in the selector: #hlBar button{background:none} would otherwise win */
   #hlBar .swatch button.sw,#hlModal .swatch button.sw{width:32px;height:32px;min-height:32px;min-width:32px;padding:0;
     border-radius:50%;border:2px solid rgba(0,0,0,.28);cursor:pointer;flex:none;box-sizing:border-box}
+  /* a smaller dot in the docked row, with the tap area kept at 44px by a transparent border
+     rather than by making the dot itself big enough to crowd the row */
+  #hlBar .swatch button.sw{width:26px;height:26px;min-height:26px;min-width:26px;
+    background-clip:padding-box;outline-offset:-2px}
+  #hlBar .swatch button.sw::before{content:"";position:absolute;left:50%;top:50%;
+    width:44px;height:44px;transform:translate(-50%,-50%)}
+  #hlBar .swatch button.sw{position:relative}
   #hlBar .swatch button.sw[aria-pressed="true"],#hlModal .swatch button.sw[aria-pressed="true"]{
     border-color:#fff;box-shadow:0 0 0 2px var(--stop)}
   #hlBar .swatch .sw-y,#hlModal .swatch .sw-y{background:#ffe08a}
@@ -517,21 +524,28 @@
   #hlBar .swatch .sw-u,#hlModal .swatch .sw-u{background:#fff;position:relative}
   #hlBar .swatch .sw-u::after,#hlModal .swatch .sw-u::after{content:"";position:absolute;left:6px;right:6px;bottom:8px;
     border-bottom:2px solid #b41426}
-  #hlBar{flex-wrap:wrap;max-width:calc(100vw - 16px)}
-  #hlBar .swatch{padding:0 4px}
+  #hlBar .swatch{padding:0 2px;gap:4px}
   #hlModal .swatch{margin:10px 0}
-  /* floating session timer — on every section except the home page */
-  #miniT{position:fixed;left:10px;bottom:14px;z-index:56;font-family:var(--sans);background:var(--ink);color:var(--paper);
-    border-radius:22px;box-shadow:0 6px 22px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;
-    max-width:calc(100vw - 20px)}
+  /* floating session timer — on every section except the home page.
+     Page-coloured, not a black pill: background:var(--ink) put a near-black slab on screen in
+     both themes (light --ink is a dark brown-black, and there was no dark override at all, so
+     dark mode inherited the same near-black). Now it is the page's own surface with a thin
+     rule border and ink text, the same softening as the selection bar. */
+  #miniT{position:fixed;left:10px;bottom:14px;z-index:56;font-family:var(--sans);background:var(--surface);color:var(--ink);
+    border:1px solid var(--rule);border-radius:22px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:flex;align-items:center;gap:8px;
+    padding:6px 8px 6px 12px;max-width:calc(100vw - 20px)}
+  /* the dark page's own surface, per Eias, with a border a little lighter than the page rule
+     so the pill still reads as its own shape against the dark background */
+  body.dark #miniT{border-color:#3d3530}
   #miniT[hidden]{display:none}
   #miniT b{font-family:var(--mono);font-size:calc(15px*var(--fs,1));letter-spacing:.02em;min-width:56px;cursor:pointer}
   #miniT .ph{cursor:pointer}
   #miniT .ph{font-size:calc(11.5px*var(--fs,1));opacity:.75;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #miniT button{font-family:var(--sans);font-size:calc(12.5px*var(--fs,1));min-height:40px;padding:8px 12px;border-radius:20px;cursor:pointer;
-    background:none;border:1px solid var(--paper);color:var(--paper);white-space:nowrap}
-  #miniT button.pri{background:var(--paper);color:var(--ink);font-weight:600}
-  #miniT.run b{color:#ffd28a}
+    background:none;border:1px solid var(--rule);color:var(--ink);white-space:nowrap}
+  #miniT button.pri{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}
+  #miniT.run b{color:#b45309}
+  body.dark #miniT.run b{color:#ffd28a}
   #miniT .more{display:none}
   #miniT.open .more{display:flex;gap:6px;flex-wrap:wrap}
   #miniT.open{border-radius:14px;flex-wrap:wrap;padding-bottom:8px}
@@ -560,11 +574,39 @@
   #dispPop .bm button{font-family:var(--sans);font-size:calc(12.5px*var(--fs,1));padding:8px 12px;min-height:38px;background:none;border:1px solid var(--ink);border-radius:2px;color:var(--ink);cursor:pointer}
   #dispPop .bm .cur{color:var(--mute);flex:1;min-width:140px}
   mark.hl.flash{outline:2px solid var(--stop);outline-offset:2px}
-  #hlBar{position:fixed;z-index:58;display:flex;gap:6px;background:var(--ink);color:var(--paper);padding:6px;
-    border-radius:4px;box-shadow:0 6px 22px rgba(0,0,0,.3)}
+  /* Docked to the bottom edge, not floated under the selection. Floating put a slab over the
+     two lines next to what you had just selected — the thing you were reading — and it moved
+     on every selectionchange, including the one Chrome fires when its own contextual search
+     expands the selection to a phrase, so the bar jumped too. Docked, it covers nothing near
+     the text and never repositions.
+     It is the page's own paper with a rule border and ink text, not a black slab. */
+  /* One row, docked, at most ~56px at XL: 40px buttons + 6px top/bottom padding + the 1px
+     border = 53px. Text buttons in muted ink, not the loud primary "highlight" a pill of that
+     size would otherwise need. */
+  #hlBar{position:fixed;z-index:58;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;
+    justify-content:center;flex-wrap:nowrap;background:var(--paper);color:var(--ink);
+    padding:6px calc(10px + env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--rule);box-shadow:0 -2px 14px rgba(0,0,0,.10)}
+  body.dark #hlBar{background:var(--surface);color:var(--ink);border-top-color:var(--rule);
+    box-shadow:0 -2px 14px rgba(0,0,0,.45)}
   #hlBar[hidden]{display:none}
-  #hlBar button{font-family:var(--sans);font-size:calc(13px*var(--fs,1));padding:8px 12px;min-height:38px;background:none;
-    border:1px solid var(--paper);border-radius:2px;color:var(--paper);cursor:pointer;white-space:nowrap}
+  /* display:none, not opacity: an invisible timer that still takes the tap is the same trap
+     the jump row hit */
+  #miniT.hl-off,.jumprow.hl-off{display:none!important}
+  /* small text buttons in muted ink — the row has to hold six swatches, "highlight" and the
+     overflow toggle at XL */
+  #hlBar button{font-family:var(--sans);font-size:calc(12px*var(--fs,1));min-height:40px;padding:6px 10px;
+    background:none;border:1px solid var(--rule);border-radius:3px;color:var(--mute);cursor:pointer;white-space:nowrap}
+  #hlBar #hlMark{color:var(--ink)}
+  #hlBar #hlMore{padding:6px 12px;font-weight:600}
+  /* floats above the docked bar rather than growing it, so opening it never pushes the row
+     past its own height cap */
+  .hlmore{position:absolute;right:calc(10px + env(safe-area-inset-left));bottom:calc(100% + 6px);
+    display:flex;flex-direction:column;gap:4px;background:var(--paper);border:1px solid var(--rule);
+    border-radius:4px;padding:6px;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+  body.dark .hlmore{background:var(--surface)}
+  .hlmore[hidden]{display:none}
+  .hlmore button{min-height:44px;color:var(--ink)}
   .mynotes{margin:30px 0 0;border-top:1px dashed var(--rule);padding-top:12px}
   .mynotes summary{cursor:pointer;font-family:var(--sans);font-size:calc(12.5px*var(--fs,1));letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
   .mynotes summary .cnt{color:var(--ink);margin-left:6px}
@@ -9119,8 +9161,14 @@ body.dark .pqo.wrong {
 <div id="hlBar" hidden>
   <span class="swatch" role="group" aria-label="Highlight colour"><button type="button" class="sw sw-y" data-c="y" title="yellow"></button><button type="button" class="sw sw-g" data-c="g" title="green"></button><button type="button" class="sw sw-b" data-c="b" title="blue"></button><button type="button" class="sw sw-p" data-c="p" title="pink"></button><button type="button" class="sw sw-o" data-c="o" title="orange"></button><button type="button" class="sw sw-u" data-c="u" title="underline only"></button></span>
   <button type="button" id="hlMark">highlight</button>
-  <button type="button" id="hlNote">+ note</button>
-  <button type="button" id="hlHere" title="Mark this as where you stopped reading">stop here</button>
+  <!-- + note and stop here do not reliably fit in one row alongside six swatches and
+       "highlight" at 390px XL, so they live behind this overflow button instead of a
+       second row -->
+  <button type="button" id="hlMore" aria-haspopup="true" aria-expanded="false" aria-label="More highlight actions">&#8943;</button>
+  <span class="hlmore" hidden>
+    <button type="button" id="hlNote">+ note</button>
+    <button type="button" id="hlHere" title="Mark this as where you stopped reading">stop here</button>
+  </span>
 </div>
 <div id="hlModal" hidden role="dialog" aria-modal="true" aria-label="Highlight">
   <div class="tm-bar"><b>Highlight</b><button type="button" id="hlClose">Close</button></div>
@@ -11182,31 +11230,50 @@ function hlSetColour(hid, c){
 (function(){
   const bar = document.getElementById('hlBar'); if(!bar) return;
   let tmr;
-  function place(){
+  function placeCore(){
     const sel = window.getSelection();
     if(!sel || sel.rangeCount === 0 || sel.isCollapsed){ bar.hidden = true; return; }
     const r = sel.getRangeAt(0); const sec = document.querySelector('main section.on');
     if(!sec || !sec.contains(r.commonAncestorContainer)){ bar.hidden = true; return; }
     const el = r.commonAncestorContainer.nodeType === 1 ? r.commonAncestorContainer : r.commonAncestorContainer.parentElement;
     if(el.closest('.secfoot,.mynotes,textarea,input,.toc') || r.toString().trim().length < 2){ bar.hidden = true; return; }
-    const rect = r.getBoundingClientRect(); bar.hidden = false;
-    const bw = bar.offsetWidth || 220, bh = bar.offsetHeight || 50;
-    let x = rect.left + rect.width/2 - bw/2; x = Math.max(8, Math.min(x, window.innerWidth - bw - 8));
-    const navBottom = (document.querySelector('nav')||{getBoundingClientRect:()=>({bottom:0})}).getBoundingClientRect().bottom;
-    let y = rect.bottom + 10; if(y + bh > window.innerHeight - 8) y = rect.top - bh - 10;
-    y = Math.max(navBottom + 8, Math.min(y, window.innerHeight - bh - 8));
-    bar.style.left = x + 'px'; bar.style.top = y + 'px';
+    bar.hidden = false;
+  }
+  /* The bar is docked, so showing it neither measures nor moves anything — no reading of the
+     selection rectangle, no left/top, no layout shift. That also ends the jump: the bar used
+     to re-place itself on every selectionchange, and Chrome fires one of those when its own
+     contextual search widens the selection to a phrase it recognises. Nothing here touches
+     the Selection or the DOM; the document is left alone until a colour is tapped. */
+  function hlBarShown(){ return !bar.hidden; }
+  function place(){ placeCore(); paintChrome(); }
+  /* one layer at the bottom at a time: the timer and the jump row stand down while the bar is
+     up, and come back when the selection clears */
+  function paintChrome(){
+    const up = hlBarShown();
+    const mt = document.getElementById('miniT'), row = document.getElementById('jumpRow');
+    if(mt) mt.classList.toggle('hl-off', up);
+    if(row) row.classList.toggle('hl-off', up);
+    if(!up) more.hidden = true;                 /* the selection cleared; the overflow goes with it */
   }
   document.addEventListener('selectionchange', ()=>{ clearTimeout(tmr); tmr = setTimeout(place, 260); });
-  window.addEventListener('scroll', ()=>{ if(!bar.hidden) place(); }, {passive:true});
   paintSwatches(bar, hlColour);
   bar.querySelector('.swatch').addEventListener('click', e=>{ const b = e.target.closest('button.sw'); if(!b) return;
     hlColour = b.dataset.c; paintSwatches(bar, hlColour); try{ window.storage.set('geri:hlcolour', hlColour); }catch(x){} });
   document.getElementById('hlHere').addEventListener('click', ()=>{ const sel = window.getSelection();
     const r = sel && sel.rangeCount ? sel.getRangeAt(0) : null; const el = r ? (r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentElement) : null;
-    bmSet(el); if(sel) sel.removeAllRanges(); bar.hidden = true; });
-  document.getElementById('hlMark').addEventListener('click', ()=>{ hlFromSelection(false); bar.hidden = true; });
-  document.getElementById('hlNote').addEventListener('click', ()=>{ hlFromSelection(true); bar.hidden = true; });
+    bmSet(el); if(sel) sel.removeAllRanges(); bar.hidden = true; paintChrome(); });
+  document.getElementById('hlMark').addEventListener('click', ()=>{ hlFromSelection(false); bar.hidden = true;  paintChrome(); });
+  document.getElementById('hlNote').addEventListener('click', ()=>{ hlFromSelection(true); bar.hidden = true;  paintChrome(); });
+  /* the overflow that holds + note and stop here, same one-tap-closes-behind-itself pattern
+     as the floating timer's menu */
+  const more = document.querySelector('#hlBar .hlmore'), moreBtn = document.getElementById('hlMore');
+  moreBtn.addEventListener('click', ()=>{
+    more.hidden = !more.hidden; moreBtn.setAttribute('aria-expanded', more.hidden ? 'false' : 'true');
+  });
+  document.addEventListener('click', e=>{
+    if(more.hidden || more.contains(e.target) || e.target === moreBtn) return;
+    more.hidden = true; moreBtn.setAttribute('aria-expanded', 'false');
+  });
 })();
 /* ---- tapping a highlight opens its note ---- */
 let hlCur = null;
@@ -14017,8 +14084,8 @@ p.tsrc i{ font-style:italic }
 /* v22 — less clutter at XL. Tap targets at least 44px (mini-timer buttons were 40 high, mock
    "back" 37 wide, chapter action pills 40 high); the header title keeps its whole name and the
    group label gives way first. */
-#miniT button, #mockPrev, #mockNext, #mockFlag, .ebgo.ebgo, .toc-item.toc-item, #hlBar .sw, #hlModal .sw, .pf button{ min-height:44px !important }
-#miniT button, #mockPrev, #hlBar .sw, #hlModal .sw{ min-width:44px !important }
+#miniT button, #mockPrev, #mockNext, #mockFlag, .ebgo.ebgo, .toc-item.toc-item, #hlModal .sw, .pf button{ min-height:44px !important }
+#miniT button, #mockPrev, #hlModal .sw{ min-width:44px !important }
 .topicbtn #topicNow{ flex:0 1 auto; min-width:0; white-space:normal; line-height:1.15;
   display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden }   /* two lines rather than cut off */
 .topicbtn .glabel{ flex:0 100 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
