@@ -1557,6 +1557,55 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   w.eval("show('falls')");
   ok('the height is still measured on Past papers, where the row is hidden', onPapers === '71px', onPapers || '(unset)');
   delete row.getBoundingClientRect;
+
+  /* ---- the row gets out of the way while the reader is scrolling (16 Sep) ---- */
+  w.eval("show('falls')");
+  row.classList.remove('fade');
+  const cs0 = w.getComputedStyle(row);
+  const pe0 = cs0.pointerEvents;
+  w.dispatchEvent(new w.Event('scroll'));
+  const cs1 = w.getComputedStyle(row);
+  /* the computed style, not just the class: a fade that leaves the button tappable is the
+     failure this whole change exists to avoid */
+  ok('scrolling fades the jump row out and stops it taking taps',
+     row.classList.contains('fade') && cs1.opacity === '0' && cs1.pointerEvents === 'none' &&
+     pe0 !== 'none',
+     row.className + ' opacity=' + cs1.opacity + ' pointer-events=' + cs1.pointerEvents +
+     ' (before: ' + pe0 + ')');
+  ok('the faded row is invisible and inert, never display:none — it must still measure',
+     /\.jumprow\.fade\{opacity:0;pointer-events:none\}/.test(code) &&
+     !/\.jumprow\.fade\{[^}]*(display|visibility)/.test(code));
+  /* the height must not depend on the fade, or the padding would collapse mid-scroll */
+  row.getBoundingClientRect = () => row.classList.contains('off')
+    ? ({height: 0, width: 0, top:0, left:0, right:0, bottom:0})
+    : ({height: 71, width: 150, top:0, left:0, right:150, bottom:71});
+  d.documentElement.style.removeProperty('--jumph');
+  w.eval("show('falls')");
+  const fadedH = d.documentElement.style.getPropertyValue('--jumph');
+  ok('the row measures the same while faded as while shown', fadedH === '71px', fadedH || '(unset)');
+  delete row.getBoundingClientRect;
+
+  await new Promise(r => setTimeout(r, 900));
+  ok('about 600 ms after the last scroll the row comes back, taps and all',
+     !row.classList.contains('fade'), row.className);
+
+  /* someone tabbing to the button would otherwise lose sight of what they are about to press */
+  const tt = d.getElementById('toTop');
+  tt.focus();
+  w.dispatchEvent(new w.Event('scroll'));
+  ok('a focused jump button does not fade out from under the keyboard',
+     !row.classList.contains('fade') && d.activeElement === tt, row.className);
+  tt.blur();
+  await new Promise(r => setTimeout(r, 900));
+
+  ok('reduced motion drops the transition rather than the fade itself',
+     /@media \(prefers-reduced-motion: reduce\)\{ \.jumprow\{transition:none\} \}/.test(code) &&
+     /\.jumprow\{transition:opacity \.18s ease\}/.test(code));
+  ok('the scroll listener is passive and debounced, not per-frame',
+     /addEventListener\('scroll', fadeJumpRow, \{passive:true\}\);/.test(code) &&
+     /clearTimeout\(settle\);/.test(code));
+  row.classList.remove('fade');
+
   w.eval("show('week')");
 }
 ok('tap targets are at least 44px on the mini-timer, mock controls, chapter pills and swatches',

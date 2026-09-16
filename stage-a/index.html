@@ -708,6 +708,13 @@
   @media print{ .jumprow{display:none!important} }
   /* on Past papers and the mock the answer options own the bottom of the screen */
   .jumprow.off{display:none!important}
+  /* and while the reader is actually scrolling it gets out of the way entirely. opacity and
+     pointer-events only — never display or visibility — so the row still measures its real
+     height for --jumph while faded. pointer-events:none matters as much as the fade: an
+     invisible button that still takes the tap is worse than a visible one. */
+  .jumprow{transition:opacity .18s ease}
+  .jumprow.fade{opacity:0;pointer-events:none}
+  @media (prefers-reduced-motion: reduce){ .jumprow{transition:none} }
   .toend,.totop{display:flex;position:static;
     font-family:var(--sans);font-size:calc(12px*var(--fs,1));line-height:1;padding:11px 12px;
     min-height:44px;min-width:44px;justify-content:center;
@@ -12093,6 +12100,19 @@ document.addEventListener('visibilitychange', ()=>{
   document.addEventListener('sectionshown', ()=>{ jumpRowFor(); measureJumpRow(); });
   addEventListener('resize', measureJumpRow, {passive:true});
   jumpRowFor(); measureJumpRow();
+  /* Out of the way while the reader is moving, back about 600 ms after they stop. One
+     debounced timer and one class write per burst — no per-frame work, and nothing that
+     reads layout. A focused jump button never fades: someone tabbing to it would otherwise
+     lose sight of what they are about to press. */
+  const SETTLE = 600;
+  let settle = 0, faded = false;
+  function fadeJumpRow(){
+    if(!row) return;
+    if(!faded && !row.contains(document.activeElement)){ row.classList.add('fade'); faded = true; }
+    clearTimeout(settle);
+    settle = setTimeout(()=>{ row.classList.remove('fade'); faded = false; }, SETTLE);
+  }
+  addEventListener('scroll', fadeJumpRow, {passive:true});
   let tick = false;
   addEventListener('scroll', ()=>{
     if(tick) return; tick = true;

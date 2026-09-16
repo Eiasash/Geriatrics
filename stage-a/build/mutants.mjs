@@ -492,6 +492,37 @@ const M = [
    "    if(off) void 0;",
    'still measured on Past papers'],
 
+  /* --- the row gets out of the way while scrolling, 16 Sep --- */
+  ['scrolling no longer fades the row out of the way',
+   "  addEventListener('scroll', fadeJumpRow, {passive:true});",
+   "  void fadeJumpRow;",
+   'scrolling fades the jump row out'],
+
+  ['the faded row is hidden by display, so it stops measuring mid-scroll',
+   "  .jumprow.fade{opacity:0;pointer-events:none}",
+   "  .jumprow.fade{display:none}",
+   'never display:none'],
+
+  ['the faded row stays tappable, so it swallows the tap it is hiding under',
+   "{opacity:0;pointer-events:none}",
+   "{opacity:0}",
+   'stops it taking taps'],
+
+  ['the row never comes back after the reader stops',
+   "    settle = setTimeout(()=>{ row.classList.remove('fade'); faded = false; }, SETTLE);",
+   "    settle = 0;",
+   'the row comes back'],
+
+  ['a focused jump button fades out from under the keyboard again',
+   "    if(!faded && !row.contains(document.activeElement)){ row.classList.add('fade'); faded = true; }",
+   "    if(!faded){ row.classList.add('fade'); faded = true; }",
+   'does not fade out from under the keyboard'],
+
+  ['reduced motion loses its carve-out',
+   "  @media (prefers-reduced-motion: reduce){ .jumprow{transition:none} }",
+   "",
+   'reduced motion drops the transition'],
+
   /* --- bracket fixes read from the IMA papers, 16 Sep --- */
   ['2023-06 q72 option 4 loses the paper\u2019s bracket again',
    "\u05d1 - DPI (DRY POWDER INHALER)",
