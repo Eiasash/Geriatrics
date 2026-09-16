@@ -1902,12 +1902,43 @@ ok('drill and past-questions sit in an equal two-up row that collapses to one wh
    /\.secfoot \.secrow2\{ display:flex !important; gap:10px !important; \}/.test(code) &&
    /\.secfoot \.secrow2 button\{ flex:1 1 0;/.test(code) &&
    /\.secfoot \.secrow2 button\[hidden\]\{ display:none !important; \}/.test(code));
+ok('the past-questions button does not carry the .pq card’s 26px margin into the two-up row (Codex #431)',
+   /\.secfoot \.secrow2 button\{ flex:1 1 0; width:auto !important; margin:0 !important;/.test(code) &&
+   w.getComputedStyle(d.querySelector('#falls .secfoot .secrow2 .pq') || d.querySelector('#thyroid .secfoot .secrow2 .pq')).marginBottom === '0px',
+   d.querySelector('#falls .secfoot .secrow2 .pq') ? w.getComputedStyle(d.querySelector('#falls .secfoot .secrow2 .pq')).marginBottom : 'no .pq found');
 ok('"Next: <chapter>" is a full-width accent action when a next chapter exists this week',
    /\.secfoot > button\.nx\{ width:100%;[\s\S]{0,220}?background:var\(--accent\) !important;/.test(code) &&
    /body\.dark \.secfoot > button\.nx\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important;/.test(code));
+{
+  /* the .nx class is shared with the "next up" reading-list grid rows (display:grid, a 92px
+     label column) — the footer's next-chapter button must reset that or its text gets stuck in
+     the 92px first column instead of centered across the full-width button (Codex #431) */
+  w.eval("show('falls')");
+  const secs = w.eval("[...new Set(weekChapters().map(x=>x.sec))]");
+  if(secs.length > 1){
+    w.eval(`show('${secs[0]}')`); w.eval('paintNextChap()');
+    const nx = d.querySelector('#' + secs[0] + ' .secfoot > button.nx');
+    ok('the next-chapter button resets the inherited "next up" grid layout to a centred flex row',
+       /\.secfoot > button\.nx:not\(\[hidden\]\)\{ display:flex !important;/.test(code) &&
+       nx && w.getComputedStyle(nx).display === 'flex', nx && w.getComputedStyle(nx).display);
+  }
+  w.eval("show('week')");
+}
 ok('print, backup and home read as one quiet underlined text line with middot separators, not three boxes',
    /\.secfoot \.secquiet button\{ width:auto !important; background:none !important; border:0 !important;/.test(code) &&
    /\.secfoot \.secquiet button \+ button::before\{ content:'\\00b7';/.test(code));
+{
+  /* text-decoration propagates to inline descendants, so text-decoration:none on the middot
+     pseudo itself cannot cancel the underline it inherits from the button — only a new block
+     formatting context does. display:inline-block on the pseudo is what actually stops it. */
+  w.eval("show('thyroid')");
+  const btn = d.querySelector('#thyroid .secfoot .secquiet .bk');
+  ok('the middot separator gets its own formatting context so it does not inherit the button\u2019s underline',
+     /button \+ button::before\{ content:'\\00b7'; margin-inline-end:8px; display:inline-block;/.test(code) &&
+     btn && w.getComputedStyle(btn, '::before').display === 'inline-block',
+     btn && w.getComputedStyle(btn, '::before').display);
+  w.eval("show('week')");
+}
 {
   w.eval("show('falls')");
   const secs = w.eval("[...new Set(weekChapters().map(x=>x.sec))]");

@@ -828,7 +828,7 @@ const M = [
    'full-width accent action'],
 
   ['the middot separator between print/backup/home disappears',
-   '.secfoot .secquiet button + button::before{ content:\'\\00b7\'; margin-inline-end:8px; text-decoration:none; }',
+   '.secfoot .secquiet button + button::before{ content:\'\\00b7\'; margin-inline-end:8px; display:inline-block; text-decoration:none; }',
    '',
    'middot separators'],
 
@@ -836,6 +836,22 @@ const M = [
    "b.dataset.go = nxt; b.textContent = 'Next: ' + (rb.dataset.short || rb.firstChild.textContent.trim()) + ' \\u2192'; }",
    "b.dataset.go = nxt; b.textContent = 'next this week: ' + (rb.dataset.short || rb.firstChild.textContent.trim()) + ' \\u2192'; }",
    'old "next this week:" wording'],
+
+  /* --- v24 chapter-end stack, Codex review on #431 --- */
+  ['the past-questions button carries the .pq card’s 26px bottom margin into the two-up row again',
+   '.secfoot .secrow2 button{ flex:1 1 0; width:auto !important; margin:0 !important;',
+   '.secfoot .secrow2 button{ flex:1 1 0; width:auto !important;',
+   'Codex #431'],
+
+  ['the next-chapter button loses its reset of the inherited "next up" grid layout',
+   '.secfoot > button.nx:not([hidden]){ display:flex !important; align-items:center !important; justify-content:center !important; }',
+   '',
+   'resets the inherited "next up" grid layout'],
+
+  ['the middot separator loses its own formatting context and inherits the button’s underline again',
+   ".secfoot .secquiet button + button::before{ content:'\\00b7'; margin-inline-end:8px; display:inline-block; text-decoration:none; }",
+   ".secfoot .secquiet button + button::before{ content:'\\00b7'; margin-inline-end:8px; text-decoration:none; }",
+   'its own formatting context'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
@@ -845,6 +861,16 @@ const M = [
 const ONLY = (process.env.MUTANT_ONLY || '').split(',').map(s=>s.trim()).filter(Boolean);
 const M_FULL = M;
 const M_RUN = (!STATIC && ONLY.length) ? M_FULL.filter(([name]) => ONLY.some(s => name.includes(s))) : M_FULL;
+/* a mistyped or renamed selector should fail loudly, not silently run zero mutations and
+   report "0 of 0 caught" as a clean exit — that would certify a run that tested nothing (Codex #431) */
+if(!STATIC && ONLY.length){
+  const unmatched = ONLY.filter(s => !M_FULL.some(([name]) => name.includes(s)));
+  if(unmatched.length){
+    console.log('MUTANT_ONLY selector(s) matched no mutation: ' + JSON.stringify(unmatched));
+    process.exit(1);
+  }
+  if(!M_RUN.length){ console.log('MUTANT_ONLY matched zero mutations'); process.exit(1); }
+}
 
 if(STATIC){
   let bad = 0;

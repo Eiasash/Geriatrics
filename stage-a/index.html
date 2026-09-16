@@ -14169,9 +14169,13 @@ body.dark #hlText, body.dark #rptNote, body.dark #bkText{ background:var(--surfa
   color:var(--start) !important; }
 body.dark .secfoot > button.mark.readon{ color:var(--start) !important; }
 .secfoot .secrow2{ display:flex !important; gap:10px !important; }
-.secfoot .secrow2 button{ flex:1 1 0; width:auto !important; font-family:var(--sans) !important;
+.secfoot .secrow2 button{ flex:1 1 0; width:auto !important; margin:0 !important; font-family:var(--sans) !important;
   border-radius:4px !important; letter-spacing:0 !important; text-transform:none !important; }
 .secfoot .secrow2 button[hidden]{ display:none !important; }
+/* .nx is also the "next up" reading-list row class (display:grid, a 92px label column) — reset
+   it here or the footer's next-chapter button becomes a 3-column grid and its text gets stuck
+   in that 92px first column instead of centered across the full-width button (Codex #431) */
+.secfoot > button.nx:not([hidden]){ display:flex !important; align-items:center !important; justify-content:center !important; }
 .secfoot > button.nx{ width:100%; font-family:var(--sans) !important; font-weight:700 !important;
   border-radius:4px !important; padding:12px 16px !important; min-height:48px !important;
   background:var(--accent) !important; border-color:var(--accent) !important; color:var(--paper) !important;
@@ -14186,7 +14190,10 @@ body.dark .secfoot > button.nx{ background:var(--surface) !important; border-col
   color:var(--mute) !important; text-decoration:underline !important; text-underline-offset:3px !important;
   padding:10px 8px !important; min-height:44px !important; }
 .secfoot .secquiet button:hover{ color:var(--ink) !important; }
-.secfoot .secquiet button + button::before{ content:'\00b7'; margin-inline-end:8px; text-decoration:none; }
+/* text-decoration is a propagating property: text-decoration:none on the pseudo itself cannot
+   cancel the underline it inherits from the button, only a new formatting context stops that —
+   display:inline-block gives it one */
+.secfoot .secquiet button + button::before{ content:'\00b7'; margin-inline-end:8px; display:inline-block; text-decoration:none; }
 .secfoot .sfnote{ text-align:center !important; }
 </style>
 </body>
