@@ -2,6 +2,10 @@ import { JSDOM } from 'jsdom';
 import fs from 'fs';
 import { PIN, pinClock } from './clock.mjs';
 
+/* a rejection nobody handled used to end the process silently mid-suite: every check after it
+   simply never ran, which the mutation runner then read as MISSED. Count it as a FAIL and
+   carry on, so the run always reaches DONE and the cause is on screen. */
+process.on('unhandledRejection', e => { console.log('FAIL  unhandled rejection: ' + (e && e.message || e)); process.exitCode = 1; });
 const html = fs.readFileSync(process.argv[2] || 'geriatrics-stage-a.html', 'utf8');
 /* The source with comments stripped. A guard that regex-matches `html` also matches
    inside a comment, so commenting a guard OUT leaves the suite green — the check would
@@ -1138,7 +1142,12 @@ ok('the synchronous teardown write stands down when the host supplies its own st
   const reset = (n, keys) => { writes = 0; failFrom = n; failKeys = keys || null; alerts.length = 0; confirms.length = 0; };
 
   // 1. the undo copy cannot be written: warn, and honour a refusal to go on
-  reset(1);
+  /* scoped to the undo copy like the other cases. Unscoped, any background write that
+     lands inside the wait (the 400 ms scroll-position save, a highlight save) was refused
+     too; its rejection went unhandled and killed the whole run at ~329 checks. On a fast
+     machine the wait closed before those timers fired; under load it did not — the
+     one-in-eight local failure, and the parallel runner's false MISSED results. */
+  reset(1, ['geri:rollback']);
   /* the scope question comes first — accept it, and refuse only the undo-copy warning */
   w.confirm = m => { confirms.push(String(m)); return !/Could not keep an undo copy/.test(m); };
   store['geri:days'] = '["KEEP"]';
@@ -1498,7 +1507,9 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
 ok('the mock report and drill summary land below the nav too', /#pqCard, #mockCard, #mockReport, #dsum, #drill \.card\{ scroll-margin-top:/.test(code));
 
 /* ---- group 3: less clutter at XL ---- */
-ok('only one of the top/end buttons shows at a time', /if\(en\) en\.hidden = !b\.hidden;/.test(code));
+ok('the end and top buttons are shown together while reading, not one swapping for the other',
+   /en\.hidden = scrollY \+ innerHeight > document\.documentElement\.scrollHeight - 400;/.test(code) &&
+   !/en\.hidden = !b\.hidden/.test(code));   /* replaced 16 Sep: he wants both buttons everywhere */
 ok('tap targets are at least 44px on the mini-timer, mock controls, chapter pills and swatches',
    /#miniT button, #mockPrev, #mockNext, #mockFlag, \.ebgo\.ebgo, \.toc-item\.toc-item, #hlBar \.sw, #hlModal \.sw, \.pf button\{ min-height:44px !important \}/.test(code) &&
    /#miniT button, #mockPrev, #hlBar \.sw, #hlModal \.sw\{ min-width:44px !important \}/.test(code));
@@ -1641,4 +1652,4 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
 }
 
 console.log("DONE");
-process.exit(FAILS ? 1 : 0);
+process.exit(FAILS || process.exitCode ? 1 : 0);

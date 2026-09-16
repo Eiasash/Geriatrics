@@ -12064,9 +12064,10 @@ document.addEventListener('visibilitychange', ()=>{
   let tick = false;
   addEventListener('scroll', ()=>{
     if(tick) return; tick = true;
-    /* one button at a time: "end" until you are well into the section, then "top" */
-    requestAnimationFrame(()=>{ b.hidden = scrollY < 700; const en = document.getElementById('toEnd');
-      if(en) en.hidden = !b.hidden; tick = false; });
+    /* both buttons while reading, stacked: "top" once you have left the top of the page,
+       "end" until you are near the bottom (he asked for both everywhere, 16 Sep) */
+    requestAnimationFrame(()=>{ b.hidden = scrollY < 300; const en = document.getElementById('toEnd');
+      if(en) en.hidden = scrollY + innerHeight > document.documentElement.scrollHeight - 400; tick = false; });
   }, {passive:true});
   b.addEventListener('click', ()=>scrollTo({top:0, behavior:'smooth'}));
   /* and its twin: to the bottom of the section you are reading */
