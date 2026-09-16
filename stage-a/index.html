@@ -699,22 +699,23 @@
   /* ---- v7: mobile and performance ---- */
   section{scroll-margin-top:16px}
   h2,h3{scroll-margin-top:20px}
-  .toend{display:none;position:fixed;right:14px;bottom:calc(60px + env(safe-area-inset-bottom));
-    z-index:45;font-family:var(--sans);font-size:calc(12px*var(--fs,1));line-height:1;padding:11px 12px;
+  /* One horizontal row in the bottom-right corner rather than two stacked buttons: at XL
+     on a 390px phone the stack was ~190px tall and sat over table cells, section headings
+     and — worst — tappable answer options. Side by side it is one button tall. */
+  .jumprow{display:none;position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));
+    z-index:45;flex-direction:row;align-items:center;gap:8px}
+  @media (max-width:900px){ .jumprow{display:flex} }
+  @media print{ .jumprow{display:none!important} }
+  /* on Past papers and the mock the answer options own the bottom of the screen */
+  .jumprow.off{display:none!important}
+  .toend,.totop{display:flex;position:static;
+    font-family:var(--sans);font-size:calc(12px*var(--fs,1));line-height:1;padding:11px 12px;
+    min-height:44px;min-width:44px;justify-content:center;
     background:var(--ink);color:var(--paper);border:0;border-radius:22px;cursor:pointer;
     box-shadow:0 2px 10px rgba(0,0,0,.18);align-items:center;gap:5px}
-  body.dark .toend{color:#12161a}
-  .toend[hidden]{display:none}
-  .toend span{font-size:calc(11px*var(--fs,1));letter-spacing:.03em}
-  @media (max-width:900px){ .toend{display:flex} }
-  @media print{ .toend{display:none!important} }
-  .totop{display:none;position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));
-    z-index:45;font-family:var(--sans);font-size:calc(12px*var(--fs,1));line-height:1;padding:11px 12px;
-    background:var(--ink);color:var(--paper);border:0;border-radius:22px;cursor:pointer;
-    box-shadow:0 2px 10px rgba(0,0,0,.18);align-items:center;gap:5px}
-  body.dark .totop{color:#12161a}
-  .totop[hidden]{display:none}
-  .totop span{font-size:calc(11px*var(--fs,1));letter-spacing:.03em}
+  body.dark .toend,body.dark .totop{color:#12161a}
+  .toend[hidden],.totop[hidden]{display:none}
+  .toend span,.totop span{font-size:calc(11px*var(--fs,1));letter-spacing:.03em}
   .tscroll{position:relative}
   .tscroll.over::after{content:"";position:absolute;top:0;right:0;width:26px;height:100%;
     pointer-events:none;background:linear-gradient(to left,var(--paper),transparent)}
@@ -724,14 +725,14 @@
     nav{position:sticky;top:0;z-index:30}
     section{scroll-margin-top:130px}
     h2,h3{scroll-margin-top:134px}
-    .totop{display:flex}
     *{-webkit-tap-highlight-color:rgba(0,0,0,.06)}
     .tscroll{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}
     .tscroll.over::after{right:0;width:18px}
-    main{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+    /* the row's own measured height (--jumph, set from JS) plus the 16px it sits above the
+       bottom edge, so the last lines of a section are never trapped under it */
+    main{padding-bottom:calc(var(--jumph, 66px) + 16px + env(safe-area-inset-bottom))}
     .toc button{font-size:calc(12.5px*var(--fs,1));min-height:38px}
   }
-  @media print{ .totop{display:none!important} }
 
   /* ---- mock paper ---- */
   .mockgo{font-family:var(--sans);font-size:calc(13.5px*var(--fs,1));padding:9px 18px;min-height:40px;
@@ -2647,8 +2648,10 @@ body.dark .pqo {
 })();
 </script>
 <button class="railshow" id="railShow" type="button" title="Show the list">&raquo;</button>
+<div class="jumprow" id="jumpRow">
 <button class="toend" id="toEnd" type="button" aria-label="Jump to the end of this section">&darr;<span>end</span></button>
 <button class="totop" id="toTop" type="button" aria-label="Back to top" hidden>&uarr;<span>top</span></button>
+</div>
 <div class="wrap">
 <nav>
   <h1>Stage&nbsp;A<br>Geriatrics</h1>
@@ -12061,10 +12064,31 @@ document.addEventListener('visibilitychange', ()=>{
 /* ---------- back to top on long sections ---------- */
 (function(){
   const b = document.getElementById('toTop');
+  const row = document.getElementById('jumpRow');
+  /* Past papers holds both the single-question drill and the mock, so one section id covers
+     both surfaces the row must never sit over. Off means display:none, not just invisible:
+     a transparent button still swallows the tap aimed at the answer underneath it. */
+  function jumpRowFor(){
+    const sec = document.querySelector('main section.on');
+    if(row) row.classList.toggle('off', !!sec && sec.id === 'papers');
+  }
+  /* main is padded by the row's real height so the last lines of a section clear it. Measured
+     rather than hard-coded: at XL the row is half again as tall as at the default size. */
+  function measureJumpRow(){
+    if(!row) return;
+    const off = row.classList.contains('off');
+    if(off) row.classList.remove('off');
+    const h = Math.round(row.getBoundingClientRect().height);
+    if(off) row.classList.add('off');
+    if(h > 0) document.documentElement.style.setProperty('--jumph', h + 'px');
+  }
+  document.addEventListener('sectionshown', ()=>{ jumpRowFor(); measureJumpRow(); });
+  addEventListener('resize', measureJumpRow, {passive:true});
+  jumpRowFor(); measureJumpRow();
   let tick = false;
   addEventListener('scroll', ()=>{
     if(tick) return; tick = true;
-    /* both buttons while reading, stacked: "top" once you have left the top of the page,
+    /* both buttons while reading, side by side: "top" once you have left the top of the page,
        "end" until you are near the bottom (he asked for both everywhere, 16 Sep) */
     requestAnimationFrame(()=>{ b.hidden = scrollY < 300; const en = document.getElementById('toEnd');
       if(en) en.hidden = scrollY + innerHeight > document.documentElement.scrollHeight - 400; tick = false; });

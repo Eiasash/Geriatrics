@@ -1510,6 +1510,55 @@ ok('the mock report and drill summary land below the nav too', /#pqCard, #mockCa
 ok('the end and top buttons are shown together while reading, not one swapping for the other',
    /en\.hidden = scrollY \+ innerHeight > document\.documentElement\.scrollHeight - 400;/.test(code) &&
    !/en\.hidden = !b\.hidden/.test(code));   /* replaced 16 Sep: he wants both buttons everywhere */
+
+/* ---- group 9: the jump row stops covering the text (16 Sep) ---- */
+{
+  const row = d.getElementById('jumpRow');
+  ok('the end and top buttons sit in one horizontal row in the corner, not stacked over the text',
+     !!row && row.contains(d.getElementById('toEnd')) && row.contains(d.getElementById('toTop')) &&
+     /\.jumprow\{display:none;position:fixed;right:14px;bottom:calc\(16px \+ env\(safe-area-inset-bottom\)\);\n\s*z-index:45;flex-direction:row;/.test(code) &&
+     /\.toend,\.totop\{display:flex;position:static;/.test(code));
+  ok('both jump buttons keep a 44px tap target',
+     /min-height:44px;min-width:44px;justify-content:center;/.test(code));
+
+  /* nothing over the answer options: Past papers carries both the single-question drill
+     and the mock, so the one section id covers both surfaces */
+  w.eval("show('falls')");
+  const offReading = row.classList.contains('off');
+  w.eval("show('papers')");
+  const offPapers = row.classList.contains('off');
+  w.eval("show('sleep')");
+  const offAfter = row.classList.contains('off');
+  ok('the jump row is hidden on Past papers and the mock, and comes back on a chapter',
+     offReading === false && offPapers === true && offAfter === false,
+     'reading=' + offReading + ' papers=' + offPapers + ' back=' + offAfter);
+  ok('hiding the row takes it out of the layout, so it cannot swallow a tap on an answer',
+     /\.jumprow\.off\{display:none!important\}/.test(code));
+
+  /* main clears the row by the row's own measured height, not a hard-coded number */
+  ok('main is padded by the measured height of the jump row',
+     /main\{padding-bottom:calc\(var\(--jumph, 66px\) \+ 16px \+ env\(safe-area-inset-bottom\)\)\}/.test(code));
+  /* jsdom does no layout, so model the one browser fact this depends on: an element with
+     display:none measures zero. Without that the guard below cannot tell a measurement
+     taken with the row hidden from one taken with it shown. */
+  row.getBoundingClientRect = () => row.classList.contains('off')
+    ? ({height: 0, width: 0, top:0, left:0, right:0, bottom:0})
+    : ({height: 71, width: 150, top:0, left:0, right:150, bottom:71});
+  w.eval("show('falls')");
+  ok('showing a section measures the row and writes its height into --jumph',
+     d.documentElement.style.getPropertyValue('--jumph') === '71px',
+     d.documentElement.style.getPropertyValue('--jumph') || '(unset)');
+  /* Measuring must also work on the section the row is hidden on, or a reader who opens
+     Past papers first gets the fallback padding for the rest of the session. Cleared first:
+     a stale value left by the previous measurement would let a broken measure pass. */
+  d.documentElement.style.removeProperty('--jumph');
+  w.eval("show('papers')");
+  const onPapers = d.documentElement.style.getPropertyValue('--jumph');
+  w.eval("show('falls')");
+  ok('the height is still measured on Past papers, where the row is hidden', onPapers === '71px', onPapers || '(unset)');
+  delete row.getBoundingClientRect;
+  w.eval("show('week')");
+}
 ok('tap targets are at least 44px on the mini-timer, mock controls, chapter pills and swatches',
    /#miniT button, #mockPrev, #mockNext, #mockFlag, \.ebgo\.ebgo, \.toc-item\.toc-item, #hlBar \.sw, #hlModal \.sw, \.pf button\{ min-height:44px !important \}/.test(code) &&
    /#miniT button, #mockPrev, #hlBar \.sw, #hlModal \.sw\{ min-width:44px !important \}/.test(code));

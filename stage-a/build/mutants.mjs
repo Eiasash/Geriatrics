@@ -455,6 +455,42 @@ const M = [
    "if(en) en.hidden = scrollY + innerHeight > document.documentElement.scrollHeight - 400;",
    "if(en) en.hidden = !b.hidden;",
    'shown together while reading'],
+
+  /* --- group 9: the jump row stops covering the text (16 Sep) --- */
+  ['the jump row stacks again, so it covers three lines instead of one',
+   "    z-index:45;flex-direction:row;align-items:center;gap:8px}",
+   "    z-index:45;flex-direction:column;align-items:center;gap:8px}",
+   'one horizontal row in the corner'],
+
+  ['the jump buttons lose their 44px tap target',
+   "    min-height:44px;min-width:44px;justify-content:center;\n",
+   "",
+   '44px tap target'],
+
+  ['the jump row stays up on Past papers and the mock, over the answer options',
+   "    if(row) row.classList.toggle('off', !!sec && sec.id === 'papers');",
+   "    if(row) row.classList.toggle('off', false);",
+   'hidden on Past papers and the mock'],
+
+  ['hiding the row only makes it invisible, so it still swallows the tap',
+   "  .jumprow.off{display:none!important}",
+   "  .jumprow.off{opacity:0}",
+   'swallow a tap on an answer'],
+
+  ['main goes back to a hard-coded bottom gap that XL outgrows',
+   "    main{padding-bottom:calc(var(--jumph, 66px) + 16px + env(safe-area-inset-bottom))}",
+   "    main{padding-bottom:calc(110px + env(safe-area-inset-bottom))}",
+   'padded by the measured height'],
+
+  ['the row is never measured, so the padding keeps its fallback',
+   "    if(h > 0) document.documentElement.style.setProperty('--jumph', h + 'px');",
+   "    if(h > 0) return;",
+   'writes its height into --jumph'],
+
+  ['the row is measured while hidden, so Past papers reports zero height',
+   "    if(off) row.classList.remove('off');",
+   "    if(off) void 0;",
+   'still measured on Past papers'],
 ];
 
 if(STATIC){
