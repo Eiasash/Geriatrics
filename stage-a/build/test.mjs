@@ -1838,6 +1838,87 @@ ok('dark mode lays dark text on the bright accents, and the mock button keeps a 
 ok('dark mode styles the remark, report and backup text boxes, and the backup Copy button',
    /body\.dark #hlText, body\.dark #rptNote, body\.dark #bkText\{ background:var\(--surface\)/.test(code) &&
    /\.tbtns button:not\(:first-child\):not\(\.lnk\)\{/.test(code));
+{
+  /* v21 — Gemini-audited dark palette. jsdom's getComputedStyle doesn't resolve var()/!important
+     cascades in this stylesheet (confirmed empirically — background/color came back unresolved),
+     so this pins the hex values by regex from the source and re-derives the same WCAG contrast
+     ratios the design was checked against, rather than trusting a jsdom "computed" style. */
+  const contrast = (hexA, hexB) => {
+    const lum = hex => {
+      const c = [0,2,4].map(i => parseInt(hex.slice(i,i+2), 16) / 255)
+        .map(v => v <= 0.03928 ? v/12.92 : ((v+0.055)/1.055) ** 2.4);
+      return 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
+    };
+    const [l1, l2] = [lum(hexA), lum(hexB)].sort((a,b) => b-a);
+    return (l1 + 0.05) / (l2 + 0.05);
+  };
+  /* anchored on the #palette block's own distinctive one-liner (paper/surface/ink/mute declared
+     together on a single line) rather than "the next html.dark, body.dark{...}" — the stylesheet
+     has three separate dark-mode blocks (line ~1004, ~1166, and this one) and a loosely-anchored
+     "from the first { to the next \n  }" match silently swallowed the wrong one during authoring. */
+  const m = code.match(/--paper:#([0-9A-Fa-f]{6}) !important; --surface:#([0-9A-Fa-f]{6}) !important; --ink:#([0-9A-Fa-f]{6}) !important; --mute:#([0-9A-Fa-f]{6}) !important;[\s\S]{0,220}?--c-now:#([0-9A-Fa-f]{6}) !important;/);
+  const [paper, surface, ink, mute, cnow] = m ? m.slice(1) : [];
+  ok('dark palette hex values are pinned to the Gemini-audited set',
+     paper === '1C1B1A' && surface === '2D2C2B' && ink === 'E6E1DC' && mute === '9C9791' && cnow === 'E59835',
+     JSON.stringify({paper, surface, ink, mute, cnow}));
+  const ratios = paper && surface && ink && mute && cnow ? {
+    inkOnPaper: contrast(ink, paper), muteOnPaper: contrast(mute, paper), muteOnSurface: contrast(mute, surface),
+    amberOnPaper: contrast(cnow, paper), surfaceVsPaper: contrast(surface, paper)
+  } : {};
+  ok('dark palette clears WCAG AA (4.5:1 body/muted text, and surface reads distinct from the page)',
+     ratios.inkOnPaper >= 4.5 && ratios.muteOnPaper >= 4.5 && ratios.muteOnSurface >= 4.5 &&
+     ratios.amberOnPaper >= 4.5 && ratios.surfaceVsPaper >= 1.05, JSON.stringify(ratios));
+  /* the v19 override used to collapse --surface back onto --paper in dark mode (var(--paper)),
+     which is why #week's cards used to read flush with the page background */
+  ok('the v19 dossier override no longer collapses dark --surface onto --paper',
+     !/html\.dark, body\.dark \{\s*\n\s*--surface: var\(--paper\)/.test(code) &&
+     /html\.dark, body\.dark \{\s*\n\s*--surface: #2D2C2B !important;/.test(code));
+}
+ok('dark mode outlines the three dashboard tiles instead of filling them solid amber with near-black text',
+   /body\.dark #week \.today \.acts \.act\{background:var\(--surface\);border-color:var\(--c-now\)\}/.test(code) &&
+   /body\.dark #week \.today \.acts \.act,body\.dark #week \.today \.acts \.act b,body\.dark #week \.today \.acts \.act span\{color:var\(--ink\)\}/.test(code) &&
+   !/body\.dark #week \.today \.acts \.act,body\.dark #week \.today \.acts \.act b,body\.dark #week \.today \.acts \.act span\{color:#12161a\}/.test(code));
+ok('dark mode outlines "Mark today done" (not-yet-done state) the same way, and leaves the done/green state alone',
+   /body\.dark #week #tdBtn:not\(\[data-on="1"\]\) \{\s*\n\s*background: var\(--surface\) !important;\s*\n\s*border-color: var\(--c-now\) !important;\s*\n\s*color: var\(--ink\) !important;\s*\n\s*\}/.test(code));
+
+/* ---- v24: chapter-end stack (was a ragged wrap of seven identically-boxed buttons) ---- */
+{
+  const foot = d.querySelector('#falls .secfoot');
+  const kids = [...foot.children].map(c => c.tagName === 'BUTTON' ? 'button.' + c.className : c.tagName === 'DIV' ? 'div.' + c.className : c.tagName);
+  ok('the chapter-end footer is one stack: mark, then the drill/past-Q row, then next, then the quiet print/backup/home row, then the stamp',
+     /^button\.mark(\s|$)/.test(kids[0]) && kids[1] === 'div.secrow2' && kids[2] === 'button.nx' &&
+     kids[3] === 'div.secquiet' && kids[4] === 'SPAN', kids.join(' | '));
+  const row2 = foot.querySelector('.secrow2');
+  ok('the drill and past-questions buttons live together in the two-up row, not loose in the footer',
+     row2 && row2.querySelector('.dr') && row2.querySelector('.pq'));
+  const quiet = foot.querySelector('.secquiet');
+  ok('print, backup and home are grouped in the quiet text row, not three separate boxed buttons',
+     quiet && quiet.querySelector('.pr') && quiet.querySelector('.bk') && quiet.querySelector('.hm'));
+}
+ok('"mark as read" is a full-width primary action, styled as a quiet outline once checked (not a solid green block)',
+   /\.secfoot > button\.mark\{ width:100%;/.test(code) &&
+   /\.secfoot > button\.mark\.readon\{ background:none !important; border-color:var\(--start\) !important;\s*\n\s*color:var\(--start\) !important; \}/.test(code));
+ok('drill and past-questions sit in an equal two-up row that collapses to one when the other is hidden',
+   /\.secfoot \.secrow2\{ display:flex !important; gap:10px !important; \}/.test(code) &&
+   /\.secfoot \.secrow2 button\{ flex:1 1 0;/.test(code) &&
+   /\.secfoot \.secrow2 button\[hidden\]\{ display:none !important; \}/.test(code));
+ok('"Next: <chapter>" is a full-width accent action when a next chapter exists this week',
+   /\.secfoot > button\.nx\{ width:100%;[\s\S]{0,220}?background:var\(--accent\) !important;/.test(code) &&
+   /body\.dark \.secfoot > button\.nx\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important;/.test(code));
+ok('print, backup and home read as one quiet underlined text line with middot separators, not three boxes',
+   /\.secfoot \.secquiet button\{ width:auto !important; background:none !important; border:0 !important;/.test(code) &&
+   /\.secfoot \.secquiet button \+ button::before\{ content:'\\00b7';/.test(code));
+{
+  w.eval("show('falls')");
+  const secs = w.eval("[...new Set(weekChapters().map(x=>x.sec))]");
+  if(secs.length > 1){
+    w.eval(`show('${secs[0]}')`); w.eval('paintNextChap()');
+    const nx = d.querySelector('#' + secs[0] + ' .secfoot .nx');
+    ok('the next-chapter button reads "Next: <chapter>", not the old "next this week:" wording',
+       nx && /^Next: /.test(nx.textContent) && !/next this week/i.test(nx.textContent), nx && nx.textContent);
+  }
+  w.eval("show('week')");
+}
 
 /* ---- group 1: question flow ---- */
 ok('next/skip brings the question card back under the nav', /function pqNext\(\)\{ pqIdx\+\+; pqRender\(\); cardIntoView\(document\.getElementById\('pqCard'\)\); \}/.test(code));
