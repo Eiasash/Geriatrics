@@ -410,6 +410,22 @@ const M = [
    "/* (removed 16/09:",
    "- Viewport Budget & Geometry Verification\n/* (removed 16/09:",
    "no pasted prose left"],
+
+  /* --- Group 8: Key Clinical Points recap tables, ch 43/44/46 (16/09) --- */
+  ["falls Key Clinical Points table loses its last row",
+   "    <tr><td class=\"n\">5</td><td>Tailored multifaceted and multifactorial interventions are the most effective for preventing falls in high-risk populations, including RACF residents.</td></tr>\n",
+   "",
+   "falls Key Clinical Points table"],
+
+  ["sleep Key Clinical Points table loses its last row",
+   "    <tr><td class=\"n\">6</td><td>Sleep-wake cycle disruption is common in nursing home patients and may improve with bright-light exposure, a regular day-night cycle and melatonin.</td></tr>\n",
+   "",
+   "sleep Key Clinical Points table"],
+
+  ["pressure Key Clinical Points table loses its last row",
+   "    <tr><td class=\"n\">6</td><td>Healing benchmarks: partial-thickness (stage 2) injuries should heal within 60 days maximum; full-thickness (stage 3/4/unstageable) injuries should show improvement every 2 to 4 weeks.</td></tr>\n",
+   "",
+   "pressure Key Clinical Points table"],
 ];
 
 if(STATIC){

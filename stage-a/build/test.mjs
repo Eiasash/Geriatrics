@@ -1587,5 +1587,28 @@ ok('the COMBODEX option reads brand (ingredients), same characters reordered',
 }
 ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/.test(code));
 
+/* ---- Group 8: Key Clinical Points recap tables, ch 43/44/46 (16 Sep) ---- */
+{
+  const kcp = (secId, expectRows) => {
+    const sec = d.getElementById(secId);
+    const h2 = [...sec.querySelectorAll('h2')].find(h => /Key Clinical Points/.test(h.textContent));
+    if (!h2) return null;
+    let n = h2.nextElementSibling;
+    while (n && !n.classList.contains('tscroll')) n = n.nextElementSibling;
+    if (!n) return null;
+    const rows = n.querySelectorAll('tbody tr');
+    return rows.length === expectRows ? n.textContent : null;
+  };
+  const falls46 = kcp('falls', 5);
+  ok('falls Key Clinical Points table (ch 43), 5 rows',
+     !!falls46 && /carotid sinus hypersensitivity/.test(falls46) && /expedited cataract extraction/.test(falls46));
+  const sleepKcp = kcp('sleep', 6);
+  ok('sleep Key Clinical Points table (ch 44), 6 rows',
+     !!sleepKcp && /REM behaviour disorder/.test(sleepKcp) && /mild-to-moderate dementia/.test(sleepKcp));
+  const pressureKcp = kcp('pressure', 6);
+  ok('pressure Key Clinical Points table (ch 46), 6 rows',
+     !!pressureKcp && /oxygen free radicals/.test(pressureKcp) && /improvement every 2 to 4 weeks/.test(pressureKcp));
+}
+
 console.log("DONE");
 process.exit(FAILS ? 1 : 0);
