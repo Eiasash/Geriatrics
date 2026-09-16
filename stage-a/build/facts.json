@@ -1,5 +1,5 @@
 {
-  "_about": "Each fact is a literal substring that must appear in the rendered text of the named section. Every entry was checked against the Hazzard 8th-edition chapter (or the named paper) on 2026-09-13 (falls entries re-verified against ch 43 on 2026-09-14). If a test fails, either the section changed or the fact did — go back to the source before editing either. Key Clinical Points recap tables for ch 43, 44, 46 added and pinned 2026-09-16.",
+  "_about": "Each fact is a literal substring that must appear in the rendered text of the named section. Every entry was checked against the Hazzard 8th-edition chapter (or the named paper) on 2026-09-13 (falls entries re-verified against ch 43 on 2026-09-14). If a test fails, either the section changed or the fact did — go back to the source before editing either. Key Clinical Points recap tables for ch 43, 44, 46 added and pinned 2026-09-16. Batch 2 (ch 47, 55, 58) added and pinned 2026-09-16.",
   "facts": [
     {
       "sec": "thyroid",
@@ -545,6 +545,46 @@
       "sec": "pressure",
       "src": "ch 46",
       "text": "improvement every 2 to 4 weeks"
+    },
+    {
+      "sec": "incont",
+      "src": "ch 47",
+      "text": "potentially reversible and modifiable conditions"
+    },
+    {
+      "sec": "incont",
+      "src": "ch 47",
+      "text": "lifestyle and behavioural therapies"
+    },
+    {
+      "sec": "rehab",
+      "src": "ch 55",
+      "text": "cognition, motivation, depression, social support and financial resources"
+    },
+    {
+      "sec": "rehab",
+      "src": "ch 55",
+      "text": "cornerstone of physical rehabilitation"
+    },
+    {
+      "sec": "rehab",
+      "src": "ch 55",
+      "text": "mobility aids, bathroom aids and self-care aids"
+    },
+    {
+      "sec": "delirium",
+      "src": "ch 58",
+      "text": "unrecognised in up to 70%"
+    },
+    {
+      "sec": "delirium",
+      "src": "ch 58",
+      "text": "two-thirds of delirium cases"
+    },
+    {
+      "sec": "delirium",
+      "src": "ch 58",
+      "text": "Nonpharmacologic strategies are the preferred treatment"
     }
   ]
 }

@@ -426,6 +426,21 @@ const M = [
    "    <tr><td class=\"n\">6</td><td>Healing benchmarks: partial-thickness (stage 2) injuries should heal within 60 days maximum; full-thickness (stage 3/4/unstageable) injuries should show improvement every 2 to 4 weeks.</td></tr>\n",
    "",
    "pressure Key Clinical Points table"],
+
+  ["incontinence Key Clinical Points table loses its last row",
+   "    <tr><td class=\"n\">3</td><td>Treatment, particularly drug therapy, should factor in patient preferences and comorbid conditions.</td></tr>\n",
+   "",
+   "incontinence Key Clinical Points table"],
+
+  ["rehab Key Clinical Points table loses its last row",
+   "    <tr><td class=\"n\">5</td><td>Adaptive aids let people with physical limitations perform BADLs/IADLs with greater ease and less pain, spanning mobility aids, bathroom aids and self-care aids.</td></tr>\n",
+   "",
+   "rehab Key Clinical Points table"],
+
+  ["delirium Key Clinical Points table loses its last row",
+   "    <tr><td class=\"n\">8</td><td>Nonpharmacologic strategies are the preferred treatment; medications are reserved for more severe symptoms that threaten medical management or patient safety.</td></tr>\n",
+   "",
+   "delirium Key Clinical Points table"],
 ];
 
 if(STATIC){

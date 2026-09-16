@@ -1608,6 +1608,15 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
   const pressureKcp = kcp('pressure', 6);
   ok('pressure Key Clinical Points table (ch 46), 6 rows',
      !!pressureKcp && /oxygen free radicals/.test(pressureKcp) && /improvement every 2 to 4 weeks/.test(pressureKcp));
+  const incontKcp = kcp('incont', 3);
+  ok('incontinence Key Clinical Points table (ch 47), 3 rows',
+     !!incontKcp && /potentially reversible and modifiable conditions/.test(incontKcp) && /lifestyle and behavioural therapies/.test(incontKcp));
+  const rehabKcp = kcp('rehab', 5);
+  ok('rehab Key Clinical Points table (ch 55), 5 rows',
+     !!rehabKcp && /cornerstone of physical rehabilitation/.test(rehabKcp) && /mobility aids, bathroom aids and self-care aids/.test(rehabKcp));
+  const deliriumKcp = kcp('delirium', 8);
+  ok('delirium Key Clinical Points table (ch 58), 8 rows',
+     !!deliriumKcp && /unrecognised in up to 70%/.test(deliriumKcp) && /two-thirds of delirium cases/.test(deliriumKcp));
 }
 
 console.log("DONE");
