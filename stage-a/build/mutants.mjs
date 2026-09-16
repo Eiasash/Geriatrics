@@ -523,6 +523,32 @@ const M = [
    "",
    'reduced motion drops the transition'],
 
+  /* --- Gemini round 5, 16 Sep --- */
+  ['2023-06 q100 source picks up q101-104 again',
+   "\u05d4\u05d6\u05d0\u05e8\u05d3 \u05e2\u05de\u05d5\u05d3620 \u05d8\u05d1\u05dc\u05d442-2\",",
+   "\u05d4\u05d6\u05d0\u05e8\u05d3 \u05e2\u05de\u05d5\u05d3620 \u05d8\u05d1\u05dc\u05d442-2 101\u05d4\u05e8\u05d9\u05e1\u05d5\u05df357\",",
+   'stops at its own table'],
+
+  ['2020 q19 source loses the rest of the pocket-guide title',
+   "\u05de\u05d0\u05de\u05e8POCKET GUIDE TO THE AGS BEERS 2019",
+   "\u05de\u05d0\u05de\u05e8POCKET GUIDE TO THE",
+   'whole pocket-guide title'],
+
+  ['2020 q20 source takes back q19\u2019s bled tail',
+   "\"src\": \"HAZZARD \u05e2\u05de\u05d5\u05d3\u05d9\u05dd702-703\"",
+   "\"src\": \"19 AGS BEERS 20HAZZARD \u05e2\u05de\u05d5\u05d3\u05d9\u05dd702-703\"",
+   'starts at HAZZARD'],
+
+  ['a font size goes back to a bare px that the text-size control cannot reach',
+   "  #miniT .mode{font-size:calc(11px*var(--fs,1));",
+   "  #miniT .mode{font-size:11px;",
+   'no font size is a bare px value'],
+
+  ['focus arriving on a faded row no longer brings it back',
+   "  if(row) row.addEventListener('focusin', ()=>{\n    clearTimeout(settle); row.classList.remove('fade'); faded = false;\n  });",
+   "  void 0;",
+   'focus arriving on a faded jump button'],
+
   /* --- bracket fixes read from the IMA papers, 16 Sep --- */
   ['2023-06 q72 option 4 loses the paper\u2019s bracket again',
    "\u05d1 - DPI (DRY POWDER INHALER)",

@@ -1589,18 +1589,35 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   ok('about 600 ms after the last scroll the row comes back, taps and all',
      !row.classList.contains('fade'), row.className);
 
-  /* someone tabbing to the button would otherwise lose sight of what they are about to press */
+  /* Two halves, and only the first was covered before: focus already on a button when the
+     scroll starts, and focus ARRIVING while the row is already faded. The second left the
+     button invisible until scrolling stopped, which is exactly when a keyboard user needs
+     to see it. Fade first, then focus, and read the state without advancing any timer. */
   const tt = d.getElementById('toTop');
+  tt.blur();
+  w.dispatchEvent(new w.Event('scroll'));
+  const fadedFirst = row.classList.contains('fade');
+  tt.focus();
+  const csF = w.getComputedStyle(row);
+  ok('focus arriving on a faded jump button brings it straight back, without waiting for the timer',
+     fadedFirst && !row.classList.contains('fade') && csF.opacity === '1' &&
+     csF.pointerEvents === 'auto' && d.activeElement === tt,
+     'fadedFirst=' + fadedFirst + ' now=' + row.className + ' opacity=' + csF.opacity +
+     ' pointer-events=' + csF.pointerEvents);
+  tt.blur();
+  row.classList.remove('fade');
+  w.dispatchEvent(new w.Event('scroll'));
+  const fadedAfterBlur = row.classList.contains('fade');
   tt.focus();
   w.dispatchEvent(new w.Event('scroll'));
-  ok('a focused jump button does not fade out from under the keyboard',
-     !row.classList.contains('fade') && d.activeElement === tt, row.className);
+  ok('a jump button that already holds focus never fades in the first place',
+     fadedAfterBlur && !row.classList.contains('fade'), row.className);
   tt.blur();
   await new Promise(r => setTimeout(r, 900));
 
   ok('reduced motion drops the transition rather than the fade itself',
      /@media \(prefers-reduced-motion: reduce\)\{ \.jumprow\{transition:none\} \}/.test(code) &&
-     /\.jumprow\{transition:opacity \.18s ease\}/.test(code));
+     /\.jumprow\{opacity:1;transition:opacity \.18s ease\}/.test(code));
   ok('the scroll listener is passive and debounced, not per-frame',
      /addEventListener\('scroll', fadeJumpRow, \{passive:true\}\);/.test(code) &&
      /clearTimeout\(settle\);/.test(code));
@@ -1608,6 +1625,32 @@ ok('the end and top buttons are shown together while reading, not one swapping f
 
   w.eval("show('week')");
 }
+/* ---- every font size answers the text-size control, 16 Sep ----
+   Nine rules were still absolute px, so the floating timer, the display popover, the report
+   dialog and the toast all ignored the reader's choice. em/rem/pt are fine: em and rem
+   inherit from body, which is itself calc(17px*var(--fs)), and pt appears only in print. */
+{
+  const px = [...code.matchAll(/font-size:\s*[0-9.]+px/g)].map(m => {
+    const at = code.slice(Math.max(0, m.index - 160), m.index).split('\n').pop();
+    return at.trim().slice(-90) + ' >>> ' + m[0];
+  });
+  ok('no font size is a bare px value — they all scale with the text-size control',
+     px.length === 0, px.slice(0, 4).join('  ||  '));
+
+  /* Pinned because it surprised us: --fs is declared on main and three modals, NOT on body or
+     :root. Every fixed overlay — the floating timer, the display popover, the report dialog,
+     the toast, the jump row, the nav — sits outside that subtree, so its var(--fs,1) resolves
+     to the fallback 1 and it does not scale today. Measured in Chromium at XL: #miniT b
+     computes to 15px, not 21px. The calc() form above is still the right form — it is what
+     makes those elements scale the day --fs moves to :root — but widening that scope resizes
+     the whole chrome and is a deliberate decision, not a side effect of this change. */
+  ok('--fs is declared on main and the three modals only, so fixed overlays still do not scale',
+     /main,#tblModal,#hlModal,#notesModal\{--fs:1;/.test(code) &&
+     !/(body|:root)\{[^}]*--fs:/.test(code));
+  ok('the floating timer sits outside main, which is why its calc\u2019d sizes resolve to the fallback',
+     html.indexOf('<div id="miniT"') > html.indexOf('</main>'));
+}
+
 ok('tap targets are at least 44px on the mini-timer, mock controls, chapter pills and swatches',
    /#miniT button, #mockPrev, #mockNext, #mockFlag, \.ebgo\.ebgo, \.toc-item\.toc-item, #hlBar \.sw, #hlModal \.sw, \.pf button\{ min-height:44px !important \}/.test(code) &&
    /#miniT button, #mockPrev, #hlBar \.sw, #hlModal \.sw\{ min-width:44px !important \}/.test(code));
@@ -1667,6 +1710,31 @@ ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
    w.eval(`(()=>{ const q = PQ.find(p => p.y === '2020' && +p.n === 90);
      return q ? q.o[0].startsWith('METRONIDAZOLE (FLAGYL) ') : false; })()`),
    w.eval(`(()=>{ const q = PQ.find(p => p.y === '2020' && +p.n === 90); return q ? q.o[0] : 'no such question'; })()`));
+
+/* ---- source lines that leaked from the next question, 16 Sep ----
+   Confirmed against the IMA reference PDFs: 2023 refs_pdf 644206_… line 100, and
+   2020 refs_pdf 644196_… page 1 lines 19 and 20, both rendered and read. The 2020 pair is
+   one leak, not two: q19's trailing "AGS BEERS 2019" is what turned up, bidi-scrambled, as
+   the "19 AGS BEERS 20" prefix on q20. */
+{
+  const srcOf = (y, n) => w.eval(`(()=>{ const q = PQ.find(p => p.y === '${y}' && +p.n === ${n});
+    return q ? (q.src || '') : '\u0000no such question'; })()`);
+  const s100 = srcOf('2023-06', 100);
+  ok('2023-06 q100 source stops at its own table, with q101-104 no longer glued on',
+     s100.endsWith('42-2') && !/101/.test(s100), s100);
+  const s19 = srcOf('2020', 19);
+  ok('2020 q19 source carries the whole pocket-guide title', /AGS BEERS 2019$/.test(s19), s19);
+  const s20 = srcOf('2020', 20);
+  ok('2020 q20 source starts at HAZZARD, with q19\u2019s tail no longer in front of it',
+     s20.startsWith('HAZZARD'), s20);
+
+  /* the scan that found them: a digit run glued straight onto a source name is the signature
+     of a neighbouring question's reference line running into this one */
+  const bled = w.eval(`(()=>{ const re = /\\s\\d{2,3}(HAZZARD|HARRISON|\u05d4\u05d6\u05d0\u05e8\u05d3|\u05d4\u05e8\u05d9\u05e1\u05d5\u05df)/;
+    return PQ.filter(q => re.test(q.src || '')).map(q => q.y + ' #' + q.n + ' ' + q.src); })()`);
+  ok('no past-paper source has a neighbouring question\u2019s reference line bled into it',
+     bled.length === 0, bled.slice(0, 3).join(' | ') || (w.eval('PQ.length') + ' sources scanned'));
+}
 
 /* ---- group 6: search and remembered past-paper place ---- */
 {
