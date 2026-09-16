@@ -455,11 +455,20 @@
   body.dark .today button,body.dark .cbtns button,body.dark .qlog button,body.dark .tbtns button:first-child{color:#12161a}
   body.dark nav button[aria-current="true"]{color:#12161a}
   body.dark .spark i{background:#333c42}
-  /* text size: one factor, applied to every px size inside main (nav and controls stay put) */
-  main,#tblModal,#hlModal,#notesModal{--fs:1;font-size:calc(1em*var(--fs))}
-  body.fs-s main,body.fs-s #tblModal,body.fs-s #hlModal,body.fs-s #notesModal{--fs:.9}
-  body.fs-l main,body.fs-l #tblModal,body.fs-l #hlModal,body.fs-l #notesModal{--fs:1.18}
-  body.fs-xl main,body.fs-xl #tblModal,body.fs-xl #hlModal,body.fs-xl #notesModal{--fs:1.4}
+  /* Text size: one factor, declared once on body — the element the control writes its class
+     to — so it inherits into everything, the fixed overlays included: the nav, the rail, the
+     jump row, the floating timer, the display popover, the report dialog and the toast. It
+     used to be declared on main and three modals only, which left every overlay resolving
+     var(--fs,1) to the fallback and silently ignoring the reader's choice.
+     main no longer carries font-size:calc(1em*var(--fs)). body's own font-size already
+     multiplies by --fs, so keeping that on main would apply the factor a second time to the
+     text it inherits — 17px would reach 33px at XL instead of 24px. The reading size is
+     unchanged by this move: body 17px x 1.4 = 23.8px is what main used to compute to on its
+     own. Every other rule multiplies a px literal, not an em, so nothing else compounds. */
+  body{--fs:1}
+  body.fs-s{--fs:.9}
+  body.fs-l{--fs:1.18}
+  body.fs-xl{--fs:1.4}
 
   /* ---- display controls ---- */
   .disp{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-family:var(--sans);font-size:calc(12.5px*var(--fs,1));
@@ -714,6 +723,12 @@
      invisible button that still takes the tap is worse than a visible one. */
   .jumprow{opacity:1;transition:opacity .18s ease}
   .jumprow.fade{opacity:0;pointer-events:none}
+  /* The floating timer is pinned bottom-left and the jump row bottom-right, and at a large
+     text size they grew into each other — the timer covered the left edge of the end button.
+     Rather than police two widths that both change with --fs, the row simply sits above the
+     timer whenever the timer is up. --minih is the timer's measured height, 0 when it is
+     hidden, so this collapses to the normal position on the home page. */
+  .jumprow.above{bottom:calc(16px + var(--minih, 0px) + 10px + env(safe-area-inset-bottom))}
   @media (prefers-reduced-motion: reduce){ .jumprow{transition:none} }
   .toend,.totop{display:flex;position:static;
     font-family:var(--sans);font-size:calc(12px*var(--fs,1));line-height:1;padding:11px 12px;
@@ -737,7 +752,7 @@
     .tscroll.over::after{right:0;width:18px}
     /* the row's own measured height (--jumph, set from JS) plus the 16px it sits above the
        bottom edge, so the last lines of a section are never trapped under it */
-    main{padding-bottom:calc(var(--jumph, 66px) + 16px + env(safe-area-inset-bottom))}
+    main{padding-bottom:calc(var(--jumph, 66px) + var(--minih, 0px) + 26px + env(safe-area-inset-bottom))}
     .toc button{font-size:calc(12.5px*var(--fs,1));min-height:38px}
   }
 
@@ -12097,9 +12112,21 @@ document.addEventListener('visibilitychange', ()=>{
     if(off) row.classList.add('off');
     if(h > 0) document.documentElement.style.setProperty('--jumph', h + 'px');
   }
-  document.addEventListener('sectionshown', ()=>{ jumpRowFor(); measureJumpRow(); });
-  addEventListener('resize', measureJumpRow, {passive:true});
-  jumpRowFor(); measureJumpRow();
+  /* the timer's height, and whether the row has to step over it. Hidden means zero, not
+     "leave the last value", or the row would float above nothing on the home page. */
+  const miniT = document.getElementById('miniT');
+  function measureTimer(){
+    if(!row) return;
+    const up = !!miniT && !miniT.hidden && miniT.getClientRects().length > 0;
+    const h = up ? Math.round(miniT.getBoundingClientRect().height) : 0;
+    document.documentElement.style.setProperty('--minih', h + 'px');
+    row.classList.toggle('above', up);
+  }
+  document.addEventListener('sectionshown', ()=>{ jumpRowFor(); measureJumpRow(); measureTimer(); });
+  addEventListener('resize', ()=>{ measureJumpRow(); measureTimer(); }, {passive:true});
+  /* the timer appears and collapses on its own clock, not on anything we already listen to */
+  if(miniT) new MutationObserver(measureTimer).observe(miniT, {attributes:true, attributeFilter:['hidden','class']});
+  jumpRowFor(); measureJumpRow(); measureTimer();
   /* Out of the way while the reader is moving, back about 600 ms after they stop. One
      debounced timer and one class write per burst — no per-frame work, and nothing that
      reads layout. A focused jump button never fades: someone tabbing to it would otherwise

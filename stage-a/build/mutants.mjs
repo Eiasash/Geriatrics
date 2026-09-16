@@ -478,7 +478,7 @@ const M = [
    'swallow a tap on an answer'],
 
   ['main goes back to a hard-coded bottom gap that XL outgrows',
-   "    main{padding-bottom:calc(var(--jumph, 66px) + 16px + env(safe-area-inset-bottom))}",
+   "    main{padding-bottom:calc(var(--jumph, 66px) + var(--minih, 0px) + 26px + env(safe-area-inset-bottom))}",
    "    main{padding-bottom:calc(110px + env(safe-area-inset-bottom))}",
    'padded by the measured height'],
 
@@ -522,6 +522,32 @@ const M = [
    "  @media (prefers-reduced-motion: reduce){ .jumprow{transition:none} }",
    "",
    'reduced motion drops the transition'],
+
+  /* --- text size on body, and the row stepping over the timer, 16 Sep --- */
+  ['--fs goes back to being scoped to main, leaving every overlay unscaled',
+   "  body{--fs:1}",
+   "  main{--fs:1}",
+   'declared once, on body'],
+
+  ['main multiplies an em by --fs again, so the reading text scales twice',
+   "  body.fs-xl{--fs:1.4}",
+   "  body.fs-xl{--fs:1.4}\n  main{font-size:calc(1em*var(--fs))}",
+   'multiplies an em by --fs'],
+
+  ['the jump row stops stepping over the timer and lands on it again',
+   "    row.classList.toggle('above', up);",
+   "    row.classList.toggle('above', false);",
+   'steps above the floating timer'],
+
+  ['the timer height is kept after it is hidden, so the row floats above nothing',
+   "    const h = up ? Math.round(miniT.getBoundingClientRect().height) : 0;",
+   "    const h = Math.round(miniT.getBoundingClientRect().height);",
+   'drops back down when the timer goes away'],
+
+  ['main stops leaving room for the timer under the jump row',
+   "    main{padding-bottom:calc(var(--jumph, 66px) + var(--minih, 0px) + 26px + env(safe-area-inset-bottom))}",
+   "    main{padding-bottom:calc(var(--jumph, 66px) + 16px + env(safe-area-inset-bottom))}",
+   'of the timer under it'],
 
   /* --- Gemini round 5, 16 Sep --- */
   ['2023-06 q100 source picks up q101-104 again',

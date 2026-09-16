@@ -1536,8 +1536,8 @@ ok('the end and top buttons are shown together while reading, not one swapping f
      /\.jumprow\.off\{display:none!important\}/.test(code));
 
   /* main clears the row by the row's own measured height, not a hard-coded number */
-  ok('main is padded by the measured height of the jump row',
-     /main\{padding-bottom:calc\(var\(--jumph, 66px\) \+ 16px \+ env\(safe-area-inset-bottom\)\)\}/.test(code));
+  ok('main is padded by the measured height of the jump row and of the timer under it',
+     /main\{padding-bottom:calc\(var\(--jumph, 66px\) \+ var\(--minih, 0px\) \+ 26px \+ env\(safe-area-inset-bottom\)\)\}/.test(code));
   /* jsdom does no layout, so model the one browser fact this depends on: an element with
      display:none measures zero. Without that the guard below cannot tell a measurement
      taken with the row hidden from one taken with it shown. */
@@ -1557,6 +1557,37 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   w.eval("show('falls')");
   ok('the height is still measured on Past papers, where the row is hidden', onPapers === '71px', onPapers || '(unset)');
   delete row.getBoundingClientRect;
+
+  /* ---- the jump row steps over the floating timer (16 Sep) ----
+     Both are position:fixed at the bottom, the timer left and the row right, and at a large
+     text size they grew into each other. Rather than police two widths that both scale, the
+     row moves above the timer whenever the timer is up. jsdom does no layout, so this reads
+     the class and the computed bottom, which is what the CSS keys off. */
+  {
+    const mt = d.getElementById('miniT');
+    mt.hidden = true;
+    mt.getBoundingClientRect = () => ({height: 56, width: 269, top:774, left:10, right:279, bottom:830});
+    mt.getClientRects = () => (mt.hidden ? [] : [mt.getBoundingClientRect()]);
+    d.documentElement.style.removeProperty('--minih');
+    w.eval("show('falls')");
+    const downH = d.documentElement.style.getPropertyValue('--minih');
+    const downCls = row.classList.contains('above');
+    mt.hidden = false;
+    await new Promise(r => setTimeout(r, 60));          /* MutationObserver is a microtask hop */
+    const upH = d.documentElement.style.getPropertyValue('--minih');
+    const upCls = row.classList.contains('above');
+    ok('the jump row steps above the floating timer as soon as the timer appears',
+       downCls === false && downH === '0px' && upCls === true && upH === '56px',
+       'timer down: ' + downCls + '/' + downH + '  timer up: ' + upCls + '/' + upH);
+    ok('and the raised position clears the timer by its measured height plus a gap',
+       /\.jumprow\.above\{bottom:calc\(16px \+ var\(--minih, 0px\) \+ 10px \+ env\(safe-area-inset-bottom\)\)\}/.test(code));
+    mt.hidden = true;
+    await new Promise(r => setTimeout(r, 60));
+    ok('and drops back down when the timer goes away, rather than floating above nothing',
+       !row.classList.contains('above') && d.documentElement.style.getPropertyValue('--minih') === '0px',
+       row.className + ' --minih=' + d.documentElement.style.getPropertyValue('--minih'));
+    delete mt.getBoundingClientRect; delete mt.getClientRects;
+  }
 
   /* ---- the row gets out of the way while the reader is scrolling (16 Sep) ---- */
   w.eval("show('falls')");
@@ -1637,18 +1668,22 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   ok('no font size is a bare px value — they all scale with the text-size control',
      px.length === 0, px.slice(0, 4).join('  ||  '));
 
-  /* Pinned because it surprised us: --fs is declared on main and three modals, NOT on body or
-     :root. Every fixed overlay — the floating timer, the display popover, the report dialog,
-     the toast, the jump row, the nav — sits outside that subtree, so its var(--fs,1) resolves
-     to the fallback 1 and it does not scale today. Measured in Chromium at XL: #miniT b
-     computes to 15px, not 21px. The calc() form above is still the right form — it is what
-     makes those elements scale the day --fs moves to :root — but widening that scope resizes
-     the whole chrome and is a deliberate decision, not a side effect of this change. */
-  ok('--fs is declared on main and the three modals only, so fixed overlays still do not scale',
-     /main,#tblModal,#hlModal,#notesModal\{--fs:1;/.test(code) &&
-     !/(body|:root)\{[^}]*--fs:/.test(code));
-  ok('the floating timer sits outside main, which is why its calc\u2019d sizes resolve to the fallback',
-     html.indexOf('<div id="miniT"') > html.indexOf('</main>'));
+  /* --fs now lives on body, the element the control writes its class to, so it inherits into
+     the fixed overlays that sit outside main — the timer, the popover, the report dialog, the
+     toast, the jump row, the nav. It must be declared in exactly one place: a second
+     declaration on a subtree would silently win for that subtree and split the truth. */
+  ok('--fs is declared once, on body, so everything outside main scales too',
+     /body\{--fs:1\}/.test(code) && /body\.fs-s\{--fs:\.9\}/.test(code) &&
+     /body\.fs-l\{--fs:1\.18\}/.test(code) && /body\.fs-xl\{--fs:1\.4\}/.test(code) &&
+     (code.match(/--fs:/g) || []).length === 4);
+  /* body's own font-size already multiplies by --fs. Any element inside it that multiplies an
+     em by --fs applies the factor twice — main used to, and 17px reached 33px at XL instead
+     of 24px. px literals are safe; em is not. */
+  ok('no rule multiplies an em by --fs, which would apply the factor a second time',
+     !/em\s*\*\s*var\(--fs/.test(code));
+  ok('the floating timer sits outside main and now scales anyway, because --fs is on body',
+     html.indexOf('<div id="miniT"') > html.indexOf('</main>') &&
+     /#miniT b\{font-family:var\(--mono\);font-size:calc\(15px\*var\(--fs,1\)\)/.test(code));
 }
 
 ok('tap targets are at least 44px on the mini-timer, mock controls, chapter pills and swatches',
