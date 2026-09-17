@@ -2907,6 +2907,28 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
   await new Promise(r => setTimeout(r, 80));
 }
 {
+  /* SZMC site-wide audit: the mockOn bail above only covers a mock. The topic sheet and every
+     other modal in this file sit visually above #papers, but the practice keydown listener had
+     no idea one was open — pressing 1-4/n while the sheet (or any tm-open modal) was open used
+     to answer/advance the practice question underneath it too. */
+  w.eval('show("papers")');
+  w.eval('pqLoad()');
+  await new Promise(r => setTimeout(r, 60));
+  if(d.activeElement && d.activeElement.blur) d.activeElement.blur();
+  w.eval("pqPool = PQ.filter(x=>!x.im); pqIdx = 0; pqRender();");
+  const practiceKey2 = w.eval('pqKey(pqPool[pqIdx % pqPool.length])');
+  w.eval('delete pqDone[' + JSON.stringify(practiceKey2) + ']');
+  const idxBefore2 = w.eval('pqIdx');
+  w.eval('openSheet()');
+  d.dispatchEvent(new w.KeyboardEvent('keydown', {key: '1'}));
+  ok('while the topic sheet is open over #papers, pressing 1 does not also answer or advance the background practice question',
+     w.eval('pqIdx') === idxBefore2 && w.eval('pqShown') === false &&
+     w.eval('pqDone[' + JSON.stringify(practiceKey2) + ']') === undefined,
+     'pqIdx=' + w.eval('pqIdx') + ' pqShown=' + w.eval('pqShown') +
+     ' pqDone=' + w.eval('pqDone[' + JSON.stringify(practiceKey2) + ']'));
+  w.eval('closeSheet()');
+}
+{
   /* Gemini site-wide audit: the drill summary listed missed cards via raw innerHTML
      (rMissed.map(i=>'<li>'+QS[i][0]+'</li>')) while the card itself renders the very same
      text via textContent — a card whose text contains a raw < (e.g. a dose comparison like
@@ -2972,6 +2994,56 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
      !!prose && /^19 of 100 questions/.test(prose.textContent.trim()) && distinct === 19,
      'distinct=' + distinct + ' prose=' + (prose && prose.textContent.slice(0, 20)));
 }
+
+{
+  /* SZMC code audit, item (c) accessibility fixes */
+  ok('#railShow has a real aria-label, not just a title attribute',
+     d.getElementById('railShow').getAttribute('aria-label') === 'Show the list');
+  ok('#sheet dialog carries aria-modal="true" like the other five dialogs in this file',
+     d.getElementById('sheet').getAttribute('aria-modal') === 'true');
+  {
+    const withLabel = [...d.querySelectorAll('table.chapidx button.chgo[aria-label]')];
+    const uniqueLabels = new Set(withLabel.map(b => b.getAttribute('aria-label')));
+    ok('every "notes" button in the chapter index has its own aria-label naming the chapter, not a shared "notes" name',
+       withLabel.length === 57 && uniqueLabels.size === 57,
+       'labelled=' + withLabel.length + ' unique=' + uniqueLabels.size);
+  }
+  ok('every SVG <text> in a role="img" chart is aria-hidden, so screen readers read the chart’s own label once instead of every axis tick',
+     d.querySelectorAll('svg[role="img"] text:not([aria-hidden="true"])').length === 0 &&
+     d.querySelectorAll('svg[role="img"] text[aria-hidden="true"]').length > 0,
+     d.querySelectorAll('svg[role="img"] text[aria-hidden="true"]').length + ' hidden');
+  ok('the restore file input is visually hidden but stays in the keyboard tab order (sr-only, not display:none)',
+     d.getElementById('bkFile').classList.contains('sr-only') &&
+     w.getComputedStyle(d.getElementById('bkFile')).display !== 'none');
+  ok('the week notes textarea has a real accessible label, not just a placeholder',
+     d.getElementById('wkNote').getAttribute('aria-label') === 'What to go back to');
+  {
+    /* behavioural: opening each modal must move focus into it, not leave it on the page
+       underneath. Each modal's own close (or first-action) control is the target. */
+    w.eval('openSheet()');
+    ok('opening the topic sheet moves focus into it', d.activeElement && d.activeElement.id === 'sheetClose',
+       'activeElement=' + (d.activeElement && d.activeElement.id));
+    w.eval('closeSheet()');
+    w.eval('bkOpen()');
+    await new Promise(r => setTimeout(r, 60));
+    ok('opening the backup/restore modal moves focus into it', d.activeElement && d.activeElement.id === 'bkClose',
+       'activeElement=' + (d.activeElement && d.activeElement.id));
+    w.eval("document.getElementById('bkClose').click()");
+    /* the highlight-note modal used to move focus in only for a brand-new note (!h.n) — an
+       existing note (h.n truthy) left focus behind on the page underneath */
+    w.eval("HL = {falls:[{id:'i9', sec:'falls', t:'fear of falling', i:0, n:'an existing remark', c:'y'}]}; hlOpen('i9');");
+    ok('opening an existing highlight note (not just a brand-new one) moves focus into the modal',
+       d.activeElement && d.activeElement.id === 'hlText', 'activeElement=' + (d.activeElement && d.activeElement.id));
+    w.eval("document.getElementById('hlClose').click(); HL = {};");
+    w.eval('notesIndex()');
+    ok('opening the notes-index modal moves focus into it', d.activeElement && d.activeElement.id === 'ntCopy',
+       'activeElement=' + (d.activeElement && d.activeElement.id));
+    w.eval("document.getElementById('ntClose').click()");
+  }
+}
+
+ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale first copy used to override a handful of rules the second, redesigned copy deliberately changed — e.g. it accidentally kept .lnk buttons at a 44px touch floor the redesign meant to exempt)',
+   (html.match(/v12 . dashboard redesign/g) || []).length === 1);
 
 console.log("DONE");
 process.exit(FAILS || process.exitCode ? 1 : 0);
