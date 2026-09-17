@@ -29,6 +29,14 @@ self-merge authority; CI green is the only thing that's actually enforced.
 For content-integrity-sensitive PRs where a second reviewer matters, prefer
 plain `gh pr merge` (no `--auto`) and wait for Codex manually, same as before.
 
+**Never use `gh pr merge --admin`.** It bypasses required status checks
+(GitHub's own semantics for admin-merge), which defeats the CI gate above
+entirely — a PR could land with `validate`/`js-integrity`/`scan`/`claude-review`
+all failing or still running. `.claude/settings.json`'s allowlist is scoped to
+`--auto`/`--squash`/`--merge`/`--rebase` specifically (not a bare
+`gh pr merge:*` wildcard) and explicitly denies `--admin`, precisely to close
+this off — do not widen that allowlist back to a bare wildcard.
+
  Eias sign-off is required only for: (a) PRs touching patient-data paths (ward-helper PHI crypto, IDB roster schema, rounds-data persistence — enumerated in ward-helper codeowners, queued as follow-up PR), and (b) per-PR gate docs that explicitly carry a "NO self-merge" clause (audit-8 R1.5 / R1.6 and subsequent R1.x gates). Claude Code never self-certifies its own audit — independence comes from cross-model review (Codex), not from human-vs-AI gates. All release,
 version-trinity, and verification rules in the repo's skill still apply
 unchanged.
