@@ -2930,11 +2930,13 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
      pressure-injury wounds heal within 60 days — the body-text <li>, the drill Q&A string,
      and the Key Clinical Points box all agree. A fabricated "A stage 2 should heal within 50
      days" clause used to sit in both the <li> and the drill Q&A, directly contradicting the
-     60-day figure in the sentence right before it. Removed from both; nothing legitimate in
-     this file should ever say "50 days". */
-  ok('pressure-injury healing still says 60 days in the body text and the drill Q&A, with no fabricated 50-day figure anywhere (Hazzard ch 46, SZMC chat correction)',
-     (code.match(/75% of stage 2 wounds heal within 60 days/g) || []).length === 2 &&
-     !/50 days/.test(code) && !/50-day/.test(code));
+     60-day figure in the sentence right before it. Scoped to the two 60-day occurrences
+     specifically (a 400-char window around each), not the whole file — a future, unrelated,
+     correctly-sourced "50 days" elsewhere must not fail this gate (Codex review of #449). */
+  const hits = [...code.matchAll(/75% of stage 2 wounds heal within 60 days/g)];
+  const windows = hits.map(m => code.slice(m.index, m.index + 400));
+  ok('pressure-injury healing still says 60 days in the body text and the drill Q&A, with no fabricated 50-day figure right after either (Hazzard ch 46, SZMC chat correction)',
+     hits.length === 2 && windows.every(w2 => !/50 days/.test(w2) && !/50-day/.test(w2)));
 }
 {
   /* SZMC chat: a printed page-footer stamp ("שלב א' בגריאטריה 28/5/2024 100 שאלות – מסלול
