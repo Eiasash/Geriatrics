@@ -101,7 +101,7 @@ Gemini web and the old Gemini CLI both fail when driven by Claude. Use `agy` on 
 - **Memory:** append a dated line to the study-console memory file.
 - **Report to the project chat** in one message: commits, revert handles, Gemini verdicts, next review start. Screenshot after sending.
 - **Triggers:** delete finished scheduled checks (`list_triggers`).
-- *"Nothing pending" only when no PR is open, no trigger remains, and the chat has acknowledged.
+- **"Nothing pending"** only when no PR is open, no trigger remains, and the chat has acknowledged.
 
 ## Scheduling
 - Use `send_later` / `update_trigger`, matched to the real work: CI about 5 min, CC edits 15–30 min, an `agy` review about 1 min.
