@@ -2925,5 +2925,53 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
   w.eval('QS.length = ' + qsLen + ';');
 }
 
+{
+  /* SZMC geriatrics project chat, checked against Hazzard ch 46 itself: 75% of stage 2
+     pressure-injury wounds heal within 60 days — the body-text <li>, the drill Q&A string,
+     and the Key Clinical Points box all agree. A fabricated "A stage 2 should heal within 50
+     days" clause used to sit in both the <li> and the drill Q&A, directly contradicting the
+     60-day figure in the sentence right before it. Scoped to the two 60-day occurrences
+     specifically (a 400-char window around each), not the whole file — a future, unrelated,
+     correctly-sourced "50 days" elsewhere must not fail this gate (Codex review of #449). */
+  const hits = [...code.matchAll(/75% of stage 2 wounds heal within 60 days/g)];
+  const windows = hits.map(m => code.slice(m.index, m.index + 400));
+  ok('pressure-injury healing still says 60 days in the body text and the drill Q&A, with no fabricated 50-day figure right after either (Hazzard ch 46, SZMC chat correction)',
+     hits.length === 2 && windows.every(w2 => !/50 days/.test(w2) && !/50-day/.test(w2)));
+}
+{
+  /* SZMC chat: a printed page-footer stamp ("שלב א' בגריאטריה 28/5/2024 100 שאלות – מסלול
+     על") was OCR-glued with no space onto the last option of 26 items in the 2024-05
+     sitting. Stripped from #pqjson by script, not by hand. The glued form (no space between
+     בגריאטריה and the date) is the unambiguous artifact signature — nothing legitimate
+     would ever produce it. */
+  ok('no past-paper option carries the 2024-05 page-footer stamp that used to run on into 26 items',
+     !code.includes('בגריאטריה28/5/2024'));
+}
+{
+  /* the Beers-vs-STOPP/START conflict table gained a sixth row (Gliclazide specifically) at
+     some point after the "Four places" lede was written, and nobody updated the prose. */
+  const confTable = d.querySelector('#conf table');
+  const confRows = confTable ? confTable.querySelectorAll('tbody tr').length : 0;
+  const lede = d.querySelector('#conf .lede');
+  ok('the conflict-table lede count matches the Beers/STOPP table’s actual row count (SZMC chat correction)',
+     !!lede && /^Six places the two tools give different answers/.test(lede.textContent.trim()) && confRows === 6,
+     'rows=' + confRows + ' lede=' + (lede && lede.textContent.slice(0, 20)));
+}
+{
+  /* the "non-textbook sources" table lists 19 distinct question numbers (some cells carry
+     two, comma-separated) but the prose below it said 14. Found by its header signature
+     (Q / Source / What it asked), not by DOM position relative to its heading — the "anatomy"
+     section carries an auto-generated heading id/annotation structure that makes sibling
+     traversal from the <h2> land on the wrong node. */
+  const tbl = [...d.querySelectorAll('table')].find(t =>
+    [...t.querySelectorAll('thead th')].map(th => th.textContent.trim()).join('|') === 'Q|Source|What it asked');
+  const nums = tbl ? [...tbl.querySelectorAll('tbody tr td.n')].flatMap(td => td.textContent.split(',').map(s => s.trim())) : [];
+  const distinct = new Set(nums).size;
+  const prose = [...d.querySelectorAll('p.note')].find(p => /of 100 questions come from material no textbook contains/.test(p.textContent));
+  ok('the non-textbook-sources prose count matches the table’s distinct question count (SZMC chat correction)',
+     !!prose && /^19 of 100 questions/.test(prose.textContent.trim()) && distinct === 19,
+     'distinct=' + distinct + ' prose=' + (prose && prose.textContent.slice(0, 20)));
+}
+
 console.log("DONE");
 process.exit(FAILS || process.exitCode ? 1 : 0);

@@ -1085,6 +1085,22 @@ const M = [
    'scrollAt[cur.id] = window.scrollY;',
    'scrollAt[cur.id] = 0;',
    'rememberScroll captures the current scroll position'],
+  ['the fabricated "should heal within 50 days" clause comes back into the pressure-injury body text, contradicting the 60-day figure in the sentence right before it (SZMC chat correction, Hazzard ch 46)',
+   '    only 17% of stage 3 or 4</b>. A full-thickness injury',
+   '    only 17% of stage 3 or 4</b>. A stage 2 should heal within 50 days; a full-thickness injury',
+   'no fabricated 50-day figure'],
+  ['the 2024-05 page-footer stamp is glued back onto a past-paper option (SZMC chat correction)',
+   `"שיווי משקל לקוי"]`,
+   `"שיווי משקל לקוי שלב א' בגריאטריה28/5/2024 100 שאלות– מסלול על"]`,
+   'page-footer stamp'],
+  ['the Beers/STOPP conflict-table lede reverts to "Four places" while the table itself still has six rows (SZMC chat correction)',
+   '<p class="lede">Six places the two tools give different answers.',
+   '<p class="lede">Four places the two tools give different answers.',
+   'Beers/STOPP table'],
+  ['the non-textbook-sources prose reverts to "Fourteen of 100" while the table still lists 19 distinct question numbers (SZMC chat correction)',
+   '<p class="note">19 of 100 questions come from material no textbook contains.',
+   '<p class="note">Fourteen of 100 questions come from material no textbook contains.',
+   'distinct question count'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
