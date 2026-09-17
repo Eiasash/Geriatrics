@@ -774,7 +774,103 @@ const M = [
    "    if(words.length) snip = snip.replace(\n      new RegExp(words.map(w=>esc(escHtml(w))).sort((a,b)=>b.length-a.length).join('|'), 'gi'),\n      m=>`<mark>${m}</mark>`);",
    "    for(const w of words) snip = snip.replace(new RegExp(esc(escHtml(w)), 'gi'), m=>`<mark>${m}</mark>`);",
    'survives a second word that matches the markup it injects'],
+
+  /* --- v21 dark palette, 16 Sep --- */
+  ['dark accent reverts to the too-bright pre-audit amber',
+   '--c-now:#E59835 !important;',
+   '--c-now:#FFA92E !important;',
+   'dark palette hex values are pinned'],
+
+  ['dark body text reverts to the pre-audit cream',
+   '--ink:#E6E1DC !important;',
+   '--ink:#F6EFE6 !important;',
+   'dark palette hex values are pinned'],
+
+  ['the v19 dossier override collapses dark --surface back onto --paper',
+   '--surface: #2D2C2B !important;',
+   '--surface: var(--paper) !important;',
+   'the v19 dossier override no longer collapses dark --surface onto --paper'],
+
+  ['the three dashboard tiles go back to near-black text in dark mode',
+   'body.dark #week .today .acts .act,body.dark #week .today .acts .act b,body.dark #week .today .acts .act span{color:var(--ink)}',
+   'body.dark #week .today .acts .act,body.dark #week .today .acts .act b,body.dark #week .today .acts .act span{color:#12161a}',
+   'dark mode outlines the three dashboard tiles'],
+
+  ['"Mark today done" loses its dark-mode outline and goes back to a solid amber fill',
+   'body.dark #week #tdBtn:not([data-on="1"]) {\n  background: var(--surface) !important;\n  border-color: var(--c-now) !important;\n  color: var(--ink) !important;\n}',
+   '',
+   'dark mode outlines "Mark today done"'],
+
+  /* --- v24 chapter-end stack, 16 Sep --- */
+  ['the chapter footer stops wrapping drill/past-questions in the two-up row div',
+   '\'<div class="secrow2">\' +',
+   '\'\' +',
+   'the chapter-end footer is one stack'],
+
+  ['the chapter footer stops wrapping print/backup/home in the quiet-row div',
+   '\'<div class="secquiet">\' +',
+   '\'\' +',
+   'quiet print/backup/home row'],
+
+  ['"mark as read" goes back to a solid green fill once checked instead of a quiet outline',
+   '.secfoot > button.mark.readon{ background:none !important; border-color:var(--start) !important;\n  color:var(--start) !important; }',
+   '',
+   'styled as a quiet outline once checked'],
+
+  ['the drill/past-questions row loses its equal-width flex layout',
+   '.secfoot .secrow2{ display:flex !important; gap:10px !important; }',
+   '.secfoot .secrow2{ display:block !important; }',
+   'equal two-up row'],
+
+  ['"Next: <chapter>" loses its accent fill and reads as a plain box again',
+   '.secfoot > button.nx{ width:100%; font-family:var(--sans) !important; font-weight:700 !important;\n  border-radius:4px !important; padding:12px 16px !important; min-height:48px !important;\n  background:var(--accent) !important; border-color:var(--accent) !important; color:var(--paper) !important;\n  letter-spacing:0 !important; text-transform:none !important; }',
+   '.secfoot > button.nx{ width:100%; }',
+   'full-width accent action'],
+
+  ['the middot separator between print/backup/home disappears',
+   '.secfoot .secquiet button + button::before{ content:\'\\00b7\'; margin-inline-end:8px; display:inline-block; text-decoration:none; }',
+   '',
+   'middot separators'],
+
+  ['the next-chapter button reverts to the old "next this week:" wording',
+   "b.dataset.go = nxt; b.textContent = 'Next: ' + (rb.dataset.short || rb.firstChild.textContent.trim()) + ' \\u2192'; }",
+   "b.dataset.go = nxt; b.textContent = 'next this week: ' + (rb.dataset.short || rb.firstChild.textContent.trim()) + ' \\u2192'; }",
+   'old "next this week:" wording'],
+
+  /* --- v24 chapter-end stack, Codex review on #431 --- */
+  ['the past-questions button carries the .pq card’s 26px bottom margin into the two-up row again',
+   '.secfoot .secrow2 button{ flex:1 1 0; width:auto !important; margin:0 !important;',
+   '.secfoot .secrow2 button{ flex:1 1 0; width:auto !important;',
+   'Codex #431'],
+
+  ['the next-chapter button loses its reset of the inherited "next up" grid layout',
+   '.secfoot > button.nx:not([hidden]){ display:flex !important; align-items:center !important; justify-content:center !important; }',
+   '',
+   'resets the inherited "next up" grid layout'],
+
+  ['the middot separator loses its own formatting context and inherits the button’s underline again',
+   ".secfoot .secquiet button + button::before{ content:'\\00b7'; margin-inline-end:8px; display:inline-block; text-decoration:none; }",
+   ".secfoot .secquiet button + button::before{ content:'\\00b7'; margin-inline-end:8px; text-decoration:none; }",
+   'its own formatting context'],
 ];
+
+/* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
+   mutations named. --static already runs the whole list cheaply (seconds); the full run patches
+   the source and re-runs the suite per mutation, which is what makes it slow, so local commits
+   only need the mutations touched this round — CI runs the unfiltered full set. */
+const ONLY = (process.env.MUTANT_ONLY || '').split(',').map(s=>s.trim()).filter(Boolean);
+const M_FULL = M;
+const M_RUN = (!STATIC && ONLY.length) ? M_FULL.filter(([name]) => ONLY.some(s => name.includes(s))) : M_FULL;
+/* a mistyped or renamed selector should fail loudly, not silently run zero mutations and
+   report "0 of 0 caught" as a clean exit — that would certify a run that tested nothing (Codex #431) */
+if(!STATIC && ONLY.length){
+  const unmatched = ONLY.filter(s => !M_FULL.some(([name]) => name.includes(s)));
+  if(unmatched.length){
+    console.log('MUTANT_ONLY selector(s) matched no mutation: ' + JSON.stringify(unmatched));
+    process.exit(1);
+  }
+  if(!M_RUN.length){ console.log('MUTANT_ONLY matched zero mutations'); process.exit(1); }
+}
 
 if(STATIC){
   let bad = 0;
@@ -818,14 +914,14 @@ if(STATIC){
    never MISSED: an unfinished run proves nothing either way. */
 const { execFile } = await import('child_process');
 const os = await import('os');
-const WORKERS = Math.max(1, Math.min(M.length, +(process.env.MUTANT_WORKERS || os.cpus().length)));
+const WORKERS = Math.max(1, Math.min(M_RUN.length, +(process.env.MUTANT_WORKERS || os.cpus().length)));
 const runSuite = file => new Promise(res => execFile('node', ['test.mjs', file],
   {encoding:'utf8', maxBuffer: 64 * 1024 * 1024}, (err, stdout, stderr) => res((stdout || '') + (stderr || ''))));
-const results = new Array(M.length);
+const results = new Array(M_RUN.length);
 let next = 0;
 async function worker(){
-  while(next < M.length){
-    const i = next++; const [name, from, to, needle] = M[i];
+  while(next < M_RUN.length){
+    const i = next++; const [name, from, to, needle] = M_RUN[i];
     const hits = src.split(from).length - 1;
     if(hits === 0){ results[i] = 'STALE  ' + name + '  — the code it mutates has moved; update this mutation'; continue; }
     /* replace() takes the first occurrence only: with two, the mutation may land on dead
@@ -850,5 +946,6 @@ const t0 = Date.now();
 await Promise.all(Array.from({length: WORKERS}, worker));
 let bad = 0;
 for(const r of results){ console.log(r); if(!r.startsWith('CAUGHT')) bad++; }
-console.log('\n' + (M.length - bad) + ' of ' + M.length + ' mutations caught (' + WORKERS + ' workers, ' + Math.round((Date.now()-t0)/1000) + ' s)');
+if(ONLY.length) console.log('\n(MUTANT_ONLY filter: ' + M_RUN.length + ' of ' + M_FULL.length + ' mutations ran locally; CI runs the full set)');
+console.log('\n' + (M_RUN.length - bad) + ' of ' + M_RUN.length + ' mutations caught (' + WORKERS + ' workers, ' + Math.round((Date.now()-t0)/1000) + ' s)');
 process.exit(bad ? 1 : 0);

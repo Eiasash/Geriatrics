@@ -935,12 +935,17 @@
   #week .today h3{font-size:calc(21px*var(--fs,1))}
   #week .today .split div b{color:var(--accent)}
   #week .today button{background:var(--accent);border-color:var(--accent);border-radius:3px}
-  /* the three dashboard actions: accent block, all text in paper white — the ink text was unreadable on orange */
+  /* the three dashboard actions: light mode fills solid with the accent (paper-white text reads fine
+     on the darker light-mode amber); dark mode outlines instead — see v21 below, the muted dark
+     amber can't carry light text as a fill without a harsh near-black override */
   #week .today .acts .act{background:var(--accent);border-color:var(--accent);color:var(--paper)}
   #week .today .acts .act b,#week .today .acts .act span{color:var(--paper)}
   #week .today .acts .act b{opacity:.85}
   #week .today .acts .act:hover{background:var(--ink);border-color:var(--ink)}
-  body.dark #week .today .acts .act,body.dark #week .today .acts .act b,body.dark #week .today .acts .act span{color:#12161a}
+  /* v21: outline instead of fill — amber #E59835 as border/accent only, body text on surface */
+  body.dark #week .today .acts .act{background:var(--surface);border-color:var(--c-now)}
+  body.dark #week .today .acts .act,body.dark #week .today .acts .act b,body.dark #week .today .acts .act span{color:var(--ink)}
+  body.dark #week .today .acts .act:hover{background:var(--rule-subtle);border-color:var(--c-now)}
   #week .today button[data-on="1"]{background:var(--paper);color:var(--start);border-color:var(--start)}
 
   /* the fourteen-day streak: chunkier, and it fills with colour */
@@ -11733,7 +11738,7 @@ function paintNextChap(){
     const id = b.closest('section').id, i = secs.indexOf(id), nxt = i >= 0 ? secs[i+1] : null;
     const rb = nxt && RAIL.querySelector('button[data-t="' + nxt + '"]');
     b.hidden = !rb;
-    if(rb){ b.dataset.go = nxt; b.textContent = 'next this week: ' + (rb.dataset.short || rb.firstChild.textContent.trim()) + ' \u2192'; }
+    if(rb){ b.dataset.go = nxt; b.textContent = 'Next: ' + (rb.dataset.short || rb.firstChild.textContent.trim()) + ' \u2192'; }
   });
 }
 document.addEventListener('sectionshown', ()=>paintNextChap());
@@ -11749,12 +11754,16 @@ CONTENT.forEach(id=>{
   foot.className = 'secfoot';
   foot.innerHTML =
     '<button type="button" class="mark" data-sec="'+id+'">mark as read</button>' +
-    (n ? '<button type="button" class="dr" data-tag="'+tag+'">drill these '+n+' cards</button>' : '') +
-    '<button type="button" class="pq" data-sec="' + id + '" hidden>past questions</button>' +
-    '<button type="button" class="pr">print this section</button>' +
-    '<button type="button" class="bk">backup &amp; restore</button>' +
-    '<button type="button" class="hm">&#8962; home</button>' +
+    '<div class="secrow2">' +
+      (n ? '<button type="button" class="dr" data-tag="'+tag+'">drill these '+n+' cards</button>' : '') +
+      '<button type="button" class="pq" data-sec="' + id + '" hidden>past questions</button>' +
+    '</div>' +
     '<button type="button" class="nx" hidden></button>' +
+    '<div class="secquiet">' +
+      '<button type="button" class="pr">print this section</button>' +
+      '<button type="button" class="bk">backup &amp; restore</button>' +
+      '<button type="button" class="hm">&#8962; home</button>' +
+    '</div>' +
     '<span class="sfnote">'+name+(VERIFIED[id] ? ' · checked against '+VERIFIED[id] : '')+'</span>';
   sec.appendChild(buildNotesPanel(id));
   sec.appendChild(foot);
@@ -13674,10 +13683,13 @@ document.getElementById('bkFile').addEventListener('change', async e=>{
     --soft:#F5EFE4 !important;
   }
   html.dark, body.dark{
-    --paper:#141110 !important; --surface:#1D1917 !important; --ink:#F6EFE6 !important; --mute:#AFA398 !important;
+    /* v21 — Gemini-audited dark palette: bg #1C1B1A, surface #2D2C2B, body text #E6E1DC
+       (13.2:1 on bg), muted #9C9791 (5.9:1 on bg, 4.8:1 on surface), amber #E59835
+       (7.3:1 on bg as text/outline — never as a fill behind black text). */
+    --paper:#1C1B1A !important; --surface:#2D2C2B !important; --ink:#E6E1DC !important; --mute:#9C9791 !important;
     --rule:#332C28 !important; --rule-subtle:#241F1C !important;
     --stop:#FF7A7A !important; --start:#43D9A3 !important; --warn:#F5C451 !important;
-    --c-now:#FFA92E !important;  --t-now:#2A1E0E !important;
+    --c-now:#E59835 !important;  --t-now:#2A1E0E !important;
     --c-rx:#FF6B81 !important;   --t-rx:#2B1218 !important;
     --c-core:#43D9A3 !important; --t-core:#0F2A22 !important;
     --c-tier2:#F5C451 !important;--t-tier2:#2A2210 !important;
@@ -13699,7 +13711,7 @@ document.getElementById('bkFile').addEventListener('change', async e=>{
 																  --mono: ui-monospace, "Roboto Mono", "Cascadia Code", Menlo, Consolas, monospace !important;
 																}
 																html.dark, body.dark {
-																  --surface: var(--paper) !important;
+																  --surface: #2D2C2B !important; /* v21: un-collapsed from --paper so dark cards read as a distinct surface, not flush with the page */
 																  --rule: #2D2522 !important;
 																  --rule-subtle: #201A18 !important;
 																}
@@ -14122,6 +14134,16 @@ p.tsrc i{ font-style:italic }
 body.dark #week #tdBtn, body.dark #week #tGo, body.dark #week #qLog,
 body.dark .pf button[aria-pressed="true"], body.dark .cbtns button.ok, body.dark .cbtns button.no,
 body.dark .secfoot button.mark.readon, body.dark .ch-actions summary.ebgo:hover{ color:var(--paper) !important }
+/* v21: "Mark today done" (not-yet-done state only — [data-on="1"] keeps its green fill from v20
+   above, already compliant) goes from a solid amber block with near-black text to an outline —
+   same softened-palette reasoning as the three dashboard tiles above. Higher specificity than
+   the plain #tdBtn selector above (adds :not) so it wins on the same !important tier. */
+body.dark #week #tdBtn:not([data-on="1"]) {
+  background: var(--surface) !important;
+  border-color: var(--c-now) !important;
+  color: var(--ink) !important;
+}
+body.dark #week #tdBtn:not([data-on="1"]):hover { background: var(--rule-subtle) !important }
 /* the mock's start button lost its fill to .pf button and read #12161a on #141110 (1.03:1) */
 .pf button.mockgo{ background:var(--c-now); border-color:var(--c-now); color:#fff }
 body.dark .pf button.mockgo{ color:var(--paper) }
@@ -14130,6 +14152,49 @@ body.dark #hlText, body.dark #rptNote, body.dark #bkText{ background:var(--surfa
 /* the backup dialog's second button was an unstyled native button */
 .tbtns button:not(:first-child):not(.lnk){ font-family:var(--sans); font-size:calc(13.5px*var(--fs,1)); padding:9px 18px;
   border-radius:3px; background:transparent; color:var(--ink); border:1px solid var(--rule); min-height:40px }
+
+/* v24 — chapter-end stack. Was a ragged wrap of seven identically-styled monospace boxes
+   (mark / drill / past-questions / print / backup / home / next, plus an empty box when next
+   was hidden — see the [hidden] fix above). One clear order instead: a full-width primary
+   "mark as read" (a quiet checked state once done, not a solid green block), an equal two-up
+   row for drill/past-questions, a full-width accent "Next: <chapter>" when one follows this
+   week, then a single quiet print · backup · home text line. The verification stamp (.sfnote)
+   stays small and muted, last. */
+.secfoot{ display:flex !important; flex-direction:column !important; align-items:stretch !important;
+  flex-wrap:nowrap !important; gap:10px !important; }
+.secfoot > button.mark{ width:100%; font-family:var(--sans) !important; font-weight:700 !important;
+  border-radius:4px !important; padding:12px 16px !important; min-height:48px !important;
+  letter-spacing:0 !important; text-transform:none !important; }
+.secfoot > button.mark.readon{ background:none !important; border-color:var(--start) !important;
+  color:var(--start) !important; }
+body.dark .secfoot > button.mark.readon{ color:var(--start) !important; }
+.secfoot .secrow2{ display:flex !important; gap:10px !important; }
+.secfoot .secrow2 button{ flex:1 1 0; width:auto !important; margin:0 !important; font-family:var(--sans) !important;
+  border-radius:4px !important; letter-spacing:0 !important; text-transform:none !important; }
+.secfoot .secrow2 button[hidden]{ display:none !important; }
+/* .nx is also the "next up" reading-list row class (display:grid, a 92px label column) — reset
+   it here or the footer's next-chapter button becomes a 3-column grid and its text gets stuck
+   in that 92px first column instead of centered across the full-width button (Codex #431) */
+.secfoot > button.nx:not([hidden]){ display:flex !important; align-items:center !important; justify-content:center !important; }
+.secfoot > button.nx{ width:100%; font-family:var(--sans) !important; font-weight:700 !important;
+  border-radius:4px !important; padding:12px 16px !important; min-height:48px !important;
+  background:var(--accent) !important; border-color:var(--accent) !important; color:var(--paper) !important;
+  letter-spacing:0 !important; text-transform:none !important; }
+body.dark .secfoot > button.nx{ background:var(--surface) !important; border-color:var(--c-now) !important;
+  color:var(--ink) !important; }
+.secfoot .secquiet{ display:flex !important; flex-wrap:wrap !important; justify-content:center !important;
+  gap:0 !important; }
+.secfoot .secquiet button{ width:auto !important; background:none !important; border:0 !important;
+  border-radius:0 !important; font-family:var(--sans) !important; font-size:calc(12.5px*var(--fs,1)) !important;
+  font-weight:400 !important; letter-spacing:0 !important; text-transform:none !important;
+  color:var(--mute) !important; text-decoration:underline !important; text-underline-offset:3px !important;
+  padding:10px 8px !important; min-height:44px !important; }
+.secfoot .secquiet button:hover{ color:var(--ink) !important; }
+/* text-decoration is a propagating property: text-decoration:none on the pseudo itself cannot
+   cancel the underline it inherits from the button, only a new formatting context stops that —
+   display:inline-block gives it one */
+.secfoot .secquiet button + button::before{ content:'\00b7'; margin-inline-end:8px; display:inline-block; text-decoration:none; }
+.secfoot .sfnote{ text-align:center !important; }
 </style>
 </body>
 </html>
