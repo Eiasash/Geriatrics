@@ -883,6 +883,48 @@ const M = [
    'body.dark .toend{ background:var(--surface) !important; color:var(--ink) !important; border:1px solid var(--rule) !important; }',
    '',
    'the same dark outline the up button'],
+
+  /* --- v26 header, next round --- */
+  ['a live selection no longer freezes the header’s auto-hide',
+   "if(typeof hdrSetFrozen === 'function') hdrSetFrozen(up);",
+   '',
+   'freezes the header’s auto-hide'],
+
+  ['the docked highlight bar stops re-anchoring to the top when the header is hidden',
+   'body.hdr-hidden #hlBar{ top:env(safe-area-inset-top) !important; }',
+   '',
+   're-anchors to the very top'],
+
+  ['the header stops sliding out of view on scroll-down',
+   'body.hdr-hidden nav{ transform:translateY(-100%) !important; }',
+   '',
+   'slides out of view on scroll-down'],
+
+  ['the chapter-top meta line loses its 44px/12px-gap tap targets',
+   '.ch-actions{ gap:12px !important; }\n.ch-actions .ebgo{ min-height:44px !important; }',
+   '',
+   '44px tap targets with 12px gaps'],
+
+  ['the header auto-hide threshold drops from 60px to 0, showing the header nowhere near the top',
+   'if(y < 60) return false;',
+   'if(y < 0) return false;',
+   'near the top (<60px) the header always shows'],
+
+  /* --- Gemini/Eias phone check of #432+#433, next round --- */
+  ['the search icon SVG loses its explicit 24px sizing and falls back to the browser default',
+   '.anchorbar .srchbtn svg{ width:24px; height:24px; flex:none; }',
+   '',
+   'an inline SVG stroked with currentColor'],
+
+  ['the tappable title goes back to the monospace technical-ledger voice',
+   '.topicbtn{ font-family:var(--sans) !important; letter-spacing:0 !important; text-transform:none !important; }',
+   '',
+   'the plain sans heading font'],
+
+  ['the header freeze moves back into the debounced timeout, arriving 260ms late (Gemini review of #433)',
+   "  document.addEventListener('selectionchange', ()=>{\n    /* the freeze itself cannot wait for the 260ms debounce below: an Android drag-handle\n       micro-scroll inside that window could still hide or show the header mid-selection,\n       before place()/paintChrome() ever runs. A non-collapsed selection freezes the header\n       synchronously, right here; the debounce still owns positioning the bar and unfreezing\n       once the selection actually clears (Gemini review of #433). */\n    const sel = window.getSelection();\n    if(sel && !sel.isCollapsed && typeof hdrSetFrozen === 'function') hdrSetFrozen(true);\n    clearTimeout(tmr); tmr = setTimeout(place, 260);\n  });",
+   "  document.addEventListener('selectionchange', ()=>{ clearTimeout(tmr); tmr = setTimeout(place, 260); });",
+   'freezes synchronously on selectionchange, before the 260ms debounce'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the

@@ -508,7 +508,8 @@ ok('table captions do not simply repeat the heading above',
 
 // ---- v12 (14 Sep): display reachable from any section; highlights and per-section notes ----
 ok('display popover exists with both controls', !!d.querySelector('#dispPop button[data-dk]') && d.querySelectorAll('#dispPop button[data-fs]').length === 4);
-ok('Aa button in the phone anchor bar and in the desktop rail', !!d.getElementById('dispBtn') && !!d.getElementById('dispBtnRail'));
+ok('display settings reachable from the topics sheet (mobile) and the desktop rail (v26: moved out of the phone anchor bar)',
+   !!d.getElementById('shDisplay') && !!d.getElementById('dispBtnRail') && !d.getElementById('dispBtn'));
 d.querySelector('#dispPop button[data-fs="s"]').click();
 ok('popover text-size click applies and syncs the home row', d.body.classList.contains('fs-s') &&
    d.querySelector('#dispRow button[data-fs="s"]').getAttribute('aria-pressed') === 'true');
@@ -742,16 +743,26 @@ ok('the chapter-footer "next this week" button is actually hidden when it carrie
   let r = d.createRange(); r.setStart(tn, 2); r.setEnd(tn, 12);
   let sel = w.getSelection(); sel.removeAllRanges(); sel.addRange(r);
   d.dispatchEvent(new w.Event('selectionchange'));
+  /* Gemini review of #433: the freeze used to only happen inside place(), which the 260ms
+     debounce below delays — an Android drag-handle micro-scroll in that window could still
+     move the header mid-selection. Assert the freeze lands synchronously, with the debounce
+     timer NOT yet advanced, before doing anything else. */
+  ok('the header freezes synchronously on selectionchange, before the 260ms debounce ever runs',
+     w.eval('hdrFrozen') === true, w.eval('hdrFrozen'));
   await new Promise(res => setTimeout(res, 320));           /* the 260ms debounce, for real */
   ok('a live selection shows the bar and stands the timer and the jump row down',
      bar.hidden === false && mt.classList.contains('hl-off') && row.classList.contains('hl-off'),
      'bar.hidden=' + bar.hidden + ' mt=' + mt.className + ' row=' + row.className);
+  /* v26: the same live selection freezes the header's auto-hide (Gemini amendment) — no
+     scroll-driven show/hide until the selection clears */
+  ok('a live selection freezes the header’s auto-hide', w.eval('hdrFrozen') === true, w.eval('hdrFrozen'));
   sel.removeAllRanges();
   d.dispatchEvent(new w.Event('selectionchange'));
   await new Promise(res => setTimeout(res, 320));
   ok('clearing the selection hides the bar and brings the timer and the jump row back',
      bar.hidden === true && !mt.classList.contains('hl-off') && !row.classList.contains('hl-off'),
      'bar.hidden=' + bar.hidden + ' mt=' + mt.className + ' row=' + row.className);
+  ok('clearing the selection un-freezes the header’s auto-hide', w.eval('hdrFrozen') === false, w.eval('hdrFrozen'));
 }
 
 /* ---- selection integrity while the bar is up, 16 Sep ----
@@ -1762,7 +1773,7 @@ errs.slice(0,12).forEach(e=>console.log('  ' + e));
      !!store['geri:rollback'] && alerts.some(x => /partway through the undo/.test(x)), alerts.join(' | '));
   store['geri:rollback'] = '';
 
-  d.getElementById('rptBtn').click();
+  d.getElementById('shReport').click();
   const note = d.getElementById('rptNote');
   note.value = '\u05d3\u05dc\u05d9\u05e8\u05d9\u05d5\u05dd '.repeat(600) + '\ud83d\ude00'.repeat(50);
   note.dispatchEvent(new w.Event('input'));
@@ -2268,6 +2279,47 @@ ok('the topics sheet carries all my notes, mark my place and resume',
    !!d.querySelector('#sheetBody #shNotes') && !!d.querySelector('#sheetBody #shMark') && !!d.querySelector('#sheetBody #shResume') &&
    (d.getElementById('shNotes').click(), !d.getElementById('notesModal').hidden));
 w.eval("document.getElementById('notesModal').hidden = true; document.body.classList.remove('tm-open')");
+
+/* ---- v26: header — search icon, auto-hide, the phone anchor bar down to two icons ---- */
+ok('the phone anchor bar is down to home, the tappable title, and a search icon (report and display moved to the topics sheet)',
+   !!d.querySelector('#anchorBar #homeBtn') && !!d.querySelector('#anchorBar #topicBtn') && !!d.querySelector('#anchorBar #srchBtn') &&
+   !d.querySelector('#anchorBar #rptBtn') && !d.querySelector('#anchorBar #dispBtn'));
+ok('report a problem is reachable from the topics sheet', !!d.querySelector('#sheetBody #shReport'));
+ok('the search icon is an inline SVG stroked with currentColor (not a colour emoji, which renders differently per device and ignores theme)',
+   !!d.querySelector('#srchBtn svg') && d.querySelector('#srchBtn').textContent.trim() === '' &&
+   d.querySelector('#srchBtn svg').getAttribute('stroke') === 'currentColor' &&
+   /\.anchorbar \.srchbtn svg\{ width:24px; height:24px; flex:none; \}/.test(code));
+ok('the tappable title reads the plain sans heading font, one line, a bare chevron with no "topics" label',
+   d.querySelector('#topicBtn .glabel').textContent.trim() === '▾' &&
+   /\.topicbtn\{ font-family:var\(--sans\) !important; letter-spacing:0 !important; text-transform:none !important; \}/.test(code));
+{
+  const wrap = d.getElementById('srchWrap'), btn = d.getElementById('srchBtn'), q = d.getElementById('q');
+  ok('the search icon opens the full input and focuses it, and a second tap closes it',
+     !wrap.classList.contains('open'), 'starts closed');
+  btn.click();
+  ok('tap 1 opens the search row', wrap.classList.contains('open') && d.activeElement === q,
+     'open=' + wrap.classList.contains('open') + ' focused=' + (d.activeElement === q));
+  btn.click();
+  ok('tap 2 closes it again', !wrap.classList.contains('open'));
+  btn.click();
+  w.eval("document.dispatchEvent(new KeyboardEvent('keydown', {key:'Escape'}))");
+  ok('Escape also closes the search row', !wrap.classList.contains('open'));
+}
+ok('window.matchMedia is feature-detected before use, not called unguarded (jsdom does not implement it, and an unguarded call here throws synchronously mid-script, silently aborting every later top-level let/const in the same script block)',
+   /const mq = window\.matchMedia \? window\.matchMedia\('\(max-width:900px\)'\) : \{matches: true\};/.test(code));
+{
+  const dec = (y, lastY, hidden) => w.eval(`hdrScrollDecision(${y}, ${lastY}, ${hidden})`);
+  ok('near the top (<60px) the header always shows', dec(0, 200, true) === false && dec(0, 0, true) === false);
+  ok('scrolling down past the threshold hides the header', dec(300, 200, false) === true, dec(300,200,false));
+  ok('scrolling up past the threshold shows the header', dec(200, 300, true) === false, dec(200,300,true));
+  ok('a small jitter (<=6px either way) keeps the current state', dec(203, 200, false) === false && dec(197, 200, true) === true);
+}
+ok('the docked highlight bar re-anchors to the very top when the header is hidden',
+   /body\.hdr-hidden #hlBar\{ top:env\(safe-area-inset-top\) !important; \}/.test(code));
+ok('the header slides out of view on scroll-down rather than jump-cutting',
+   /nav\{ transition:transform \.22s ease !important; will-change:transform; \}\s*\n\s*body\.hdr-hidden nav\{ transform:translateY\(-100%\) !important; \}/.test(code));
+ok('the chapter-top meta line (Cards/Exam/Sections counts) meets 44px tap targets with 12px gaps',
+   /\.ch-actions\{ gap:12px !important; \}/.test(code) && /\.ch-actions \.ebgo\{ min-height:44px !important; \}/.test(code));
 ok('the header uses the short label where the full one clips', (w.eval("show('bpsd')"), d.getElementById('topicNow').textContent) === '60·63 Dementia behaviour & Rx');
 w.eval("show('week')");
 {
