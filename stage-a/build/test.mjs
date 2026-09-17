@@ -2571,6 +2571,35 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
   ok('the decorative chevron is hidden from the accessible name, so it resolves to just the visible topic label',
      d.querySelector('#topicBtn .glabel').getAttribute('aria-hidden') === 'true');
 }
+{
+  /* Codex P1 review of #439: leaving the mobile breakpoint (e.g. tablet rotation) while the
+     header is hidden must not leave the nav permanently inert — onScroll's mq.matches guard
+     stops firing once mq no longer matches, so only an explicit 'change' listener on the media
+     query can restore the shown, focusable state. The main harness's window.matchMedia stub is
+     {matches: true} with no listener support (mq.addEventListener/addListener are both
+     undefined there, so onMqChange never wires up) — exercising the real branch needs a fresh
+     JSDOM whose matchMedia returns a listener-capable stub, mirroring the dark-mode test's w2
+     pattern above. */
+  let mqMatches = true, changeCb = null;
+  const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
+    beforeParse(w3){ pinClock(w3);
+      w3.matchMedia = q => (q === '(max-width:900px)')
+        ? { get matches(){ return mqMatches; }, addEventListener:(ev,cb)=>{ if(ev === 'change') changeCb = cb; }, removeEventListener(){} }
+        : { matches:false, addEventListener(){}, removeEventListener(){} }; } });
+  for(let t = 0; t < 100 && !dm.window.document.getElementById('homeBtn'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 150));
+  const w3 = dm.window, d3 = w3.document, nav3 = d3.querySelector('nav');
+  w3.scrollY = 300; w3.dispatchEvent(new w3.Event('scroll'));
+  ok('(mobile stub) scrolling down hides the header and makes the nav inert',
+     d3.body.classList.contains('hdr-hidden') && nav3.inert === true,
+     'hdr-hidden=' + d3.body.classList.contains('hdr-hidden') + ' inert=' + nav3.inert);
+  mqMatches = false;
+  if(changeCb) changeCb();
+  ok('leaving the mobile breakpoint while the header is hidden restores the shown, non-inert nav (tablet-rotation fix, Codex P1 on #439)',
+     !d3.body.classList.contains('hdr-hidden') && nav3.inert !== true,
+     'hdr-hidden=' + d3.body.classList.contains('hdr-hidden') + ' inert=' + nav3.inert);
+  dm.window.close();
+}
 ok('the docked highlight bar re-anchors to the very top when the header is hidden',
    /body\.hdr-hidden #hlBar\{ top:env\(safe-area-inset-top\) !important; \}/.test(code));
 ok('the header slides out of view on scroll-down rather than jump-cutting',
