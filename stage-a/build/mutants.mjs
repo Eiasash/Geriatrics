@@ -615,13 +615,13 @@ const M = [
    'pauses/resumes the day, the same as the button'],
 
   ['hide stops shrinking the pill to the gear dot',
-   "  document.getElementById('mtHide').addEventListener('click',()=>{ setMenuOpen(false); box.classList.add('dot'); });",
+   "  document.getElementById('mtHide').addEventListener('click',()=>{ setMenuOpen(false); setDot(true); });",
    "  document.getElementById('mtHide').addEventListener('click',()=>{ setMenuOpen(false); });",
    'shrinks the pill to a gear dot'],
 
   ['tapping the gear dot no longer restores the pill',
-   "    if(box.classList.contains('dot')){ box.classList.remove('dot'); return; }\n    if(e.target.closest('#mtClock, .ph')) goTap();",
-   "    if(false){ box.classList.remove('dot'); return; }\n    if(e.target.closest('#mtClock, .ph')) goTap();",
+   "    if(box.classList.contains('dot')){ setDot(false); return; }\n    if(e.target.closest('#mtClock, .ph')) goTap();",
+   "    if(false){ setDot(false); return; }\n    if(e.target.closest('#mtClock, .ph')) goTap();",
    'restores the pill'],
 
   ['switching mode leaves the menu open',
@@ -704,6 +704,11 @@ const M = [
    "#miniT button.pri{background:var(--surface);color:var(--ink);border-color:var(--ink);font-weight:600}",
    "#miniT button.pri{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}",
    'not a solid near-black slab'],
+
+  ['the gear dot stops updating mtMore’s accessible name, so it still announces "Settings and more" with a popup once dotted',
+   "    moreBtn.setAttribute('aria-label', v ? 'Restore timer' : 'Settings and more');\n    moreBtn.setAttribute('aria-haspopup', v ? 'false' : 'true');",
+   "",
+   'accessible name says it restores the timer'],
 
   /* --- final Gemini round, 16 Sep --- */
   ['dark mode answer feedback loses to the plain-option rule again',

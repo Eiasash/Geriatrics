@@ -10636,6 +10636,14 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
        mode, hide) leaves it expanded for the next fresh open of the menu */
     if(!v && moreSub){ moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false'); }
   }
+  /* while dotted, mtMore is the only exposed control and no longer opens a menu — it restores
+     the pill instead, so its accessible name and popup state need to say that rather than
+     still announcing "Settings and more" / haspopup */
+  function setDot(v){
+    box.classList.toggle('dot', v);
+    moreBtn.setAttribute('aria-label', v ? 'Restore timer' : 'Settings and more');
+    moreBtn.setAttribute('aria-haspopup', v ? 'false' : 'true');
+  }
   /* One tap, always. Pause/Resume acts immediately and closes the menu rather than opening
      it; it never needs the menu to be open first. Tapping the clock or the phase label does
      the same thing — the pill IS the single control, so there is no separate collapse tap to
@@ -10644,12 +10652,12 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
   document.getElementById('mtGo').addEventListener('click', goTap);
   box.addEventListener('click', e=>{
     if(e.target.closest('button')) return;              /* buttons own their own behaviour */
-    if(box.classList.contains('dot')){ box.classList.remove('dot'); return; }
+    if(box.classList.contains('dot')){ setDot(false); return; }
     if(e.target.closest('#mtClock, .ph')) goTap();
   });
   /* every action inside the menu closes it behind itself */
   moreBtn.addEventListener('click', ()=>{
-    if(box.classList.contains('dot')){ box.classList.remove('dot'); return; }
+    if(box.classList.contains('dot')){ setDot(false); return; }
     setMenuOpen(!box.classList.contains('open'));
   });
   /* mtSize opens the shared display popover — wired into the ['shDisplay','dispBtnRail',...]
@@ -10679,7 +10687,7 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
   /* "hide" used to set box.hidden = true, which left no way back to it except changing
      section. It now shrinks to a small gear dot instead — still on screen, still draggable,
      one tap restores it (per the box click handler above) */
-  document.getElementById('mtHide').addEventListener('click',()=>{ setMenuOpen(false); box.classList.add('dot'); });
+  document.getElementById('mtHide').addEventListener('click',()=>{ setMenuOpen(false); setDot(true); });
   /* the dot doesn't force mtOff/hidden any more, so nothing needs to reset it on section
      change; tPaint() still runs to keep the clock live underneath the dot */
   document.addEventListener('sectionshown', ()=>{ mtOff = false; tPaint(); });

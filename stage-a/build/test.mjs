@@ -1258,8 +1258,15 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   box.classList.remove('dot'); d.getElementById('mtHide').click();
   ok('the hide button in the menu shrinks the pill to the dot, and closes the menu behind it',
      box.classList.contains('dot') && !box.classList.contains('open'), cls());
+  ok('once dotted, mtMore’s accessible name says it restores the timer, not "Settings and more" with a popup it no longer opens',
+     d.getElementById('mtMore').getAttribute('aria-label') === 'Restore timer' &&
+     d.getElementById('mtMore').getAttribute('aria-haspopup') === 'false',
+     'label=' + d.getElementById('mtMore').getAttribute('aria-label') + ' haspopup=' + d.getElementById('mtMore').getAttribute('aria-haspopup'));
   box.click();
   ok('tapping the dot restores the pill', !box.classList.contains('dot'), cls());
+  ok('restoring the pill puts mtMore’s accessible name back to "Settings and more" with its popup restored',
+     d.getElementById('mtMore').getAttribute('aria-label') === 'Settings and more' &&
+     d.getElementById('mtMore').getAttribute('aria-haspopup') === 'true');
   /* every action in the menu closes it behind itself */
   box.classList.add('open'); d.getElementById('mtMode').click();
   const modeClosed = !box.classList.contains('open');
