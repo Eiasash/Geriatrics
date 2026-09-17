@@ -13430,6 +13430,16 @@ function hdrSetFrozen(v){ hdrFrozen = v; }
     }
     if(next !== hdrHidden){ hdrHidden = next; apply(); }
   }
+  /* leaving the mobile breakpoint (e.g. tablet rotation) stops onScroll's mq.matches guard from
+     ever running again, so a hidden+inert nav would otherwise stay inert forever above 900px —
+     the CSS transform that visually hides it only applies inside the media query too, leaving a
+     visible nav nothing can click. Force the shown, non-inert state back the moment mq stops
+     matching. */
+  function onMqChange(){
+    if(!mq.matches && hdrHidden){ hdrHidden = false; apply(); }
+  }
+  if(mq.addEventListener) mq.addEventListener('change', onMqChange);
+  else if(mq.addListener) mq.addListener(onMqChange);
   addEventListener('scroll', onScroll, {passive:true});
 })();
 function seeEl(el){ if(el && typeof el.scrollIntoView === 'function') el.scrollIntoView({block:'start'}); }

@@ -1056,6 +1056,11 @@ const M = [
    "    if(next && !hdrHidden){\n      const nav = document.querySelector('nav');\n      if(nav && document.activeElement && nav.contains(document.activeElement)) return;\n    }",
    '',
    'never hides while focus is inside it'],
+
+  ['the nav stays inert forever when the viewport leaves the mobile breakpoint while the header is hidden, e.g. tablet rotation (Codex P1 review of #439)',
+   '    if(!mq.matches && hdrHidden){ hdrHidden = false; apply(); }',
+   '',
+   'restores the shown, non-inert nav'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
