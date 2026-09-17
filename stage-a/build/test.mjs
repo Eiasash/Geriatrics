@@ -1734,7 +1734,7 @@ ok('the consolidation week survives the week card, the chips and the tag lookup'
 })());
 
 ok('the past-paper week filter does not empty the pool when the week has no chapters',
-   /if\(chs\.size\) p = p\.filter\(x=>x\.ch && chs\.has\(x\.ch\)/.test(code) &&
+   /if\(chs\.size\) p = p\.filter\(x=>x\.ch && x\.bk===.Hazzard. && chs\.has\(x\.ch\)/.test(code) &&
    /\(\(VIEW && VIEW\.items\) \|\| \[\]\)\.forEach/.test(code));
 ok('every flashcard carries a tag and no tag points past the end of the deck', (()=>{
   /* CARDTAG maps cards by hard-coded index, so inserting a card anywhere but the end
@@ -2109,7 +2109,41 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
   ok('a single weak chapter holds while the scope changes', r.chHeld, r.n + ' questions');
   ok('the weakest-chapters button holds the chapter as a filter', /pqChap = 'ch:' \+ b\.dataset\.ch;/.test(code));
   ok('an earlier-edition question has no jump to an 8th-edition section',
-     /const tsec = p\.ch \? \(OLDED\.indexOf\(p\.y\) < 0 \? sectionForChapter\(p\.ch\) : ''\)/.test(code));
+     /const tsec = \(p\.ch && p\.bk===.Hazzard.\) \? \(OLDED\.indexOf\(p\.y\) < 0 \? sectionForChapter\(p\.ch\) : ''\)/.test(code));
+}
+
+/* ---- cross-book chapter collision (ChatGPT third-model audit round 3) ---- */
+{
+  /* Chapter numbers are per-book. secChapters('bpsd') is [60,63] in Hazzard's numbering — a
+     Harrison record can independently have ch:60 in Harrison's own numbering (this reproduces
+     the real 2024-09 Q69 finding: bk Harrison, ch 59, which happened to land in the dementia
+     Hazzard section). Every path that reads .ch as a Hazzard chapter must check p.bk==='Hazzard'
+     first, or a non-Hazzard record with a colliding chapter number silently joins that Hazzard
+     chapter's pool and its weak-chapter analytics. */
+  const r = w.eval(`(()=>{
+    const fake = {y:'2099-09', n:9001, q:'synthetic cross-book collision', o:['a','b','c','d'],
+      a:'א', src:'synthetic', bk:'Harrison', ch:60, pg:1};
+    PQ.push(fake);
+    const sv = [pqChap, pqScope, pqYear];
+    const out = {};
+    out.poolIncludes = chapterPaperPool('bpsd').some(x => x.n === 9001);
+    pqChap = 'bpsd'; pqScope = 'all'; pqYear = 'all';
+    out.filterIncludes = pqFilter().some(x => x.n === 9001);
+    [pqChap, pqScope, pqYear] = sv;
+    PQ.pop();
+    return out;
+  })()`);
+  ok('a synthetic Harrison record whose chapter number collides with a Hazzard section does not enter that section’s past-paper pool',
+     r.poolIncludes === false, JSON.stringify(r));
+  ok('...nor does it pass the chapter-constrained filter used by the chapter-index “open the notes” flow',
+     r.filterIncludes === false, JSON.stringify(r));
+  ok('chapterPaperPool only pools records from the Hazzard book',
+     /return PQ\.filter\(p=>p\.bk===.Hazzard. && p\.ch && chs\.indexOf\(p\.ch\) >= 0 && OLDED\.indexOf\(p\.y\) < 0\);/.test(code));
+  ok('the pqStats weak-chapter aggregation only attributes a chaptered question to by\\[\\] when it is Hazzard’s own chapter numbering',
+     /if\(!x\.ch \|\| x\.bk!==.Hazzard. \|\| OLDED\.indexOf\(x\.y\) >= 0\) return;/.test(code) &&
+     /if\(\(x\.ch && x\.bk===.Hazzard.\) \|\| OLDED\.indexOf\(x\.y\) >= 0\) return;/.test(code));
+  ok('the mock-exam weak-chapter report only attributes a chaptered question to byCh when it is Hazzard’s own chapter numbering',
+     /if\(r\.p\.ch && r\.p\.bk===.Hazzard. && r\.given\)/.test(code));
 }
 
 /* ---- render-check round: search landing, drill scroll, mock blanks, paused mock, source line, dark contrast ---- */
@@ -3096,22 +3130,6 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
    (html.match(/v12 . dashboard redesign/g) || []).length === 1);
 
 {
-  /* ChatGPT third-model audit of main ee44f96: errs (window errors + console.error calls the
-     PAGE made, not test noise like jsdom's "Not implemented" warnings which never reach it)
-     was captured and printed mid-run but never checked — a run that threw could still finish
-     576 PASS / 0 FAIL and exit 0. Proven: inject a zero-delay throw and the suite reported
-     success with "errors captured: 1" sitting unread in the middle of the log. Now it fails
-     the run unless a test explicitly allowlisted the message first (see allowErr above — no
-     current test needs to). Printed here, once, after the last check, not mid-run. */
-  const unexpected = errs.filter(e => !errAllow.some(p => e.includes(p)));
-  ok('no unexpected runtime errors were captured during the run',
-     unexpected.length === 0, unexpected.slice(0, 5).join(' | '));
-  console.log('\nerrors captured: ' + errs.length +
-    (errAllow.length ? ' (' + (errs.length - unexpected.length) + ' allowlisted)' : ''));
-  errs.slice(0, 12).forEach(e => console.log('  ' + e));
-}
-
-{
   /* ChatGPT third-model audit: sw.js's fetch handler returned any RESOLVED response —
      including a 503 — as-is, and only fell back to the cache on a network-level rejection
      (offline, DNS failure). A server error therefore blanked a page that was already cached
@@ -3257,6 +3275,25 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
      d4.getElementById('drill').classList.contains('on'),
      'drill.on=' + d4.getElementById('drill').classList.contains('on'));
   dm2.window.close();
+}
+
+{
+  /* ChatGPT third-model audit of main ee44f96, round 4: this check used to sit right after
+     the sw.js/BKEYS/etc. blocks, well before the end of the file — everything below it
+     (several more blocks, including two that spin up fresh JSDOM windows and await real
+     timers) still ran afterward. `errs` on the ORIGINAL window (w) keeps collecting for as
+     long as that window's event loop is pumped, which the awaits in every later block do,
+     so an error firing on `w` after this check had already read `errs` was never seen by any
+     verdict — the run could still finish 598 PASS / 0 FAIL / DONE / exit 0. Proven with a
+     late-injected error below. Moved here, after every other check in the file including the
+     ones that await, so this is the last thing that reads `errs` before the exit code is
+     decided. */
+  const unexpected = errs.filter(e => !errAllow.some(p => e.includes(p)));
+  ok('no unexpected runtime errors were captured during the run',
+     unexpected.length === 0, unexpected.slice(0, 5).join(' | '));
+  console.log('\nerrors captured: ' + errs.length +
+    (errAllow.length ? ' (' + (errs.length - unexpected.length) + ' allowlisted)' : ''));
+  errs.slice(0, 12).forEach(e => console.log('  ' + e));
 }
 
 console.log("DONE");

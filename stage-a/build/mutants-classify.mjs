@@ -15,7 +15,11 @@ export function classifyMutant(name, needle, out) {
   const lines = out.split('\n');
   const caught = lines.some(l => l.startsWith('FAIL') && l.includes(needle));
   const passes = lines.filter(l => l.startsWith('PASS')).length;
-  const done = lines.some(l => l.startsWith('DONE'));
+  /* exact line match, not startsWith: test.mjs only ever prints a bare "DONE" line, so this
+     was already safe in practice, but startsWith('DONE') would also credit a line like
+     "DONE_WITH_ERRORS" or any other line that happens to begin with the same four letters
+     (ChatGPT third-model audit round 4, paired with the same weakness below in baselineOk) */
+  const done = lines.some(l => l === 'DONE');
   if (!done) return 'INCOMPLETE ' + name + '  — the suite stopped after ' + passes + ' checks without reaching DONE; not a verdict';
   /* the file stopped parsing, so everything failed. That is not the guard biting. */
   if (caught && passes < 50) return 'BROKE  ' + name + '  — mutation broke the parse (' + passes + ' passed); it proves nothing';
@@ -31,6 +35,9 @@ export function classifyMutant(name, needle, out) {
    green". Exit status is now part of the verdict, not just the printed text. */
 export function baselineOk(out, exitStatus) {
   const fails = out.split('\n').filter(l => l.startsWith('FAIL'));
-  const hasDone = /DONE/.test(out);
+  /* exact line match, not a bare substring test: /DONE/.test(out) also matches inside a line
+     like "NOT_DONE" or "DONE_WITH_ERRORS" — a baseline that printed either of those and
+     exited 0 would have been reported green (ChatGPT third-model audit round 4) */
+  const hasDone = out.split('\n').some(l => l === 'DONE');
   return { ok: fails.length === 0 && hasDone && exitStatus === 0, fails, hasDone, exitStatus };
 }

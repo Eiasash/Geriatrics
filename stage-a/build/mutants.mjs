@@ -233,8 +233,8 @@ const M = [
    'carries the time it happened'],
 
   ['the week scope matches earlier-edition chapter numbers again',
-   "    if(chs.size) p = p.filter(x=>x.ch && chs.has(x.ch) && OLDED.indexOf(x.y) < 0);",
-   "    if(chs.size) p = p.filter(x=>x.ch && chs.has(x.ch));",
+   "    if(chs.size) p = p.filter(x=>x.ch && x.bk==='Hazzard' && chs.has(x.ch) && OLDED.indexOf(x.y) < 0);",
+   "    if(chs.size) p = p.filter(x=>x.ch && x.bk==='Hazzard' && chs.has(x.ch));",
    'never serves earlier-edition questions'],
 
   ['a single-chapter hold is not understood by the filter',
@@ -243,8 +243,8 @@ const M = [
    'single weak chapter holds'],
 
   ['an earlier-edition question jumps to a section by its old chapter number',
-   "  const tsec = p.ch ? (OLDED.indexOf(p.y) < 0 ? sectionForChapter(p.ch) : '') : (PQSEC[p.bk] || '');",
-   "  const tsec = p.ch ? sectionForChapter(p.ch) : (PQSEC[p.bk] || '');",
+   "  const tsec = (p.ch && p.bk==='Hazzard') ? (OLDED.indexOf(p.y) < 0 ? sectionForChapter(p.ch) : '') : (PQSEC[p.bk] || '');",
+   "  const tsec = (p.ch && p.bk==='Hazzard') ? sectionForChapter(p.ch) : (PQSEC[p.bk] || '');",
    'no jump to an 8th-edition section'],
 
   /* --- render-check round, 16/09 --- */
@@ -264,8 +264,8 @@ const M = [
    "asks before discarding"],
 
   ["blanks count as wrong in the chapter tally",
-   "    if(r.p.ch && r.given){",
-   "    if(r.p.ch){",
+   "    if(r.p.ch && r.p.bk==='Hazzard' && r.given){",
+   "    if(r.p.ch && r.p.bk==='Hazzard'){",
    "keeps blanks apart"],
 
   ["the source line is shown as extracted",
@@ -1148,6 +1148,22 @@ const M = [
    `      });\n    });\n    sec.insertBefore(e, sec.firstChild);\n  });\n  document.addEventListener('click', ev=>{`,
    `      });\n    });\n    document.querySelector('main section').insertBefore(e, document.querySelector('main section').firstChild);\n  });\n  document.addEventListener('click', ev=>{`,
    'owns exactly one header band'],
+  ['chapterPaperPool stops requiring the Hazzard book, so a Harrison/Article/other record whose chapter number collides with a Hazzard chapter joins that chapter’s past-paper pool (ChatGPT third-model audit round 3, reproduces the real 2024-09 Q69 finding)',
+   `  return PQ.filter(p=>p.bk==='Hazzard' && p.ch && chs.indexOf(p.ch) >= 0 && OLDED.indexOf(p.y) < 0);`,
+   `  return PQ.filter(p=>p.ch && chs.indexOf(p.ch) >= 0 && OLDED.indexOf(p.y) < 0);`,
+   'does not enter that section’s past-paper pool'],
+  ['the past-paper chapter-constrained filter stops requiring the Hazzard book, so a colliding non-Hazzard record passes the chapter-index "open the notes" flow’s filter too (ChatGPT third-model audit round 3)',
+   `    p = p.filter(x=>x.ch && x.bk==='Hazzard' && chs.indexOf(x.ch) >= 0 && OLDED.indexOf(x.y) < 0);`,
+   `    p = p.filter(x=>x.ch && chs.indexOf(x.ch) >= 0 && OLDED.indexOf(x.y) < 0);`,
+   'chapter-constrained filter'],
+  ['the pqStats weak-chapter aggregation goes back to keying by[] on any book’s chapter number, so a Harrison/Article record with a colliding chapter number is attributed to the wrong Hazzard chapter in the weak-chapters analytics (ChatGPT third-model audit round 3)',
+   `    if(!x.ch || x.bk!=='Hazzard' || OLDED.indexOf(x.y) >= 0) return;`,
+   `    if(!x.ch || OLDED.indexOf(x.y) >= 0) return;`,
+   'weak-chapter aggregation only attributes'],
+  ['the mock-exam weak-chapter report goes back to keying byCh on any book’s chapter number (ChatGPT third-model audit round 3)',
+   `    if(r.p.ch && r.p.bk==='Hazzard' && r.given){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }`,
+   `    if(r.p.ch && r.given){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }`,
+   'mock-exam weak-chapter report only attributes'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
