@@ -11129,7 +11129,12 @@ document.getElementById('homeBtn').addEventListener('click', ()=>{ show('week');
     return head + encodeURIComponent(body);
   }
   function flash(){ const t = document.getElementById('rptDone'); t.classList.add('on'); setTimeout(()=>t.classList.remove('on'), 1400); }
-  document.getElementById('shReport').addEventListener('click', ()=>{
+  /* null-guarded, unlike the rest of this wiring block: #shReport lives inside the topics-
+     sheet row appended by the IIFE above, so anything that stops that row from reaching the
+     DOM (a bug, or the mutation-testing harness proving the point) must not crash page load
+     here before it even gets a chance to fail the guard that actually covers the row */
+  const shReportBtn = document.getElementById('shReport');
+  if(shReportBtn) shReportBtn.addEventListener('click', ()=>{
     closeSheet();
     ctx.textContent = context(); modal.hidden = false; document.body.classList.add('tm-open'); note.focus();
     document.getElementById('rptIssue').href = issueHref();

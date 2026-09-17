@@ -1981,7 +1981,11 @@ errs.slice(0,12).forEach(e=>console.log('  ' + e));
      !!store['geri:rollback'] && alerts.some(x => /partway through the undo/.test(x)), alerts.join(' | '));
   store['geri:rollback'] = '';
 
-  d.getElementById('shReport').click();
+  /* guarded, not because a real run ever lacks #shReport, but so an earlier mutation that
+     removes it (the topics-sheet row) fails cleanly at its own guard instead of taking the
+     whole suite down here with an unrelated, uncatchable TypeError before reaching DONE */
+  const shReportEl = d.getElementById('shReport');
+  if(shReportEl) shReportEl.click();
   const note = d.getElementById('rptNote');
   note.value = '\u05d3\u05dc\u05d9\u05e8\u05d9\u05d5\u05dd '.repeat(600) + '\ud83d\ude00'.repeat(50);
   note.dispatchEvent(new w.Event('input'));
