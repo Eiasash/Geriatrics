@@ -12,11 +12,15 @@ on:
 
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+    # GitHub withholds repo secrets from workflow runs triggered by Dependabot PRs
+    # (security measure — a malicious dependency bump can't exfiltrate secrets this
+    # way). ANTHROPIC_API_KEY is empty on those runs, so the review action errors
+    # out instead of reviewing anything. Since claude-review is a required status
+    # check (branch protection, added 2026-09-17), that permanently blocks every
+    # dependabot PR from merging — for a reason that has nothing to do with the
+    # PR's actual content. Skip the job entirely for dependabot; a skipped required
+    # check still satisfies branch protection.
+    if: github.actor != 'dependabot[bot]'
 
     runs-on: ubuntu-latest
     permissions:
