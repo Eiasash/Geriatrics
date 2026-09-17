@@ -517,8 +517,18 @@ ok('pearls are searchable', (w.eval('buildIndex(); INDEX.filter(x=>/Exam pearl|d
 ok('every section carries a group colour',
    [...d.querySelectorAll('main section')].filter(x=>!x.dataset.g).length === 0,
    [...d.querySelectorAll('main section')].filter(x=>!x.dataset.g).map(x=>x.id).join(','));
-ok('every section has a header band', d.querySelectorAll('.eyebrow').length ===
-   d.querySelectorAll('main section').length, d.querySelectorAll('.eyebrow').length + ' bands');
+/* ChatGPT round 2: this used to compare only the two totals (.eyebrow count === section count),
+   which a header MOVE, SWAP or CLONE between sections survives — the totals stay equal even
+   though a section now owns 0 or 2 and another owns the other's. Check ownership per section
+   instead: every <section> has exactly one .eyebrow as its own direct child. */
+{
+  const secsWithBand = [...d.querySelectorAll('main section')].map(s => ({
+    id: s.id, n: s.querySelectorAll(':scope > .eyebrow').length
+  }));
+  const bad = secsWithBand.filter(s => s.n !== 1);
+  ok('every section owns exactly one header band of its own',
+     bad.length === 0, bad.map(s => s.id + ':' + s.n).join(',') || 'ok');
+}
 ok('table captions do not simply repeat the heading above',
    [...d.querySelectorAll('.cap')].every(c=>{
      const h = c.previousElementSibling;
@@ -2224,10 +2234,19 @@ ok('drill and past-questions sit in an equal two-up row that collapses to one wh
    /\.secfoot \.secrow2\{ display:flex !important; gap:10px !important; \}/.test(code) &&
    /\.secfoot \.secrow2 button\{ flex:1 1 0;/.test(code) &&
    /\.secfoot \.secrow2 button\[hidden\]\{ display:none !important; \}/.test(code));
-ok('the past-questions button does not carry the .pq card’s 26px margin into the two-up row (Codex #431)',
-   /\.secfoot \.secrow2 button\{ flex:1 1 0; width:auto !important; margin:0 !important;/.test(code) &&
-   w.getComputedStyle(d.querySelector('#falls .secfoot .secrow2 .pq') || d.querySelector('#thyroid .secfoot .secrow2 .pq')).marginBottom === '0px',
-   d.querySelector('#falls .secfoot .secrow2 .pq') ? w.getComputedStyle(d.querySelector('#falls .secfoot .secrow2 .pq')).marginBottom : 'no .pq found');
+{
+  /* ChatGPT third-model audit, round 2: a mutation removing the .secrow2 wrapper makes both
+     selectors below return null, and getComputedStyle(null) throws — a TypeError while
+     evaluating ok()'s own arguments kills the whole suite mid-run (no DONE), which the
+     pre-PR-C caught-before-done ordering then misreported as CAUGHT. That ordering bug is
+     fixed; this fixes the actual crash too, so a missing element fails its own check loudly
+     instead of taking the rest of the suite down with it. */
+  const pqEl = d.querySelector('#falls .secfoot .secrow2 .pq') || d.querySelector('#thyroid .secfoot .secrow2 .pq');
+  ok('the past-questions button does not carry the .pq card’s 26px margin into the two-up row (Codex #431)',
+     /\.secfoot \.secrow2 button\{ flex:1 1 0; width:auto !important; margin:0 !important;/.test(code) &&
+     !!pqEl && w.getComputedStyle(pqEl).marginBottom === '0px',
+     pqEl ? w.getComputedStyle(pqEl).marginBottom : 'no .pq found in #falls or #thyroid .secrow2');
+}
 ok('"Next: <chapter>" is a full-width accent action when a next chapter exists this week',
    /\.secfoot > button\.nx\{ width:100%;[\s\S]{0,220}?background:var\(--accent\) !important;/.test(code) &&
    /body\.dark \.secfoot > button\.nx\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important;/.test(code));
