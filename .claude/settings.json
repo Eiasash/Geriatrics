@@ -12,7 +12,8 @@
       "Bash(git commit:*)",
       "Bash(python3 -m http.server:*)",
       "Bash(scripts/hooks/*:*)",
-      "Bash(.claude/skills/ship-it/ship.sh:*)"
+      "Bash(.claude/skills/ship-it/ship.sh:*)",
+      "Bash(gh pr merge:*)"
     ]
   },
   "hooks": {

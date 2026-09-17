@@ -8,10 +8,26 @@ every "two-lane", "web-lane", or "terminal-lane" instruction in older docs and
 skills (audit-fix-deploy and the per-repo skills included): there is no second
 Claude lane, and no `claude/web-` vs `claude/term-` branch split.
 
-Workflow: branch `claude/<slug>` -> PR -> CI green + Codex review -> Claude Code
-self-merges -> post-merge `verify-deploy`. Codex is the independent automated
-reviewer. Codex green + CI green is sufficient self-merge authority.
-**"Codex green" is defined as:** review state ∈ {`APPROVED`, `COMMENTED`} AND no unresolved P0 or P1 inline comments at the moment of merge. P2 inline comments may self-merge with an in-thread reply explaining the decision. Auto-merge (`gh pr merge --auto`) is **disabled** — every self-merge requires explicitly reading the latest Codex review surface and CI status before merging. If Codex has not reviewed and the PR is substantive, wait or ping; do not deadline-out a missing reviewer on non-trivial changes.
+Workflow: branch `claude/<slug>` -> PR -> CI green -> Claude Code self-merges
+(or auto-merges) -> post-merge `verify-deploy`.
+
+**Auto-merge (`gh pr merge --auto`) is enabled (from 2026-09-17)**, gated by
+GitHub branch protection on `main` requiring `validate`, `js-integrity`,
+`scan`, and `claude-review` to pass. This is a **CI-only** gate — GitHub has
+no mechanism to block merge on Codex review, since Codex does not post a
+required/blocking status check on this repo (confirmed: PR #436, the last
+merge before this policy change, carries zero Codex reviews). Do not describe
+auto-merge as "Codex-gated" — it isn't, and treating it as such is how a
+CI-green-but-medically-wrong change would ship silently.
+
+Codex review is now **best-effort, not a merge gate**: request it
+(`@codex review`) for substantive changes — especially anything touching
+`q.c`/`o[]`/`e` content, the curator-override registry, or FSRS/quiz logic —
+and read its findings before merging if it has responded in a reasonable
+window. But do not block or wait on it, and do not claim "Codex green" as
+self-merge authority; CI green is the only thing that's actually enforced.
+For content-integrity-sensitive PRs where a second reviewer matters, prefer
+plain `gh pr merge` (no `--auto`) and wait for Codex manually, same as before.
 
  Eias sign-off is required only for: (a) PRs touching patient-data paths (ward-helper PHI crypto, IDB roster schema, rounds-data persistence — enumerated in ward-helper codeowners, queued as follow-up PR), and (b) per-PR gate docs that explicitly carry a "NO self-merge" clause (audit-8 R1.5 / R1.6 and subsequent R1.x gates). Claude Code never self-certifies its own audit — independence comes from cross-model review (Codex), not from human-vs-AI gates. All release,
 version-trinity, and verification rules in the repo's skill still apply
