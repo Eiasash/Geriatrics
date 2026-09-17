@@ -12938,7 +12938,10 @@ function pqFilter(){
        being replaced by it */
     /* a section id, or 'ch:N' for a single chapter (the weakest-chapters buttons) */
     const chs = /^ch:\d+$/.test(pqChap) ? [+pqChap.slice(3)] : secChapters(pqChap);
-    p = p.filter(x=>x.ch && chs.indexOf(x.ch) >= 0 && OLDED.indexOf(x.y) < 0);
+    /* these chapter numbers are Hazzard section chapters (secChapters/SECCH); a Harrison or
+       Article record can carry the same integer in .ch for its own book and would otherwise
+       collide into a Hazzard chapter's pool (ChatGPT third-model audit round 3) */
+    p = p.filter(x=>x.ch && x.bk==='Hazzard' && chs.indexOf(x.ch) >= 0 && OLDED.indexOf(x.y) < 0);
   }
   if(pqScope === 'week'){
     const chs = new Set();
@@ -12947,7 +12950,8 @@ function pqFilter(){
        them empties the pool, so leave it whole rather than dead-ending */
     /* the 2020–2022 papers carry chapter numbers from the earlier edition; matching them
        against this week's 8th-edition chapters serves the wrong questions */
-    if(chs.size) p = p.filter(x=>x.ch && chs.has(x.ch) && OLDED.indexOf(x.y) < 0);
+    /* same book-collision guard as the chapter-constraint filter above */
+    if(chs.size) p = p.filter(x=>x.ch && x.bk==='Hazzard' && chs.has(x.ch) && OLDED.indexOf(x.y) < 0);
   } else if(pqScope === 'unseen'){
     p = p.filter(x=>pqDone[pqKey(x)] === undefined);
   } else if(pqScope === 'wrong'){
@@ -13037,7 +13041,12 @@ function pqAnswer(letter){
   /* a third of the bank has no chapter number; those questions are the hardest to hunt
      down by hand, so map their source to a section the same way the metric does */
   /* an earlier-edition chapter number points at the wrong 8th-edition section: no jump */
-  const tsec = p.ch ? (OLDED.indexOf(p.y) < 0 ? sectionForChapter(p.ch) : '') : (PQSEC[p.bk] || '');
+  /* sectionForChapter interprets its argument as a Hazzard 8e chapter number; a non-Hazzard
+     record's .ch is that book's own chapter number and can collide with an unrelated Hazzard
+     chapter of the same integer, so only take this branch for Hazzard records. Every other
+     book keeps its existing PQSEC[p.bk] mapping, same as a record with no chapter number at
+     all (ChatGPT third-model audit round 3). */
+  const tsec = (p.ch && p.bk==='Hazzard') ? (OLDED.indexOf(p.y) < 0 ? sectionForChapter(p.ch) : '') : (PQSEC[p.bk] || '');
   const chp = (p.ch ? ' &mdash; chapter ' + p.ch + (p.pg ? ', p' + p.pg : '') : '') +
     (tsec ? ' <button type="button" class="chgo pqgo" data-sec="' + tsec + '">open the notes</button>' : '');
   document.getElementById('pqSrc').innerHTML =
@@ -13076,9 +13085,15 @@ function pqStats(){
      one and 4 of 4 on another averages to a pass, and sends you to re-read the one you
      already know. The reference string names the paper, so group by that and keep the
      section only for the jump. */
+  /* by[] treats its key as a Hazzard 8e chapter number (sectionForChapter below). A record
+     from another book (Harrison, Article, ...) can carry a .ch in that book's own numbering,
+     which can collide with an unrelated Hazzard chapter of the same integer — so a chaptered
+     non-Hazzard record must NOT go into by[]. It keeps the PQSEC[bk] "named source" treatment
+     that a chapterless record already gets, same as before this book existed (ChatGPT
+     third-model audit round 3). */
   const byS = {};
   PQ.forEach(x=>{
-    if(x.ch || OLDED.indexOf(x.y) >= 0) return;
+    if((x.ch && x.bk==='Hazzard') || OLDED.indexOf(x.y) >= 0) return;
     const sec = PQSEC[x.bk]; if(!sec) return;
     const v = pqDone[pqKey(x)]; if(v === undefined) return;
     const lab = srcLabel(x.src);
@@ -13089,7 +13104,7 @@ function pqStats(){
   });
   const by = {};
   PQ.forEach(x=>{
-    if(!x.ch || OLDED.indexOf(x.y) >= 0) return;
+    if(!x.ch || x.bk!=='Hazzard' || OLDED.indexOf(x.y) >= 0) return;
     const v = pqDone[pqKey(x)];
     if(v === undefined) return;
     by[x.ch] = by[x.ch] || {n:0, w:0};
@@ -13415,7 +13430,11 @@ function chapterLabel(sec){
 function chapterPaperPool(sec){
   const chs = secChapters(sec);
   if(!chs.length || !pqReady) return [];
-  return PQ.filter(p=>p.ch && chs.indexOf(p.ch) >= 0 && OLDED.indexOf(p.y) < 0);
+  /* chs holds Hazzard section chapter numbers; a Harrison/Article/other-book record can carry
+     the same integer in .ch for its own book's numbering. Without the book check a 2024-09
+     Harrison ch 59 question (dementia in Harrison's numbering) lands in the Hazzard "dementia"
+     chapter's practice pool, since Hazzard also has a ch 59 (ChatGPT third-model audit round 3). */
+  return PQ.filter(p=>p.bk==='Hazzard' && p.ch && chs.indexOf(p.ch) >= 0 && OLDED.indexOf(p.y) < 0);
 }
 function openChapterPapers(sec){
   pqLoad();
@@ -13600,7 +13619,10 @@ async function mockFinish(auto){
     const b = r.p.bk || 'Other';
     byBk[b] = byBk[b] || [0,0]; byBk[b][1]++; if(r.ok) byBk[b][0]++;
     /* per chapter, only what was answered: a blank is not evidence about the chapter */
-    if(r.p.ch && r.given){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }
+    /* byCh keys feed sectionForChapter() below, which reads them as Hazzard 8e chapters; a
+       non-Hazzard record's .ch is that book's own numbering and can collide with an unrelated
+       Hazzard chapter of the same integer (ChatGPT third-model audit round 3) */
+    if(r.p.ch && r.p.bk==='Hazzard' && r.given){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }
   });
   const weak = Object.keys(byCh).filter(c=>byCh[c][1] - byCh[c][0] >= 2)
     .sort((a,b)=>(byCh[b][1]-byCh[b][0])-(byCh[a][1]-byCh[a][0]));
