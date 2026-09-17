@@ -119,10 +119,29 @@ ok('chip toggle writes geri:days with the day actually in it', (()=>{
   return Array.isArray(v) && v.length > 0 && v.every(x => /^\d{4}-\d{2}-\d{2}$/.test(x))
     && store['geri:days'] !== before;
 })(), store['geri:days']);
-ok('chip toggle repaints dots', d.querySelectorAll('#dots i.y').length >= 0);
 ok('chip toggle updates the count label', /of 6/.test(d.getElementById('wkDaysLab').textContent),
    d.getElementById('wkDaysLab').textContent);
 chip.click();
+await new Promise(r=>setTimeout(r,50));
+{
+  /* a NodeList's .length is always >= 0 — the old guard here could never fail. #dots only
+     shows the last 14 days ending today, but the chip above belongs to the currently
+     displayed week, which in the pre-reading phase is a future week entirely outside that
+     window — toggling it would never light a dot no matter what paintDays() does, at some
+     pinned dates and not others. Drive the exact same mechanism the chip's own click
+     handler uses (days Set + saveDays + paintDays, from paintChips in index.html) against
+     today() directly, which is always inside the last-14-days window regardless of phase. */
+  const td = w.eval('today()');
+  const wasOn = w.eval("days.has('" + td + "')");
+  const dotsBefore = d.querySelectorAll('#dots i.y').length;
+  w.eval("(days.has('" + td + "') ? days.delete('" + td + "') : days.add('" + td + "')); saveDays(); paintDays();");
+  const dotsAfter = d.querySelectorAll('#dots i.y').length;
+  ok('marking today repaints the dots strip with a newly lit (or cleared) dot',
+     dotsAfter === dotsBefore + (wasOn ? -1 : 1), 'before=' + dotsBefore + ' after=' + dotsAfter);
+  w.eval("(days.has('" + td + "') ? days.delete('" + td + "') : days.add('" + td + "')); saveDays(); paintDays();");
+  ok('toggling it back restores the original dot count',
+     d.querySelectorAll('#dots i.y').length === dotsBefore, d.querySelectorAll('#dots i.y').length + '');
+}
 
 // question log
 const qs = d.getElementById('qScore'); qs.value = '41';
@@ -292,7 +311,15 @@ await new Promise(r=>setTimeout(r,300));
 const hitBtns = [...d.querySelectorAll('#hits button')];
 ok('flashcards are searchable', hitBtns.some(b=>b.querySelector('span').textContent === 'Drill'),
    hitBtns.map(b=>b.querySelector('span').textContent).join('/'));
-hitBtns.find(b=>b.querySelector('span').textContent === 'Drill').click();
+/* .find(...).click() used to throw a TypeError (undefined has no .click) and crash the whole
+   runner if no 'Drill' hit was found, turning a would-be red assertion into a hard stop
+   before any later test ran. Guard it so a missing hit fails loudly instead. */
+{
+  const drillHit = hitBtns.find(b=>b.querySelector('span').textContent === 'Drill');
+  if(drillHit) drillHit.click();
+  else ok('a "Drill" search hit exists to click', false,
+    'no matching hit among: ' + hitBtns.map(b=>b.querySelector('span').textContent).join('/'));
+}
 await new Promise(r=>setTimeout(r,50));
 ok('a card hit opens that one card', /1 of 1/.test(d.getElementById('cpos').textContent),
    d.getElementById('cpos').textContent);
@@ -611,7 +638,16 @@ ok('v27: hide shrinks the pill to the gear dot and closes the menu behind it',
 d.getElementById('miniT').click();
 ok('tapping the dot opens it again', !d.getElementById('miniT').classList.contains('dot'));
 ok('scroll position is stored per section and persisted', w.eval("typeof scrollAt === 'object' && typeof scrollFrac === 'object' && SCKEY === 'geri:scroll'"));
-w.eval("scrollAt.falls = 1234; scrollFrac.falls = 0.5; rememberScroll; restoreScroll('falls')");
+/* the old line referenced rememberScroll without calling it (missing parens), so the
+   capture it was meant to set up never ran — the assertion below passed on a value that
+   was hand-set two lines above, never on anything rememberScroll actually wrote. Call it
+   for real, against a section that is actually shown ('falls', from show('falls') above),
+   and prove the captured value is the live scroll position, not the leftover manual one. */
+w.scrollY = 777;
+w.eval('rememberScroll()');
+ok('rememberScroll captures the current scroll position for the shown section',
+   w.eval('scrollAt.falls') === 777, w.eval('scrollAt.falls') + '');
+w.eval("scrollAt.falls = 1234; scrollFrac.falls = 0.5; restoreScroll('falls')");
 ok('restoring a section reads its stored offset', w.eval("scrollAt.falls === 1234"));
 
 // ---- audit fixes, 14 Sep ----
@@ -821,7 +857,11 @@ ok('the chapter-footer "next this week" button is actually hidden when it carrie
 
 ok('resume makes one scroll jump, not two', /skipRestore = true;/.test(code) && /if\(skipRestore\)\{ skipRestore = false; return; \}/.test(code));
 ok('no font size escapes the text-size control, whatever its capitalisation',
-   !/font-size:\s*[0-9.]+px/i.test(code.replace(/font-size:\s*calc\(/gi,'font-size:calc(').replace(/#(miniT|dispPop)[^}]*\}/g,'').replace(/style="[^"]*"/g,'').replace(/cssText = '[^']*'/g,'')));
+   /* #miniT and #dispPop used to be carved out of this check — every font-size declared
+      inside them already uses calc(Npx*var(--fs,1)) like everywhere else, so the carve-out
+      was stale and was hiding real coverage rather than protecting a deliberate exemption.
+      Dropped; nothing goes red because there was nothing bare left to catch. */
+   !/font-size:\s*[0-9.]+px/i.test(code.replace(/font-size:\s*calc\(/gi,'font-size:calc(').replace(/style="[^"]*"/g,'').replace(/cssText = '[^']*'/g,'')));
 ok('the rail state and the open tab are backed up', w.eval("BKEYS.includes('geri:rail') && BKEYS.includes('geri:tab')"));
 
 // ---- second review follow-up, 15 Sep ----
@@ -1507,7 +1547,14 @@ ok('the timer\u2019s height is watched, not just its attributes',
 {
   /* the mode line flips between "plain stopwatch" and "back to the 75/35/10 day" and the clock
      text changes; neither touches an attribute, so without this the box can grow a line and
-     --minih goes stale. jsdom has no ResizeObserver, so drive measureTimer the way one would. */
+     --minih goes stale. jsdom implements no ResizeObserver at all (typeof ResizeObserver ===
+     'undefined' here) — a dispatched 'resize' Event on the element is NOT what a real
+     ResizeObserver reacts to and nothing in this file listens for it, so it cannot drive that
+     path. It is kept only as a negative check: the height must still read stale right after it,
+     proving the event really did nothing (rather than silently, coincidentally, passing). What
+     this guard actually exercises is the MutationObserver fallback (attribute changes on
+     show()) below it, which is real coverage; the ResizeObserver-driven repaint itself needs a
+     real browser to observe and is not something jsdom can be made to exercise. */
   const mt = d.getElementById('miniT'), row = d.getElementById('jumpRow');
   mt.hidden = false;
   let h = 56;
@@ -1516,12 +1563,12 @@ ok('the timer\u2019s height is watched, not just its attributes',
   w.eval("show('falls')");
   const before = d.documentElement.style.getPropertyValue('--minih');
   h = 88;                                        /* the mode line wrapped it a row taller */
-  mt.dispatchEvent(new w.Event('resize'));        /* no attribute changed */
+  mt.dispatchEvent(new w.Event('resize'));        /* jsdom has no ResizeObserver; see comment above — this must NOT change anything */
   const stale = d.documentElement.style.getPropertyValue('--minih');
-  w.eval("show('falls')");                        /* whatever re-measures must pick it up */
+  w.eval("show('falls')");                        /* the MutationObserver path this guard actually exercises */
   const after = d.documentElement.style.getPropertyValue('--minih');
-  ok('a height change with no attribute change still updates --minih',
-     before === '56px' && after === '88px',
+  ok('a height change with no attribute change still updates --minih, via the MutationObserver fallback (the ResizeObserver path itself cannot be exercised in jsdom)',
+     before === '56px' && stale === '56px' && after === '88px',
      'before=' + before + ' on-resize=' + stale + ' after=' + after);
   delete mt.getBoundingClientRect; delete mt.getClientRects;
   mt.hidden = true; w.eval("show('week')");
@@ -1686,24 +1733,39 @@ ok('the undo actually puts the old values back, not just the right-looking code'
     store[k] = (k in v) ? v[k] : '';
   return store['geri:days'] === '["BEFORE"]' && store['geri:qlog'] === '';
 })());
-ok('a highlight spanning a block boundary is anchored as one highlight', (()=>{
-  w.eval("show('falls')");          /* hlFromSelection only works in the section on screen */
-  const sec = d.getElementById('falls');
-  const ps = [...sec.querySelectorAll('p')].filter(p => p.firstChild && p.firstChild.nodeType === 3 && p.textContent.length > 80);
-  if(ps.length < 2) return false;
-  const a = ps[0], b = ps[1];
-  const r = d.createRange();
-  r.setStart(a.firstChild, a.firstChild.data.length - 20);
-  r.setEnd(b.firstChild, 20);
-  const sel = w.getSelection(); sel.removeAllRanges(); sel.addRange(r);
-  w.eval("HL = {falls:[]}");
-  const h = w.hlFromSelection(false);
-  const marks = h ? [...d.querySelectorAll('mark.hl[data-hid="' + h.id + '"]')] : [];
-  const spansBoth = marks.some(m => a.contains(m)) && marks.some(m => b.contains(m));
-  if(h) w.eval("hlRemove('" + h.id + "')");
-  w.eval("HL = {}");
-  return !!h && marks.length >= 2 && spansBoth;
-})());
+{
+  /* r.setStart(a.firstChild, a.firstChild.data.length - 20) used to throw IndexSizeError and
+     crash the whole runner whenever the FIRST paragraph's leading text node was shorter than
+     20 chars — the old filter only checked p.textContent.length (the whole paragraph,
+     including any inline <b>/<mark> children after the leading text node), which does not
+     guarantee the leading text node itself is that long. Require it directly, and catch
+     anything else that could still throw so a real regression fails loudly instead of
+     aborting every test after it. */
+  let result, err = null;
+  try{
+    w.eval("show('falls')");          /* hlFromSelection only works in the section on screen */
+    const sec = d.getElementById('falls');
+    const ps = [...sec.querySelectorAll('p')].filter(p =>
+      p.firstChild && p.firstChild.nodeType === 3 && p.firstChild.data.length >= 20 && p.textContent.length > 80);
+    if(ps.length < 2){ result = false; }
+    else{
+      const a = ps[0], b = ps[1];
+      const r = d.createRange();
+      r.setStart(a.firstChild, a.firstChild.data.length - 20);
+      r.setEnd(b.firstChild, 20);
+      const sel = w.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      w.eval("HL = {falls:[]}");
+      const h = w.hlFromSelection(false);
+      const marks = h ? [...d.querySelectorAll('mark.hl[data-hid="' + h.id + '"]')] : [];
+      const spansBoth = marks.some(m => a.contains(m)) && marks.some(m => b.contains(m));
+      if(h) w.eval("hlRemove('" + h.id + "')");
+      w.eval("HL = {}");
+      result = !!h && marks.length >= 2 && spansBoth;
+    }
+  }catch(e){ err = e; result = false; }
+  ok('a highlight spanning a block boundary is anchored as one highlight', result,
+     err ? 'threw: ' + (err && err.message || err) : '');
+}
 ok('a highlight the other tab deleted is not resurrected by this tab saving a new one', (()=>{
   /* the inverse of the deletion case already covered: the deletion happened THERE */
   const stored = {falls:[{id:'keep'}]};                    /* the other tab deleted 'gone' */
