@@ -1130,6 +1130,20 @@ const M = [
    `  /* ===================== v12 — dashboard redesign ===================== */`,
    `  /* ===================== v12 — dashboard redesign ===================== */\n  /* ===================== v12 — dashboard redesign ===================== */`,
    'CSS block is not duplicated'],
+  ['geri:mockrun drops back out of BKEYS, so a backup captures a finished mock but silently drops a half-finished one (ChatGPT third-model audit)',
+   `'geri:pq','geri:mock','geri:mockrun','geri:hl'`,
+   `'geri:pq','geri:mock','geri:hl'`,
+   'in-progress mock key is in the backup set'],
+  ['paintLastMock stops escaping the stored right/n/when fields, so a crafted value renders as markup instead of text (ChatGPT third-model audit)',
+   `el.innerHTML = 'Last mock: <b>' + escHtml(v.right) + ' / ' + escHtml(v.n) + '</b> (' +
+      Math.round(v.right/v.n*100) + '%) on ' + escHtml(v.when) + '.';`,
+   `el.innerHTML = 'Last mock: <b>' + v.right + ' / ' + v.n + '</b> (' +
+      Math.round(v.right/v.n*100) + '%) on ' + v.when + '.';`,
+   'crafted when/right value'],
+  ['the saved-tab restore stops checking for a deep-link hash first, so it races the hash router again and can land a reader on the wrong tab (ChatGPT third-model audit)',
+   `    if(location.hash.slice(1)) return;\n    const r = await window.storage.get('geri:tab');`,
+   `    const r = await window.storage.get('geri:tab');`,
+   'wins over a saved tab'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the

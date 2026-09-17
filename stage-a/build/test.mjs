@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 import fs from 'fs';
+import vm from 'vm';
 import { PIN, pinClock } from './clock.mjs';
 
 /* a rejection nobody handled used to end the process silently mid-suite: every check after it
@@ -466,6 +467,8 @@ ok('and offers a way back', !!d.getElementById('pqBackAll'));
 ok('download control present', !!d.getElementById('bkDownload'));
 ok('file input present', !!d.getElementById('bkFile'));
 ok('mock key is in the backup set', w.eval("BKEYS.includes('geri:mock')"));
+ok('the in-progress mock key is in the backup set too, not just the finished-mock key',
+   w.eval("BKEYS.includes('geri:mockrun')"));
 
 
 // ---- v9: portability, unseen pool, resume, keyboard ----
@@ -3087,6 +3090,154 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   console.log('\nerrors captured: ' + errs.length +
     (errAllow.length ? ' (' + (errs.length - unexpected.length) + ' allowlisted)' : ''));
   errs.slice(0, 12).forEach(e => console.log('  ' + e));
+}
+
+{
+  /* ChatGPT third-model audit: sw.js's fetch handler returned any RESOLVED response —
+     including a 503 — as-is, and only fell back to the cache on a network-level rejection
+     (offline, DNS failure). A server error therefore blanked a page that was already cached
+     and available. Runs the real sw.js source in a sandboxed vm (no jsdom service-worker
+     support exists) with mocked self/caches/fetch, so this is the actual fetch handler, not
+     a description of it. */
+  const swSrc = fs.readFileSync('../sw.js', 'utf8');
+  function loadSw(fetchImpl, cacheHas){
+    const listeners = {};
+    const cacheStore = new Map(cacheHas ? [['https://example.org/stage-a/', {ok:true, status:200, cached:true, clone(){return this;}}]] : []);
+    const cache = { put: async (req, res) => { cacheStore.set(typeof req === 'string' ? req : req.url, res); },
+      match: async req => cacheStore.get(typeof req === 'string' ? req : req.url) };
+    const sandbox = {
+      self: { addEventListener: (type, cb) => { listeners[type] = cb; } },
+      caches: { open: async () => cache, match: async req => cache.match(req), keys: async () => [], delete: async () => true },
+      fetch: fetchImpl,
+      location: { origin: 'https://example.org' },
+      URL,
+      console
+    };
+    vm.createContext(sandbox);
+    vm.runInContext(swSrc, sandbox);
+    return { listeners, cacheStore };
+  }
+  const navReq = { method: 'GET', url: 'https://example.org/stage-a/', mode: 'navigate' };
+
+  {
+    const { listeners } = loadSw(async () => ({ ok:false, status:503, clone(){return this;} }), true);
+    let result;
+    const e = { request: navReq, respondWith: p => { result = p; } };
+    await listeners.fetch(e);
+    const r = await result;
+    ok('a resolved-but-not-ok (503) navigation response falls back to the cached copy when one exists',
+       r && r.cached === true, JSON.stringify(r));
+  }
+  {
+    const { listeners } = loadSw(async () => ({ ok:false, status:503, clone(){return this;} }), false);
+    let result;
+    const e = { request: navReq, respondWith: p => { result = p; } };
+    await listeners.fetch(e);
+    const r = await result;
+    ok('a resolved-but-not-ok navigation response with nothing cached still returns the response, not a hang or a throw',
+       r && r.status === 503, JSON.stringify(r));
+  }
+  {
+    const { listeners, cacheStore } = loadSw(async () => ({ ok:true, status:200, clone(){return this;} }), false);
+    let result;
+    const e = { request: navReq, respondWith: p => { result = p; } };
+    await listeners.fetch(e);
+    const r = await result;
+    await new Promise(res => setTimeout(res, 10));   /* caches.open(...).then(c=>c.put(...)) is fire-and-forget */
+    ok('an ok response is returned as-is and cached for next time',
+       r && r.ok === true && cacheStore.has(navReq.url));
+  }
+  {
+    const { listeners } = loadSw(async () => { throw new Error('offline'); }, true);
+    let result;
+    const e = { request: navReq, respondWith: p => { result = p; } };
+    await listeners.fetch(e);
+    const r = await result;
+    ok('a network-level rejection (offline) still falls back to the cache, as before this fix',
+       r && r.cached === true);
+  }
+}
+
+{
+  /* ChatGPT third-model audit: geri:mockrun (RUNKEY) missing from BKEYS meant a backup
+     captured a finished mock but silently dropped a half-finished one — restore would just
+     never see it, no error either. Proves the restored value round-trips into the actual
+     "resume the mock you left" UI on a fresh boot (the same async IIFE that reads RUNKEY at
+     e.g. 13701 runs after every restore's location.reload()), not just that the key is
+     listed in BKEYS above. Answer: yes — since restore is pure storage-write-then-reload,
+     and that boot IIFE is unconditional and storage-driven, a restored in-progress mock
+     resumes exactly as if left on this device: the button appears with the same
+     answered-count text, and clicking it (matching the existing "Resume the mock you left"
+     wiring) rebuilds mockQs/mockAns/mockI from the very JSON a backup file would carry. */
+  const runVal = JSON.stringify({q: ['x#1', 'x#2', 'x#3'], a: {'x#1': 'א'}, f: {}, i: 1, t: 0, e: 0});
+  const rstore = {'geri:mockrun': runVal};
+  const dm = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2);
+      w2.storage = { get: async k => { if(!(k in rstore)) throw new Error('missing'); return {key:k, value:rstore[k]}; },
+        set: async (k, v) => { rstore[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dm.window.document.getElementById('mockLast'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 200));
+  const d3 = dm.window.document;
+  const resumeBtn = d3.getElementById('mockResume');
+  ok('a restored in-progress mock (geri:mockrun round-tripped through a backup) offers to resume it on the next load, with the right answered count',
+     !!resumeBtn && /1 of 3 answered/.test(resumeBtn.textContent), resumeBtn && resumeBtn.textContent);
+  dm.window.close();
+}
+
+{
+  /* ChatGPT third-model audit: paintLastMock() wrote v.right/v.n/v.when from storage
+     straight into innerHTML. Those are normally a number and a date string the app itself
+     wrote, but nothing enforces that on the way back in — a restored backup file (or a
+     value synced from another device/app version) could carry HTML instead. Escaped like
+     every other storage-derived field this file paints, matching the QS[i][0]/filter.label
+     fixes already in the drill summary. */
+  const mkkey = w.eval('MKKEY');
+  store[mkkey] = JSON.stringify({when: '<img src=x onerror=alert(1)>', n: 5, right: '<b>3</b>'});
+  w.eval('paintLastMock()');
+  await new Promise(r => setTimeout(r, 60));
+  const html = d.getElementById('mockLast').innerHTML;
+  ok('a crafted when/right value in the stored last-mock result is escaped, not rendered as markup',
+     html.includes('&lt;img src=x onerror=alert(1)&gt;') && html.includes('&lt;b&gt;3&lt;/b&gt;') &&
+     !d.getElementById('mockLast').querySelector('img'),
+     html.slice(0, 160));
+}
+
+{
+  /* ChatGPT third-model audit: the async IIFE reading geri:tab called show(r.value)
+     unconditionally, racing a second async IIFE further down that routes a deep-link hash
+     (e.g. #falls) — both are async, so whichever's await happened to resolve last silently
+     won. In practice the saved-tab restore raced ahead of the hash router, landing a reader
+     who followed a deep link with a saved tab of 'drill' on drill instead of falls. The hash
+     must win on a cold load; the saved tab is the fallback only when there is no hash. */
+  const tabStore = {'geri:tab': 'drill'};
+  const dm = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/#falls',
+    beforeParse(w2){ pinClock(w2);
+      w2.storage = { get: async k => { if(!(k in tabStore)) throw new Error('missing'); return {key:k, value:tabStore[k]}; },
+        set: async (k, v) => { tabStore[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dm.window.document.getElementById('falls'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 250));
+  const d3 = dm.window.document;
+  ok('a deep-link hash (#falls) wins over a saved tab (drill) on a cold load',
+     d3.getElementById('falls').classList.contains('on') && !d3.getElementById('drill').classList.contains('on'),
+     'falls.on=' + d3.getElementById('falls').classList.contains('on') +
+     ' drill.on=' + d3.getElementById('drill').classList.contains('on'));
+  dm.window.close();
+}
+{
+  /* the inverse: with no hash at all, the saved tab is still the fallback — this fix must
+     not have simply disabled tab restoration. */
+  const tabStore2 = {'geri:tab': 'drill'};
+  const dm2 = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2);
+      w2.storage = { get: async k => { if(!(k in tabStore2)) throw new Error('missing'); return {key:k, value:tabStore2[k]}; },
+        set: async (k, v) => { tabStore2[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dm2.window.document.getElementById('drill'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 250));
+  const d4 = dm2.window.document;
+  ok('with no hash at all, the saved tab is still restored as the fallback',
+     d4.getElementById('drill').classList.contains('on'),
+     'drill.on=' + d4.getElementById('drill').classList.contains('on'));
+  dm2.window.close();
 }
 
 console.log("DONE");
