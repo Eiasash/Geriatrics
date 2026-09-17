@@ -577,9 +577,12 @@ ok('its button starts the same timer the home page drives', w.eval("T.run === tr
 d.getElementById('mtGo').click();
 ok('and pauses it', w.eval("T.run === false") && d.getElementById('mtGo').textContent === 'Resume');
 d.getElementById('mtHide').click();
-ok('hide dismisses it until the next section change', d.getElementById('miniT').hidden);
-w.eval("show('sleep')");
-ok('changing section brings it back', !d.getElementById('miniT').hidden);
+/* v27: hide used to set box.hidden (recoverable only by changing section); it now shrinks
+   to a small gear dot that stays on screen and draggable, one tap restores it */
+ok('hide shrinks the pill to a gear dot rather than removing it from the screen',
+   !d.getElementById('miniT').hidden && d.getElementById('miniT').classList.contains('dot'));
+d.getElementById('miniT').click();
+ok('tapping the dot restores the full pill', !d.getElementById('miniT').classList.contains('dot'));
 w.eval("show('week')");
 ok('swatch colour rules carry an id so the bar button rule cannot flatten them',
    /#hlBar \.swatch \.sw-y/.test(code) && /#hlBar \.swatch button\.sw\{/.test(code.replace(/,#hlModal \.swatch button\.sw/,'')));
@@ -602,10 +605,11 @@ ok('reset takes it to zero', w.eval("swMs() < 50") && /^0?0:00$/.test(d.getEleme
 w.eval("swSetMode(false)");
 ok('the day comes back exactly where it was left', w.eval("T.p === 1 && Math.round(T.left) === 900"));
 ok('the stopwatch is in the backup key list', w.eval("BKEYS.includes('geri:stopwatch')"));
-d.getElementById('miniT').classList.add('open'); d.getElementById('mtShut').click();
-ok('collapse shrinks the pill to its handle', d.getElementById('miniT').classList.contains('shut') && !d.getElementById('miniT').classList.contains('open'));
-d.getElementById('mtMore').click();
-ok('tapping the handle opens it again', !d.getElementById('miniT').classList.contains('shut'));
+d.getElementById('miniT').classList.add('open'); d.getElementById('mtHide').click();
+ok('v27: hide shrinks the pill to the gear dot and closes the menu behind it',
+   d.getElementById('miniT').classList.contains('dot') && !d.getElementById('miniT').classList.contains('open'));
+d.getElementById('miniT').click();
+ok('tapping the dot opens it again', !d.getElementById('miniT').classList.contains('dot'));
 ok('scroll position is stored per section and persisted', w.eval("typeof scrollAt === 'object' && typeof scrollFrac === 'object' && SCKEY === 'geri:scroll'"));
 w.eval("scrollAt.falls = 1234; scrollFrac.falls = 0.5; rememberScroll; restoreScroll('falls')");
 ok('restoring a section reads its stored offset', w.eval("scrollAt.falls === 1234"));
@@ -1224,7 +1228,7 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   const box = d.getElementById('miniT'), go = d.getElementById('mtGo');
   const cls = () => box.className;
   w.eval("show('falls'); mtOff = false; T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint()");
-  box.classList.remove('shut','open');
+  box.classList.remove('dot','open');
   /* pause and resume: one tap each, from the compact bar, without the menu */
   go.click();
   const ranAfterOne = w.eval('T.run');
@@ -1237,22 +1241,36 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
      target outside the timer, so the outside-tap handler closes the menu too and would mask
      whether this handler did its own job. */
   w.eval("swSetMode(true)");
-  box.classList.remove('shut'); box.classList.add('open');
+  box.classList.remove('dot'); box.classList.add('open');
   go.click();
   ok('pausing from an open menu closes the menu rather than leaving it up',
      !box.classList.contains('open'), cls());
   w.eval("swSetMode(false); SW = {on:false, run:false, ms:0, ts:0};");
-  /* collapse and expand: one tap each, on the clock and on the collapsed bar */
-  box.classList.remove('open','shut');
+  /* v27: the pill is the single control, so the clock now does the same thing mtGo does \u2014
+     no separate collapse gesture to confuse it with any more */
+  box.classList.remove('open','dot');
+  w.eval("T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint()");
   d.getElementById('mtClock').click();
-  ok('one tap on the clock collapses the timer', box.classList.contains('shut'), cls());
+  ok('one tap on the clock pauses/resumes the day, the same as the button', w.eval('T.run') === true, cls());
+  d.getElementById('mtClock').click();
+  ok('a second tap pauses it again', w.eval('T.run') === false, cls());
+  /* hide shrinks the pill to a gear dot; a tap on the dot restores it */
+  box.classList.remove('dot');
+  d.getElementById('mtHide').focus();   /* simulate reaching Hide by keyboard, then activating it */
+  d.getElementById('mtHide').click();
+  ok('the hide button in the menu shrinks the pill to the dot, and closes the menu behind it',
+     box.classList.contains('dot') && !box.classList.contains('open'), cls());
+  ok('activating Hide by keyboard moves focus to the restore dot, so it doesn’t strand focus on the now-hidden mtHide and skip the pill entirely on the next Tab',
+     d.activeElement === d.getElementById('mtMore'), 'activeElement=' + (d.activeElement && d.activeElement.id));
+  ok('once dotted, mtMore’s accessible name says it restores the timer, not "Settings and more" with a popup it no longer opens',
+     d.getElementById('mtMore').getAttribute('aria-label') === 'Restore timer' &&
+     d.getElementById('mtMore').getAttribute('aria-haspopup') === 'false',
+     'label=' + d.getElementById('mtMore').getAttribute('aria-label') + ' haspopup=' + d.getElementById('mtMore').getAttribute('aria-haspopup'));
   box.click();
-  ok('and one tap on the collapsed timer brings it back', !box.classList.contains('shut'), cls());
-  /* the collapse button still works and is not undone by the bar\u2019s own handler */
-  box.classList.remove('shut'); d.getElementById('mtShut').click();
-  ok('the collapse button in the menu still collapses, and stays collapsed',
-     box.classList.contains('shut') && !box.classList.contains('open'), cls());
-  box.classList.remove('shut');
+  ok('tapping the dot restores the pill', !box.classList.contains('dot'), cls());
+  ok('restoring the pill puts mtMore’s accessible name back to "Settings and more" with its popup restored',
+     d.getElementById('mtMore').getAttribute('aria-label') === 'Settings and more' &&
+     d.getElementById('mtMore').getAttribute('aria-haspopup') === 'true');
   /* every action in the menu closes it behind itself */
   box.classList.add('open'); d.getElementById('mtMode').click();
   const modeClosed = !box.classList.contains('open');
@@ -1265,7 +1283,197 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   box.classList.add('open');
   d.body.dispatchEvent(new w.MouseEvent('click', {bubbles:true}));
   ok('tapping outside the menu closes it', !box.classList.contains('open'), cls());
-  box.classList.remove('open','shut');
+  box.classList.remove('open','dot');
+
+  /* ---- v27: the pill as the single control ---- */
+  const jumpRow = d.getElementById('jumpRow');
+  box.classList.add('open');
+  w.eval('if(typeof setMenuOpen === "function") setMenuOpen(true)');
+  d.getElementById('mtMore').click();  /* toggles open->closed via the real handler */
+  d.getElementById('mtMore').click();  /* back open, through the real handler this time */
+  ok('the jump row stands down while the pill’s own menu is open, and returns once it closes',
+     jumpRow.classList.contains('hl-off'),
+     'open=' + box.classList.contains('open') + ' jumpRow=' + jumpRow.className);
+  d.getElementById('mtMore').click();
+  ok('closing the pill’s menu brings the jump row back', !jumpRow.classList.contains('hl-off'));
+  ok('the reordered menu leads with text size, theme, and mark my place, with the rarer actions behind a muted "More"',
+     !!d.getElementById('mtSize') && !!d.getElementById('mtTheme') && !!d.getElementById('mtMark') &&
+     !!d.getElementById('mtMoreToggle') && d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtSkip')) &&
+     d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtReset')) &&
+     d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtMode')) &&
+     d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtHide')) &&
+     !d.getElementById('mtShut'));
+  {
+    const moreSub = box.querySelector('.moresub');
+    ok('the muted "More" toggle reveals next phase / reset the day / plain stopwatch / hide, and starts closed',
+       moreSub.hidden === true);
+    d.getElementById('mtMoreToggle').click();
+    ok('tapping it opens the sub-list', moreSub.hidden === false);
+    d.getElementById('mtMoreToggle').click();
+    ok('tapping it again closes it', moreSub.hidden === true);
+    /* reopen it, then close the whole menu through an ordinary action rather than the
+       outside-tap handler — the nested list must not still be expanded next time the
+       menu opens fresh */
+    d.getElementById('mtMoreToggle').click();
+    d.getElementById('mtMark').click();
+    ok('an action that closes the pill’s menu also collapses the nested More list behind it, not only the outside-tap handler',
+       moreSub.hidden === true && d.getElementById('mtMoreToggle').getAttribute('aria-expanded') === 'false',
+       'hidden=' + moreSub.hidden + ' expanded=' + d.getElementById('mtMoreToggle').getAttribute('aria-expanded'));
+  }
+  ok('theme in the pill’s menu toggles dark mode the same way the display popover does',
+     /document\.getElementById\('mtTheme'\)\.addEventListener\('click', \(\)=>\{ disp\.dark = !disp\.dark; paintDisp\(\); setMenuOpen\(false\); \}\);/.test(code));
+  ok('mark my place in the pill’s menu sets the bookmark the same way the topics-sheet row does',
+     /document\.getElementById\('mtMark'\)\.addEventListener\('click', \(\)=>\{ setTimeout\(\(\)=>bmSet\(null\), 0\); setMenuOpen\(false\); \}\);/.test(code));
+  ok('text size in the pill’s menu joins the shared display-popover wiring, and closes the pill’s own menu behind it',
+     /\['shDisplay','dispBtnRail','mtSize'\]\.forEach/.test(code) &&
+     /document\.getElementById\('mtSize'\)\.addEventListener\('click', \(\)=>setMenuOpen\(false\)\);/.test(code));
+  ok('the pill’s menu button carries a settings glyph alongside the overflow dots, so the gear reads even when the menu is closed',
+     d.getElementById('mtMore').textContent.includes('⚙'));
+  {
+    /* opening the menu grows the box upward from its fixed bottom anchor. A pill dragged to the
+       top edge (bottom pinned near vh-h-EDGE) can then have its open, taller self pushed off
+       the top of the viewport — re-clamping on open must pull bottom back down so the whole
+       open box stays inside the edge inset, and closing must restore the exact pre-open spot
+       rather than leaving the pill wherever the open-state clamp put it. jsdom never lays out
+       real geometry, so offsetHeight/offsetWidth are overridden here (same technique other
+       tests in this file already use for getBoundingClientRect) to simulate a taller open box. */
+    box.classList.remove('dot','open');
+    const leftBefore = box.style.left, bottomBefore = box.style.bottom;   /* restored below */
+    Object.defineProperty(box, 'offsetHeight', { configurable:true, get(){ return box.classList.contains('open') ? 220 : 48; } });
+    Object.defineProperty(box, 'offsetWidth', { configurable:true, get(){ return 120; } });
+    box.style.left = '24px'; box.style.bottom = '696px';   /* pinned at the very top edge (768-48-24) */
+    d.getElementById('mtMore').click();                     /* open */
+    ok('opening the menu re-clamps a top-pinned pill so its taller, open self stays inside the top edge inset',
+       box.style.bottom === '524px', 'bottom=' + box.style.bottom);   /* 768-220-24 */
+    d.getElementById('mtMore').click();                     /* close */
+    ok('closing the menu restores the exact pre-open position, not the open-state clamp',
+       box.style.bottom === '696px', 'bottom=' + box.style.bottom);
+    delete box.offsetHeight; delete box.offsetWidth;
+    box.style.left = leftBefore; box.style.bottom = bottomBefore;
+  }
+  ok('the drag threshold is a real long-press (300ms), not an instant drag on touchdown',
+     /pressTimer = setTimeout\(\(\)=>\{\s*\n\s*armed = true; dragging = true; box\.classList\.add\('dragging'\);\s*\n\s*if\(navigator\.vibrate\) navigator\.vibrate\(12\);\s*\n\s*\}, 300\);/.test(code));
+  ok('the dragged pill snaps 24px (plus the safe-area inset) off the nearest edge, not flush — a flush dock sits inside Android’s own back-gesture strip',
+     /const EDGE = 24;/.test(code) && /safeInset\('left'\)/.test(code) && /safeInset\('right'\)/.test(code) &&
+     /safeInset\('top'\)/.test(code) && /safeInset\('bottom'\)/.test(code));
+  ok('the safe-area inset is measured off a resolved padding on a real probe element, not round-tripped through a custom property (which some browsers hand back as the literal unresolved "env(...)" string — parseFloat of that is always NaN, reading as 0 everywhere)',
+     /padding-left:env\(safe-area-inset-left,0px\)/.test(code) &&
+     /getComputedStyle\(safeProbe\)\.getPropertyValue\('padding-' \+ side\)/.test(code));
+  ok('the dragged position persists to geri:timerpos and is read back on load',
+     /window\.storage\.set\('geri:timerpos', JSON\.stringify\(pos\)\);/.test(code) &&
+     /window\.storage\.get\('geri:timerpos'\); const stored = JSON\.parse\(r\.value\);/.test(code));
+  ok('a long-press that never moves is swallowed as a hold, not forwarded to the pause/resume tap',
+     /if\(armed \|\| \(Date\.now\(\) - dragEndedAt < 400\)\)\{ armed = false; e\.stopImmediatePropagation\(\); \}/.test(code));
+  ok('armed is cleared synchronously in endDrag, not only by a post-drag click — Android doesn’t reliably fire one, which used to leave armed true forever and swallow the next unrelated genuine tap',
+     /armed = false;\s*\n\s*dragEndedAt = Date\.now\(\);\s*\n\s*teardown\(\);/.test(code));
+  ok('pointercancel tears the drag down — clears the press timer, drops dragging, and removes the document-level listeners — so a later unrelated touch cannot inherit an armed drag',
+     /function onPointerCancel\(e\)\{\s*\n\s*if\(e\.pointerId !== activePointerId\) return;\s*\n\s*armed = false; teardown\(\);\s*\n\s*\}/.test(code) &&
+     /document\.addEventListener\('pointercancel', onPointerCancel\);/.test(code) &&
+     /document\.removeEventListener\('pointercancel', onPointerCancel\);/.test(code));
+  ok('the pill is clamped to the edge inset on load even with no stored position, not only after the first drag',
+     /applyPos\(clampPos\(\.\.\.Object\.values\(CSS_DEFAULT_POS\)\)\);/.test(code));
+  ok('a fresh desktop pill keeps its CSS right-side default instead of being dragged to the mobile left/bottom fallback',
+     /!\(window\.matchMedia && window\.matchMedia\('\(min-width:901px\)'\)\.matches\)/.test(code));
+  /* the init IIFE runs at page load while #miniT is still display:none (hidden until the
+     reading block shows it), so clamping from a live getBoundingClientRect() reads a
+     zero-size rect — its "bottom" computes as the full viewport height, which clampPos then
+     pins to the TOP edge instead of leaving a fresh pill near the bottom. jsdom never lays
+     out real geometry, so this asserts on the inline style the init IIFE actually wrote
+     (box.style.left/bottom), the same thing a real layout engine would place on screen —
+     not on getBoundingClientRect(), which stays all-zero here regardless of the fix. */
+  ok('with no stored position, the pill lands near the bottom-left edge inset, not pinned to the top from a zero-size hidden rect',
+     box.style.bottom === '24px' && box.style.left === '24px',
+     'left=' + box.style.left + ' bottom=' + box.style.bottom);
+  ok('Start/Resume is the same surface/ink-border outline as the rest of the pill, not a solid near-black slab (light mode’s --ink is dark, unlike dark mode’s)',
+     /#miniT button\.pri\{background:var\(--surface\);color:var\(--ink\);border-color:var\(--ink\);font-weight:600\}/.test(code));
+  ok('the shrunk gear dot can still be long-pressed and dragged, even though it is entirely covered by the mtMore button',
+     /if\(e\.target\.closest\('button'\) && !box\.classList\.contains\('dot'\)\) return;/.test(code));
+  ok('the gear dot is 44px, not 40 — mtMore keeps its app-wide 44px min-size regardless, so a smaller dot just clips that hit area down via overflow:hidden',
+     /#miniT\.dot\{ padding:0; border-radius:50%; width:44px; height:44px; min-width:44px; overflow:hidden;/.test(code));
+  {
+    /* a second finger touching down anywhere on the page while the first is dragging must not
+       affect the gesture at all: its pointerdown is ignored (a gesture is already active), and
+       critically its own pointerup must not end — and save! — the first finger's drag early */
+    box.classList.remove('dot','open','dragging');
+    const pd1 = new w.Event('pointerdown', {bubbles:true}); pd1.clientX = 50; pd1.clientY = 50; pd1.pointerId = 1;
+    box.dispatchEvent(pd1);
+    await new Promise(r=>setTimeout(r,350));
+    const armedByFirstFinger = box.classList.contains('dragging');
+    const pd2 = new w.Event('pointerdown', {bubbles:true}); pd2.clientX = 200; pd2.clientY = 200; pd2.pointerId = 2;
+    box.dispatchEvent(pd2);
+    /* the second finger's own pointermove must not be able to teleport the pill mid-drag */
+    const leftBeforeForeignMove = box.style.left;
+    const mv2 = new w.Event('pointermove', {bubbles:true}); mv2.clientX = 900; mv2.clientY = 700; mv2.pointerId = 2;
+    d.dispatchEvent(mv2);
+    const leftUnchangedByForeignMove = box.style.left === leftBeforeForeignMove;
+    const pu2 = new w.Event('pointerup', {bubbles:true}); pu2.pointerId = 2;
+    d.dispatchEvent(pu2);
+    const stillDraggingAfterOtherFingerUp = box.classList.contains('dragging');
+    const pu1 = new w.Event('pointerup', {bubbles:true}); pu1.pointerId = 1;
+    d.dispatchEvent(pu1);
+    ok('a second finger cannot hijack an in-progress drag — its pointermove cannot teleport the pill, and its pointerup cannot end the first finger’s drag early',
+       armedByFirstFinger === true && leftUnchangedByForeignMove === true &&
+       stillDraggingAfterOtherFingerUp === true && box.classList.contains('dragging') === false,
+       'armed=' + armedByFirstFinger + ' unmovedByForeignMove=' + leftUnchangedByForeignMove +
+       ' afterOtherFingerUp=' + stillDraggingAfterOtherFingerUp + ' afterOwnUp=' + box.classList.contains('dragging'));
+  }
+
+  {
+    /* Android touch doesn't reliably fire a click after a real drag's pointerup. If armed only
+       cleared on that click, it would stay true forever and the next, much-later, genuine tap
+       on the pill would be silently swallowed. armed must clear in endDrag itself. */
+    w.eval("T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint()");
+    box.classList.remove('dot','open','dragging');
+    const clockEl = d.getElementById('mtClock');
+    const pd = new w.Event('pointerdown', {bubbles:true}); pd.clientX = 40; pd.clientY = 40; pd.pointerId = 9;
+    clockEl.dispatchEvent(pd);
+    await new Promise(r=>setTimeout(r,350));
+    const mv = new w.Event('pointermove', {bubbles:true}); mv.clientX = 90; mv.clientY = 90; mv.pointerId = 9;
+    d.dispatchEvent(mv);
+    const pu = new w.Event('pointerup', {bubbles:true}); pu.pointerId = 9;
+    d.dispatchEvent(pu);
+    /* no click dispatched here on purpose — simulating the Android quirk */
+    await new Promise(r=>setTimeout(r,450));
+    clockEl.dispatchEvent(new w.MouseEvent('click', {bubbles:true}));
+    ok('a much-later genuine tap is not swallowed by a stale armed flag from an earlier real drag that never got a post-drag click',
+       w.eval('T.run') === true, 'run=' + w.eval('T.run'));
+    /* the reverse case: a click landing quickly after a real drag ends (the common desktop/
+       most-Android case) must still be swallowed, so releasing the drag over the clock doesn't
+       also toggle the timer */
+    box.classList.remove('dragging');
+    const pd2 = new w.Event('pointerdown', {bubbles:true}); pd2.clientX = 40; pd2.clientY = 40; pd2.pointerId = 10;
+    clockEl.dispatchEvent(pd2);
+    await new Promise(r=>setTimeout(r,350));
+    const mv2 = new w.Event('pointermove', {bubbles:true}); mv2.clientX = 90; mv2.clientY = 90; mv2.pointerId = 10;
+    d.dispatchEvent(mv2);
+    const pu2 = new w.Event('pointerup', {bubbles:true}); pu2.pointerId = 10;
+    d.dispatchEvent(pu2);
+    const runBeforeQuickClick = w.eval('T.run');
+    clockEl.dispatchEvent(new w.MouseEvent('click', {bubbles:true}));   /* fired right away */
+    ok('a click landing right after a real drag ends is still swallowed, so releasing over the clock doesn’t also toggle the timer',
+       w.eval('T.run') === runBeforeQuickClick, 'before=' + runBeforeQuickClick + ' after=' + w.eval('T.run'));
+  }
+
+  /* runtime reproduction of the long-press-toggles-the-timer bug: pointerdown on the clock,
+     hold past the 300ms arm threshold with no movement, pointerup, then the click the browser
+     fires afterward — same sequence a real 600ms hold-without-drag produces. A hold must never
+     pause or resume; only the swallow guard above stops the click from reaching goTap(). */
+  {
+    w.eval("T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint()");
+    box.classList.remove('dot','open');
+    const clockEl = d.getElementById('mtClock');
+    const pd = new w.Event('pointerdown', {bubbles:true}); pd.clientX = 40; pd.clientY = 40;
+    clockEl.dispatchEvent(pd);
+    await new Promise(r=>setTimeout(r,350));
+    const pu = new w.Event('pointerup', {bubbles:true}); pu.clientX = 40; pu.clientY = 40;
+    d.dispatchEvent(pu);
+    const ck = new w.MouseEvent('click', {bubbles:true});
+    clockEl.dispatchEvent(ck);
+    ok('a 600ms hold on the clock with no movement never toggles the timer',
+       w.eval('T.run') === false, 'run=' + w.eval('T.run'));
+    box.classList.remove('dragging');
+  }
+
   /* left part-way through the block on purpose: the timer only shows while the block is in
      use, and the height guard further down needs a visible box to measure */
   w.eval("T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint(); show('week')");

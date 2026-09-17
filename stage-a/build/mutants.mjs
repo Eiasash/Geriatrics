@@ -605,34 +605,150 @@ const M = [
    'drill moves the place on too'],
 
   ['pause has to go through the menu again',
-   "    box.classList.remove('open');\n    if(SW.on) swToggleRun(); else elGo.click();",
-   "    box.classList.add('open');\n    if(SW.on) swToggleRun(); else elGo.click();",
+   "  function goTap(){ setMenuOpen(false); if(SW.on) swToggleRun(); else elGo.click(); }",
+   "  function goTap(){ setMenuOpen(true); if(SW.on) swToggleRun(); else elGo.click(); }",
    'closes the menu rather than leaving it up'],
 
-  ['a tap on the clock stops collapsing the timer',
-   "    if(e.target.closest('#mtClock, .ph')){ box.classList.remove('open'); box.classList.add('shut'); }",
+  ['a tap on the clock goes back to doing nothing, instead of pausing/resuming like the button',
+   "    if(e.target.closest('#mtClock, .ph')) goTap();",
    "    void e;",
-   'tap on the clock collapses'],
+   'pauses/resumes the day, the same as the button'],
 
-  ['the collapsed timer cannot be tapped open again',
-   "    if(box.classList.contains('shut')){ box.classList.remove('shut'); return; }\n    if(e.target.closest('#mtClock, .ph'))",
-   "    if(false){ box.classList.remove('shut'); return; }\n    if(e.target.closest('#mtClock, .ph'))",
-   'collapsed timer brings it back'],
+  ['hide stops shrinking the pill to the gear dot',
+   "  document.getElementById('mtHide').addEventListener('click',()=>{ setMenuOpen(false); setDot(true); });",
+   "  document.getElementById('mtHide').addEventListener('click',()=>{ setMenuOpen(false); });",
+   'shrinks the pill to a gear dot'],
 
-  ['the collapse button is undone by the bar\u2019s own handler again',
-   "    if(e.target.closest('button')) return;",
-   "    void e.target;",
-   'collapse button in the menu still collapses'],
+  ['tapping the gear dot no longer restores the pill',
+   "    if(box.classList.contains('dot')){ setDot(false); return; }\n    if(e.target.closest('#mtClock, .ph')) goTap();",
+   "    if(false){ setDot(false); return; }\n    if(e.target.closest('#mtClock, .ph')) goTap();",
+   'restores the pill'],
 
   ['switching mode leaves the menu open',
-   "  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); box.classList.remove('open'); });",
+   "  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); setMenuOpen(false); });",
    "  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); });",
    'action taken in the menu closes it'],
 
   ['tapping the page no longer closes the menu',
-   "    if(!box.classList.contains('open') || box.contains(e.target)) return;\n    box.classList.remove('open');",
+   "    if(!box.classList.contains('open') || box.contains(e.target)) return;\n    setMenuOpen(false);",
    "    return;",
    'tapping outside the menu closes it'],
+
+  /* --- v27 pill-as-single-control, next round --- */
+  ['the jump row stops standing down while the pill\u2019s menu is open',
+   "    if(jumpRow) jumpRow.classList.toggle('hl-off', v);",
+   "    void jumpRow;",
+   'the jump row stands down while the pill\u2019s own menu is open'],
+
+  ['the More sub-list stops toggling open',
+   "  moreToggle.addEventListener('click', ()=>{\n    const open = moreSub.hidden; moreSub.hidden = !open;\n    moreToggle.setAttribute('aria-expanded', open ? 'true' : 'false');\n  });",
+   "  moreToggle.addEventListener('click', ()=>{});",
+   'tapping it opens the sub-list'],
+
+  ['text size in the pill\u2019s menu no longer closes the menu behind it',
+   "  document.getElementById('mtSize').addEventListener('click', ()=>setMenuOpen(false));",
+   "",
+   'text size'],
+
+  ['theme in the pill\u2019s menu stops toggling dark mode',
+   "  document.getElementById('mtTheme').addEventListener('click', ()=>{ disp.dark = !disp.dark; paintDisp(); setMenuOpen(false); });",
+   "  document.getElementById('mtTheme').addEventListener('click', ()=>{ setMenuOpen(false); });",
+   'theme in the pill'],
+
+  ['mark my place in the pill\u2019s menu stops setting the bookmark',
+   "  document.getElementById('mtMark').addEventListener('click', ()=>{ setTimeout(()=>bmSet(null), 0); setMenuOpen(false); });",
+   "  document.getElementById('mtMark').addEventListener('click', ()=>{ setMenuOpen(false); });",
+   'mark my place in the pill'],
+
+  ['the drag threshold drops from 300ms, so a plain tap starts dragging',
+   "    }, 300);",
+   "    }, 0);",
+   'a real long-press (300ms)'],
+
+  ['the dragged pill snaps flush to the edge instead of the 24px + safe-area inset',
+   "  const EDGE = 24;",
+   "  const EDGE = 0;",
+   '24px'],
+
+  ['the pill\u2019s dragged position stops being saved to geri:timerpos',
+   "      try{ window.storage.set('geri:timerpos', JSON.stringify(pos)); }catch(e){}",
+   "",
+   'geri:timerpos'],
+
+  ['a long-press with no movement stops being swallowed, so it falls through and pauses/resumes the timer',
+   "    if(armed || (Date.now() - dragEndedAt < 400)){ armed = false; e.stopImmediatePropagation(); }",
+   "    if(armed || (Date.now() - dragEndedAt < 400)){ }",
+   'swallowed as a hold'],
+
+  ['pointercancel stops tearing the drag down, so a system-cancelled press leaves the pill armed for the next touch',
+   "    document.addEventListener('pointercancel', onPointerCancel);",
+   "",
+   'pointercancel tears the drag down'],
+
+  ['closing the pill’s menu stops collapsing the nested More list behind it',
+   "      if(moreSub){ moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false'); }",
+   "",
+   'also collapses the nested More list'],
+
+  ['the gear dot loses its drag carve-out, so it can never be long-pressed once hidden down to a dot',
+   "    if(e.target.closest('button') && !box.classList.contains('dot')) return;",
+   "    if(e.target.closest('button')) return;",
+   'shrunk gear dot can still be long-pressed'],
+
+  ['a fresh, never-dragged pill goes back to clamping from a zero-size hidden rect and gets pinned to the top edge',
+   "applyPos(clampPos(...Object.values(CSS_DEFAULT_POS)));",
+   "applyPos(clampPos(...Object.values(currentPos())));",
+   'pill lands near the bottom-left edge inset'],
+
+  ['Start/Resume goes back to a solid near-black --ink slab in light mode',
+   "#miniT button.pri{background:var(--surface);color:var(--ink);border-color:var(--ink);font-weight:600}",
+   "#miniT button.pri{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}",
+   'not a solid near-black slab'],
+
+  ['the gear dot stops updating mtMore’s accessible name, so it still announces "Settings and more" with a popup once dotted',
+   "    moreBtn.setAttribute('aria-label', v ? 'Restore timer' : 'Settings and more');\n    moreBtn.setAttribute('aria-haspopup', v ? 'false' : 'true');",
+   "",
+   'accessible name says it restores the timer'],
+
+  ['a fresh desktop pill loses its CSS right-side default and gets dragged to the mobile left/bottom fallback',
+   "} else if(!(window.matchMedia && window.matchMedia('(min-width:901px)').matches)){",
+   "} else if(true){",
+   'keeps its CSS right-side default'],
+
+  ['a second finger can hijack an in-progress pill drag',
+   "  function onPointerMove(e){\n    if(e.pointerId !== activePointerId) return;",
+   "  function onPointerMove(e){",
+   'second finger cannot hijack an in-progress drag'],
+
+  ['the gear dot shrinks back to 40px, clipping mtMore’s 44px hit area down below the touch-target floor',
+   "width:44px; height:44px; min-width:44px;",
+   "width:40px; height:40px; min-width:40px;",
+   'the gear dot is 44px, not 40'],
+
+  ['opening the menu stops re-clamping a top-pinned pill, so its taller open self can be pushed off the top of the viewport',
+   "    if(v && collapsedPos){",
+   "    if(false && collapsedPos){",
+   're-clamps a top-pinned pill'],
+
+  ['closing the menu stops restoring the exact pre-open position, leaving the pill wherever the open-state clamp put it',
+   "      if(collapsedPos){ applyPos(collapsedPos); collapsedPos = null; }",
+   "",
+   'restores the exact pre-open position'],
+
+  ['endDrag stops clearing armed and stamping dragEndedAt, so a real drag with no post-drag click leaves armed true forever',
+   "    armed = false;\n    dragEndedAt = Date.now();\n    teardown();",
+   "    teardown();",
+   'not swallowed by a stale armed flag'],
+
+  ['the safe-area probe goes back to reading an unresolved custom property, so the inset is always 0',
+   "    const v = getComputedStyle(safeProbe).getPropertyValue('padding-' + side);",
+   "    const v = getComputedStyle(document.documentElement).getPropertyValue('--sai-' + side);",
+   'measured off a resolved padding on a real probe element'],
+
+  ['entering dot mode stops moving focus off a hidden Hide button, stranding a keyboard user’s focus on it',
+   "    if(v && document.activeElement && box.contains(document.activeElement) && document.activeElement !== moreBtn){\n      moreBtn.focus();\n    }",
+   "",
+   'moves focus to the restore dot'],
 
   /* --- final Gemini round, 16 Sep --- */
   ['dark mode answer feedback loses to the plain-option rule again',
