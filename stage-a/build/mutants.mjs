@@ -630,7 +630,7 @@ const M = [
    'action taken in the menu closes it'],
 
   ['tapping the page no longer closes the menu',
-   "    if(!box.classList.contains('open') || box.contains(e.target)) return;\n    setMenuOpen(false); moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false');",
+   "    if(!box.classList.contains('open') || box.contains(e.target)) return;\n    setMenuOpen(false);",
    "    return;",
    'tapping outside the menu closes it'],
 
@@ -684,6 +684,16 @@ const M = [
    "    document.addEventListener('pointercancel', onPointerCancel);",
    "",
    'pointercancel tears the drag down'],
+
+  ['closing the pill’s menu stops collapsing the nested More list behind it',
+   "    if(!v && moreSub){ moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false'); }",
+   "",
+   'also collapses the nested More list'],
+
+  ['the gear dot loses its drag carve-out, so it can never be long-pressed once hidden down to a dot',
+   "    if(e.target.closest('button') && !box.classList.contains('dot')) return;",
+   "    if(e.target.closest('button')) return;",
+   'shrunk gear dot can still be long-pressed'],
 
   /* --- final Gemini round, 16 Sep --- */
   ['dark mode answer feedback loses to the plain-option rule again',

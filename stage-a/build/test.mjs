@@ -1300,6 +1300,14 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
     ok('tapping it opens the sub-list', moreSub.hidden === false);
     d.getElementById('mtMoreToggle').click();
     ok('tapping it again closes it', moreSub.hidden === true);
+    /* reopen it, then close the whole menu through an ordinary action rather than the
+       outside-tap handler — the nested list must not still be expanded next time the
+       menu opens fresh */
+    d.getElementById('mtMoreToggle').click();
+    d.getElementById('mtMark').click();
+    ok('an action that closes the pill’s menu also collapses the nested More list behind it, not only the outside-tap handler',
+       moreSub.hidden === true && d.getElementById('mtMoreToggle').getAttribute('aria-expanded') === 'false',
+       'hidden=' + moreSub.hidden + ' expanded=' + d.getElementById('mtMoreToggle').getAttribute('aria-expanded'));
   }
   ok('theme in the pill’s menu toggles dark mode the same way the display popover does',
      /document\.getElementById\('mtTheme'\)\.addEventListener\('click', \(\)=>\{ disp\.dark = !disp\.dark; paintDisp\(\); setMenuOpen\(false\); \}\);/.test(code));
@@ -1326,6 +1334,8 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
      /document\.removeEventListener\('pointercancel', onPointerCancel\);/.test(code));
   ok('the pill is clamped to the edge inset on load even with no stored position, not only after the first drag',
      /applyPos\(clampPos\(\.\.\.\(pos \? \[pos\.left, pos\.bottom\] : Object\.values\(currentPos\(\)\)\)\)\);/.test(code));
+  ok('the shrunk gear dot can still be long-pressed and dragged, even though it is entirely covered by the mtMore button',
+     /if\(e\.target\.closest\('button'\) && !box\.classList\.contains\('dot'\)\) return;/.test(code));
 
   /* runtime reproduction of the long-press-toggles-the-timer bug: pointerdown on the clock,
      hold past the 300ms arm threshold with no movement, pointerup, then the click the browser

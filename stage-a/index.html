@@ -10627,6 +10627,10 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
     /* the same one-layer-at-the-bottom-at-a-time rule as the highlight bar: the jump row
        stands down while the pill's own menu covers the same corner of the screen */
     if(jumpRow) jumpRow.classList.toggle('hl-off', v);
+    /* closing the menu always closes its nested More sub-list too, not only via the
+       outside-tap handler — otherwise an action taken from inside More (next phase, reset,
+       mode, hide) leaves it expanded for the next fresh open of the menu */
+    if(!v && moreSub){ moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false'); }
   }
   /* One tap, always. Pause/Resume acts immediately and closes the menu rather than opening
      it; it never needs the menu to be open first. Tapping the clock or the phase label does
@@ -10660,7 +10664,7 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
      stay expanded the next time the menu opens from a fresh tap) */
   document.addEventListener('click', e=>{
     if(!box.classList.contains('open') || box.contains(e.target)) return;
-    setMenuOpen(false); moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false');
+    setMenuOpen(false);
   });
   document.getElementById('mtSkip').addEventListener('click',()=>{ if(T.p<PH.length) tAdvance(); setMenuOpen(false); });
   document.getElementById('mtReset').addEventListener('click',()=>{
@@ -10743,7 +10747,10 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
      down, so the next unrelated touch anywhere on the page starts dragging the pill */
   function onPointerCancel(){ armed = false; teardown(); }
   box.addEventListener('pointerdown', e=>{
-    if(e.target.closest('button')) return;               /* buttons keep their own tap behaviour */
+    /* buttons keep their own tap behaviour — except the gear dot, which IS a button
+       (#mtMore, sized to fill the 40px dot by its own 44px min-size rule): without this
+       carve-out the dot could never be armed for a drag at all */
+    if(e.target.closest('button') && !box.classList.contains('dot')) return;
     const rect = box.getBoundingClientRect();
     startX = e.clientX; startY = e.clientY; startLeft = rect.left; startBottom = window.innerHeight - rect.bottom;
     pressTimer = setTimeout(()=>{
