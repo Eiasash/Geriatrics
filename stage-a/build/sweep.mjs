@@ -19,4 +19,8 @@ let dupAbbr=0; for(const id of w.eval('CONTENT')){ const ks=[...d.querySelectorA
 // broken internal anchors in prose (button chgo data-sec)
 const dead=[...d.querySelectorAll('[data-sec]')].filter(b=>!d.getElementById(b.dataset.sec)).length;
 console.log('sections',ids.length,'chgo clicks',clicks,'dup-abbr sections',dupAbbr,'dead data-sec',dead,'errors',errs.length); errs.slice(0,10).forEach(e=>console.log(' ',e));
-process.exit(errs.length?1:0);
+/* dupAbbr and dead were printed but never gated — a fixture with a dead data-sec target or a
+   duplicated abbreviation footnote passed with exit 0 as long as no runtime error fired. Both
+   are real defects (a dead-sec button silently does nothing on click; a dup abbr means two
+   footnotes fight for one asterisk), so fail on them the same as a runtime error. */
+process.exit((errs.length || dupAbbr || dead) ? 1 : 0);

@@ -1144,6 +1144,10 @@ const M = [
    `    if(location.hash.slice(1)) return;\n    const r = await window.storage.get('geri:tab');`,
    `    const r = await window.storage.get('geri:tab');`,
    'wins over a saved tab'],
+  ['every content section’s header band is inserted into the first <main section> instead of its own, piling every band onto one section and leaving the rest with none (ChatGPT round-2 audit: the old total-count check could not see this — 40 bands, 40 sections, still true)',
+   `      });\n    });\n    sec.insertBefore(e, sec.firstChild);\n  });\n  document.addEventListener('click', ev=>{`,
+   `      });\n    });\n    document.querySelector('main section').insertBefore(e, document.querySelector('main section').firstChild);\n  });\n  document.addEventListener('click', ev=>{`,
+   'owns exactly one header band'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
