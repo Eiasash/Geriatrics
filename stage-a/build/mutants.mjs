@@ -1069,6 +1069,14 @@ const M = [
    ' aria-describedby="topicBtnDesc"',
    '',
    'aria-describedby pointing at hidden text'],
+  ['a mock running underneath the practice keydown listener also answers/advances the background practice question, polluting pqDone (Gemini site-wide audit)',
+   "  if(mockOn) return;\n  if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;\n  if(e.key === 'n'){ pqNext(); return; }",
+   "  if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;\n  if(e.key === 'n'){ pqNext(); return; }",
+   'does not also answer or advance the background practice question'],
+  ['the drill summary injects a missed card’s text into innerHTML unescaped, so a raw < in the text starts an unintended tag (Gemini site-wide audit)',
+   "rMissed.map(i=>'<li>'+escHtml(QS[i][0])+'</li>')",
+   "rMissed.map(i=>'<li>'+QS[i][0]+'</li>')",
+   'is escaped in the drill summary'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
