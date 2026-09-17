@@ -1077,6 +1077,14 @@ const M = [
    "rMissed.map(i=>'<li>'+escHtml(QS[i][0])+'</li>')",
    "rMissed.map(i=>'<li>'+QS[i][0]+'</li>')",
    'is escaped in the drill summary'],
+  ['the day dots stop repainting when a day is marked, so the last-14-days strip goes stale (Gemini site-wide audit — this guard used to assert NodeList.length >= 0, which cannot fail)',
+   "document.getElementById('dots').innerHTML = w.map(d=>",
+   "void 0; w.map(d=>",
+   'repaints the dots strip'],
+  ['rememberScroll stops capturing the live scroll position for the shown section (Gemini site-wide audit — the old test referenced rememberScroll without calling it, so this was never exercised)',
+   'scrollAt[cur.id] = window.scrollY;',
+   'scrollAt[cur.id] = 0;',
+   'rememberScroll captures the current scroll position'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
