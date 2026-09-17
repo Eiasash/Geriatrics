@@ -15,6 +15,11 @@ const code = html
   .split('\n').map(l => l.replace(/(^|[^:'"\\])\/\/.*$/, '$1')).join('\n');
 const store = {};
 const errs = [];
+/* substrings a test may register before deliberately provoking a window error or
+   console.error, so that expected noise from a negative test doesn't fail the whole run
+   once unexpected errors start being enforced below. Empty unless a test needs it. */
+const errAllow = [];
+const allowErr = substr => errAllow.push(substr);
 
 const dom = new JSDOM(html, {
   runScripts: 'dangerously',
@@ -42,6 +47,22 @@ await new Promise(r => setTimeout(r, 400));
 let FAILS = 0;
 const ok = (label, cond, extra='') => { if(!cond) FAILS++;
   console.log((cond?'PASS  ':'FAIL  ') + label + (extra?'  — '+extra:'')); };
+
+/* parses the number a piece of prose OPENS with — digit or spelled-out word — so a
+   prose-matches-its-own-table guard can compare against the real count instead of pinning
+   both a literal word and a literal number (Gemini review of merged #449: "a guard must
+   test what its label promises" — the label says the prose matches its table, not that the
+   table has exactly N rows). Returns null if the text doesn't start with a recognised
+   number. */
+const NUM_WORDS = {zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,
+  ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,
+  eighteen:18,nineteen:19,twenty:20};
+function leadingNumber(text){
+  const m = (text || '').trim().match(/^([A-Za-z]+|\d+)/);
+  if(!m) return null;
+  if(/^\d+$/.test(m[1])) return parseInt(m[1], 10);
+  return (m[1].toLowerCase() in NUM_WORDS) ? NUM_WORDS[m[1].toLowerCase()] : null;
+}
 
 ok('page clock is pinned to ' + PIN, w.eval('today()') === PIN, w.eval('today()'));
 /* where the pinned date sits in the schedule: pre / reading / post */
@@ -1918,9 +1939,6 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
   return r.n === 8 && r.anyAnswered === false;
 })());
 
-console.log('\nerrors captured:', errs.length);
-errs.slice(0,12).forEach(e=>console.log('  ' + e));
-
 /* ---- crossing midnight with the tab open: the page clock is moved mid-session ----
    Absolute dates, so these hold at every STAGEA_DATE CI runs. */
 {
@@ -2961,38 +2979,48 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
      hits.length === 2 && windows.every(w2 => !/50 days/.test(w2) && !/50-day/.test(w2)));
 }
 {
-  /* SZMC chat: a printed page-footer stamp ("שלב א' בגריאטריה 28/5/2024 100 שאלות – מסלול
-     על") was OCR-glued with no space onto the last option of 26 items in the 2024-05
-     sitting. Stripped from #pqjson by script, not by hand. The glued form (no space between
-     בגריאטריה and the date) is the unambiguous artifact signature — nothing legitimate
-     would ever produce it. */
-  ok('no past-paper option carries the 2024-05 page-footer stamp that used to run on into 26 items',
-     !code.includes('בגריאטריה28/5/2024'));
+  /* Gemini review of merged #449: this used to match the literal date 28/5/2024, so the
+     identical OCR bug recurring in a future sitting would sail through. Generalised to the
+     SHAPE of the artifact instead — a Hebrew letter immediately followed by a D/M/YYYY date
+     with no separating space, the unambiguous signature of an exam header/footer glued onto
+     question text. Confirmed zero legitimate hits of this shape anywhere else in the file. */
+  const glued = [...code.matchAll(/[א-ת]\d{1,2}\/\d{1,2}\/\d{2,4}/g)];
+  ok('no past-paper option carries an exam header/footer stamp glued onto it with no separating space (any sitting, any date — not just the 2024-05 one already fixed)',
+     glued.length === 0, glued.map(m => m[0]).join(', '));
 }
 {
-  /* the Beers-vs-STOPP/START conflict table gained a sixth row (Gliclazide specifically) at
-     some point after the "Four places" lede was written, and nobody updated the prose. */
+  /* Gemini review of merged #449: this pinned both the prose word AND the row count as
+     literals ("Six" / 6), which would turn red the moment a legitimate seventh disagreement
+     row was added and the prose correctly updated to "Seven" — a guard testing a number, not
+     the relationship its own label promises. Parses the leading number out of the prose
+     (digit or spelled-out word) and requires it match the table's actual row count, whatever
+     either value is. */
   const confTable = d.querySelector('#conf table');
   const confRows = confTable ? confTable.querySelectorAll('tbody tr').length : 0;
   const lede = d.querySelector('#conf .lede');
-  ok('the conflict-table lede count matches the Beers/STOPP table’s actual row count (SZMC chat correction)',
-     !!lede && /^Six places the two tools give different answers/.test(lede.textContent.trim()) && confRows === 6,
-     'rows=' + confRows + ' lede=' + (lede && lede.textContent.slice(0, 20)));
+  const ledeText = lede ? lede.textContent.trim() : '';
+  const ledeNum = leadingNumber(ledeText);
+  ok('the conflict-table lede’s leading number matches the Beers/STOPP table’s actual row count, whatever either value is (SZMC chat correction; relationship, not a pinned literal)',
+     !!lede && ledeNum !== null && ledeNum === confRows &&
+     / places the two tools give different answers/.test(ledeText),
+     'ledeNum=' + ledeNum + ' rows=' + confRows + ' lede=' + ledeText.slice(0, 24));
 }
 {
-  /* the "non-textbook sources" table lists 19 distinct question numbers (some cells carry
-     two, comma-separated) but the prose below it said 14. Found by its header signature
-     (Q / Source / What it asked), not by DOM position relative to its heading — the "anatomy"
-     section carries an auto-generated heading id/annotation structure that makes sibling
-     traversal from the <h2> land on the wrong node. */
+  /* same relationship-not-literal fix as above, for the non-textbook-sources count. Found by
+     its header signature (Q / Source / What it asked), not by DOM position relative to its
+     heading — the "anatomy" section carries an auto-generated heading id/annotation
+     structure that makes sibling traversal from the <h2> land on the wrong node. */
   const tbl = [...d.querySelectorAll('table')].find(t =>
     [...t.querySelectorAll('thead th')].map(th => th.textContent.trim()).join('|') === 'Q|Source|What it asked');
   const nums = tbl ? [...tbl.querySelectorAll('tbody tr td.n')].flatMap(td => td.textContent.split(',').map(s => s.trim())) : [];
   const distinct = new Set(nums).size;
-  const prose = [...d.querySelectorAll('p.note')].find(p => /of 100 questions come from material no textbook contains/.test(p.textContent));
-  ok('the non-textbook-sources prose count matches the table’s distinct question count (SZMC chat correction)',
-     !!prose && /^19 of 100 questions/.test(prose.textContent.trim()) && distinct === 19,
-     'distinct=' + distinct + ' prose=' + (prose && prose.textContent.slice(0, 20)));
+  const prose = [...d.querySelectorAll('p.note')].find(p => /questions come from material no textbook contains/.test(p.textContent));
+  const proseText = prose ? prose.textContent.trim() : '';
+  const proseNum = leadingNumber(proseText);
+  ok('the non-textbook-sources prose’s leading number matches the table’s distinct question count, whatever either value is (SZMC chat correction; relationship, not a pinned literal)',
+     !!prose && proseNum !== null && proseNum === distinct &&
+     / of 100 questions come from material no textbook contains/.test(proseText),
+     'proseNum=' + proseNum + ' distinct=' + distinct + ' prose=' + proseText.slice(0, 24));
 }
 
 {
@@ -3044,6 +3072,22 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
 
 ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale first copy used to override a handful of rules the second, redesigned copy deliberately changed — e.g. it accidentally kept .lnk buttons at a 44px touch floor the redesign meant to exempt)',
    (html.match(/v12 . dashboard redesign/g) || []).length === 1);
+
+{
+  /* ChatGPT third-model audit of main ee44f96: errs (window errors + console.error calls the
+     PAGE made, not test noise like jsdom's "Not implemented" warnings which never reach it)
+     was captured and printed mid-run but never checked — a run that threw could still finish
+     576 PASS / 0 FAIL and exit 0. Proven: inject a zero-delay throw and the suite reported
+     success with "errors captured: 1" sitting unread in the middle of the log. Now it fails
+     the run unless a test explicitly allowlisted the message first (see allowErr above — no
+     current test needs to). Printed here, once, after the last check, not mid-run. */
+  const unexpected = errs.filter(e => !errAllow.some(p => e.includes(p)));
+  ok('no unexpected runtime errors were captured during the run',
+     unexpected.length === 0, unexpected.slice(0, 5).join(' | '));
+  console.log('\nerrors captured: ' + errs.length +
+    (errAllow.length ? ' (' + (errs.length - unexpected.length) + ' allowlisted)' : ''));
+  errs.slice(0, 12).forEach(e => console.log('  ' + e));
+}
 
 console.log("DONE");
 process.exit(FAILS || process.exitCode ? 1 : 0);

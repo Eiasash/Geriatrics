@@ -12,6 +12,7 @@
 */
 import fs from 'fs';
 import { execFileSync } from 'child_process';
+import { classifyMutant, baselineOk } from './mutants-classify.mjs';
 
 const SRC = process.argv.slice(2).find(a => !a.startsWith('--')) || '../index.html';
 /* --static: only check that every mutation still has exactly one target. Seconds instead of
@@ -1089,15 +1090,15 @@ const M = [
    '    only 17% of stage 3 or 4</b>. A full-thickness injury',
    '    only 17% of stage 3 or 4</b>. A stage 2 should heal within 50 days; a full-thickness injury',
    'no fabricated 50-day figure'],
-  ['the 2024-05 page-footer stamp is glued back onto a past-paper option (SZMC chat correction)',
+  ['an exam header/footer stamp is glued back onto a past-paper option — the general shape, not just the 2024-05 date already fixed (Gemini review of merged #449)',
    `"שיווי משקל לקוי"]`,
    `"שיווי משקל לקוי שלב א' בגריאטריה28/5/2024 100 שאלות– מסלול על"]`,
-   'page-footer stamp'],
-  ['the Beers/STOPP conflict-table lede reverts to "Four places" while the table itself still has six rows (SZMC chat correction)',
+   'header/footer stamp'],
+  ['the Beers/STOPP conflict-table lede’s leading number stops matching the table’s actual row count (Gemini review of merged #449: the guard now tests the relationship, not a pinned "Six"/6 literal)',
    '<p class="lede">Six places the two tools give different answers.',
    '<p class="lede">Four places the two tools give different answers.',
    'Beers/STOPP table'],
-  ['the non-textbook-sources prose reverts to "Fourteen of 100" while the table still lists 19 distinct question numbers (SZMC chat correction)',
+  ['the non-textbook-sources prose’s leading number stops matching the table’s distinct question count (Gemini review of merged #449: the guard now tests the relationship, not a pinned "19 of 100" literal)',
    '<p class="note">19 of 100 questions come from material no textbook contains.',
    '<p class="note">Fourteen of 100 questions come from material no textbook contains.',
    'distinct question count'],
@@ -1182,13 +1183,15 @@ if(STATIC){
 }
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
 {
-  let out = '';
-  try{ out = execFileSync('node', ['test.mjs', SRC], {encoding:'utf8'}); }
-  catch(e){ out = (e.stdout || '') + (e.stderr || ''); }
-  const fails = out.split('\n').filter(l => l.startsWith('FAIL'));
-  if(fails.length || !/DONE/.test(out)){
+  let out = '', status = 0;
+  try{ out = execFileSync('node', ['test.mjs', SRC], {encoding:'utf8'}); status = 0; }
+  catch(e){ out = (e.stdout || '') + (e.stderr || ''); status = e.status == null ? 1 : e.status; }
+  const base = baselineOk(out, status);
+  if(!base.ok){
     console.log('BASELINE IS NOT GREEN — nothing below can be trusted');
-    fails.forEach(f => console.log('   ' + f));
+    if(status !== 0) console.log('   exit status ' + status + (base.fails.length ? '' : ' (no FAIL line printed — see test.mjs’s own exit code)'));
+    base.fails.forEach(f => console.log('   ' + f));
+    if(!base.hasDone) console.log('   the run never reached DONE');
     process.exit(1);
   }
   console.log('baseline green: ' + out.split('\n').filter(l => l.startsWith('PASS')).length + ' checks\n');
@@ -1198,8 +1201,10 @@ if(STATIC){
    The first attempt at this (965e9c8) was reverted after three false MISSED results; the cause
    was not contention itself but a quota test in test.mjs that refused background writes and
    let the rejection kill the run at ~329 checks, which only happened when the machine was
-   slow. That is fixed in test.mjs, and a run that never reaches DONE is now INCOMPLETE here,
-   never MISSED: an unfinished run proves nothing either way. */
+   slow. That is fixed in test.mjs, and a run that never reaches DONE is classified
+   INCOMPLETE by classifyMutant() (mutants-classify.mjs) before it ever looks at whether a
+   FAIL line happened to match — never MISSED, and, since the ChatGPT audit of main ee44f96,
+   never CAUGHT either: an unfinished run proves nothing either way. */
 const { execFile } = await import('child_process');
 const os = await import('os');
 const WORKERS = Math.max(1, Math.min(M_RUN.length, +(process.env.MUTANT_WORKERS || os.cpus().length)));
@@ -1219,15 +1224,7 @@ async function worker(){
     fs.writeFileSync(tmp, src.replace(from, to));
     const out = await runSuite(tmp);
     try{ fs.unlinkSync(tmp); }catch(e){}
-    const lines = out.split('\n');
-    const caught = lines.some(l => l.startsWith('FAIL') && l.includes(needle));
-    const passes = lines.filter(l => l.startsWith('PASS')).length;
-    const done = lines.some(l => l.startsWith('DONE'));
-    /* the file stopped parsing, so everything failed. That is not the guard biting. */
-    if(caught && passes < 50) results[i] = 'BROKE  ' + name + '  — mutation broke the parse (' + passes + ' passed); it proves nothing';
-    else if(caught) results[i] = 'CAUGHT ' + name;
-    else if(!done) results[i] = 'INCOMPLETE ' + name + '  — the suite stopped after ' + passes + ' checks without reaching DONE; not a verdict';
-    else results[i] = 'MISSED ' + name;
+    results[i] = classifyMutant(name, needle, out);
   }
 }
 const t0 = Date.now();
