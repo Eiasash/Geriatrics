@@ -1005,165 +1005,6 @@
   @media print{ #week .today,#week .timer{background:none!important} }
 
   /* ===================== v12 — dashboard redesign ===================== */
-  :root{ --mute:#59636b; --daily-accent:#18566a; --daily-tint:#edf3f4; --daily-edge:#667a80; }
-  html.dark, body.dark{ --mute:#96a0a7; --daily-accent:#85c7dc; --daily-tint:#1c2b32; --daily-edge:#80949c; }
-  /* verified ratios — accent 7.80 light / 9.43 dark; mute 5.88; edge 4.32; accent on tint 7.26 */
-
-  @media screen{
-    .tbar i, .mockprog i, .savedtag.on{ transition-duration:120ms }
-    .srch input{ min-block-size:44px; border-color:var(--daily-edge); font-size:1rem }
-    input::placeholder, textarea::placeholder{ color:var(--mute); opacity:1 }
-
-    /* touch floor — scoped so it cannot inflate the 113-row chapter index,
-       the in-section jump chips, the header actions or inline text buttons */
-    #week button, #week summary, #week select,
-    .card button, .pq button, .cbtns button, .chips button{
-      min-block-size:44px; }
-    .topicbtn{ min-block-size:44px }
-
-    button:focus-visible, input:focus-visible, textarea:focus-visible,
-    select:focus-visible, summary:focus-visible, a:focus-visible{
-      outline:3px solid var(--daily-accent) !important; outline-offset:3px !important }
-
-    .topicbtn{ border-color:var(--daily-edge); border-inline-start:4px solid var(--daily-accent);
-      border-radius:3px; font-weight:650 }
-    .topicbtn .glabel{ font-weight:400 }
-    .totop{ box-shadow:none; border:1px solid var(--daily-edge) }
-
-    #week{ --accent:var(--daily-accent); --tint:var(--daily-tint);
-      max-inline-size:76ch; margin-inline:auto }
-
-    #week .note{ font-family:var(--sans); font-size:.95em; line-height:1.65; color:var(--mute);
-      max-inline-size:62ch; margin-block-end:16px }
-    #week h2{ font-size:1.05em; font-weight:700; line-height:1.35; margin-block:32px 12px }
-    #week h2::before{ content:none }
-
-    #week .today{ background:var(--daily-tint); border:1px solid var(--daily-edge);
-      border-left-width:1px; border-inline-start:5px solid var(--daily-accent);
-      border-radius:4px; padding:20px; margin-block-end:22px }
-    #week .today .lab{ font-size:.8em; font-weight:750; letter-spacing:0; text-transform:none;
-      color:var(--daily-accent); margin-block-end:8px }
-    #week .today h3{ font-size:1.65em; font-weight:700; line-height:1.2; letter-spacing:normal;
-      margin-block:0 10px }
-    #week .today .meta, #week .wkbig .meta{ font-size:.88em; line-height:1.55; color:var(--mute);
-      margin-block-end:16px }
-
-    #week .today .split{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px;
-      padding-block:14px; margin-block-end:18px }
-    #week .today .split div{ display:block; padding:0; font-family:var(--sans); font-size:.9em;
-      line-height:1.5; color:var(--ink); min-inline-size:0 }
-    #week .today .split div b{ display:block; margin:0 0 3px; font-size:1.12em; font-weight:750;
-      color:var(--daily-accent); font-variant-numeric:tabular-nums }
-    #week .today .split div::after{ content:none }
-
-    #week .today .row{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:16px 12px;
-      align-items:center }
-    #week #tdBtn{ grid-column:1/-1; inline-size:100%; min-block-size:48px; padding:12px 16px;
-      font-size:1em; font-weight:650; background:var(--daily-accent);
-      border-color:var(--daily-accent); color:var(--paper); border-radius:3px }
-    #week #tdBtn[data-on="1"]{ background:var(--start); border-color:var(--start); color:var(--paper) }
-
-    #week .dots{ display:grid; grid-template-columns:repeat(14,minmax(0,1fr)); gap:4px;
-      inline-size:100%; min-inline-size:0 }
-    #week .dots i{ inline-size:auto; min-inline-size:0; block-size:22px; background:var(--paper);
-      border:1px solid var(--daily-edge); border-radius:1px;
-      transition:background-color 120ms, border-color 120ms }
-    #week .dots i.y{ background:var(--start); border-color:var(--start) }
-    #week .dots i.t{ outline:2px solid var(--daily-accent); outline-offset:2px }
-    #week .adh{ font-size:.85em; white-space:nowrap; font-variant-numeric:tabular-nums }
-    #week .adh b{ font-size:1.15em }
-
-    #week .timer{ background:var(--paper); border:0; border-inline-start:3px solid var(--daily-edge);
-      border-radius:0; padding:16px 18px; margin-block-end:28px }
-    #week .timer.run{ background:var(--daily-tint); border-color:var(--daily-accent) }
-    #week .timer .lab{ font-size:.8em; font-weight:600; letter-spacing:normal; text-transform:none;
-      line-height:1.5; color:var(--mute) }
-    #week #tClock{ font-family:var(--sans); font-size:3em; font-weight:700; line-height:1.15;
-      letter-spacing:-.035em; font-variant-numeric:tabular-nums }
-    #week #tPhase{ font-size:.9em; color:var(--ink) }
-    #week .tbar{ block-size:8px; background:var(--paper); border:1px solid var(--daily-edge);
-      border-radius:0; margin-block:16px 12px }
-    #week .tbar i{ background:var(--daily-accent); border-radius:0; transition:width 120ms linear }
-    #week .timer.run .tbar i{ background:var(--start) }
-    #week #tGo, #week #qLog{ background:var(--daily-accent); border-color:var(--daily-accent);
-      color:var(--paper); font-size:.95em; font-weight:650; border-radius:3px }
-    #week .timer.run #tGo{ background:var(--paper); border-color:var(--daily-accent);
-      color:var(--daily-accent) }
-    #week .tbtns{ gap:6px 14px }
-    #week .tbtns .lnk{ font-size:.88em; color:var(--ink); text-underline-offset:4px; padding-block:10px }
-
-    #week #bkBtn{ background:none; color:var(--ink); border:0; padding-inline:0; font-weight:400 }
-    #week label[for="bkFile"]{ display:inline-flex; align-items:center; min-block-size:44px }
-
-    #week .wkbig{ border-top:1px solid var(--daily-edge); padding-block-start:20px }
-    #week .chap, #week .chap:hover{ padding:16px 0; border-inline-start:0; background:none;
-      transition:none }
-    #week .chap b{ font-size:1.13em; line-height:1.4 }
-    #week .chap i{ font-size:.85em; line-height:1.5 }
-    #week .chap .go2{ font-size:.85em; color:var(--daily-accent); background:var(--paper);
-      border-color:var(--daily-edge); padding:10px 12px; white-space:normal; text-align:start }
-    #week .chap .go2:hover, body.dark #week .chap .go2:hover{ color:var(--daily-accent);
-      background:var(--daily-tint); border-color:var(--daily-accent) }
-
-    #week .chips{ display:grid; grid-template-columns:repeat(7,minmax(44px,1fr)); gap:6px;
-      margin-block:14px 12px }
-    #week .chips button{ min-block-size:64px; padding:8px 2px; font-size:.8em; line-height:1.3;
-      background:var(--paper); color:var(--mute); border:1px solid var(--daily-edge);
-      border-radius:3px; opacity:1; transform:none;
-      transition:background-color 120ms, border-color 120ms }
-    #week .chips button b{ font-size:1.25em; color:var(--ink); font-variant-numeric:tabular-nums }
-    #week .chips button[data-fut="1"]{ opacity:1; border-style:dashed }
-    #week .chips button[data-today="1"]{ background:var(--daily-tint); border-color:var(--daily-accent);
-      outline:2px solid var(--daily-accent); outline-offset:2px }
-    #week .chips button[data-today="1"] b{ color:var(--daily-accent); text-decoration:underline;
-      text-underline-offset:4px }
-    #week .chips button[data-on="1"]{ background:var(--t-core); border-color:var(--start);
-      border-block-end-width:4px; color:var(--start) }
-    #week .chips button[data-on="1"] b{ color:var(--start) }
-    #week .chips button:active{ transform:none }
-
-    #week #wkDaysLab b, #week #pace b{ color:var(--ink); font-weight:750;
-      font-variant-numeric:tabular-nums }
-
-    #week .qlog input{ inline-size:6em; min-block-size:48px; padding:10px 12px; font-size:1.1em;
-      font-weight:650; font-variant-numeric:tabular-nums; border-color:var(--daily-edge);
-      border-radius:3px }
-    #week .qlog button{ min-block-size:48px }
-    #week .spark i{ background:var(--daily-accent); border-radius:0 }
-    #week .spark i.hi{ background:var(--start) }
-    #week .spark i.lo{ background:var(--stop) }
-    #week .spark:empty{ display:none }
-    #week .sparklab, #week .weakmini, #week .disp{ font-size:.85em; line-height:1.55 }
-    #week .weakmini{ margin-block-start:12px }
-    #week .notebox{ font-size:1em; line-height:1.65; min-block-size:9em; padding:14px;
-      border-color:var(--daily-edge) }
-    #week #bkText, #week .disp button, #week .wopen{ border-color:var(--daily-edge) }
-    #week .nx{ padding-block:14px }
-    #week .nx .t{ font-size:1em; line-height:1.5 }
-    #week .nx .d, #week .nx .h{ font-size:.82em }
-    #week .disp button[aria-pressed="true"]{ background:var(--daily-tint);
-      border-color:var(--daily-accent); color:var(--daily-accent); font-weight:750;
-      text-decoration:underline; text-underline-offset:3px }
-  }
-
-  @media screen and (max-width:600px){
-    #week .today{ padding:16px 14px }
-    #week .today .split{ grid-template-columns:minmax(0,1fr); gap:10px }
-    #week .today .split div{ display:grid; grid-template-columns:4.5em minmax(0,1fr);
-      column-gap:10px; align-items:baseline }
-    #week .today .split div b{ margin:0 }
-    #week .today .row{ grid-template-columns:minmax(0,1fr); gap:12px }
-    #week .adh{ justify-self:end }
-    #week .timer{ padding:14px }
-  }
-  @media screen and (max-width:400px){
-    #week .chips{ grid-template-columns:repeat(4,minmax(44px,1fr)) }
-  }
-  @media (prefers-reduced-motion:reduce){
-    *,*::before,*::after{ animation:none !important; transition:none !important }
-  }
-
-  /* ===================== v12 — dashboard redesign ===================== */
   :root{
     --mute:#59636b;
     --daily-accent:#18566a; --daily-tint:#edf3f4; --daily-edge:#667a80;
@@ -2754,7 +2595,7 @@ body.dark .pqo.wrong {
   }catch(e){}
 })();
 </script>
-<button class="railshow" id="railShow" type="button" title="Show the list">&raquo;</button>
+<button class="railshow" id="railShow" type="button" title="Show the list" aria-label="Show the list">&raquo;</button>
 <div class="jumprow" id="jumpRow">
 <button class="toend" id="toEnd" type="button" aria-label="Jump to end">&darr;</button>
 <button class="totop" id="toTop" type="button" aria-label="Back to top" hidden>&uarr;</button>
@@ -2836,7 +2677,7 @@ body.dark .pqo.wrong {
     <b id="readCount" style="margin-top:10px">&mdash;</b>chapters read</div>
 </nav>
 
-<div id="sheet" hidden role="dialog" aria-label="Jump to a section">
+<div id="sheet" hidden role="dialog" aria-modal="true" aria-label="Jump to a section">
   <div class="sheetbar">
     <strong>Jump to</strong>
     <button type="button" id="sheetClose">Close</button>
@@ -2914,7 +2755,7 @@ body.dark .pqo.wrong {
   <h2>What to go back to</h2>
   <p class="note">Per week, kept with the week. The thing you could not answer on Tuesday is the
   thing January is for &mdash; write it here while you still know what it was.</p>
-  <textarea class="notebox" id="wkNote" placeholder="Missed cards, a table you could not hold, a drug you keep getting the wrong way round&hellip;"></textarea>
+  <textarea class="notebox" id="wkNote" aria-label="What to go back to" placeholder="Missed cards, a table you could not hold, a drug you keep getting the wrong way round&hellip;"></textarea>
   <div class="sparklab" style="margin-top:6px">Saved to this week only<span class="savedtag" id="nSaved">saved</span></div>
 
   </details>
@@ -2949,7 +2790,7 @@ body.dark .pqo.wrong {
       <button type="button" id="bkDownload">Download as a file</button>
       <button type="button" id="bkCopy">Copy</button>
       <label class="lnk" for="bkFile" style="cursor:pointer">Load from a file</label>
-      <input type="file" id="bkFile" accept="application/json,.json" style="display:none">
+      <input type="file" id="bkFile" accept="application/json,.json" class="sr-only">
       <button type="button" id="bkRestore" class="lnk">Restore from the box</button>
       <button type="button" id="bkUndo" class="lnk">Undo the last restore</button>
       <span class="savedtag" id="bkSaved">done</span>
@@ -3803,17 +3644,17 @@ body.dark .pqo.wrong {
   <div class="tscroll"><table class="wide chapidx">
   <thead><tr><th>Ch</th><th>Title</th><th>Page</th><th>Q / 400</th></tr></thead><tbody>
 <tr><td colspan="4" style="padding-top:16px"><b>Part I · Principles of Gerontology</b></td></tr>
-<tr><td class="n">1</td><td>Biology of Aging and Longevity <button type="button" class="chgo" data-sec="biology">notes</button></td><td class="n">p3</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">2</td><td>Demography and Epidemiology <button type="button" class="chgo" data-sec="biology">notes</button></td><td class="n">p23</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">1</td><td>Biology of Aging and Longevity <button type="button" class="chgo" data-sec="biology" aria-label="Biology of Aging and Longevity — notes">notes</button></td><td class="n">p3</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">2</td><td>Demography and Epidemiology <button type="button" class="chgo" data-sec="biology" aria-label="Demography and Epidemiology — notes">notes</button></td><td class="n">p23</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">3</td><td>Immunology and Inflammation </td><td class="n">p47</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">4</td><td>Psychosocial Aspects of Aging </td><td class="n">p65</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">5</td><td>Sex Differences in Health and Longevity </td><td class="n">p83</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">6</td><td>Social Determinants of Health, Health Disparities, and Health Equity </td><td class="n">p95</td><td class="n">&mdash;</td></tr>
 <tr><td colspan="4" style="padding-top:16px"><b>Part II · Principles of Geriatrics</b></td></tr>
-<tr><td class="n">7</td><td>Decision Making and Advance Care Planning: What Matters Most <button type="button" class="chgo" data-sec="ethics">notes</button></td><td class="n">p109</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">7</td><td>Decision Making and Advance Care Planning: What Matters Most <button type="button" class="chgo" data-sec="ethics" aria-label="Decision Making and Advance Care Planning: What Matters Most — notes">notes</button></td><td class="n">p109</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">8</td><td>Principles of Geriatric Assessment </td><td class="n">p117</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">9</td><td>Mental Status and Neurologic Examination <button type="button" class="chgo" data-sec="cognition">notes</button></td><td class="n">p133</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">10</td><td>Assessment of Decisional Capacity and Competencies <button type="button" class="chgo" data-sec="ethics">notes</button></td><td class="n">p151</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">9</td><td>Mental Status and Neurologic Examination <button type="button" class="chgo" data-sec="cognition" aria-label="Mental Status and Neurologic Examination — notes">notes</button></td><td class="n">p133</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">10</td><td>Assessment of Decisional Capacity and Competencies <button type="button" class="chgo" data-sec="ethics" aria-label="Assessment of Decisional Capacity and Competencies — notes">notes</button></td><td class="n">p151</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">11</td><td>Prevention and Screening </td><td class="n">p157</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">12</td><td>Age-Friendly Care </td><td class="n">p171</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">13</td><td>Geriatrics Around the World </td><td class="n">p179</td><td class="n">&mdash;</td></tr>
@@ -3825,16 +3666,16 @@ body.dark .pqo.wrong {
 <tr><td class="n">19</td><td>Value-Based Care </td><td class="n">p263</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">20</td><td>The Role of Social Workers </td><td class="n">p277</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">21</td><td>The Patient Perspective </td><td class="n">p287</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">22</td><td>Medication Prescribing and De-Prescribing <button type="button" class="chgo" data-sec="beers">notes</button></td><td class="n">p301</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">22</td><td>Medication Prescribing and De-Prescribing <button type="button" class="chgo" data-sec="beers" aria-label="Medication Prescribing and De-Prescribing — notes">notes</button></td><td class="n">p301</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">23</td><td>Substance Use and Disorders </td><td class="n">p317</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">24</td><td>Integrative Medicine and Health </td><td class="n">p329</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">25</td><td>Patient-Centered Management of Chronic Diseases </td><td class="n">p345</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">26</td><td>Legal Issues <button type="button" class="chgo" data-sec="ethics">notes</button></td><td class="n">p361</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">27</td><td>Perioperative Care: Evaluation and Management <button type="button" class="chgo" data-sec="periop">notes</button></td><td class="n">p371</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">26</td><td>Legal Issues <button type="button" class="chgo" data-sec="ethics" aria-label="Legal Issues — notes">notes</button></td><td class="n">p361</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">27</td><td>Perioperative Care: Evaluation and Management <button type="button" class="chgo" data-sec="periop" aria-label="Perioperative Care: Evaluation and Management — notes">notes</button></td><td class="n">p371</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">28</td><td>Anesthesia </td><td class="n">p383</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">29</td><td>Surgical Quality and Outcomes </td><td class="n">p399</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">30</td><td>Nutrition Disorders, Obesity, and Enteral/Parenteral Alimentation </td><td class="n">p405</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">31</td><td>Disorders of Swallowing <button type="button" class="chgo" data-sec="dysphagia">notes</button></td><td class="n">p437</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">31</td><td>Disorders of Swallowing <button type="button" class="chgo" data-sec="dysphagia" aria-label="Disorders of Swallowing — notes">notes</button></td><td class="n">p437</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">32</td><td>Oral Health </td><td class="n">p453</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">33</td><td>Low Vision: Assessment and Rehabilitation </td><td class="n">p469</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">34</td><td>Hearing Loss: Assessment and Management </td><td class="n">p489</td><td class="n">&mdash;</td></tr>
@@ -3843,58 +3684,58 @@ body.dark .pqo.wrong {
 <tr><td class="n">37</td><td>Sexuality, Sexual Function, and the Aging Man </td><td class="n">p547</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">38</td><td>Benign Prostate Disorders </td><td class="n">p555</td><td class="n">&mdash;</td></tr>
 <tr><td colspan="4" style="padding-top:16px"><b>Part III · Geriatric Conditions</b></td></tr>
-<tr><td class="n">39</td><td>Systems Physiology of Aging and Selected Disorders of Homeostasis <button type="button" class="chgo" data-sec="biology">notes</button></td><td class="n">p575</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">40</td><td>Applied Clinical Geroscience <button type="button" class="chgo" data-sec="biology">notes</button></td><td class="n">p593</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">39</td><td>Systems Physiology of Aging and Selected Disorders of Homeostasis <button type="button" class="chgo" data-sec="biology" aria-label="Systems Physiology of Aging and Selected Disorders of Homeostasis — notes">notes</button></td><td class="n">p575</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">40</td><td>Applied Clinical Geroscience <button type="button" class="chgo" data-sec="biology" aria-label="Applied Clinical Geroscience — notes">notes</button></td><td class="n">p593</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">41</td><td>Managing the Care of Patients with Multiple Chronic Conditions </td><td class="n">p605</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">42</td><td>Frailty <button type="button" class="chgo" data-sec="frailty">notes</button></td><td class="n">p615</td><td class="n">9</td></tr>
-<tr class="core"><td class="n">43</td><td>Falls <button type="button" class="chgo" data-sec="falls">notes</button></td><td class="n">p633</td><td class="n"><b>5</b></td></tr>
-<tr class="core"><td class="n">44</td><td>Sleep Disorders <button type="button" class="chgo" data-sec="sleep">notes</button></td><td class="n">p643</td><td class="n"><b>6</b></td></tr>
-<tr><td class="n">45</td><td>Syncope and Dizziness <button type="button" class="chgo" data-sec="syncope">notes</button></td><td class="n">p665</td><td class="n">5</td></tr>
-<tr class="core"><td class="n">46</td><td>Pressure Injuries <button type="button" class="chgo" data-sec="pressure">notes</button></td><td class="n">p679</td><td class="n"><b>16</b></td></tr>
-<tr class="core"><td class="n">47</td><td>Incontinence <button type="button" class="chgo" data-sec="incont">notes</button></td><td class="n">p699</td><td class="n"><b>12</b></td></tr>
-<tr><td class="n">48</td><td>Elder Mistreatment <button type="button" class="chgo" data-sec="mistreat">notes</button></td><td class="n">p719</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">49</td><td>Muscle Aging and Sarcopenia <button type="button" class="chgo" data-sec="frailty">notes</button></td><td class="n">p729</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">50</td><td>Mobility Assessment and Management <button type="button" class="chgo" data-sec="falls">notes</button></td><td class="n">p741</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">51</td><td>Osteoporosis <button type="button" class="chgo" data-sec="osteo">notes</button></td><td class="n">p759</td><td class="n">5</td></tr>
-<tr><td class="n">52</td><td>Osteoarthritis <button type="button" class="chgo" data-sec="pain">notes</button></td><td class="n">p779</td><td class="n">4</td></tr>
-<tr><td class="n">53</td><td>Hip Fractures <button type="button" class="chgo" data-sec="hipfx">notes</button></td><td class="n">p793</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">54</td><td>Therapeutic Exercise <button type="button" class="chgo" data-sec="frailty">notes</button></td><td class="n">p805</td><td class="n">&mdash;</td></tr>
-<tr class="core"><td class="n">55</td><td>Rehabilitation <button type="button" class="chgo" data-sec="rehab">notes</button></td><td class="n">p817</td><td class="n"><b>7</b></td></tr>
+<tr><td class="n">42</td><td>Frailty <button type="button" class="chgo" data-sec="frailty" aria-label="Frailty — notes">notes</button></td><td class="n">p615</td><td class="n">9</td></tr>
+<tr class="core"><td class="n">43</td><td>Falls <button type="button" class="chgo" data-sec="falls" aria-label="Falls — notes">notes</button></td><td class="n">p633</td><td class="n"><b>5</b></td></tr>
+<tr class="core"><td class="n">44</td><td>Sleep Disorders <button type="button" class="chgo" data-sec="sleep" aria-label="Sleep Disorders — notes">notes</button></td><td class="n">p643</td><td class="n"><b>6</b></td></tr>
+<tr><td class="n">45</td><td>Syncope and Dizziness <button type="button" class="chgo" data-sec="syncope" aria-label="Syncope and Dizziness — notes">notes</button></td><td class="n">p665</td><td class="n">5</td></tr>
+<tr class="core"><td class="n">46</td><td>Pressure Injuries <button type="button" class="chgo" data-sec="pressure" aria-label="Pressure Injuries — notes">notes</button></td><td class="n">p679</td><td class="n"><b>16</b></td></tr>
+<tr class="core"><td class="n">47</td><td>Incontinence <button type="button" class="chgo" data-sec="incont" aria-label="Incontinence — notes">notes</button></td><td class="n">p699</td><td class="n"><b>12</b></td></tr>
+<tr><td class="n">48</td><td>Elder Mistreatment <button type="button" class="chgo" data-sec="mistreat" aria-label="Elder Mistreatment — notes">notes</button></td><td class="n">p719</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">49</td><td>Muscle Aging and Sarcopenia <button type="button" class="chgo" data-sec="frailty" aria-label="Muscle Aging and Sarcopenia — notes">notes</button></td><td class="n">p729</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">50</td><td>Mobility Assessment and Management <button type="button" class="chgo" data-sec="falls" aria-label="Mobility Assessment and Management — notes">notes</button></td><td class="n">p741</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">51</td><td>Osteoporosis <button type="button" class="chgo" data-sec="osteo" aria-label="Osteoporosis — notes">notes</button></td><td class="n">p759</td><td class="n">5</td></tr>
+<tr><td class="n">52</td><td>Osteoarthritis <button type="button" class="chgo" data-sec="pain" aria-label="Osteoarthritis — notes">notes</button></td><td class="n">p779</td><td class="n">4</td></tr>
+<tr><td class="n">53</td><td>Hip Fractures <button type="button" class="chgo" data-sec="hipfx" aria-label="Hip Fractures — notes">notes</button></td><td class="n">p793</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">54</td><td>Therapeutic Exercise <button type="button" class="chgo" data-sec="frailty" aria-label="Therapeutic Exercise — notes">notes</button></td><td class="n">p805</td><td class="n">&mdash;</td></tr>
+<tr class="core"><td class="n">55</td><td>Rehabilitation <button type="button" class="chgo" data-sec="rehab" aria-label="Rehabilitation — notes">notes</button></td><td class="n">p817</td><td class="n"><b>7</b></td></tr>
 <tr><td class="n">56</td><td>The Aging Brain </td><td class="n">p835</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">57</td><td>Cognitive Changes in Normal and Pathologic Aging <button type="button" class="chgo" data-sec="cognition">notes</button></td><td class="n">p853</td><td class="n">8</td></tr>
-<tr class="core"><td class="n">58</td><td>Delirium <button type="button" class="chgo" data-sec="delirium">notes</button></td><td class="n">p879</td><td class="n"><b>15</b></td></tr>
-<tr><td class="n">59</td><td>Dementia Including Alzheimer Disease <button type="button" class="chgo" data-sec="dementia">notes</button></td><td class="n">p893</td><td class="n">6</td></tr>
-<tr class="core"><td class="n">60</td><td>Behavioral Symptoms of Dementia and Psychoactive Drug Therapy <button type="button" class="chgo" data-sec="bpsd">notes</button></td><td class="n">p919</td><td class="n"><b>8</b></td></tr>
-<tr class="core"><td class="n">61</td><td>Parkinson Disease and Related Disorders <button type="button" class="chgo" data-sec="parkinson">notes</button></td><td class="n">p935</td><td class="n"><b>18</b></td></tr>
-<tr><td class="n">62</td><td>Cerebrovascular Disease <button type="button" class="chgo" data-sec="stroke">notes</button></td><td class="n">p953</td><td class="n">&mdash;</td></tr>
-<tr class="core"><td class="n">63</td><td>Other Neurodegenerative Disorders <button type="button" class="chgo" data-sec="bpsd">notes</button></td><td class="n">p981</td><td class="n"><b>9</b></td></tr>
+<tr><td class="n">57</td><td>Cognitive Changes in Normal and Pathologic Aging <button type="button" class="chgo" data-sec="cognition" aria-label="Cognitive Changes in Normal and Pathologic Aging — notes">notes</button></td><td class="n">p853</td><td class="n">8</td></tr>
+<tr class="core"><td class="n">58</td><td>Delirium <button type="button" class="chgo" data-sec="delirium" aria-label="Delirium — notes">notes</button></td><td class="n">p879</td><td class="n"><b>15</b></td></tr>
+<tr><td class="n">59</td><td>Dementia Including Alzheimer Disease <button type="button" class="chgo" data-sec="dementia" aria-label="Dementia Including Alzheimer Disease — notes">notes</button></td><td class="n">p893</td><td class="n">6</td></tr>
+<tr class="core"><td class="n">60</td><td>Behavioral Symptoms of Dementia and Psychoactive Drug Therapy <button type="button" class="chgo" data-sec="bpsd" aria-label="Behavioral Symptoms of Dementia and Psychoactive Drug Therapy — notes">notes</button></td><td class="n">p919</td><td class="n"><b>8</b></td></tr>
+<tr class="core"><td class="n">61</td><td>Parkinson Disease and Related Disorders <button type="button" class="chgo" data-sec="parkinson" aria-label="Parkinson Disease and Related Disorders — notes">notes</button></td><td class="n">p935</td><td class="n"><b>18</b></td></tr>
+<tr><td class="n">62</td><td>Cerebrovascular Disease <button type="button" class="chgo" data-sec="stroke" aria-label="Cerebrovascular Disease — notes">notes</button></td><td class="n">p953</td><td class="n">&mdash;</td></tr>
+<tr class="core"><td class="n">63</td><td>Other Neurodegenerative Disorders <button type="button" class="chgo" data-sec="bpsd" aria-label="Other Neurodegenerative Disorders — notes">notes</button></td><td class="n">p981</td><td class="n"><b>9</b></td></tr>
 <tr><td class="n">64</td><td>Traumatic Brain Injury and Chronic Traumatic Encephalopathy </td><td class="n">p997</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">65</td><td>Major Depression <button type="button" class="chgo" data-sec="depression">notes</button></td><td class="n">p1007</td><td class="n">5</td></tr>
+<tr><td class="n">65</td><td>Major Depression <button type="button" class="chgo" data-sec="depression" aria-label="Major Depression — notes">notes</button></td><td class="n">p1007</td><td class="n">5</td></tr>
 <tr><td class="n">66</td><td>General Topics in Geriatric Psychiatry </td><td class="n">p1021</td><td class="n">&mdash;</td></tr>
 <tr><td colspan="4" style="padding-top:16px"><b>Part IV · Palliative Medicine and Ethics</b></td></tr>
-<tr><td class="n">67</td><td>Palliative Care and Special Management Issues <button type="button" class="chgo" data-sec="palliative">notes</button></td><td class="n">p1045</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">68</td><td>Pain Management <button type="button" class="chgo" data-sec="pain">notes</button></td><td class="n">p1055</td><td class="n">11</td></tr>
-<tr><td class="n">69</td><td>Management of Common Nonpain Symptoms <button type="button" class="chgo" data-sec="palliative">notes</button></td><td class="n">p1071</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">70</td><td>Palliative Care Across Care Settings <button type="button" class="chgo" data-sec="palliative">notes</button></td><td class="n">p1077</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">71</td><td>Effective Communication Strategies for Patients with Serious Illness <button type="button" class="chgo" data-sec="palliative">notes</button></td><td class="n">p1089</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">72</td><td>Ethical Issues <button type="button" class="chgo" data-sec="ethics">notes</button></td><td class="n">p1097</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">67</td><td>Palliative Care and Special Management Issues <button type="button" class="chgo" data-sec="palliative" aria-label="Palliative Care and Special Management Issues — notes">notes</button></td><td class="n">p1045</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">68</td><td>Pain Management <button type="button" class="chgo" data-sec="pain" aria-label="Pain Management — notes">notes</button></td><td class="n">p1055</td><td class="n">11</td></tr>
+<tr><td class="n">69</td><td>Management of Common Nonpain Symptoms <button type="button" class="chgo" data-sec="palliative" aria-label="Management of Common Nonpain Symptoms — notes">notes</button></td><td class="n">p1071</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">70</td><td>Palliative Care Across Care Settings <button type="button" class="chgo" data-sec="palliative" aria-label="Palliative Care Across Care Settings — notes">notes</button></td><td class="n">p1077</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">71</td><td>Effective Communication Strategies for Patients with Serious Illness <button type="button" class="chgo" data-sec="palliative" aria-label="Effective Communication Strategies for Patients with Serious Illness — notes">notes</button></td><td class="n">p1089</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">72</td><td>Ethical Issues <button type="button" class="chgo" data-sec="ethics" aria-label="Ethical Issues — notes">notes</button></td><td class="n">p1097</td><td class="n">&mdash;</td></tr>
 <tr><td colspan="4" style="padding-top:16px"><b>Part V · Organ Systems and Diseases</b></td></tr>
-<tr><td class="n">73</td><td>The Aging Cardiovascular System <button type="button" class="chgo" data-sec="ihd">notes</button></td><td class="n">p1115</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">74</td><td>Coronary Heart Disease and Dyslipidemia <button type="button" class="chgo" data-sec="ihd">notes</button></td><td class="n">p1133</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">75</td><td>Valvular Heart Disease <button type="button" class="chgo" data-sec="ihd">notes</button></td><td class="n">p1149</td><td class="n">5</td></tr>
-<tr><td class="n">76</td><td>Heart Failure <button type="button" class="chgo" data-sec="hf">notes</button></td><td class="n">p1165</td><td class="n">4</td></tr>
-<tr><td class="n">77</td><td>Cardiac Arrhythmias <button type="button" class="chgo" data-sec="ihd">notes</button></td><td class="n">p1193</td><td class="n">4</td></tr>
+<tr><td class="n">73</td><td>The Aging Cardiovascular System <button type="button" class="chgo" data-sec="ihd" aria-label="The Aging Cardiovascular System — notes">notes</button></td><td class="n">p1115</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">74</td><td>Coronary Heart Disease and Dyslipidemia <button type="button" class="chgo" data-sec="ihd" aria-label="Coronary Heart Disease and Dyslipidemia — notes">notes</button></td><td class="n">p1133</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">75</td><td>Valvular Heart Disease <button type="button" class="chgo" data-sec="ihd" aria-label="Valvular Heart Disease — notes">notes</button></td><td class="n">p1149</td><td class="n">5</td></tr>
+<tr><td class="n">76</td><td>Heart Failure <button type="button" class="chgo" data-sec="hf" aria-label="Heart Failure — notes">notes</button></td><td class="n">p1165</td><td class="n">4</td></tr>
+<tr><td class="n">77</td><td>Cardiac Arrhythmias <button type="button" class="chgo" data-sec="ihd" aria-label="Cardiac Arrhythmias — notes">notes</button></td><td class="n">p1193</td><td class="n">4</td></tr>
 <tr><td class="n">78</td><td>Peripheral Vascular Disease </td><td class="n">p1209</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">79</td><td>Hypertension </td><td class="n">p1219</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">80</td><td>Respiratory System and Selected Pulmonary Disorders </td><td class="n">p1229</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">81</td><td>Chronic Obstructive Pulmonary Disease <button type="button" class="chgo" data-sec="copd">notes</button></td><td class="n">p1235</td><td class="n">5</td></tr>
+<tr><td class="n">81</td><td>Chronic Obstructive Pulmonary Disease <button type="button" class="chgo" data-sec="copd" aria-label="Chronic Obstructive Pulmonary Disease — notes">notes</button></td><td class="n">p1235</td><td class="n">5</td></tr>
 <tr><td class="n">82</td><td>Aging of the Kidney </td><td class="n">p1267</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">83</td><td>Kidney Diseases </td><td class="n">p1277</td><td class="n">4</td></tr>
 <tr><td class="n">84</td><td>Aging of the Gastrointestinal System and Selected Lower GI Disorders </td><td class="n">p1299</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">85</td><td>Upper Gastrointestinal Disorders </td><td class="n">p1315</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">86</td><td>Hepatic, Pancreatic, and Biliary Diseases </td><td class="n">p1337</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">87</td><td>Constipation <button type="button" class="chgo" data-sec="constip">notes</button></td><td class="n">p1353</td><td class="n">7</td></tr>
-<tr><td class="n">88</td><td>Cancer and Aging: General Principles <button type="button" class="chgo" data-sec="cancer">notes</button></td><td class="n">p1381</td><td class="n">4</td></tr>
+<tr><td class="n">87</td><td>Constipation <button type="button" class="chgo" data-sec="constip" aria-label="Constipation — notes">notes</button></td><td class="n">p1353</td><td class="n">7</td></tr>
+<tr><td class="n">88</td><td>Cancer and Aging: General Principles <button type="button" class="chgo" data-sec="cancer" aria-label="Cancer and Aging: General Principles — notes">notes</button></td><td class="n">p1381</td><td class="n">4</td></tr>
 <tr><td class="n">89</td><td>Breast Disease </td><td class="n">p1395</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">90</td><td>Prostate Cancer </td><td class="n">p1409</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">91</td><td>Lung Cancer </td><td class="n">p1421</td><td class="n">&mdash;</td></tr>
@@ -3904,17 +3745,17 @@ body.dark .pqo.wrong {
 <tr><td class="n">95</td><td>Hematologic Malignancies (Leukemia/Lymphoma) and Plasma Cell Disorders </td><td class="n">p1483</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">96</td><td>Coagulation Disorders </td><td class="n">p1509</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">97</td><td>Aging of the Endocrine System and Non-Thyroid Endocrine Disorders </td><td class="n">p1525</td><td class="n">4</td></tr>
-<tr><td class="n">98</td><td>Thyroid Diseases <button type="button" class="chgo" data-sec="thyroid">notes</button></td><td class="n">p1545</td><td class="n">5</td></tr>
-<tr><td class="n">99</td><td>Diabetes Mellitus <button type="button" class="chgo" data-sec="diabetes">notes</button></td><td class="n">p1559</td><td class="n">12</td></tr>
-<tr><td class="n">100</td><td>Myopathies, Polymyalgia Rheumatica, and Giant Cell Arteritis <button type="button" class="chgo" data-sec="ra">notes</button></td><td class="n">p1589</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">101</td><td>Rheumatoid Arthritis and Other Autoimmune Diseases <button type="button" class="chgo" data-sec="ra">notes</button></td><td class="n">p1607</td><td class="n">6</td></tr>
-<tr><td class="n">102</td><td>Back Pain and Spinal Stenosis <button type="button" class="chgo" data-sec="backpain">notes</button></td><td class="n">p1629</td><td class="n">4</td></tr>
+<tr><td class="n">98</td><td>Thyroid Diseases <button type="button" class="chgo" data-sec="thyroid" aria-label="Thyroid Diseases — notes">notes</button></td><td class="n">p1545</td><td class="n">5</td></tr>
+<tr><td class="n">99</td><td>Diabetes Mellitus <button type="button" class="chgo" data-sec="diabetes" aria-label="Diabetes Mellitus — notes">notes</button></td><td class="n">p1559</td><td class="n">12</td></tr>
+<tr><td class="n">100</td><td>Myopathies, Polymyalgia Rheumatica, and Giant Cell Arteritis <button type="button" class="chgo" data-sec="ra" aria-label="Myopathies, Polymyalgia Rheumatica, and Giant Cell Arteritis — notes">notes</button></td><td class="n">p1589</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">101</td><td>Rheumatoid Arthritis and Other Autoimmune Diseases <button type="button" class="chgo" data-sec="ra" aria-label="Rheumatoid Arthritis and Other Autoimmune Diseases — notes">notes</button></td><td class="n">p1607</td><td class="n">6</td></tr>
+<tr><td class="n">102</td><td>Back Pain and Spinal Stenosis <button type="button" class="chgo" data-sec="backpain" aria-label="Back Pain and Spinal Stenosis — notes">notes</button></td><td class="n">p1629</td><td class="n">4</td></tr>
 <tr><td class="n">103</td><td>Fibromyalgia and Myofascial Pain Syndromes </td><td class="n">p1643</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">104</td><td>Infection and Appropriate Antimicrobial Selection <button type="button" class="chgo" data-sec="infection">notes</button></td><td class="n">p1667</td><td class="n">5</td></tr>
-<tr><td class="n">105</td><td>Bacterial Pneumonia and Tuberculosis <button type="button" class="chgo" data-sec="infection">notes</button></td><td class="n">p1679</td><td class="n">4</td></tr>
-<tr><td class="n">106</td><td>Urinary Tract Infections <button type="button" class="chgo" data-sec="infection">notes</button></td><td class="n">p1699</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">107</td><td>Other Viruses: Human Immunodeficiency Virus Infection and Herpes Zoster <button type="button" class="chgo" data-sec="infection">notes</button></td><td class="n">p1719</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">108</td><td>Influenza, COVID-19, and Other Respiratory Viruses <button type="button" class="chgo" data-sec="infection">notes</button></td><td class="n">p1733</td><td class="n">4</td></tr>
+<tr><td class="n">104</td><td>Infection and Appropriate Antimicrobial Selection <button type="button" class="chgo" data-sec="infection" aria-label="Infection and Appropriate Antimicrobial Selection — notes">notes</button></td><td class="n">p1667</td><td class="n">5</td></tr>
+<tr><td class="n">105</td><td>Bacterial Pneumonia and Tuberculosis <button type="button" class="chgo" data-sec="infection" aria-label="Bacterial Pneumonia and Tuberculosis — notes">notes</button></td><td class="n">p1679</td><td class="n">4</td></tr>
+<tr><td class="n">106</td><td>Urinary Tract Infections <button type="button" class="chgo" data-sec="infection" aria-label="Urinary Tract Infections — notes">notes</button></td><td class="n">p1699</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">107</td><td>Other Viruses: Human Immunodeficiency Virus Infection and Herpes Zoster <button type="button" class="chgo" data-sec="infection" aria-label="Other Viruses: Human Immunodeficiency Virus Infection and Herpes Zoster — notes">notes</button></td><td class="n">p1719</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">108</td><td>Influenza, COVID-19, and Other Respiratory Viruses <button type="button" class="chgo" data-sec="infection" aria-label="Influenza, COVID-19, and Other Respiratory Viruses — notes">notes</button></td><td class="n">p1733</td><td class="n">4</td></tr>
   </tbody></table></div>
 
   <h2>Does the schedule still match the evidence?</h2>
@@ -4419,37 +4260,37 @@ body.dark .pqo.wrong {
   too much narrows.</p>
   <figure class="fig">
 <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Levodopa levels against the therapeutic window in early and advanced Parkinson disease">
-<text x="55" y="28" font-size="12.5" font-weight="600" fill="var(--ink)" font-family="sans-serif">Early disease &#8212; long-duration response</text>
+<text aria-hidden="true" x="55" y="28" font-size="12.5" font-weight="600" fill="var(--ink)" font-family="sans-serif">Early disease &#8212; long-duration response</text>
 <rect x="55" y="40" width="250" height="110" fill="none" stroke="var(--rule)"/>
 <rect x="55" y="64" width="250" height="50" fill="var(--start)" opacity=".13"/>
-<text x="61" y="56" font-size="10" fill="var(--mute)" font-family="sans-serif">dyskinesia</text>
-<text x="310" y="93.0" font-size="10" fill="var(--start)" font-family="sans-serif">on</text>
-<text x="310" y="126" font-size="10" fill="var(--stop)" font-family="sans-serif">off</text>
+<text aria-hidden="true" x="61" y="56" font-size="10" fill="var(--mute)" font-family="sans-serif">dyskinesia</text>
+<text aria-hidden="true" x="310" y="93.0" font-size="10" fill="var(--start)" font-family="sans-serif">on</text>
+<text aria-hidden="true" x="310" y="126" font-size="10" fill="var(--stop)" font-family="sans-serif">off</text>
 <polyline points="55,99.9 56,94.1 57,89.6 58,86.1 59,83.5 60,81.6 61,80.2 62,79.2 63,78.6 64,78.3 65,78.2 66,78.3 67,78.5 68,78.8 69,79.2 70,79.7 71,80.2 72,80.7 73,81.3 74,81.8 75,82.4 76,83.0 77,83.5 78,84.1 79,84.6 80,85.2 81,85.7 82,86.2 83,86.7 84,87.2 85,87.6 86,88.1 87,88.5 88,88.9 89,89.3 90,89.7 91,90.1 92,90.5 93,90.8 94,91.2 95,91.5 96,91.8 97,92.1 98,92.4 99,92.7 100,93.0 101,93.2 102,93.5 103,93.7 104,94.0 105,94.2 106,94.4 107,94.6 108,94.8 109,95.0 110,95.2 111,95.4 112,95.5 113,95.7 114,95.9 115,96.0 116,96.2 117,96.3 118,96.4 119,96.6 120,96.7 121,96.8 122,96.9 123,97.0 124,97.1 125,97.3 126,97.4 127,97.4 128,97.5 129,97.6 130,97.7 131,97.8 132,97.9 133,98.0 134,98.0 135,98.1 136,98.2 137,98.2 138,98.3 139,94.3 140,89.5 141,85.7 142,82.9 143,80.8 144,79.3 145,78.3 146,77.6 147,77.3 148,77.1 149,77.2 150,77.4 151,77.7 152,78.2 153,78.6 154,79.1 155,79.7 156,80.3 157,80.9 158,81.5 159,82.1 160,82.6 161,83.2 162,83.8 163,84.4 164,84.9 165,85.5 166,86.0 167,86.5 168,87.0 169,87.4 170,87.9 171,88.3 172,88.8 173,89.2 174,89.6 175,90.0 176,90.3 177,90.7 178,91.0 179,91.4 180,91.7 181,92.0 182,92.3 183,92.6 184,92.9 185,93.1 186,93.4 187,93.6 188,93.9 189,94.1 190,94.3 191,94.5 192,94.7 193,94.9 194,95.1 195,95.3 196,95.5 197,95.6 198,95.8 199,95.9 200,96.1 201,96.2 202,96.4 203,96.5 204,96.6 205,96.8 206,96.9 207,97.0 208,97.1 209,97.2 210,97.3 211,97.4 212,97.5 213,97.6 214,97.7 215,97.8 216,97.8 217,97.9 218,98.0 219,98.1 220,98.1 221,98.2 222,96.2 223,90.9 224,86.8 225,83.7 226,81.4 227,79.7 228,78.5 229,77.8 230,77.3 231,77.1 232,77.1 233,77.3 234,77.6 235,78.0 236,78.4 237,78.9 238,79.5 239,80.0 240,80.6 241,81.2 242,81.8 243,82.4 244,83.0 245,83.6 246,84.2 247,84.7 248,85.3 249,85.8 250,86.3 251,86.8 252,87.3 253,87.7 254,88.2 255,88.6 256,89.0 257,89.4 258,89.8 259,90.2 260,90.6 261,90.9 262,91.3 263,91.6 264,91.9 265,92.2 266,92.5 267,92.8 268,93.0 269,93.3 270,93.5 271,93.8 272,94.0 273,94.2 274,94.4 275,94.7 276,94.9 277,95.0 278,95.2 279,95.4 280,95.6 281,95.7 282,95.9 283,96.0 284,96.2 285,96.3 286,96.5 287,96.6 288,96.7 289,96.8 290,97.0 291,97.1 292,97.2 293,97.3 294,97.4 295,97.5 296,97.6 297,97.7 298,97.7 299,97.8 300,97.9 301,98.0 302,98.0 303,98.1 304,98.2 305,98.2" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
 <path d="M55.0 150 l0 7" stroke="var(--mute)"/>
 <path d="M138.33333333333331 150 l0 7" stroke="var(--mute)"/>
 <path d="M221.66666666666666 150 l0 7" stroke="var(--mute)"/>
-<text x="55" y="176" font-size="10.5" fill="var(--mute)" font-family="sans-serif">doses &#8595;   benefit outlasts each dose; the level never leaves the window</text>
-<text x="420" y="28" font-size="12.5" font-weight="600" fill="var(--ink)" font-family="sans-serif">Advanced &#8212; narrow window</text>
+<text aria-hidden="true" x="55" y="176" font-size="10.5" fill="var(--mute)" font-family="sans-serif">doses &#8595;   benefit outlasts each dose; the level never leaves the window</text>
+<text aria-hidden="true" x="420" y="28" font-size="12.5" font-weight="600" fill="var(--ink)" font-family="sans-serif">Advanced &#8212; narrow window</text>
 <rect x="420" y="40" width="250" height="110" fill="none" stroke="var(--rule)"/>
 <rect x="420" y="64" width="250" height="50" fill="var(--start)" opacity=".13"/>
-<text x="426" y="56" font-size="10" fill="var(--mute)" font-family="sans-serif">dyskinesia</text>
-<text x="675" y="93.0" font-size="10" fill="var(--start)" font-family="sans-serif">on</text>
-<text x="675" y="126" font-size="10" fill="var(--stop)" font-family="sans-serif">off</text>
+<text aria-hidden="true" x="426" y="56" font-size="10" fill="var(--mute)" font-family="sans-serif">dyskinesia</text>
+<text aria-hidden="true" x="675" y="93.0" font-size="10" fill="var(--start)" font-family="sans-serif">on</text>
+<text aria-hidden="true" x="675" y="126" font-size="10" fill="var(--stop)" font-family="sans-serif">off</text>
 <polyline points="420,135.5 421,124.4 422,115.7 423,109.1 424,104.1 425,100.4 426,97.8 427,96.0 428,94.9 429,94.3 430,94.1 431,94.2 432,94.6 433,95.2 434,96.0 435,96.9 436,97.8 437,98.8 438,99.9 439,100.9 440,102.0 441,103.1 442,104.2 443,105.2 444,106.3 445,107.3 446,108.3 447,109.3 448,110.2 449,111.1 450,112.0 451,112.9 452,113.7 453,114.5 454,115.3 455,116.0 456,116.8 457,117.5 458,118.1 459,118.8 460,119.4 461,120.0 462,120.6 463,121.2 464,121.7 465,122.2 466,122.7 467,123.2 468,123.6 469,124.1 470,124.5 471,124.9 472,125.3 473,125.7 474,126.1 475,126.4 476,126.8 477,127.1 478,127.4 479,127.7 480,128.0 481,128.3 482,128.6 483,128.8 484,129.1 485,129.3 486,129.5 487,129.8 488,130.0 489,130.2 490,130.4 491,130.6 492,130.8 493,130.9 494,131.1 495,131.3 496,131.4 497,131.6 498,131.7 499,131.9 500,132.0 501,132.1 502,132.3 503,132.4 504,124.8 505,115.5 506,108.4 507,103.0 508,99.0 509,96.1 510,94.2 511,92.9 512,92.2 513,92.0 514,92.1 515,92.5 516,93.2 517,93.9 518,94.8 519,95.8 520,96.9 521,98.0 522,99.1 523,100.2 524,101.4 525,102.5 526,103.6 527,104.7 528,105.8 529,106.8 530,107.9 531,108.9 532,109.8 533,110.8 534,111.7 535,112.5 536,113.4 537,114.2 538,115.0 539,115.8 540,116.5 541,117.2 542,117.9 543,118.5 544,119.2 545,119.8 546,120.4 547,120.9 548,121.5 549,122.0 550,122.5 551,123.0 552,123.5 553,123.9 554,124.4 555,124.8 556,125.2 557,125.6 558,125.9 559,126.3 560,126.6 561,127.0 562,127.3 563,127.6 564,127.9 565,128.2 566,128.5 567,128.7 568,129.0 569,129.2 570,129.5 571,129.7 572,129.9 573,130.1 574,130.3 575,130.5 576,130.7 577,130.9 578,131.0 579,131.2 580,131.4 581,131.5 582,131.7 583,131.8 584,132.0 585,132.1 586,132.2 587,128.3 588,118.2 589,110.4 590,104.5 591,100.1 592,96.9 593,94.6 594,93.2 595,92.3 596,92.0 597,92.0 598,92.3 599,92.9 600,93.6 601,94.5 602,95.4 603,96.5 604,97.5 605,98.7 606,99.8 607,100.9 608,102.1 609,103.2 610,104.3 611,105.4 612,106.4 613,107.5 614,108.5 615,109.5 616,110.4 617,111.3 618,112.2 619,113.1 620,113.9 621,114.7 622,115.5 623,116.2 624,116.9 625,117.6 626,118.3 627,118.9 628,119.6 629,120.2 630,120.7 631,121.3 632,121.8 633,122.3 634,122.8 635,123.3 636,123.8 637,124.2 638,124.6 639,125.0 640,125.4 641,125.8 642,126.2 643,126.5 644,126.9 645,127.2 646,127.5 647,127.8 648,128.1 649,128.4 650,128.6 651,128.9 652,129.1 653,129.4 654,129.6 655,129.8 656,130.0 657,130.2 658,130.4 659,130.6 660,130.8 661,131.0 662,131.2 663,131.3 664,131.5 665,131.6 666,131.8 667,131.9 668,132.0 669,132.2 670,132.3" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
 <path d="M420.0 150 l0 7" stroke="var(--mute)"/>
 <path d="M503.3333333333333 150 l0 7" stroke="var(--mute)"/>
 <path d="M586.6666666666666 150 l0 7" stroke="var(--mute)"/>
-<text x="420" y="176" font-size="10.5" fill="var(--mute)" font-family="sans-serif">the same doses now overshoot into dyskinesia and fall into &#8220;off&#8221;</text>
-<text x="55" y="250" font-size="12" fill="var(--ink)" font-family="sans-serif" font-weight="600">What changes, and what to do</text>
-<text x="55" y="272" font-size="11" fill="var(--ink)" font-family="sans-serif">&#183; Wearing-off &#8212; the trough</text>
-<text x="300" y="272" font-size="11" fill="var(--mute)" font-family="sans-serif">shorten the interval, or add COMT / MAO-B. Not a bigger dose</text>
-<text x="55" y="293" font-size="11" fill="var(--ink)" font-family="sans-serif">&#183; Peak-dose dyskinesia &#8212; the peak</text>
-<text x="300" y="293" font-size="11" fill="var(--mute)" font-family="sans-serif">smaller dose, given more often; amantadine</text>
-<text x="55" y="314" font-size="11" fill="var(--ink)" font-family="sans-serif">&#183; Delayed on / dose failure</text>
-<text x="300" y="314" font-size="11" fill="var(--mute)" font-family="sans-serif">protein competition &#8212; dose 30&#8211;60 min before meals</text>
-<text x="55" y="335" font-size="11" fill="var(--ink)" font-family="sans-serif">&#183; Freezing of gait</text>
-<text x="300" y="335" font-size="11" fill="var(--mute)" font-family="sans-serif">poorly dopaminergic &#8212; cueing and physiotherapy, not more levodopa</text>
+<text aria-hidden="true" x="420" y="176" font-size="10.5" fill="var(--mute)" font-family="sans-serif">the same doses now overshoot into dyskinesia and fall into &#8220;off&#8221;</text>
+<text aria-hidden="true" x="55" y="250" font-size="12" fill="var(--ink)" font-family="sans-serif" font-weight="600">What changes, and what to do</text>
+<text aria-hidden="true" x="55" y="272" font-size="11" fill="var(--ink)" font-family="sans-serif">&#183; Wearing-off &#8212; the trough</text>
+<text aria-hidden="true" x="300" y="272" font-size="11" fill="var(--mute)" font-family="sans-serif">shorten the interval, or add COMT / MAO-B. Not a bigger dose</text>
+<text aria-hidden="true" x="55" y="293" font-size="11" fill="var(--ink)" font-family="sans-serif">&#183; Peak-dose dyskinesia &#8212; the peak</text>
+<text aria-hidden="true" x="300" y="293" font-size="11" fill="var(--mute)" font-family="sans-serif">smaller dose, given more often; amantadine</text>
+<text aria-hidden="true" x="55" y="314" font-size="11" fill="var(--ink)" font-family="sans-serif">&#183; Delayed on / dose failure</text>
+<text aria-hidden="true" x="300" y="314" font-size="11" fill="var(--mute)" font-family="sans-serif">protein competition &#8212; dose 30&#8211;60 min before meals</text>
+<text aria-hidden="true" x="55" y="335" font-size="11" fill="var(--ink)" font-family="sans-serif">&#183; Freezing of gait</text>
+<text aria-hidden="true" x="300" y="335" font-size="11" fill="var(--mute)" font-family="sans-serif">poorly dopaminergic &#8212; cueing and physiotherapy, not more levodopa</text>
 </svg>
     <figcaption>Why the same three doses stop working. The shaded band is the therapeutic
     window. Early in the disease the level never leaves it; in advanced disease each dose overshoots
@@ -4543,39 +4384,39 @@ body.dark .pqo.wrong {
   <figure class="fig">
 <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Depth of tissue loss by pressure injury stage">
 <rect x="150" y="60" width="520" height="26" fill="#e9ded6" stroke="var(--rule)"/>
-<text x="142" y="77.0" text-anchor="end" font-size="11" fill="var(--mute)" font-family="sans-serif">epidermis</text>
+<text aria-hidden="true" x="142" y="77.0" text-anchor="end" font-size="11" fill="var(--mute)" font-family="sans-serif">epidermis</text>
 <rect x="150" y="86" width="520" height="52" fill="#dcc9bd" stroke="var(--rule)"/>
-<text x="142" y="116.0" text-anchor="end" font-size="11" fill="var(--mute)" font-family="sans-serif">dermis</text>
+<text aria-hidden="true" x="142" y="116.0" text-anchor="end" font-size="11" fill="var(--mute)" font-family="sans-serif">dermis</text>
 <rect x="150" y="138" width="520" height="60" fill="#f0e2b8" stroke="var(--rule)"/>
-<text x="142" y="172.0" text-anchor="end" font-size="11" fill="var(--mute)" font-family="sans-serif">subcutaneous fat</text>
+<text aria-hidden="true" x="142" y="172.0" text-anchor="end" font-size="11" fill="var(--mute)" font-family="sans-serif">subcutaneous fat</text>
 <rect x="150" y="198" width="520" height="42" fill="#c9a0a0" stroke="var(--rule)"/>
-<text x="142" y="223.0" text-anchor="end" font-size="11" fill="var(--mute)" font-family="sans-serif">muscle</text>
+<text aria-hidden="true" x="142" y="223.0" text-anchor="end" font-size="11" fill="var(--mute)" font-family="sans-serif">muscle</text>
 <rect x="150" y="240" width="520" height="26" fill="#e6e2da" stroke="var(--rule)"/>
-<text x="142" y="257.0" text-anchor="end" font-size="11" fill="var(--mute)" font-family="sans-serif">bone</text>
+<text aria-hidden="true" x="142" y="257.0" text-anchor="end" font-size="11" fill="var(--mute)" font-family="sans-serif">bone</text>
 <rect x="157" y="60" width="56" height="26" fill="var(--stop)" opacity=".45"/>
-<text x="185" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="sans-serif">1</text>
-<text x="185" y="288" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">intact skin,</text>
-<text x="185" y="301" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">non-blanchable</text>
-<text x="185" y="314" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">erythema</text>
+<text aria-hidden="true" x="185" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="sans-serif">1</text>
+<text aria-hidden="true" x="185" y="288" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">intact skin,</text>
+<text aria-hidden="true" x="185" y="301" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">non-blanchable</text>
+<text aria-hidden="true" x="185" y="314" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">erythema</text>
 <path d="M250 60 L310 60 L296 78 L264 78 Z" fill="var(--paper)" stroke="var(--stop)" stroke-width="1.5"/>
-<text x="280" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="sans-serif">2</text>
-<text x="280" y="288" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">partial thickness,</text>
-<text x="280" y="301" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">dermis exposed</text>
+<text aria-hidden="true" x="280" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="sans-serif">2</text>
+<text aria-hidden="true" x="280" y="288" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">partial thickness,</text>
+<text aria-hidden="true" x="280" y="301" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">dermis exposed</text>
 <path d="M345 60 L405 60 L391 198 L359 198 Z" fill="var(--paper)" stroke="var(--stop)" stroke-width="1.5"/>
-<text x="375" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="sans-serif">3</text>
-<text x="375" y="288" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">full thickness,</text>
-<text x="375" y="301" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">fat visible</text>
+<text aria-hidden="true" x="375" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="sans-serif">3</text>
+<text aria-hidden="true" x="375" y="288" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">full thickness,</text>
+<text aria-hidden="true" x="375" y="301" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">fat visible</text>
 <path d="M440 60 L500 60 L486 266 L454 266 Z" fill="var(--paper)" stroke="var(--stop)" stroke-width="1.5"/>
-<text x="470" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="sans-serif">4</text>
-<text x="470" y="288" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">full thickness,</text>
-<text x="470" y="301" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">bone / tendon</text>
+<text aria-hidden="true" x="470" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="sans-serif">4</text>
+<text aria-hidden="true" x="470" y="288" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">full thickness,</text>
+<text aria-hidden="true" x="470" y="301" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">bone / tendon</text>
 <rect x="537" y="60" width="56" height="26" fill="#6b2a3a" opacity=".55"/>
 <rect x="543" y="86" width="44" height="52" fill="#6b2a3a" opacity=".30"/>
-<text x="565" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="sans-serif">DTI</text>
-<text x="565" y="288" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">persistent deep</text>
-<text x="565" y="301" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">red or purple,</text>
-<text x="565" y="314" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">intact or not</text>
-<text x="150" y="332" font-size="11" fill="var(--mute)" font-family="sans-serif">Unstageable = full thickness with the base obscured by slough or eschar &#8212; stage it only when you can see the bottom</text>
+<text aria-hidden="true" x="565" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="sans-serif">DTI</text>
+<text aria-hidden="true" x="565" y="288" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">persistent deep</text>
+<text aria-hidden="true" x="565" y="301" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">red or purple,</text>
+<text aria-hidden="true" x="565" y="314" text-anchor="middle" font-size="10.5" fill="var(--mute)" font-family="sans-serif">intact or not</text>
+<text aria-hidden="true" x="150" y="332" font-size="11" fill="var(--mute)" font-family="sans-serif">Unstageable = full thickness with the base obscured by slough or eschar &#8212; stage it only when you can see the bottom</text>
 </svg>
     <figcaption>Depth of tissue loss by stage. Stage 1 is intact skin with non-blanchable
     erythema; stage 2 reaches the dermis; stage 3 exposes subcutaneous fat; stage 4 exposes fascia,
@@ -5257,23 +5098,23 @@ body.dark .pqo.wrong {
 <defs><linearGradient id="dg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="var(--start)" stop-opacity=".10"/><stop offset=".45" stop-color="var(--warn)" stop-opacity=".18"/><stop offset="1" stop-color="var(--stop)" stop-opacity=".22"/></linearGradient></defs>
 <rect x="110" y="30" width="530" height="270" fill="url(#dg)"/>
 <path d="M110 70 L640 270" stroke="var(--ink)" stroke-width="1.6" stroke-dasharray="6 4" fill="none"/>
-<text x="632" y="260" text-anchor="end" font-size="11.5" fill="var(--mute)" font-family="sans-serif">threshold for delirium</text>
+<text aria-hidden="true" x="632" y="260" text-anchor="end" font-size="11.5" fill="var(--mute)" font-family="sans-serif">threshold for delirium</text>
 <circle cx="170" cy="80" r="6" fill="var(--stop)"/>
-<text x="181" y="84" font-size="11" fill="var(--ink)" font-family="sans-serif">frail, demented</text>
-<text x="181" y="97" font-size="11" fill="var(--ink)" font-family="sans-serif">+ a urinary catheter</text>
+<text aria-hidden="true" x="181" y="84" font-size="11" fill="var(--ink)" font-family="sans-serif">frail, demented</text>
+<text aria-hidden="true" x="181" y="97" font-size="11" fill="var(--ink)" font-family="sans-serif">+ a urinary catheter</text>
 <circle cx="250" cy="175" r="6" fill="var(--warn)"/>
-<text x="261" y="179" font-size="11" fill="var(--ink)" font-family="sans-serif">moderate impairment</text>
-<text x="261" y="192" font-size="11" fill="var(--ink)" font-family="sans-serif">+ pneumonia</text>
+<text aria-hidden="true" x="261" y="179" font-size="11" fill="var(--ink)" font-family="sans-serif">moderate impairment</text>
+<text aria-hidden="true" x="261" y="192" font-size="11" fill="var(--ink)" font-family="sans-serif">+ pneumonia</text>
 <circle cx="520" cy="255" r="6" fill="var(--warn)"/>
-<text x="531" y="259" font-size="11" fill="var(--ink)" font-family="sans-serif">fit, cognitively intact</text>
-<text x="531" y="272" font-size="11" fill="var(--ink)" font-family="sans-serif">+ major surgery</text>
+<text aria-hidden="true" x="531" y="259" font-size="11" fill="var(--ink)" font-family="sans-serif">fit, cognitively intact</text>
+<text aria-hidden="true" x="531" y="272" font-size="11" fill="var(--ink)" font-family="sans-serif">+ major surgery</text>
 <circle cx="560" cy="110" r="6" fill="var(--start)"/>
-<text x="571" y="114" font-size="11" fill="var(--ink)" font-family="sans-serif">fit, intact</text>
-<text x="571" y="127" font-size="11" fill="var(--ink)" font-family="sans-serif">+ a bad night</text>
-<text x="375.0" y="326" text-anchor="middle" font-size="12" fill="var(--mute)" font-family="sans-serif">severity of the acute insult &#8594;</text>
-<text x="26" y="165.0" text-anchor="middle" font-size="12" fill="var(--mute)" font-family="sans-serif" transform="rotate(-90 26 165.0)">baseline vulnerability &#8594;</text>
-<text x="118" y="50" font-size="11.5" fill="var(--stop)" font-family="sans-serif">delirium</text>
-<text x="632" y="292" text-anchor="end" font-size="11.5" fill="var(--start)" font-family="sans-serif">no delirium</text>
+<text aria-hidden="true" x="571" y="114" font-size="11" fill="var(--ink)" font-family="sans-serif">fit, intact</text>
+<text aria-hidden="true" x="571" y="127" font-size="11" fill="var(--ink)" font-family="sans-serif">+ a bad night</text>
+<text aria-hidden="true" x="375.0" y="326" text-anchor="middle" font-size="12" fill="var(--mute)" font-family="sans-serif">severity of the acute insult &#8594;</text>
+<text aria-hidden="true" x="26" y="165.0" text-anchor="middle" font-size="12" fill="var(--mute)" font-family="sans-serif" transform="rotate(-90 26 165.0)">baseline vulnerability &#8594;</text>
+<text aria-hidden="true" x="118" y="50" font-size="11.5" fill="var(--stop)" font-family="sans-serif">delirium</text>
+<text aria-hidden="true" x="632" y="292" text-anchor="end" font-size="11.5" fill="var(--start)" font-family="sans-serif">no delirium</text>
 </svg>
     <figcaption>Delirium as vulnerability multiplied by insult. The dashed line is not a real
     threshold you can measure &mdash; it is the shape of the relationship. A frail, demented patient
@@ -6755,21 +6596,21 @@ body.dark .pqo.wrong {
   <figure class="fig">
 <svg viewBox="0 0 700 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Change in sleep architecture with age, schematic">
 <polygon points="80,250.0 640,250.0 640,236.8 80,192.8" fill="var(--ink)" fill-opacity=".55" stroke="var(--paper)"/>
-<text x="648" y="247" font-size="11" fill="var(--mute)" font-family="sans-serif">slow-wave sleep</text>
+<text aria-hidden="true" x="648" y="247" font-size="11" fill="var(--mute)" font-family="sans-serif">slow-wave sleep</text>
 <polygon points="80,192.8 640,236.8 640,199.4 80,144.4" fill="var(--start)" fill-opacity=".55" stroke="var(--paper)"/>
-<text x="648" y="222" font-size="11" fill="var(--mute)" font-family="sans-serif">REM</text>
+<text aria-hidden="true" x="648" y="222" font-size="11" fill="var(--mute)" font-family="sans-serif">REM</text>
 <polygon points="80,144.4 640,199.4 640,102.6 80,56.4" fill="var(--rule)" fill-opacity=".55" stroke="var(--paper)"/>
-<text x="648" y="155" font-size="11" fill="var(--mute)" font-family="sans-serif">stage 2</text>
+<text aria-hidden="true" x="648" y="155" font-size="11" fill="var(--mute)" font-family="sans-serif">stage 2</text>
 <polygon points="80,56.4 640,102.6 640,74.0 80,41.0" fill="var(--warn)" fill-opacity=".55" stroke="var(--paper)"/>
-<text x="648" y="92" font-size="11" fill="var(--mute)" font-family="sans-serif">stage 1</text>
+<text aria-hidden="true" x="648" y="92" font-size="11" fill="var(--mute)" font-family="sans-serif">stage 1</text>
 <polygon points="80,41.0 640,74.0 640,30.0 80,30.0" fill="var(--stop)" fill-opacity=".55" stroke="var(--paper)"/>
-<text x="648" y="56" font-size="11" fill="var(--mute)" font-family="sans-serif">wake after sleep onset</text>
+<text aria-hidden="true" x="648" y="56" font-size="11" fill="var(--mute)" font-family="sans-serif">wake after sleep onset</text>
 <line x1="80" y1="250" x2="640" y2="250" stroke="var(--ink)"/>
-<text x="80" y="268" font-size="11.5" fill="var(--mute)" font-family="sans-serif">young adult</text>
-<text x="640" y="268" text-anchor="end" font-size="11.5" fill="var(--mute)" font-family="sans-serif">old age</text>
-<text x="26" y="140.0" text-anchor="middle" font-size="11.5" fill="var(--mute)" font-family="sans-serif" transform="rotate(-90 26 140.0)">proportion of time in bed</text>
-<text x="80" y="296" font-size="11" fill="var(--mute)" font-family="sans-serif">Schematic &#8212; direction and rough proportion only, not measured values.</text>
-<text x="80" y="314" font-size="11" fill="var(--ink)" font-family="sans-serif">Slow-wave sleep falls steeply; wake after sleep onset rises; REM falls modestly; total sleep need changes little.</text>
+<text aria-hidden="true" x="80" y="268" font-size="11.5" fill="var(--mute)" font-family="sans-serif">young adult</text>
+<text aria-hidden="true" x="640" y="268" text-anchor="end" font-size="11.5" fill="var(--mute)" font-family="sans-serif">old age</text>
+<text aria-hidden="true" x="26" y="140.0" text-anchor="middle" font-size="11.5" fill="var(--mute)" font-family="sans-serif" transform="rotate(-90 26 140.0)">proportion of time in bed</text>
+<text aria-hidden="true" x="80" y="296" font-size="11" fill="var(--mute)" font-family="sans-serif">Schematic &#8212; direction and rough proportion only, not measured values.</text>
+<text aria-hidden="true" x="80" y="314" font-size="11" fill="var(--ink)" font-family="sans-serif">Slow-wave sleep falls steeply; wake after sleep onset rises; REM falls modestly; total sleep need changes little.</text>
 </svg>
     <figcaption>Change in sleep architecture with age. Slow-wave sleep falls steeply, wake
     after sleep onset rises markedly, REM falls modestly, and the total requirement changes little
@@ -7218,30 +7059,30 @@ body.dark .pqo.wrong {
 <circle cx="250" cy="165" r="148" fill="var(--stop)" fill-opacity=".10" stroke="var(--rule)"/>
 <circle cx="250" cy="165" r="104" fill="var(--warn)" fill-opacity=".14" stroke="var(--rule)"/>
 <circle cx="250" cy="165" r="58" fill="var(--start)" fill-opacity=".16" stroke="var(--rule)"/>
-<text x="250" y="45" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)" font-family="sans-serif">what you see</text>
-<text x="250" y="89" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)" font-family="sans-serif">what you could measure</text>
-<text x="250" y="135" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)" font-family="sans-serif">what drives it</text>
-<text x="250" y="155" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">cellular senescence</text>
-<text x="250" y="168" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">DNA damage and methylation</text>
-<text x="250" y="181" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">telomere shortening</text>
-<text x="250" y="194" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">mitochondrial dysfunction</text>
-<text x="250" y="207" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">impaired autophagy</text>
-<text x="250" y="220" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">stem-cell exhaustion</text>
-<text x="470" y="60" font-size="12" font-weight="600" fill="var(--ink)" font-family="sans-serif">Outer &#8212; clinical</text>
-<text x="470" y="80" font-size="11" fill="var(--mute)" font-family="sans-serif">slowness</text>
-<text x="470" y="95" font-size="11" fill="var(--mute)" font-family="sans-serif">weakness</text>
-<text x="470" y="110" font-size="11" fill="var(--mute)" font-family="sans-serif">weight loss</text>
-<text x="470" y="125" font-size="11" fill="var(--mute)" font-family="sans-serif">poor endurance</text>
-<text x="470" y="140" font-size="11" fill="var(--mute)" font-family="sans-serif">low activity</text>
-<text x="470" y="155" font-size="11" fill="var(--mute)" font-family="sans-serif">cognitive impairment</text>
-<text x="470" y="170" font-size="11" fill="var(--mute)" font-family="sans-serif">reduced mobility</text>
-<text x="470" y="185" font-size="11" fill="var(--mute)" font-family="sans-serif">loss of independence</text>
-<text x="470" y="218" font-size="12" font-weight="600" fill="var(--ink)" font-family="sans-serif">Middle &#8212; biomarkers</text>
-<text x="470" y="238" font-size="11" fill="var(--mute)" font-family="sans-serif">inflammation</text>
-<text x="470" y="253" font-size="11" fill="var(--mute)" font-family="sans-serif">oxidative stress</text>
-<text x="470" y="268" font-size="11" fill="var(--mute)" font-family="sans-serif">anabolic hormone deficit</text>
-<text x="470" y="283" font-size="11" fill="var(--mute)" font-family="sans-serif">energy imbalance</text>
-<text x="470" y="298" font-size="11" fill="var(--mute)" font-family="sans-serif">neurodegeneration</text>
+<text aria-hidden="true" x="250" y="45" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)" font-family="sans-serif">what you see</text>
+<text aria-hidden="true" x="250" y="89" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)" font-family="sans-serif">what you could measure</text>
+<text aria-hidden="true" x="250" y="135" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)" font-family="sans-serif">what drives it</text>
+<text aria-hidden="true" x="250" y="155" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">cellular senescence</text>
+<text aria-hidden="true" x="250" y="168" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">DNA damage and methylation</text>
+<text aria-hidden="true" x="250" y="181" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">telomere shortening</text>
+<text aria-hidden="true" x="250" y="194" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">mitochondrial dysfunction</text>
+<text aria-hidden="true" x="250" y="207" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">impaired autophagy</text>
+<text aria-hidden="true" x="250" y="220" text-anchor="middle" font-size="10" fill="var(--mute)" font-family="sans-serif">stem-cell exhaustion</text>
+<text aria-hidden="true" x="470" y="60" font-size="12" font-weight="600" fill="var(--ink)" font-family="sans-serif">Outer &#8212; clinical</text>
+<text aria-hidden="true" x="470" y="80" font-size="11" fill="var(--mute)" font-family="sans-serif">slowness</text>
+<text aria-hidden="true" x="470" y="95" font-size="11" fill="var(--mute)" font-family="sans-serif">weakness</text>
+<text aria-hidden="true" x="470" y="110" font-size="11" fill="var(--mute)" font-family="sans-serif">weight loss</text>
+<text aria-hidden="true" x="470" y="125" font-size="11" fill="var(--mute)" font-family="sans-serif">poor endurance</text>
+<text aria-hidden="true" x="470" y="140" font-size="11" fill="var(--mute)" font-family="sans-serif">low activity</text>
+<text aria-hidden="true" x="470" y="155" font-size="11" fill="var(--mute)" font-family="sans-serif">cognitive impairment</text>
+<text aria-hidden="true" x="470" y="170" font-size="11" fill="var(--mute)" font-family="sans-serif">reduced mobility</text>
+<text aria-hidden="true" x="470" y="185" font-size="11" fill="var(--mute)" font-family="sans-serif">loss of independence</text>
+<text aria-hidden="true" x="470" y="218" font-size="12" font-weight="600" fill="var(--ink)" font-family="sans-serif">Middle &#8212; biomarkers</text>
+<text aria-hidden="true" x="470" y="238" font-size="11" fill="var(--mute)" font-family="sans-serif">inflammation</text>
+<text aria-hidden="true" x="470" y="253" font-size="11" fill="var(--mute)" font-family="sans-serif">oxidative stress</text>
+<text aria-hidden="true" x="470" y="268" font-size="11" fill="var(--mute)" font-family="sans-serif">anabolic hormone deficit</text>
+<text aria-hidden="true" x="470" y="283" font-size="11" fill="var(--mute)" font-family="sans-serif">energy imbalance</text>
+<text aria-hidden="true" x="470" y="298" font-size="11" fill="var(--mute)" font-family="sans-serif">neurodegeneration</text>
 </svg>
     <figcaption>Frailty as three layers. The outer layer is the clinical presentation &mdash;
     what the phenotype and the Clinical Frailty Scale capture. The middle layer is the hypothesised
@@ -10320,7 +10161,7 @@ document.getElementById('railShow').addEventListener('click',()=>paintRail(false
   if(cur) gopen.add(cur.closest('.gwrap').dataset.g);
   paintGroups();
 })();
-function openSheet(){ SHEET.hidden=false; document.body.style.overflow='hidden'; }
+function openSheet(){ SHEET.hidden=false; document.body.style.overflow='hidden'; document.getElementById('sheetClose').focus(); }
 function closeSheet(){ SHEET.hidden=true; document.body.style.overflow=''; }
 document.getElementById('topicBtn').addEventListener('click', openSheet);
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
@@ -10988,6 +10829,7 @@ async function bkOpen(){
   if(wrap.parentNode !== body) body.appendChild(wrap);
   wrap.classList.add('on');
   document.getElementById('bkModal').hidden = false; document.body.classList.add('tm-open');
+  document.getElementById('bkClose').focus();
   await bkFill();
 }
 function bkClose(){ document.getElementById('bkModal').hidden = true; document.body.classList.remove('tm-open'); }
@@ -11527,7 +11369,9 @@ function hlOpen(hid){
   document.getElementById('hlQuote').textContent = h.t;
   document.getElementById('hlText').value = h.n || '';
   document.getElementById('hlModal').hidden = false; document.body.classList.add('tm-open');
-  if(!h.n) document.getElementById('hlText').focus();
+  /* focus used to move into the modal only for a brand-new note (!h.n) — editing an existing
+     one left focus behind on the page underneath, same bug as the other modals */
+  document.getElementById('hlText').focus();
 }
 (function(){
   const modal = document.getElementById('hlModal'); if(!modal) return;
@@ -11581,6 +11425,7 @@ function notesIndex(){
     ((HL[id]||[]).length ? '<ul>' + HL[id].map(h=>'<li data-hid="'+h.id+'">' + escHtml(h.t) + (h.n ? ' <i>— ' + escHtml(h.n) + '</i>' : '') + '</li>').join('') + '</ul>' : '')).join('')
     : '<p class="note">Nothing yet. Select a passage in any section to highlight it, or write in the notes box at the bottom of a section.</p>';
   document.getElementById('notesModal').hidden = false; document.body.classList.add('tm-open');
+  document.getElementById('ntCopy').focus();
 }
 function notesAsText(){
   return CONTENT.filter(id=>(HL[id]||[]).length || (SN[id]||'').trim()).map(id=>
@@ -11774,6 +11619,7 @@ function bmPaint(){
     if(src){ const p = document.createElement('p'); p.className = 'tm-src'; p.innerHTML = src; body.appendChild(p); }
     body.scrollTop = 0;
     modal.hidden = false; document.body.classList.add('tm-open'); open = true;
+    document.getElementById('tmClose').focus();
     try{ history.pushState({tbl:1}, '', location.href); pushed = true; }catch(e){ pushed = false; }
   }
   function closeTable(fromPop){
@@ -12258,7 +12104,7 @@ function summary(){
   const n = order.length, pct = Math.round(rGot/n*100);
   dSum.innerHTML =
     '<div class="big">' + rGot + ' of ' + n + '</div>' +
-    '<div class="sub">' + pct + '% · ' + filter.label +
+    '<div class="sub">' + pct + '% · ' + escHtml(filter.label) +
       (rMissed.length ? ' · the ones that went are listed below' : ' · clean round') + '</div>' +
     /* the card itself renders this same text via textContent (never innerHTML) — a raw < here
        (e.g. a drug-dose comparison like "Cr < 1.5") would otherwise start an unintended tag,
@@ -12658,11 +12504,11 @@ defer(function drawAlign(){
              'aria-label="Scheduled hours against examined frequency, one point per chapter">'];
   for(let g=0; g<=maxQ; g+=5)
     o.push('<line x1="'+X(g).toFixed(0)+'" y1="'+T+'" x2="'+X(g).toFixed(0)+'" y2="'+B+
-      '" stroke="var(--rule)"/><text x="'+X(g).toFixed(0)+'" y="'+(B+18)+
+      '" stroke="var(--rule)"/><text aria-hidden="true" x="'+X(g).toFixed(0)+'" y="'+(B+18)+
       '" text-anchor="middle" font-size="11" fill="var(--mute)" font-family="sans-serif">'+g+'</text>');
   for(let g=0; g<=maxH; g+=2)
     o.push('<line x1="'+L+'" y1="'+Y(g).toFixed(0)+'" x2="'+R+'" y2="'+Y(g).toFixed(0)+
-      '" stroke="var(--rule)"/><text x="'+(L-8)+'" y="'+(Y(g)+4).toFixed(0)+
+      '" stroke="var(--rule)"/><text aria-hidden="true" x="'+(L-8)+'" y="'+(Y(g)+4).toFixed(0)+
       '" text-anchor="end" font-size="11" fill="var(--mute)" font-family="sans-serif">'+g+'</text>');
   /* the proportional line: total hours spread in proportion to questions */
   const tq = pts.reduce((a,b)=>a+b.q,0), th = pts.reduce((a,b)=>a+b.h,0);
@@ -12686,19 +12532,19 @@ defer(function drawAlign(){
     const lab = g.map(z=>z.ch).join('\u00b7');
     if(p.defer){
       const dy = -11 - (dfi++ % 2) * 15;
-      o.push('<text x="'+cx.toFixed(1)+'" y="'+(cy+dy).toFixed(1)+'" text-anchor="middle" ' +
+      o.push('<text aria-hidden="true" x="'+cx.toFixed(1)+'" y="'+(cy+dy).toFixed(1)+'" text-anchor="middle" ' +
         'font-size="10.5" fill="var(--stop)" font-family="sans-serif">'+lab+'</text>');
     } else {
-      o.push('<text x="'+(cx+9).toFixed(1)+'" y="'+(cy+4).toFixed(1)+
+      o.push('<text aria-hidden="true" x="'+(cx+9).toFixed(1)+'" y="'+(cy+4).toFixed(1)+
         '" font-size="10.5" fill="var(--mute)" font-family="sans-serif">'+lab+'</text>');
     }
   });
   o.push('<circle cx="'+(R-150)+'" cy="'+(T+8)+'" r="5" fill="none" stroke="var(--stop)" stroke-width="2"/>');
-  o.push('<text x="'+(R-138)+'" y="'+(T+12)+'" font-size="11" fill="var(--mute)" ' +
+  o.push('<text aria-hidden="true" x="'+(R-138)+'" y="'+(T+12)+'" font-size="11" fill="var(--mute)" ' +
     'font-family="sans-serif">deferred &mdash; no hours</text>');
-  o.push('<text x="'+((L+R)/2)+'" y="'+(B+34)+'" text-anchor="middle" font-size="11" ' +
+  o.push('<text aria-hidden="true" x="'+((L+R)/2)+'" y="'+(B+34)+'" text-anchor="middle" font-size="11" ' +
     'fill="var(--mute)" font-family="sans-serif">questions per 400</text>');
-  o.push('<text x="16" y="'+((T+B)/2)+'" font-size="11" fill="var(--mute)" font-family="sans-serif" ' +
+  o.push('<text aria-hidden="true" x="16" y="'+((T+B)/2)+'" font-size="11" fill="var(--mute)" font-family="sans-serif" ' +
     'transform="rotate(-90 16 '+((T+B)/2)+')" text-anchor="middle">hours scheduled</text>');
   o.push('</svg>');
   host.innerHTML = o.join('');
@@ -13343,6 +13189,12 @@ document.addEventListener('keydown', e=>{
      mockOpts — without this guard 1-4/n ALSO answered/advanced the background practice
      question underneath the mock, polluting pqDone with answers the user never saw */
   if(mockOn) return;
+  /* the topic sheet and every other modal in this file sit visually above #papers, but the
+     practice keydown listener has no idea one is open — 1-4/n used to answer/advance the
+     practice question underneath it too. openSheet() doesn't join the tm-open convention the
+     other modals use, so both checks are needed. */
+  if(!SHEET.hidden) return;
+  if(document.body.classList.contains('tm-open')) return;
   if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
   if(e.key === 'n'){ pqNext(); return; }
   const i = ['1','2','3','4'].indexOf(e.key);
