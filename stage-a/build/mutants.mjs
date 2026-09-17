@@ -883,6 +883,32 @@ const M = [
    'body.dark .toend{ background:var(--surface) !important; color:var(--ink) !important; border:1px solid var(--rule) !important; }',
    '',
    'the same dark outline the up button'],
+
+  /* --- v26 header, next round --- */
+  ['a live selection no longer freezes the header’s auto-hide',
+   "if(typeof hdrSetFrozen === 'function') hdrSetFrozen(up);",
+   '',
+   'freezes the header’s auto-hide'],
+
+  ['the docked highlight bar stops re-anchoring to the top when the header is hidden',
+   'body.hdr-hidden #hlBar{ top:env(safe-area-inset-top) !important; }',
+   '',
+   're-anchors to the very top'],
+
+  ['the header stops sliding out of view on scroll-down',
+   'body.hdr-hidden nav{ transform:translateY(-100%) !important; }',
+   '',
+   'slides out of view on scroll-down'],
+
+  ['the chapter-top meta line loses its 44px/12px-gap tap targets',
+   '.ch-actions{ gap:12px !important; }\n.ch-actions .ebgo{ min-height:44px !important; }',
+   '',
+   '44px tap targets with 12px gaps'],
+
+  ['the header auto-hide threshold drops from 60px to 0, showing the header nowhere near the top',
+   'if(y < 60) return false;',
+   'if(y < 0) return false;',
+   'near the top (<60px) the header always shows'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the

@@ -2760,14 +2760,13 @@ body.dark .pqo.wrong {
   <p class="sub">Before Sheba · February 2027</p>
   <button class="railhide" id="railHide" type="button" title="Hide this list">&laquo; hide the list</button>
   <button class="railhide" id="dispBtnRail" type="button" title="Text size and dark mode" style="margin-left:14px">Aa &middot; display</button>
-  <div class="srch"><input id="q" type="search" placeholder="Search all sections" autocomplete="off" aria-label="Search all sections"></div>
+  <div class="srch" id="srchWrap"><input id="q" type="search" placeholder="Search all sections" autocomplete="off" aria-label="Search all sections"></div>
   <div class="anchorbar" id="anchorBar">
     <button class="homebtn" id="homeBtn" type="button" aria-label="Home">&#8962;</button>
     <button class="topicbtn" id="topicBtn" type="button" aria-haspopup="dialog">
       <span id="topicNow">This week</span><span class="glabel">topics &#9662;</span>
     </button>
-    <button class="rptbtn" id="rptBtn" type="button" aria-label="Report a problem" title="Report a problem">&#9873;</button>
-    <button class="dispbtn" id="dispBtn" type="button" aria-label="Display: text size and dark mode" title="Text size and dark mode">Aa</button>
+    <button class="srchbtn" id="srchBtn" type="button" aria-label="Search all sections" title="Search">&#128269;</button>
   </div>
   <div class="btns" id="rail">
     <div class="gwrap open" data-g="now"><button class="grp" type="button" aria-expanded="true">Now</button><div class="gitems">
@@ -10227,11 +10226,16 @@ const TNOW  = document.getElementById('topicNow');
   const row = document.createElement('div'); row.className = 'sheetacts';
   row.innerHTML = '<button type="button" id="shNotes">all my notes</button>' +
     '<button type="button" id="shMark">mark my place here</button>' +
-    '<button type="button" id="shResume">resume where I stopped</button>';
+    '<button type="button" id="shResume">resume where I stopped</button>' +
+    '<button type="button" id="shDisplay">text size &amp; theme</button>' +
+    '<button type="button" id="shReport">report a problem</button>';
   SHBODY.appendChild(row);
   row.querySelector('#shNotes').addEventListener('click', ()=>{ closeSheet(); notesIndex(); });
   row.querySelector('#shMark').addEventListener('click', ()=>{ closeSheet(); setTimeout(()=>bmSet(null), 0); });
   row.querySelector('#shResume').addEventListener('click', ()=>{ closeSheet(); bmGo(); });
+  /* the flag and Aa buttons moved out of the phone anchor bar (down to two icons plus the
+     tappable title) and into the topics sheet, alongside the other reading tools */
+  row.querySelector('#shDisplay').addEventListener('click', ()=>{ closeSheet(); });
 })();
 RAIL.querySelectorAll('.gwrap').forEach(w=>{
   const wrap = document.createElement('div');
@@ -10934,7 +10938,8 @@ document.getElementById('homeBtn').addEventListener('click', ()=>{ show('week');
     return head + encodeURIComponent(body);
   }
   function flash(){ const t = document.getElementById('rptDone'); t.classList.add('on'); setTimeout(()=>t.classList.remove('on'), 1400); }
-  document.getElementById('rptBtn').addEventListener('click', ()=>{
+  document.getElementById('shReport').addEventListener('click', ()=>{
+    closeSheet();
     ctx.textContent = context(); modal.hidden = false; document.body.classList.add('tm-open'); note.focus();
     document.getElementById('rptIssue').href = issueHref();
   });
@@ -11272,6 +11277,7 @@ function hlSetColour(hid, c){
     if(mt) mt.classList.toggle('hl-off', up);
     if(row) row.classList.toggle('hl-off', up);
     if(!up) more.hidden = true;                 /* the selection cleared; the overflow goes with it */
+    if(typeof hdrSetFrozen === 'function') hdrSetFrozen(up);
   }
   document.addEventListener('selectionchange', ()=>{ clearTimeout(tmr); tmr = setTimeout(place, 260); });
   paintSwatches(bar, hlColour);
@@ -11951,16 +11957,17 @@ document.querySelectorAll('.disprow').forEach(row=>{
     else if(b.dataset.fs){ disp.fs = b.dataset.fs; paintDisp(); }
   });
 });
-/* the popover itself: Aa in the phone anchor bar, "Aa · display" in the desktop rail */
+/* the popover itself: "text size & theme" in the topics sheet (moved out of the phone anchor
+   bar), "Aa · display" in the desktop rail */
 (function(){
   const pop = document.getElementById('dispPop'); if(!pop) return;
   const close = ()=>{ pop.hidden = true; };
-  ['dispBtn','dispBtnRail'].forEach(id=>{ const b = document.getElementById(id);
+  ['shDisplay','dispBtnRail'].forEach(id=>{ const b = document.getElementById(id);
     if(b) b.addEventListener('click', ()=>{ pop.hidden = !pop.hidden; if(!pop.hidden) paintDisp(); }); });
   document.getElementById('dispPopClose').addEventListener('click', close);
   document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && !pop.hidden) close(); });
   document.addEventListener('click', e=>{
-    if(pop.hidden || pop.contains(e.target) || e.target.closest('#dispBtn,#dispBtnRail')) return; close();
+    if(pop.hidden || pop.contains(e.target) || e.target.closest('#shDisplay,#dispBtnRail')) return; close();
   });
 })();
 
@@ -12819,6 +12826,16 @@ function annotateSection(id){
 /* ---------- the deck is indexed inside buildIndex(), lazily ---------- */
 document.getElementById('q').addEventListener('focus', buildIndex, {once:true});
 idle(buildIndex);
+/* ---------- the phone anchor bar's search icon: the full-width input only takes the row
+   back on a tap, instead of sitting open (and taking header height) all the time ---------- */
+(function(){
+  const wrap = document.getElementById('srchWrap'), btn = document.getElementById('srchBtn');
+  if(!wrap || !btn) return;
+  function openSrch(){ wrap.classList.add('open'); qbox.focus(); }
+  function closeSrch(){ wrap.classList.remove('open'); }
+  btn.addEventListener('click', ()=>{ wrap.classList.contains('open') ? closeSrch() : openSrch(); });
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && wrap.classList.contains('open')) closeSrch(); });
+})();
 /* source -> section, for questions that carry no chapter number. Used by the jump
    button and by the read-but-not-retained metric; keep them agreeing. */
 const PQSEC = {'Law/MoH':'ethics', 'Article':'src', 'Beers':'beers'};
@@ -13163,6 +13180,40 @@ function cardIntoView(el){
 function setNavH(){ const nav = document.querySelector('nav');
   if(nav) document.documentElement.style.setProperty('--navh', Math.round(nav.getBoundingClientRect().height) + 'px'); }
 addEventListener('resize', setNavH); setTimeout(setNavH, 0);
+
+/* ---------- header auto-hide (mobile): hides on scroll down, returns on scroll up ----------
+   Frozen while a highlight-bar selection is active (hlSetFrozen, called from the hlBar IIFE's
+   paintChrome) so a selection-handle's own micro-scroll cannot drag the docked bar under a
+   thumb — the header's shown/hidden state, and so the bar's top, are fixed for the life of
+   that selection (Gemini amendment). The threshold/decision is a pure function so it can be
+   exercised directly without a real scroll event, which jsdom cannot generate. */
+function hdrScrollDecision(y, lastY, hidden){
+  if(y < 60) return false;
+  const dy = y - lastY;
+  if(dy > 6) return true;
+  if(dy < -6) return false;
+  return hidden;
+}
+let hdrHidden = false, hdrFrozen = false;
+function hdrSetFrozen(v){ hdrFrozen = v; }
+(function(){
+  /* window.matchMedia is not implemented in jsdom (test.mjs's harness) — an unguarded call
+     throws synchronously here, aborting the rest of this script block including every later
+     top-level let/const in it (this broke mockN's declaration and crashed the suite before
+     the guard below was added). Same defensive pattern as the two other matchMedia call
+     sites in this file. */
+  const mq = window.matchMedia ? window.matchMedia('(max-width:900px)') : {matches: true};
+  let lastY = 0;
+  function apply(){ document.body.classList.toggle('hdr-hidden', hdrHidden); }
+  function onScroll(){
+    if(hdrFrozen || !mq.matches) return;
+    const y = window.scrollY || window.pageYOffset || 0;
+    const next = hdrScrollDecision(y, lastY, hdrHidden);
+    lastY = y;
+    if(next !== hdrHidden){ hdrHidden = next; apply(); }
+  }
+  addEventListener('scroll', onScroll, {passive:true});
+})();
 function seeEl(el){ if(el && typeof el.scrollIntoView === 'function') el.scrollIntoView({block:'start'}); }
 let papersIndexed = false;
 function indexPapers(){
@@ -14216,6 +14267,28 @@ body.dark .pf button.mockgo{ background:var(--surface) !important; border-color:
    .toend never got the matching treatment and stayed on the shared base rule's ink fill with
    near-black text (body.dark .toend,body.dark .totop{color:#12161a} above) */
 body.dark .toend{ background:var(--surface) !important; color:var(--ink) !important; border:1px solid var(--rule) !important; }
+
+/* v26 — header: search becomes a magnifier icon instead of a full-width input that sat open
+   (and took header height) all the time; report and display settings moved into the topics
+   sheet, leaving the anchor bar down to two icons (home, search) plus the tappable title.
+   Auto-hide on scroll (hdrScrollDecision/onScroll above), frozen while a highlight-bar
+   selection is active; the docked bar re-anchors to top:0 when the header is hidden and to
+   --navh when shown (fixed for the life of a selection, since auto-hide itself is frozen
+   for that same span). Chapter-top meta-line tap targets go to >=44px with >=12px gaps
+   (Gemini amendment C). */
+@media (max-width:900px){
+  .srch{ display:none !important; margin:0 14px 10px !important; }
+  .srch.open{ display:block !important; }
+  .anchorbar .srchbtn{ display:flex !important; align-items:center; justify-content:center;
+    width:46px; min-height:46px; flex:none; font-size:calc(18px*var(--fs,1));
+    background:var(--paper); border:1px solid var(--ink); border-radius:2px; color:var(--ink); cursor:pointer; }
+  body.dark .anchorbar .srchbtn{ background:var(--surface); border-color:var(--rule); color:var(--ink); }
+  nav{ transition:transform .22s ease !important; will-change:transform; }
+  body.hdr-hidden nav{ transform:translateY(-100%) !important; }
+}
+body.hdr-hidden #hlBar{ top:env(safe-area-inset-top) !important; }
+.ch-actions{ gap:12px !important; }
+.ch-actions .ebgo{ min-height:44px !important; }
 </style>
 </body>
 </html>
