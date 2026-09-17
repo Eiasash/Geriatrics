@@ -743,6 +743,12 @@ ok('the chapter-footer "next this week" button is actually hidden when it carrie
   let r = d.createRange(); r.setStart(tn, 2); r.setEnd(tn, 12);
   let sel = w.getSelection(); sel.removeAllRanges(); sel.addRange(r);
   d.dispatchEvent(new w.Event('selectionchange'));
+  /* Gemini review of #433: the freeze used to only happen inside place(), which the 260ms
+     debounce below delays — an Android drag-handle micro-scroll in that window could still
+     move the header mid-selection. Assert the freeze lands synchronously, with the debounce
+     timer NOT yet advanced, before doing anything else. */
+  ok('the header freezes synchronously on selectionchange, before the 260ms debounce ever runs',
+     w.eval('hdrFrozen') === true, w.eval('hdrFrozen'));
   await new Promise(res => setTimeout(res, 320));           /* the 260ms debounce, for real */
   ok('a live selection shows the bar and stands the timer and the jump row down',
      bar.hidden === false && mt.classList.contains('hl-off') && row.classList.contains('hl-off'),

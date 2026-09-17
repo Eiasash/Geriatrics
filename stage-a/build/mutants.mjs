@@ -920,6 +920,11 @@ const M = [
    '.topicbtn{ font-family:var(--sans) !important; letter-spacing:0 !important; text-transform:none !important; }',
    '',
    'the plain sans heading font'],
+
+  ['the header freeze moves back into the debounced timeout, arriving 260ms late (Gemini review of #433)',
+   "  document.addEventListener('selectionchange', ()=>{\n    /* the freeze itself cannot wait for the 260ms debounce below: an Android drag-handle\n       micro-scroll inside that window could still hide or show the header mid-selection,\n       before place()/paintChrome() ever runs. A non-collapsed selection freezes the header\n       synchronously, right here; the debounce still owns positioning the bar and unfreezing\n       once the selection actually clears (Gemini review of #433). */\n    const sel = window.getSelection();\n    if(sel && !sel.isCollapsed && typeof hdrSetFrozen === 'function') hdrSetFrozen(true);\n    clearTimeout(tmr); tmr = setTimeout(place, 260);\n  });",
+   "  document.addEventListener('selectionchange', ()=>{ clearTimeout(tmr); tmr = setTimeout(place, 260); });",
+   'freezes synchronously on selectionchange, before the 260ms debounce'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the

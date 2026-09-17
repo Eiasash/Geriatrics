@@ -11281,7 +11281,16 @@ function hlSetColour(hid, c){
     if(!up) more.hidden = true;                 /* the selection cleared; the overflow goes with it */
     if(typeof hdrSetFrozen === 'function') hdrSetFrozen(up);
   }
-  document.addEventListener('selectionchange', ()=>{ clearTimeout(tmr); tmr = setTimeout(place, 260); });
+  document.addEventListener('selectionchange', ()=>{
+    /* the freeze itself cannot wait for the 260ms debounce below: an Android drag-handle
+       micro-scroll inside that window could still hide or show the header mid-selection,
+       before place()/paintChrome() ever runs. A non-collapsed selection freezes the header
+       synchronously, right here; the debounce still owns positioning the bar and unfreezing
+       once the selection actually clears (Gemini review of #433). */
+    const sel = window.getSelection();
+    if(sel && !sel.isCollapsed && typeof hdrSetFrozen === 'function') hdrSetFrozen(true);
+    clearTimeout(tmr); tmr = setTimeout(place, 260);
+  });
   paintSwatches(bar, hlColour);
   bar.querySelector('.swatch').addEventListener('click', e=>{ const b = e.target.closest('button.sw'); if(!b) return;
     hlColour = b.dataset.c; paintSwatches(bar, hlColour); try{ window.storage.set('geri:hlcolour', hlColour); }catch(x){} });
