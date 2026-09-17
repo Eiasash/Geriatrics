@@ -1863,11 +1863,15 @@ ok('dark mode styles the remark, report and backup text boxes, and the backup Co
      JSON.stringify({paper, surface, ink, mute, cnow}));
   const ratios = paper && surface && ink && mute && cnow ? {
     inkOnPaper: contrast(ink, paper), muteOnPaper: contrast(mute, paper), muteOnSurface: contrast(mute, surface),
-    amberOnPaper: contrast(cnow, paper), surfaceVsPaper: contrast(surface, paper)
+    amberOnPaper: contrast(cnow, paper), surfaceVsPaper: contrast(surface, paper),
+    /* v25: every dark-leftover outline button (tGo, qLog, pressed filter pills, mockgo, the
+       three dashboard tiles, tdBtn, mark-as-read, next-chapter) puts --ink text on --surface —
+       one shared ratio covers all of them, rather than a per-element re-derivation */
+    inkOnSurface: contrast(ink, surface)
   } : {};
   ok('dark palette clears WCAG AA (4.5:1 body/muted text, and surface reads distinct from the page)',
      ratios.inkOnPaper >= 4.5 && ratios.muteOnPaper >= 4.5 && ratios.muteOnSurface >= 4.5 &&
-     ratios.amberOnPaper >= 4.5 && ratios.surfaceVsPaper >= 1.05, JSON.stringify(ratios));
+     ratios.amberOnPaper >= 4.5 && ratios.surfaceVsPaper >= 1.05 && ratios.inkOnSurface >= 4.5, JSON.stringify(ratios));
   /* the v19 override used to collapse --surface back onto --paper in dark mode (var(--paper)),
      which is why #week's cards used to read flush with the page background */
   ok('the v19 dossier override no longer collapses dark --surface onto --paper',
@@ -1880,6 +1884,18 @@ ok('dark mode outlines the three dashboard tiles instead of filling them solid a
    !/body\.dark #week \.today \.acts \.act,body\.dark #week \.today \.acts \.act b,body\.dark #week \.today \.acts \.act span\{color:#12161a\}/.test(code));
 ok('dark mode outlines "Mark today done" (not-yet-done state) the same way, and leaves the done/green state alone',
    /body\.dark #week #tdBtn:not\(\[data-on="1"\]\) \{\s*\n\s*background: var\(--surface\) !important;\s*\n\s*border-color: var\(--c-now\) !important;\s*\n\s*color: var\(--ink\) !important;\s*\n\s*\}/.test(code));
+
+/* ---- v25: dark leftovers — the rest of the solid --c-now fills forced near-black by v20 ---- */
+ok('dark mode outlines the timer Start/Resume button the same way, with a real border (not just border-color on a borderless button)',
+   /body\.dark #week #tGo\{ background:var\(--surface\) !important; border:1px solid var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
+ok('dark mode outlines the quick-log button the same way, with a real border (its own rule sets border:none, so border-color alone would be invisible)',
+   /body\.dark #week #qLog\{ background:var\(--surface\) !important; border:1px solid var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
+ok('dark mode outlines a pressed filter pill the same way',
+   /body\.dark \.pf button\[aria-pressed="true"\]\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
+ok('dark mode outlines the mock’s start button the same way',
+   /body\.dark \.pf button\.mockgo\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
+ok('the down jump button (.toend) gets the same dark outline the up button (.totop) already had',
+   /body\.dark \.toend\{ background:var\(--surface\) !important; color:var\(--ink\) !important; border:1px solid var\(--rule\) !important; \}/.test(code));
 
 /* ---- v24: chapter-end stack (was a ragged wrap of seven identically-boxed buttons) ---- */
 {

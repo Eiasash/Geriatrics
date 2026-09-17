@@ -852,6 +852,37 @@ const M = [
    ".secfoot .secquiet button + button::before{ content:'\\00b7'; margin-inline-end:8px; display:inline-block; text-decoration:none; }",
    ".secfoot .secquiet button + button::before{ content:'\\00b7'; margin-inline-end:8px; text-decoration:none; }",
    'its own formatting context'],
+
+  /* --- v25 dark leftovers, next round --- */
+  ['the timer Start/Resume button reverts to a solid amber fill with near-black text in dark mode',
+   'body.dark #week #tGo{ background:var(--surface) !important; border:1px solid var(--c-now) !important; color:var(--ink) !important; }',
+   '',
+   'outlines the timer Start/Resume button'],
+
+  ['the quick-log button reverts to a solid amber fill with near-black text in dark mode',
+   'body.dark #week #qLog{ background:var(--surface) !important; border:1px solid var(--c-now) !important; color:var(--ink) !important; }',
+   '',
+   'outlines the quick-log button'],
+
+  ['the quick-log button’s dark outline goes back to border-color-only, invisible against its own border:none rule',
+   'body.dark #week #qLog{ background:var(--surface) !important; border:1px solid var(--c-now) !important; color:var(--ink) !important; }',
+   'body.dark #week #qLog{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }',
+   'with a real border'],
+
+  ['a pressed filter pill reverts to a solid amber fill with near-black text in dark mode',
+   'body.dark .pf button[aria-pressed="true"]{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }',
+   '',
+   'outlines a pressed filter pill'],
+
+  ['the mock’s start button reverts to a solid amber fill with near-black text in dark mode',
+   'body.dark .pf button.mockgo{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }',
+   '',
+   'outlines the mock’s start button'],
+
+  ['the down jump button (.toend) loses its dark outline and goes back to the broken ink-fill/near-black-text state',
+   'body.dark .toend{ background:var(--surface) !important; color:var(--ink) !important; border:1px solid var(--rule) !important; }',
+   '',
+   'the same dark outline the up button'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
