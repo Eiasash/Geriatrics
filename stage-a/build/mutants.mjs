@@ -1049,7 +1049,18 @@ const M = [
    only need the mutations touched this round — CI runs the unfiltered full set. */
 const ONLY = (process.env.MUTANT_ONLY || '').split(',').map(s=>s.trim()).filter(Boolean);
 const M_FULL = M;
-const M_RUN = (!STATIC && ONLY.length) ? M_FULL.filter(([name]) => ONLY.some(s => name.includes(s))) : M_FULL;
+const M_SEL = (!STATIC && ONLY.length) ? M_FULL.filter(([name]) => ONLY.some(s => name.includes(s))) : M_FULL;
+/* MUTANT_SHARD=i/N runs every Nth mutation starting at index i, so CI can split the full set
+   across N parallel jobs (each on its own runner) instead of one job running all of them.
+   Index modulo N partitions the list exactly: shards 0..N-1 together run every mutation once.
+   A malformed value fails loudly rather than silently running everything or nothing. */
+const SHARD = process.env.MUTANT_SHARD || '';
+let M_RUN = M_SEL;
+if(!STATIC && SHARD){
+  const m = /^(\d+)\/(\d+)$/.exec(SHARD);
+  if(!m || +m[2] < 1 || +m[1] >= +m[2]){ console.log('MUTANT_SHARD must be i/N with 0 <= i < N, got ' + JSON.stringify(SHARD)); process.exit(1); }
+  M_RUN = M_SEL.filter((_, k) => k % +m[2] === +m[1]);
+}
 /* a mistyped or renamed selector should fail loudly, not silently run zero mutations and
    report "0 of 0 caught" as a clean exit — that would certify a run that tested nothing (Codex #431) */
 if(!STATIC && ONLY.length){
@@ -1135,6 +1146,7 @@ const t0 = Date.now();
 await Promise.all(Array.from({length: WORKERS}, worker));
 let bad = 0;
 for(const r of results){ console.log(r); if(!r.startsWith('CAUGHT')) bad++; }
+if(SHARD) console.log('\n(MUTANT_SHARD ' + SHARD + ': ' + M_RUN.length + ' of ' + M_SEL.length + ' mutations in this shard)');
 if(ONLY.length) console.log('\n(MUTANT_ONLY filter: ' + M_RUN.length + ' of ' + M_FULL.length + ' mutations ran locally; CI runs the full set)');
 console.log('\n' + (M_RUN.length - bad) + ' of ' + M_RUN.length + ' mutations caught (' + WORKERS + ' workers, ' + Math.round((Date.now()-t0)/1000) + ' s)');
 process.exit(bad ? 1 : 0);

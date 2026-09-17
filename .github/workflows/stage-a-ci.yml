@@ -48,6 +48,26 @@ jobs:
 
       - name: mutants.mjs --static — every mutation still has exactly one target (fails fast)
         run: node mutants.mjs --static ../index.html
-      - name: mutants.mjs — breakages the suite must catch
+
+  # The full mutation run was ~20 of the ~25 minutes when it ran inside the guards job on one
+  # 4-core runner. Split across 10 parallel runners it takes about as long as its slowest shard.
+  # MUTANT_SHARD=i/N partitions the list by index, so the 10 shards together run every mutation
+  # exactly once; a shard whose baseline is red or that misses a mutation fails its own job.
+  mutants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env: { TZ: Asia/Jerusalem }
+    defaults: { run: { working-directory: stage-a/build } }
+    strategy:
+      fail-fast: false
+      matrix: { shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+    name: mutants (${{ matrix.shard }}/10)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm i --no-save jsdom@24
+      - name: mutants.mjs — breakages the suite must catch (this shard)
         # a green suite and a blind suite look the same; this proves the guards bite
         run: node mutants.mjs ../index.html
+        env: { MUTANT_SHARD: '${{ matrix.shard }}/10' }
