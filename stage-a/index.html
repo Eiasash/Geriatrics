@@ -10658,6 +10658,13 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
     box.classList.toggle('dot', v);
     moreBtn.setAttribute('aria-label', v ? 'Restore timer' : 'Settings and more');
     moreBtn.setAttribute('aria-haspopup', v ? 'false' : 'true');
+    /* entering dot mode can hide the focused control out from under a keyboard user (Hide is
+       reached through the now-closed menu) — mtMore is the one control still visible, so move
+       focus there rather than stranding it on a hidden descendant, which would make the next
+       Tab skip the pill entirely instead of offering an immediate way to undo Hide */
+    if(v && document.activeElement && box.contains(document.activeElement) && document.activeElement !== moreBtn){
+      moreBtn.focus();
+    }
   }
   /* One tap, always. Pause/Resume acts immediately and closes the menu rather than opening
      it; it never needs the menu to be open first. Tapping the clock or the phase label does

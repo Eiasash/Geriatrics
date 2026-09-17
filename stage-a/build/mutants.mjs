@@ -745,6 +745,11 @@ const M = [
    "    const v = getComputedStyle(document.documentElement).getPropertyValue('--sai-' + side);",
    'measured off a resolved padding on a real probe element'],
 
+  ['entering dot mode stops moving focus off a hidden Hide button, stranding a keyboard user’s focus on it',
+   "    if(v && document.activeElement && box.contains(document.activeElement) && document.activeElement !== moreBtn){\n      moreBtn.focus();\n    }",
+   "",
+   'moves focus to the restore dot'],
+
   /* --- final Gemini round, 16 Sep --- */
   ['dark mode answer feedback loses to the plain-option rule again',
    "body.dark .pqo.right {\n  background: #1b2a25 !important;",

@@ -1255,9 +1255,13 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   d.getElementById('mtClock').click();
   ok('a second tap pauses it again', w.eval('T.run') === false, cls());
   /* hide shrinks the pill to a gear dot; a tap on the dot restores it */
-  box.classList.remove('dot'); d.getElementById('mtHide').click();
+  box.classList.remove('dot');
+  d.getElementById('mtHide').focus();   /* simulate reaching Hide by keyboard, then activating it */
+  d.getElementById('mtHide').click();
   ok('the hide button in the menu shrinks the pill to the dot, and closes the menu behind it',
      box.classList.contains('dot') && !box.classList.contains('open'), cls());
+  ok('activating Hide by keyboard moves focus to the restore dot, so it doesn’t strand focus on the now-hidden mtHide and skip the pill entirely on the next Tab',
+     d.activeElement === d.getElementById('mtMore'), 'activeElement=' + (d.activeElement && d.activeElement.id));
   ok('once dotted, mtMore’s accessible name says it restores the timer, not "Settings and more" with a popup it no longer opens',
      d.getElementById('mtMore').getAttribute('aria-label') === 'Restore timer' &&
      d.getElementById('mtMore').getAttribute('aria-haspopup') === 'false',
