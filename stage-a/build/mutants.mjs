@@ -675,6 +675,16 @@ const M = [
    "",
    'geri:timerpos'],
 
+  ['a long-press with no movement stops being swallowed, so it falls through and pauses/resumes the timer',
+   "    if(armed){ armed = false; e.stopImmediatePropagation(); }",
+   "    if(armed){ armed = false; }",
+   'swallowed as a hold'],
+
+  ['pointercancel stops tearing the drag down, so a system-cancelled press leaves the pill armed for the next touch',
+   "    document.addEventListener('pointercancel', onPointerCancel);",
+   "",
+   'pointercancel tears the drag down'],
+
   /* --- final Gemini round, 16 Sep --- */
   ['dark mode answer feedback loses to the plain-option rule again',
    "body.dark .pqo.right {\n  background: #1b2a25 !important;",

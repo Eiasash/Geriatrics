@@ -10694,40 +10694,65 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
              bottom: Math.min(Math.max(bottom, minB), Math.max(minB, maxB)) };
   }
   function applyPos(pos){ box.style.left = pos.left + 'px'; box.style.bottom = pos.bottom + 'px'; box.style.right = 'auto'; }
+  function currentPos(){ const rect = box.getBoundingClientRect(); return { left: rect.left, bottom: window.innerHeight - rect.bottom }; }
   (async()=>{
-    try{
-      const r = await window.storage.get('geri:timerpos'); const pos = JSON.parse(r.value);
-      if(pos && typeof pos.left === 'number' && typeof pos.bottom === 'number') applyPos(clampPos(pos.left, pos.bottom));
-    }catch(e){}
+    let pos = null;
+    try{ const r = await window.storage.get('geri:timerpos'); const stored = JSON.parse(r.value);
+      if(stored && typeof stored.left === 'number' && typeof stored.bottom === 'number') pos = stored; }catch(e){}
+    /* no stored position yet — the CSS default (left:10px) sits inside the 24px edge inset
+       until the first drag; clamp it on load too, not only once something has been saved */
+    applyPos(clampPos(...(pos ? [pos.left, pos.bottom] : Object.values(currentPos()))));
   })();
-  let pressTimer = null, dragging = false, startX = 0, startY = 0, startLeft = 0, startBottom = 0;
+  let pressTimer = null, dragging = false, armed = false, startX = 0, startY = 0, startLeft = 0, startBottom = 0;
+  /* a press that reached the 300ms long-press threshold (armed) must never fall through to a
+     plain tap afterward, even if the finger never moved: goTap (pause/resume) is guarded on
+     the click that follows, and armed is cleared there so a genuine next tap still works. */
+  box.addEventListener('click', e=>{
+    /* stopImmediatePropagation, not just returning: this is a capture-phase listener on the
+       same element as the bubble-phase one below that calls goTap() on the clock/phase tap —
+       returning from this handler alone would not stop that other listener from still firing */
+    if(armed){ armed = false; e.stopImmediatePropagation(); }
+  }, true);
+  function teardown(){
+    clearTimeout(pressTimer); pressTimer = null; dragging = false; box.classList.remove('dragging');
+    document.removeEventListener('pointermove', onPointerMove);
+    document.removeEventListener('pointerup', endDrag);
+    document.removeEventListener('pointercancel', onPointerCancel);
+  }
   function onPointerMove(e){
-    if(!dragging) return;
     const dx = e.clientX - startX, dy = e.clientY - startY;
+    if(!dragging){
+      /* more than ~8px before the long-press threshold reads as a scroll attempt, not a
+         drag-in-waiting — let it go rather than arm mid-scroll */
+      if(Math.hypot(dx, dy) > 8) teardown();
+      return;
+    }
     applyPos(clampPos(startLeft + dx, startBottom - dy));
   }
   function endDrag(){
     if(dragging){
-      dragging = false; box.classList.remove('dragging');
-      const rect = box.getBoundingClientRect();
-      const pos = clampPos(rect.left, window.innerHeight - rect.bottom);
+      const pos = clampPos(...Object.values(currentPos()));
       applyPos(pos);
       try{ window.storage.set('geri:timerpos', JSON.stringify(pos)); }catch(e){}
     }
-    clearTimeout(pressTimer); pressTimer = null;
-    document.removeEventListener('pointermove', onPointerMove);
-    document.removeEventListener('pointerup', endDrag);
+    teardown();
   }
+  /* an Android system gesture, notification shade, or incoming call can cancel the pointer
+     without ever firing pointerup — without this, pressTimer still fires later (arming a
+     drag nobody is doing any more) and the document-level move/up listeners never get torn
+     down, so the next unrelated touch anywhere on the page starts dragging the pill */
+  function onPointerCancel(){ armed = false; teardown(); }
   box.addEventListener('pointerdown', e=>{
     if(e.target.closest('button')) return;               /* buttons keep their own tap behaviour */
     const rect = box.getBoundingClientRect();
     startX = e.clientX; startY = e.clientY; startLeft = rect.left; startBottom = window.innerHeight - rect.bottom;
     pressTimer = setTimeout(()=>{
-      dragging = true; box.classList.add('dragging');
+      armed = true; dragging = true; box.classList.add('dragging');
       if(navigator.vibrate) navigator.vibrate(12);
     }, 300);
     document.addEventListener('pointermove', onPointerMove);
     document.addEventListener('pointerup', endDrag);
+    document.addEventListener('pointercancel', onPointerCancel);
   });
 })();
 document.getElementById('tReset').addEventListener('click',()=>{

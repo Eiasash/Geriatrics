@@ -1311,13 +1311,41 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   ok('the pill’s menu button carries a settings glyph alongside the overflow dots, so the gear reads even when the menu is closed',
      d.getElementById('mtMore').textContent.includes('⚙'));
   ok('the drag threshold is a real long-press (300ms), not an instant drag on touchdown',
-     /pressTimer = setTimeout\(\(\)=>\{\s*\n\s*dragging = true; box\.classList\.add\('dragging'\);\s*\n\s*if\(navigator\.vibrate\) navigator\.vibrate\(12\);\s*\n\s*\}, 300\);/.test(code));
+     /pressTimer = setTimeout\(\(\)=>\{\s*\n\s*armed = true; dragging = true; box\.classList\.add\('dragging'\);\s*\n\s*if\(navigator\.vibrate\) navigator\.vibrate\(12\);\s*\n\s*\}, 300\);/.test(code));
   ok('the dragged pill snaps 24px (plus the safe-area inset) off the nearest edge, not flush — a flush dock sits inside Android’s own back-gesture strip',
      /const EDGE = 24;/.test(code) && /safeInset\('left'\)/.test(code) && /safeInset\('right'\)/.test(code) &&
      /safeInset\('top'\)/.test(code) && /safeInset\('bottom'\)/.test(code));
   ok('the dragged position persists to geri:timerpos and is read back on load',
      /window\.storage\.set\('geri:timerpos', JSON\.stringify\(pos\)\);/.test(code) &&
-     /window\.storage\.get\('geri:timerpos'\); const pos = JSON\.parse\(r\.value\);/.test(code));
+     /window\.storage\.get\('geri:timerpos'\); const stored = JSON\.parse\(r\.value\);/.test(code));
+  ok('a long-press that never moves is swallowed as a hold, not forwarded to the pause/resume tap',
+     /if\(armed\)\{ armed = false; e\.stopImmediatePropagation\(\); \}/.test(code));
+  ok('pointercancel tears the drag down — clears the press timer, drops dragging, and removes the document-level listeners — so a later unrelated touch cannot inherit an armed drag',
+     /function onPointerCancel\(\)\{ armed = false; teardown\(\); \}/.test(code) &&
+     /document\.addEventListener\('pointercancel', onPointerCancel\);/.test(code) &&
+     /document\.removeEventListener\('pointercancel', onPointerCancel\);/.test(code));
+  ok('the pill is clamped to the edge inset on load even with no stored position, not only after the first drag',
+     /applyPos\(clampPos\(\.\.\.\(pos \? \[pos\.left, pos\.bottom\] : Object\.values\(currentPos\(\)\)\)\)\);/.test(code));
+
+  /* runtime reproduction of the long-press-toggles-the-timer bug: pointerdown on the clock,
+     hold past the 300ms arm threshold with no movement, pointerup, then the click the browser
+     fires afterward — same sequence a real 600ms hold-without-drag produces. A hold must never
+     pause or resume; only the swallow guard above stops the click from reaching goTap(). */
+  {
+    w.eval("T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint()");
+    box.classList.remove('dot','open');
+    const clockEl = d.getElementById('mtClock');
+    const pd = new w.Event('pointerdown', {bubbles:true}); pd.clientX = 40; pd.clientY = 40;
+    clockEl.dispatchEvent(pd);
+    await new Promise(r=>setTimeout(r,350));
+    const pu = new w.Event('pointerup', {bubbles:true}); pu.clientX = 40; pu.clientY = 40;
+    d.dispatchEvent(pu);
+    const ck = new w.MouseEvent('click', {bubbles:true});
+    clockEl.dispatchEvent(ck);
+    ok('a 600ms hold on the clock with no movement never toggles the timer',
+       w.eval('T.run') === false, 'run=' + w.eval('T.run'));
+    box.classList.remove('dragging');
+  }
 
   /* left part-way through the block on purpose: the timer only shows while the block is in
      use, and the height guard further down needs a visible box to measure */
