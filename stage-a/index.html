@@ -12248,7 +12248,10 @@ function summary(){
     '<div class="big">' + rGot + ' of ' + n + '</div>' +
     '<div class="sub">' + pct + '% · ' + filter.label +
       (rMissed.length ? ' · the ones that went are listed below' : ' · clean round') + '</div>' +
-    (rMissed.length ? '<ol>' + rMissed.map(i=>'<li>'+QS[i][0]+'</li>').join('') + '</ol>' :
+    /* the card itself renders this same text via textContent (never innerHTML) — a raw < here
+       (e.g. a drug-dose comparison like "Cr < 1.5") would otherwise start an unintended tag,
+       rendering wrong or dropping the rest of the line */
+    (rMissed.length ? '<ol>' + rMissed.map(i=>'<li>'+escHtml(QS[i][0])+'</li>').join('') + '</ol>' :
       (filter.mode === 'custom'
         ? '<p class="note">That set is clear. The next round goes back to the whole deck.</p>' : '')) +
     '<div class="cbtns">' +
@@ -13324,6 +13327,10 @@ const PPKEY = 'geri:ppintro';
 })();
 document.addEventListener('keydown', e=>{
   if(!document.getElementById('papers').classList.contains('on')) return;
+  /* while a mock is running it owns #papers.on and its own keydown listener below answers
+     mockOpts — without this guard 1-4/n ALSO answered/advanced the background practice
+     question underneath the mock, polluting pqDone with answers the user never saw */
+  if(mockOn) return;
   if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
   if(e.key === 'n'){ pqNext(); return; }
   const i = ['1','2','3','4'].indexOf(e.key);

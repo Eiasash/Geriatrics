@@ -2816,5 +2816,52 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
      !!parkinsonKcp && /gold standard for diagnosing Parkinson disease remains autopsy/.test(parkinsonKcp) && /medication-refractory tremor/.test(parkinsonKcp));
 }
 
+{
+  /* Gemini site-wide audit: the practice keydown listener (~13325) is gated only on
+     #papers.on, while the mock's own listener (~13820) is gated on mockOn && #papers.on.
+     While a mock is running, both listeners are live on the same document — pressing 1-4 or
+     n used to ALSO answer/advance the background practice question underneath the mock,
+     polluting pqDone with an answer the user never saw. Tests real behaviour (a dispatched
+     keydown), not the presence of a mockOn token in the source. */
+  w.eval('show("papers")');
+  w.eval('pqLoad()');
+  await new Promise(r => setTimeout(r, 60));
+  if(d.activeElement && d.activeElement.blur) d.activeElement.blur();
+  w.eval("pqPool = PQ.filter(x=>!x.im); pqIdx = 0; pqRender();");
+  const practiceKey = w.eval('pqKey(pqPool[pqIdx % pqPool.length])');
+  w.eval('delete pqDone[' + JSON.stringify(practiceKey) + ']');
+  const idxBefore = w.eval('pqIdx');
+  if(w.eval('mockOn')){ w.eval('mockFinish(true)'); await new Promise(r => setTimeout(r, 80)); }
+  w.eval('mockN = 5; mockPerQ = 0; mockStart();');
+  await new Promise(r => setTimeout(r, 80));
+  d.dispatchEvent(new w.KeyboardEvent('keydown', {key: '1'}));
+  d.dispatchEvent(new w.KeyboardEvent('keydown', {key: 'n'}));
+  ok('while a mock is running, pressing 1-4/n does not also answer or advance the background practice question',
+     w.eval('pqIdx') === idxBefore && w.eval('pqShown') === false &&
+     w.eval('pqDone[' + JSON.stringify(practiceKey) + ']') === undefined,
+     'pqIdx=' + w.eval('pqIdx') + ' pqShown=' + w.eval('pqShown') +
+     ' pqDone=' + w.eval('pqDone[' + JSON.stringify(practiceKey) + ']'));
+  w.eval('mockFinish(true)');
+  await new Promise(r => setTimeout(r, 80));
+}
+{
+  /* Gemini site-wide audit: the drill summary listed missed cards via raw innerHTML
+     (rMissed.map(i=>'<li>'+QS[i][0]+'</li>')) while the card itself renders the very same
+     text via textContent — a card whose text contains a raw < (e.g. a dose comparison like
+     "Cr < 1.5") would start an unintended tag, rendering wrong or dropping the rest of the
+     line. escHtml already exists and is used at every other innerHTML call site in this
+     file; the summary line was the one that skipped it. */
+  const qsLen = w.eval('QS.length');
+  w.eval("QS.push(['Cr < 1.5 mg/dL is the cutoff <b>injected</b>', 'answer text'])");
+  const idx = qsLen;
+  w.eval('filter = {mode:"custom", pool:[' + idx + '], label:"test"}; ' +
+    'order = [' + idx + ']; pos = 0; rGot = 0; rMissed = [' + idx + ']; summary();');
+  const html = d.getElementById('dsum').innerHTML;
+  ok('a raw < in a missed card’s text is escaped in the drill summary, not injected as markup',
+     html.includes('Cr &lt; 1.5 mg/dL is the cutoff &lt;b&gt;injected&lt;/b&gt;') && !html.includes('<b>injected</b>'),
+     html.slice(0, 250));
+  w.eval('QS.length = ' + qsLen + ';');
+}
+
 console.log("DONE");
 process.exit(FAILS || process.exitCode ? 1 : 0);
