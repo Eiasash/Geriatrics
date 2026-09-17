@@ -10720,11 +10720,20 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
     let pos = null;
     try{ const r = await window.storage.get('geri:timerpos'); const stored = JSON.parse(r.value);
       if(stored && typeof stored.left === 'number' && typeof stored.bottom === 'number') pos = stored; }catch(e){}
-    /* no stored position yet — the CSS default (left:10px) sits inside the 24px edge inset
-       until the first drag; clamp it on load too, not only once something has been saved */
-    applyPos(clampPos(...(pos ? [pos.left, pos.bottom] : Object.values(CSS_DEFAULT_POS))));
+    if(pos){
+      applyPos(clampPos(pos.left, pos.bottom));
+    } else if(!(window.matchMedia && window.matchMedia('(min-width:901px)').matches)){
+      /* no stored position yet — the CSS default (left:10px) sits inside the 24px edge inset
+         until the first drag; clamp it on load too, not only once something has been saved.
+         The desktop breakpoint's own CSS default is right:18px (left:auto) — applyPos always
+         writes left/right:auto, so running it with the mobile CSS_DEFAULT_POS on desktop would
+         drag every first-run desktop pill from the bottom-right to the bottom-left. Leave
+         desktop's CSS position alone until it has an actual stored left/bottom to restore. */
+      applyPos(clampPos(...Object.values(CSS_DEFAULT_POS)));
+    }
   })();
   let pressTimer = null, dragging = false, armed = false, startX = 0, startY = 0, startLeft = 0, startBottom = 0;
+  let activePointerId = null;
   /* a press that reached the 300ms long-press threshold (armed) must never fall through to a
      plain tap afterward, even if the finger never moved: goTap (pause/resume) is guarded on
      the click that follows, and armed is cleared there so a genuine next tap still works. */
@@ -10735,12 +10744,16 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
     if(armed){ armed = false; e.stopImmediatePropagation(); }
   }, true);
   function teardown(){
-    clearTimeout(pressTimer); pressTimer = null; dragging = false; box.classList.remove('dragging');
+    clearTimeout(pressTimer); pressTimer = null; dragging = false; activePointerId = null; box.classList.remove('dragging');
     document.removeEventListener('pointermove', onPointerMove);
     document.removeEventListener('pointerup', endDrag);
     document.removeEventListener('pointercancel', onPointerCancel);
   }
+  /* a second finger touching down anywhere on the page while the first is arming or dragging
+     must not affect this gesture at all — without filtering by pointerId, its pointermove
+     could teleport the pill, and its pointerup could end (and save!) the first finger's drag */
   function onPointerMove(e){
+    if(e.pointerId !== activePointerId) return;
     const dx = e.clientX - startX, dy = e.clientY - startY;
     if(!dragging){
       /* more than ~8px before the long-press threshold reads as a scroll attempt, not a
@@ -10750,7 +10763,8 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
     }
     applyPos(clampPos(startLeft + dx, startBottom - dy));
   }
-  function endDrag(){
+  function endDrag(e){
+    if(e.pointerId !== activePointerId) return;
     if(dragging){
       const pos = clampPos(...Object.values(currentPos()));
       applyPos(pos);
@@ -10762,12 +10776,17 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
      without ever firing pointerup — without this, pressTimer still fires later (arming a
      drag nobody is doing any more) and the document-level move/up listeners never get torn
      down, so the next unrelated touch anywhere on the page starts dragging the pill */
-  function onPointerCancel(){ armed = false; teardown(); }
+  function onPointerCancel(e){
+    if(e.pointerId !== activePointerId) return;
+    armed = false; teardown();
+  }
   box.addEventListener('pointerdown', e=>{
     /* buttons keep their own tap behaviour — except the gear dot, which IS a button
-       (#mtMore, sized to fill the 40px dot by its own 44px min-size rule): without this
+       (#mtMore, sized to fill the 44px dot by its own 44px min-size rule): without this
        carve-out the dot could never be armed for a drag at all */
     if(e.target.closest('button') && !box.classList.contains('dot')) return;
+    if(activePointerId !== null) return;                 /* a gesture is already in progress */
+    activePointerId = e.pointerId;
     const rect = box.getBoundingClientRect();
     startX = e.clientX; startY = e.clientY; startLeft = rect.left; startBottom = window.innerHeight - rect.bottom;
     pressTimer = setTimeout(()=>{
@@ -14450,10 +14469,13 @@ body.hdr-hidden #hlBar{ top:env(safe-area-inset-top) !important; }
 #miniT .moretoggle{ opacity:.6; font-size:calc(11.5px*var(--fs,1)); }
 #miniT .moresub{ display:contents; }
 #miniT .moresub[hidden]{ display:none; }
-#miniT.dot{ padding:0; border-radius:50%; width:40px; height:40px; min-width:40px; overflow:hidden;
+/* 44px, not 40 — mtMore keeps the app-wide 44px min-size (v22, !important) whatever this rule
+   says, so a smaller dot just clips that hit area down via overflow:hidden, defeating the
+   touch-target floor on the one control left once the timer is hidden */
+#miniT.dot{ padding:0; border-radius:50%; width:44px; height:44px; min-width:44px; overflow:hidden;
   display:flex; align-items:center; justify-content:center; }
 #miniT.dot b, #miniT.dot .ph, #miniT.dot #mtGo, #miniT.dot .more{ display:none; }
-#miniT.dot #mtMore{ border:0; background:none; min-height:40px; padding:0; }
+#miniT.dot #mtMore{ border:0; background:none; padding:0; }
 </style>
 </body>
 </html>

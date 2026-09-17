@@ -696,8 +696,8 @@ const M = [
    'shrunk gear dot can still be long-pressed'],
 
   ['a fresh, never-dragged pill goes back to clamping from a zero-size hidden rect and gets pinned to the top edge',
-   "applyPos(clampPos(...(pos ? [pos.left, pos.bottom] : Object.values(CSS_DEFAULT_POS))));",
-   "applyPos(clampPos(...(pos ? [pos.left, pos.bottom] : Object.values(currentPos()))));",
+   "applyPos(clampPos(...Object.values(CSS_DEFAULT_POS)));",
+   "applyPos(clampPos(...Object.values(currentPos())));",
    'pill lands near the bottom-left edge inset'],
 
   ['Start/Resume goes back to a solid near-black --ink slab in light mode',
@@ -709,6 +709,21 @@ const M = [
    "    moreBtn.setAttribute('aria-label', v ? 'Restore timer' : 'Settings and more');\n    moreBtn.setAttribute('aria-haspopup', v ? 'false' : 'true');",
    "",
    'accessible name says it restores the timer'],
+
+  ['a fresh desktop pill loses its CSS right-side default and gets dragged to the mobile left/bottom fallback',
+   "} else if(!(window.matchMedia && window.matchMedia('(min-width:901px)').matches)){",
+   "} else if(true){",
+   'keeps its CSS right-side default'],
+
+  ['a second finger can hijack an in-progress pill drag',
+   "  function onPointerMove(e){\n    if(e.pointerId !== activePointerId) return;",
+   "  function onPointerMove(e){",
+   'second finger cannot hijack an in-progress drag'],
+
+  ['the gear dot shrinks back to 40px, clipping mtMore’s 44px hit area down below the touch-target floor',
+   "width:44px; height:44px; min-width:44px;",
+   "width:40px; height:40px; min-width:40px;",
+   'the gear dot is 44px, not 40'],
 
   /* --- final Gemini round, 16 Sep --- */
   ['dark mode answer feedback loses to the plain-option rule again',

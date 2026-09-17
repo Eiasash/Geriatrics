@@ -1336,11 +1336,13 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   ok('a long-press that never moves is swallowed as a hold, not forwarded to the pause/resume tap',
      /if\(armed\)\{ armed = false; e\.stopImmediatePropagation\(\); \}/.test(code));
   ok('pointercancel tears the drag down — clears the press timer, drops dragging, and removes the document-level listeners — so a later unrelated touch cannot inherit an armed drag',
-     /function onPointerCancel\(\)\{ armed = false; teardown\(\); \}/.test(code) &&
+     /function onPointerCancel\(e\)\{\s*\n\s*if\(e\.pointerId !== activePointerId\) return;\s*\n\s*armed = false; teardown\(\);\s*\n\s*\}/.test(code) &&
      /document\.addEventListener\('pointercancel', onPointerCancel\);/.test(code) &&
      /document\.removeEventListener\('pointercancel', onPointerCancel\);/.test(code));
   ok('the pill is clamped to the edge inset on load even with no stored position, not only after the first drag',
-     /applyPos\(clampPos\(\.\.\.\(pos \? \[pos\.left, pos\.bottom\] : Object\.values\(CSS_DEFAULT_POS\)\)\)\);/.test(code));
+     /applyPos\(clampPos\(\.\.\.Object\.values\(CSS_DEFAULT_POS\)\)\);/.test(code));
+  ok('a fresh desktop pill keeps its CSS right-side default instead of being dragged to the mobile left/bottom fallback',
+     /!\(window\.matchMedia && window\.matchMedia\('\(min-width:901px\)'\)\.matches\)/.test(code));
   /* the init IIFE runs at page load while #miniT is still display:none (hidden until the
      reading block shows it), so clamping from a live getBoundingClientRect() reads a
      zero-size rect — its "bottom" computes as the full viewport height, which clampPos then
@@ -1355,6 +1357,35 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
      /#miniT button\.pri\{background:var\(--surface\);color:var\(--ink\);border-color:var\(--ink\);font-weight:600\}/.test(code));
   ok('the shrunk gear dot can still be long-pressed and dragged, even though it is entirely covered by the mtMore button',
      /if\(e\.target\.closest\('button'\) && !box\.classList\.contains\('dot'\)\) return;/.test(code));
+  ok('the gear dot is 44px, not 40 — mtMore keeps its app-wide 44px min-size regardless, so a smaller dot just clips that hit area down via overflow:hidden',
+     /#miniT\.dot\{ padding:0; border-radius:50%; width:44px; height:44px; min-width:44px; overflow:hidden;/.test(code));
+  {
+    /* a second finger touching down anywhere on the page while the first is dragging must not
+       affect the gesture at all: its pointerdown is ignored (a gesture is already active), and
+       critically its own pointerup must not end — and save! — the first finger's drag early */
+    box.classList.remove('dot','open','dragging');
+    const pd1 = new w.Event('pointerdown', {bubbles:true}); pd1.clientX = 50; pd1.clientY = 50; pd1.pointerId = 1;
+    box.dispatchEvent(pd1);
+    await new Promise(r=>setTimeout(r,350));
+    const armedByFirstFinger = box.classList.contains('dragging');
+    const pd2 = new w.Event('pointerdown', {bubbles:true}); pd2.clientX = 200; pd2.clientY = 200; pd2.pointerId = 2;
+    box.dispatchEvent(pd2);
+    /* the second finger's own pointermove must not be able to teleport the pill mid-drag */
+    const leftBeforeForeignMove = box.style.left;
+    const mv2 = new w.Event('pointermove', {bubbles:true}); mv2.clientX = 900; mv2.clientY = 700; mv2.pointerId = 2;
+    d.dispatchEvent(mv2);
+    const leftUnchangedByForeignMove = box.style.left === leftBeforeForeignMove;
+    const pu2 = new w.Event('pointerup', {bubbles:true}); pu2.pointerId = 2;
+    d.dispatchEvent(pu2);
+    const stillDraggingAfterOtherFingerUp = box.classList.contains('dragging');
+    const pu1 = new w.Event('pointerup', {bubbles:true}); pu1.pointerId = 1;
+    d.dispatchEvent(pu1);
+    ok('a second finger cannot hijack an in-progress drag — its pointermove cannot teleport the pill, and its pointerup cannot end the first finger’s drag early',
+       armedByFirstFinger === true && leftUnchangedByForeignMove === true &&
+       stillDraggingAfterOtherFingerUp === true && box.classList.contains('dragging') === false,
+       'armed=' + armedByFirstFinger + ' unmovedByForeignMove=' + leftUnchangedByForeignMove +
+       ' afterOtherFingerUp=' + stillDraggingAfterOtherFingerUp + ' afterOwnUp=' + box.classList.contains('dragging'));
+  }
 
   /* runtime reproduction of the long-press-toggles-the-timer bug: pointerdown on the clock,
      hold past the 300ms arm threshold with no movement, pointerup, then the click the browser
