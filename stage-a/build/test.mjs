@@ -577,9 +577,12 @@ ok('its button starts the same timer the home page drives', w.eval("T.run === tr
 d.getElementById('mtGo').click();
 ok('and pauses it', w.eval("T.run === false") && d.getElementById('mtGo').textContent === 'Resume');
 d.getElementById('mtHide').click();
-ok('hide dismisses it until the next section change', d.getElementById('miniT').hidden);
-w.eval("show('sleep')");
-ok('changing section brings it back', !d.getElementById('miniT').hidden);
+/* v27: hide used to set box.hidden (recoverable only by changing section); it now shrinks
+   to a small gear dot that stays on screen and draggable, one tap restores it */
+ok('hide shrinks the pill to a gear dot rather than removing it from the screen',
+   !d.getElementById('miniT').hidden && d.getElementById('miniT').classList.contains('dot'));
+d.getElementById('miniT').click();
+ok('tapping the dot restores the full pill', !d.getElementById('miniT').classList.contains('dot'));
 w.eval("show('week')");
 ok('swatch colour rules carry an id so the bar button rule cannot flatten them',
    /#hlBar \.swatch \.sw-y/.test(code) && /#hlBar \.swatch button\.sw\{/.test(code.replace(/,#hlModal \.swatch button\.sw/,'')));
@@ -602,10 +605,11 @@ ok('reset takes it to zero', w.eval("swMs() < 50") && /^0?0:00$/.test(d.getEleme
 w.eval("swSetMode(false)");
 ok('the day comes back exactly where it was left', w.eval("T.p === 1 && Math.round(T.left) === 900"));
 ok('the stopwatch is in the backup key list', w.eval("BKEYS.includes('geri:stopwatch')"));
-d.getElementById('miniT').classList.add('open'); d.getElementById('mtShut').click();
-ok('collapse shrinks the pill to its handle', d.getElementById('miniT').classList.contains('shut') && !d.getElementById('miniT').classList.contains('open'));
-d.getElementById('mtMore').click();
-ok('tapping the handle opens it again', !d.getElementById('miniT').classList.contains('shut'));
+d.getElementById('miniT').classList.add('open'); d.getElementById('mtHide').click();
+ok('v27: hide shrinks the pill to the gear dot and closes the menu behind it',
+   d.getElementById('miniT').classList.contains('dot') && !d.getElementById('miniT').classList.contains('open'));
+d.getElementById('miniT').click();
+ok('tapping the dot opens it again', !d.getElementById('miniT').classList.contains('dot'));
 ok('scroll position is stored per section and persisted', w.eval("typeof scrollAt === 'object' && typeof scrollFrac === 'object' && SCKEY === 'geri:scroll'"));
 w.eval("scrollAt.falls = 1234; scrollFrac.falls = 0.5; rememberScroll; restoreScroll('falls')");
 ok('restoring a section reads its stored offset', w.eval("scrollAt.falls === 1234"));
@@ -1224,7 +1228,7 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   const box = d.getElementById('miniT'), go = d.getElementById('mtGo');
   const cls = () => box.className;
   w.eval("show('falls'); mtOff = false; T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint()");
-  box.classList.remove('shut','open');
+  box.classList.remove('dot','open');
   /* pause and resume: one tap each, from the compact bar, without the menu */
   go.click();
   const ranAfterOne = w.eval('T.run');
@@ -1237,22 +1241,25 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
      target outside the timer, so the outside-tap handler closes the menu too and would mask
      whether this handler did its own job. */
   w.eval("swSetMode(true)");
-  box.classList.remove('shut'); box.classList.add('open');
+  box.classList.remove('dot'); box.classList.add('open');
   go.click();
   ok('pausing from an open menu closes the menu rather than leaving it up',
      !box.classList.contains('open'), cls());
   w.eval("swSetMode(false); SW = {on:false, run:false, ms:0, ts:0};");
-  /* collapse and expand: one tap each, on the clock and on the collapsed bar */
-  box.classList.remove('open','shut');
+  /* v27: the pill is the single control, so the clock now does the same thing mtGo does \u2014
+     no separate collapse gesture to confuse it with any more */
+  box.classList.remove('open','dot');
+  w.eval("T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint()");
   d.getElementById('mtClock').click();
-  ok('one tap on the clock collapses the timer', box.classList.contains('shut'), cls());
+  ok('one tap on the clock pauses/resumes the day, the same as the button', w.eval('T.run') === true, cls());
+  d.getElementById('mtClock').click();
+  ok('a second tap pauses it again', w.eval('T.run') === false, cls());
+  /* hide shrinks the pill to a gear dot; a tap on the dot restores it */
+  box.classList.remove('dot'); d.getElementById('mtHide').click();
+  ok('the hide button in the menu shrinks the pill to the dot, and closes the menu behind it',
+     box.classList.contains('dot') && !box.classList.contains('open'), cls());
   box.click();
-  ok('and one tap on the collapsed timer brings it back', !box.classList.contains('shut'), cls());
-  /* the collapse button still works and is not undone by the bar\u2019s own handler */
-  box.classList.remove('shut'); d.getElementById('mtShut').click();
-  ok('the collapse button in the menu still collapses, and stays collapsed',
-     box.classList.contains('shut') && !box.classList.contains('open'), cls());
-  box.classList.remove('shut');
+  ok('tapping the dot restores the pill', !box.classList.contains('dot'), cls());
   /* every action in the menu closes it behind itself */
   box.classList.add('open'); d.getElementById('mtMode').click();
   const modeClosed = !box.classList.contains('open');
@@ -1265,7 +1272,53 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   box.classList.add('open');
   d.body.dispatchEvent(new w.MouseEvent('click', {bubbles:true}));
   ok('tapping outside the menu closes it', !box.classList.contains('open'), cls());
-  box.classList.remove('open','shut');
+  box.classList.remove('open','dot');
+
+  /* ---- v27: the pill as the single control ---- */
+  const jumpRow = d.getElementById('jumpRow');
+  box.classList.add('open');
+  w.eval('if(typeof setMenuOpen === "function") setMenuOpen(true)');
+  d.getElementById('mtMore').click();  /* toggles open->closed via the real handler */
+  d.getElementById('mtMore').click();  /* back open, through the real handler this time */
+  ok('the jump row stands down while the pill’s own menu is open, and returns once it closes',
+     jumpRow.classList.contains('hl-off'),
+     'open=' + box.classList.contains('open') + ' jumpRow=' + jumpRow.className);
+  d.getElementById('mtMore').click();
+  ok('closing the pill’s menu brings the jump row back', !jumpRow.classList.contains('hl-off'));
+  ok('the reordered menu leads with text size, theme, and mark my place, with the rarer actions behind a muted "More"',
+     !!d.getElementById('mtSize') && !!d.getElementById('mtTheme') && !!d.getElementById('mtMark') &&
+     !!d.getElementById('mtMoreToggle') && d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtSkip')) &&
+     d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtReset')) &&
+     d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtMode')) &&
+     d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtHide')) &&
+     !d.getElementById('mtShut'));
+  {
+    const moreSub = box.querySelector('.moresub');
+    ok('the muted "More" toggle reveals next phase / reset the day / plain stopwatch / hide, and starts closed',
+       moreSub.hidden === true);
+    d.getElementById('mtMoreToggle').click();
+    ok('tapping it opens the sub-list', moreSub.hidden === false);
+    d.getElementById('mtMoreToggle').click();
+    ok('tapping it again closes it', moreSub.hidden === true);
+  }
+  ok('theme in the pill’s menu toggles dark mode the same way the display popover does',
+     /document\.getElementById\('mtTheme'\)\.addEventListener\('click', \(\)=>\{ disp\.dark = !disp\.dark; paintDisp\(\); setMenuOpen\(false\); \}\);/.test(code));
+  ok('mark my place in the pill’s menu sets the bookmark the same way the topics-sheet row does',
+     /document\.getElementById\('mtMark'\)\.addEventListener\('click', \(\)=>\{ setTimeout\(\(\)=>bmSet\(null\), 0\); setMenuOpen\(false\); \}\);/.test(code));
+  ok('text size in the pill’s menu joins the shared display-popover wiring, and closes the pill’s own menu behind it',
+     /\['shDisplay','dispBtnRail','mtSize'\]\.forEach/.test(code) &&
+     /document\.getElementById\('mtSize'\)\.addEventListener\('click', \(\)=>setMenuOpen\(false\)\);/.test(code));
+  ok('the pill’s menu button carries a settings glyph alongside the overflow dots, so the gear reads even when the menu is closed',
+     d.getElementById('mtMore').textContent.includes('⚙'));
+  ok('the drag threshold is a real long-press (300ms), not an instant drag on touchdown',
+     /pressTimer = setTimeout\(\(\)=>\{\s*\n\s*dragging = true; box\.classList\.add\('dragging'\);\s*\n\s*if\(navigator\.vibrate\) navigator\.vibrate\(12\);\s*\n\s*\}, 300\);/.test(code));
+  ok('the dragged pill snaps 24px (plus the safe-area inset) off the nearest edge, not flush — a flush dock sits inside Android’s own back-gesture strip',
+     /const EDGE = 24;/.test(code) && /safeInset\('left'\)/.test(code) && /safeInset\('right'\)/.test(code) &&
+     /safeInset\('top'\)/.test(code) && /safeInset\('bottom'\)/.test(code));
+  ok('the dragged position persists to geri:timerpos and is read back on load',
+     /window\.storage\.set\('geri:timerpos', JSON\.stringify\(pos\)\);/.test(code) &&
+     /window\.storage\.get\('geri:timerpos'\); const pos = JSON\.parse\(r\.value\);/.test(code));
+
   /* left part-way through the block on purpose: the timer only shows while the block is in
      use, and the height guard further down needs a visible box to measure */
   w.eval("T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint(); show('week')");

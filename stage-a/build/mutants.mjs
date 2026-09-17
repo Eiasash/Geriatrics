@@ -605,34 +605,75 @@ const M = [
    'drill moves the place on too'],
 
   ['pause has to go through the menu again',
-   "    box.classList.remove('open');\n    if(SW.on) swToggleRun(); else elGo.click();",
-   "    box.classList.add('open');\n    if(SW.on) swToggleRun(); else elGo.click();",
+   "  function goTap(){ setMenuOpen(false); if(SW.on) swToggleRun(); else elGo.click(); }",
+   "  function goTap(){ setMenuOpen(true); if(SW.on) swToggleRun(); else elGo.click(); }",
    'closes the menu rather than leaving it up'],
 
-  ['a tap on the clock stops collapsing the timer',
-   "    if(e.target.closest('#mtClock, .ph')){ box.classList.remove('open'); box.classList.add('shut'); }",
+  ['a tap on the clock goes back to doing nothing, instead of pausing/resuming like the button',
+   "    if(e.target.closest('#mtClock, .ph')) goTap();",
    "    void e;",
-   'tap on the clock collapses'],
+   'pauses/resumes the day, the same as the button'],
 
-  ['the collapsed timer cannot be tapped open again',
-   "    if(box.classList.contains('shut')){ box.classList.remove('shut'); return; }\n    if(e.target.closest('#mtClock, .ph'))",
-   "    if(false){ box.classList.remove('shut'); return; }\n    if(e.target.closest('#mtClock, .ph'))",
-   'collapsed timer brings it back'],
+  ['hide stops shrinking the pill to the gear dot',
+   "  document.getElementById('mtHide').addEventListener('click',()=>{ setMenuOpen(false); box.classList.add('dot'); });",
+   "  document.getElementById('mtHide').addEventListener('click',()=>{ setMenuOpen(false); });",
+   'shrinks the pill to a gear dot'],
 
-  ['the collapse button is undone by the bar\u2019s own handler again',
-   "    if(e.target.closest('button')) return;",
-   "    void e.target;",
-   'collapse button in the menu still collapses'],
+  ['tapping the gear dot no longer restores the pill',
+   "    if(box.classList.contains('dot')){ box.classList.remove('dot'); return; }\n    if(e.target.closest('#mtClock, .ph')) goTap();",
+   "    if(false){ box.classList.remove('dot'); return; }\n    if(e.target.closest('#mtClock, .ph')) goTap();",
+   'restores the pill'],
 
   ['switching mode leaves the menu open',
-   "  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); box.classList.remove('open'); });",
+   "  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); setMenuOpen(false); });",
    "  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); });",
    'action taken in the menu closes it'],
 
   ['tapping the page no longer closes the menu',
-   "    if(!box.classList.contains('open') || box.contains(e.target)) return;\n    box.classList.remove('open');",
+   "    if(!box.classList.contains('open') || box.contains(e.target)) return;\n    setMenuOpen(false); moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false');",
    "    return;",
    'tapping outside the menu closes it'],
+
+  /* --- v27 pill-as-single-control, next round --- */
+  ['the jump row stops standing down while the pill\u2019s menu is open',
+   "    if(jumpRow) jumpRow.classList.toggle('hl-off', v);",
+   "    void jumpRow;",
+   'the jump row stands down while the pill\u2019s own menu is open'],
+
+  ['the More sub-list stops toggling open',
+   "  moreToggle.addEventListener('click', ()=>{\n    const open = moreSub.hidden; moreSub.hidden = !open;\n    moreToggle.setAttribute('aria-expanded', open ? 'true' : 'false');\n  });",
+   "  moreToggle.addEventListener('click', ()=>{});",
+   'tapping it opens the sub-list'],
+
+  ['text size in the pill\u2019s menu no longer closes the menu behind it',
+   "  document.getElementById('mtSize').addEventListener('click', ()=>setMenuOpen(false));",
+   "",
+   'text size'],
+
+  ['theme in the pill\u2019s menu stops toggling dark mode',
+   "  document.getElementById('mtTheme').addEventListener('click', ()=>{ disp.dark = !disp.dark; paintDisp(); setMenuOpen(false); });",
+   "  document.getElementById('mtTheme').addEventListener('click', ()=>{ setMenuOpen(false); });",
+   'theme in the pill'],
+
+  ['mark my place in the pill\u2019s menu stops setting the bookmark',
+   "  document.getElementById('mtMark').addEventListener('click', ()=>{ setTimeout(()=>bmSet(null), 0); setMenuOpen(false); });",
+   "  document.getElementById('mtMark').addEventListener('click', ()=>{ setMenuOpen(false); });",
+   'mark my place in the pill'],
+
+  ['the drag threshold drops from 300ms, so a plain tap starts dragging',
+   "    }, 300);",
+   "    }, 0);",
+   'a real long-press (300ms)'],
+
+  ['the dragged pill snaps flush to the edge instead of the 24px + safe-area inset',
+   "  const EDGE = 24;",
+   "  const EDGE = 0;",
+   '24px'],
+
+  ['the pill\u2019s dragged position stops being saved to geri:timerpos',
+   "      try{ window.storage.set('geri:timerpos', JSON.stringify(pos)); }catch(e){}",
+   "",
+   'geri:timerpos'],
 
   /* --- final Gemini round, 16 Sep --- */
   ['dark mode answer feedback loses to the plain-option rule again',

@@ -9163,13 +9163,18 @@ body.dark .pqo.wrong {
   <b id="mtClock">75:00</b>
   <span class="ph" id="mtPhase"></span>
   <button type="button" class="pri" id="mtGo">Start</button>
-  <button type="button" id="mtMore" aria-label="More timer controls">&#8943;</button>
+  <button type="button" id="mtMore" aria-label="Settings and more" aria-haspopup="true" aria-expanded="false">&#9881;&#8943;</button>
   <span class="more">
-    <button type="button" id="mtMode">plain stopwatch</button>
-    <button type="button" id="mtSkip">next phase</button>
-    <button type="button" id="mtReset">reset</button>
-    <button type="button" id="mtShut">collapse</button>
-    <button type="button" id="mtHide">hide</button>
+    <button type="button" id="mtSize">text size</button>
+    <button type="button" id="mtTheme">theme</button>
+    <button type="button" id="mtMark">mark my place</button>
+    <button type="button" id="mtMoreToggle" class="moretoggle" aria-expanded="false">More &#9662;</button>
+    <span class="moresub" hidden>
+      <button type="button" id="mtSkip">next phase</button>
+      <button type="button" id="mtReset">reset the day</button>
+      <button type="button" id="mtMode">plain stopwatch</button>
+      <button type="button" id="mtHide">hide</button>
+    </span>
     <span class="mode" id="mtModeLab"></span>
   </span>
 </div>
@@ -10606,47 +10611,124 @@ elGo.addEventListener('click',()=>{
   tSave(); tPaint();
 });
 document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length) tAdvance(); });
-/* the floating copy drives the same state; the big timer on the home page follows it */
+/* the floating copy drives the same state; the big timer on the home page follows it.
+   v27 — the pill becomes the single control: the old separate "collapse" gesture and menu
+   entry are gone (dragging the pill out of the way replaces the reason to shrink it), text
+   size / theme / mark-my-place move up from the app chrome into the pill's own menu, and the
+   rarer actions (next phase, reset the day, plain stopwatch, hide) sit behind a muted "More"
+   inside that same menu instead of being flat alongside the common ones. */
 (function(){
   const box = document.getElementById('miniT'); if(!box) return;
+  const jumpRow = document.getElementById('jumpRow');
+  const moreBtn = document.getElementById('mtMore');
+  function setMenuOpen(v){
+    box.classList.toggle('open', v);
+    moreBtn.setAttribute('aria-expanded', v ? 'true' : 'false');
+    /* the same one-layer-at-the-bottom-at-a-time rule as the highlight bar: the jump row
+       stands down while the pill's own menu covers the same corner of the screen */
+    if(jumpRow) jumpRow.classList.toggle('hl-off', v);
+  }
   /* One tap, always. Pause/Resume acts immediately and closes the menu rather than opening
-     it; it never needs the menu to be open first. */
-  document.getElementById('mtGo').addEventListener('click',()=>{
-    box.classList.remove('open');
-    if(SW.on) swToggleRun(); else elGo.click();
+     it; it never needs the menu to be open first. Tapping the clock or the phase label does
+     the same thing — the pill IS the single control, so there is no separate collapse tap to
+     confuse it with any more. */
+  function goTap(){ setMenuOpen(false); if(SW.on) swToggleRun(); else elGo.click(); }
+  document.getElementById('mtGo').addEventListener('click', goTap);
+  box.addEventListener('click', e=>{
+    if(e.target.closest('button')) return;              /* buttons own their own behaviour */
+    if(box.classList.contains('dot')){ box.classList.remove('dot'); return; }
+    if(e.target.closest('#mtClock, .ph')) goTap();
   });
   /* every action inside the menu closes it behind itself */
-  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); box.classList.remove('open'); });
-  document.getElementById('mtShut').addEventListener('click',()=>{ box.classList.remove('open'); box.classList.add('shut'); });
-  document.getElementById('mtMore').addEventListener('click',()=>{
-    if(box.classList.contains('shut')){ box.classList.remove('shut'); return; }
-    box.classList.toggle('open');
+  moreBtn.addEventListener('click', ()=>{
+    if(box.classList.contains('dot')){ box.classList.remove('dot'); return; }
+    setMenuOpen(!box.classList.contains('open'));
   });
-  /* Tapping the clock or the phase label collapses the bar, and tapping the collapsed bar
-     anywhere brings it back — one tap each way, instead of going through the menu. The
-     collapse action stays in the menu too, so a keyboard user loses nothing: the clock is
-     text, not a control. */
-  box.addEventListener('click', e=>{
-    /* buttons own their own behaviour: without this the collapse button's own click bubbles
-       up here, is read as "a tap on a collapsed bar", and immediately re-opens it */
-    if(e.target.closest('button')) return;
-    if(box.classList.contains('shut')){ box.classList.remove('shut'); return; }
-    if(e.target.closest('#mtClock, .ph')){ box.classList.remove('open'); box.classList.add('shut'); }
+  /* mtSize opens the shared display popover — wired into the ['shDisplay','dispBtnRail',...]
+     forEach further down the file, alongside the topics-sheet and desktop-rail entry points;
+     this listener only closes the pill's own menu behind it */
+  document.getElementById('mtSize').addEventListener('click', ()=>setMenuOpen(false));
+  document.getElementById('mtTheme').addEventListener('click', ()=>{ disp.dark = !disp.dark; paintDisp(); setMenuOpen(false); });
+  document.getElementById('mtMark').addEventListener('click', ()=>{ setTimeout(()=>bmSet(null), 0); setMenuOpen(false); });
+  const moreSub = box.querySelector('.moresub'), moreToggle = document.getElementById('mtMoreToggle');
+  moreToggle.addEventListener('click', ()=>{
+    const open = moreSub.hidden; moreSub.hidden = !open;
+    moreToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
-  /* tapping anywhere else on the page closes the menu */
+  document.getElementById('mtMode').addEventListener('click',()=>{ swSetMode(!SW.on); setMenuOpen(false); });
+  /* tapping anywhere else on the page closes the menu (and its More sub-list, so it does not
+     stay expanded the next time the menu opens from a fresh tap) */
   document.addEventListener('click', e=>{
     if(!box.classList.contains('open') || box.contains(e.target)) return;
-    box.classList.remove('open');
+    setMenuOpen(false); moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false');
   });
-  document.getElementById('mtSkip').addEventListener('click',()=>{ if(T.p<PH.length) tAdvance(); box.classList.remove('open'); });
+  document.getElementById('mtSkip').addEventListener('click',()=>{ if(T.p<PH.length) tAdvance(); setMenuOpen(false); });
   document.getElementById('mtReset').addEventListener('click',()=>{
-    if(SW.on){ swReset(); box.classList.remove('open'); return; }
+    if(SW.on){ swReset(); setMenuOpen(false); return; }
     if(!confirm('Reset the day back to the start of the 75-minute chapter block?')) return;
-    T={p:0,left:PH[0].s,run:false,ts:0,d:today()}; tSave(); tPaint(); box.classList.remove('open');
+    T={p:0,left:PH[0].s,run:false,ts:0,d:today()}; tSave(); tPaint(); setMenuOpen(false);
   });
-  document.getElementById('mtHide').addEventListener('click',()=>{ mtOff = true; box.classList.remove('open'); box.hidden = true; });
-  /* it comes back on the next section change, and whenever the clock is running */
+  /* "hide" used to set box.hidden = true, which left no way back to it except changing
+     section. It now shrinks to a small gear dot instead — still on screen, still draggable,
+     one tap restores it (per the box click handler above) */
+  document.getElementById('mtHide').addEventListener('click',()=>{ setMenuOpen(false); box.classList.add('dot'); });
+  /* the dot doesn't force mtOff/hidden any more, so nothing needs to reset it on section
+     change; tPaint() still runs to keep the clock live underneath the dot */
   document.addEventListener('sectionshown', ()=>{ mtOff = false; tPaint(); });
+
+  /* ---- draggable: long-press 300ms, then follow the pointer; release snaps 24px (plus the
+     safe-area inset) off the nearest edge rather than flush, so a flush-docked pill would sit
+     inside Android's own back-gesture strip and a long-press-drag there gets stolen by the
+     OS. Position persists per geri:timerpos. ---- */
+  const EDGE = 24;
+  function safeInset(side){
+    const v = getComputedStyle(document.documentElement).getPropertyValue('--sai-' + side);
+    return parseFloat(v) || 0;
+  }
+  function clampPos(left, bottom){
+    const w = box.offsetWidth || 120, h = box.offsetHeight || 48;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const minL = EDGE + safeInset('left'), maxL = vw - w - EDGE - safeInset('right');
+    const minB = EDGE + safeInset('bottom'), maxB = vh - h - EDGE - safeInset('top');
+    return { left: Math.min(Math.max(left, minL), Math.max(minL, maxL)),
+             bottom: Math.min(Math.max(bottom, minB), Math.max(minB, maxB)) };
+  }
+  function applyPos(pos){ box.style.left = pos.left + 'px'; box.style.bottom = pos.bottom + 'px'; box.style.right = 'auto'; }
+  (async()=>{
+    try{
+      const r = await window.storage.get('geri:timerpos'); const pos = JSON.parse(r.value);
+      if(pos && typeof pos.left === 'number' && typeof pos.bottom === 'number') applyPos(clampPos(pos.left, pos.bottom));
+    }catch(e){}
+  })();
+  let pressTimer = null, dragging = false, startX = 0, startY = 0, startLeft = 0, startBottom = 0;
+  function onPointerMove(e){
+    if(!dragging) return;
+    const dx = e.clientX - startX, dy = e.clientY - startY;
+    applyPos(clampPos(startLeft + dx, startBottom - dy));
+  }
+  function endDrag(){
+    if(dragging){
+      dragging = false; box.classList.remove('dragging');
+      const rect = box.getBoundingClientRect();
+      const pos = clampPos(rect.left, window.innerHeight - rect.bottom);
+      applyPos(pos);
+      try{ window.storage.set('geri:timerpos', JSON.stringify(pos)); }catch(e){}
+    }
+    clearTimeout(pressTimer); pressTimer = null;
+    document.removeEventListener('pointermove', onPointerMove);
+    document.removeEventListener('pointerup', endDrag);
+  }
+  box.addEventListener('pointerdown', e=>{
+    if(e.target.closest('button')) return;               /* buttons keep their own tap behaviour */
+    const rect = box.getBoundingClientRect();
+    startX = e.clientX; startY = e.clientY; startLeft = rect.left; startBottom = window.innerHeight - rect.bottom;
+    pressTimer = setTimeout(()=>{
+      dragging = true; box.classList.add('dragging');
+      if(navigator.vibrate) navigator.vibrate(12);
+    }, 300);
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', endDrag);
+  });
 })();
 document.getElementById('tReset').addEventListener('click',()=>{
   T={p:0,left:PH[0].s,run:false,ts:0,d:today()}; tSave(); tPaint();
@@ -11973,12 +12055,12 @@ document.querySelectorAll('.disprow').forEach(row=>{
 (function(){
   const pop = document.getElementById('dispPop'); if(!pop) return;
   const close = ()=>{ pop.hidden = true; };
-  ['shDisplay','dispBtnRail'].forEach(id=>{ const b = document.getElementById(id);
+  ['shDisplay','dispBtnRail','mtSize'].forEach(id=>{ const b = document.getElementById(id);
     if(b) b.addEventListener('click', ()=>{ pop.hidden = !pop.hidden; if(!pop.hidden) paintDisp(); }); });
   document.getElementById('dispPopClose').addEventListener('click', close);
   document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && !pop.hidden) close(); });
   document.addEventListener('click', e=>{
-    if(pop.hidden || pop.contains(e.target) || e.target.closest('#shDisplay,#dispBtnRail')) return; close();
+    if(pop.hidden || pop.contains(e.target) || e.target.closest('#shDisplay,#dispBtnRail,#mtSize')) return; close();
   });
 })();
 
@@ -14305,6 +14387,24 @@ body.dark .toend{ background:var(--surface) !important; color:var(--ink) !import
 body.hdr-hidden #hlBar{ top:env(safe-area-inset-top) !important; }
 .ch-actions{ gap:12px !important; }
 .ch-actions .ebgo{ min-height:44px !important; }
+
+/* v27 — the floating timer pill: draggable (long-press 300ms), snapped 24px + the safe-area
+   inset off the nearest edge rather than flush (a flush dock sits inside Android's own
+   back-gesture strip, which would steal a long-press-drag there); the menu is reordered
+   (text size, theme, mark my place, then a muted More for the rarer actions); "hide" shrinks
+   to a small gear dot instead of disappearing, and tapping the dot restores it. */
+:root{ --sai-left:env(safe-area-inset-left, 0px); --sai-right:env(safe-area-inset-right, 0px);
+  --sai-top:env(safe-area-inset-top, 0px); --sai-bottom:env(safe-area-inset-bottom, 0px); }
+#miniT{ touch-action:none; }
+#miniT.dragging{ transition:none !important; opacity:.92; }
+#miniT #mtMore{ letter-spacing:0; }
+#miniT .moretoggle{ opacity:.6; font-size:calc(11.5px*var(--fs,1)); }
+#miniT .moresub{ display:contents; }
+#miniT .moresub[hidden]{ display:none; }
+#miniT.dot{ padding:0; border-radius:50%; width:40px; height:40px; min-width:40px; overflow:hidden;
+  display:flex; align-items:center; justify-content:center; }
+#miniT.dot b, #miniT.dot .ph, #miniT.dot #mtGo, #miniT.dot .more{ display:none; }
+#miniT.dot #mtMore{ border:0; background:none; min-height:40px; padding:0; }
 </style>
 </body>
 </html>
