@@ -2925,5 +2925,62 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
   w.eval('QS.length = ' + qsLen + ';');
 }
 
+{
+  /* SZMC geriatrics project chat, checked against Hazzard ch 46 itself: 75% of stage 2
+     pressure-injury wounds heal within 60 days — the body-text <li>, the drill Q&A string,
+     and the Key Clinical Points box all agree. A fabricated "A stage 2 should heal within 50
+     days" clause used to sit in both the <li> and the drill Q&A, directly contradicting the
+     60-day figure in the sentence right before it. Removed from both; nothing legitimate in
+     this file should ever say "50 days". */
+  ok('pressure-injury healing still says 60 days in the body text and the drill Q&A, with no fabricated 50-day figure anywhere (Hazzard ch 46, SZMC chat correction)',
+     (code.match(/75% of stage 2 wounds heal within 60 days/g) || []).length === 2 &&
+     !/50 days/.test(code) && !/50-day/.test(code));
+}
+{
+  /* SZMC chat: a printed page-footer stamp ("שלב א' בגריאטריה 28/5/2024 100 שאלות – מסלול
+     על") was OCR-glued with no space onto the last option of 26 items in the 2024-05
+     sitting. Stripped from #pqjson by script, not by hand. The glued form (no space between
+     בגריאטריה and the date) is the unambiguous artifact signature — nothing legitimate
+     would ever produce it. */
+  ok('no past-paper option carries the 2024-05 page-footer stamp that used to run on into 26 items',
+     !code.includes('בגריאטריה28/5/2024'));
+}
+{
+  /* the Beers-vs-STOPP/START conflict table gained a sixth row (Gliclazide specifically) at
+     some point after the "Four places" lede was written, and nobody updated the prose. */
+  const confTable = d.querySelector('#conf table');
+  const confRows = confTable ? confTable.querySelectorAll('tbody tr').length : 0;
+  const lede = d.querySelector('#conf .lede');
+  ok('the conflict-table lede count matches the Beers/STOPP table’s actual row count (SZMC chat correction)',
+     !!lede && /^Six places the two tools give different answers/.test(lede.textContent.trim()) && confRows === 6,
+     'rows=' + confRows + ' lede=' + (lede && lede.textContent.slice(0, 20)));
+}
+{
+  /* the "non-textbook sources" table lists 19 distinct question numbers (some cells carry
+     two, comma-separated) but the prose below it said 14. Found by its header signature
+     (Q / Source / What it asked), not by DOM position relative to its heading — the "anatomy"
+     section carries an auto-generated heading id/annotation structure that makes sibling
+     traversal from the <h2> land on the wrong node. */
+  const tbl = [...d.querySelectorAll('table')].find(t =>
+    [...t.querySelectorAll('thead th')].map(th => th.textContent.trim()).join('|') === 'Q|Source|What it asked');
+  const nums = tbl ? [...tbl.querySelectorAll('tbody tr td.n')].flatMap(td => td.textContent.split(',').map(s => s.trim())) : [];
+  const distinct = new Set(nums).size;
+  const prose = [...d.querySelectorAll('p.note')].find(p => /of 100 questions come from material no textbook contains/.test(p.textContent));
+  ok('the non-textbook-sources prose count matches the table’s distinct question count (SZMC chat correction)',
+     !!prose && /^19 of 100 questions/.test(prose.textContent.trim()) && distinct === 19,
+     'distinct=' + distinct + ' prose=' + (prose && prose.textContent.slice(0, 20)));
+}
+{
+  /* the master chapter-by-chapter index printed 5 questions for ch 65 (depression) while
+     #pqjson actually carries 12 for that chapter. */
+  const ch65Count = w.eval("PQ.filter(p=>p.ch===65).length");
+  const row = [...d.querySelectorAll('table.chapidx tbody tr')]
+    .find(tr => (tr.querySelector('td.n') || {}).textContent === '65');
+  const cells = row ? row.querySelectorAll('td.n') : [];
+  const printed = cells.length ? cells[cells.length - 1].textContent.trim() : null;
+  ok('the master chapter-index row for ch 65 (depression) matches pqjson’s actual question count (SZMC chat correction)',
+     printed === '12' && ch65Count === 12, 'printed=' + printed + ' pqjson=' + ch65Count);
+}
+
 console.log("DONE");
 process.exit(FAILS || process.exitCode ? 1 : 0);
