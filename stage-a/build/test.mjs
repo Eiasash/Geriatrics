@@ -1886,10 +1886,10 @@ ok('dark mode outlines "Mark today done" (not-yet-done state) the same way, and 
    /body\.dark #week #tdBtn:not\(\[data-on="1"\]\) \{\s*\n\s*background: var\(--surface\) !important;\s*\n\s*border-color: var\(--c-now\) !important;\s*\n\s*color: var\(--ink\) !important;\s*\n\s*\}/.test(code));
 
 /* ---- v25: dark leftovers — the rest of the solid --c-now fills forced near-black by v20 ---- */
-ok('dark mode outlines the timer Start/Resume button the same way',
-   /body\.dark #week #tGo\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
-ok('dark mode outlines the quick-log button the same way',
-   /body\.dark #week #qLog\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
+ok('dark mode outlines the timer Start/Resume button the same way, with a real border (not just border-color on a borderless button)',
+   /body\.dark #week #tGo\{ background:var\(--surface\) !important; border:1px solid var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
+ok('dark mode outlines the quick-log button the same way, with a real border (its own rule sets border:none, so border-color alone would be invisible)',
+   /body\.dark #week #qLog\{ background:var\(--surface\) !important; border:1px solid var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
 ok('dark mode outlines a pressed filter pill the same way',
    /body\.dark \.pf button\[aria-pressed="true"\]\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
 ok('dark mode outlines the mock’s start button the same way',

@@ -855,14 +855,19 @@ const M = [
 
   /* --- v25 dark leftovers, next round --- */
   ['the timer Start/Resume button reverts to a solid amber fill with near-black text in dark mode',
-   'body.dark #week #tGo{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }',
+   'body.dark #week #tGo{ background:var(--surface) !important; border:1px solid var(--c-now) !important; color:var(--ink) !important; }',
    '',
    'outlines the timer Start/Resume button'],
 
   ['the quick-log button reverts to a solid amber fill with near-black text in dark mode',
-   'body.dark #week #qLog{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }',
+   'body.dark #week #qLog{ background:var(--surface) !important; border:1px solid var(--c-now) !important; color:var(--ink) !important; }',
    '',
    'outlines the quick-log button'],
+
+  ['the quick-log button’s dark outline goes back to border-color-only, invisible against its own border:none rule',
+   'body.dark #week #qLog{ background:var(--surface) !important; border:1px solid var(--c-now) !important; color:var(--ink) !important; }',
+   'body.dark #week #qLog{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }',
+   'with a real border'],
 
   ['a pressed filter pill reverts to a solid amber fill with near-black text in dark mode',
    'body.dark .pf button[aria-pressed="true"]{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }',

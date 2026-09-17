@@ -14200,9 +14200,14 @@ body.dark .secfoot > button.nx{ background:var(--surface) !important; border-col
    forces near-black text onto, given the same softened-palette outline treatment as v21
    (surface fill, amber border, ink text). Timer Start/Resume (#tGo), quick-log (#qLog), the
    pressed filter pills, and the mock's own start button (.mockgo). */
-body.dark #week #tGo{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }
+/* #tGo has no border declared of its own (relies on the UA default, which is not guaranteed
+   to be a visible 1px solid line); #qLog explicitly carries border:none !important from its
+   own rule above. border-color alone cannot produce a visible border in either case — a
+   border-style of none (or an unset/default width) computes the border to nothing regardless
+   of colour. Both need the full shorthand here, not just border-color (Codex #432). */
+body.dark #week #tGo{ background:var(--surface) !important; border:1px solid var(--c-now) !important; color:var(--ink) !important; }
 body.dark #week #tGo:hover{ background:var(--rule-subtle) !important; }
-body.dark #week #qLog{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }
+body.dark #week #qLog{ background:var(--surface) !important; border:1px solid var(--c-now) !important; color:var(--ink) !important; }
 body.dark #week #qLog:hover{ background:var(--rule-subtle) !important; }
 body.dark .pf button[aria-pressed="true"]{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }
 body.dark .pf button.mockgo{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }
