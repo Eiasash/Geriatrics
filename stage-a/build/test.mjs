@@ -2556,6 +2556,32 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
      'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert + ' activeElement=' + (d.activeElement && d.activeElement.id));
   homeBtn.blur();
   w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
+  /* the focus guard above only proves the header stays shown WHILE focus is inside the nav —
+     it never proves the header can hide again once focus moves on, so a regression that left
+     it permanently un-hideable after any focus visit would slip through */
+  w.scrollY = 300; w.dispatchEvent(new w.Event('scroll'));
+  ok('the header can hide again once focus leaves the nav',
+     d.body.classList.contains('hdr-hidden') && nav.inert === true,
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert);
+  w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
+}
+{
+  /* Gemini review of #439/#440: onScroll returns before updating lastY when hdrFrozen (or
+     off the mobile breakpoint), so the first scroll after unfreezing compared the current
+     position against a stale pre-freeze lastY — a small real movement could read as a huge
+     dy and flip the header the wrong way for one event. lastY must track the live position
+     even during a frozen scroll so the comparison right after unfreezing is against the
+     freeze-time position, not whatever it was before the freeze started. */
+  const nav2 = d.querySelector('nav');
+  w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
+  w.eval('hdrSetFrozen(true)');
+  w.scrollY = 500; w.dispatchEvent(new w.Event('scroll'));
+  w.eval('hdrSetFrozen(false)');
+  w.scrollY = 503; w.dispatchEvent(new w.Event('scroll'));
+  ok('a small scroll right after unfreezing does not wrongly flip the header (lastY tracked the live position while frozen)',
+     !d.body.classList.contains('hdr-hidden') && !nav2.inert,
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav2.inert);
+  w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
 }
 {
   /* WCAG 2.5.3 label-in-name: an aria-label that doesn't contain the visible text hides that
@@ -2570,6 +2596,13 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
      !topicBtn.hasAttribute('aria-label'));
   ok('the decorative chevron is hidden from the accessible name, so it resolves to just the visible topic label',
      d.querySelector('#topicBtn .glabel').getAttribute('aria-hidden') === 'true');
+  /* Gemini review: "This week" alone doesn't say what the control does. aria-describedby adds
+     that without touching the accessible NAME (which must stay the visible text, per 2.5.3
+     above) — the name says what it's labelled, the description says what it does. */
+  ok('the topics button has an aria-describedby pointing at hidden text describing what it does',
+     topicBtn.getAttribute('aria-describedby') === 'topicBtnDesc' &&
+     !!d.getElementById('topicBtnDesc') &&
+     d.getElementById('topicBtnDesc').textContent.trim() === 'opens the topic list');
 }
 {
   /* Codex P1 review of #439: leaving the mobile breakpoint (e.g. tablet rotation) while the

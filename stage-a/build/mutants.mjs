@@ -1043,8 +1043,8 @@ const M = [
    'freezes synchronously on selectionchange, before the 260ms debounce'],
 
   ['the topics button’s aria-label comes back and hides its visible text from screen readers again (WCAG 2.5.3 label-in-name, Gemini review of #433)',
-   '<button class="topicbtn" id="topicBtn" type="button" aria-haspopup="dialog">',
-   '<button class="topicbtn" id="topicBtn" type="button" aria-haspopup="dialog" aria-label="Jump to topics">',
+   '<button class="topicbtn" id="topicBtn" type="button" aria-haspopup="dialog" aria-describedby="topicBtnDesc">',
+   '<button class="topicbtn" id="topicBtn" type="button" aria-haspopup="dialog" aria-describedby="topicBtnDesc" aria-label="Jump to topics">',
    'carries no aria-label that would hide its visible text'],
 
   ['the header no longer makes the nav inert while hidden, so its buttons stay focusable off-screen (Gemini review of #433)',
@@ -1061,6 +1061,14 @@ const M = [
    '    if(!mq.matches && hdrHidden){ hdrHidden = false; apply(); }',
    '',
    'restores the shown, non-inert nav'],
+  ['lastY does not track the live scroll position while frozen or off the mobile breakpoint, so the first scroll after unfreezing can wrongly flip the header (Gemini review of #439/#440)',
+   'if(hdrFrozen || !mq.matches){ lastY = y; return; }',
+   'if(hdrFrozen || !mq.matches){ return; }',
+   'wrongly flip the header'],
+  ['the topics button loses its aria-describedby, so a screen reader no longer hears what the control does (Gemini review of #439/#440)',
+   ' aria-describedby="topicBtnDesc"',
+   '',
+   'aria-describedby pointing at hidden text'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
