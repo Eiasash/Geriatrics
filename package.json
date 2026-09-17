@@ -25,5 +25,8 @@
     "playwright": "^1.59.1",
     "vite": "^7.3.6",
     "vitest": "^4.1.11"
+  },
+  "overrides": {
+    "esbuild": "^0.28.1"
   }
 }
