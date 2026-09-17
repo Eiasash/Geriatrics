@@ -676,8 +676,8 @@ const M = [
    'geri:timerpos'],
 
   ['a long-press with no movement stops being swallowed, so it falls through and pauses/resumes the timer',
-   "    if(armed){ armed = false; e.stopImmediatePropagation(); }",
-   "    if(armed){ armed = false; }",
+   "    if(armed || (Date.now() - dragEndedAt < 400)){ armed = false; e.stopImmediatePropagation(); }",
+   "    if(armed || (Date.now() - dragEndedAt < 400)){ }",
    'swallowed as a hold'],
 
   ['pointercancel stops tearing the drag down, so a system-cancelled press leaves the pill armed for the next touch',
@@ -686,7 +686,7 @@ const M = [
    'pointercancel tears the drag down'],
 
   ['closing the pill’s menu stops collapsing the nested More list behind it',
-   "    if(!v && moreSub){ moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false'); }",
+   "      if(moreSub){ moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false'); }",
    "",
    'also collapses the nested More list'],
 
@@ -724,6 +724,26 @@ const M = [
    "width:44px; height:44px; min-width:44px;",
    "width:40px; height:40px; min-width:40px;",
    'the gear dot is 44px, not 40'],
+
+  ['opening the menu stops re-clamping a top-pinned pill, so its taller open self can be pushed off the top of the viewport',
+   "    if(v && collapsedPos){",
+   "    if(false && collapsedPos){",
+   're-clamps a top-pinned pill'],
+
+  ['closing the menu stops restoring the exact pre-open position, leaving the pill wherever the open-state clamp put it',
+   "      if(collapsedPos){ applyPos(collapsedPos); collapsedPos = null; }",
+   "",
+   'restores the exact pre-open position'],
+
+  ['endDrag stops clearing armed and stamping dragEndedAt, so a real drag with no post-drag click leaves armed true forever',
+   "    armed = false;\n    dragEndedAt = Date.now();\n    teardown();",
+   "    teardown();",
+   'not swallowed by a stale armed flag'],
+
+  ['the safe-area probe goes back to reading an unresolved custom property, so the inset is always 0',
+   "    const v = getComputedStyle(safeProbe).getPropertyValue('padding-' + side);",
+   "    const v = getComputedStyle(document.documentElement).getPropertyValue('--sai-' + side);",
+   'measured off a resolved padding on a real probe element'],
 
   /* --- final Gemini round, 16 Sep --- */
   ['dark mode answer feedback loses to the plain-option rule again',

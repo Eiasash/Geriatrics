@@ -10625,16 +10625,31 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
   const box = document.getElementById('miniT'); if(!box) return;
   const jumpRow = document.getElementById('jumpRow');
   const moreBtn = document.getElementById('mtMore');
+  let collapsedPos = null;
   function setMenuOpen(v){
+    if(v && !box.classList.contains('open')){
+      const left = parseFloat(box.style.left), bottom = parseFloat(box.style.bottom);
+      collapsedPos = (Number.isFinite(left) && Number.isFinite(bottom)) ? { left, bottom } : null;
+    }
     box.classList.toggle('open', v);
     moreBtn.setAttribute('aria-expanded', v ? 'true' : 'false');
     /* the same one-layer-at-the-bottom-at-a-time rule as the highlight bar: the jump row
        stands down while the pill's own menu covers the same corner of the screen */
     if(jumpRow) jumpRow.classList.toggle('hl-off', v);
-    /* closing the menu always closes its nested More sub-list too, not only via the
-       outside-tap handler — otherwise an action taken from inside More (next phase, reset,
-       mode, hide) leaves it expanded for the next fresh open of the menu */
-    if(!v && moreSub){ moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false'); }
+    if(v && collapsedPos){
+      /* opening grows the box upward from its fixed bottom anchor — a pill dragged near the
+         top edge can otherwise push its taller, open self off-screen above the viewport.
+         Re-clamp with the now-open offsetHeight so the whole open box stays inside the edge
+         inset; the pre-open position is restored exactly on close, below. */
+      applyPos(clampPos(collapsedPos.left, collapsedPos.bottom));
+    }
+    if(!v){
+      /* closing the menu always closes its nested More sub-list too, not only via the
+         outside-tap handler — otherwise an action taken from inside More (next phase, reset,
+         mode, hide) leaves it expanded for the next fresh open of the menu */
+      if(moreSub){ moreSub.hidden = true; moreToggle.setAttribute('aria-expanded','false'); }
+      if(collapsedPos){ applyPos(collapsedPos); collapsedPos = null; }
+    }
   }
   /* while dotted, mtMore is the only exposed control and no longer opens a menu — it restores
      the pill instead, so its accessible name and popup state need to say that rather than
@@ -10697,8 +10712,19 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
      inside Android's own back-gesture strip and a long-press-drag there gets stolen by the
      OS. Position persists per geri:timerpos. ---- */
   const EDGE = 24;
+  /* env(safe-area-inset-*) round-tripped through a custom property (the old --sai-* approach)
+     comes back from getComputedStyle as the literal unresolved "env(...)" string in some
+     browsers, not the resolved pixel value — parseFloat of that is always NaN, so the inset
+     silently read as 0 everywhere. A hidden probe element with the env() value on a real
+     padding property resolves reliably; getComputedStyle().paddingLeft on that element is a
+     plain resolved length. */
+  const safeProbe = document.createElement('div');
+  safeProbe.style.cssText = 'position:fixed;left:-9999px;top:-9999px;visibility:hidden;pointer-events:none;' +
+    'padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);' +
+    'padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);';
+  document.body.appendChild(safeProbe);
   function safeInset(side){
-    const v = getComputedStyle(document.documentElement).getPropertyValue('--sai-' + side);
+    const v = getComputedStyle(safeProbe).getPropertyValue('padding-' + side);
     return parseFloat(v) || 0;
   }
   function clampPos(left, bottom){
@@ -10733,15 +10759,19 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
     }
   })();
   let pressTimer = null, dragging = false, armed = false, startX = 0, startY = 0, startLeft = 0, startBottom = 0;
-  let activePointerId = null;
+  let activePointerId = null, dragEndedAt = 0;
   /* a press that reached the 300ms long-press threshold (armed) must never fall through to a
-     plain tap afterward, even if the finger never moved: goTap (pause/resume) is guarded on
-     the click that follows, and armed is cleared there so a genuine next tap still works. */
+     plain tap afterward, even if the finger never moved. Android touch doesn't reliably fire a
+     click after a real drag's pointerup, so armed can't wait for that click to clear itself —
+     it would stay true forever and swallow the next, unrelated genuine tap on the pill. armed
+     is cleared synchronously in endDrag() instead; this listener also swallows a click landing
+     within ~400ms of that (dragEndedAt), which is what actually stops the post-drag synthetic
+     click from reaching goTap() on browsers that do fire one. */
   box.addEventListener('click', e=>{
     /* stopImmediatePropagation, not just returning: this is a capture-phase listener on the
        same element as the bubble-phase one below that calls goTap() on the clock/phase tap —
        returning from this handler alone would not stop that other listener from still firing */
-    if(armed){ armed = false; e.stopImmediatePropagation(); }
+    if(armed || (Date.now() - dragEndedAt < 400)){ armed = false; e.stopImmediatePropagation(); }
   }, true);
   function teardown(){
     clearTimeout(pressTimer); pressTimer = null; dragging = false; activePointerId = null; box.classList.remove('dragging');
@@ -10770,6 +10800,8 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
       applyPos(pos);
       try{ window.storage.set('geri:timerpos', JSON.stringify(pos)); }catch(e){}
     }
+    armed = false;
+    dragEndedAt = Date.now();
     teardown();
   }
   /* an Android system gesture, notification shade, or incoming call can cancel the pointer
@@ -14461,8 +14493,6 @@ body.hdr-hidden #hlBar{ top:env(safe-area-inset-top) !important; }
    back-gesture strip, which would steal a long-press-drag there); the menu is reordered
    (text size, theme, mark my place, then a muted More for the rarer actions); "hide" shrinks
    to a small gear dot instead of disappearing, and tapping the dot restores it. */
-:root{ --sai-left:env(safe-area-inset-left, 0px); --sai-right:env(safe-area-inset-right, 0px);
-  --sai-top:env(safe-area-inset-top, 0px); --sai-bottom:env(safe-area-inset-bottom, 0px); }
 #miniT{ touch-action:none; }
 #miniT.dragging{ transition:none !important; opacity:.92; }
 #miniT #mtMore{ letter-spacing:0; }

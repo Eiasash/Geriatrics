@@ -1325,16 +1325,43 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
      /document\.getElementById\('mtSize'\)\.addEventListener\('click', \(\)=>setMenuOpen\(false\)\);/.test(code));
   ok('the pill’s menu button carries a settings glyph alongside the overflow dots, so the gear reads even when the menu is closed',
      d.getElementById('mtMore').textContent.includes('⚙'));
+  {
+    /* opening the menu grows the box upward from its fixed bottom anchor. A pill dragged to the
+       top edge (bottom pinned near vh-h-EDGE) can then have its open, taller self pushed off
+       the top of the viewport — re-clamping on open must pull bottom back down so the whole
+       open box stays inside the edge inset, and closing must restore the exact pre-open spot
+       rather than leaving the pill wherever the open-state clamp put it. jsdom never lays out
+       real geometry, so offsetHeight/offsetWidth are overridden here (same technique other
+       tests in this file already use for getBoundingClientRect) to simulate a taller open box. */
+    box.classList.remove('dot','open');
+    const leftBefore = box.style.left, bottomBefore = box.style.bottom;   /* restored below */
+    Object.defineProperty(box, 'offsetHeight', { configurable:true, get(){ return box.classList.contains('open') ? 220 : 48; } });
+    Object.defineProperty(box, 'offsetWidth', { configurable:true, get(){ return 120; } });
+    box.style.left = '24px'; box.style.bottom = '696px';   /* pinned at the very top edge (768-48-24) */
+    d.getElementById('mtMore').click();                     /* open */
+    ok('opening the menu re-clamps a top-pinned pill so its taller, open self stays inside the top edge inset',
+       box.style.bottom === '524px', 'bottom=' + box.style.bottom);   /* 768-220-24 */
+    d.getElementById('mtMore').click();                     /* close */
+    ok('closing the menu restores the exact pre-open position, not the open-state clamp',
+       box.style.bottom === '696px', 'bottom=' + box.style.bottom);
+    delete box.offsetHeight; delete box.offsetWidth;
+    box.style.left = leftBefore; box.style.bottom = bottomBefore;
+  }
   ok('the drag threshold is a real long-press (300ms), not an instant drag on touchdown',
      /pressTimer = setTimeout\(\(\)=>\{\s*\n\s*armed = true; dragging = true; box\.classList\.add\('dragging'\);\s*\n\s*if\(navigator\.vibrate\) navigator\.vibrate\(12\);\s*\n\s*\}, 300\);/.test(code));
   ok('the dragged pill snaps 24px (plus the safe-area inset) off the nearest edge, not flush — a flush dock sits inside Android’s own back-gesture strip',
      /const EDGE = 24;/.test(code) && /safeInset\('left'\)/.test(code) && /safeInset\('right'\)/.test(code) &&
      /safeInset\('top'\)/.test(code) && /safeInset\('bottom'\)/.test(code));
+  ok('the safe-area inset is measured off a resolved padding on a real probe element, not round-tripped through a custom property (which some browsers hand back as the literal unresolved "env(...)" string — parseFloat of that is always NaN, reading as 0 everywhere)',
+     /padding-left:env\(safe-area-inset-left,0px\)/.test(code) &&
+     /getComputedStyle\(safeProbe\)\.getPropertyValue\('padding-' \+ side\)/.test(code));
   ok('the dragged position persists to geri:timerpos and is read back on load',
      /window\.storage\.set\('geri:timerpos', JSON\.stringify\(pos\)\);/.test(code) &&
      /window\.storage\.get\('geri:timerpos'\); const stored = JSON\.parse\(r\.value\);/.test(code));
   ok('a long-press that never moves is swallowed as a hold, not forwarded to the pause/resume tap',
-     /if\(armed\)\{ armed = false; e\.stopImmediatePropagation\(\); \}/.test(code));
+     /if\(armed \|\| \(Date\.now\(\) - dragEndedAt < 400\)\)\{ armed = false; e\.stopImmediatePropagation\(\); \}/.test(code));
+  ok('armed is cleared synchronously in endDrag, not only by a post-drag click — Android doesn’t reliably fire one, which used to leave armed true forever and swallow the next unrelated genuine tap',
+     /armed = false;\s*\n\s*dragEndedAt = Date\.now\(\);\s*\n\s*teardown\(\);/.test(code));
   ok('pointercancel tears the drag down — clears the press timer, drops dragging, and removes the document-level listeners — so a later unrelated touch cannot inherit an armed drag',
      /function onPointerCancel\(e\)\{\s*\n\s*if\(e\.pointerId !== activePointerId\) return;\s*\n\s*armed = false; teardown\(\);\s*\n\s*\}/.test(code) &&
      /document\.addEventListener\('pointercancel', onPointerCancel\);/.test(code) &&
@@ -1385,6 +1412,42 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
        stillDraggingAfterOtherFingerUp === true && box.classList.contains('dragging') === false,
        'armed=' + armedByFirstFinger + ' unmovedByForeignMove=' + leftUnchangedByForeignMove +
        ' afterOtherFingerUp=' + stillDraggingAfterOtherFingerUp + ' afterOwnUp=' + box.classList.contains('dragging'));
+  }
+
+  {
+    /* Android touch doesn't reliably fire a click after a real drag's pointerup. If armed only
+       cleared on that click, it would stay true forever and the next, much-later, genuine tap
+       on the pill would be silently swallowed. armed must clear in endDrag itself. */
+    w.eval("T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint()");
+    box.classList.remove('dot','open','dragging');
+    const clockEl = d.getElementById('mtClock');
+    const pd = new w.Event('pointerdown', {bubbles:true}); pd.clientX = 40; pd.clientY = 40; pd.pointerId = 9;
+    clockEl.dispatchEvent(pd);
+    await new Promise(r=>setTimeout(r,350));
+    const mv = new w.Event('pointermove', {bubbles:true}); mv.clientX = 90; mv.clientY = 90; mv.pointerId = 9;
+    d.dispatchEvent(mv);
+    const pu = new w.Event('pointerup', {bubbles:true}); pu.pointerId = 9;
+    d.dispatchEvent(pu);
+    /* no click dispatched here on purpose — simulating the Android quirk */
+    await new Promise(r=>setTimeout(r,450));
+    clockEl.dispatchEvent(new w.MouseEvent('click', {bubbles:true}));
+    ok('a much-later genuine tap is not swallowed by a stale armed flag from an earlier real drag that never got a post-drag click',
+       w.eval('T.run') === true, 'run=' + w.eval('T.run'));
+    /* the reverse case: a click landing quickly after a real drag ends (the common desktop/
+       most-Android case) must still be swallowed, so releasing the drag over the clock doesn't
+       also toggle the timer */
+    box.classList.remove('dragging');
+    const pd2 = new w.Event('pointerdown', {bubbles:true}); pd2.clientX = 40; pd2.clientY = 40; pd2.pointerId = 10;
+    clockEl.dispatchEvent(pd2);
+    await new Promise(r=>setTimeout(r,350));
+    const mv2 = new w.Event('pointermove', {bubbles:true}); mv2.clientX = 90; mv2.clientY = 90; mv2.pointerId = 10;
+    d.dispatchEvent(mv2);
+    const pu2 = new w.Event('pointerup', {bubbles:true}); pu2.pointerId = 10;
+    d.dispatchEvent(pu2);
+    const runBeforeQuickClick = w.eval('T.run');
+    clockEl.dispatchEvent(new w.MouseEvent('click', {bubbles:true}));   /* fired right away */
+    ok('a click landing right after a real drag ends is still swallowed, so releasing over the clock doesn’t also toggle the timer',
+       w.eval('T.run') === runBeforeQuickClick, 'before=' + runBeforeQuickClick + ' after=' + w.eval('T.run'));
   }
 
   /* runtime reproduction of the long-press-toggles-the-timer bug: pointerdown on the clock,
