@@ -2279,6 +2279,13 @@ ok('the phone anchor bar is down to home, the tappable title, and a search icon 
    !!d.querySelector('#anchorBar #homeBtn') && !!d.querySelector('#anchorBar #topicBtn') && !!d.querySelector('#anchorBar #srchBtn') &&
    !d.querySelector('#anchorBar #rptBtn') && !d.querySelector('#anchorBar #dispBtn'));
 ok('report a problem is reachable from the topics sheet', !!d.querySelector('#sheetBody #shReport'));
+ok('the search icon is an inline SVG stroked with currentColor (not a colour emoji, which renders differently per device and ignores theme)',
+   !!d.querySelector('#srchBtn svg') && d.querySelector('#srchBtn').textContent.trim() === '' &&
+   d.querySelector('#srchBtn svg').getAttribute('stroke') === 'currentColor' &&
+   /\.anchorbar \.srchbtn svg\{ width:24px; height:24px; flex:none; \}/.test(code));
+ok('the tappable title reads the plain sans heading font, one line, a bare chevron with no "topics" label',
+   d.querySelector('#topicBtn .glabel').textContent.trim() === '▾' &&
+   /\.topicbtn\{ font-family:var\(--sans\) !important; letter-spacing:0 !important; text-transform:none !important; \}/.test(code));
 {
   const wrap = d.getElementById('srchWrap'), btn = d.getElementById('srchBtn'), q = d.getElementById('q');
   ok('the search icon opens the full input and focuses it, and a second tap closes it',

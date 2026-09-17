@@ -909,6 +909,17 @@ const M = [
    'if(y < 60) return false;',
    'if(y < 0) return false;',
    'near the top (<60px) the header always shows'],
+
+  /* --- Gemini/Eias phone check of #432+#433, next round --- */
+  ['the search icon SVG loses its explicit 24px sizing and falls back to the browser default',
+   '.anchorbar .srchbtn svg{ width:24px; height:24px; flex:none; }',
+   '',
+   'an inline SVG stroked with currentColor'],
+
+  ['the tappable title goes back to the monospace technical-ledger voice',
+   '.topicbtn{ font-family:var(--sans) !important; letter-spacing:0 !important; text-transform:none !important; }',
+   '',
+   'the plain sans heading font'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the

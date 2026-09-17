@@ -2763,10 +2763,12 @@ body.dark .pqo.wrong {
   <div class="srch" id="srchWrap"><input id="q" type="search" placeholder="Search all sections" autocomplete="off" aria-label="Search all sections"></div>
   <div class="anchorbar" id="anchorBar">
     <button class="homebtn" id="homeBtn" type="button" aria-label="Home">&#8962;</button>
-    <button class="topicbtn" id="topicBtn" type="button" aria-haspopup="dialog">
-      <span id="topicNow">This week</span><span class="glabel">topics &#9662;</span>
+    <button class="topicbtn" id="topicBtn" type="button" aria-haspopup="dialog" aria-label="Jump to topics">
+      <span id="topicNow">This week</span><span class="glabel">&#9662;</span>
     </button>
-    <button class="srchbtn" id="srchBtn" type="button" aria-label="Search all sections" title="Search">&#128269;</button>
+    <button class="srchbtn" id="srchBtn" type="button" aria-label="Search all sections" title="Search">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </button>
   </div>
   <div class="btns" id="rail">
     <div class="gwrap open" data-g="now"><button class="grp" type="button" aria-expanded="true">Now</button><div class="gitems">
@@ -14280,11 +14282,16 @@ body.dark .toend{ background:var(--surface) !important; color:var(--ink) !import
   .srch{ display:none !important; margin:0 14px 10px !important; }
   .srch.open{ display:block !important; }
   .anchorbar .srchbtn{ display:flex !important; align-items:center; justify-content:center;
-    width:46px; min-height:46px; flex:none; font-size:calc(18px*var(--fs,1));
+    width:46px; min-height:46px; flex:none;
     background:var(--paper); border:1px solid var(--ink); border-radius:2px; color:var(--ink); cursor:pointer; }
+  .anchorbar .srchbtn svg{ width:24px; height:24px; flex:none; }
   body.dark .anchorbar .srchbtn{ background:var(--surface); border-color:var(--rule); color:var(--ink); }
   nav{ transition:transform .22s ease !important; will-change:transform; }
   body.hdr-hidden nav{ transform:translateY(-100%) !important; }
+  /* the chapter-top dossier pass (line ~14116) put .topicbtn back into the monospace/
+     uppercase technical-ledger voice; the tappable title stays the plain sans heading font,
+     one line with ellipsis (#topicNow, above), a bare chevron (no "topics" label text) */
+  .topicbtn{ font-family:var(--sans) !important; letter-spacing:0 !important; text-transform:none !important; }
 }
 body.hdr-hidden #hlBar{ top:env(safe-area-inset-top) !important; }
 .ch-actions{ gap:12px !important; }
