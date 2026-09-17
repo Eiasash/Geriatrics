@@ -9959,6 +9959,12 @@ function show(id){
 btns.forEach(b=>b.addEventListener('click',()=>{ show(b.dataset.t); }));
 (async()=>{
   try{
+    /* a deep link (e.g. #falls) must win over the saved tab on a cold load — the saved tab
+       is only the fallback when there is no hash to route on. Both this and the hash-router
+       IIFE further down are async, so without this check whichever one's await happened to
+       resolve last silently overrode the other; the saved tab racing ahead of the hash was
+       what actually landed a reader who followed a deep link on their last-open tab instead. */
+    if(location.hash.slice(1)) return;
     const r = await window.storage.get('geri:tab');
     if(r && document.getElementById(r.value)) show(r.value);
   }catch(e){ /* first visit */ }
@@ -10815,7 +10821,7 @@ document.querySelectorAll('.wopen').forEach(b=>{
 
 /* ---------- backup ---------- */
 const BKEYS = ['geri:weeks-done','geri:days','geri:missed','geri:qlog','geri:mocklog','geri:notes','geri:timer',
-  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch','geri:scroll','geri:hlcolour','geri:rail','geri:tab','geri:ppintro','geri:pqpos'];
+  'geri:read','geri:display','geri:groups','geri:round','geri:pq','geri:mock','geri:mockrun','geri:hl','geri:secnotes','geri:bookmark','geri:stopwatch','geri:scroll','geri:hlcolour','geri:rail','geri:tab','geri:ppintro','geri:pqpos'];
 /* One backup block, kept in a dialog so it is reachable from the bottom of every
    section as well as from the home page. Moving the node rather than copying it
    means there is still only one textarea and one set of handlers. */
@@ -13518,8 +13524,12 @@ async function paintLastMock(){
     const r = await window.storage.get(MKKEY);
     if(mine !== lastMockPaint) return;
     const v = JSON.parse(r.value);
-    if(v && v.n) el.innerHTML = 'Last mock: <b>' + v.right + ' / ' + v.n + '</b> (' +
-      Math.round(v.right/v.n*100) + '%) on ' + v.when + '.';
+    /* v comes straight from storage, which a restored backup file (or a synced-from-another-
+       device value) can put arbitrary content into — right/n/when are normally a number and a
+       date string the app itself wrote, but nothing enforces that on the way back in. Escaped
+       like every other storage-derived field this file paints into innerHTML. */
+    if(v && v.n) el.innerHTML = 'Last mock: <b>' + escHtml(v.right) + ' / ' + escHtml(v.n) + '</b> (' +
+      Math.round(v.right/v.n*100) + '%) on ' + escHtml(v.when) + '.';
   }catch(e){}
 }
 function mockPaint(){
