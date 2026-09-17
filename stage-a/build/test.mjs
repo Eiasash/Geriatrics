@@ -2526,6 +2526,51 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
   ok('scrolling up past the threshold shows the header', dec(200, 300, true) === false, dec(200,300,true));
   ok('a small jitter (<=6px either way) keeps the current state', dec(203, 200, false) === false && dec(197, 200, true) === true);
 }
+{
+  /* translateY alone leaves the nav's buttons focusable while it sits off-screen — a
+     keyboard or screen-reader user can still Tab into (or land VoiceOver/TalkBack rotor on)
+     controls that aren't visually there. nav.inert must track hdr-hidden in both directions,
+     driven by a real scroll event (not calling hdrScrollDecision directly), since apply() and
+     the inert assignment live inside onScroll, not in the pure decision function above. */
+  const nav = d.querySelector('nav');
+  if(d.activeElement && d.activeElement.blur) d.activeElement.blur();   /* clear focus left over from earlier tests (e.g. the search input) so it doesn't trip the focus-guard tested explicitly below */
+  w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
+  ok('the header starts shown and the nav is not inert', !d.body.classList.contains('hdr-hidden') && !nav.inert,
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert);
+  w.scrollY = 300; w.dispatchEvent(new w.Event('scroll'));
+  ok('scrolling down hides the header and makes the nav inert, out of the tab order and the accessibility tree',
+     d.body.classList.contains('hdr-hidden') && nav.inert === true,
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert);
+  w.scrollY = 100; w.dispatchEvent(new w.Event('scroll'));
+  ok('scrolling back up shows the header and clears inert again',
+     !d.body.classList.contains('hdr-hidden') && !nav.inert,
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert);
+  /* focus inside the nav when a hide would otherwise fire must block the hide — inert-ing a
+     focused element silently drops focus to <body>, stranding a keyboard user mid-navigation */
+  w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
+  const homeBtn = d.getElementById('homeBtn');
+  homeBtn.focus();
+  w.scrollY = 300; w.dispatchEvent(new w.Event('scroll'));
+  ok('the header never hides while focus is inside it, even past the scroll-down threshold',
+     !d.body.classList.contains('hdr-hidden') && !nav.inert && d.activeElement === homeBtn,
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert + ' activeElement=' + (d.activeElement && d.activeElement.id));
+  homeBtn.blur();
+  w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
+}
+{
+  /* WCAG 2.5.3 label-in-name: an aria-label that doesn't contain the visible text hides that
+     text from screen readers entirely, so a sighted user reading "This week" and a screen-
+     reader user hearing "Jump to topics" can't even talk about the same control by name.
+     Removing the aria-label lets the accessible name fall back to the button's own text
+     content — real jsdom doesn't compute the full accessible-name algorithm, so this checks
+     the two things that algorithm depends on: no overriding aria-label, and the decorative
+     chevron hidden from it so the name resolves to just the visible topic label. */
+  const topicBtn = d.getElementById('topicBtn');
+  ok('the topics button carries no aria-label that would hide its visible text (This week, etc.) from screen readers',
+     !topicBtn.hasAttribute('aria-label'));
+  ok('the decorative chevron is hidden from the accessible name, so it resolves to just the visible topic label',
+     d.querySelector('#topicBtn .glabel').getAttribute('aria-hidden') === 'true');
+}
 ok('the docked highlight bar re-anchors to the very top when the header is hidden',
    /body\.hdr-hidden #hlBar\{ top:env\(safe-area-inset-top\) !important; \}/.test(code));
 ok('the header slides out of view on scroll-down rather than jump-cutting',

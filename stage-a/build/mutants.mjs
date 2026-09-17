@@ -1041,6 +1041,21 @@ const M = [
    "  document.addEventListener('selectionchange', ()=>{\n    /* the freeze itself cannot wait for the 260ms debounce below: an Android drag-handle\n       micro-scroll inside that window could still hide or show the header mid-selection,\n       before place()/paintChrome() ever runs. A non-collapsed selection freezes the header\n       synchronously, right here; the debounce still owns positioning the bar and unfreezing\n       once the selection actually clears (Gemini review of #433). */\n    const sel = window.getSelection();\n    if(sel && !sel.isCollapsed && typeof hdrSetFrozen === 'function') hdrSetFrozen(true);\n    clearTimeout(tmr); tmr = setTimeout(place, 260);\n  });",
    "  document.addEventListener('selectionchange', ()=>{ clearTimeout(tmr); tmr = setTimeout(place, 260); });",
    'freezes synchronously on selectionchange, before the 260ms debounce'],
+
+  ['the topics button’s aria-label comes back and hides its visible text from screen readers again (WCAG 2.5.3 label-in-name, Gemini review of #433)',
+   '<button class="topicbtn" id="topicBtn" type="button" aria-haspopup="dialog">',
+   '<button class="topicbtn" id="topicBtn" type="button" aria-haspopup="dialog" aria-label="Jump to topics">',
+   'carries no aria-label that would hide its visible text'],
+
+  ['the header no longer makes the nav inert while hidden, so its buttons stay focusable off-screen (Gemini review of #433)',
+   '    const nav = document.querySelector(\'nav\');\n    if(nav) nav.inert = hdrHidden;',
+   '',
+   'makes the nav inert, out of the tab order and the accessibility tree'],
+
+  ['the header hides even while focus sits inside it, dropping focus to <body> mid-navigation (Gemini review of #433)',
+   "    if(next && !hdrHidden){\n      const nav = document.querySelector('nav');\n      if(nav && document.activeElement && nav.contains(document.activeElement)) return;\n    }",
+   '',
+   'never hides while focus is inside it'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
