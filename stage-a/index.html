@@ -2767,8 +2767,8 @@ body.dark .pqo.wrong {
   <div class="srch" id="srchWrap"><input id="q" type="search" placeholder="Search all sections" autocomplete="off" aria-label="Search all sections"></div>
   <div class="anchorbar" id="anchorBar">
     <button class="homebtn" id="homeBtn" type="button" aria-label="Home">&#8962;</button>
-    <button class="topicbtn" id="topicBtn" type="button" aria-haspopup="dialog" aria-label="Jump to topics">
-      <span id="topicNow">This week</span><span class="glabel">&#9662;</span>
+    <button class="topicbtn" id="topicBtn" type="button" aria-haspopup="dialog">
+      <span id="topicNow">This week</span><span class="glabel" aria-hidden="true">&#9662;</span>
     </button>
     <button class="srchbtn" id="srchBtn" type="button" aria-label="Search all sections" title="Search">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -13409,12 +13409,25 @@ function hdrSetFrozen(v){ hdrFrozen = v; }
      sites in this file. */
   const mq = window.matchMedia ? window.matchMedia('(max-width:900px)') : {matches: true};
   let lastY = 0;
-  function apply(){ document.body.classList.toggle('hdr-hidden', hdrHidden); }
+  /* translateY alone leaves the nav's buttons keyboard/screen-reader focusable while it sits
+     off-screen — inert removes them from both the tab order and the accessibility tree while
+     hidden, and restores them the moment the header returns */
+  function apply(){
+    document.body.classList.toggle('hdr-hidden', hdrHidden);
+    const nav = document.querySelector('nav');
+    if(nav) nav.inert = hdrHidden;
+  }
   function onScroll(){
     if(hdrFrozen || !mq.matches) return;
     const y = window.scrollY || window.pageYOffset || 0;
     const next = hdrScrollDecision(y, lastY, hdrHidden);
     lastY = y;
+    /* never hide the header while focus is inside it — inert-ing a focused element silently
+       drops focus to <body>, stranding a keyboard user mid-navigation */
+    if(next && !hdrHidden){
+      const nav = document.querySelector('nav');
+      if(nav && document.activeElement && nav.contains(document.activeElement)) return;
+    }
     if(next !== hdrHidden){ hdrHidden = next; apply(); }
   }
   addEventListener('scroll', onScroll, {passive:true});
