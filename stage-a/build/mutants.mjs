@@ -695,6 +695,16 @@ const M = [
    "    if(e.target.closest('button')) return;",
    'shrunk gear dot can still be long-pressed'],
 
+  ['a fresh, never-dragged pill goes back to clamping from a zero-size hidden rect and gets pinned to the top edge',
+   "applyPos(clampPos(...(pos ? [pos.left, pos.bottom] : Object.values(CSS_DEFAULT_POS))));",
+   "applyPos(clampPos(...(pos ? [pos.left, pos.bottom] : Object.values(currentPos()))));",
+   'pill lands near the bottom-left edge inset'],
+
+  ['Start/Resume goes back to a solid near-black --ink slab in light mode',
+   "#miniT button.pri{background:var(--surface);color:var(--ink);border-color:var(--ink);font-weight:600}",
+   "#miniT button.pri{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}",
+   'not a solid near-black slab'],
+
   /* --- final Gemini round, 16 Sep --- */
   ['dark mode answer feedback loses to the plain-option rule again',
    "body.dark .pqo.right {\n  background: #1b2a25 !important;",

@@ -551,7 +551,11 @@
   #miniT .ph{font-size:calc(11.5px*var(--fs,1));opacity:.75;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #miniT button{font-family:var(--sans);font-size:calc(12.5px*var(--fs,1));min-height:40px;padding:8px 12px;border-radius:20px;cursor:pointer;
     background:none;border:1px solid var(--rule);color:var(--ink);white-space:nowrap}
-  #miniT button.pri{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}
+  /* Start/Resume was a solid near-black --ink slab in light mode (dark mode's --ink is a
+     light colour, so it read fine there by accident) — Eias asked for no black slabs on the
+     timer, so this is the same surface/ink-border outline the rest of the pill already uses,
+     in both modes rather than a dark-only override */
+  #miniT button.pri{background:var(--surface);color:var(--ink);border-color:var(--ink);font-weight:600}
   #miniT.run b{color:#b45309}
   body.dark #miniT.run b{color:#ffd28a}
   #miniT .more{display:none}
@@ -10699,13 +10703,18 @@ document.getElementById('tSkip').addEventListener('click',()=>{ if(T.p<PH.length
   }
   function applyPos(pos){ box.style.left = pos.left + 'px'; box.style.bottom = pos.bottom + 'px'; box.style.right = 'auto'; }
   function currentPos(){ const rect = box.getBoundingClientRect(); return { left: rect.left, bottom: window.innerHeight - rect.bottom }; }
+  /* the #miniT rule's own left:10px/bottom:14px — matches the CSS default exactly, so this
+     is what a fresh load without a stored position clamps from. currentPos() reads a zero
+     rect while the pill is still display:none at load (its bottom then computes as the full
+     viewport height), which pinned it to the top edge instead of leaving it near the bottom. */
+  const CSS_DEFAULT_POS = { left: 10, bottom: 14 };
   (async()=>{
     let pos = null;
     try{ const r = await window.storage.get('geri:timerpos'); const stored = JSON.parse(r.value);
       if(stored && typeof stored.left === 'number' && typeof stored.bottom === 'number') pos = stored; }catch(e){}
     /* no stored position yet — the CSS default (left:10px) sits inside the 24px edge inset
        until the first drag; clamp it on load too, not only once something has been saved */
-    applyPos(clampPos(...(pos ? [pos.left, pos.bottom] : Object.values(currentPos()))));
+    applyPos(clampPos(...(pos ? [pos.left, pos.bottom] : Object.values(CSS_DEFAULT_POS))));
   })();
   let pressTimer = null, dragging = false, armed = false, startX = 0, startY = 0, startLeft = 0, startBottom = 0;
   /* a press that reached the 300ms long-press threshold (armed) must never fall through to a

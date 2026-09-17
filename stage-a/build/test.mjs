@@ -1333,7 +1333,19 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
      /document\.addEventListener\('pointercancel', onPointerCancel\);/.test(code) &&
      /document\.removeEventListener\('pointercancel', onPointerCancel\);/.test(code));
   ok('the pill is clamped to the edge inset on load even with no stored position, not only after the first drag',
-     /applyPos\(clampPos\(\.\.\.\(pos \? \[pos\.left, pos\.bottom\] : Object\.values\(currentPos\(\)\)\)\)\);/.test(code));
+     /applyPos\(clampPos\(\.\.\.\(pos \? \[pos\.left, pos\.bottom\] : Object\.values\(CSS_DEFAULT_POS\)\)\)\);/.test(code));
+  /* the init IIFE runs at page load while #miniT is still display:none (hidden until the
+     reading block shows it), so clamping from a live getBoundingClientRect() reads a
+     zero-size rect — its "bottom" computes as the full viewport height, which clampPos then
+     pins to the TOP edge instead of leaving a fresh pill near the bottom. jsdom never lays
+     out real geometry, so this asserts on the inline style the init IIFE actually wrote
+     (box.style.left/bottom), the same thing a real layout engine would place on screen —
+     not on getBoundingClientRect(), which stays all-zero here regardless of the fix. */
+  ok('with no stored position, the pill lands near the bottom-left edge inset, not pinned to the top from a zero-size hidden rect',
+     box.style.bottom === '24px' && box.style.left === '24px',
+     'left=' + box.style.left + ' bottom=' + box.style.bottom);
+  ok('Start/Resume is the same surface/ink-border outline as the rest of the pill, not a solid near-black slab (light mode’s --ink is dark, unlike dark mode’s)',
+     /#miniT button\.pri\{background:var\(--surface\);color:var\(--ink\);border-color:var\(--ink\);font-weight:600\}/.test(code));
   ok('the shrunk gear dot can still be long-pressed and dragged, even though it is entirely covered by the mtMore button',
      /if\(e\.target\.closest\('button'\) && !box\.classList\.contains\('dot'\)\) return;/.test(code));
 
