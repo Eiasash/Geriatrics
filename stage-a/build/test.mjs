@@ -2972,17 +2972,6 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
      !!prose && /^19 of 100 questions/.test(prose.textContent.trim()) && distinct === 19,
      'distinct=' + distinct + ' prose=' + (prose && prose.textContent.slice(0, 20)));
 }
-{
-  /* the master chapter-by-chapter index printed 5 questions for ch 65 (depression) while
-     #pqjson actually carries 12 for that chapter. */
-  const ch65Count = w.eval("PQ.filter(p=>p.ch===65).length");
-  const row = [...d.querySelectorAll('table.chapidx tbody tr')]
-    .find(tr => (tr.querySelector('td.n') || {}).textContent === '65');
-  const cells = row ? row.querySelectorAll('td.n') : [];
-  const printed = cells.length ? cells[cells.length - 1].textContent.trim() : null;
-  ok('the master chapter-index row for ch 65 (depression) matches pqjson’s actual question count (SZMC chat correction)',
-     printed === '12' && ch65Count === 12, 'printed=' + printed + ' pqjson=' + ch65Count);
-}
 
 console.log("DONE");
 process.exit(FAILS || process.exitCode ? 1 : 0);

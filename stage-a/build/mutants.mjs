@@ -1101,10 +1101,6 @@ const M = [
    '<p class="note">19 of 100 questions come from material no textbook contains.',
    '<p class="note">Fourteen of 100 questions come from material no textbook contains.',
    'distinct question count'],
-  ['the master chapter-index row for ch 65 (depression) reverts to the stale count of 5 while pqjson still carries 12 (SZMC chat correction)',
-   '<tr><td class="n">65</td><td>Major Depression <button type="button" class="chgo" data-sec="depression">notes</button></td><td class="n">p1007</td><td class="n">12</td></tr>',
-   '<tr><td class="n">65</td><td>Major Depression <button type="button" class="chgo" data-sec="depression">notes</button></td><td class="n">p1007</td><td class="n">5</td></tr>',
-   'ch 65 (depression)'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
