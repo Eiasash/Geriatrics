@@ -13611,6 +13611,13 @@ let mockRunMigrated = false;
    a write we actually made keeps it out of the first checkpoint of a migration, which is the
    normal path and must go through the ownership check like any other (Codex review of #464). */
 let mockRunWrote = false;
+/* Whether this tab has moved its reader since the cursor it last had written down. Inferring
+   that from mineI !== seenI compares ENDPOINTS, which cannot see a tab that navigated away and
+   came back: it reads as "did not move" while it in fact made the most recent interaction, and
+   the merge below then keeps another tab's older reading (Codex review of #464). Set wherever
+   the cursor moves, cleared when a write carrying it lands. */
+let mockICursorMoved = false;
+function setMockI(n){ if(n !== mockI){ mockI = n; mockICursorMoved = true; } }
 /* last-synced full checkpoint record for THIS run, mirroring HLSEEN/SNSEEN/PQSEEN. Without
    this, mockSaveRun sent the WHOLE current mockAns/mockFlag as an unconditional overwrite —
    two tabs both legitimately resumed on the same run, each answering different questions from
@@ -13666,20 +13673,30 @@ function mockPaperFp(list){
    win while it is newer by less than CURSOR_SKEW: beyond that it is a clock anomaly, not an
    interleaving, and this tab's live reader position wins. Worst case the cursor is wrong for one
    window; it can no longer be stuck. */
-const CURSOR_SKEW = 5 * 60 * 1000;
-function mergeMockCursor(seenI, mineI, mineIAt, cur){
+function mergeMockCursor(seenI, mineI, mineIAt, mineMoved, cur, now){
   const mine = {i: mineI, iAt: mineIAt};
   if(!cur || typeof cur.i !== 'number') return mine;
   const theirs = {i: cur.i, iAt: typeof cur.iAt === 'number' ? cur.iAt : mineIAt};
+  /* Both sides moved, so the later READING wins — except that the stamp is a wall clock and can
+     be wrong. The first attempt bounded the disagreement by a five-minute window, which also
+     threw away any genuine interleaving longer than five minutes: a tab suspended for six
+     minutes came back and rewound the cursor exactly as before (Codex review of #464).
+     A duration cannot tell a slow tab from a wrong clock. A stamp from the FUTURE can: no honest
+     capture is later than the moment we are reading it, so `cur.iAt > now` is the anomaly —
+     a record written while that device's clock ran ahead — and nothing else is. No constant,
+     and a six-minute delay resolves the way it should. */
   const laterWins = () => {
-    const ahead = (typeof cur.iAt === 'number' ? cur.iAt : -Infinity) - mineIAt;
-    return (ahead > 0 && ahead <= CURSOR_SKEW) ? theirs : mine;
+    if(typeof cur.iAt !== 'number') return mine;
+    if(cur.iAt > now) return mine;
+    return cur.iAt > mineIAt ? theirs : mine;
   };
   if(typeof seenI !== 'number') return laterWins();
-  const mineMoved = mineI !== seenI, curMoved = cur.i !== seenI;
+  /* whether the OTHER side moved is still an endpoint comparison, which is all we can see of it;
+     whether THIS side moved is tracked, because an endpoint cannot see a reader who navigated
+     away and came back */
+  const curMoved = cur.i !== seenI;
   if(curMoved && !mineMoved) return theirs;
-  if(mineMoved && !curMoved) return mine;
-  if(!mineMoved && !curMoved) return mine;
+  if(!curMoved) return mine;
   return laterWins();
 }
 /* the home tile starts a 50-question mock on the same clock the mock runs (exam pace,
@@ -13748,7 +13765,7 @@ function mockSaveRun(){
   const mineAns = Object.assign({}, mockAns), mineFlag = Object.assign({}, mockFlag), mineI = mockI;
   /* when this tab's reader was at mineI — captured here, with the cursor itself, because the
      write below can reach storage long after this moment (see the cursor merge further down) */
-  const mineIAt = Date.now();
+  const mineIAt = Date.now(), mineMoved = mockICursorMoved;
   /* each answer used to fire an unawaited, unserialized window.storage.set — nothing stopped
      two of those in-flight writes from resolving out of order, so a later, more-complete
      answer set could land on disk before an earlier, smaller one, which then overwrote it.
@@ -13851,14 +13868,17 @@ function mockSaveRun(){
          the saved cursor until wall time caught up (both Codex review of #464). mergeMockCursor
          three-way-merges against the baseline instead, the same shape as the answers above. */
       const seenI = (sameRun && typeof seen.i === 'number') ? seen.i : null;
-      const cursor = mergeMockCursor(seenI, mineI, mineIAt, sameRun ? cur : null);
+      const cursor = mergeMockCursor(seenI, mineI, mineIAt, mineMoved, sameRun ? cur : null, Date.now());
       const blob = JSON.stringify({
         q: qList, fp: qFp, a: mergedAF.a, f: mergedAF.f, i: cursor.i, iAt: cursor.iAt,
         e: mockEnds, t: mockPerQ, id: forId, rev: seq });
       try{
         await window.storage.set(RUNKEY, blob);
         const back = await window.storage.get(RUNKEY);
-        if(back && back.value === blob){ if(forId === mockRunId){ mockRunClaimed = true; mockRunWrote = true; MOCKSEEN = blob; } }
+        if(back && back.value === blob){ if(forId === mockRunId){ mockRunClaimed = true; mockRunWrote = true; MOCKSEEN = blob;
+          /* only if THIS write carried this tab's reading; one that deferred to the other tab's
+             leaves our move still unrecorded on disk and so still pending */
+          if(cursor.i === mineI && mockI === mineI) mockICursorMoved = false; } }
         else notSaved();
       }catch(e){ notSaved(); }
     });
@@ -13917,7 +13937,7 @@ function mockPaint(){
   document.getElementById('mockOpts').querySelectorAll('.pqo').forEach(b=>
     b.addEventListener('click', ()=>{
       mockAns[mockI] = b.dataset.l;
-      if(mockI < mockQs.length - 1){ mockI++; mockPaint(); } else mockPaint();
+      if(mockI < mockQs.length - 1){ setMockI(mockI + 1); mockPaint(); } else mockPaint();
     }));
   cardIntoView(document.getElementById('mockCard'));
   const done = Object.keys(mockAns).length;
@@ -13949,7 +13969,7 @@ async function mockStart(){
   pqLoad();
   mockQs = mockPick(mockN);
   if(!mockQs.length) return;
-  mockAns = {}; mockFlag = {}; mockI = 0; mockOn = true;
+  mockAns = {}; mockFlag = {}; mockI = 0; mockICursorMoved = false; mockOn = true;
   mockEnds = mockPerQ ? Date.now() + mockN * mockPerQ * 60000 : 0;
   mockRunId = newRunId(); mockRunSeq = 0; mockRunClaimed = false; mockRunMigrated = false; mockRunWrote = false;
   mockRunObservedId = (stored && stored.id) || '';
@@ -14125,10 +14145,10 @@ document.querySelectorAll('#mockBar [data-mt]').forEach(b=>b.addEventListener('c
 }));
 document.getElementById('mockGo').addEventListener('click', mockStart);
 document.getElementById('mockNext').addEventListener('click', ()=>{
-  if(mockI < mockQs.length-1){ mockI++; mockPaint(); }
+  if(mockI < mockQs.length-1){ setMockI(mockI + 1); mockPaint(); }
 });
 document.getElementById('mockPrev').addEventListener('click', ()=>{
-  if(mockI > 0){ mockI--; mockPaint(); }
+  if(mockI > 0){ setMockI(mockI - 1); mockPaint(); }
 });
 document.getElementById('mockFlag').addEventListener('click', ()=>{
   mockFlag[mockI] = !mockFlag[mockI]; mockPaint();
@@ -14184,7 +14204,7 @@ document.addEventListener('keydown', e=>{
             'so it cannot be resumed. It has been cleared.');
       return;
     }
-    mockAns = fresh.a || {}; mockFlag = fresh.f || {}; mockI = fresh.i || 0;
+    mockAns = fresh.a || {}; mockFlag = fresh.f || {}; mockI = fresh.i || 0; mockICursorMoved = false;
     mockPerQ = fresh.t || 0; mockEnds = fresh.e || 0; mockOn = true;
     /* this run already owns RUNKEY under its own id (we just read it back) — inherit that
        id/sequence rather than minting a new one, so this tab's next checkpoint write is

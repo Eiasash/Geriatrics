@@ -1300,8 +1300,8 @@ const M = [
    /* re-anchored twice now, as #462 then #464 moved this decision — into mergeMockCursor's
       "only this tab moved" branch. Same property, same needle: a reader walking backward must
       take the saved cursor with them, and the high-water mark still overrides the merge. */
-   `  if(mineMoved && !curMoved) return mine;`,
-   `  if(mineMoved && !curMoved) return {i: Math.max(mineI, cur.i), iAt: mineIAt};`,
+   `  if(!curMoved) return mine;`,
+   `  if(!curMoved) return {i: Math.max(mineI, cur.i), iAt: mineIAt};`,
    'moves the saved cursor back too'],
 
   /* ---- Codex review of #462, posted four minutes before that PR auto-merged and therefore
@@ -1315,7 +1315,7 @@ const M = [
   ['the saved cursor goes back to raw last-commit-wins, so a checkpoint captured at an earlier question but queued behind its own tab\'s in-flight write lands after a later one from another tab and rewinds the reader\'s place (Codex review of #462, P2)',
    /* re-anchored onto mergeMockCursor's tie-break, which is where #464 moved this decision.
       Same property: the later capture must win a genuine two-tab race. */
-   `    return (ahead > 0 && ahead <= CURSOR_SKEW) ? theirs : mine;`,
+   `    return cur.iAt > mineIAt ? theirs : mine;`,
    `    return mine;`,
    'reaches the lock late'],
 
@@ -1330,14 +1330,17 @@ const M = [
    `    const s = p.y + '#' + p.n + '\u0001' + (p.o || []).join('\u0002') + '\u0001' + (p.a || '');`,
    `    const s = p.y + '#' + p.n;`,
    'fingerprint changes when the options are reordered'],
-  ['the cursor merge loses its sanity window, so a record stamped by a clock that was running ahead beats every later capture and the saved place stays frozen until wall time catches up (Codex review of #464, P2)',
-   `    return (ahead > 0 && ahead <= CURSOR_SKEW) ? theirs : mine;
-  };
-  if(typeof seenI !== 'number') return laterWins();`,
-   `    return (ahead > 0) ? theirs : mine;
-  };
-  if(typeof seenI !== 'number') return laterWins();`,
+  ['the cursor merge stops rejecting a stamp from the future, so a record written while that device\'s clock ran ahead beats every later capture and the saved place stays frozen until wall time catches up (Codex review of #464, P2)',
+   /* re-anchored: the first fix bounded this with a five-minute window, which also discarded any
+      genuine interleaving longer than five minutes. A duration cannot tell a slow tab from a
+      wrong clock; a stamp later than the moment we are reading it can only be a wrong clock. */
+   `    if(cur.iAt > now) return mine;`,
+   `    if(false) return mine;`,
    'freeze the saved place'],
+  ['setMockI stops recording that the reader moved, so movement is inferred from endpoints again and a reader who navigated away and came back reads as having stayed put, losing their place to another tab\'s older reading (Codex review of #464, P2)',
+   `function setMockI(n){ if(n !== mockI){ mockI = n; mockICursorMoved = true; } }`,
+   `function setMockI(n){ mockI = n; }`,
+   'navigated away and back still counts as having moved'],
   ['the cursor merge stops being three-way and falls back to comparing captures, so a legacy record — which carries no timestamp at all — loses the reading its own tab actually moved to, in the very write that rescues its answers (Codex review of #464, P2)',
    `  if(curMoved && !mineMoved) return theirs;`,
    `  if(false) return theirs;`,

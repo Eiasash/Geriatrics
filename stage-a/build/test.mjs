@@ -4104,11 +4104,11 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   const realSetOrd = dmOrd.window.storage.set;
   let releaseOrdB; const heldOrdB = new Promise(r => { releaseOrdB = r; });
   dmOrd.window.storage.set = async (k, v) => { if(k === rkeyOrd) await heldOrdB; return realSetOrd(k, v); };
-  dmOrd.window.eval('mockI = 1; mockSaveRun()');                     /* B1 takes the lock and blocks in its write */
+  dmOrd.window.eval('setMockI(1); mockSaveRun()');                   /* B1 takes the lock and blocks in its write */
   await new Promise(r => setTimeout(r, 30));
-  const ordChainB = dmOrd.window.eval('mockI = 3; mockSaveRun()');   /* B2 captured at 3, stuck behind B1's chain */
+  const ordChainB = dmOrd.window.eval('setMockI(3); mockSaveRun()'); /* B2 captured at 3, stuck behind B1's chain */
   await new Promise(r => setTimeout(r, 30));
-  const ordChainA = w.eval('mockI = 5; mockSaveRun()');              /* A captured later, joins the lock queue now */
+  const ordChainA = w.eval('setMockI(5); mockSaveRun()');            /* A captured later, joins the lock queue now */
   await new Promise(r => setTimeout(r, 30));
   releaseOrdB();
   await ordChainA; await ordChainB;
@@ -4130,9 +4130,12 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   const rkeySk = w.eval('RUNKEY');
   const qsSk = w.eval("PQ.slice(0,12).map(p=>p.y+'#'+p.n)");
   w.eval(`mockQs = ${JSON.stringify(qsSk)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
-    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 3;
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 0;
     mockRunId = 'skew-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'skew-run';
-    MOCKSEEN = JSON.stringify({id: 'skew-run', a: {}, f: {}, i: 0});`);
+    MOCKSEEN = JSON.stringify({id: 'skew-run', a: {}, f: {}, i: 0});
+    setMockI(3);`);   /* the app's own cursor mover, which every control calls — a bare
+                         mockI = 3 would leave the reader looking moved but not marked as
+                         having moved, which is the distinction this merge now turns on */
   store[rkeySk] = w.eval(`JSON.stringify({q: ${JSON.stringify(qsSk)}, fp: mockPaperFp(mockQs), a: {}, f: {},
     i: 9, iAt: Date.now() + 3600000, e: 0, t: 0, id: 'skew-run', rev: 1})`);
   await w.eval('mockSaveRun()');
@@ -4140,6 +4143,30 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   const skDisk = JSON.parse(store[rkeySk] || '{}');
   ok('a cursor timestamped in the future does not freeze the saved place until wall time catches up',
      skDisk.i === 3, 'i=' + skDisk.i + ' (reader is at 3; disk claimed 9, stamped an hour ahead)');
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+}
+{
+  /* Codex review of #464 (P2): whether THIS tab moved was inferred by comparing endpoints,
+     mineI !== seenI. That cannot see a reader who navigated away and came back before the
+     checkpoint reached the lock: the endpoints match, it reads as "did not move", and the other
+     tab's older reading is kept even though this tab made the most recent interaction. The
+     rapid repaints in between supersede each other by seq, so no intermediate write records it
+     either. Movement is now tracked rather than inferred.
+     Driven through setMockI, which is what every cursor control in the file calls. */
+  const rkeyBk = w.eval('RUNKEY');
+  const qsBk = w.eval("PQ.slice(0,10).map(p=>p.y+'#'+p.n)");
+  w.eval(`mockQs = ${JSON.stringify(qsBk)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 0;
+    mockRunId = 'back-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'back-run';
+    MOCKSEEN = JSON.stringify({id: 'back-run', a: {}, f: {}, i: 0});
+    setMockI(2); setMockI(0);`);   /* away and back: same endpoint, latest interaction */
+  store[rkeyBk] = w.eval(`JSON.stringify({q: ${JSON.stringify(qsBk)}, fp: mockPaperFp(mockQs), a: {}, f: {},
+    i: 7, iAt: Date.now() - 1000, e: 0, t: 0, id: 'back-run', rev: 1})`);
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 40));
+  const bkDisk = JSON.parse(store[rkeyBk] || '{}');
+  ok('a reader who navigated away and back still counts as having moved, and keeps their place',
+     bkDisk.i === 0, 'i=' + bkDisk.i + ' (reader went 0 to 2 and back to 0; the other tab saved 7)');
   w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
 }
 {
