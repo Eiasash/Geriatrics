@@ -11,10 +11,68 @@
    used to sit above this logic claimed the opposite ("a run that never reaches DONE is now
    INCOMPLETE here, never MISSED") — true for MISSED, never actually wired for CAUGHT.
    Completion is established first: no DONE means INCOMPLETE regardless of a matching FAIL. */
+/* The machine-readable stream test.mjs now prints alongside its prose. Parsing is total: a
+   malformed record is surfaced rather than dropped, because a silently skipped record is a
+   guard that quietly stops existing as far as certification is concerned. */
+export function guardRecords(out) {
+  const guards = [], bad = [];
+  let run = null;
+  for (const l of out.split('\n')) {
+    if (l.startsWith('##GUARD ')) {
+      try { guards.push(JSON.parse(l.slice(8))); } catch (e) { bad.push(l); }
+    } else if (l.startsWith('##RUN ')) {
+      try { run = JSON.parse(l.slice(6)); } catch (e) { bad.push(l); }
+    }
+  }
+  return { guards, run, bad };
+}
+
+/* Resolve what a mutation entry POINTS AT to exactly one guard, against the labels the run
+   actually emitted.
+
+   This is the whole point of the change. The old certifier asked "does some failing line
+   contain this needle", which conflates three different situations:
+
+     - the needle names one guard, and that guard failed        -> a real witness
+     - the needle names one guard, and a DIFFERENT guard failed
+       whose label also contains it                              -> credited the wrong guard
+     - the needle names no guard at all                          -> can never credit anything
+
+   The second is invisible to any static check, because the label the needle points at exists.
+   Here both are visible, because the universe of labels is read from the run itself. A needle
+   that resolves to zero or to more than one guard yields no verdict — it is reported as
+   uncertifiable, never as CAUGHT and never as MISSED. */
+export function resolveNeedle(labels, needle) {
+  const exact = labels.filter(l => l === needle);
+  if (exact.length === 1) return { ok: true, label: exact[0], how: 'exact' };
+  if (exact.length > 1) return { ok: false, reason: 'two guards share this exact label', matches: exact };
+  const hits = labels.filter(l => l.includes(needle));
+  if (hits.length === 1) return { ok: true, label: hits[0], how: 'unique substring' };
+  if (hits.length === 0) return { ok: false, reason: 'no guard label contains it', matches: [] };
+  return { ok: false, reason: 'it matches ' + hits.length + ' distinct guard labels', matches: hits };
+}
+
 export function classifyMutant(name, needle, out) {
   const lines = out.split('\n');
-  const caught = lines.some(l => l.startsWith('FAIL') && l.includes(needle));
   const passes = lines.filter(l => l.startsWith('PASS')).length;
+  const rec = guardRecords(out);
+  /* Identity first, prose only where the run emitted no records at all (audit-runner output,
+     or a child so broken it never reached the first check). The fallback is named in the
+     verdict string so a reader is never left thinking a substring match was an identity. */
+  let caught, how = 'identity';
+  if (rec.guards.length) {
+    const r = resolveNeedle(rec.guards.map(g => g.label), needle);
+    if (!r.ok) {
+      return 'UNCERTIFIABLE ' + name + '  — the needle cannot be resolved to one guard: ' +
+        r.reason + (r.matches.length ? '; matches: ' + r.matches.slice(0, 3).map(m => '"' + m + '"').join(', ') : '') +
+        '. No verdict either way.';
+    }
+    caught = rec.guards.some(g => g.label === r.label && g.verdict === 'fail');
+    if (r.how !== 'exact') how = 'identity via a needle that is a unique substring of "' + r.label + '"';
+  } else {
+    caught = lines.some(l => l.startsWith('FAIL') && l.includes(needle));
+    how = 'SUBSTRING FALLBACK — the run emitted no guard records, so this is not an identity';
+  }
   /* exact line match, not startsWith: test.mjs only ever prints a bare "DONE" line, so this
      was already safe in practice, but startsWith('DONE') would also credit a line like
      "DONE_WITH_ERRORS" or any other line that happens to begin with the same four letters
@@ -23,8 +81,8 @@ export function classifyMutant(name, needle, out) {
   if (!done) return 'INCOMPLETE ' + name + '  — the suite stopped after ' + passes + ' checks without reaching DONE; not a verdict';
   /* the file stopped parsing, so everything failed. That is not the guard biting. */
   if (caught && passes < 50) return 'BROKE  ' + name + '  — mutation broke the parse (' + passes + ' passed); it proves nothing';
-  if (caught) return 'CAUGHT ' + name;
-  return 'MISSED ' + name;
+  if (caught) return 'CAUGHT ' + name + (how === 'identity' ? '' : '  [' + how + ']');
+  return 'MISSED ' + name + (how === 'identity' ? '' : '  [' + how + ']');
 }
 
 /* ChatGPT third-model audit: the baseline check read only stdout/stderr text (FAIL lines,

@@ -12,7 +12,7 @@
 */
 import fs from 'fs';
 import { execFileSync } from 'child_process';
-import { classifyMutant, baselineOk } from './mutants-classify.mjs';
+import { classifyMutant, baselineOk, guardRecords, resolveNeedle } from './mutants-classify.mjs';
 import { logRun } from './ledger.mjs';
 
 /* The child runs are runs of a DELIBERATELY BROKEN file. Their verdicts say nothing about the
@@ -25,6 +25,10 @@ const SRC = process.argv.slice(2).find(a => !a.startsWith('--')) || '../index.ht
 /* --static: only check that every mutation still has exactly one target. Seconds instead of
    minutes; run it before every commit — three pushes went red on a stale target */
 const STATIC = process.argv.includes('--static');
+/* --needles: one green baseline, then resolve every needle against the labels that run
+   actually emitted, and stop. About a minute, versus half an hour for the full set, and it
+   answers the question --static cannot: does each needle name exactly ONE guard. */
+const NEEDLES_ONLY = process.argv.includes('--needles');
 const src = fs.readFileSync(SRC, 'utf8');
 
 const M = [
@@ -1449,6 +1453,52 @@ if(STATIC){
     process.exit(1);
   }
   console.log('baseline green: ' + out.split('\n').filter(l => l.startsWith('PASS')).length + ' checks\n');
+
+  /* Every needle, resolved against the labels the GREEN baseline actually emitted, before a
+     single mutation runs.
+
+     `--static` greps the source for a needle and is satisfied when some label contains it.
+     That cannot see the worse half of the defect: a needle whose text appears in TWO different
+     guards' labels resolves fine statically and then certifies whichever one happened to fail,
+     which may not be the guard the mutation was written to exercise. Here the universe of
+     labels is the run's own, so "names exactly one guard" is checkable, and a needle that
+     names none or names several is reported as what it is — a mutation that can produce no
+     verdict — rather than being quietly counted as a pass or a miss for 259 runs.
+
+     test.mjs-run mutations only: the audit runner prints no guard records. */
+  const baseLabels = guardRecords(out).guards.map(g => g.label);
+  if(baseLabels.length){
+    const unresolvable = [];
+    for(const [name, , , needle, runner] of M_RUN){
+      if(runner === 'audit') continue;
+      const r = resolveNeedle(baseLabels, needle);
+      if(!r.ok) unresolvable.push({ name, needle, r });
+    }
+    if(unresolvable.length){
+      console.log('NEEDLES THAT NAME NO SINGLE GUARD — these mutations can produce no verdict:');
+      for(const u of unresolvable){
+        console.log('  ' + u.r.reason + '  — needle "' + u.needle + '"');
+        u.r.matches.slice(0, 3).forEach(m => console.log('      also: "' + m + '"'));
+        console.log('      on: ' + u.name.slice(0, 110));
+      }
+      console.log('\n' + unresolvable.length + ' of ' + M_RUN.length + ' mutations cannot be certified. Nothing below would mean anything.');
+      logRun('mutants.mjs', { file: SRC, verdict: 'incomplete', completed: false,
+        reason: 'unresolvable needles', unresolvable: unresolvable.length, shard: SHARD || null });
+      process.exit(1);
+    }
+    const viaSubstring = M_RUN.filter(([, , , needle, runner]) =>
+      runner !== 'audit' && resolveNeedle(baseLabels, needle).how === 'unique substring').length;
+    console.log('every needle names exactly one guard (' + M_RUN.length + ' checked, ' +
+      viaSubstring + ' by unique substring rather than by the full label)\n');
+    if(NEEDLES_ONLY){
+      logRun('mutants.mjs --needles', { file: SRC, mutations: M_RUN.length,
+        via_substring: viaSubstring, verdict: 'pass', completed: true });
+      process.exit(0);
+    }
+  }else if(NEEDLES_ONLY){
+    console.log('the baseline emitted no guard records — nothing to resolve needles against');
+    process.exit(1);
+  }
 }
 
 /* In parallel, one temp file per mutation. Sequentially the set had grown to ~30 minutes.

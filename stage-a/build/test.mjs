@@ -82,8 +82,50 @@ let FAILS = 0;
    not the same verdict, and the ledger cannot tell them apart from the failure count alone. */
 let CHECKS = 0;
 const T_START = Date.now();
-const ok = (label, cond, extra='') => { CHECKS++; if(!cond) FAILS++;
-  console.log((cond?'PASS  ':'FAIL  ') + label + (extra?'  — '+extra:'')); };
+
+/* Every check also prints a machine-readable twin, so a reader does not have to recover a
+   guard's identity by matching substrings against prose written for a human. The prose line
+   stays exactly as it was — this is additional, not a replacement.
+
+   Why identity matters here: mutants-classify.mjs certified a mutation by asking whether ANY
+   failing line CONTAINED a needle. A needle that matched two different labels credited the
+   wrong guard; a needle that matched none could never credit anything. Those are the same
+   defect from two sides, and no amount of source-grepping finds the first, because the label
+   it points at exists. An exact label, read from the run itself, is an identity: membership
+   in the failing set is a yes or a no.
+
+   `id` is null until stable inert tokens are allocated (next commit). Until then the exact
+   label IS the identity, with the weakness that renaming a label silently re-identifies the
+   guard — which is precisely why the tokens come next. */
+const GUARD_LINE = '##GUARD ';
+const RUN_LINE = '##RUN ';
+const ok = (label, cond, extra='', meta) => {
+  CHECKS++;
+  const t0 = Date.now();
+  /* A condition may be passed as a thunk. Evaluating `d.querySelector(x).style` when the
+     mutation deleted x throws a TypeError while ok()'s own ARGUMENTS are being built — before
+     ok() is ever entered — which kills the suite mid-run with no DONE. The verdict that should
+     have been "this check failed" became "the run proves nothing". As a thunk the throw lands
+     here, fails its own check loudly, and the other 600 checks still get to run. */
+  let threw = null;
+  if(typeof cond === 'function'){
+    try{ cond = cond(); }
+    catch(e){ threw = (e && e.message) || String(e); cond = false; }
+  }
+  if(typeof extra === 'function'){
+    /* the detail string is usually built from the same element the condition just failed on,
+       so it throws for the same reason; a check must not be lost while explaining itself */
+    try{ extra = extra(); }
+    catch(e){ extra = 'detail unavailable: ' + ((e && e.message) || String(e)); }
+  }
+  const pass = !!cond;
+  if(!pass) FAILS++;
+  console.log((pass?'PASS  ':'FAIL  ') + label + (extra?'  — '+extra:''));
+  console.log(GUARD_LINE + JSON.stringify({
+    id: (meta && meta.id) || null, label, verdict: pass ? 'pass' : 'fail',
+    items: (meta && typeof meta.items === 'number') ? meta.items : null,
+    threw, engine: 'jsdom', ms: Date.now() - t0, n: CHECKS }));
+};
 
 /* parses the number a piece of prose OPENS with — digit or spelled-out word — so a
    prose-matches-its-own-table guard can compare against the real count instead of pinning
@@ -4341,6 +4383,11 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   errs.slice(0, 12).forEach(e => console.log('  ' + e));
 }
 
+/* The completion flag belongs in the machine-readable stream too: a reader that takes the
+   ##GUARD lines and no completion marker cannot tell a clean run from one that stopped
+   after 300 checks with nothing failing yet. */
+console.log(RUN_LINE + JSON.stringify({ completed: true, checks: CHECKS, failures: FAILS,
+  date_pin: PIN, ms: Date.now() - T_START }));
 console.log("DONE");
 /* The ledger line is written AFTER "DONE" and reads the same two values the exit code is
    computed from, so a run that died early cannot leave a "passed" line behind: no DONE, no

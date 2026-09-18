@@ -18,7 +18,7 @@
 */
 import { execFileSync } from 'child_process';
 import fs from 'fs';
-import { classifyMutant, baselineOk } from './mutants-classify.mjs';
+import { classifyMutant, baselineOk, guardRecords, resolveNeedle } from './mutants-classify.mjs';
 
 let FAILS = 0;
 const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
@@ -190,6 +190,69 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
   ok('wireErrs is called from every window construction in test.mjs, not just the primary one',
      domConstructions >= 2 && callSites === domConstructions,
      callSites + ' call sites vs ' + domConstructions + ' new JSDOM(...) constructions');
+}
+
+/* ---- (4) certification by guard identity, not by substring ----
+
+   Each case here is a way the old substring certifier produced a confident verdict it had no
+   right to. They are written against canned child output so they need no subprocess. */
+{
+  const G = (label, verdict) => '##GUARD ' + JSON.stringify({ id: null, label, verdict });
+  const RUN = '##RUN {"completed":true}';
+  const body = lines => lines.join('\n') + '\nDONE\n' + Array(60).fill('PASS x').join('\n');
+
+  /* the defect that motivated all of this: the needle names guard A, guard B failed, and B's
+     label happens to contain the needle. The old certifier said CAUGHT. */
+  const twoLabels = body([
+    'FAIL  the chapter-top meta line meets 44px tap targets with 12px gaps',
+    G('both jump buttons keep a 44px tap target', 'pass'),
+    G('the chapter-top meta line meets 44px tap targets with 12px gaps', 'fail'), RUN]);
+  ok('a needle matching two different guard labels yields NO verdict, rather than crediting whichever one failed',
+     classifyMutant('m', '44px tap target', twoLabels).startsWith('UNCERTIFIABLE'),
+     classifyMutant('m', '44px tap target', twoLabels).slice(0, 80));
+
+  /* the same defect from the other side: the needle names nothing, so the mutation can only
+     ever report MISSED — which reads as "the suite is blind here" when the truth is "this
+     witness was never wired up" */
+  const deadNeedle = body([
+    'FAIL  some guard that did fire',
+    G('some guard that did fire', 'fail'), RUN]);
+  ok('a needle that names no guard at all yields NO verdict, rather than a MISSED that reads as a blind suite',
+     classifyMutant('m', 'a label nobody wrote', deadNeedle).startsWith('UNCERTIFIABLE'),
+     classifyMutant('m', 'a label nobody wrote', deadNeedle).slice(0, 80));
+
+  /* and the case it must still get right */
+  const clean = body(['FAIL  the guard fired', G('the guard fired', 'fail'), RUN]);
+  ok('a needle naming exactly one guard, which failed, is CAUGHT',
+     classifyMutant('m', 'the guard fired', clean) === 'CAUGHT m');
+  const notFired = body(['PASS  the guard fired', G('the guard fired', 'pass'), RUN]);
+  ok('a needle naming exactly one guard, which passed, is MISSED',
+     classifyMutant('m', 'the guard fired', notFired) === 'MISSED m');
+
+  /* identity is membership in the FAILING set, not presence in the output. A guard that
+     passed while an unrelated one failed must not be credited. */
+  const otherFailed = body([
+    'FAIL  an unrelated guard',
+    G('an unrelated guard', 'fail'), G('the guard fired', 'pass'), RUN]);
+  ok('a guard that PASSED is not credited because some other guard failed in the same run',
+     classifyMutant('m', 'the guard fired', otherFailed) === 'MISSED m');
+
+  /* completion still outranks everything: no DONE is no verdict */
+  const noDone = ['FAIL  the guard fired', G('the guard fired', 'fail')].join('\n');
+  ok('a run that never reached DONE is INCOMPLETE even when the named guard is in the failing set',
+     classifyMutant('m', 'the guard fired', noDone).startsWith('INCOMPLETE'));
+
+  /* a malformed record is surfaced, never silently dropped */
+  const rec = guardRecords('##GUARD {not json\n' + G('a', 'pass') + '\n' + RUN);
+  ok('a malformed guard record is reported rather than skipped',
+     rec.bad.length === 1 && rec.guards.length === 1 && rec.run && rec.run.completed === true,
+     rec.bad.length + ' bad, ' + rec.guards.length + ' good');
+
+  /* the resolver itself */
+  ok('resolveNeedle prefers an exact label over a longer one that contains it',
+     resolveNeedle(['text size applies', 'text size applies before the first paint'], 'text size applies').how === 'exact');
+  ok('resolveNeedle refuses when two labels contain the needle and neither is exact',
+     resolveNeedle(['a text size row', 'another text size row'], 'text size').ok === false);
 }
 
 console.log('\n' + FAILS + ' failing harness self-test(s)');
