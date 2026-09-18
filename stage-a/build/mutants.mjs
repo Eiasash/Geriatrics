@@ -1289,6 +1289,50 @@ const M = [
    `      const mergedI = Math.max(mineI, (cur && cur.i) || 0);`,
    'moves the saved cursor back too'],
 
+  /* ---- red tests for the weak-check rewrites (ChatGPT audit of the SUITE, not the app: ~234
+     of 618 checks were weaker than their labels). Each mutation below breaks the behaviour the
+     label promises and was confirmed MISSED by the check as it stood and CAUGHT by the rewrite.
+     Without these entries the rewrites would be unguarded themselves — a later "simplification"
+     could put the tautology back and nothing would notice. ---- */
+  ['flushPending goes back to writing section notes on teardown whether or not this tab changed anything, so a background tab holding a stale copy overwrites the note another tab just wrote (class 6: the check that should catch this ended in `return true`)',
+   `    if(changed){`,
+   `    if(true){`,
+   'writes nothing on teardown'],
+  ['bmSet stops recording the text of the block that was marked, so the place has nothing to re-find after the page re-renders and only the section id survives (class 4: the check hand-assigned BM and then read it back, so no app code ran between write and assert)',
+   `  BM = {sec: sec.id, t, i, d: nowStamp()};`,
+   `  BM = {sec: sec.id, t: '', i, d: nowStamp()};`,
+   'a place marked by hand through bmSet is kept'],
+  ['the week-note debounce writes every note under one fixed key instead of the week being viewed, so last week\'s note is what loads next week and the real note is gone (class 2: the check only asked whether the text appeared somewhere in the blob)',
+   `  nTmr = setTimeout(async()=>{
+    notes[VIEW.k] = nBox.value;`,
+   `  nTmr = setTimeout(async()=>{
+    notes['week'] = nBox.value;`,
+   'note persisted against the week key'],
+  /* the obvious mutation here — loosening the marking itself to `indexOf(...) >= -1` — is no
+     good as a red test: it also empties the weak-chapter tally and the blanks breakdown, and the
+     suite dies before DONE, which classifyMutant correctly refuses to read as a verdict. This
+     one moves ONLY the reported numerator, leaving every other number in the report intact, so
+     what it proves is exactly that the numerator is now checked. */
+  ['the mock report\'s score counts every question that was answered rather than every one answered right, so a reader who answered all 25 is told they scored 25 (class 2: the check parsed the fraction but accepted any numerator from 0 to 25)',
+   `  const right = rows.filter(r=>r.ok).length;`,
+   `  const right = rows.filter(r=>r.given).length;`,
+   'mock report scores out of the right total'],
+  /* deliberately shaped so the whitelist ARRAY is still there, verbatim, for the structural
+     guard to find: the `|| v.fs` after it is what actually decides, so any size a stale phone
+     carries is applied again. This is the mutation the file could not see before — the source
+     text the old check searched for is untouched. */
+  ['the pre-paint script applies whatever size string is in storage, whitelist or not, so a value from a build that is not this one becomes a body class that matches no rule (class 1b: a structural guard whose label promised behaviour, with nothing else in the file covering it)',
+   `    if(['s','m','l','xl'].indexOf(v.fs) >= 0) document.body.classList.add('fs-' + v.fs);`,
+   `    if(['s','m','l','xl'].indexOf(v.fs) >= 0 || v.fs) document.body.classList.add('fs-' + v.fs);`,
+   'refuses one it does not'],
+  /* also invisible to the structural guard beside it: the three regexes that guard this handler
+     pin the inModal lookup, the section fallback and the dropped way-back, none of which this
+     touches. Only driving the tap sees it. */
+  ['an abbreviation tapped inside the table pop-out no longer closes the pop-out first, so the footnote it jumps to scrolls into view behind a full-screen dialog and the reader sees nothing happen (class 1b: a structural guard whose label promised behaviour, with nothing else in the file covering it)',
+   `      if(inModal){`,
+   `      if(false){`,
+   'pop-out closes the dialog'],
+
   /* ---- audit.mjs's own gates (runner 'audit'): each break below is one a reviewer verified
      the OLD gate waved through. They are the red tests for those gates as much as they are
      mutations — for a guard file whose whole job is to reject a bad index.html, "feed it a
