@@ -92,7 +92,7 @@ export function classifyMutant(name, needle, out, baselinePasses, exitStatus) {
   /* Identity first, prose only where the run emitted no records at all (audit-runner output,
      or a child so broken it never reached the first check). The fallback is named in the
      verdict string so a reader is never left thinking a substring match was an identity. */
-  let caught, how = 'identity';
+  let caught, how = 'identity', weakWitness = null;
   if (rec.guards.length) {
     const r = resolveNeedle(rec.guards.map(g => g.label), needle);
     if (!r.ok) {
@@ -100,7 +100,26 @@ export function classifyMutant(name, needle, out, baselinePasses, exitStatus) {
         r.reason + (r.matches.length ? '; matches: ' + r.matches.slice(0, 3).map(m => '"' + m + '"').join(', ') : '') +
         '. No verdict either way.';
     }
-    caught = rec.guards.some(g => g.label === r.label && g.verdict === 'fail');
+    const named = rec.guards.filter(g => g.label === r.label);
+    const failed = named.filter(g => g.verdict === 'fail');
+    caught = failed.length > 0;
+    /* threw-as-fail (test.mjs's ok(): a thunk that throws counts as a failure, so the suite
+       cannot be silently killed mid-run by one dead selector) is the right call for the SUITE
+       — it must not lose 600 other checks to one crash. It is a WEAK WITNESS for a mutation
+       verdict, though: `threw != null` on the only failing record for this label proves a
+       selector threw — the element the check reaches for is gone, or the crash happened before
+       the check's own predicate ever ran — not that the BEHAVIOUR the label names is broken.
+       R7 requirement 2 ("wrong oracle"): crediting that as CAUGHT certifies the label's claim on
+       evidence that never actually exercised it. Distinct from UNCERTIFIABLE above, which is
+       about the needle naming no guard or several — this needle resolved cleanly to exactly one
+       guard; the guard itself is what didn't do its job. Checked later, not returned here: a
+       run that also never reached DONE, or whose exit code contradicts its own ##RUN record,
+       is INCOMPLETE/INCONSISTENT regardless of how the guard failed — those are stronger, more
+       fundamental defects in the run itself and take priority over this one. */
+    weakWitness = caught && failed.every(g => g.threw != null) ?
+      'every failing record for "' + r.label + '" threw (' +
+        failed.map(g => '"' + g.threw + '"').slice(0, 2).join('; ') + ') rather than evaluating the ' +
+        'labelled behaviour; a crashed selector is not a witness for what the label claims' : null;
     if (r.how !== 'exact') how = 'identity via a needle that is a unique substring of "' + r.label + '"';
   } else {
     /* Exact label-boundary match, not `.includes(needle)`. A FAIL line's own shape (test.mjs's
@@ -150,6 +169,7 @@ export function classifyMutant(name, needle, out, baselinePasses, exitStatus) {
   /* the file stopped parsing, so everything failed. That is not the guard biting. */
   if (caught && passes < brokeThreshold) return 'BROKE  ' + name + '  — mutation broke the parse (' +
     passes + ' passed, below ' + brokeThreshold + (typeof baselinePasses === 'number' ? ' = 10% of the ' + baselinePasses + '-check baseline' : ', the no-baseline fallback floor') + '); it proves nothing';
+  if (weakWitness) return 'WEAK-WITNESS ' + name + '  — ' + weakWitness + '. Not CAUGHT.';
   if (caught) return 'CAUGHT ' + name + (how === 'identity' ? '' : '  [' + how + ']');
   return 'MISSED ' + name + (how === 'identity' ? '' : '  [' + how + ']');
 }

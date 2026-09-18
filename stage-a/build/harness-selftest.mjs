@@ -198,7 +198,7 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
    Each case here is a way the old substring certifier produced a confident verdict it had no
    right to. They are written against canned child output so they need no subprocess. */
 {
-  const G = (label, verdict) => '##GUARD ' + JSON.stringify({ id: null, label, verdict });
+  const G = (label, verdict, threw) => '##GUARD ' + JSON.stringify({ id: null, label, verdict, threw: threw || null });
   const RUN = '##RUN {"completed":true}';
   const body = lines => lines.join('\n') + '\nDONE\n' + Array(60).fill('PASS x').join('\n');
 
@@ -229,6 +229,52 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
   const notFired = body(['PASS  the guard fired', G('the guard fired', 'pass'), RUN]);
   ok('a needle naming exactly one guard, which passed, is MISSED',
      classifyMutant('m', 'the guard fired', notFired) === 'MISSED m');
+
+  /* ---- weak-witness: a guard that failed by THROWING is not a witness for its own label ----
+     R7 requirement 2 ("wrong oracle"), from the review-lane ruling on #469. test.mjs's ok()
+     counts a thrown predicate as a failure so one crashed selector never kills the other 600
+     checks — correct for the SUITE. For a MUTATION verdict it proves only that a selector threw
+     (the element it reaches for is gone), never that the labelled BEHAVIOUR broke; crediting it
+     CAUGHT certifies a claim the check never actually evaluated. */
+  const threwOnly = body([
+    'FAIL  the guard fired',
+    G('the guard fired', 'fail', "Cannot read properties of null (reading 'style')"), RUN]);
+  ok('a guard whose only failing record threw is WEAK-WITNESS, not CAUGHT',
+     classifyMutant('m', 'the guard fired', threwOnly).startsWith('WEAK-WITNESS m'),
+     classifyMutant('m', 'the guard fired', threwOnly).slice(0, 80));
+
+  /* and the case it must still get right: a real evaluated failure (threw: null) is still
+     CAUGHT — this is a NEW class of verdict for a NEW kind of evidence, not a general
+     downgrade of every failure */
+  const evaluatedFail = body(['FAIL  the guard fired', G('the guard fired', 'fail', null), RUN]);
+  ok('a guard that failed by evaluating false (no throw) is still plain CAUGHT',
+     classifyMutant('m', 'the guard fired', evaluatedFail) === 'CAUGHT m');
+
+  /* a label that fires more than once (e.g. inside a loop) never actually reaches the
+     threw-check above with more than one record to look at: resolveNeedle already refuses
+     TWO records sharing the exact label ("two guards share this exact label") before
+     classifyMutant gets this far, and its unique-substring path counts occurrences the same
+     way. Checked directly here rather than assumed, since that's the premise the weak-witness
+     logic above relies on to treat a single `failed` record as the whole story. */
+  const twoFires = body([
+    'FAIL  the guard fired',
+    'FAIL  the guard fired',
+    G('the guard fired', 'fail', 'boom'),
+    G('the guard fired', 'fail', null), RUN]);
+  ok('a label that fired twice is UNCERTIFIABLE before the weak-witness check ever runs, not CAUGHT via one of the two records',
+     classifyMutant('m', 'the guard fired', twoFires).startsWith('UNCERTIFIABLE'),
+     classifyMutant('m', 'the guard fired', twoFires).slice(0, 60));
+
+  /* completion and consistency still outrank this: a thrown-only failure paired with no DONE,
+     or with a contradicted exit code, reports THAT problem, not WEAK-WITNESS — both are more
+     fundamental claims about whether the run itself can be trusted at all */
+  const threwNoDone = ['FAIL  the guard fired', G('the guard fired', 'fail', 'boom')].join('\n');
+  ok('a thrown-only failure with no DONE line is still INCOMPLETE, not WEAK-WITNESS',
+     classifyMutant('m', 'the guard fired', threwNoDone).startsWith('INCOMPLETE'));
+  const threwInconsistent = body(['FAIL  the guard fired', G('the guard fired', 'fail', 'boom'),
+    '##RUN {"completed":true,"failures":0}']);
+  ok('a thrown-only failure whose ##RUN record disagrees with its exit code is still INCONSISTENT, not WEAK-WITNESS',
+     classifyMutant('m', 'the guard fired', threwInconsistent, undefined, 1).startsWith('INCONSISTENT'));
 
   /* identity is membership in the FAILING set, not presence in the output. A guard that
      passed while an unrelated one failed must not be credited. */
