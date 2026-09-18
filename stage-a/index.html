@@ -13808,7 +13808,9 @@ function mockSaveRun(){
       let curId = '', cur = null, rawVal = '';
       try{ rawVal = (await window.storage.get(RUNKEY)).value; if(rawVal){ cur = JSON.parse(rawVal); curId = (cur && cur.id) || ''; } }catch(e){}
       /* classified BEFORE the ownership check, because one ownership mismatch is not another tab
-         taking the run over — see the reclaim below */
+         taking the run over — see the reclaim below. The flag is declared out here because the
+         merge further down has to know: a reclaim changes what the seen-baseline means. */
+      let legacyReclaim = false;
       const sameList = !!(cur && Array.isArray(cur.q) && cur.q.length === qList.length &&
                           cur.q.every((k, n) => k === qList[n]));
       /* a record with no fingerprint predates this field and cannot be checked; one that has a
@@ -13825,19 +13827,22 @@ function mockSaveRun(){
            and re-assert this run's id. Only for the same paper and compatible content. */
         /* An id-less record for this paper is not proof the pre-ID tab wrote it — a reader
            restoring a backup mid-run produces one too, and reclaiming that would silently undo
-           part of a deliberate restore (Codex review of #464). What distinguishes them is shape:
-           the old tab is CONTINUING the run, so everything this tab last wrote is still in its
-           record. A restore is a different snapshot and will generally have dropped or changed
-           something. Reclaim a continuation; stand down for anything else. */
+           part of a deliberate restore (Codex review of #464). What distinguishes them is whether
+           the record CONTRADICTS what this tab last wrote.
+           Absence is not contradiction, and getting that wrong made the reclaim useless: the old
+           tab cannot know about an answer this tab wrote after its own last read, so requiring it
+           to carry everything meant the ordinary clobber — the one this whole path exists for —
+           was classified as foreign and stood down on. A foreign snapshot differs in a VALUE, or
+           in the paper; a continuation is merely behind. */
         let continues = false;
         if(cur && cur.a){
           try{
             const lastA = (JSON.parse(MOCKSEEN) || {}).a || {};
-            continues = Object.keys(lastA).every(k => cur.a[k] === lastA[k]);
+            continues = Object.keys(lastA).every(k => !(k in cur.a) || cur.a[k] === lastA[k]);
           }catch(e){ continues = false; }
         }
-        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent && continues;
-        if(!legacyClobber){ if(mockOn) mockRunSuperseded(); return; }
+        legacyReclaim = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent && continues;
+        if(!legacyReclaim){ if(mockOn) mockRunSuperseded(); return; }
       }
       /* merge THIS write's own changed answers/flags onto whatever is on disk right now
          (freshly read inside the same lock hold as the write below), rather than overwriting
@@ -13887,7 +13892,15 @@ function mockSaveRun(){
       const sameRun = !!(cur && (cur.id ? cur.id === forId : sameList));
       let seen = {};
       if(sameRun){ try{ const s = JSON.parse(MOCKSEEN); if(s && s.id === forId) seen = s; }catch(e){} }
-      const mergedAF = mergeMockAnswers(sameRun ? cur : null, seen, mineAns, mineFlag);
+      /* A reclaim is the one case where the seen-baseline must be dropped. It exists to stop this
+         tab re-asserting answers it has not touched; but the record we are reclaiming has had the
+         pre-ID tab's whole-record write land on top of it, and anything that tab had not seen is
+         simply gone from it. Judged against the baseline those answers look unchanged-since-seen,
+         so the merge would leave them out and they would be lost for good — the modern tab's own
+         answer, dropped by the very write that rescues the legacy tab's (Codex review of #464).
+         After a clobber this tab's local state is the authority for everything it holds; the other
+         tab's additions still come in from the record itself. */
+      const mergedAF = mergeMockAnswers(sameRun ? cur : null, legacyReclaim ? {} : seen, mineAns, mineFlag);
       /* the cursor is where this tab's reader is looking, not a high-water mark: #mockPrev (and
          the 'b' key) walk it backward on purpose, so taking the maximum meant that going back to
          question 10 with 50 on disk kept writing 50, and the next resume opened at 51 instead of

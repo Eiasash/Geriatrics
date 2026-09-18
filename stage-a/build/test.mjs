@@ -4016,6 +4016,38 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   dmRc.window.close();
 }
 {
+  /* Codex review of #464 (P1): the pre-ID tab's snapshot is written from what IT last read, so an
+     answer this tab wrote after that is simply not in it. The reclaim merged from that truncated
+     record, and the missing answer still equalled the seen-baseline, so the merge left it out —
+     the modern tab's own answer dropped by the very write that rescues the legacy tab's.
+     Codex's fixture exactly: claim, save question 1, legacy overwrite carrying 0 and 3 but not 1,
+     then answer 2. All four must survive. */
+  const qsPk = w.eval("PQ.slice(0,5).map(p=>p.y+'#'+p.n)");
+  const pkStore = {'geri:mockrun': JSON.stringify({q: qsPk, a: {0:'\u05d0'}, f: {}, i: 0, e: 0, t: 0})};
+  const dmPk = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in pkStore)) throw new Error('missing'); return {key:k, value:pkStore[k]}; },
+        set: async (k, v) => { pkStore[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dmPk.window.document.getElementById('mockResume'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 100));
+  dmPk.window.alert = () => {};
+  dmPk.window.document.getElementById('mockResume').click();
+  await new Promise(r => setTimeout(r, 150));
+  await dmPk.window.eval("mockAns[1] = '\u05d1'; mockSaveRun()");   /* the modern tab's own answer */
+  await new Promise(r => setTimeout(r, 60));
+  /* the pre-ID tab writes from what it last read: it never saw question 1 */
+  pkStore['geri:mockrun'] = JSON.stringify({q: qsPk, a: {0:'\u05d0', 3:'\u05d3'}, f: {}, i: 3, e: 0, t: 0});
+  await dmPk.window.eval("mockAns[2] = '\u05d2'; mockSaveRun()");
+  await new Promise(r => setTimeout(r, 80));
+  let pkDisk = {};
+  try{ pkDisk = JSON.parse(pkStore['geri:mockrun']); }catch(e){}
+  ok('a legacy snapshot that is merely behind is still reclaimed, and this tab\u2019s own answer survives it',
+     !!pkDisk.id && pkDisk.a && pkDisk.a['0'] === '\u05d0' && pkDisk.a['1'] === '\u05d1' &&
+     pkDisk.a['2'] === '\u05d2' && pkDisk.a['3'] === '\u05d3',
+     JSON.stringify(pkDisk.a) + ' (1 is the one the legacy snapshot never carried)');
+  dmPk.window.close();
+}
+{
   /* Eias's call on Codex's fourth #464 finding: an id-less record for this paper is not proof the
      pre-ID tab wrote it. A reader restoring a backup mid-run produces one too, and reclaiming
      that silently undoes part of a deliberate restore. What tells them apart is shape — the old
@@ -4035,7 +4067,10 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   dmNc.window.document.getElementById('mockResume').click();
   await new Promise(r => setTimeout(r, 150));
   /* a restored backup: same paper, no id, but it does not carry what this tab already wrote */
-  ncStore['geri:mockrun'] = JSON.stringify({q: qsNc, a: {3:'\u05d3'}, f: {}, i: 3, e: 0, t: 0});
+  /* a genuinely foreign snapshot: it CONTRADICTS what this tab wrote (question 0 is \u05d1 here,
+     \u05d0 in our last checkpoint). Merely lacking one of our answers would not qualify — the
+     pre-ID tab cannot know about an answer written after its own last read. */
+  ncStore['geri:mockrun'] = JSON.stringify({q: qsNc, a: {0:'\u05d1', 3:'\u05d3'}, f: {}, i: 3, e: 0, t: 0});
   const ncRestored = ncStore['geri:mockrun'];
   await dmNc.window.eval("mockAns[1] = '\u05d1'; mockSaveRun()");
   await new Promise(r => setTimeout(r, 80));

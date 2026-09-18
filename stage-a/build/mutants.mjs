@@ -1208,7 +1208,7 @@ const M = [
       here first and came back MISSED, because the check that catches it is the sibling one
       about telling the reader, whose label does not carry this needle. The stand-down itself
       has to go for this mutation to mean what its name says. */
-   `        if(!legacyClobber){ if(mockOn) mockRunSuperseded(); return; }`,
+   `        if(!legacyReclaim){ if(mockOn) mockRunSuperseded(); return; }`,
    ``,
    'superseded by another tab'],
   /* "mockSaveRun stops serializing its checkpoint writes through mockRunChain" (de-chaining
@@ -1271,7 +1271,7 @@ const M = [
    /* re-anchored after the Codex-review-of-#459 fixes rewrote these two lines (ownership-scoped
       merge, and a cursor that is no longer a high-water mark). Same property guarded, same
       needle — only the text it attaches to moved. */
-   `      const mergedAF = mergeMockAnswers(sameRun ? cur : null, seen, mineAns, mineFlag);`,
+   `      const mergedAF = mergeMockAnswers(sameRun ? cur : null, legacyReclaim ? {} : seen, mineAns, mineFlag);`,
    `      const mergedAF = {a: mineAns, f: mineFlag};`,
    'two-tabs-both-resumed'],
   ['newRunId stops trying crypto.randomUUID and goes straight back to Date.now()+Math.random(), which is not collision-proof under a frozen clock and a repeated RNG sequence (ChatGPT audit against ACCEPTANCE-round5.md, ID2)',
@@ -1292,8 +1292,8 @@ const M = [
    `    mockRunClaimed = true; mockRunObservedId = mockRunId;`,
    'resumes and migrates instead of being declared superseded'],
   ['mockSaveRun goes back to merging against whatever record is on disk regardless of whose run it is, so a new mock started over a discarded one inherits that run\'s index-keyed answers onto a different question list (Codex review of #459)',
-   `      const mergedAF = mergeMockAnswers(sameRun ? cur : null, seen, mineAns, mineFlag);`,
-   `      const mergedAF = mergeMockAnswers(cur, seen, mineAns, mineFlag);`,
+   `      const mergedAF = mergeMockAnswers(sameRun ? cur : null, legacyReclaim ? {} : seen, mineAns, mineFlag);`,
+   `      const mergedAF = mergeMockAnswers(cur, legacyReclaim ? {} : seen, mineAns, mineFlag);`,
    'does not inherit that run’s answers or flags'],
   ['the checkpoint cursor goes back to being a high-water mark, so walking back through the paper keeps writing the furthest question reached and the next resume opens past where the reader actually was (Codex review of #459)',
    /* re-anchored twice now, as #462 then #464 moved this decision — into mergeMockCursor's
@@ -1349,8 +1349,8 @@ const M = [
    `  if(false) return theirs;`,
    'cursor the legacy tab moved to'],
   ['a pre-ID tab overwriting this tab\'s freshly claimed record is read as another tab taking the run over again, so the modern tab stands down, the stale id-less record is left on disk, and the reader is told their answers are safe in a run that does not exist (Codex review of #464, P1)',
-   `        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent && continues;`,
-   `        const legacyClobber = false;`,
+   `        legacyReclaim = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent && continues;`,
+   `        legacyReclaim = false;`,
    'reclaimed, not read as another tab'],
 
   /* ---- red tests for the weak-check rewrites (ChatGPT audit of the SUITE, not the app: ~234
@@ -1412,9 +1412,17 @@ const M = [
    `      const sameRun = !!(cur && sameContent && (cur.id ? cur.id === forId : sameList));`,
    'edited paper are kept, not silently re-certified'],
   ['the reclaim stops requiring the id-less record to be a continuation of what this tab last wrote, so a backup the reader restored mid-run is absorbed and partly undone as if the pre-ID tab had written it (Eias\'s call on Codex #464: reclaim a continuation only)',
-   `            continues = Object.keys(lastA).every(k => cur.a[k] === lastA[k]);`,
+   `            continues = Object.keys(lastA).every(k => !(k in cur.a) || cur.a[k] === lastA[k]);`,
    `            continues = true;`,
    'NOT a continuation is left alone'],
+  ['the reclaim goes back to treating a merely-behind legacy snapshot as foreign, so the ordinary clobber \u2014 where the old tab simply never saw this tab\'s newest answer \u2014 is classified as a restore and stood down on (Codex review of #464, P1)',
+   `            continues = Object.keys(lastA).every(k => !(k in cur.a) || cur.a[k] === lastA[k]);`,
+   `            continues = Object.keys(lastA).every(k => cur.a[k] === lastA[k]);`,
+   'merely behind is still reclaimed'],
+  ['the reclaim keeps the seen-baseline, so an answer this tab wrote that the pre-ID tab\'s snapshot never carried looks unchanged-since-seen, is left out of the merge, and is lost by the very write that rescues the legacy tab\'s answers (Codex review of #464, P1)',
+   `legacyReclaim ? {} : seen, mineAns, mineFlag);\n      /* the cursor`,
+   `seen, mineAns, mineFlag);\n      /* the cursor`,
+   'merely behind is still reclaimed'],
 
   /* ---- audit.mjs's own gates (runner 'audit'): each break below is one a reviewer verified
      the OLD gate waved through. They are the red tests for those gates as much as they are
