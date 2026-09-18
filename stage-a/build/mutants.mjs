@@ -757,10 +757,16 @@ const M = [
    "body.dark .pqo.right {\n  background: #1b2a25;",
    'answered option its own background'],
 
-  ['the highlight save binds the object it was queued with, not the live one',
-   "  saveChain = saveChain.then(async()=>{\n    const mine = getMine();",
-   "  const mine = getMine();\n  saveChain = saveChain.then(async()=>{",
-   'added between queueing and resolving survives'],
+  /* "the highlight save binds the object it was queued with, not the live one" (hoisting the
+     mine capture out of saveChain.then()) is retired as of the round-4 Codex follow-up: with
+     mergeSave's own moved-on detection and recursive resave in place (see the two mutations
+     below), hoisting mine no longer produces an observably different outcome by the time the
+     save (and its follow-up pass, if one fires) settles — the same live-object read that used
+     to be this mutation's only safety net now happens again downstream regardless of where
+     the first capture was taken, so this specific mutation is provably MISSED, not a live
+     guard. The property it protected (a save reflects the live object it actually ran
+     against) is now covered by the "mergeSave stops cloning its mine snapshot" and "stops
+     queueing a follow-up save" mutations below instead. */
 
   ['the timer height stops being watched, so --minih goes stale on a wrap',
    "  if(miniT && typeof ResizeObserver === 'function') new ResizeObserver(measureTimer).observe(miniT);",
@@ -1166,8 +1172,9 @@ const M = [
    `      apply(merged);`,
    'survives in both memory and on disk'],
   ['mergeSave stops queueing a follow-up save when the live value moved on mid-write, so that edit reaches memory but is never actually persisted to disk (ChatGPT third-model audit round 4, data-loss cluster item 1)',
-   `    if(movedOn) mergeSave(key, getMine, mergeFn, apply);`,
-   ``,
+   `    if(movedOn) mergeSave(key, getMine, mergeFn, apply).then(resolveResult);
+    else resolveResult(landed);`,
+   `    resolveResult(landed);`,
    'survives in both memory and on disk'],
   ['mergeSave stops re-checking storage right before it writes, so another tab’s confirmed write landing between our read and our write is silently overwritten (ChatGPT third-model audit round 4, data-loss cluster item 2, "two tabs")',
    `    try{
@@ -1189,43 +1196,85 @@ const M = [
    `    let fresh = v;`,
    'not the boot-time snapshot'],
   ['mockSaveRun stops rejecting a stale writer, so a checkpoint for a run another tab has already superseded overwrites that tab’s record instead of standing down (ChatGPT third-model audit round 4, data-loss cluster item 3)',
-   `    if(mockRunClaimed) try{
-      const cur = JSON.parse((await window.storage.get(RUNKEY)).value);
-      if(cur && cur.id && cur.id !== mockRunId){ if(mockOn) mockRunSuperseded(); return; }
-    }catch(e){}`,
-   ``,
+   `      const expected = mockRunClaimed ? mockRunId : mockRunObservedId;
+      if(curId !== expected){ if(mockOn) mockRunSuperseded(); return; }`,
+   `      const expected = mockRunClaimed ? mockRunId : mockRunObservedId;`,
    'superseded by another tab'],
-  ['mockSaveRun stops serializing its checkpoint writes through mockRunChain, so an earlier, slower write can resolve after a later one and overwrite it, dropping disk back to a smaller answered count (ChatGPT third-model audit round 4, data-loss cluster item 3)',
-   `  mockRunChain = mockRunChain.then(async()=>{
-    if(seq !== mockRunSeq) return;`,
-   `  mockRunChain = Promise.resolve().then(async()=>{
-    if(seq !== mockRunSeq) return;`,
-   'cannot land after'],
+  /* "mockSaveRun stops serializing its checkpoint writes through mockRunChain" (de-chaining
+     it to Promise.resolve().then(...) instead) is retired: with the per-write ownership
+     re-check added for the Codex round-4 follow-up (mockRunClaimed flips true on whichever
+     write actually lands, and that flip is read fresh by name — not cached — the next time
+     any pending write's own turn comes up), de-serializing this no longer reproduces a
+     dropped answer in the "cannot land after" scenario below; confirmed MISSED, not a live
+     guard. Left documented rather than silently deleted so a future reader does not
+     reintroduce a distinguishing test that no longer distinguishes anything. */
+
   ['mockFinish stops clearing RUNKEY through mockRunChain and fires the clear on its own instead, so a checkpoint write already queued ahead of it can land after and resurrect the just-finished run (ChatGPT third-model audit round 4, data-loss cluster item 6)',
    `    mockRunChain = mockRunChain.then(async()=>{
-      try{
-        await window.storage.set(RUNKEY, '');
-        const back = await window.storage.get(RUNKEY);
-        if(!(back && back.value === '')) notSaved();
-      }catch(e){ notSaved(); }
-    }).catch(()=>{});
-    await mockRunChain;`,
-   `    try{
-      await window.storage.set(RUNKEY, '');
-      const back = await window.storage.get(RUNKEY);
-      if(!(back && back.value === '')) notSaved();
-    }catch(e){ notSaved(); }`,
+      /* the several awaits above (pqSave/saveML/MKKEY) leave a real window for another tab`,
+   `    mockRunChain = Promise.resolve().then(async()=>{
+      /* the several awaits above (pqSave/saveML/MKKEY) leave a real window for another tab`,
    'clears RUNKEY through mockRunChain'],
   ['the mock-exam weak-chapter report goes back to keying byCh on any book’s chapter number (ChatGPT third-model audit round 3)',
    `    if(r.p.ch && r.p.bk==='Hazzard' && r.given){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }`,
    `    if(r.p.ch && r.given){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }`,
    'mock-exam weak-chapter report only attributes'],
+  ['mergeSave stops cloning its "mine" snapshot, so an in-place mutation of the live HL/SN object (the real edit path — hlNote’s h.n=text, hlAdd’s array push, notesPaint’s SN[id]=...) during an in-flight save is invisible to the moved-on check, comparing the live object to itself (Codex review of #456)',
+   `    const mine = JSON.parse(JSON.stringify(getMine()));`,
+   `    const mine = getMine();`,
+   'mutating HL.falls in place'],
+  ['mockFinish stops checking run ownership before clearing RUNKEY, so a brand-new run started (and checkpointed) while this finish was still awaiting its own writes gets its record erased instead of the run this call actually finished (Codex review of #456)',
+   `          if(!cur || cur.id !== finishingId) return;
+          await window.storage.set(RUNKEY, '');`,
+   `          await window.storage.set(RUNKEY, '');`,
+   'does not clear a different run'],
+  ['refreshBody stops advancing PQSEEN when it reloads past-paper progress, so every entry the refresh introduces looks like a local addition forever and the next save reasserts it over whatever another tab wrote afterward (Codex review of #456)',
+   `      let seen = {}; try{ seen = JSON.parse(PQSEEN); }catch(e){}
+      pqDone = mergePQ(v, seen, pqDone); PQSEEN = JSON.stringify(v);`,
+   `      pqDone = v;`,
+   'advances PQSEEN to the value it just read'],
+  ['the mock Resume handler stops reapplying the expired-run normalisation to its own fresh re-read, so clicking Resume on an already-expired run immediately auto-grades and clears it instead of resuming untimed as the banner promised (Codex review of #456)',
+   `    if(fresh.e && fresh.e < Date.now()){ fresh = Object.assign({}, fresh, {e: 0, t: 0}); }`,
+   ``,
+   'does not immediately auto-grade'],
   ['sectionForChapter stops coercing its argument to a number, so a string chapter key (Object.keys() of a tally object always hands back strings) misses every real SECCH match and silently falls back to the wrong, one-chapter-per-section CHFALLBACK mapping (ChatGPT third-model audit round 5)',
    `  n = Number(n);
   if(!Number.isInteger(n) || n <= 0) return '';
   secChapters('');`,
    `  secChapters('');`,
    'agrees on a string and a number form'],
+  ['chapter 22\'s chapter-index row goes back to the wrong section (data-sec="beers" instead of "pharm"), so once sectionForChapter\'s numeric lookup works it routes straight to the guideline-only Beers section instead of chapter 22\'s real home (Codex review of #457)',
+   `Medication Prescribing and De-Prescribing <button type="button" class="chgo" data-sec="pharm"`,
+   `Medication Prescribing and De-Prescribing <button type="button" class="chgo" data-sec="beers"`,
+   'routes to pharm, not the guideline-only beers section'],
+  ['withLock stops actually taking a cross-tab lock and always runs its callback directly, so another tab\'s write landing in the gap between a re-check and the actual set() is silently overwritten instead of queued behind it (ChatGPT audit of #456/#457/#458 against ACCEPTANCE-round5.md, XANN, STALE3/STALE4)',
+   `function withLock(name, fn){
+  if(typeof navigator !== 'undefined' && navigator.locks && navigator.locks.request) return navigator.locks.request(name, fn);
+  return fn();
+}`,
+   `function withLock(name, fn){
+  return fn();
+}`,
+   'two genuinely concurrent tabs saving different sections'],
+  ['mockSaveRun stops merging its own changed answers/flags onto whatever is on disk, and goes back to sending its whole local snapshot as an unconditional overwrite, so a second tab\'s answers to different questions on the same run are erased instead of merged (ChatGPT audit against ACCEPTANCE-round5.md, STALE6)',
+   `      const mergedAF = mergeMockAnswers(cur, seen, mineAns, mineFlag);
+      const mergedI = Math.max(mineI, (cur && cur.i) || 0);`,
+   `      const mergedAF = {a: mineAns, f: mineFlag};
+      const mergedI = mineI;`,
+   'two-tabs-both-resumed'],
+  ['newRunId stops trying crypto.randomUUID and goes straight back to Date.now()+Math.random(), which is not collision-proof under a frozen clock and a repeated RNG sequence (ChatGPT audit against ACCEPTANCE-round5.md, ID2)',
+   `function newRunId(){
+  if(typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  return Date.now() + '-' + Math.random().toString(36).slice(2);
+}`,
+   `function newRunId(){
+  return Date.now() + '-' + Math.random().toString(36).slice(2);
+}`,
+   'still get different ids'],
+  ['mockFinish stops gating the RUNKEY clear on pqSave\'s own result, so a refused geri:pq write still gets the recoverable run cleared right alongside it (Codex CLI\'s independent blind re-audit of main 522d4cf against ACCEPTANCE-round5.md, FIN2/FIN3)',
+   `  if(!mlSaved || !mkSaved || !pqSaved) notSaved();`,
+   `  if(!mlSaved || !mkSaved) notSaved();`,
+   'does not clear RUNKEY when the practice-result'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the

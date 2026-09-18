@@ -3666,7 +3666,7 @@ body.dark .pqo.wrong {
 <tr><td class="n">19</td><td>Value-Based Care </td><td class="n">p263</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">20</td><td>The Role of Social Workers </td><td class="n">p277</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">21</td><td>The Patient Perspective </td><td class="n">p287</td><td class="n">&mdash;</td></tr>
-<tr><td class="n">22</td><td>Medication Prescribing and De-Prescribing <button type="button" class="chgo" data-sec="beers" aria-label="Medication Prescribing and De-Prescribing — notes">notes</button></td><td class="n">p301</td><td class="n">&mdash;</td></tr>
+<tr><td class="n">22</td><td>Medication Prescribing and De-Prescribing <button type="button" class="chgo" data-sec="pharm" aria-label="Medication Prescribing and De-Prescribing — notes">notes</button></td><td class="n">p301</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">23</td><td>Substance Use and Disorders </td><td class="n">p317</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">24</td><td>Integrative Medicine and Health </td><td class="n">p329</td><td class="n">&mdash;</td></tr>
 <tr><td class="n">25</td><td>Patient-Centered Management of Chronic Diseases </td><td class="n">p345</td><td class="n">&mdash;</td></tr>
@@ -11130,10 +11130,40 @@ function mergePQ(stored, seen, mine){
    and write it back over anything added since — invisible in the suite, where the stub
    resolves in the same tick, and entirely possible on a phone where a real write takes
    a macrotask and taps land in between. */
+/* Cross-tab mutual exclusion for a read-merge-write critical section. mergeSave's own
+   "re-check storage right before writing" (below) narrows the gap between reading and writing
+   but cannot close it — another tab's confirmed write can still land in the moment between that
+   re-check and this tab's own window.storage.set actually landing, and get silently overwritten
+   (ChatGPT audit of #456 against ACCEPTANCE-round5.md: XANN, and the STALE3/STALE4 mock-run
+   equivalent). navigator.locks (Web Locks API) gives real mutual exclusion across tabs/windows
+   of the same origin, keyed by name; where it is unavailable, fall back to running the callback
+   directly — the same, narrower protection this file already had. */
+function withLock(name, fn){
+  if(typeof navigator !== 'undefined' && navigator.locks && navigator.locks.request) return navigator.locks.request(name, fn);
+  return fn();
+}
 function mergeSave(key, getMine, mergeFn, apply){
   if(restoring) return saveChain;   /* see flushPending */
-  saveChain = saveChain.then(async()=>{
-    const mine = getMine();
+  /* ChatGPT third-model audit round 4 review (Codex, on #456): the caller's own promise from
+     mergeSave used to be `saveChain` itself — the same object every queued save (from every
+     key) shares, which resolves to nothing and carries no signal of whether THIS call's own
+     write actually landed. A caller that needs to know before acting on it (mockFinish,
+     deciding whether it is safe to clear the recoverable run) had no way to ask. resultP
+     resolves to this call's own true/false once its write (and any follow-up pass triggered
+     by a live edit that moved on) is settled, independent of what else is queued on
+     saveChain around it. */
+  let resolveResult; const resultP = new Promise(res => { resolveResult = res; });
+  saveChain = saveChain.then(()=> withLock('geri-save-' + key, async()=>{
+    /* ChatGPT third-model audit round 4 review (Codex, on #456): getMine() returns the LIVE
+       object (HL/SN/pqDone) — comparing it against itself further down (`nowMine !== mine`)
+       is comparing an object to itself when the real edit paths in this file mutate that
+       object IN PLACE (`h.n = text`, `(HL[sec]=...).push(h)`, `SN[id]=...`) rather than
+       reassigning it. A mutation made while this save awaits storage below then silently
+       mutates `mine` too, `movedOn` never sees a difference, and the exact stale-snapshot
+       clobber this whole mechanism exists to prevent (see the comment further down) happens
+       again — just via mutation instead of reassignment. `mine` is a JSON snapshot from here
+       on, frozen at the moment this save actually started running, not a live reference. */
+    const mine = JSON.parse(JSON.stringify(getMine()));
     let stored = null;
     try{ const r = await window.storage.get(key); stored = JSON.parse(r.value); }catch(e){ stored = null; }
     let seen = {}; try{ seen = JSON.parse(seenGet(key)); }catch(e){ seen = {}; }
@@ -11183,10 +11213,13 @@ function mergeSave(key, getMine, mergeFn, apply){
        what actually reached disk in this pass — was built from `mine` before it happened, so
        disk does not have it yet. Queue another pass so it gets there without depending on the
        caller noticing and saving again (the caller has no way to know a second edit landed
-       mid-write). */
-    if(movedOn) mergeSave(key, getMine, mergeFn, apply);
-  }).catch(()=>{});
-  return saveChain;
+       mid-write). This pass's own success is `landed`; the overall promise this call handed
+       back to its caller isn't settled until the follow-up pass (which is what actually
+       persists the edit that moved on) settles too. */
+    if(movedOn) mergeSave(key, getMine, mergeFn, apply).then(resolveResult);
+    else resolveResult(landed);
+  })).catch(()=>resolveResult(false));
+  return resultP;
 }
 /* repaint now, or as soon as the reader has finished selecting */
 function hlRepaintWhenIdle(merged){
@@ -12319,7 +12352,20 @@ async function refreshBody(){
   try{ const r = await window.storage.get(READKEY); readSet = new Set(asList(r.value, 'chapters read')); }catch(e){}
   try{ const r = await window.storage.get(DKEY);    days    = new Set(JSON.parse(r.value)); }catch(e){}
   try{ const r = await window.storage.get(MKEY);    missed  = new Set(JSON.parse(r.value)); }catch(e){}
-  try{ const r = await window.storage.get(PKEY);    pqDone  = JSON.parse(r.value) || {};   }catch(e){}
+  /* ChatGPT third-model audit round 4 review (Codex, on #456): a plain reassignment here,
+     unlike the merge-and-advance-SEEN treatment HL/SN get just below, leaves PQSEEN at its
+     boot-time value — every entry this refresh just introduced then looks, to the NEXT
+     mergePQ, like something added in THIS tab (seen has no record of it), so a later answer
+     to any different question re-asserts this whole refreshed snapshot and silently
+     overwrites whatever another tab wrote to geri:pq after it. Merge and advance PQSEEN the
+     same way HL/SN already do. */
+  try{
+    const r = await window.storage.get(PKEY); const v = JSON.parse(r.value);
+    if(v && typeof v === 'object'){
+      let seen = {}; try{ seen = JSON.parse(PQSEEN); }catch(e){}
+      pqDone = mergePQ(v, seen, pqDone); PQSEEN = JSON.stringify(v);
+    }
+  }catch(e){}
   try{ const r = await window.storage.get(QKEY);    qlog    = JSON.parse(r.value) || {};   }catch(e){}
   try{ const r = await window.storage.get(MQKEY);   mlog    = JSON.parse(r.value) || {};   }catch(e){}
   try{
@@ -13548,6 +13594,38 @@ let mockN = 100, mockPerQ = 2, mockUnseen = 0, mockOn = false;
    for it, so a stale writer — an old tab's answer still in flight after a newer run
    started, here or in another tab — can be told apart from the current one. */
 let mockRunId = '', mockRunSeq = 0, mockRunChain = Promise.resolve(), mockRunClaimed = false;
+/* the id (or '' for "nothing there") RUNKEY held at the moment mockStart approved starting
+   THIS run — mockSaveRun's first checkpoint checks storage still agrees before claiming it,
+   so a second tab racing past the same discard prompt at nearly the same moment cannot also
+   silently claim RUNKEY (Codex review of #456) */
+let mockRunObservedId = '';
+/* last-synced full checkpoint record for THIS run, mirroring HLSEEN/SNSEEN/PQSEEN. Without
+   this, mockSaveRun sent the WHOLE current mockAns/mockFlag as an unconditional overwrite —
+   two tabs both legitimately resumed on the same run, each answering different questions from
+   their own (possibly stale) local state, would have the later write blow away the earlier
+   tab's answers entirely rather than merge with them (ChatGPT audit of #456/#457 against
+   ACCEPTANCE-round5.md, STALE6 and the deeper two-tabs-both-resumed gap it names). */
+let MOCKSEEN = '{}';
+function mergeMockAnswers(diskRec, seen, mineAns, mineFlag){
+  const seenA = (seen && seen.a) || {}, seenF = (seen && seen.f) || {};
+  const outA = Object.assign({}, diskRec && diskRec.a || {});
+  const outF = Object.assign({}, diskRec && diskRec.f || {});
+  for(const k in mineAns){ if(!(k in seenA) || mineAns[k] !== seenA[k]) outA[k] = mineAns[k]; }
+  for(const k in mineFlag){ if(!(k in seenF) || mineFlag[k] !== seenF[k]) outF[k] = mineFlag[k]; }
+  return {a: outA, f: outF};
+}
+/* Date.now()+Math.random() is not actually collision-proof: under a frozen clock (a phone
+   asleep, or two tabs opened in the same test tick) plus a repeated RNG sequence, two "new"
+   runs can mint the identical id (ChatGPT audit of #456/#457 against ACCEPTANCE-round5.md,
+   ID2) — the run-identity mechanism this whole file relies on to tell two runs apart is only
+   as sound as this id actually being unique. crypto.randomUUID() is a real UUIDv4 (122 random
+   bits), not derivable from timing or a predictable RNG state; fall back to the old scheme only
+   where it is unavailable (very old browsers with no navigator.storage-quality persistence
+   anyway). */
+function newRunId(){
+  if(typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  return Date.now() + '-' + Math.random().toString(36).slice(2);
+}
 /* the home tile starts a 50-question mock on the same clock the mock runs (exam pace,
    mockPerQ minutes a question); it said "35 min", the daily goal, while the clock read 100:00 */
 function paintMockTile(){
@@ -13601,9 +13679,16 @@ function mockPick(n){
 function mockSaveRun(){
   if(!mockOn) return mockRunChain;
   const seq = ++mockRunSeq;
-  const blob = JSON.stringify({
-    q: mockQs.map(p=>p.y + '#' + p.n), a: mockAns, f: mockFlag, i: mockI,
-    e: mockEnds, t: mockPerQ, id: mockRunId, rev: seq });
+  /* captured now, synchronously, not read again from the (mutable, shared) global once this
+     write's turn comes up: mockStart can reset mockRunId/mockRunClaimed for a brand-new run
+     while THIS write — queued for the OLD run — is still waiting on mockRunChain. Without its
+     own copy, this write's completion handler would mark the NEW run's global mockRunClaimed
+     true after confirming only the OLD run's blob landed, and the new run's own next
+     checkpoint would then find a mismatched id on disk and wrongly stand down (Codex review
+     of #456). */
+  const forId = mockRunId;
+  const qList = mockQs.map(p=>p.y + '#' + p.n);
+  const mineAns = Object.assign({}, mockAns), mineFlag = Object.assign({}, mockFlag), mineI = mockI;
   /* each answer used to fire an unawaited, unserialized window.storage.set — nothing stopped
      two of those in-flight writes from resolving out of order, so a later, more-complete
      answer set could land on disk before an earlier, smaller one, which then overwrote it.
@@ -13612,23 +13697,49 @@ function mockSaveRun(){
      newer one has already superseded by the time its turn comes up, instead of doing (and
      confirming) pointless work. */
   mockRunChain = mockRunChain.then(async()=>{
-    if(seq !== mockRunSeq) return;
-    /* a DIFFERENT id in storage means some other run has taken this key over since our LAST
-       CONFIRMED write — start here, resume in another tab, or resume here again — and a
-       checkpoint for a run that no longer owns RUNKEY must not stomp on it. Only checked once
-       this run has actually claimed RUNKEY at least once (mockRunClaimed): the very first
-       write for a brand-new run is meant to take it over from whatever stale record was
-       there — mockStart already asked before this run existed. */
-    if(mockRunClaimed) try{
-      const cur = JSON.parse((await window.storage.get(RUNKEY)).value);
-      if(cur && cur.id && cur.id !== mockRunId){ if(mockOn) mockRunSuperseded(); return; }
-    }catch(e){}
-    try{
-      await window.storage.set(RUNKEY, blob);
-      const back = await window.storage.get(RUNKEY);
-      if(back && back.value === blob) mockRunClaimed = true;
-      else notSaved();
-    }catch(e){ notSaved(); }
+    if(seq !== mockRunSeq || forId !== mockRunId) return;
+    /* checked before EVERY write, not just once claimed — two tabs can both pass mockStart's
+       discard prompt for the same stale run at nearly the same moment and each mint their own
+       new id before either has written a first checkpoint, so the ownership check has to hold
+       from the very first write, not just the second one onward. A cleared or missing record
+       (mockFinish's own clear, elsewhere, or nothing ever written) normalises to '' — distinct
+       from "we haven't looked yet" only in that '' never equals a real id, so it always reads
+       as lost/unclaimed ownership rather than silently retrying the write on a JSON.parse
+       failure the way an empty-string RUNKEY used to (Codex review of #456).
+       Wrapped in withLock: the check-then-write here is the same TOCTOU shape as mergeSave's
+       (ChatGPT audit of #456 against ACCEPTANCE-round5.md, STALE3/STALE4) — another tab's
+       write can land between this check and this tab's own set() actually reaching storage,
+       and get silently overwritten, unless the whole check-then-write is mutually exclusive
+       across tabs. */
+    await withLock('geri-mockrun', async()=>{
+      let curId = '', cur = null, rawVal = '';
+      try{ rawVal = (await window.storage.get(RUNKEY)).value; if(rawVal){ cur = JSON.parse(rawVal); curId = (cur && cur.id) || ''; } }catch(e){}
+      const expected = mockRunClaimed ? mockRunId : mockRunObservedId;
+      if(curId !== expected){ if(mockOn) mockRunSuperseded(); return; }
+      /* merge THIS write's own changed answers/flags onto whatever is on disk right now
+         (freshly read inside the same lock hold as the write below), rather than overwriting
+         the whole record with this tab's local snapshot — two tabs both resumed on the same
+         run, each answering different questions from their own local state, must not have the
+         later write erase the earlier tab's answers entirely (STALE6). `i` never regresses:
+         take whichever tab got further. */
+      /* MOCKSEEN is only a valid merge baseline for the run it was captured for — a test (or a
+         real path) that sets mockAns/mockRunId directly, skipping mockStart/Resume's own reset,
+         must not have a DIFFERENT run's stale MOCKSEEN silently suppress this write's answers
+         (an answer that happens to already equal an old, unrelated run's "seen" value for the
+         same key would otherwise look unchanged and get dropped from the merge entirely). */
+      let seen = {}; try{ const s = JSON.parse(MOCKSEEN); if(s && s.id === forId) seen = s; }catch(e){}
+      const mergedAF = mergeMockAnswers(cur, seen, mineAns, mineFlag);
+      const mergedI = Math.max(mineI, (cur && cur.i) || 0);
+      const blob = JSON.stringify({
+        q: qList, a: mergedAF.a, f: mergedAF.f, i: mergedI,
+        e: mockEnds, t: mockPerQ, id: forId, rev: seq });
+      try{
+        await window.storage.set(RUNKEY, blob);
+        const back = await window.storage.get(RUNKEY);
+        if(back && back.value === blob){ if(forId === mockRunId){ mockRunClaimed = true; MOCKSEEN = blob; } }
+        else notSaved();
+      }catch(e){ notSaved(); }
+    });
   }).catch(()=>{});
   return mockRunChain;
 }
@@ -13637,6 +13748,16 @@ function mockRunSuperseded(){
      checkpoint write for the same stale run (queued right behind the first) is a no-op at
      the top of mockSaveRun before this function is ever reached again */
   mockOn = false;
+  /* setting mockOn=false alone stops mockSaveRun/mockFinish from doing anything, and drops
+     the beforeunload warning, but the question card, its answer buttons, flag and nav were
+     all still on screen and fully wired — every tap after the alert kept changing mockAns
+     and repainting as if the paper were live, none of it going anywhere (Codex review of
+     #456). Tear the card down the same way a finished mock does, minus the report: hide it,
+     stop the clock, and return to the papers view the reader can restart a mock from. */
+  clearInterval(mockTick);
+  const card = document.getElementById('mockCard'); if(card) card.hidden = true;
+  const bar = document.getElementById('mockBar'); if(bar) bar.hidden = false;
+  const pq = document.getElementById('pqCard'); if(pq) pq.hidden = false;
   alert('This mock paper was started again in another tab, so this copy has stopped saving ' +
         'to avoid overwriting it. Your answers here up to this point are safe in that other run.');
 }
@@ -13708,7 +13829,9 @@ async function mockStart(){
   if(!mockQs.length) return;
   mockAns = {}; mockFlag = {}; mockI = 0; mockOn = true;
   mockEnds = mockPerQ ? Date.now() + mockN * mockPerQ * 60000 : 0;
-  mockRunId = Date.now() + '-' + Math.random().toString(36).slice(2); mockRunSeq = 0; mockRunClaimed = false;
+  mockRunId = newRunId(); mockRunSeq = 0; mockRunClaimed = false;
+  mockRunObservedId = (stored && stored.id) || '';
+  MOCKSEEN = '{}';   /* a brand-new run has no prior checkpoint to merge against */
   document.getElementById('mockCard').hidden = false;
   document.getElementById('mockReport').hidden = true;
   document.getElementById('pqCard').hidden = true;
@@ -13723,6 +13846,13 @@ async function mockFinish(auto){
     const left = mockQs.length - Object.keys(mockAns).length;
     if(left && !confirm(left + ' still unanswered. Mark it anyway?')) return;
   }
+  /* captured before any of the several awaits below, none of which are on mockRunChain: with
+     mockOn about to go false, a NEW mockStart can run concurrently while this finish is still
+     in flight (pqSave/saveML/the MKKEY write all take real turns), mint its own mockRunId,
+     and start checkpointing — the clear at the end of this function must ask whether IT IS
+     STILL FINISHING THE RUN IT STARTED WITH, not just what mockRunId happens to hold by then
+     (Codex review of #456). */
+  const finishingId = mockRunId;
   mockOn = false; clearInterval(mockTick);
   document.getElementById('mockCard').hidden = true;
   document.getElementById('mockBar').hidden = false;
@@ -13787,7 +13917,12 @@ async function mockFinish(auto){
     mlog[today()] = Math.round(right / rows.length * 50);
     mlSaved = await saveML(); paintQ();
   }
-  await pqSave(); pqStats();
+  /* mergeSave (what pqSave runs through) catches its own failures and always resolves — an
+     `await` alone always looked like success even when the geri:pq write was refused or lost
+     its readback race, and this function proceeded to erase the only recoverable copy of the
+     mock's answers regardless (Codex review of #456). Its return value is that write's own
+     true/false now (see mergeSave); use it. */
+  const pqSaved = await pqSave(); pqStats();
   let mkSaved = false;
   try{
     const blob = JSON.stringify({when:today(), n:rows.length, right:right});
@@ -13795,18 +13930,31 @@ async function mockFinish(auto){
     const back = await window.storage.get(MKKEY);
     mkSaved = !!(back && back.value === blob);
   }catch(e){ mkSaved = false; }
-  if(!mlSaved || !mkSaved) notSaved();
+  if(!mlSaved || !mkSaved || !pqSaved) notSaved();
   else{
     /* mockSaveRun() queues its checkpoint writes on mockRunChain (one per answer, during the
        mock) — a write queued just before this finish, but not yet executed, would otherwise
        be free to land AFTER this clear and resurrect the just-finished run. Clear through the
        same chain so it is strictly ordered after every checkpoint already queued for it. */
     mockRunChain = mockRunChain.then(async()=>{
-      try{
-        await window.storage.set(RUNKEY, '');
-        const back = await window.storage.get(RUNKEY);
-        if(!(back && back.value === '')) notSaved();
-      }catch(e){ notSaved(); }
+      /* the several awaits above (pqSave/saveML/MKKEY) leave a real window for another tab
+         to have started and checkpointed a brand-new run in the meantime — clearing RUNKEY
+         unconditionally would erase THAT run instead of the one this call actually finished.
+         Only clear if RUNKEY still names the run this call started with (Codex review of
+         #456); an empty/missing/differently-owned record means somebody else has already
+         moved it on, and this call has nothing left to clean up.
+         Wrapped in withLock, same reason as mockSaveRun above: the check-then-clear here has
+         the same TOCTOU shape a held write can slip through (STALE5's cross-tab equivalent). */
+      await withLock('geri-mockrun', async()=>{
+        try{
+          const raw = (await window.storage.get(RUNKEY)).value;
+          const cur = raw ? JSON.parse(raw) : null;
+          if(!cur || cur.id !== finishingId) return;
+          await window.storage.set(RUNKEY, '');
+          const back = await window.storage.get(RUNKEY);
+          if(!(back && back.value === '')) notSaved();
+        }catch(e){ notSaved(); }
+      });
     }).catch(()=>{});
     await mockRunChain;
   }
@@ -13896,6 +14044,14 @@ document.addEventListener('keydown', e=>{
        cluster item 3). Re-read fresh, right now, instead. */
     let fresh = v;
     try{ const r = await window.storage.get(RUNKEY); const f = JSON.parse(r.value); if(f && f.q && f.q.length) fresh = f; }catch(e){}
+    /* the boot-time read a few lines up normalised an expired deadline to untimed (e:0, t:0)
+       so the reader can still resume instead of being auto-graded on click — a fresh read here
+       can turn up the same run still carrying its original, by-now-also-expired deadline, and
+       without the same normalisation mockClock() (started a few lines down) would see zero
+       time left on the very next tick and call mockFinish(true) immediately, silently grading
+       and clearing the paper the Resume button just promised would resume untimed (Codex
+       review of #456). */
+    if(fresh.e && fresh.e < Date.now()){ fresh = Object.assign({}, fresh, {e: 0, t: 0}); }
     pqLoad();
     const by = {}; PQ.forEach(p=>{ by[p.y + '#' + p.n] = p; });
     mockQs = fresh.q.map(k=>by[k]).filter(Boolean);
@@ -13911,8 +14067,12 @@ document.addEventListener('keydown', e=>{
     /* this run already owns RUNKEY under its own id (we just read it back) — inherit that
        id/sequence rather than minting a new one, so this tab's next checkpoint write is
        recognised as belonging to the run already on disk, not rejected as a stale writer */
-    mockRunId = fresh.id || (Date.now() + '-' + Math.random().toString(36).slice(2));
-    mockRunSeq = fresh.rev || 0; mockRunClaimed = true;
+    mockRunId = fresh.id || newRunId();
+    mockRunSeq = fresh.rev || 0; mockRunClaimed = true; mockRunObservedId = mockRunId;
+    /* baseline for the merge in mockSaveRun: what we just resumed FROM, so our next checkpoint
+       only asserts what changed here since this exact read, not our whole local answer set as
+       an unconditional overwrite of whatever another tab may have added since */
+    MOCKSEEN = JSON.stringify({id: mockRunId, a: mockAns, f: mockFlag});
     document.getElementById('mockCard').hidden = false;
     document.getElementById('mockReport').hidden = true;
     document.getElementById('pqCard').hidden = true;
