@@ -1208,9 +1208,9 @@ const M = [
       here first and came back MISSED, because the check that catches it is the sibling one
       about telling the reader, whose label does not carry this needle. The stand-down itself
       has to go for this mutation to mean what its name says. */
-   `        const legacyClobber = mockRunMigrated && !curId && sameList && sameContent;
+   `        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent;
         if(!legacyClobber){ if(mockOn) mockRunSuperseded(); return; }`,
-   `        const legacyClobber = mockRunMigrated && !curId && sameList && sameContent;`,
+   `        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent;`,
    'superseded by another tab'],
   /* "mockSaveRun stops serializing its checkpoint writes through mockRunChain" (de-chaining
      it to Promise.resolve().then(...) instead) is retired: with the per-write ownership
@@ -1343,7 +1343,7 @@ const M = [
    `  if(false) return theirs;`,
    'cursor the legacy tab moved to'],
   ['a pre-ID tab overwriting this tab\'s freshly claimed record is read as another tab taking the run over again, so the modern tab stands down, the stale id-less record is left on disk, and the reader is told their answers are safe in a run that does not exist (Codex review of #464, P1)',
-   `        const legacyClobber = mockRunMigrated && !curId && sameList && sameContent;`,
+   `        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent;`,
    `        const legacyClobber = false;`,
    'reclaimed, not read as another tab'],
 

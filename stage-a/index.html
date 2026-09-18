@@ -13605,6 +13605,12 @@ let mockRunObservedId = '';
    there left a stale record on disk under an alert promising the reader their answers were safe
    somewhere else (Codex review of #464). Only a migrated run is allowed to reclaim. */
 let mockRunMigrated = false;
+/* set only when a write by THIS tab was read back intact. The reclaim below needs it: "the
+   legacy tab overwrote my claim" presupposes a claim, and mockRunClaimed alone does not prove
+   one — Resume sets that flag from what it read, without writing anything. Gating the reclaim on
+   a write we actually made keeps it out of the first checkpoint of a migration, which is the
+   normal path and must go through the ownership check like any other (Codex review of #464). */
+let mockRunWrote = false;
 /* last-synced full checkpoint record for THIS run, mirroring HLSEEN/SNSEEN/PQSEEN. Without
    this, mockSaveRun sent the WHOLE current mockAns/mockFlag as an unconditional overwrite —
    two tabs both legitimately resumed on the same run, each answering different questions from
@@ -13784,7 +13790,7 @@ function mockSaveRun(){
            stale legacy record on disk AND told the reader "your answers are safe in that other
            run", which was false (Codex review of #464). Reclaim it instead: fall through, merge,
            and re-assert this run's id. Only for the same paper and compatible content. */
-        const legacyClobber = mockRunMigrated && !curId && sameList && sameContent;
+        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent;
         if(!legacyClobber){ if(mockOn) mockRunSuperseded(); return; }
       }
       /* merge THIS write's own changed answers/flags onto whatever is on disk right now
@@ -13852,7 +13858,7 @@ function mockSaveRun(){
       try{
         await window.storage.set(RUNKEY, blob);
         const back = await window.storage.get(RUNKEY);
-        if(back && back.value === blob){ if(forId === mockRunId){ mockRunClaimed = true; MOCKSEEN = blob; } }
+        if(back && back.value === blob){ if(forId === mockRunId){ mockRunClaimed = true; mockRunWrote = true; MOCKSEEN = blob; } }
         else notSaved();
       }catch(e){ notSaved(); }
     });
@@ -13945,7 +13951,7 @@ async function mockStart(){
   if(!mockQs.length) return;
   mockAns = {}; mockFlag = {}; mockI = 0; mockOn = true;
   mockEnds = mockPerQ ? Date.now() + mockN * mockPerQ * 60000 : 0;
-  mockRunId = newRunId(); mockRunSeq = 0; mockRunClaimed = false; mockRunMigrated = false;
+  mockRunId = newRunId(); mockRunSeq = 0; mockRunClaimed = false; mockRunMigrated = false; mockRunWrote = false;
   mockRunObservedId = (stored && stored.id) || '';
   MOCKSEEN = '{}';   /* a brand-new run has no prior checkpoint to merge against */
   document.getElementById('mockCard').hidden = false;
@@ -14193,7 +14199,7 @@ document.addEventListener('keydown', e=>{
        unclaimed migration it is and let the first write claim it, the way mockStart already
        does for a run it takes over. */
     mockRunClaimed = !!fresh.id; mockRunObservedId = fresh.id || '';
-    mockRunMigrated = !fresh.id;
+    mockRunMigrated = !fresh.id; mockRunWrote = false;
     /* baseline for the merge in mockSaveRun: what we just resumed FROM, so our next checkpoint
        only asserts what changed here since this exact read, not our whole local answer set as
        an unconditional overwrite of whatever another tab may have added since */
