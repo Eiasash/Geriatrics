@@ -249,6 +249,42 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
      rec.bad.length === 1 && rec.guards.length === 1 && rec.run && rec.run.completed === true,
      rec.bad.length + ' bad, ' + rec.guards.length + ' good');
 
+  /* ---- BROKE threshold is relative to the baseline, not a literal pinned to one day's
+     check count ---- */
+  {
+    const bodyN = (lines, n) => lines.join('\n') + '\nDONE\n' + Array(n).fill('PASS x').join('\n');
+    /* none of the fixed lines above (FAIL, ##GUARD, ##RUN) start with 'PASS', so the filler
+       count IS the total passes count classifyMutant will read — no off-by-N to track */
+    const caughtOut = n => bodyN(['FAIL  the guard fired', G('the guard fired', 'fail'), RUN], n);
+
+    /* a small suite (100 baseline checks): a mutation that still completed 30% of them and
+       caught the guard is a legitimate catch. The OLD literal-50 rule would have called this
+       BROKE (30 < 50) and thrown away a real result — exactly the drift the instruction set
+       named: a threshold anchored to nothing means something different at every suite size. */
+    const smallSuiteCatch = caughtOut(30);
+    ok('a mutation reaching 30% of a 100-check baseline and catching its guard is CAUGHT, not BROKE (the old literal-50 rule would have discarded this)',
+       classifyMutant('m', 'the guard fired', smallSuiteCatch, 100) === 'CAUGHT m',
+       classifyMutant('m', 'the guard fired', smallSuiteCatch, 100));
+
+    /* the reverse and more consequential direction: a large suite (1000 baseline checks)
+       where a mutation dies after only 60 — 6% of the way through. The OLD literal-50 rule
+       (60 > 50) would have called this a normal result and credited whatever FAIL line
+       happened to be sitting in that truncated output as a real CAUGHT — silently trusting
+       parse wreckage. The new rule (60 < 100 = 10% of 1000) correctly calls it BROKE. */
+    const largeSuiteBreak = caughtOut(60);
+    ok('a mutation dying after 6% of a 1000-check baseline is BROKE, not credited as CAUGHT (the old literal-50 rule would have trusted this)',
+       classifyMutant('m', 'the guard fired', largeSuiteBreak, 1000).startsWith('BROKE'),
+       classifyMutant('m', 'the guard fired', largeSuiteBreak, 1000));
+
+    /* no baseline supplied at all (a caller like this file's OWN fixtures above, which have no
+       real child process to measure): falls back to the old literal 50, not to zero or
+       Infinity — a missing baseline must not silently disable the guard against parse
+       wreckage, nor silently resurrect the exact drift this item exists to remove */
+    ok('with no baseline argument, the fallback floor is the old literal 50, not disabled and not zero',
+       classifyMutant('m', 'the guard fired', caughtOut(30)).startsWith('BROKE') &&
+       classifyMutant('m', 'the guard fired', caughtOut(60)) === 'CAUGHT m');
+  }
+
   /* the resolver itself */
   ok('resolveNeedle prefers an exact label over a longer one that contains it',
      resolveNeedle(['text size applies', 'text size applies before the first paint'], 'text size applies').how === 'exact');

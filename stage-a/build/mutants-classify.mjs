@@ -52,9 +52,26 @@ export function resolveNeedle(labels, needle) {
   return { ok: false, reason: 'it matches ' + hits.length + ' distinct guard labels', matches: hits };
 }
 
-export function classifyMutant(name, needle, out) {
+/* The fraction of the baseline's own PASS count below which a "caught" mutation is judged to
+   have broken the parse rather than been legitimately caught. Was a literal `50`, pinned to
+   whatever the suite's check count happened to be the day that line was written (per the
+   instruction set: "a range chosen for a value inherently about two things matching only
+   holds once one side is externally anchored" — 50 was anchored to nothing, and would silently
+   mean something different every time a check was added or removed). Relative to the actual
+   baseline instead: a mutation that dies before completing even a tenth of the SAME run's own
+   checks broke parsing, whatever the suite's current size. */
+const BROKE_FRACTION = 0.1;
+
+export function classifyMutant(name, needle, out, baselinePasses) {
   const lines = out.split('\n');
   const passes = lines.filter(l => l.startsWith('PASS')).length;
+  /* callers with no real baseline to measure against (harness-selftest.mjs's canned-string
+     fixtures) get the old literal floor rather than a division by an undefined denominator —
+     documented here, not silently defaulted, because "no baseline provided" and "baseline
+     provided" are different claims about how much trust the threshold below deserves */
+  const brokeThreshold = (typeof baselinePasses === 'number' && baselinePasses > 0)
+    ? Math.max(1, Math.round(baselinePasses * BROKE_FRACTION))
+    : 50;
   const rec = guardRecords(out);
   /* Identity first, prose only where the run emitted no records at all (audit-runner output,
      or a child so broken it never reached the first check). The fallback is named in the
@@ -80,7 +97,8 @@ export function classifyMutant(name, needle, out) {
   const done = lines.some(l => l === 'DONE');
   if (!done) return 'INCOMPLETE ' + name + '  — the suite stopped after ' + passes + ' checks without reaching DONE; not a verdict';
   /* the file stopped parsing, so everything failed. That is not the guard biting. */
-  if (caught && passes < 50) return 'BROKE  ' + name + '  — mutation broke the parse (' + passes + ' passed); it proves nothing';
+  if (caught && passes < brokeThreshold) return 'BROKE  ' + name + '  — mutation broke the parse (' +
+    passes + ' passed, below ' + brokeThreshold + (typeof baselinePasses === 'number' ? ' = 10% of the ' + baselinePasses + '-check baseline' : ', the no-baseline fallback floor') + '); it proves nothing';
   if (caught) return 'CAUGHT ' + name + (how === 'identity' ? '' : '  [' + how + ']');
   return 'MISSED ' + name + (how === 'identity' ? '' : '  [' + how + ']');
 }

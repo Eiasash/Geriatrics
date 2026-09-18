@@ -1435,7 +1435,10 @@ if(STATIC){
     verdict: bad ? 'fail' : 'pass', completed: true });
   process.exit(bad ? 1 : 0);
 }
-/* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
+/* Baseline first: a mutation "caught" by a suite that was already red proves nothing. Declared
+   here, outside the block below, because the worker loop that classifies each mutation needs
+   it too — assigned once, read many times, never recomputed per mutation. */
+let BASELINE_PASSES = 0;
 {
   let out = '', status = 0;
   try{ out = execFileSync('node', ['test.mjs', SRC], {encoding:'utf8', env: CHILD_ENV}); status = 0; }
@@ -1452,7 +1455,11 @@ if(STATIC){
       reason: 'baseline not green', shard: SHARD || null });
     process.exit(1);
   }
-  console.log('baseline green: ' + out.split('\n').filter(l => l.startsWith('PASS')).length + ' checks\n');
+  /* the exact number a mutant's own passes are later judged against — never re-derived per
+     mutation, always this one baseline reading, so every mutation in the run is held to the
+     same relative bar */
+  BASELINE_PASSES = out.split('\n').filter(l => l.startsWith('PASS')).length;
+  console.log('baseline green: ' + BASELINE_PASSES + ' checks\n');
 
   /* Every needle, resolved against the labels the GREEN baseline actually emitted, before a
      single mutation runs.
@@ -1554,7 +1561,7 @@ async function worker(){
     }
     const out = await runSuite(tmp);
     try{ fs.unlinkSync(tmp); }catch(e){}
-    results[i] = classifyMutant(name, needle, out);
+    results[i] = classifyMutant(name, needle, out, BASELINE_PASSES);
   }
 }
 const t0 = Date.now();
