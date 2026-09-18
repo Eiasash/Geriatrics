@@ -451,7 +451,17 @@ ok('mock is weighted to the source mix',
    w.eval("mockQs.filter(p=>p.bk==='Hazzard').length") >= 17,
    w.eval("mockQs.filter(p=>p.bk==='Hazzard').length") + ' of 25 Hazzard');
 ok('mock hides the practice card', d.getElementById('pqCard').hidden);
-ok('mock shows a question', d.getElementById('mockStem').textContent.length > 30);
+/* this used to assert the stem was longer than 30 characters, which is a guess about question
+   text standing in for the thing the label promises — that the card is showing THIS question.
+   Three real past-paper stems in the mock-eligible pool are 28 and 30 characters long
+   (2026-06#40, 2023-06#28, 2023-06#50), so whenever mockPick's shuffle put one of them first the
+   check failed on correct behaviour: it went red once in CI on a commit whose other twelve runs
+   of this same suite passed. mockPaint assigns the stem with textContent = p.q, so compare
+   against the question actually drawn and the length stops mattering. */
+ok('mock shows a question', (()=>{
+  const want = w.eval('mockQs[mockI].q');
+  return !!want && d.getElementById('mockStem').textContent === want;
+})(), JSON.stringify(d.getElementById('mockStem').textContent.slice(0, 40)));
 ok('untimed mock says so', /untimed/.test(d.getElementById('mockClock').textContent));
 // answer them all
 for(let k=0;k<25;k++){
