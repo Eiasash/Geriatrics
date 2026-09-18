@@ -1519,8 +1519,16 @@ let BASELINE_PASSES = 0;
 const { execFile } = await import('child_process');
 const os = await import('os');
 const WORKERS = Math.max(1, Math.min(M_RUN.length, +(process.env.MUTANT_WORKERS || os.cpus().length)));
+/* Exit status is captured alongside output, mirroring runAudit below — it used to be discarded
+   entirely here (`res((stdout||'')+(stderr||''))`, `err` unused), which meant a child that
+   printed a clean DONE and ##RUN record but then exited non-zero for a reason those never saw
+   (test.mjs's own unhandledRejection handler sets `process.exitCode` without touching FAILS,
+   precisely so a late rejection still fails the run) had no way to be caught here — `done` was
+   the only completion signal, and it does not know about the exit code. classifyMutant's own
+   INCONSISTENT check is what actually uses this; capturing it here is what makes that possible. */
 const runSuite = file => new Promise(res => execFile('node', ['test.mjs', file],
-  {encoding:'utf8', maxBuffer: 64 * 1024 * 1024, env: CHILD_ENV}, (err, stdout, stderr) => res((stdout || '') + (stderr || ''))));
+  {encoding:'utf8', maxBuffer: 64 * 1024 * 1024, env: CHILD_ENV}, (err, stdout, stderr) =>
+    res({ out: (stdout || '') + (stderr || ''), status: err ? (err.code == null ? 1 : err.code) : 0 })));
 /* audit.mjs is a guard file too, and its gates exist to catch defects in index.html — exactly
    what a mutation is. But it reports differently from test.mjs: no PASS lines, no DONE line, one
    "FAIL: label, label" summary and a non-zero exit. classifyMutant() requires an exact DONE line,
@@ -1559,9 +1567,9 @@ async function worker(){
       results[i] = classifyAudit(name, needle, r);
       continue;
     }
-    const out = await runSuite(tmp);
+    const { out, status } = await runSuite(tmp);
     try{ fs.unlinkSync(tmp); }catch(e){}
-    results[i] = classifyMutant(name, needle, out, BASELINE_PASSES);
+    results[i] = classifyMutant(name, needle, out, BASELINE_PASSES, status);
   }
 }
 const t0 = Date.now();

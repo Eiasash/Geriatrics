@@ -19,7 +19,7 @@
 import { execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { classifyMutant, baselineOk, guardRecords, resolveNeedle } from './mutants-classify.mjs';
+import { classifyMutant, baselineOk, guardRecords, resolveNeedle, failLabels } from './mutants-classify.mjs';
 
 let FAILS = 0;
 const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
@@ -290,6 +290,55 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
      resolveNeedle(['text size applies', 'text size applies before the first paint'], 'text size applies').how === 'exact');
   ok('resolveNeedle refuses when two labels contain the needle and neither is exact',
      resolveNeedle(['a text size row', 'another text size row'], 'text size').ok === false);
+
+  /* ---- the substring-fallback path (no ##GUARD records at all) is bounded to the LABEL,
+     not the whole FAIL line ---- */
+  {
+    ok('failLabels bounds each FAIL line to its label, stopping at the  — separator',
+       JSON.stringify(failLabels(['FAIL  something unrelated  — the detail mentions catchme by accident', 'PASS  x', 'FAIL  no detail here'])) ===
+       JSON.stringify(['something unrelated', 'no detail here']));
+
+    /* the exact gap this closes: a needle that only appears in the EXTRA detail text (after
+       the separator) used to credit the mutation via a whole-line substring match, even
+       though the FAIL line's own label never named it */
+    const noGuards = 'FAIL  something unrelated  — the detail mentions catchme by accident\nDONE\n' +
+      Array(60).fill('PASS x').join('\n');
+    ok('the substring fallback does not credit a needle that only appears in a FAIL line’s extra detail text, past the separator',
+       classifyMutant('m', 'catchme', noGuards).startsWith('MISSED'),
+       classifyMutant('m', 'catchme', noGuards));
+    ok('the substring fallback still credits a needle that is genuinely inside the label',
+       classifyMutant('m', 'unrelated', noGuards).startsWith('CAUGHT'),
+       classifyMutant('m', 'unrelated', noGuards));
+  }
+
+  /* ---- exit status, once actually captured, is cross-checked against the ##RUN record's own
+     failure count — the gap named in Eias's review: the mutation subprocess wrapper used to
+     discard it entirely on the test.mjs path (fixed alongside this check) ---- */
+  {
+    const cleanRun = body([G('the guard fired', 'pass'),
+      '##RUN ' + JSON.stringify({ completed: true, checks: 60, failures: 0 })]);
+    ok('a clean ##RUN record (0 failures) paired with a clean exit (0) is not flagged — the ordinary case',
+       !classifyMutant('m', 'the guard fired', cleanRun, undefined, 0).startsWith('INCONSISTENT'));
+
+    /* the exact scenario this exists for: every check the ##RUN record knows about passed,
+       but the process exited 1 anyway — test.mjs's own unhandledRejection handler does exactly
+       this, setting process.exitCode without ever touching the FAILS variable ##RUN reports */
+    ok('a clean ##RUN record (0 failures) paired with a non-zero exit is INCONSISTENT, not silently trusted',
+       classifyMutant('m', 'the guard fired', cleanRun, undefined, 1).startsWith('INCONSISTENT'),
+       classifyMutant('m', 'the guard fired', cleanRun, undefined, 1));
+
+    const failedRun = body(['FAIL  the guard fired', G('the guard fired', 'fail'),
+      '##RUN ' + JSON.stringify({ completed: true, checks: 60, failures: 1 })]);
+    ok('a ##RUN record reporting 1 failure paired with exit 1 is consistent — still CAUGHT, not flagged',
+       classifyMutant('m', 'the guard fired', failedRun, undefined, 1) === 'CAUGHT m');
+    ok('a ##RUN record reporting 1 failure paired with exit 0 IS flagged — the exit code contradicts the record',
+       classifyMutant('m', 'the guard fired', failedRun, undefined, 0).startsWith('INCONSISTENT'));
+
+    /* no exit status captured at all (every OTHER fixture in this file, and any caller that
+       predates this) must be completely unaffected — the check is opt-in on real evidence */
+    ok('with no exitStatus argument at all, nothing here changes: the plain ##RUN case above still just works',
+       classifyMutant('m', 'the guard fired', failedRun) === 'CAUGHT m');
+  }
 }
 
 /* ---- (5) allocate-guard-ids.mjs: retirement is real, and an id is never handed back out ----

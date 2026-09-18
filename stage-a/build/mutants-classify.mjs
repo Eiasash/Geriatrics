@@ -27,6 +27,22 @@ export function guardRecords(out) {
   return { guards, run, bad };
 }
 
+/* test.mjs's ok() prints 'FAIL  ' + label + optionally '  — ' + extra. The LABEL, exactly, is
+   the text from immediately after that prefix up to the '  — ' separator or end-of-string —
+   whichever comes first. Bounding the match here (rather than testing a needle against the
+   whole line) closes a false-CAUGHT gap: a needle that is a true substring of the `extra`
+   detail text, or of an entirely different FAIL line's label, previously credited a mutation
+   for a label it never actually named. */
+export function failLabels(lines) {
+  return lines
+    .filter(l => l.startsWith('FAIL'))
+    .map(l => {
+      const rest = l.slice(4).replace(/^\s+/, ''); // 'FAIL' consumed; leading spaces are the print's own '  '
+      const sep = rest.indexOf('  — ');
+      return sep < 0 ? rest : rest.slice(0, sep);
+    });
+}
+
 /* Resolve what a mutation entry POINTS AT to exactly one guard, against the labels the run
    actually emitted.
 
@@ -62,7 +78,7 @@ export function resolveNeedle(labels, needle) {
    checks broke parsing, whatever the suite's current size. */
 const BROKE_FRACTION = 0.1;
 
-export function classifyMutant(name, needle, out, baselinePasses) {
+export function classifyMutant(name, needle, out, baselinePasses, exitStatus) {
   const lines = out.split('\n');
   const passes = lines.filter(l => l.startsWith('PASS')).length;
   /* callers with no real baseline to measure against (harness-selftest.mjs's canned-string
@@ -87,7 +103,26 @@ export function classifyMutant(name, needle, out, baselinePasses) {
     caught = rec.guards.some(g => g.label === r.label && g.verdict === 'fail');
     if (r.how !== 'exact') how = 'identity via a needle that is a unique substring of "' + r.label + '"';
   } else {
-    caught = lines.some(l => l.startsWith('FAIL') && l.includes(needle));
+    /* Exact label-boundary match, not `.includes(needle)`. A FAIL line's own shape (test.mjs's
+       ok(): 'FAIL  ' + label + optionally '  — ' + extra) means the label is everything from
+       the prefix up to the '  — ' separator or end-of-string, whichever comes first — never
+       the whole line, which would never match anything once `extra` is present (the same
+       defect this identity work exists to close, one layer further out: a needle that is a
+       true substring of some UNRELATED FAIL line's label, or of its `extra` detail text past
+       the separator, used to credit a mutation for text it never actually witnessed). This
+       path only fires when the run produced no ##GUARD records at all — today that means the
+       run crashed before the first check ever ran, since every live ok() call emits one; it
+       is a defensive floor for that case, not the everyday path. */
+    /* bounded to the label, substring rather than full equality: needles are designed
+       throughout this file as unique substrings of a label (resolveNeedle's own "unique
+       substring" mode is a first-class, accepted resolution — not a compromise), so requiring
+       full-string equality here would silently turn many needles that legitimately match
+       today into MISSED the one time this path fires. What actually needed fixing is the
+       BOUNDARY: matching inside `extra` (the text after the '  — ' separator) or inside some
+       OTHER unrelated FAIL line credited a mutation for text its own label never contained.
+       Bounding the haystack to just the label closes that; it does not also require the whole
+       label. */
+    caught = failLabels(lines).some(label => label.includes(needle));
     how = 'SUBSTRING FALLBACK — the run emitted no guard records, so this is not an identity';
   }
   /* exact line match, not startsWith: test.mjs only ever prints a bare "DONE" line, so this
@@ -96,6 +131,22 @@ export function classifyMutant(name, needle, out, baselinePasses) {
      (ChatGPT third-model audit round 4, paired with the same weakness below in baselineOk) */
   const done = lines.some(l => l === 'DONE');
   if (!done) return 'INCOMPLETE ' + name + '  — the suite stopped after ' + passes + ' checks without reaching DONE; not a verdict';
+  /* The DONE line proves the child reached its own last line of code, not that its exit code
+     agrees with what it just printed. test.mjs's own contract is `process.exit(FAILS ||
+     process.exitCode ? 1 : 0)` — FAILS is what the ##RUN record's `failures` field carries,
+     but `process.exitCode` can be set by a path FAILS never sees (the unhandledRejection
+     handler sets it directly, without touching FAILS, specifically so a late rejection after
+     every check has already passed still fails the run). A run that prints a clean ##RUN
+     record and then exits 1 anyway is exactly that case — contaminated in a way `caught`/
+     `done` alone cannot see. Checked only when a real exit status was actually captured: the
+     mutation subprocess wrapper on this path used to discard it entirely (fixed alongside this
+     check, not before it — a status nobody captured cannot be cross-checked against anything). */
+  if (rec.run && typeof exitStatus === 'number') {
+    const expectStatus = rec.run.failures > 0 ? 1 : 0;
+    if (exitStatus !== expectStatus) return 'INCONSISTENT ' + name + '  — ##RUN reports ' +
+      rec.run.failures + ' failure(s) (expected exit ' + expectStatus + ') but the process exited ' +
+      exitStatus + '; something failed after the last check that FAILS never counted. Not a verdict.';
+  }
   /* the file stopped parsing, so everything failed. That is not the guard biting. */
   if (caught && passes < brokeThreshold) return 'BROKE  ' + name + '  — mutation broke the parse (' +
     passes + ' passed, below ' + brokeThreshold + (typeof baselinePasses === 'number' ? ' = 10% of the ' + baselinePasses + '-check baseline' : ', the no-baseline fallback floor') + '); it proves nothing';
