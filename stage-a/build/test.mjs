@@ -3784,6 +3784,88 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   dmBoth.window.close();
 }
 {
+  /* ID3 / Codex review of #459: a checkpoint written before run ids existed has no id, so the
+     record on disk is still ''-owned. Resume used to claim it under a freshly minted id anyway,
+     and the very first checkpoint then compared curId '' against that id, decided another tab
+     had taken the run over, and closed the mock — anyone mid-paper across the upgrade could not
+     resume at all. Drive the REAL Resume button against a real legacy record and then answer,
+     which is what fires the first checkpoint. */
+  const qsLeg = w.eval("PQ.slice(0,3).map(p=>p.y+'#'+p.n)");
+  const legacy = JSON.stringify({q: qsLeg, a: {0:'א'}, f: {}, i: 1, e: 0, t: 0});   /* no id, no rev */
+  const legStore = {'geri:mockrun': legacy};
+  const dmLeg = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in legStore)) throw new Error('missing'); return {key:k, value:legStore[k]}; },
+        set: async (k, v) => { legStore[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dmLeg.window.document.getElementById('mockResume'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 100));
+  const legAlerts = []; dmLeg.window.alert = m => legAlerts.push(String(m));
+  dmLeg.window.document.getElementById('mockResume').click();
+  await new Promise(r => setTimeout(r, 120));
+  /* answering is what queues the first checkpoint — the write that used to stand down */
+  await dmLeg.window.eval("mockAns[1] = 'ב'; mockSaveRun()");
+  await new Promise(r => setTimeout(r, 60));
+  let legDisk = {};
+  try{ legDisk = JSON.parse(legStore['geri:mockrun']); }catch(e){}
+  ok('ID3: a legacy id-less checkpoint resumes and migrates instead of being declared superseded and closed',
+     dmLeg.window.eval('mockOn') === true && !legAlerts.some(a => /another tab/.test(a)),
+     'mockOn=' + dmLeg.window.eval('mockOn') + ' alerts=' + legAlerts.join(' | '));
+  ok('...and the migrated record keeps both the resumed answer and the new one, under a real id',
+     !!legDisk.id && legDisk.a && legDisk.a['0'] === 'א' && legDisk.a['1'] === 'ב',
+     JSON.stringify(legDisk.a) + ' id=' + legDisk.id);
+  dmLeg.window.close();
+}
+{
+  /* Codex review of #459: when the reader confirms replacing an unfinished mock, mockStart
+     leaves mockRunObservedId pointing at the OLD record so the first checkpoint may take the key
+     over — but that record was then passed into mergeMockAnswers, copying the discarded run's
+     index-keyed answers onto a completely different question list. A reload before every
+     inherited index was answered again would grade the new paper against the old paper's
+     choices. Drive the real #mockGo control with the discard prompt confirmed. */
+  const rkeyNew = w.eval('RUNKEY');
+  const oldRun = JSON.stringify({q: ['2020#1','2020#2','2020#3'], a: {0:'ד',1:'ד',2:'ד'}, f: {1:1},
+    i: 2, e: 0, t: 0, id: 'run-being-discarded', rev: 9});
+  store[rkeyNew] = oldRun;
+  const realConfirmNew = w.confirm; w.confirm = () => true;
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'; mockN = 25; mockPerQ = 0;");
+  d.getElementById('mockGo').click();
+  await new Promise(r => setTimeout(r, 150));
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 60));
+  w.confirm = realConfirmNew;
+  let newDisk = {};
+  try{ newDisk = JSON.parse(store[rkeyNew]); }catch(e){}
+  ok('a new run started over a discarded one does not inherit that run’s answers or flags',
+     newDisk.id !== 'run-being-discarded' && Object.keys(newDisk.a || {}).length === 0 &&
+     Object.keys(newDisk.f || {}).length === 0,
+     'id=' + newDisk.id + ' a=' + JSON.stringify(newDisk.a) + ' f=' + JSON.stringify(newDisk.f));
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+}
+{
+  /* Codex review of #459: the cursor was merged with Math.max, treating it as a high-water mark.
+     #mockPrev (and the 'b' key) walk it backward on purpose, so going back with a higher index
+     already on disk kept writing the higher one and the next resume opened past where the reader
+     actually was. Drive the real back button rather than assigning mockI. */
+  const rkeyCur = w.eval('RUNKEY');
+  const qsCur = w.eval("PQ.slice(0,6).map(p=>p.y+'#'+p.n)");
+  delete store[rkeyCur];
+  w.eval(`mockQs = ${JSON.stringify(qsCur)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 5;
+    mockRunId = 'cursor-run'; mockRunSeq = 1; mockRunClaimed = false; mockRunObservedId = '';
+    MOCKSEEN = '{}'; mockPaint();`);
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 40));
+  const atFive = JSON.parse(store[rkeyCur] || '{}').i;
+  d.getElementById('mockPrev').click();   /* the real back control: mockI 5 -> 4 */
+  d.getElementById('mockPrev').click();   /* -> 3 */
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 40));
+  const afterBack = JSON.parse(store[rkeyCur] || '{}').i;
+  ok('walking back through the paper moves the saved cursor back too, instead of pinning it at the furthest question reached',
+     atFive === 5 && afterBack === 3, 'first=' + atFive + ' after two backs=' + afterBack);
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+}
+{
   /* ID2 (ACCEPTANCE-round5.md, section A): Date.now()+Math.random() is not actually
      collision-proof — under a frozen clock (already true here, the whole suite pins it) plus a
      repeated RNG sequence, two "new" runs could mint the identical id. Force exactly that: pin
