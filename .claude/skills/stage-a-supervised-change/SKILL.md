@@ -283,6 +283,18 @@ long builds, and any check whose subject cannot change faster than the interval.
 at 22:05 is not noticed until the next tick. Say "scheduled check every N minutes", never
 "continuous".
 
+**A monitor's reference range is a guard's requirement — R7 applies to watchers too.** The external
+watchdog's step 3 originally pinned main at a fixed sha. Every legitimate commit — including the one
+that installed this very rule — invalidated it, so it would have fired, correctly by its own logic,
+on a change that was fine. A watcher that alarms on normal operation gets ignored, and then it is
+not a watcher. Snapshot equality (is the sha still X?) is a PROXY; the property that actually matters
+is whether the content under hold moved. So a monitor asserts the behaviour, not the snapshot: step 3
+now asks whether a commit beyond the recorded sha touches `stage-a/index.html` or `stage-a/build/`,
+and names docs- or skill-only movement instead of alarming on it. Same defect class as a guard that
+checks for a class name instead of the computed style that class is supposed to produce. **Whenever
+you push, re-read every monitor that references what you just changed** — the coordinator invalidating
+its own watchdog is a failure mode with no external witness by construction.
+
 ## Lane changes (18 Sep 2026)
 
 - **The project chat lane is the partner, not a delegate.** Its input is collected before a package
