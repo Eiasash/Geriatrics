@@ -1275,6 +1275,40 @@ const M = [
    `  if(!mlSaved || !mkSaved || !pqSaved) notSaved();`,
    `  if(!mlSaved || !mkSaved) notSaved();`,
    'does not clear RUNKEY when the practice-result'],
+
+  /* ---- audit.mjs's own gates (runner 'audit'): each break below is one a reviewer verified
+     the OLD gate waved through. They are the red tests for those gates as much as they are
+     mutations — for a guard file whose whole job is to reject a bad index.html, "feed it a
+     deliberately broken input and require the right gate to fail" IS the red test. Each was
+     confirmed to pass the pre-fix audit.mjs and fail the fixed one. ---- */
+  ['a chapter-index button points at an element that exists but is not a <main section>, which the old getElementById test waved through even though it cannot open as a chapter',
+   `data-sec="biology" aria-label="Biology of Aging and Longevity`,
+   `data-sec="rail" aria-label="Biology of Aging and Longevity`,
+   'dead chapter links', 'audit'],
+  ['a schedule item routes to an element id that exists but is not a section — same getElementById blindness as the chapter-index gate, one layer further in',
+   `[/ch 43/,'falls','falls']`,
+   `[/ch 43/,'rail','falls']`,
+   'schedule links that 404', 'audit'],
+  ['a card tag is given a display name of a single space: truthy, so the old !TAGNAME[t] gate passed it while the reader saw an unlabelled tag',
+   `falls:'43 Falls'`,
+   `falls:' '`,
+   'card tags missing a display name', 'audit'],
+  ['a card answer is ten spaces: length 10, so it cleared the old <10 test and counted as real content',
+   `const QS = [`,
+   `const QS = [\n ["probe: an answer that is nothing but whitespace", "          "],`,
+   'cards with an answer under 10 characters', 'audit'],
+  ['a past-paper option is whitespace only: truthy, so the old some(o=>!o) gate read it as real content and never reported the empty tap target',
+   `id="pqjson">[{"y": "2020", "n": 1,`,
+   `id="pqjson">[{"y": "9999", "n": 1, "q": "probe", "o": ["a", "b", "c", "   "], "a": "\\u05d0", "src": "probe", "bk": "Hazzard"}, {"y": "2020", "n": 1,`,
+   'questions with a blank option (unflagged', 'audit'],
+  ['a caption and a table that do not belong to each other, in balanced numbers — the exact shape the old count-minus-count gate could not see, since 101 tables minus 101 captions is still 0',
+   `</body>`,
+   `<div class="cap">Table 999</div><p>not a table</p><div class="tscroll"><table><tbody><tr><td>x</td></tr></tbody></table></div></body>`,
+   'tables lacking a caption of their own', 'audit'],
+  ['the in-app "an option did not extract cleanly" disclosure is removed, while audit.mjs keeps printing a flagged-option count under a label promising the reader was told',
+   `an option did not extract cleanly`,
+   `an option did not parse`,
+   'the in-app blank-option disclosure still exists', 'audit'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
@@ -1318,10 +1352,15 @@ if(STATIC){
      The target check above would not have noticed — the code it mutates was untouched. */
   /* the suite writes non-ASCII in guard labels as \uXXXX escapes, so decode before comparing
      or every needle holding a real curly apostrophe reports a false miss */
-  const suite = fs.readFileSync('test.mjs', 'utf8')
-    .replace(/\\u([0-9a-fA-F]{4})/g, (m, h) => String.fromCharCode(parseInt(h, 16)));
-  for(const [name, , , needle] of M){
-    if(!suite.includes(needle)){ bad++; console.log('NEEDLE ' + name + '  — no guard label contains "' + needle + '"'); }
+  const decode = s => s.replace(/\\u([0-9a-fA-F]{4})/g, (m, h) => String.fromCharCode(parseInt(h, 16)));
+  const suite = decode(fs.readFileSync('test.mjs', 'utf8'));
+  /* a mutation whose runner is 'audit' is caught by a gate label in audit.mjs, not by a guard
+     label in test.mjs — look its needle up in the file that actually has to catch it, or every
+     such entry reports a false NEEDLE against a suite that was never going to contain it */
+  const auditSrc = decode(fs.readFileSync('audit.mjs', 'utf8'));
+  for(const [name, , , needle, runner] of M){
+    const hay = runner === 'audit' ? auditSrc : suite;
+    if(!hay.includes(needle)){ bad++; console.log('NEEDLE ' + name + '  — no ' + (runner === 'audit' ? 'audit.mjs gate' : 'guard') + ' label contains "' + needle + '"'); }
   }
   console.log(M.length + ' mutations, ' + bad + ' stale, ambiguous or unmatched');
   process.exit(bad ? 1 : 0);
@@ -1355,11 +1394,31 @@ const os = await import('os');
 const WORKERS = Math.max(1, Math.min(M_RUN.length, +(process.env.MUTANT_WORKERS || os.cpus().length)));
 const runSuite = file => new Promise(res => execFile('node', ['test.mjs', file],
   {encoding:'utf8', maxBuffer: 64 * 1024 * 1024}, (err, stdout, stderr) => res((stdout || '') + (stderr || ''))));
+/* audit.mjs is a guard file too, and its gates exist to catch defects in index.html — exactly
+   what a mutation is. But it reports differently from test.mjs: no PASS lines, no DONE line, one
+   "FAIL: label, label" summary and a non-zero exit. classifyMutant() requires an exact DONE line,
+   so an audit run through it would report INCOMPLETE every time. An entry may therefore carry a
+   fifth element, the runner: omit it for the test.mjs default, or pass 'audit' to have the
+   mutated file judged by audit.mjs instead. Its exit status is what says whether the gate fired,
+   so unlike runSuite this keeps it. */
+const runAudit = file => new Promise(res => execFile('node', ['audit.mjs', file],
+  {encoding:'utf8', maxBuffer: 64 * 1024 * 1024}, (err, stdout, stderr) =>
+    res({ out: (stdout || '') + (stderr || ''), status: err ? (err.code == null ? 1 : err.code) : 0 })));
+function classifyAudit(name, needle, r){
+  /* the empty-PQ preflight exits 1 before any gate runs; that is a broken fixture, not a verdict */
+  if(/^FATAL/m.test(r.out)) return 'INCOMPLETE  ' + name + '  — audit.mjs stopped at its own preflight before reaching any gate; not a verdict';
+  if(r.status === 0) return 'MISSED  ' + name;
+  const failLine = r.out.split('\n').find(l => l.startsWith('FAIL:')) || '';
+  /* a non-zero exit alone is not enough: the mutation has to trip THIS gate, not some unrelated
+     one it happened to break on the way past */
+  if(!failLine.includes(needle)) return 'MISSED  ' + name + '  — audit.mjs failed, but on "' + failLine.trim() + '", not the gate this mutation targets';
+  return 'CAUGHT  ' + name;
+}
 const results = new Array(M_RUN.length);
 let next = 0;
 async function worker(){
   while(next < M_RUN.length){
-    const i = next++; const [name, from, to, needle] = M_RUN[i];
+    const i = next++; const [name, from, to, needle, runner] = M_RUN[i];
     const hits = src.split(from).length - 1;
     if(hits === 0){ results[i] = 'STALE  ' + name + '  — the code it mutates has moved; update this mutation'; continue; }
     /* replace() takes the first occurrence only: with two, the mutation may land on dead
@@ -1367,6 +1426,12 @@ async function worker(){
     if(hits > 1){ results[i] = 'AMBIG  ' + name + '  — target appears ' + hits + ' times; make it unique'; continue; }
     const tmp = '/tmp/mutant-' + process.pid + '-' + i + '.html';
     fs.writeFileSync(tmp, src.replace(from, to));
+    if(runner === 'audit'){
+      const r = await runAudit(tmp);
+      try{ fs.unlinkSync(tmp); }catch(e){}
+      results[i] = classifyAudit(name, needle, r);
+      continue;
+    }
     const out = await runSuite(tmp);
     try{ fs.unlinkSync(tmp); }catch(e){}
     results[i] = classifyMutant(name, needle, out);
