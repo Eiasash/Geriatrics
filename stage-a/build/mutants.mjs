@@ -259,7 +259,7 @@ const M = [
    "next card is brought into view"],
 
   ["a mock left part-way is discarded without asking",
-   "  if((mockOn || document.getElementById('mockResume')) &&\n     !confirm('An unfinished mock is still waiting. Start a new paper and discard it?')) return;\n",
+   "  if(liveRun && !confirm('An unfinished mock is still waiting. Start a new paper and discard it?')) return;\n",
    "",
    "asks before discarding"],
 
@@ -314,8 +314,8 @@ const M = [
    "home mock tile states the time"],
   /* --- Gemini round 4, 16/09 --- */
   ["a running mock is replaced without asking",
-   "  if((mockOn || document.getElementById('mockResume')) &&",
-   "  if((document.getElementById('mockResume')) &&",
+   "  const liveRun = mockOn || !!document.getElementById('mockResume') || !!(stored && stored.q && stored.q.length);",
+   "  const liveRun = !!document.getElementById('mockResume') || !!(stored && stored.q && stored.q.length);",
    "while one is running asks first"],
 
   ["the mock report scrolls under the nav",
@@ -783,8 +783,8 @@ const M = [
    'from another day is left where it is'],
 
   ['the mock writes the reader\u2019s log again',
-   "    mlog[today()] = Math.round(right / rows.length * 50);\n    saveML(); paintQ();",
-   "    qlog[today()] = Math.round(right / rows.length * 50);\n    saveQ(); paintQ();",
+   "    mlog[today()] = Math.round(right / rows.length * 50);\n    mlSaved = await saveML(); paintQ();",
+   "    qlog[today()] = Math.round(right / rows.length * 50);\n    mlSaved = await saveQ(); paintQ();",
    'writes its own log'],
 
   ['the mock log is left out of the backup',
@@ -1160,6 +1160,62 @@ const M = [
    `    if(!x.ch || x.bk!=='Hazzard' || OLDED.indexOf(x.y) >= 0) return;`,
    `    if(!x.ch || OLDED.indexOf(x.y) >= 0) return;`,
    'weak-chapter aggregation only attributes'],
+  ['mergeSave goes back to applying its stale snapshot unconditionally, so a highlight/note edit made while an earlier save is still writing gets silently overwritten in memory (ChatGPT third-model audit round 4, data-loss cluster item 1)',
+   `      movedOn = JSON.stringify(nowMine) !== JSON.stringify(mine);
+      apply(movedOn ? mergeFn(merged, mine, nowMine) : merged);`,
+   `      apply(merged);`,
+   'survives in both memory and on disk'],
+  ['mergeSave stops queueing a follow-up save when the live value moved on mid-write, so that edit reaches memory but is never actually persisted to disk (ChatGPT third-model audit round 4, data-loss cluster item 1)',
+   `    if(movedOn) mergeSave(key, getMine, mergeFn, apply);`,
+   ``,
+   'survives in both memory and on disk'],
+  ['mergeSave stops re-checking storage right before it writes, so another tab’s confirmed write landing between our read and our write is silently overwritten (ChatGPT third-model audit round 4, data-loss cluster item 2, "two tabs")',
+   `    try{
+      const r2 = await window.storage.get(key);
+      if(r2 && r2.value !== JSON.stringify(stored)){
+        const fresh = JSON.parse(r2.value);
+        if(fresh && typeof fresh === 'object'){ stored = fresh; merged = mergeFn(stored, seen, mine); }
+      }
+    }catch(e){}`,
+   ``,
+   'confirmed by another tab'],
+  ['pqSave goes back to a single-key full overwrite of the whole past-paper progress blob instead of merging, so two tabs answering different questions keep only whichever tab wrote last (ChatGPT third-model audit round 4, data-loss cluster item 7)',
+   `function pqSave(){ return mergeSave(PKEY, ()=>pqDone, mergePQ, merged=>{ pqDone = merged; }); }`,
+   `function pqSave(){ try{ window.storage.set(PKEY, JSON.stringify(pqDone)); }catch(e){} }`,
+   'another tab is not overwritten'],
+  ['the mock Resume handler stops re-reading RUNKEY at click time, so it resumes from the boot-time snapshot again and can roll a run backward (ChatGPT third-model audit round 4, data-loss cluster item 3)',
+   `    let fresh = v;
+    try{ const r = await window.storage.get(RUNKEY); const f = JSON.parse(r.value); if(f && f.q && f.q.length) fresh = f; }catch(e){}`,
+   `    let fresh = v;`,
+   'not the boot-time snapshot'],
+  ['mockSaveRun stops rejecting a stale writer, so a checkpoint for a run another tab has already superseded overwrites that tab’s record instead of standing down (ChatGPT third-model audit round 4, data-loss cluster item 3)',
+   `    if(mockRunClaimed) try{
+      const cur = JSON.parse((await window.storage.get(RUNKEY)).value);
+      if(cur && cur.id && cur.id !== mockRunId){ if(mockOn) mockRunSuperseded(); return; }
+    }catch(e){}`,
+   ``,
+   'superseded by another tab'],
+  ['mockSaveRun stops serializing its checkpoint writes through mockRunChain, so an earlier, slower write can resolve after a later one and overwrite it, dropping disk back to a smaller answered count (ChatGPT third-model audit round 4, data-loss cluster item 3)',
+   `  mockRunChain = mockRunChain.then(async()=>{
+    if(seq !== mockRunSeq) return;`,
+   `  mockRunChain = Promise.resolve().then(async()=>{
+    if(seq !== mockRunSeq) return;`,
+   'cannot land after'],
+  ['mockFinish stops clearing RUNKEY through mockRunChain and fires the clear on its own instead, so a checkpoint write already queued ahead of it can land after and resurrect the just-finished run (ChatGPT third-model audit round 4, data-loss cluster item 6)',
+   `    mockRunChain = mockRunChain.then(async()=>{
+      try{
+        await window.storage.set(RUNKEY, '');
+        const back = await window.storage.get(RUNKEY);
+        if(!(back && back.value === '')) notSaved();
+      }catch(e){ notSaved(); }
+    }).catch(()=>{});
+    await mockRunChain;`,
+   `    try{
+      await window.storage.set(RUNKEY, '');
+      const back = await window.storage.get(RUNKEY);
+      if(!(back && back.value === '')) notSaved();
+    }catch(e){ notSaved(); }`,
+   'clears RUNKEY through mockRunChain'],
   ['the mock-exam weak-chapter report goes back to keying byCh on any book’s chapter number (ChatGPT third-model audit round 3)',
    `    if(r.p.ch && r.p.bk==='Hazzard' && r.given){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }`,
    `    if(r.p.ch && r.given){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }`,
