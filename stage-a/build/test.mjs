@@ -1636,6 +1636,31 @@ ok('the timer\u2019s height is watched, not just its attributes',
      Math.round(w.eval('T.left')) === 123, 'left=' + w.eval('T.left'));
   w.eval("SW = {on:false, run:false, ms:0, ts:0}; swSetMode(false)");
 }
+{
+  /* Codex review of #456: refreshBody used to reassign pqDone from a fresh PKEY read without
+     ever updating PQSEEN — every entry that refresh introduced then looked, to the NEXT
+     mergePQ, like something answered in THIS tab (PQSEEN has no record of it), so the very
+     next pqSave() would re-assert this whole refreshed snapshot over whatever another tab
+     wrote to geri:pq afterward. Confirm PQSEEN actually advances to the refreshed value, and
+     that a subsequent save composes correctly instead of clobbering a later write. */
+  const pkeyRB = w.eval('PKEY');
+  store[pkeyRB] = JSON.stringify({'2020#1': 1});
+  w.eval("pqDone = {}; PQSEEN = '{}'");
+  await w.eval('refreshBody()');
+  const pqSeenAfterRefresh = w.eval('PQSEEN');
+  ok('refreshBody advances PQSEEN to the value it just read, not leaving it at boot-time ‘{}’',
+     pqSeenAfterRefresh === JSON.stringify({'2020#1': 1}), pqSeenAfterRefresh);
+  /* now the other tab answers a second question and commits it; this tab, unaware, answers a
+     THIRD — the refreshed snapshot from above must not be treated as new-here and reasserted
+     over the other tab's answer */
+  store[pkeyRB] = JSON.stringify({'2020#1': 1, '2020#2': 0});
+  w.eval("pqDone['2020#3'] = 1");
+  await w.eval('pqSave()');
+  let pqAfter = {};
+  try{ pqAfter = JSON.parse(store[pkeyRB]); }catch(e){}
+  ok('...so a save made after the refresh composes with another tab’s answer instead of overwriting it',
+     Object.keys(pqAfter).sort().join(',') === '2020#1,2020#2,2020#3', JSON.stringify(pqAfter));
+}
 
 /* ---- the mock keeps its own day log, 16 Sep ----
    The mock used to write into qlog, so a paper could silently replace a score the reader had
@@ -1814,7 +1839,7 @@ ok('a highlight the other tab deleted is not resurrected by this tab saving a ne
 })());
 
 ok('a save queued before a merge reassigns HL reads the live object, not the one it was queued with',
-   /function mergeSave\(key, getMine, mergeFn, apply\)\{/.test(code) && /const mine = getMine\(\);/.test(code) &&
+   /function mergeSave\(key, getMine, mergeFn, apply\)\{/.test(code) && /const mine = JSON\.parse\(JSON\.stringify\(getMine\(\)\)\);/.test(code) &&
    /mergeSave\(HLKEY, \(\)=>HL, mergeHL/.test(code) && /mergeSave\(SNKEY, \(\)=>SN, mergeSN/.test(code));
 /* This used to assert only that hlSave() returned a thenable, which is true of the broken
    version too — it proved nothing about the merge it is named for. Await the chain and read
@@ -1864,6 +1889,34 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   ok('a highlight added while an earlier save is still writing survives in both memory and on disk',
      liveIds === 'first,second' && diskIds.join(',') === 'first,second',
      'live=' + liveIds + ' disk=' + diskIds.join(','));
+}
+{
+  /* Codex review of #456: the test above proves the mechanism when HL is REASSIGNED, but
+     every real edit path in this file (hlAdd's `(HL[sec.id]=HL[sec.id]||[]).push(h)`,
+     hlNote's `h.n = text`, notesPaint's `SN[id] = ta.value`) mutates the SAME object IN
+     PLACE. getMine() always returns that one live object, so comparing it to itself
+     (`nowMine !== mine`) after an in-place mutation used to always read "unchanged" even
+     though it had changed — mergeSave's own `mine` needed to be a frozen snapshot, not
+     another reference to the live object. Same scenario as above, but "type SECOND" now
+     pushes into the SAME array HL.falls already is, instead of reassigning HL to a new one. */
+  delete store[w.eval('HLKEY')];
+  w.eval("HL = {falls:[{id:'firstip', sec:'falls', t:'fear of falling', i:0, n:'', c:'2026-09-14'}]}; HLSEEN = '{}'");
+  const realSet2 = w.storage.set;
+  let release2; const held2 = new Promise(r => { release2 = r; });
+  w.storage.set = async (k, v) => { if(k === w.eval('HLKEY')) await held2; return realSet2(k, v); };
+  const chain2 = w.eval("hlSave()");
+  await new Promise(r => setTimeout(r, 0));
+  w.eval("HL.falls.push({id:'secondip', sec:'falls', t:'orthostatic hypotension', i:1, n:'', c:'2026-09-14'})");   /* in-place mutation, not reassignment */
+  release2();
+  await chain2;
+  await w.eval('saveChain');
+  w.storage.set = realSet2;
+  const liveIds2 = w.eval("(HL.falls||[]).map(x=>x.id).sort()").join(',');
+  let diskIds2 = [];
+  try{ diskIds2 = (JSON.parse(store[w.eval('HLKEY')]).falls || []).map(x=>x.id).sort(); }catch(e){}
+  ok('a highlight added by mutating HL.falls in place (the real edit path, not a reassignment) while an earlier save is still writing survives in both memory and on disk',
+     liveIds2 === 'firstip,secondip' && diskIds2.join(',') === 'firstip,secondip',
+     'live=' + liveIds2 + ' disk=' + diskIds2.join(','));
 }
 {
   /* ChatGPT third-model audit round 4, data-loss cluster item 2: "two tabs" — a confirmed,
@@ -3352,6 +3405,41 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
      Object.keys(gotAns).sort().join(',') === [qs[0], qs[1]].sort().join(','), JSON.stringify(gotAns));
   dm2.window.close();
 }
+{
+  /* Codex review of #456: the boot-time read normalises an EXPIRED deadline to untimed
+     (e:0, t:0) so the Resume banner can honestly say "resumes untimed" — but the click
+     handler's own fresh re-read (added for the fix just above) replaces `v` with whatever is
+     on disk right now, which still carries the original, still-expired `e` if nothing wrote
+     over it in between. Without reapplying the same normalisation, mockClock() — started a
+     few lines after the fresh read — sees zero time left on its very first tick and calls
+     mockFinish(true) immediately, silently grading and clearing the paper the banner just
+     promised would resume untimed. */
+  const qsExp = w.eval("PQ.slice(0,2).map(p=>p.y+'#'+p.n)");
+  /* relative to PIN (the pinned clock), not a hardcoded date — a fixed date is only
+     "well before" whichever STAGEA_DATE happened to be the default when this was written,
+     and silently stops being expired (and this whole test starts asserting the opposite
+     of what it claims) under any other pinned date */
+  const expiredE = Date.parse(PIN + 'T10:00:00') - 24 * 3600 * 1000;
+  const staleValExp = JSON.stringify({q: qsExp, a: {}, f: {}, i: 0, t: 5, e: expiredE, id: 'run-exp', rev: 1});
+  const rstore3 = {'geri:mockrun': staleValExp};
+  const dm3 = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2);
+      w2.storage = { get: async k => { if(!(k in rstore3)) throw new Error('missing'); return {key:k, value:rstore3[k]}; },
+        set: async (k, v) => { rstore3[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dm3.window.document.getElementById('mockResume'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 100));
+  const d5 = dm3.window.document;
+  ok('the Resume banner says it will resume untimed when the run is already expired at boot',
+     /resumes untimed/.test(d5.getElementById('mockResume').textContent), d5.getElementById('mockResume').textContent);
+  /* the record on disk is unchanged at click time — same expired e, same t — so the fresh
+     re-read finds exactly the still-expired run the banner already accounted for */
+  d5.getElementById('mockResume').click();
+  await new Promise(r => setTimeout(r, 150));
+  ok('clicking Resume on an already-expired run does not immediately auto-grade and clear it — it actually resumes, untimed, as promised',
+     dm3.window.eval('mockOn') === true && dm3.window.eval('mockEnds') === 0,
+     'mockOn=' + dm3.window.eval('mockOn') + ' mockEnds=' + dm3.window.eval('mockEnds'));
+  dm3.window.close();
+}
 
 {
   /* ChatGPT third-model audit round 4, data-loss cluster item 3: "reject stale writers" —
@@ -3424,8 +3512,44 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
      exactly when mockFinish reaches this step. Pinned structurally instead: the clear MUST be
      queued on mockRunChain and awaited, not fired on its own. */
   ok('mockFinish clears RUNKEY through mockRunChain — the same queue a pending checkpoint write sits on — instead of racing it with a separate write',
-     /mockRunChain = mockRunChain\.then\(async\(\)=>\{\s*\n\s*try\{\s*\n\s*await window\.storage\.set\(RUNKEY, ''\);/.test(code) &&
-     /\}\)\.catch\(\(\)=>\{\}\);\s*\n\s*await mockRunChain;\s*\n\s*\}\s*\n\s*paintLastMock\(\);/.test(code));
+     /* one contiguous match, not three independent whole-file .test() calls — mockSaveRun has
+        its OWN, unrelated "mockRunChain = mockRunChain.then(async()=>{" a few hundred lines up,
+        so the original three-regex shape of this check stayed true even when only the
+        mockFinish occurrence was mutated to Promise.resolve().then(...): each regex just
+        matched mockSaveRun's intact copy instead. Confirmed MISSED under MUTANT_ONLY before
+        this fix. `code` has block comments stripped (see top of file), so the anchor is the
+        structural "try{ const raw = (await window.storage.get(RUNKEY))" that immediately
+        follows this specific occurrence, not the comment text. */
+     /mockRunChain = mockRunChain\.then\(async\(\)=>\{\s*\n\s*try\{\s*\n\s*const raw = \(await window\.storage\.get\(RUNKEY\)\)\.value;[\s\S]*?if\(!cur \|\| cur\.id !== finishingId\) return;\s*\n\s*await window\.storage\.set\(RUNKEY, ''\);[\s\S]*?\}\)\.catch\(\(\)=>\{\}\);\s*\n\s*await mockRunChain;\s*\n\s*\}\s*\n\s*paintLastMock\(\);/.test(code));
+}
+{
+  /* Codex review of #456: mockFinish awaits pqSave/saveML/the MKKEY write before this clear —
+     real wall-clock time during which a brand-new mock, with its own fresh id, can be started
+     (and checkpointed) in this same tab. Clearing RUNKEY unconditionally at that point would
+     erase the NEW run instead of the one this call actually finished. Drive a real 25-question
+     mock through mockFinish while it is mid-flight, "start" a different run's record directly
+     in storage (standing in for a concurrent mockStart completing while this finish still
+     awaits), and confirm that record survives. */
+  const qsFin = w.eval("PQ.filter(x=>!x.im).slice(0,25)");
+  const rkeyFin = w.eval('RUNKEY');
+  const otherRun = JSON.stringify({q: ['zzz#1'], a: {}, f: {}, i: 0, e: 0, t: 0, id: 'other-run-started-during-finish', rev: 1});
+  const realSetFin = w.storage.set;
+  let sawMkKeyWrite = false;
+  w.storage.set = async (k, v) => {
+    /* the MKKEY write is the one this function awaits right before the clear; slip the
+       other tab's/run's write in immediately after it, simulating it landing during the
+       real gap this function's own awaits leave open */
+    const r = await realSetFin(k, v);
+    if(k === w.eval('MKKEY') && !sawMkKeyWrite){ sawMkKeyWrite = true; store[rkeyFin] = otherRun; }
+    return r;
+  };
+  w.eval(`mockOn = true; mockQs = ${JSON.stringify(qsFin)}; mockAns = {}; mockI = 0;
+    mockRunId = 'finishing-run'; mockRunSeq = 1; mockRunClaimed = true;`);
+  await w.eval('mockFinish(true)');
+  w.storage.set = realSetFin;
+  ok('mockFinish does not clear a different run’s record that started while this finish was still awaiting its own writes',
+     store[rkeyFin] === otherRun, JSON.stringify(store[rkeyFin]));
+  w.eval("mockOn = false; mockQs = []; mockAns = {}");
 }
 
 {
