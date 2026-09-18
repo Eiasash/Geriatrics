@@ -20,16 +20,16 @@ To change the checklist, edit this file only. Agree the change with the SZMC ger
 
 ## The pipeline for one change
 
-The order the sections below are written in is also the order to run them. Each step names the section that details it.
+This is the order to run. The sections below are grouped by topic, not by sequence, so each step names the one that details it — §2 and §3 in particular are run in the order here, not the order they appear.
 
 1. **Agree the scope** (§0). Content, sections, schedule, verification rules or project instructions → the project chat concurs first. Pure UI or CI mechanics Eias already asked for → go, but still report.
 2. **Build it** (§1). One bounded task: fix, guard, red test, mutation entry. Nothing speculative.
 3. **CC's own gate** (§1). Suite at three pinned dates, audit/facts/sweep/dashtest, `mutants --static`, the touched mutations under `MUTANT_ONLY`, `harness-selftest`.
 4. **Open the PR** (§1). Arm auto-merge, unless it touches persistence or clinical content — those wait for an outside lane.
 5. **Cheap review, automatically** (§3). Codex reviews on open at no cost. Read it.
-6. **Paid review, deliberately** (§3). `agy`/Gemini on the diff for anything non-trivial; a deep ChatGPT or Antigravity pass when the cheap lanes disagree, or when a whole subsystem needs auditing rather than a diff.
+6. **Paid review, deliberately** (§3). `agy`/Gemini on the diff for anything non-trivial — same eligibility as rule 1, and "trivial" means a change with no behaviour in it at all, such as a comment, a label or a doc. A deep ChatGPT or Antigravity pass when the cheap lanes disagree, or when a whole subsystem needs auditing rather than a diff.
 7. **Verify it yourself** (§2). Playwright against the PR head: real behaviour, not proxies.
-8. **Verify every finding in source, then route** (§3). Mechanical → CC as a new PR. Content or scope → the project chat.
+8. **Verify every finding in source, then route** (§3). Mechanical, on a PR still open → back onto that PR. Mechanical, after merge → a new PR. Content or scope → the project chat.
 9. **Merge, re-fetch, re-run, live check** (§2). GitHub can merge an older head than the one you tested.
 10. **Close out** (§5). Project doc, memory, reviewer scorecard, triggers.
 
@@ -39,7 +39,7 @@ The order the sections below are written in is also the order to run them. Each 
 | **SZMC geriatrics project chat** (claude.ai, decisions) | Sonnet | Clinical/exam content, what the console should do, project instructions and verification rules. Decides outside-review findings that touch content or scope. |
 | **Cowork** (coordinator) | — | Relays, Gemini runs, verification, merges, live checks, project update doc, memory, scheduled checks. |
 | **Claude Code** (CC, build) | Sonnet | Code, guards, red tests, mutations, PRs. |
-| **Outside review** (four lanes) | see §3 | Defects only. Never decides. |
+| **Outside review** (five lanes) | see §3 | Defects only. Never decides. |
 
 When Cowork opens the project chat or starts CC, it selects Sonnet.
 
@@ -64,7 +64,7 @@ When Cowork opens the project chat or starts CC, it selects Sonnet.
 - **Local runs:** CC runs `test/audit/facts/sweep/dashtest`, `mutants --static`, and only the touched mutations (`MUTANT_ONLY`). CI runs the full sharded set.
 - **Merging:** CC opens a PR and arms auto-merge (`gh pr merge N --squash --auto`). It never merges red and never uses `--admin`. No per-PR approval from Eias. **Exception:** a change to persistence or clinical content does not get auto-merge — it waits for an outside lane, because auto-merge has raced a real Codex P1 on three consecutive PRs.
 - **Stop pushing** once a head passes Cowork's retests; every push restarts CI.
-- **Clone hygiene.** Anywhere a save compares "what I have" against "what moved on", the snapshot must be a real copy. A shallow copy is not enough: the live edit paths mutate **in place** (`HL[sec.id].push(h)`, `SN[id] = ta.value`, `pqDone[pqKey(p)] = …`), so a one-level copy still shares the arrays and objects underneath and the comparison ends up comparing an object with itself. Use `structuredClone` or a JSON round trip. The red test must **pass under a shallow copy and fail under no copy at all** — otherwise it is not testing depth, and it must run against existing stored data, not an empty store.
+- **Clone hygiene.** Anywhere a save compares "what I have" against "what moved on", the snapshot must be a real copy. A shallow copy is not enough: the live edit paths mutate **in place** (`HL[sec.id].push(h)`, `SN[id] = ta.value`, `pqDone[pqKey(p)] = …`), so a one-level copy still shares the arrays and objects underneath, the in-flight edit mutates the snapshot too, and the moved-on check compares an object with itself. Use `structuredClone` or a JSON round trip. The red test must **fail under a shallow copy AND under no copy**, and pass only with an independent deep snapshot — a test that survives the shallow-copy mutation is not testing depth and would let the same data-loss regression back in. It must also run against existing stored data, not an empty store. (An earlier wording here had this backwards, asking for a test that *passes* under a shallow copy; the guard in `test.mjs` has always been the stronger one — swapping the deep clone for `Object.assign({}, getMine())` turns two checks red.)
 
 ## 2. Verify it yourself
 - **Get the code:** fetch the PR head or main and extract `stage-a/index.html`.
@@ -78,7 +78,7 @@ When Cowork opens the project chat or starts CC, it selects Sonnet.
 
 ## 3. Outside review
 
-Four outside lanes, plus Claude Code itself. They are not interchangeable and they do not cost the same. Spend them in the order of the seven rules below, not all at once on every PR.
+Five outside lanes, plus Claude Code itself — the two Codex modes count separately, because they differ in what they can see and in how they are invoked, and each is scored on its own row. They are not interchangeable and they do not cost the same. Spend them in the order of the seven rules below, not all at once on every PR.
 
 ### The six lanes
 
@@ -123,7 +123,9 @@ Gemini web and the old Gemini CLI both fail when driven by Claude. Use `agy` on 
    - Unavailable → fall back to Eias pasting the prompt into his own Gemini and screenshotting the answer.
 
 ### Routing a verified finding
-- Mechanical defect → CC as a new PR.
+Where it goes depends on whether the code it is about has merged yet. A finding on a PR that is still open cannot be fixed by a new PR branched off `main` — the defect is not on `main`; sending it to a new PR means either merging the known-bad change first or building an undocumented stack.
+- Mechanical defect, **PR still open** → back onto that PR. This is the usual case for a held persistence change, where the whole point of holding it is to fix the finding before it lands.
+- Mechanical defect, **already merged** → a new PR.
 - Anything touching content or scope → the project chat first.
 - Tell Eias and the chat what was adopted or rejected, one line each with the reason, and which lane raised it — that line is what keeps the scorecard honest.
 
@@ -140,7 +142,12 @@ Gemini web and the old Gemini CLI both fail when driven by Claude. Use `agy` on 
   - findings adopted / rejected, **named by lane**
   - next review start commit
   - open items
-- **Reviewer scorecard:** update the Stage A Reviewer Scorecard artifact — one row per finding: lane, PR, severity as raised, and the verified outcome (real / false / already-known / not-reproducible). This is the only thing that keeps the error profiles in §3 honest instead of anecdotal; a profile nobody is scoring drifts into folklore. Correct §3 when a lane's numbers move.
+- **Reviewer scorecard:** update the Stage A Reviewer Scorecard artifact. Three kinds of row, because findings alone can only measure precision:
+  - **one per finding** — lane, PR, severity as raised, verified outcome (real / false / already-known / not-reproducible)
+  - **one per review that came back clean** — otherwise a lane that says "clean" is invisible, and §3's claim that a lane's clean calls are reliable rests on nothing
+  - **one per miss**, written back when a later lane, or production, finds something an earlier review looked at and did not report — otherwise no profile can ever get worse, only better
+
+  This is the only thing that keeps the error profiles in §3 honest instead of anecdotal; a profile nobody is scoring drifts into folklore, and one scored on findings alone drifts favourably. Correct §3 when a lane's numbers move.
 - **Memory:** append a dated line to the study-console memory file.
 - **Report to the project chat** in one message: commits, revert handles, Gemini verdicts, next review start. Screenshot after sending.
 - **Triggers:** delete finished scheduled checks (`list_triggers`).
