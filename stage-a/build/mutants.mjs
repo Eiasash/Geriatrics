@@ -1208,9 +1208,8 @@ const M = [
       here first and came back MISSED, because the check that catches it is the sibling one
       about telling the reader, whose label does not carry this needle. The stand-down itself
       has to go for this mutation to mean what its name says. */
-   `        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent;
-        if(!legacyClobber){ if(mockOn) mockRunSuperseded(); return; }`,
-   `        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent;`,
+   `        if(!legacyClobber){ if(mockOn) mockRunSuperseded(); return; }`,
+   ``,
    'superseded by another tab'],
   /* "mockSaveRun stops serializing its checkpoint writes through mockRunChain" (de-chaining
      it to Promise.resolve().then(...) instead) is retired: with the per-write ownership
@@ -1309,8 +1308,8 @@ const M = [
   ['mockSaveRun goes back to reading every id-less record as "not this run", so a migration\'s first write asserts this tab\'s boot-time snapshot over a legacy record a still-open pre-ID tab updated in the meantime, and everything that tab added is silently erased (Codex review of #462, P1)',
    /* re-anchored after #464 moved sameList above the ownership check and added the content
       fingerprint; same property, same needle */
-   `      const sameRun = !!(cur && sameContent && (cur.id ? cur.id === forId : sameList));`,
-   `      const sameRun = !!(cur && sameContent && cur.id === forId);`,
+   `      const sameRun = !!(cur && (cur.id ? cur.id === forId : sameList));`,
+   `      const sameRun = !!(cur && cur.id === forId);`,
    'old tab updated mid-migration'],
   ['the saved cursor goes back to raw last-commit-wins, so a checkpoint captured at an earlier question but queued behind its own tab\'s in-flight write lands after a later one from another tab and rewinds the reader\'s place (Codex review of #462, P2)',
    /* re-anchored onto mergeMockCursor's tie-break, which is where #464 moved this decision.
@@ -1322,14 +1321,14 @@ const M = [
   /* ---- Codex review of #464: four findings on the PR that fixed the previous two, two of them
      P1. All four reproduce, and one was derived from the fixture of the test added in that PR.
      Each red test is in test.mjs. ---- */
-  ['mockSaveRun goes back to treating a matching y#n list as proof the paper still means the same thing, so answers given before a deployment reworded an option, reordered the options or corrected the key are merged back in and graded against different content (Codex review of #464, P1 — ACCEPTANCE-round5.md ID4)',
-   `      const sameRun = !!(cur && sameContent && (cur.id ? cur.id === forId : sameList));`,
-   `      const sameRun = !!(cur && (cur.id ? cur.id === forId : sameList));`,
-   'no longer match are not merged'],
   ['mockPaperFp stops covering the option text and the key, so its fingerprint is just the question slots again and an edited paper is indistinguishable from the one the answers were given against (Codex review of #464, P1)',
-   `    const s = p.y + '#' + p.n + '\u0001' + (p.o || []).join('\u0002') + '\u0001' + (p.a || '');`,
+   `    const s = p.y + '#' + p.n + '\u0001' + (p.q || '') + '\u0001' + (p.o || []).join('\u0002') + '\u0001' + (p.a || '');`,
    `    const s = p.y + '#' + p.n;`,
    'fingerprint changes when the options are reordered'],
+  ['mockPaperFp stops covering the question stem, so a deployment that rewords what a question ASKS \u2014 leaving y#n, the options and the key untouched \u2014 is invisible to the content check and old answers are restored against it (Codex review of #464, P1)',
+   `p.y + '#' + p.n + '\u0001' + (p.q || '') + '\u0001'`,
+   `p.y + '#' + p.n + '\u0001'`,
+   'when only the stem is reworded'],
   ['the cursor merge stops rejecting a stamp from the future, so a record written while that device\'s clock ran ahead beats every later capture and the saved place stays frozen until wall time catches up (Codex review of #464, P2)',
    /* re-anchored: the first fix bounded this with a five-minute window, which also discarded any
       genuine interleaving longer than five minutes. A duration cannot tell a slow tab from a
@@ -1338,15 +1337,19 @@ const M = [
    `    if(false) return mine;`,
    'freeze the saved place'],
   ['setMockI stops recording that the reader moved, so movement is inferred from endpoints again and a reader who navigated away and came back reads as having stayed put, losing their place to another tab\'s older reading (Codex review of #464, P2)',
-   `function setMockI(n){ if(n !== mockI){ mockI = n; mockICursorMoved = true; } }`,
-   `function setMockI(n){ mockI = n; }`,
+   `function setMockI(n){ if(n !== mockI){ mockI = n; mockICursorMoved = true; mockIAtMoved = Date.now(); } }`,
+   `function setMockI(n){ mockI = n; mockIAtMoved = Date.now(); }`,
    'navigated away and back still counts as having moved'],
+  ['the cursor timestamp goes back to being taken at save time rather than at the move, so a flag toggle or a re-answer at the same question hands this tab the freshest stamp with no navigation at all and beats another tab\'s genuinely later move (Codex review of #464, P2)',
+   `  const mineIAt = mockIAtMoved, mineMoved = mockICursorMoved;`,
+   `  const mineIAt = Date.now(), mineMoved = mockICursorMoved;`,
+   'does not refresh the cursor timestamp'],
   ['the cursor merge stops being three-way and falls back to comparing captures, so a legacy record — which carries no timestamp at all — loses the reading its own tab actually moved to, in the very write that rescues its answers (Codex review of #464, P2)',
    `  if(curMoved && !mineMoved) return theirs;`,
    `  if(false) return theirs;`,
    'cursor the legacy tab moved to'],
   ['a pre-ID tab overwriting this tab\'s freshly claimed record is read as another tab taking the run over again, so the modern tab stands down, the stale id-less record is left on disk, and the reader is told their answers are safe in a run that does not exist (Codex review of #464, P1)',
-   `        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent;`,
+   `        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent && continues;`,
    `        const legacyClobber = false;`,
    'reclaimed, not read as another tab'],
 
@@ -1393,6 +1396,25 @@ const M = [
    `      if(inModal){`,
    `      if(false){`,
    'pop-out closes the dialog'],
+
+  /* ---- Codex round 3 on #464, plus the two policy calls Eias made on it ---- */
+  ['Resume stops noticing that the saved paper has been edited since these answers were given, so the score is presented with no caveat and the reader is told a percentage that may be wrong in either direction (Codex review of #464, P1 — ACCEPTANCE-round5.md ID4)',
+   `    mockPaperChanged = !!fresh.chg ||
+      (typeof fresh.fp === 'string' && fresh.fp !== mockPaperFp(mockQs));`,
+   `    mockPaperChanged = false;`,
+   'fingerprint does not match the paper this build serves'],
+  ['the changed-paper flag stops being written onto the record, so it survives in memory only and a reload presents the same score with no caveat at all (Eias\'s call on Codex #464: keep the answers and warn)',
+   `        q: qList, fp: qFp, chg: (mockPaperChanged || !!(sameRun && cur && cur.chg)) ? 1 : 0,`,
+   `        q: qList, fp: qFp, chg: 0,`,
+   'carries the flag, so a reload still knows'],
+  ['the fingerprint goes back to gating the MERGE rather than the warning, which is the shape that made this worse: Resume has already loaded the old answers, so refusing to merge writes every one of them back under the current fingerprint, certifying exactly what could not be certified (Codex review of #464, P1)',
+   `      const sameRun = !!(cur && (cur.id ? cur.id === forId : sameList));`,
+   `      const sameRun = !!(cur && sameContent && (cur.id ? cur.id === forId : sameList));`,
+   'edited paper are kept, not silently re-certified'],
+  ['the reclaim stops requiring the id-less record to be a continuation of what this tab last wrote, so a backup the reader restored mid-run is absorbed and partly undone as if the pre-ID tab had written it (Eias\'s call on Codex #464: reclaim a continuation only)',
+   `            continues = Object.keys(lastA).every(k => cur.a[k] === lastA[k]);`,
+   `            continues = true;`,
+   'NOT a continuation is left alone'],
 
   /* ---- audit.mjs's own gates (runner 'audit'): each break below is one a reviewer verified
      the OLD gate waved through. They are the red tests for those gates as much as they are

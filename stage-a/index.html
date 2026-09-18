@@ -13617,7 +13617,20 @@ let mockRunWrote = false;
    the merge below then keeps another tab's older reading (Codex review of #464). Set wherever
    the cursor moves, cleared when a write carrying it lands. */
 let mockICursorMoved = false;
-function setMockI(n){ if(n !== mockI){ mockI = n; mockICursorMoved = true; } }
+/* This run's answers were given against a paper that has since been edited: same y#n slots, but
+   an option was reworded or reordered, or the key was corrected, so a saved letter no longer
+   points where it did. The answers are kept — throwing away someone's work is the worse failure
+   in exam prep — but the run is flagged and the reader is told before the score is presented,
+   because a percentage computed over answers like that does not mean what it says
+   (ACCEPTANCE-round5.md ID4; Codex review of #464). Carried on the record so it survives a
+   reload; once set for a run it stays set. */
+let mockPaperChanged = false;
+/* stamped when the reader moves, not when a checkpoint happens to run. mineIAt used to be
+   Date.now() at save time, so a flag toggle or a re-answer at the same question handed this
+   tab the freshest timestamp without any navigation at all, and laterWins() then beat
+   another tab's genuinely later move (Codex review of #464). */
+let mockIAtMoved = 0;
+function setMockI(n){ if(n !== mockI){ mockI = n; mockICursorMoved = true; mockIAtMoved = Date.now(); } }
 /* last-synced full checkpoint record for THIS run, mirroring HLSEEN/SNSEEN/PQSEEN. Without
    this, mockSaveRun sent the WHOLE current mockAns/mockFlag as an unconditional overwrite —
    two tabs both legitimately resumed on the same run, each answering different questions from
@@ -13656,7 +13669,7 @@ function newRunId(){
 function mockPaperFp(list){
   let h = 0x811c9dc5;
   for(const p of (list || [])){
-    const s = p.y + '#' + p.n + '' + (p.o || []).join('') + '' + (p.a || '');
+    const s = p.y + '#' + p.n + '' + (p.q || '') + '' + (p.o || []).join('') + '' + (p.a || '');
     for(let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
   }
   return (h >>> 0).toString(36);
@@ -13765,7 +13778,10 @@ function mockSaveRun(){
   const mineAns = Object.assign({}, mockAns), mineFlag = Object.assign({}, mockFlag), mineI = mockI;
   /* when this tab's reader was at mineI — captured here, with the cursor itself, because the
      write below can reach storage long after this moment (see the cursor merge further down) */
-  const mineIAt = Date.now(), mineMoved = mockICursorMoved;
+  /* the moment this tab's reader last MOVED, not the moment this save runs. 0 until they move,
+     which reads as older than anything and is right: a tab that has not navigated has no
+     cursor interaction to win with. */
+  const mineIAt = mockIAtMoved, mineMoved = mockICursorMoved;
   /* each answer used to fire an unawaited, unserialized window.storage.set — nothing stopped
      two of those in-flight writes from resolving out of order, so a later, more-complete
      answer set could land on disk before an earlier, smaller one, which then overwrote it.
@@ -13807,7 +13823,20 @@ function mockSaveRun(){
            stale legacy record on disk AND told the reader "your answers are safe in that other
            run", which was false (Codex review of #464). Reclaim it instead: fall through, merge,
            and re-assert this run's id. Only for the same paper and compatible content. */
-        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent;
+        /* An id-less record for this paper is not proof the pre-ID tab wrote it — a reader
+           restoring a backup mid-run produces one too, and reclaiming that would silently undo
+           part of a deliberate restore (Codex review of #464). What distinguishes them is shape:
+           the old tab is CONTINUING the run, so everything this tab last wrote is still in its
+           record. A restore is a different snapshot and will generally have dropped or changed
+           something. Reclaim a continuation; stand down for anything else. */
+        let continues = false;
+        if(cur && cur.a){
+          try{
+            const lastA = (JSON.parse(MOCKSEEN) || {}).a || {};
+            continues = Object.keys(lastA).every(k => cur.a[k] === lastA[k]);
+          }catch(e){ continues = false; }
+        }
+        const legacyClobber = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent && continues;
         if(!legacyClobber){ if(mockOn) mockRunSuperseded(); return; }
       }
       /* merge THIS write's own changed answers/flags onto whatever is on disk right now
@@ -13849,7 +13878,13 @@ function mockSaveRun(){
          more, whatever its ids say. A record written before the field existed carries none and
          cannot be checked either way — warning the reader in that case is ID4, still open, and it
          is a decision about what to tell them rather than a merge rule. */
-      const sameRun = !!(cur && sameContent && (cur.id ? cur.id === forId : sameList));
+      /* sameContent is deliberately NOT a condition here. Gating the merge on it looked safe and
+         was worse: Resume has already copied the old answers into mockAns, so refusing to merge
+         made mergeMockAnswers treat every one of them as a local edit and write them straight
+         back under the CURRENT fingerprint — certifying exactly the choices that could not be
+         certified (Codex review of #464). The answers are merged as usual and the run carries a
+         flag instead; see mockPaperChanged. */
+      const sameRun = !!(cur && (cur.id ? cur.id === forId : sameList));
       let seen = {};
       if(sameRun){ try{ const s = JSON.parse(MOCKSEEN); if(s && s.id === forId) seen = s; }catch(e){} }
       const mergedAF = mergeMockAnswers(sameRun ? cur : null, seen, mineAns, mineFlag);
@@ -13870,7 +13905,8 @@ function mockSaveRun(){
       const seenI = (sameRun && typeof seen.i === 'number') ? seen.i : null;
       const cursor = mergeMockCursor(seenI, mineI, mineIAt, mineMoved, sameRun ? cur : null, Date.now());
       const blob = JSON.stringify({
-        q: qList, fp: qFp, a: mergedAF.a, f: mergedAF.f, i: cursor.i, iAt: cursor.iAt,
+        q: qList, fp: qFp, chg: (mockPaperChanged || !!(sameRun && cur && cur.chg)) ? 1 : 0,
+        a: mergedAF.a, f: mergedAF.f, i: cursor.i, iAt: cursor.iAt,
         e: mockEnds, t: mockPerQ, id: forId, rev: seq });
       try{
         await window.storage.set(RUNKEY, blob);
@@ -13969,9 +14005,9 @@ async function mockStart(){
   pqLoad();
   mockQs = mockPick(mockN);
   if(!mockQs.length) return;
-  mockAns = {}; mockFlag = {}; mockI = 0; mockICursorMoved = false; mockOn = true;
+  mockAns = {}; mockFlag = {}; mockI = 0; mockICursorMoved = false; mockIAtMoved = 0; mockOn = true;
   mockEnds = mockPerQ ? Date.now() + mockN * mockPerQ * 60000 : 0;
-  mockRunId = newRunId(); mockRunSeq = 0; mockRunClaimed = false; mockRunMigrated = false; mockRunWrote = false;
+  mockRunId = newRunId(); mockRunSeq = 0; mockRunClaimed = false; mockRunMigrated = false; mockRunWrote = false; mockPaperChanged = false;
   mockRunObservedId = (stored && stored.id) || '';
   MOCKSEEN = '{}';   /* a brand-new run has no prior checkpoint to merge against */
   document.getElementById('mockCard').hidden = false;
@@ -14015,7 +14051,16 @@ async function mockFinish(auto){
     .sort((a,b)=>(byCh[b][1]-byCh[b][0])-(byCh[a][1]-byCh[a][0]));
   const el = document.getElementById('mockReport');
   el.hidden = false;
+  /* said before the number, not after it: the score is the thing the caveat is about, and a note
+     underneath a percentage is read second or not at all */
   el.innerHTML =
+    (mockPaperChanged
+      ? '<p class="note" id="mockStaleNote"><b>Read the score with care.</b> Some of these answers were ' +
+        'saved against an earlier version of this paper \u2014 an option or an answer key has been ' +
+        'corrected since. A letter you chose then may not point at the option it pointed at now, so ' +
+        'this percentage may be wrong in either direction. Reviewing the questions below is reliable; ' +
+        'the total is not.</p>'
+      : '') +
     '<div class="big">' + right + ' / ' + rows.length + '</div>' +
     '<div class="sub">' + Math.round(right/rows.length*100) + '%' +
       (auto ? ' · time ran out' : '') + ' · ' +
@@ -14204,7 +14249,7 @@ document.addEventListener('keydown', e=>{
             'so it cannot be resumed. It has been cleared.');
       return;
     }
-    mockAns = fresh.a || {}; mockFlag = fresh.f || {}; mockI = fresh.i || 0; mockICursorMoved = false;
+    mockAns = fresh.a || {}; mockFlag = fresh.f || {}; mockI = fresh.i || 0; mockICursorMoved = false; mockIAtMoved = 0;
     mockPerQ = fresh.t || 0; mockEnds = fresh.e || 0; mockOn = true;
     /* this run already owns RUNKEY under its own id (we just read it back) — inherit that
        id/sequence rather than minting a new one, so this tab's next checkpoint write is
@@ -14220,6 +14265,11 @@ document.addEventListener('keydown', e=>{
        does for a run it takes over. */
     mockRunClaimed = !!fresh.id; mockRunObservedId = fresh.id || '';
     mockRunMigrated = !fresh.id; mockRunWrote = false;
+    /* the paper the answers were given against vs the paper this build serves. A record with no
+       fingerprint predates the field and cannot be compared, so it is not flagged on that basis;
+       a flag already on the record is sticky. */
+    mockPaperChanged = !!fresh.chg ||
+      (typeof fresh.fp === 'string' && fresh.fp !== mockPaperFp(mockQs));
     /* baseline for the merge in mockSaveRun: what we just resumed FROM, so our next checkpoint
        only asserts what changed here since this exact read, not our whole local answer set as
        an unconditional overwrite of whatever another tab may have added since */
