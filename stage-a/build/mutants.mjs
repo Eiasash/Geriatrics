@@ -1196,9 +1196,15 @@ const M = [
    `    let fresh = v;`,
    'not the boot-time snapshot'],
   ['mockSaveRun stops rejecting a stale writer, so a checkpoint for a run another tab has already superseded overwrites that tab’s record instead of standing down (ChatGPT third-model audit round 4, data-loss cluster item 3)',
-   `      const expected = mockRunClaimed ? mockRunId : mockRunObservedId;
-      if(curId !== expected){ if(mockOn) mockRunSuperseded(); return; }`,
-   `      const expected = mockRunClaimed ? mockRunId : mockRunObservedId;`,
+   /* re-anchored where #464's legacy reclaim turned this one-liner into a block. Same
+      property, same needle: a writer whose run another tab has taken over must not write.
+      Dropping only the alert and keeping the `return` is a DIFFERENT property — it was tried
+      here first and came back MISSED, because the check that catches it is the sibling one
+      about telling the reader, whose label does not carry this needle. The stand-down itself
+      has to go for this mutation to mean what its name says. */
+   `        const legacyClobber = mockRunMigrated && !curId && sameList && sameContent;
+        if(!legacyClobber){ if(mockOn) mockRunSuperseded(); return; }`,
+   `        const legacyClobber = mockRunMigrated && !curId && sameList && sameContent;`,
    'superseded by another tab'],
   /* "mockSaveRun stops serializing its checkpoint writes through mockRunChain" (de-chaining
      it to Promise.resolve().then(...) instead) is retired: with the per-write ownership
@@ -1285,24 +1291,55 @@ const M = [
    `      const mergedAF = mergeMockAnswers(cur, seen, mineAns, mineFlag);`,
    'does not inherit that run’s answers or flags'],
   ['the checkpoint cursor goes back to being a high-water mark, so walking back through the paper keeps writing the furthest question reached and the next resume opens past where the reader actually was (Codex review of #459)',
-   /* re-anchored where the #462 capture-time ordering rewrote this line; same property, same
-      needle, and the high-water mark still overrides whatever the ordering rule decided */
-   `      const mergedI = keepMineI ? mineI : cur.i;`,
-   `      const mergedI = Math.max(mineI, (cur && cur.i) || 0);`,
+   /* re-anchored twice now, as #462 then #464 moved this decision — into mergeMockCursor's
+      "only this tab moved" branch. Same property, same needle: a reader walking backward must
+      take the saved cursor with them, and the high-water mark still overrides the merge. */
+   `  if(mineMoved && !curMoved) return mine;`,
+   `  if(mineMoved && !curMoved) return {i: Math.max(mineI, cur.i), iAt: mineIAt};`,
    'moves the saved cursor back too'],
 
   /* ---- Codex review of #462, posted four minutes before that PR auto-merged and therefore
      against code already on main. Both reproduce; both red tests are in test.mjs. ---- */
   ['mockSaveRun goes back to reading every id-less record as "not this run", so a migration\'s first write asserts this tab\'s boot-time snapshot over a legacy record a still-open pre-ID tab updated in the meantime, and everything that tab added is silently erased (Codex review of #462, P1)',
-   `      const sameList = !!(cur && Array.isArray(cur.q) && cur.q.length === qList.length &&
-                          cur.q.every((k, n) => k === qList[n]));
-      const sameRun = !!(cur && (cur.id ? cur.id === forId : sameList));`,
-   `      const sameRun = !!(cur && cur.id === forId);`,
+   /* re-anchored after #464 moved sameList above the ownership check and added the content
+      fingerprint; same property, same needle */
+   `      const sameRun = !!(cur && sameContent && (cur.id ? cur.id === forId : sameList));`,
+   `      const sameRun = !!(cur && sameContent && cur.id === forId);`,
    'old tab updated mid-migration'],
   ['the saved cursor goes back to raw last-commit-wins, so a checkpoint captured at an earlier question but queued behind its own tab\'s in-flight write lands after a later one from another tab and rewinds the reader\'s place (Codex review of #462, P2)',
-   `      const keepMineI = mineIAt >= curIAt;`,
-   `      const keepMineI = true;`,
+   /* re-anchored onto mergeMockCursor's tie-break, which is where #464 moved this decision.
+      Same property: the later capture must win a genuine two-tab race. */
+   `    return (ahead > 0 && ahead <= CURSOR_SKEW) ? theirs : mine;`,
+   `    return mine;`,
    'reaches the lock late'],
+
+  /* ---- Codex review of #464: four findings on the PR that fixed the previous two, two of them
+     P1. All four reproduce, and one was derived from the fixture of the test added in that PR.
+     Each red test is in test.mjs. ---- */
+  ['mockSaveRun goes back to treating a matching y#n list as proof the paper still means the same thing, so answers given before a deployment reworded an option, reordered the options or corrected the key are merged back in and graded against different content (Codex review of #464, P1 — ACCEPTANCE-round5.md ID4)',
+   `      const sameRun = !!(cur && sameContent && (cur.id ? cur.id === forId : sameList));`,
+   `      const sameRun = !!(cur && (cur.id ? cur.id === forId : sameList));`,
+   'no longer match are not merged'],
+  ['mockPaperFp stops covering the option text and the key, so its fingerprint is just the question slots again and an edited paper is indistinguishable from the one the answers were given against (Codex review of #464, P1)',
+   `    const s = p.y + '#' + p.n + '\u0001' + (p.o || []).join('\u0002') + '\u0001' + (p.a || '');`,
+   `    const s = p.y + '#' + p.n;`,
+   'fingerprint changes when the options are reordered'],
+  ['the cursor merge loses its sanity window, so a record stamped by a clock that was running ahead beats every later capture and the saved place stays frozen until wall time catches up (Codex review of #464, P2)',
+   `    return (ahead > 0 && ahead <= CURSOR_SKEW) ? theirs : mine;
+  };
+  if(typeof seenI !== 'number') return laterWins();`,
+   `    return (ahead > 0) ? theirs : mine;
+  };
+  if(typeof seenI !== 'number') return laterWins();`,
+   'freeze the saved place'],
+  ['the cursor merge stops being three-way and falls back to comparing captures, so a legacy record — which carries no timestamp at all — loses the reading its own tab actually moved to, in the very write that rescues its answers (Codex review of #464, P2)',
+   `  if(curMoved && !mineMoved) return theirs;`,
+   `  if(false) return theirs;`,
+   'cursor the legacy tab moved to'],
+  ['a pre-ID tab overwriting this tab\'s freshly claimed record is read as another tab taking the run over again, so the modern tab stands down, the stale id-less record is left on disk, and the reader is told their answers are safe in a run that does not exist (Codex review of #464, P1)',
+   `        const legacyClobber = mockRunMigrated && !curId && sameList && sameContent;`,
+   `        const legacyClobber = false;`,
+   'reclaimed, not read as another tab'],
 
   /* ---- red tests for the weak-check rewrites (ChatGPT audit of the SUITE, not the app: ~234
      of 618 checks were weaker than their labels). Each mutation below breaks the behaviour the
