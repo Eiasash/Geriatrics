@@ -3,6 +3,10 @@ const html=fs.readFileSync(process.argv[2]||'geriatrics-stage-a.html','utf8'); c
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,beforeParse(w){pinClock(w);
   w.storage={get:async k=>{if(!(k in store))throw 0;return{key:k,value:store[k]}},set:async(k,v)=>{store[k]=v;return{key:k,value:v}}};
   w.addEventListener('error',e=>errs.push(e.message));
+  /* ChatGPT third-model audit round 5: only the window 'error' event was wired, so a
+     console.error call from the page (as opposed to an uncaught throw) never counted toward
+     'runtime errors' below, same gap class as test.mjs's secondary windows */
+  w.console.error=(...a)=>errs.push('console.error '+a.join(' '));
 }});
 const w=dom.window,d=w.document; await new Promise(r=>setTimeout(r,600));
 /* PQ starts empty until pqLoad() parses #pqjson (normally deferred to when the user opens

@@ -145,6 +145,45 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
      r4.ok === false, JSON.stringify(r4));
 }
 
+/* ---- (4) a secondary window's error must be caught too, not only the primary's ---- */
+{
+  /* ChatGPT third-model audit round 5: only the primary JSDOM's beforeParse wired
+     w.addEventListener('error', ...) into `errs` — every secondary window test.mjs spins up
+     (a restored mock, a different viewport, the #falls hash-vs-tab race, ...) wired pinClock
+     and storage but not this, so a page-script exception inside any of them was invisible to
+     the final verdict: the suite could finish PASS/PASS/.../DONE/exit 0 with a real error
+     sitting unrecorded. wireErrs(w2) now runs in every window's beforeParse, primary and
+     secondary alike.
+
+     This fixture throws only inside a window loaded at the #falls hash — unique, in this
+     file, to the "a deep-link hash (#falls) wins over a saved tab" secondary window — so a
+     pass here specifically proves THAT window's error reaches the verdict, not just the
+     primary's. */
+  const src = fs.readFileSync('../index.html', 'utf8');
+  const injectedFalls = src.replace('</body>',
+    '<script>if(location.hash === "#falls"){ setTimeout(()=>{ throw new Error("HARNESS_SELFTEST_FALLS_WINDOW_ERROR"); }, 50); }</script></body>');
+  const tmp = '/tmp/harness-selftest-falls-window-error-' + process.pid + '.html';
+  fs.writeFileSync(tmp, injectedFalls);
+  let status = 0, out = '';
+  try { out = execFileSync('node', ['test.mjs', tmp], { encoding: 'utf8' }); status = 0; }
+  catch (e) { out = (e.stdout || '') + (e.stderr || ''); status = e.status == null ? 1 : e.status; }
+  try { fs.unlinkSync(tmp); } catch (e) {}
+  const reachedDone = out.split('\n').some(l => l === 'DONE');
+  const mentionsFalls = out.includes('HARNESS_SELFTEST_FALLS_WINDOW_ERROR');
+  ok('an error inside the #falls secondary window fails the run, not just an error on the primary window',
+     status !== 0 && reachedDone && mentionsFalls, 'status=' + status + ' reachedDone=' + reachedDone + ' mentionsFalls=' + mentionsFalls);
+}
+{
+  const src = fs.readFileSync('test.mjs', 'utf8');
+  const helperIdx = src.indexOf('function wireErrs(w2){');
+  ok('the wireErrs helper is defined in test.mjs', helperIdx >= 0);
+  const callSites = (src.match(/wireErrs\(w[23]?\)/g) || []).length;
+  /* the primary window's call (wireErrs(w)) plus every secondary JSDOM construction's
+     (wireErrs(w2)/wireErrs(w3)) — this file has 8 secondary windows as of this writing */
+  ok('wireErrs is called from every window construction in test.mjs, not just the primary one',
+     callSites >= 9, callSites + ' call sites');
+}
+
 console.log('\n' + FAILS + ' failing harness self-test(s)');
 console.log('DONE');
 process.exit(FAILS ? 1 : 0);

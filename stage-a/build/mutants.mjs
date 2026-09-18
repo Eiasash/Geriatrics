@@ -1220,6 +1220,12 @@ const M = [
    `    if(r.p.ch && r.p.bk==='Hazzard' && r.given){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }`,
    `    if(r.p.ch && r.given){ byCh[r.p.ch] = byCh[r.p.ch] || [0,0]; byCh[r.p.ch][1]++; if(r.ok) byCh[r.p.ch][0]++; }`,
    'mock-exam weak-chapter report only attributes'],
+  ['sectionForChapter stops coercing its argument to a number, so a string chapter key (Object.keys() of a tally object always hands back strings) misses every real SECCH match and silently falls back to the wrong, one-chapter-per-section CHFALLBACK mapping (ChatGPT third-model audit round 5)',
+   `  n = Number(n);
+  if(!Number.isInteger(n) || n <= 0) return '';
+  secChapters('');`,
+   `  secChapters('');`,
+   'agrees on a string and a number form'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
