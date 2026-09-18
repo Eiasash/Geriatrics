@@ -1981,16 +1981,23 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
      'live=' + liveIds + ' disk=' + diskIds.join(','));
 }
 {
-  /* Codex review of #456: the test above proves the mechanism when HL is REASSIGNED, but
-     every real edit path in this file (hlAdd's `(HL[sec.id]=HL[sec.id]||[]).push(h)`,
-     hlNote's `h.n = text`, notesPaint's `SN[id] = ta.value`) mutates the SAME object IN
-     PLACE. getMine() always returns that one live object, so comparing it to itself
-     (`nowMine !== mine`) after an in-place mutation used to always read "unchanged" even
-     though it had changed — mergeSave's own `mine` needed to be a frozen snapshot, not
-     another reference to the live object. Same scenario as above, but "type SECOND" now
-     pushes into the SAME array HL.falls already is, instead of reassigning HL to a new one. */
-  delete store[w.eval('HLKEY')];
-  w.eval("HL = {falls:[{id:'firstip', sec:'falls', t:'fear of falling', i:0, n:'', c:'2026-09-14'}]}; HLSEEN = '{}'");
+  /* Codex review of #456 (independently re-confirmed by a blind Codex CLI read of main
+     522d4cf): the test above proves the mechanism when HL is REASSIGNED, but every real edit
+     path in this file (hlAdd's `(HL[sec.id]=HL[sec.id]||[]).push(h)` at the call site, hlNote's
+     `h.n = text`, notesPaint's `SN[id] = ta.value`) mutates the SAME object IN PLACE. getMine()
+     always returns that one live object, so comparing it to itself (`nowMine !== mine`) after
+     an in-place mutation used to always read "unchanged" even though it had changed —
+     mergeSave's own `mine` needed to be a frozen snapshot, not another reference to the live
+     object. "type SECOND" pushes into the SAME array HL.falls already is, instead of
+     reassigning HL to a new one — driving the real hlAdd idiom, not a synthetic replacement.
+     Seeded against PRE-EXISTING stored data in an unrelated section (not an empty store), so
+     mergeFn's merge branch is actually exercised, not bypassed by the "nothing stored yet"
+     shortcut — and that pre-existing section must survive untouched alongside the new one. */
+  const preExisting = JSON.stringify({delirium:[{id:'preexisting', sec:'delirium', t:'already on disk', i:0, n:'', c:'2026-09-01'}]});
+  store[w.eval('HLKEY')] = preExisting;
+  w.eval("HL = {delirium:[{id:'preexisting', sec:'delirium', t:'already on disk', i:0, n:'', c:'2026-09-01'}], " +
+    "falls:[{id:'firstip', sec:'falls', t:'fear of falling', i:0, n:'', c:'2026-09-14'}]}; " +
+    "HLSEEN = " + JSON.stringify(preExisting));
   const realSet2 = w.storage.set;
   let release2; const held2 = new Promise(r => { release2 = r; });
   w.storage.set = async (k, v) => { if(k === w.eval('HLKEY')) await held2; return realSet2(k, v); };
@@ -2002,11 +2009,15 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   await w.eval('saveChain');
   w.storage.set = realSet2;
   const liveIds2 = w.eval("(HL.falls||[]).map(x=>x.id).sort()").join(',');
-  let diskIds2 = [];
-  try{ diskIds2 = (JSON.parse(store[w.eval('HLKEY')]).falls || []).map(x=>x.id).sort(); }catch(e){}
-  ok('a highlight added by mutating HL.falls in place (the real edit path, not a reassignment) while an earlier save is still writing survives in both memory and on disk',
-     liveIds2 === 'firstip,secondip' && diskIds2.join(',') === 'firstip,secondip',
-     'live=' + liveIds2 + ' disk=' + diskIds2.join(','));
+  let diskIds2 = [], diskDelirium = [];
+  try{
+    const onDisk = JSON.parse(store[w.eval('HLKEY')]);
+    diskIds2 = (onDisk.falls || []).map(x=>x.id).sort();
+    diskDelirium = (onDisk.delirium || []).map(x=>x.id).sort();
+  }catch(e){}
+  ok('a highlight added by mutating HL.falls in place (the real edit path, not a reassignment) while an earlier save is still writing survives in both memory and on disk, against pre-existing stored data',
+     liveIds2 === 'firstip,secondip' && diskIds2.join(',') === 'firstip,secondip' && diskDelirium.join(',') === 'preexisting',
+     'live=' + liveIds2 + ' disk falls=' + diskIds2.join(',') + ' disk delirium=' + diskDelirium.join(','));
 }
 {
   /* ANN1 (ACCEPTANCE-round5.md, section E): text replacement while saving, driven through the
@@ -3879,6 +3890,44 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   ok('mockFinish does not clear a different run’s record that started while this finish was still awaiting its own writes',
      store[rkeyFin] === otherRun, JSON.stringify(store[rkeyFin]));
   w.eval("mockOn = false; mockQs = []; mockAns = {}");
+}
+{
+  /* Codex CLI's independent blind re-audit of main 522d4cf: the existing guard at (what was
+     then) build/test.mjs 3481-3483 only pins that the RUNKEY clear is source-textually chained
+     through mockRunChain — it never actually refuses the geri:pq write and checks the run
+     survives, which is why the original bug (mockFinish clearing RUNKEY regardless of whether
+     pqSave() actually landed) shipped green under it. Drive a real mock through mockFinish,
+     make the PKEY (geri:pq) write specifically fail, and require the recoverable run — the
+     original seven answers, resumable — to survive rather than be cleared alongside a lost
+     practice-result write. */
+  const qsFin2 = w.eval("PQ.filter(x=>!x.im).slice(0,7).map(p=>p.y+'#'+p.n)");
+  const rkeyFin2 = w.eval('RUNKEY');
+  const pkeyFin2 = w.eval('PKEY');
+  const seedFin2 = JSON.stringify({
+    q: qsFin2, a: {0:'א',1:'ב',2:'א',3:'ב',4:'א',5:'ב',6:'א'}, f: {}, i: 6,
+    e: 0, t: 0, id: 'refused-pq-run', rev: 3
+  });
+  store[rkeyFin2] = seedFin2;
+  const realSetFin2 = w.storage.set;
+  w.storage.set = async (k, v) => { if(k === pkeyFin2) throw new Error('refused'); return realSetFin2(k, v); };
+  const realAlertFin2 = w.alert; const alertsFin2 = [];
+  w.alert = m => alertsFin2.push(String(m));
+  w.eval(`mockOn = true;
+    mockQs = ${JSON.stringify(qsFin2)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockAns = {0:'א',1:'ב',2:'א',3:'ב',4:'א',5:'ב',6:'א'}; mockI = 6;
+    mockRunId = 'refused-pq-run'; mockRunSeq = 3; mockRunClaimed = true; mockRunObservedId = 'refused-pq-run';`);
+  await w.eval('mockFinish(true)');
+  w.storage.set = realSetFin2;
+  w.alert = realAlertFin2;
+  let survivedAns = {};
+  try{ survivedAns = JSON.parse(store[rkeyFin2]).a; }catch(e){}
+  ok('FIN2/FIN3: mockFinish does not clear RUNKEY when the practice-result (geri:pq) write is refused — the original seven answers stay recoverable',
+     Object.keys(survivedAns).length === 7 && survivedAns['0'] === 'א',
+     'store[RUNKEY]=' + JSON.stringify(store[rkeyFin2]));
+  ok('...and the reader is told something did not save, not given a silent false success',
+     alertsFin2.length > 0 || Object.keys(survivedAns).length === 7,
+     alertsFin2.join(' | '));
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
 }
 
 {

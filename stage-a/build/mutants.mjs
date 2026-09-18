@@ -1271,6 +1271,10 @@ const M = [
   return Date.now() + '-' + Math.random().toString(36).slice(2);
 }`,
    'still get different ids'],
+  ['mockFinish stops gating the RUNKEY clear on pqSave\'s own result, so a refused geri:pq write still gets the recoverable run cleared right alongside it (Codex CLI\'s independent blind re-audit of main 522d4cf against ACCEPTANCE-round5.md, FIN2/FIN3)',
+   `  if(!mlSaved || !mkSaved || !pqSaved) notSaved();`,
+   `  if(!mlSaved || !mkSaved) notSaved();`,
+   'does not clear RUNKEY when the practice-result'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
