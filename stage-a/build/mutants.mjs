@@ -1237,6 +1237,12 @@ const M = [
    `    if(fresh.e && fresh.e < Date.now()){ fresh = Object.assign({}, fresh, {e: 0, t: 0}); }`,
    ``,
    'does not immediately auto-grade'],
+  ['sectionForChapter stops coercing its argument to a number, so a string chapter key (Object.keys() of a tally object always hands back strings) misses every real SECCH match and silently falls back to the wrong, one-chapter-per-section CHFALLBACK mapping (ChatGPT third-model audit round 5)',
+   `  n = Number(n);
+  if(!Number.isInteger(n) || n <= 0) return '';
+  secChapters('');`,
+   `  secChapters('');`,
+   'agrees on a string and a number form'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the

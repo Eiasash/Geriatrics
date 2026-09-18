@@ -21,6 +21,19 @@ const errs = [];
    once unexpected errors start being enforced below. Empty unless a test needs it. */
 const errAllow = [];
 const allowErr = substr => errAllow.push(substr);
+/* ChatGPT third-model audit round 5: only the PRIMARY window's beforeParse wired an error
+   listener and a console.error wrapper into `errs`. Every secondary JSDOM window this file
+   spins up (a restored mock, a reader with a different viewport, a cold-start hash-vs-tab
+   race, ...) wired pinClock and storage but not this — a page-script exception inside any of
+   them was invisible to the final verdict block: the suite could still finish 603 PASS, 0
+   FAIL, DONE, exit 0 with a real error sitting unrecorded. One helper, called from every
+   window's beforeParse, so a future secondary window gets this by construction instead of by
+   remembering to copy three lines. */
+function wireErrs(w2){
+  w2.addEventListener('error', e => errs.push('window error: ' + e.message));
+  const ce = w2.console.error;
+  w2.console.error = (...a) => { errs.push('console.error: ' + a.join(' ')); ce(...a); };
+}
 
 const dom = new JSDOM(html, {
   runScripts: 'dangerously',
@@ -34,9 +47,7 @@ const dom = new JSDOM(html, {
       get: async k => { if (!(k in store)) throw new Error('missing'); return { key:k, value:store[k] }; },
       set: async (k,v) => { store[k]=v; return {key:k,value:v}; }
     };
-    w.addEventListener('error', e => errs.push('window error: ' + e.message));
-    const ce = w.console.error;
-    w.console.error = (...a) => { errs.push('console.error: ' + a.join(' ')); ce(...a); };
+    wireErrs(w);
   }
 });
 
@@ -555,6 +566,50 @@ ok('table captions do not simply repeat the heading above',
   ok('ch 59 → #dementia, ch 60/63 → #bpsd', ci('ch 59 · x').sec === 'dementia' && ci('ch 60 · x').sec === 'bpsd' && ci('ch 63 · x').sec === 'bpsd');
   ok('dementia 14 cards / bpsd 10 cards', w.eval('countTag("dementia")') === 14 && w.eval('countTag("bpsd")') === 10);
   ok('chapter index routes 60 and 63 to bpsd', JSON.stringify(w.eval('secChapters("bpsd")')) === '[60,63]');
+}
+
+{
+  /* ChatGPT third-model audit round 5: sectionForChapter did SECCH[sec].indexOf(n) with a
+     strict, non-coercing indexOf against a NUMBER-keyed array. Object.keys() of a tally
+     object (as byCh in mockFinish, or the equivalent in pqStats) always hands back STRINGS,
+     so sectionForChapter('63') fell through to CHFALLBACK, which maps only one primary
+     chapter per section rather than the real per-chapter mapping — sectionForChapter(63) is
+     'bpsd', sectionForChapter('63') used to be ''; sectionForChapter(22) is 'beers',
+     sectionForChapter('22') used to be 'pharm'. Two spot values are a proxy, not the
+     behaviour the fix promises: loop every chapter the app actually maps and require the
+     string and number forms to agree for every one of them. */
+  const r = w.eval(`(()=>{
+    secChapters('');   /* force SECCH to build, same as sectionForChapter does internally */
+    const bad = [];
+    for(const sec in SECCH){
+      for(const n of SECCH[sec]){
+        const a = sectionForChapter(n), b = sectionForChapter(String(n));
+        if(a !== b) bad.push(n + ': ' + a + ' vs ' + b);
+      }
+    }
+    return bad;
+  })()`);
+  ok('sectionForChapter agrees on a string and a number form of the same chapter, for every chapter in SECCH',
+     r.length === 0, r.slice(0, 5).join(', '));
+  ok('sectionForChapter coerces at its own boundary',
+     /function sectionForChapter\(n\)\{[\s\S]{0,40}n = Number\(n\);\s*\n\s*if\(!Number\.isInteger\(n\) \|\| n <= 0\) return '';/.test(code));
+}
+
+{
+  /* behavioural: a mock with two wrong Hazzard ch 63 answers must offer a real jump button
+     to bpsd in the weak-chapter remediation list, not plain bold text with a dead promise
+     ("tap one to open it") next to it */
+  const ch63 = w.eval("PQ.filter(p => p.ch === 63 && p.bk === 'Hazzard' && !p.im)");
+  ok('fixture precondition: at least 2 Hazzard ch 63 questions exist', ch63.length >= 2, ch63.length + '');
+  w.eval(`mockOn = true; mockQs = ${JSON.stringify(ch63.slice(0, 2))};
+    mockAns = {0: (mockQs[0].a[0]==='א' ? 'ב' : 'א'), 1: (mockQs[1].a[0]==='א' ? 'ב' : 'א')};
+    mockI = 0; mockRunId = 'weakgo-test'; mockRunSeq = 0; mockRunClaimed = false;`);
+  await w.eval('mockFinish(true)');
+  await new Promise(r => setTimeout(r, 50));
+  const weakgo = d.querySelector('#mockReport .weakgo[data-sec="bpsd"]');
+  ok('two wrong Hazzard ch 63 answers produce a real .weakgo jump button to bpsd, not plain bold text',
+     !!weakgo, d.querySelector('#mockReport .note') ? d.querySelector('#mockReport .note').innerHTML.slice(0, 200) : '(no note)');
+  w.eval("mockOn = false; mockQs = []; mockAns = {}");
 }
 
 
@@ -2502,7 +2557,7 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
 {
   /* fresh pages: this suite's own restore tests clear every backup key, the flag included */
   const page = async st => { const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2);
       w2.storage = { get: async k => { if(!(k in st)) throw new Error('missing'); return {key:k, value:st[k]}; },
                      set: async (k,v) => { st[k] = v; return {key:k, value:v}; } }; } });
     /* poll for the script to have run, rather than a fixed wait that a busy CI runner can outrun */
@@ -2906,7 +2961,7 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
      pattern above. */
   let mqMatches = true, changeCb = null;
   const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
-    beforeParse(w3){ pinClock(w3);
+    beforeParse(w3){ pinClock(w3); wireErrs(w3);
       w3.matchMedia = q => (q === '(max-width:900px)')
         ? { get matches(){ return mqMatches; }, addEventListener:(ev,cb)=>{ if(ev === 'change') changeCb = cb; }, removeEventListener(){} }
         : { matches:false, addEventListener(){}, removeEventListener(){} }; } });
@@ -2934,7 +2989,7 @@ ok('the header uses the short label where the full one clips', (w.eval("show('bp
 w.eval("show('week')");
 {
   const load = async (st, dark) => { const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2);
       w2.matchMedia = q => ({ matches: dark && /prefers-color-scheme: dark/.test(q), addEventListener(){}, removeEventListener(){} });
       w2.storage = { get: async k => { if(!(k in st)) throw new Error('missing'); return {key:k, value:st[k]}; },
                      set: async (k,v) => { st[k] = v; return {key:k, value:v}; } }; } });
@@ -3026,7 +3081,7 @@ ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
   const key = w.eval('pqKey(pqPool[pqIdx % pqPool.length])');
   const st = {'geri:pqpos': JSON.stringify({y:'2024-05', s:'unseen', c:'all', k:saved.k})};
   const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2);
       w2.storage = { get: async k => { if(!(k in st)) throw new Error('missing'); return {key:k, value:st[k]}; },
                      set: async (k,v) => { st[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm.window.document.getElementById('ppIntroBtn'); t++) await new Promise(r => setTimeout(r, 50));
@@ -3364,7 +3419,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   const runVal = JSON.stringify({q: ['x#1', 'x#2', 'x#3'], a: {'x#1': 'א'}, f: {}, i: 1, t: 0, e: 0});
   const rstore = {'geri:mockrun': runVal};
   const dm = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2);
       w2.storage = { get: async k => { if(!(k in rstore)) throw new Error('missing'); return {key:k, value:rstore[k]}; },
         set: async (k, v) => { rstore[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm.window.document.getElementById('mockLast'); t++) await new Promise(r => setTimeout(r, 50));
@@ -3389,7 +3444,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   const staleVal = JSON.stringify({q: qs, a: {[qs[0]]: 'א'}, f: {}, i: 1, t: 0, e: 0, id: 'run-1', rev: 1});
   const rstore2 = {'geri:mockrun': staleVal};
   const dm2 = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2);
       w2.storage = { get: async k => { if(!(k in rstore2)) throw new Error('missing'); return {key:k, value:rstore2[k]}; },
         set: async (k, v) => { rstore2[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm2.window.document.getElementById('mockLast'); t++) await new Promise(r => setTimeout(r, 50));
@@ -3609,7 +3664,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
      must win on a cold load; the saved tab is the fallback only when there is no hash. */
   const tabStore = {'geri:tab': 'drill'};
   const dm = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/#falls',
-    beforeParse(w2){ pinClock(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2);
       w2.storage = { get: async k => { if(!(k in tabStore)) throw new Error('missing'); return {key:k, value:tabStore[k]}; },
         set: async (k, v) => { tabStore[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm.window.document.getElementById('falls'); t++) await new Promise(r => setTimeout(r, 50));
@@ -3626,7 +3681,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
      not have simply disabled tab restoration. */
   const tabStore2 = {'geri:tab': 'drill'};
   const dm2 = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2);
       w2.storage = { get: async k => { if(!(k in tabStore2)) throw new Error('missing'); return {key:k, value:tabStore2[k]}; },
         set: async (k, v) => { tabStore2[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm2.window.document.getElementById('drill'); t++) await new Promise(r => setTimeout(r, 50));
