@@ -117,7 +117,7 @@ ok('every section is reachable from the rail', secs.every(s=>railed.includes(s))
    secs.filter(s=>!railed.includes(s)).join(','));
 ok('sheet mirrors the rail', d.querySelectorAll('#sheetBody button[data-t]').length === railBtns.length,
    d.querySelectorAll('#sheetBody button[data-t]').length + ' vs ' + railBtns.length);
-ok('42 topics in the rail', railBtns.length === 44, railBtns.length + '');
+ok('44 topics in the rail', railBtns.length === 44, railBtns.length + '');
 ok('groups collapsed except the active one',
    d.querySelectorAll('#rail .gwrap.open').length === 1,
    [...d.querySelectorAll('#rail .gwrap.open')].map(x=>x.dataset.g).join(','));
@@ -209,7 +209,15 @@ const nb = d.getElementById('wkNote');
 nb.value = 'test note';
 nb.dispatchEvent(new w.Event('input'));
 await new Promise(r=>setTimeout(r,800));
-ok('note persisted against the week key', 'geri:notes' in store && /test note/.test(store['geri:notes']), store['geri:notes']);
+/* this used to check only that the text appeared SOMEWHERE in the notes blob, so writing every
+   note under one wrong key — or under a key that drifts as the weeks advance — passed while the
+   note would never be found again. The app writes notes[VIEW.k], so name that key. */
+ok('note persisted against the week key', (()=>{
+  if(!('geri:notes' in store)) return false;
+  let notes = {}; try{ notes = JSON.parse(store['geri:notes']); }catch(e){ return false; }
+  const wk = w.eval('VIEW.k');
+  return !!wk && notes[wk] === 'test note';
+})(), 'VIEW.k=' + w.eval('VIEW.k') + ' ' + store['geri:notes']);
 
 // drill
 const QS = w.eval('QS.length'), TG = w.eval('CARDTAG.filter(Boolean).length');
@@ -325,7 +333,7 @@ console.log('chapters with no section:', unlinked || 'none');
 
 
 // ---- v4: figures, labels, sources, card search ----
-ok('chapter index has 108 chapters', d.querySelectorAll('.chapidx tbody tr').length === 113,
+ok('chapter index has 113 chapters', d.querySelectorAll('.chapidx tbody tr').length === 113,
    d.querySelectorAll('.chapidx tbody tr').length + ' rows');
 ok('chapter 27 resolved', /Perioperative Care: Evaluation/.test(d.getElementById('anatomy').textContent));
 ok('chapter index links work', d.querySelectorAll('.chgo').length > 30,
@@ -463,24 +471,31 @@ ok('mock shows a question', (()=>{
   return !!want && d.getElementById('mockStem').textContent === want;
 })(), JSON.stringify(d.getElementById('mockStem').textContent.slice(0, 40)));
 ok('untimed mock says so', /untimed/.test(d.getElementById('mockClock').textContent));
-// answer them all
+// answer them all, keeping our own tally of what the marking SHOULD come to
+let wantRight = 0;
 for(let k=0;k<25;k++){
   const cur = w.eval('mockQs[mockI]');
   const pick = k % 4 === 0 ? cur.a[0] : 'א';
+  /* the key is a string of accepted letters, so a pick is right when the key contains it.
+     Derived from the drawn fixture, not read back out of the app's own marking. */
+  if(cur.a.indexOf(pick) >= 0) wantRight++;
   d.querySelector('#mockOpts .pqo[data-l="'+pick+'"]').click();
 }
 await w.eval('mockFinish(true)');
 await new Promise(r=>setTimeout(r,120));
 ok('mock report appears', !d.getElementById('mockReport').hidden);
 ok('mock report scores out of the right total', (()=>{
-  /* the old form matched "/ 25" anywhere in the report — a date or the blank count
-     would satisfy it. Parse the actual fraction and check both halves. */
+  /* two earlier forms of this were weaker than the label. First it matched "/ 25" anywhere in
+     the report, so a date or the blank count satisfied it. Then it parsed the fraction but only
+     asserted 0 <= numerator <= 25 — which every possible mark satisfies, including marking every
+     answer wrong, so the numerator half of "scores" was untested. Compare against the tally the
+     answering loop above kept from the fixture. */
   const el = [...d.getElementById('mockReport').querySelectorAll('*')]
     .find(e => /^\s*\d+\s*\/\s*\d+\s*$/.test(e.textContent));
   if(!el) return false;
   const m = el.textContent.match(/^\s*(\d+)\s*\/\s*(\d+)\s*$/);
-  return Number(m[2]) === 25 && Number(m[1]) >= 0 && Number(m[1]) <= 25;
-})(), d.getElementById('mockReport').textContent.slice(0,40));
+  return Number(m[2]) === 25 && Number(m[1]) === wantRight;
+})(), d.getElementById('mockReport').textContent.slice(0,40) + ' want ' + wantRight);
 ok('mock breaks the score down by source',
    d.querySelectorAll('#mockReport tbody tr').length > 1,
    d.querySelectorAll('#mockReport tbody tr').length + ' source rows');
@@ -1220,14 +1235,26 @@ ok('navigating while a note is still in its debounce banks it first', (()=>{
 w.eval("SN = {}; snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the flush is wired into show, not only into teardown',
    /if\(typeof flushPending === 'function'\) flushPending\(\);[\s\S]{0,120}?annotateSection\(id\)/.test(code));
-ok('a tab whose notes box matches its own stale memory writes nothing on teardown', (()=>{
-  w.eval("SN = {falls:'STALE'}"); w.eval("SNSEEN = JSON.stringify({falls:'STALE'})");   /* this tab has changed nothing */
-  d.querySelectorAll('.mynotes').forEach(p=>{ const ta = p.querySelector('textarea');
-    if(ta) ta.value = w.eval("SN['" + p.dataset.sec + "'] || ''"); });
-  store['geri:secnotes'] = JSON.stringify({falls:'NEWER from the other tab'});
-  w.eval("flushPending()");
-  return true;
-})());
+/* this block used to end in `return true`, so the check could not fail and only its sibling
+   below carried any weight. The label promises the teardown writes NOTHING, which is a stronger
+   and separately observable property than "the other tab's note survived" — count the writes to
+   the notes key across flushPending() and require zero, rather than asserting a literal. */
+w.eval("SN = {falls:'STALE'}"); w.eval("SNSEEN = JSON.stringify({falls:'STALE'})");   /* this tab has changed nothing */
+d.querySelectorAll('.mynotes').forEach(p=>{ const ta = p.querySelector('textarea');
+  if(ta) ta.value = w.eval("SN['" + p.dataset.sec + "'] || ''"); });
+store['geri:secnotes'] = JSON.stringify({falls:'NEWER from the other tab'});
+const realSetTd = w.storage.set;
+let teardownWrites = 0;
+w.storage.set = async (k, v) => { if(k === 'geri:secnotes') teardownWrites++; return realSetTd(k, v); };
+w.eval("flushPending()");
+/* the non-urgent path routes through snSave(), which queues on saveChain — counting before that
+   settles would see zero no matter what the guard did, which is the trap the old `return true`
+   version never had to confront */
+await w.eval('saveChain');
+await new Promise(r=>setTimeout(r,60));
+w.storage.set = realSetTd;
+ok('a tab whose notes box matches its own stale memory writes nothing on teardown',
+   teardownWrites === 0, teardownWrites + ' write(s) to geri:secnotes');
 await new Promise(r=>setTimeout(r,60));
 ok('and the newer note is still there afterwards',
    JSON.parse(store['geri:secnotes']).falls === 'NEWER from the other tab', store['geri:secnotes']);
@@ -1256,8 +1283,34 @@ ok('but a navigation that moved nothing writes nothing', (()=>{
   const second = store['geri:scroll'];
   return !!first && second === undefined;
 })());
-ok('the pre-paint script only accepts a size it knows',
+ok('the pre-paint whitelist is in the source',
    /\['s','m','l','xl'\]\.indexOf\(v\.fs\) >= 0/.test(code));
+/* ...and this drives it. The structural guard above was the ONLY check on this behaviour, under
+   a label promising the script "only accepts a size it knows" — delete the whitelist and every
+   other check in the file still passed. The pre-paint script is a synchronous IIFE in <body>
+   reading localStorage directly, so it has already run by the time the JSDOM constructor
+   returns: the class list read on the next line IS the pre-paint state, before any async read
+   of window.storage could have replaced it. */
+{
+  const prePaint = async seed => {
+    const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
+      beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+        w2.localStorage.setItem('geri:display', seed);
+        w2.storage = { get: async () => { throw new Error('missing'); }, set: async (k,v) => ({key:k, value:v}) }; } });
+    const cls = dm.window.document.body.className;      /* captured before anything async runs */
+    /* let the app finish its own start-up before closing, so a half-initialised window does not
+       throw into the shared error tally that the last check in this file reads */
+    for(let t = 0; t < 100 && !dm.window.document.getElementById('ppIntroBtn'); t++) await new Promise(r=>setTimeout(r,50));
+    await new Promise(r=>setTimeout(r,80));
+    dm.window.close();
+    return cls;
+  };
+  const known = await prePaint('{"fs":"xl"}');
+  /* a size from a build that is not this one — the shape a stale phone actually presents */
+  const unknown = await prePaint('{"fs":"xxl"}');
+  ok('the pre-paint script applies a size it knows', known.split(/\s+/).includes('fs-xl'), known || '(no classes)');
+  ok('and refuses one it does not', !unknown.split(/\s+/).some(c=>c.startsWith('fs-')), unknown || '(no classes)');
+}
 
 // ---- seventh review follow-up, 15 Sep: saves are merges, not writes ----
 ok('highlights and notes are saved through a three-way merge, not a blind write',
@@ -1383,9 +1436,21 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   /* un-marking must not drag it back into the chapter just re-opened */
   w.eval(`toggleRead('${wk[0]}')`);
   ok('un-marking a chapter leaves the place where it moved to', bm() === wk[1], String(bm()));
-  /* a place set by hand wins, until the next completion */
-  w.eval(`BM = {sec:'${wk[0]}', t:'hand placed', i:0, d:'x'}`);
-  ok('a place marked by hand is kept', bm() === wk[0], String(bm()));
+  /* a place set by hand wins, until the next completion.
+     This used to assign BM itself and then assert bm() returned what it had just assigned — no
+     app operation ran in between, so it could only fail if reading back a value you just wrote
+     were broken. Drive bmSet(), which is what every hand-place control in the file actually
+     calls (#shMark, #mtMark, #bmHere and the selection bar), against a real block inside the
+     target section, and check the place the APP derived from that element. */
+  const handPlaced = w.eval(`(()=>{
+    const sec = document.getElementById('${wk[0]}');
+    const block = sec && sec.querySelector('p,li,h2,h3,blockquote,.callout');
+    if(!block) return 'no block to mark';
+    bmSet(block);
+    return BM ? BM.sec + '|' + (BM.t || '').slice(0, 24) : 'no BM';
+  })()`);
+  ok('a place marked by hand through bmSet is kept, with the text the app read off that block',
+     handPlaced.split('|')[0] === wk[0] && (handPlaced.split('|')[1] || '').length > 0, handPlaced);
   w.eval(`readSet = new Set(); toggleRead('${wk[0]}')`);
   ok('and the next completion moves it on again', bm() === wk[1], String(bm()));
   /* finishing a chapter's own cards counts the same as marking it read */
@@ -1809,10 +1874,46 @@ ok('the timer\u2019s height is watched, not just its attributes',
      onlyMine.slice(-60) + '  ||  ' + onlyMock.slice(-60));
 }
 
-ok('an abbreviation tapped inside the table pop-out finds its footnote and closes the dialog first',
+ok('the abbreviation handler still falls back to the section on screen and drops the way back',
    /const inModal = a\.closest\('#tblModal'\);/.test(code) &&
    /const sec = a\.closest\('main section'\) \|\| document\.querySelector\('main section\.on'\);/.test(code) &&
    /back = inModal \? null : a;/.test(code));
+{
+  /* the guard above is three regexes on the source, under a label that used to promise
+     behaviour — a tap inside the pop-out finds its footnote and closes the dialog first. Nothing
+     in this file drove that: '#tblModal' appeared exactly once here, inside that regex. So the
+     label has been narrowed to what the regexes actually establish, and the behaviour is driven
+     below.
+     jsdom has no Element.prototype.scrollIntoView and this path calls it unguarded (rightly —
+     every browser has it), so stub it for the length of this block only; otherwise the handler
+     throws one line before the flash it is being judged on. */
+  const wasOn = (d.querySelector('main section.on') || {}).id || 'week';
+  w.Element.prototype.scrollIntoView = function(){};
+  w.eval("show('falls'); annotateSection('falls')");
+  await new Promise(r=>setTimeout(r,80));
+  const sec = d.getElementById('falls');
+  const keys = [...sec.querySelectorAll('.fnotes dt')].map(x=>x.textContent.trim());
+  const abbr = [...sec.querySelectorAll('.tscroll table abbr.abbr')]
+    .find(a => keys.includes(a.textContent.replace(/\*$/,'').trim()));
+  const key = abbr ? abbr.textContent.replace(/\*$/,'').trim() : '';
+  sec.querySelector('.tscroll table td').dispatchEvent(new w.MouseEvent('click',{bubbles:true}));
+  await new Promise(r=>setTimeout(r,80));
+  const opened = !d.getElementById('tblModal').hidden;
+  const clone = [...d.querySelectorAll('#tblModal abbr.abbr')]
+    .find(a => a.textContent.replace(/\*$/,'').trim() === key);
+  if(clone) clone.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));
+  await new Promise(r=>setTimeout(r,140));
+  const closed = d.getElementById('tblModal').hidden;
+  const dt = [...sec.querySelectorAll('.fnotes dt')].find(x=>x.textContent.trim() === key);
+  const flashed = !!dt && dt.classList.contains('bm-flash');
+  ok('an abbreviation tapped inside the table pop-out closes the dialog and lands on its own footnote',
+     !!key && opened && !!clone && closed && flashed,
+     'key=' + (key || 'none') + ' opened=' + opened + ' clone=' + !!clone + ' closed=' + closed + ' flashed=' + flashed);
+  delete w.Element.prototype.scrollIntoView;
+  if(!d.getElementById('tblModal').hidden) d.getElementById('tmClose').click();
+  w.eval("show('" + wasOn + "')");
+  await new Promise(r=>setTimeout(r,60));
+}
 
 ok('a page number stuck on a reference does not split one source into two',
    (()=>{ const a = w.srcLabel('Stroke Rehabilitation Clinical Handbook עמוד17');
@@ -3066,7 +3167,10 @@ ok('the tappable title reads the plain sans heading font, one line, a bare chevr
    /\.topicbtn\{ font-family:var\(--sans\) !important; letter-spacing:0 !important; text-transform:none !important; \}/.test(code));
 {
   const wrap = d.getElementById('srchWrap'), btn = d.getElementById('srchBtn'), q = d.getElementById('q');
-  ok('the search icon opens the full input and focuses it, and a second tap closes it',
+  /* this row's label used to promise the whole open/focus/close cycle while its predicate only
+     established the starting state — the three checks below are what actually test the cycle,
+     so say what this one is: the precondition they rest on. */
+  ok('the search row starts closed, before any tap',
      !wrap.classList.contains('open'), 'starts closed');
   btn.click();
   ok('tap 1 opens the search row', wrap.classList.contains('open') && d.activeElement === q,
@@ -4106,6 +4210,111 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
      d4.getElementById('drill').classList.contains('on'),
      'drill.on=' + d4.getElementById('drill').classList.contains('on'));
   dm2.window.close();
+}
+
+/* ---- a guard against the whole family, not one member of it ------------------------------
+   The audit behind the rewrites above found tautologies: checks whose predicate could not fail,
+   under labels promising real behaviour. Fixing the three we found is worth little without
+   something that stops the fourth being written the same way, so scan THIS FILE for the two
+   shapes that make a check unconditional:
+       ok('label', true)
+       ok('label', (()=>{ ...; return true; })())      — one way out, and it is true
+   Both were live in this file before this pass. The second shape is judged exactly, not
+   approximately: a predicate body whose ONLY return is `return true` cannot report a failure,
+   whatever else it does; a body with any second return can.
+
+   Parens and braces cannot be counted straight off the source — a '(' inside a regex literal or
+   a '{' inside a message string throws the count off — so the counting runs against a copy with
+   every string, template, comment and regex literal replaced by spaces of the SAME length.
+   Indices stay aligned, so the original is still what gets reported. */
+{
+  const self = fs.readFileSync(new URL(import.meta.url), 'utf8');
+  const blankLiterals = src => {
+    const out = src.split('');
+    const blank = (a, b) => { for(let i = a; i < b && i < out.length; i++) if(out[i] !== '\n') out[i] = ' '; };
+    /* a '/' opens a regex rather than dividing when what comes before it cannot end an
+       expression: an operator, an opening bracket, or one of the keywords that take one */
+    const KW = /(?:^|[^\w$])(?:return|typeof|case|in|of|new|delete|void|do|else|yield|await)$/;
+    let i = 0;
+    while(i < src.length){
+      const c = src[i], c2 = src[i + 1];
+      if(c === '/' && c2 === '/'){ let j = src.indexOf('\n', i); if(j < 0) j = src.length; blank(i, j); i = j; continue; }
+      if(c === '/' && c2 === '*'){ let j = src.indexOf('*/', i + 2); j = j < 0 ? src.length : j + 2; blank(i, j); i = j; continue; }
+      if(c === "'" || c === '"'){
+        let j = i + 1; while(j < src.length && src[j] !== c){ if(src[j] === '\\') j++; j++; }
+        blank(i, j + 1); i = j + 1; continue;
+      }
+      if(c === '`'){
+        let j = i + 1, depth = 0;
+        while(j < src.length){
+          if(src[j] === '\\'){ j += 2; continue; }
+          if(src[j] === '$' && src[j + 1] === '{'){ depth++; j += 2; continue; }
+          if(depth > 0 && src[j] === '}'){ depth--; j++; continue; }
+          if(depth === 0 && src[j] === '`') break;
+          j++;
+        }
+        blank(i, j + 1); i = j + 1; continue;
+      }
+      if(c === '/'){
+        /* read what comes before out of the copy being built, not the original: a regex that
+           follows a block comment (this file has several) would otherwise see the comment's
+           own closing '/' as the previous character and be misread as a division, leaving its
+           escaped parens in place to wreck the count downstream */
+        const before = out.slice(Math.max(0, i - 16), i).join('').replace(/\s+$/, '');
+        if(before === '' || /[(,=:[!&|?{};+\-*%~^]$/.test(before) || KW.test(before)){
+          let j = i + 1, inClass = false;
+          while(j < src.length && src[j] !== '\n'){
+            if(src[j] === '\\'){ j += 2; continue; }
+            if(src[j] === '[') inClass = true;
+            else if(src[j] === ']') inClass = false;
+            else if(src[j] === '/' && !inClass) break;
+            j++;
+          }
+          blank(i, j + 1); i = j + 1; continue;
+        }
+      }
+      i++;
+    }
+    return out.join('');
+  };
+  const bl = blankLiterals(self);
+  const re = /(^|[^\w$.])ok\(/g;
+  let m, seen = 0, resolved = 0;
+  const tautologies = [], unresolved = [];
+  while((m = re.exec(bl))){
+    seen++;
+    const open = m.index + m[0].length - 1;
+    let depth = 0, close = -1;
+    for(let j = open; j < bl.length; j++){
+      if(bl[j] === '(') depth++;
+      else if(bl[j] === ')'){ depth--; if(depth === 0){ close = j; break; } }
+    }
+    if(close < 0){ unresolved.push('line ' + self.slice(0, m.index).split('\n').length); continue; }
+    resolved++;
+    const cuts = [open + 1]; let d = 0;
+    for(let k = open + 1; k < close; k++){
+      const ch = bl[k];
+      if(ch === '(' || ch === '[' || ch === '{') d++;
+      else if(ch === ')' || ch === ']' || ch === '}') d--;
+      else if(ch === ',' && d === 0) cuts.push(k + 1);
+    }
+    if(cuts.length < 2) continue;                       /* no second argument to judge */
+    const from = cuts[1], to = cuts.length > 2 ? cuts[2] - 1 : close;
+    const pred = self.slice(from, to).trim(), predBl = bl.slice(from, to);
+    const returns = (predBl.match(/\breturn\b/g) || []).length;
+    const why = pred === 'true' ? 'a literal true'
+      : (returns === 1 && /\breturn\s+true\b/.test(predBl)) ? 'a body whose only return is true' : '';
+    if(why){
+      const line = self.slice(0, m.index).split('\n').length;
+      tautologies.push('line ' + line + ': ' + why + ' — ' + self.slice(m.index, m.index + 60).replace(/\s+/g, ' '));
+    }
+  }
+  /* if the scanner stops resolving calls it would report "no tautologies" for the wrong reason,
+     so make its own reach part of the verdict rather than something to take on trust */
+  ok('the tautology scanner resolved every ok() call in this file', seen > 600 && resolved === seen,
+     resolved + ' of ' + seen + ' resolved' + (unresolved.length ? ' — unresolved at ' + unresolved.join(', ') : ''));
+  ok('no check in this file is asserted against a predicate that cannot fail',
+     tautologies.length === 0, tautologies.slice(0, 5).join(' | '));
 }
 
 {
