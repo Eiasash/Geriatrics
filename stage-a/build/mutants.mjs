@@ -80,7 +80,10 @@ const M = [
   ['abbreviation in the pop-out stops closing the dialog',
    "const inModal = a.closest('#tblModal');",
    "const inModal = false;",
-   'finds its footnote and closes'],
+   /* re-pointed: #463 split this check in two, and this mutation breaks the STRUCTURAL half —
+      the line it removes is one of the three that guard matches for. The behavioural half has
+      its own entry further down, mutating only the close. */
+   'abbreviation handler still falls back'],
 
   ['all-wrong small samples hidden again',
    "const weakEnough = t => (t.n >= 4 && (t.n - t.w) / t.n < 0.65) || (t.n >= 2 && t.w === t.n);",
@@ -95,7 +98,10 @@ const M = [
   ['pre-paint script accepts any text size',
    "if(['s','m','l','xl'].indexOf(v.fs) >= 0) document.body.classList.add('fs-' + v.fs);",
    "if(v.fs) document.body.classList.add('fs-' + v.fs);",
-   'only accepts a size it knows'],
+   /* re-pointed for the same reason: removing the whitelist array breaks the structural guard
+      too, and #463 relabelled it. The behavioural half is the `|| v.fs` entry further down,
+      which leaves the array intact so only the driven check can see it. */
+   'pre-paint whitelist is in the source'],
 
   ['mock draws answered questions as unseen',
    "const fresh = pool.filter(p=>pqDone[pqKey(p)] === undefined);",
@@ -1462,11 +1468,27 @@ if(STATIC){
   /* the suite writes non-ASCII in guard labels as \uXXXX escapes, so decode before comparing
      or every needle holding a real curly apostrophe reports a false miss */
   const decode = s => s.replace(/\\u([0-9a-fA-F]{4})/g, (m, h) => String.fromCharCode(parseInt(h, 16)));
-  const suite = decode(fs.readFileSync('test.mjs', 'utf8'));
+  /* Search the LABELS, not the file. This used to grep the whole of test.mjs, which meant any
+     mention of the old wording anywhere kept a dead needle looking alive — and the most likely
+     place for such a mention is the comment a rewrite leaves behind explaining what the check
+     used to promise. That is exactly what happened in #463: two guards were relabelled, their
+     mutations kept the old needles, --static stayed green because the new comments quoted the
+     old labels verbatim, and both mutations went MISSED in CI on a merged commit. Same class as
+     this suite's own `code`-not-`html` rule, one level up.
+     Comments are stripped first, then the first argument of every ok()/check() call is collected;
+     every label in both files is a plain string literal, so that is the whole haystack. */
+  const labelsOf = (src, fn) => {
+    const noComments = decode(src)
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .split('\n').map(l => l.replace(/(^|[^:'"\\])\/\/.*$/, '$1')).join('\n');
+    const re = new RegExp('\\b' + fn + "\\(\\s*(['\"])((?:\\\\.|(?!\\1).)*)\\1", 'g');
+    return [...noComments.matchAll(re)].map(m => m[2]).join('\n');
+  };
+  const suite = labelsOf(fs.readFileSync('test.mjs', 'utf8'), 'ok');
   /* a mutation whose runner is 'audit' is caught by a gate label in audit.mjs, not by a guard
      label in test.mjs — look its needle up in the file that actually has to catch it, or every
      such entry reports a false NEEDLE against a suite that was never going to contain it */
-  const auditSrc = decode(fs.readFileSync('audit.mjs', 'utf8'));
+  const auditSrc = labelsOf(fs.readFileSync('audit.mjs', 'utf8'), 'check');
   for(const [name, , , needle, runner] of M){
     const hay = runner === 'audit' ? auditSrc : suite;
     if(!hay.includes(needle)){ bad++; console.log('NEEDLE ' + name + '  — no ' + (runner === 'audit' ? 'audit.mjs gate' : 'guard') + ' label contains "' + needle + '"'); }
