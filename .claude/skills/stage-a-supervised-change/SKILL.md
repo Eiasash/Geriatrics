@@ -27,11 +27,12 @@ This is the order to run. The sections below are grouped by topic, not by sequen
 3. **CC's own gate** (§1). Suite at three pinned dates, audit/facts/sweep/dashtest, `mutants --static`, the touched mutations under `MUTANT_ONLY`, `harness-selftest`.
 4. **Open the PR** (§1). Arm auto-merge, unless it touches persistence or clinical content — those wait for an outside lane.
 5. **Cheap review, automatically** (§3). Codex reviews on open at no cost. Read it.
-6. **Paid review, deliberately** (§3). `agy`/Gemini on the diff for anything non-trivial — same eligibility as rule 1, and "trivial" means a change with no behaviour in it at all, such as a comment, a label or a doc. A deep ChatGPT or Antigravity pass when the cheap lanes disagree, or when a whole subsystem needs auditing rather than a diff.
+6. **Paid review, deliberately** (§3). `agy`/Gemini on the diff unless the change is trivial, which rule 1 defines the same way: **trivial means it cannot affect the product or the workflow.** A code comment or a typo in prose is trivial. A change to THIS file is not — it alters routing and merge behaviour, which is why the doctrine PR that introduced this rule got a full review and needed one. A deep ChatGPT or Antigravity pass when the cheap lanes disagree, or when a whole subsystem needs auditing rather than a diff.
 7. **Verify it yourself** (§2). Playwright against the PR head: real behaviour, not proxies.
 8. **Verify every finding in source, then route** (§3). Mechanical, on a PR still open → back onto that PR. Mechanical, after merge → a new PR. Content or scope → the project chat.
-9. **Merge, re-fetch, re-run, live check** (§2). GitHub can merge an older head than the one you tested.
-10. **Close out** (§5). Project doc, memory, reviewer scorecard, triggers.
+9. **If step 8 pushed to the PR, go back to step 3.** The head has changed, so the local gate, the `agy` review and the Playwright pass all ran against code that is no longer there, and Codex only reviews automatically when a PR OPENS — `@codex review` has to be asked for by hand on every later push. Merging here would land a persistence fix that no lane examined, which is the race the hold exists to prevent.
+10. **Merge, re-fetch, re-run, live check** (§2). GitHub can merge an older head than the one you tested.
+11. **Close out** (§5). Project doc, memory, reviewer scorecard, triggers.
 
 ## 0. Lanes and models
 | Lane | Model | Owns |
@@ -93,7 +94,7 @@ Five outside lanes, plus Claude Code itself — the two Codex modes count separa
 
 ### The seven rules
 
-1. **Cheap first.** Codex on GitHub costs nothing and fires by itself; `agy` costs about a minute. A deep ChatGPT audit or an Antigravity session is the expensive instrument. Spend the cheap lanes on every PR and the expensive ones on a subsystem, a disagreement, or a suspicion — never as a reflex.
+1. **Cheap first.** Codex on GitHub costs nothing and fires by itself, so it runs on every PR without deciding anything. `agy` costs about a minute, so it runs on every PR **except a trivial one — meaning one that cannot affect the product or the workflow**: a code comment, a typo in prose. A change to this file is not trivial by that test, and neither is anything under `stage-a/`. A deep ChatGPT audit or an Antigravity session is the expensive instrument: spend it on a subsystem, a disagreement, or a suspicion — never as a reflex. Step 6 of the pipeline states the same eligibility; if these two ever disagree, this one is wrong, because the pipeline is what someone actually follows.
 2. **Convergence is the confidence signal.** Two lanes reaching the same finding independently is the strongest evidence available here — stronger than any single lane's stated confidence. When two name the same line, treat it as real and go straight to verifying it.
 3. **Divergence is where to spend attention.** One lane flags what another called clean: that gap is the finding. Do not average the lanes and do not let a majority vote settle it — go and look.
 4. **Execution beats inference.** A lane that ran the code outranks a lane that read it. A runtime claim from a non-executing lane (`agy`, ChatGPT on a pasted diff) is a hypothesis to test, never a finding to route.
@@ -124,9 +125,10 @@ Gemini web and the old Gemini CLI both fail when driven by Claude. Use `agy` on 
 
 ### Routing a verified finding
 Where it goes depends on whether the code it is about has merged yet. A finding on a PR that is still open cannot be fixed by a new PR branched off `main` — the defect is not on `main`; sending it to a new PR means either merging the known-bad change first or building an undocumented stack.
-- Mechanical defect, **PR still open** → back onto that PR. This is the usual case for a held persistence change, where the whole point of holding it is to fix the finding before it lands.
+- Mechanical defect, **PR still open, fix fits the bounded task** → back onto that PR. This is the usual case for a held persistence change, where the whole point of holding it is to fix the finding before it lands. Then go back to step 3 of the pipeline: a push invalidates every gate that has already run.
+- Mechanical defect, **PR still open, fix does NOT fit** — a redesign, a second subsystem, a schema change → hold the PR and get a scope decision before choosing between widening it and ordering the work separately. "Mechanical" says the defect is real, not that the fix is small, and the one-bounded-task rule still applies.
 - Mechanical defect, **already merged** → a new PR.
-- Anything touching content or scope → the project chat first.
+- Anything touching PRODUCT content or scope → the project chat first. (The row above is about the size of an implementation fix; this one is about what the console should do.)
 - Tell Eias and the chat what was adopted or rejected, one line each with the reason, and which lane raised it — that line is what keeps the scorecard honest.
 
 ## 4. CI facts
@@ -145,7 +147,7 @@ Where it goes depends on whether the code it is about has merged yet. A finding 
 - **Reviewer scorecard:** update the Stage A Reviewer Scorecard artifact. Three kinds of row, because findings alone can only measure precision:
   - **one per finding** — lane, PR, severity as raised, verified outcome (real / false / already-known / not-reproducible)
   - **one per review that came back clean** — otherwise a lane that says "clean" is invisible, and §3's claim that a lane's clean calls are reliable rests on nothing
-  - **one per miss**, written back when a later lane, or production, finds something an earlier review looked at and did not report — otherwise no profile can ever get worse, only better
+  - **one per miss**, written back when a later lane, or production, finds something an earlier review could have seen and did not report. "Could have seen" is the whole test: the defect had to be present in the material and scope that lane was actually given — the pasted diff for `agy`, the diff in repo context for Codex on GitHub, whatever was pasted for ChatGPT. A lane is not charged for code it was never shown, or the visibility differences in the table above would quietly become a ranking of who got the most context. Otherwise no profile can ever get worse, only better
 
   This is the only thing that keeps the error profiles in §3 honest instead of anecdotal; a profile nobody is scoring drifts into folklore, and one scored on findings alone drifts favourably. Correct §3 when a lane's numbers move.
 - **Memory:** append a dated line to the study-console memory file.
