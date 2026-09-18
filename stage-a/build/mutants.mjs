@@ -542,6 +542,31 @@ const M = [
    "  document.querySelectorAll('.disprow button[data-dk]').forEach(dk=>{",
    'calls setNavH, so a text-size change'],
 
+  /* ---- runner 'browser': real Chromium, not jsdom — see browser-check.mjs's own header for
+     why. Found while building it, 3(3): a mutation that scales the #week .disp em multiplier
+     down (.85em -> .5em) is invisible to every existing jsdom guard — nothing in test.mjs pins
+     that literal — AND, on its own, invisible to a ratio-only real-browser check too (8.00px
+     -> 11.20px is still exactly 1.40x; the ratio survives a uniform scale-down that collapses
+     the actual reading size). Needed the floor check alongside the ratio check, not instead
+     of it. ---- */
+  ['the reading text at #week collapses toward unreadable at every text-size setting, and a ratio-only check alone would call it clean',
+   "#week .sparklab, #week .weakmini, #week .disp{ font-size:.85em; line-height:1.55 }",
+   "#week .sparklab, #week .weakmini, #week .disp{ font-size:.5em; line-height:1.55 }",
+   'not collapsed toward unreadable', 'browser'],
+
+  /* Same code path as the jsdom mutation above ('the faded row stays tappable' / g0513) — this
+     one is not jsdom-blind, jsdom's synchronous computed-style read already catches it. It is
+     here because g0513's own model of the transition is itself wrong (jsdom jumps straight to
+     the end CSS state; there is no transition in jsdom, so its "immediately opacity:0" read is
+     not what a reader on a real phone sees — they see the row still visible for up to .18s
+     while it is already untappable). A real second witness on the SAME regression, from an
+     engine whose model of the transition is not fabricated, costs one more shard-run and closes
+     the gap if g0513 or g0519's literal pin is ever loosened on its own. */
+  ['the fading jump row stops being provably dead while still visible — only a real transition can show that window exists at all',
+   "{opacity:0;pointer-events:none}",
+   "{opacity:0}",
+   'visible-but-dead mid-transition', 'browser'],
+
   /* --- regression, real phone: bottom-docked bar hidden by Chrome, and the empty nx, 16 Sep --- */
   ['the bar goes back to the bottom edge, under Chrome\u2019s own contextual sheet',
    "top:calc(var(--navh, 130px) + env(safe-area-inset-top));",
@@ -1424,11 +1449,17 @@ if(STATIC){
   const suite = decode(fs.readFileSync('test.mjs', 'utf8'));
   /* a mutation whose runner is 'audit' is caught by a gate label in audit.mjs, not by a guard
      label in test.mjs — look its needle up in the file that actually has to catch it, or every
-     such entry reports a false NEEDLE against a suite that was never going to contain it */
+     such entry reports a false NEEDLE against a suite that was never going to contain it. Same
+     reasoning for 'browser': its needle lives in browser-check.mjs's own gate labels, not in
+     either of the other two files — real-browser checks (real CSS transitions, real computed
+     font sizes at a real viewport) that jsdom cannot evaluate at all, so they run separately. */
   const auditSrc = decode(fs.readFileSync('audit.mjs', 'utf8'));
+  const browserSrc = decode(fs.readFileSync('browser-check.mjs', 'utf8'));
+  const HAY = { audit: { src: auditSrc, file: 'audit.mjs' }, browser: { src: browserSrc, file: 'browser-check.mjs' } };
   for(const [name, , , needle, runner] of M){
-    const hay = runner === 'audit' ? auditSrc : suite;
-    if(!hay.includes(needle)){ bad++; console.log('NEEDLE ' + name + '  — no ' + (runner === 'audit' ? 'audit.mjs gate' : 'guard') + ' label contains "' + needle + '"'); }
+    const h = HAY[runner];
+    const hay = h ? h.src : suite;
+    if(!hay.includes(needle)){ bad++; console.log('NEEDLE ' + name + '  — no ' + (h ? h.file + ' gate' : 'guard') + ' label contains "' + needle + '"'); }
   }
   console.log(M.length + ' mutations, ' + bad + ' stale, ambiguous or unmatched');
   logRun('mutants.mjs --static', { file: SRC, mutations: M.length, unmatched: bad,
@@ -1477,7 +1508,7 @@ let BASELINE_PASSES = 0;
   if(baseLabels.length){
     const unresolvable = [];
     for(const [name, , , needle, runner] of M_RUN){
-      if(runner === 'audit') continue;
+      if(runner === 'audit' || runner === 'browser') continue;
       const r = resolveNeedle(baseLabels, needle);
       if(!r.ok) unresolvable.push({ name, needle, r });
     }
@@ -1494,7 +1525,7 @@ let BASELINE_PASSES = 0;
       process.exit(1);
     }
     const viaSubstring = M_RUN.filter(([, , , needle, runner]) =>
-      runner !== 'audit' && resolveNeedle(baseLabels, needle).how === 'unique substring').length;
+      runner !== 'audit' && runner !== 'browser' && resolveNeedle(baseLabels, needle).how === 'unique substring').length;
     console.log('every needle names exactly one guard (' + M_RUN.length + ' checked, ' +
       viaSubstring + ' by unique substring rather than by the full label)\n');
     if(NEEDLES_ONLY){
@@ -1539,6 +1570,14 @@ const runSuite = file => new Promise(res => execFile('node', ['test.mjs', file],
 const runAudit = file => new Promise(res => execFile('node', ['audit.mjs', file],
   {encoding:'utf8', maxBuffer: 64 * 1024 * 1024, env: CHILD_ENV}, (err, stdout, stderr) =>
     res({ out: (stdout || '') + (stderr || ''), status: err ? (err.code == null ? 1 : err.code) : 0 })));
+/* browser-check.mjs shares audit.mjs's gate contract (check(), one "FAIL: a, b" summary line,
+   non-zero exit) precisely so it can reuse this same dispatch — real Chromium instead of
+   jsdom underneath, nothing else different about how a verdict is read. Its own timeout is
+   generous: a real browser launch is slower than a jsdom parse, and a mutation that hangs the
+   page (rather than erroring it) must still resolve to a verdict, not stall the whole shard. */
+const runBrowser = file => new Promise(res => execFile('node', ['browser-check.mjs', file],
+  {encoding:'utf8', maxBuffer: 64 * 1024 * 1024, timeout: 60000, env: CHILD_ENV}, (err, stdout, stderr) =>
+    res({ out: (stdout || '') + (stderr || ''), status: err ? (err.code == null ? 1 : err.code) : 0 })));
 function classifyAudit(name, needle, r){
   /* the empty-PQ preflight exits 1 before any gate runs; that is a broken fixture, not a verdict */
   if(/^FATAL/m.test(r.out)) return 'INCOMPLETE  ' + name + '  — audit.mjs stopped at its own preflight before reaching any gate; not a verdict';
@@ -1563,6 +1602,12 @@ async function worker(){
     fs.writeFileSync(tmp, src.replace(from, to));
     if(runner === 'audit'){
       const r = await runAudit(tmp);
+      try{ fs.unlinkSync(tmp); }catch(e){}
+      results[i] = classifyAudit(name, needle, r);
+      continue;
+    }
+    if(runner === 'browser'){
+      const r = await runBrowser(tmp);
       try{ fs.unlinkSync(tmp); }catch(e){}
       results[i] = classifyAudit(name, needle, r);
       continue;
