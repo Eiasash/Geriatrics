@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     # the phone runs in Israel time; daylight-saving bugs only show in a zone that has it
-    env: { TZ: Asia/Jerusalem }
+    env: { TZ: Asia/Jerusalem, STAGEA_LEDGER: '1' }
     defaults: { run: { working-directory: stage-a/build } }
     steps:
       - uses: actions/checkout@v4
@@ -48,6 +48,12 @@ jobs:
 
       - name: mutants.mjs --static — every mutation still has exactly one target (fails fast)
         run: node mutants.mjs --static ../index.html
+      - name: keep this job's ledger lines
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ledger-guards
+          path: stage-a/build/ledger.jsonl
 
   # The full mutation run was ~20 of the ~25 minutes when it ran inside the guards job on one
   # 4-core runner. Split across 10 parallel runners it takes about as long as its slowest shard.
@@ -56,7 +62,7 @@ jobs:
   mutants:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env: { TZ: Asia/Jerusalem }
+    env: { TZ: Asia/Jerusalem, STAGEA_LEDGER: '1' }
     defaults: { run: { working-directory: stage-a/build } }
     strategy:
       fail-fast: false
@@ -71,3 +77,9 @@ jobs:
         # a green suite and a blind suite look the same; this proves the guards bite
         run: node mutants.mjs ../index.html
         env: { MUTANT_SHARD: '${{ matrix.shard }}/10' }
+      - name: keep this shard's ledger lines
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ledger-mutants-${{ matrix.shard }}
+          path: stage-a/build/ledger.jsonl
