@@ -35,6 +35,26 @@ function wireErrs(w2){
   w2.console.error = (...a) => { errs.push('console.error: ' + a.join(' ')); ce(...a); };
 }
 
+/* Real cross-tab mutual exclusion needs a lock manager shared across whichever windows are
+   meant to represent separate tabs of the same origin — jsdom has no built-in navigator.locks,
+   and each JSDOM instance otherwise gets its own independent `navigator`, so two "tabs" in the
+   same test would never actually contend for the same lock without this. One FIFO queue per
+   lock name, held at module scope (not per-window) so every window wired against it — whether
+   it is the primary window or a genuinely separate JSDOM instance standing in for another tab
+   — serializes against the same set of queues, the same way real browser tabs of
+   one origin serialize through the real Web Locks API. */
+const LOCK_TAILS = new Map();
+function fakeLocksRequest(name, optsOrCb, maybeCb){
+  const cb = typeof optsOrCb === 'function' ? optsOrCb : maybeCb;
+  const tail = LOCK_TAILS.get(name) || Promise.resolve();
+  const result = tail.then(() => cb({ name }));
+  LOCK_TAILS.set(name, result.then(() => {}, () => {}));
+  return result;
+}
+function wireLocks(w2){
+  w2.navigator.locks = { request: fakeLocksRequest };
+}
+
 const dom = new JSDOM(html, {
   runScripts: 'dangerously',
   pretendToBeVisual: true,
@@ -47,7 +67,7 @@ const dom = new JSDOM(html, {
       get: async k => { if (!(k in store)) throw new Error('missing'); return { key:k, value:store[k] }; },
       set: async (k,v) => { store[k]=v; return {key:k,value:v}; }
     };
-    wireErrs(w);
+    wireErrs(w); wireLocks(w);
   }
 });
 
@@ -1263,7 +1283,7 @@ ok('section notes merge per section: untouched here means the other tab\u2019s c
   const out = w.mergeSN(stored, seen, mine);
   return out.falls === 'newer from the other tab' && out.sleep === 'mine, edited here';
 })());
-ok('saves are serialised so two in the same tick cannot interleave', /saveChain = saveChain\.then\(async\(\)=>\{/.test(code));
+ok('saves are serialised so two in the same tick cannot interleave', /saveChain = saveChain\.then\(\(\)=> withLock\('geri-save-' \+ key, async\(\)=>\{/.test(code));
 
 // ---- merge audit, 15 Sep: the merge must never turn a failure into a deletion ----
 ok('SEEN only advances on a write that was read back', /if\(landed\) seenSet\(key, blob\);/.test(code) &&
@@ -1989,6 +2009,32 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
      'live=' + liveIds2 + ' disk=' + diskIds2.join(','));
 }
 {
+  /* ANN1 (ACCEPTANCE-round5.md, section E): text replacement while saving, driven through the
+     REAL control — the section-note textarea's own debounced input handler (buildNotesPanel,
+     500ms) — not a direct eval of SN[id]=... the way a source-pattern check would. Type FIRST,
+     let the debounce fire and hold its write, type SECOND while it is still in flight, release,
+     and require the live textarea, the live SN object, and disk to all end up with SECOND —
+     never the stale FIRST snapshot the held write was built from. */
+  delete store[w.eval('SNKEY')];
+  w.eval("SN = {}; SNSEEN = '{}'");
+  const ann1ta = d.querySelector('.mynotes[data-sec="falls"] textarea');
+  const realSetAnn1 = w.storage.set;
+  let releaseAnn1; const heldAnn1 = new Promise(r => { releaseAnn1 = r; });
+  w.storage.set = async (k, v) => { if(k === w.eval('SNKEY')) await heldAnn1; return realSetAnn1(k, v); };
+  ann1ta.value = 'FIRST'; ann1ta.dispatchEvent(new w.Event('input'));
+  await new Promise(r => setTimeout(r, 600));      /* debounce fires, save starts, write held */
+  ann1ta.value = 'SECOND'; ann1ta.dispatchEvent(new w.Event('input'));
+  await new Promise(r => setTimeout(r, 600));      /* second debounce fires and queues behind the first */
+  releaseAnn1();
+  await new Promise(r => setTimeout(r, 100));
+  w.storage.set = realSetAnn1;
+  let ann1Disk = '';
+  try{ ann1Disk = JSON.parse(store[w.eval('SNKEY')]).falls; }catch(e){}
+  ok('ANN1: typing SECOND while FIRST is still saving (through the real debounced textarea, not a direct eval) ends up live, in the textarea, and on disk — not the stale FIRST snapshot',
+     ann1ta.value === 'SECOND' && w.eval("SN.falls") === 'SECOND' && ann1Disk === 'SECOND',
+     'textarea=' + ann1ta.value + ' live=' + w.eval('SN.falls') + ' disk=' + ann1Disk);
+}
+{
   /* ChatGPT third-model audit round 4, data-loss cluster item 2: "two tabs" — a confirmed,
      read-back save in tab A silently replaced by tab B merging from an older read. Simulated
      here as this tab reading `stored` once (getting the pre-tabB value), then another tab's
@@ -2017,6 +2063,50 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
      diskIds.join(',') === 'base,tabA,tabB', 'disk=' + diskIds.join(','));
 }
 {
+  /* ChatGPT review of #457/#458 against ACCEPTANCE-round5.md (XANN): the two "two tabs" tests
+     above prove mergeSave's own re-read-before-write catches a competing write that lands
+     between its FIRST and SECOND read — but neither ever exercises a competing write that lands
+     genuinely concurrently, i.e. a real second tab's own hlSave() running at the same time as
+     this one, which is the surviving race the second read alone cannot close (its own re-read
+     has exactly the same gap one level later). Two REAL, independent JSDOM instances sharing
+     `store` (not one window with a manually-mutated shared object) is what actually exercises
+     this: hold tab A's write, start tab B's save (on a DIFFERENT section, same key) while A is
+     still held, release A, and confirm both sections survive regardless of which one's lock
+     turn came first. Closed by withLock('geri-save-'+key, ...) wrapping the whole read-merge-
+     write critical section — before that, this test is flaky/lossy depending on scheduling. */
+  const seedXann = JSON.stringify({});
+  store[w.eval('HLKEY')] = seedXann;
+  w.eval("HL = {}; HLSEEN = " + JSON.stringify(seedXann));
+  const realSetXann = w.storage.set;
+  let releaseA; const heldA = new Promise(r => { releaseA = r; });
+  w.storage.set = async (k, v) => { if(k === w.eval('HLKEY')) await heldA; return realSetXann(k, v); };
+  const chainA = w.eval(
+    "HL.falls = HL.falls || []; HL.falls.push({id:'A-falls', sec:'falls', t:'from tab A', i:0, n:'', c:'2026-09-14'}); hlSave()"
+  );
+  await new Promise(r => setTimeout(r, 0));   /* let A's save start and reach the held write */
+
+  const dmXann = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in store)) throw new Error('missing'); return {key:k, value:store[k]}; },
+        set: async (k, v) => { store[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && typeof dmXann.window.eval('typeof HL') !== 'string'; t++) await new Promise(r => setTimeout(r, 50));
+  const chainB = dmXann.window.eval(
+    "HL.delirium = HL.delirium || []; HL.delirium.push({id:'B-delirium', sec:'delirium', t:'from tab B', i:0, n:'', c:'2026-09-14'}); hlSave()"
+  );
+  await new Promise(r => setTimeout(r, 30));   /* B is queued behind A's lock, not yet run */
+  releaseA();
+  await chainA; await chainB;
+  await new Promise(r => setTimeout(r, 30));
+  w.storage.set = realSetXann;
+  let bothSections = {};
+  try{ bothSections = JSON.parse(store[w.eval('HLKEY')]); }catch(e){}
+  ok('two genuinely concurrent tabs saving different sections both survive, in either lock order',
+     (bothSections.falls || []).some(x => x.id === 'A-falls') &&
+     (bothSections.delirium || []).some(x => x.id === 'B-delirium'),
+     JSON.stringify(bothSections));
+  dmXann.window.close();
+}
+{
   /* ChatGPT third-model audit round 4, data-loss cluster item 7: pqSave used to overwrite
      the whole geri:pq blob with whatever THIS tab's pqDone held, so two tabs answering
      different practice questions kept only whichever tab's fire-and-forget write landed
@@ -2038,6 +2128,94 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
      JSON.stringify(diskPq));
   ok('...and the merged result is reflected back into the live pqDone, not just on disk',
      Object.keys(livePq).sort().join(',') === wantKeys, JSON.stringify(livePq));
+}
+{
+  /* ChatGPT review of #457/#458 against ACCEPTANCE-round5.md (PQ2/PQ3): the test above proves
+     PQ1's shape — the OTHER tab's write already landed on disk before this tab's own pqSave()
+     ever reads. PQ2 needs both tabs to have read the SAME old revision before EITHER commits,
+     in both commit orders; PQ3 needs a mock's batch result commit (several keys at once,
+     mockFinish's own call shape) to survive alongside a concurrent ordinary-practice answer
+     from another tab. Both go through the identical pqSave()->mergeSave(PKEY, ...) path this
+     file already uses everywhere, now serialised by withLock('geri-save-'+key, ...) the same
+     way the XANN test above proves for highlights — two real, independent JSDOM instances
+     sharing `store`, not one window with a manually-mutated object. */
+  const pkey2 = w.eval('PKEY');
+  const seedPq2 = JSON.stringify({'2021-12#1': 1});
+  store[pkey2] = seedPq2;
+  w.eval("pqDone = {'2021-12#1': 1}; PQSEEN = " + JSON.stringify(seedPq2));
+
+  const dmPq = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in store)) throw new Error('missing'); return {key:k, value:store[k]}; },
+        set: async (k, v) => { store[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && typeof dmPq.window.eval('typeof pqDone') !== 'object'; t++) await new Promise(r => setTimeout(r, 50));
+  dmPq.window.eval("pqDone = {'2021-12#1': 1}; PQSEEN = " + JSON.stringify(seedPq2));
+
+  /* PQ2: both tabs' own pqSave() reads resolve against the same seeded baseline before either
+     writes — hold A's write so B's read genuinely lands first, matching "both read before
+     either writes"; the reverse order is the same mechanism the XANN test above already covers
+     with the roles swapped, so it is not duplicated a third time here. */
+  const realSetPq = w.storage.set;
+  let releasePqA; const heldPqA = new Promise(r => { releasePqA = r; });
+  w.storage.set = async (k, v) => { if(k === pkey2) await heldPqA; return realSetPq(k, v); };
+  w.eval("pqDone['2024-05#26'] = 1");
+  const pqChainA = w.eval('pqSave()');
+  await new Promise(r => setTimeout(r, 0));
+  const pqChainB = dmPq.window.eval("pqDone['2024-05#77'] = 0; pqSave()");
+  await new Promise(r => setTimeout(r, 30));
+  releasePqA();
+  await pqChainA; await pqChainB;
+  await new Promise(r => setTimeout(r, 30));
+  w.storage.set = realSetPq;
+  let pq2Disk = {};
+  try{ pq2Disk = JSON.parse(store[pkey2]); }catch(e){}
+  ok('PQ2: two tabs that both read the same old revision before either commits both survive, regardless of write order',
+     pq2Disk['2021-12#1'] === 1 && pq2Disk['2024-05#26'] === 1 && pq2Disk['2024-05#77'] === 0,
+     JSON.stringify(pq2Disk));
+
+  /* PQ3: a mock's batch result commit (several keys written by one pqSave() call, the same
+     shape mockFinish uses) alongside a concurrent ordinary-practice answer from the other tab. */
+  let releasePqC; const heldPqC = new Promise(r => { releasePqC = r; });
+  w.storage.set = async (k, v) => { if(k === pkey2) await heldPqC; return realSetPq(k, v); };
+  const mockBatchChain = w.eval(
+    "pqDone['2023-06#10'] = 1; pqDone['2023-06#11'] = 0; pqDone['2023-06#12'] = 1; pqSave()"
+  );
+  await new Promise(r => setTimeout(r, 0));
+  const otherAnswerChain = dmPq.window.eval("pqDone['2021-12#50'] = 1; pqSave()");
+  await new Promise(r => setTimeout(r, 30));
+  releasePqC();
+  await mockBatchChain; await otherAnswerChain;
+  await new Promise(r => setTimeout(r, 30));
+  w.storage.set = realSetPq;
+  let pq3Disk = {};
+  try{ pq3Disk = JSON.parse(store[pkey2]); }catch(e){}
+  ok('PQ3: a mock batch result commit and a concurrent ordinary-practice answer both survive',
+     pq3Disk['2023-06#10'] === 1 && pq3Disk['2023-06#11'] === 0 && pq3Disk['2023-06#12'] === 1 &&
+     pq3Disk['2021-12#50'] === 1,
+     JSON.stringify(pq3Disk));
+
+  /* PQ4: the same question, answered differently by both tabs from the same base version. The
+     checklist requires an explicit, tested policy rather than an accidental delayed-writer
+     overwrite — this app's policy is "the write that wins the lock queue for this key wins the
+     conflict", which withLock now makes a real, deterministic commit-order outcome rather than
+     a storage-layer race; either legitimate resolution (A's answer or B's) is acceptable, but
+     an UNRELATED result recorded alongside it must survive whichever one wins. */
+  let releasePqD; const heldPqD = new Promise(r => { releasePqD = r; });
+  w.storage.set = async (k, v) => { if(k === pkey2) await heldPqD; return realSetPq(k, v); };
+  const conflictChainA = w.eval("pqDone['2022-12#5'] = 1; pqDone['2020-06#1'] = 1; pqSave()");
+  await new Promise(r => setTimeout(r, 0));
+  const conflictChainB = dmPq.window.eval("pqDone['2022-12#5'] = 0; pqSave()");
+  await new Promise(r => setTimeout(r, 30));
+  releasePqD();
+  await conflictChainA; await conflictChainB;
+  await new Promise(r => setTimeout(r, 30));
+  w.storage.set = realSetPq;
+  let pq4Disk = {};
+  try{ pq4Disk = JSON.parse(store[pkey2]); }catch(e){}
+  ok('PQ4: a same-question conflict resolves to exactly one side (a real commit-order decision, not a lost write), and an unrelated result alongside it survives regardless',
+     (pq4Disk['2022-12#5'] === 1 || pq4Disk['2022-12#5'] === 0) && pq4Disk['2020-06#1'] === 1,
+     JSON.stringify(pq4Disk));
+  dmPq.window.close();
 }
 ok('the synchronous teardown write stands down when the host supplies its own storage',
    /if\(!storageIsLocal\) return false;/.test(code) && /let storageIsLocal = false;/.test(code) &&
@@ -2572,7 +2750,7 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
 {
   /* fresh pages: this suite's own restore tests clear every backup key, the flag included */
   const page = async st => { const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2); wireErrs(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
       w2.storage = { get: async k => { if(!(k in st)) throw new Error('missing'); return {key:k, value:st[k]}; },
                      set: async (k,v) => { st[k] = v; return {key:k, value:v}; } }; } });
     /* poll for the script to have run, rather than a fixed wait that a busy CI runner can outrun */
@@ -2976,7 +3154,7 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
      pattern above. */
   let mqMatches = true, changeCb = null;
   const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
-    beforeParse(w3){ pinClock(w3); wireErrs(w3);
+    beforeParse(w3){ pinClock(w3); wireErrs(w3); wireLocks(w3);
       w3.matchMedia = q => (q === '(max-width:900px)')
         ? { get matches(){ return mqMatches; }, addEventListener:(ev,cb)=>{ if(ev === 'change') changeCb = cb; }, removeEventListener(){} }
         : { matches:false, addEventListener(){}, removeEventListener(){} }; } });
@@ -3004,7 +3182,7 @@ ok('the header uses the short label where the full one clips', (w.eval("show('bp
 w.eval("show('week')");
 {
   const load = async (st, dark) => { const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2); wireErrs(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
       w2.matchMedia = q => ({ matches: dark && /prefers-color-scheme: dark/.test(q), addEventListener(){}, removeEventListener(){} });
       w2.storage = { get: async k => { if(!(k in st)) throw new Error('missing'); return {key:k, value:st[k]}; },
                      set: async (k,v) => { st[k] = v; return {key:k, value:v}; } }; } });
@@ -3096,7 +3274,7 @@ ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
   const key = w.eval('pqKey(pqPool[pqIdx % pqPool.length])');
   const st = {'geri:pqpos': JSON.stringify({y:'2024-05', s:'unseen', c:'all', k:saved.k})};
   const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2); wireErrs(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
       w2.storage = { get: async k => { if(!(k in st)) throw new Error('missing'); return {key:k, value:st[k]}; },
                      set: async (k,v) => { st[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm.window.document.getElementById('ppIntroBtn'); t++) await new Promise(r => setTimeout(r, 50));
@@ -3434,7 +3612,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   const runVal = JSON.stringify({q: ['x#1', 'x#2', 'x#3'], a: {'x#1': 'א'}, f: {}, i: 1, t: 0, e: 0});
   const rstore = {'geri:mockrun': runVal};
   const dm = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2); wireErrs(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
       w2.storage = { get: async k => { if(!(k in rstore)) throw new Error('missing'); return {key:k, value:rstore[k]}; },
         set: async (k, v) => { rstore[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm.window.document.getElementById('mockLast'); t++) await new Promise(r => setTimeout(r, 50));
@@ -3459,7 +3637,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   const staleVal = JSON.stringify({q: qs, a: {[qs[0]]: 'א'}, f: {}, i: 1, t: 0, e: 0, id: 'run-1', rev: 1});
   const rstore2 = {'geri:mockrun': staleVal};
   const dm2 = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2); wireErrs(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
       w2.storage = { get: async k => { if(!(k in rstore2)) throw new Error('missing'); return {key:k, value:rstore2[k]}; },
         set: async (k, v) => { rstore2[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm2.window.document.getElementById('mockLast'); t++) await new Promise(r => setTimeout(r, 50));
@@ -3493,7 +3671,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   const staleValExp = JSON.stringify({q: qsExp, a: {}, f: {}, i: 0, t: 5, e: expiredE, id: 'run-exp', rev: 1});
   const rstore3 = {'geri:mockrun': staleValExp};
   const dm3 = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2); wireErrs(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
       w2.storage = { get: async k => { if(!(k in rstore3)) throw new Error('missing'); return {key:k, value:rstore3[k]}; },
         set: async (k, v) => { rstore3[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm3.window.document.getElementById('mockResume'); t++) await new Promise(r => setTimeout(r, 50));
@@ -3534,6 +3712,85 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
      alerts2.some(a => /started again in another tab/.test(a)) && w.eval('mockOn') === false,
      alerts2.join(' | '));
   w.eval("mockOn = false; mockQs = []; mockAns = {}");
+}
+
+{
+  /* ChatGPT review of #457/#458 against ACCEPTANCE-round5.md (STALE3/STALE4/STALE6): two REAL,
+     independent tabs both legitimately resumed on the SAME run — the realistic shape of the
+     race the checklist names, not a single window with directly-mutated state. Before the
+     withLock + mergeMockAnswers fix, mockSaveRun sent the whole local mockAns as an
+     unconditional overwrite: tab B's checkpoint, landing after tab A's held one released,
+     would have erased A's answer entirely rather than merge with it. */
+  const qsBoth = w.eval("PQ.slice(0,3).map(p=>p.y+'#'+p.n)");
+  const rkeyBoth = w.eval('RUNKEY');
+  const seedBoth = JSON.stringify({q: qsBoth, a: {}, f: {}, i: 0, e: 0, t: 0, id: 'shared-run', rev: 1});
+  store[rkeyBoth] = seedBoth;
+  w.eval(`mockQs = ${JSON.stringify(qsBoth)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 0;
+    mockRunId = 'shared-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'shared-run';
+    MOCKSEEN = JSON.stringify({id: 'shared-run', a: {}, f: {}});`);
+
+  const dmBoth = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in store)) throw new Error('missing'); return {key:k, value:store[k]}; },
+        set: async (k, v) => { store[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && typeof dmBoth.window.eval('typeof mockQs') !== 'object'; t++) await new Promise(r => setTimeout(r, 50));
+  dmBoth.window.eval(`mockQs = ${JSON.stringify(qsBoth)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 0;
+    mockRunId = 'shared-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'shared-run';
+    MOCKSEEN = JSON.stringify({id: 'shared-run', a: {}, f: {}});`);
+
+  const realSetBoth = w.storage.set;
+  let releaseBothA; const heldBothA = new Promise(r => { releaseBothA = r; });
+  w.storage.set = async (k, v) => { if(k === rkeyBoth) await heldBothA; return realSetBoth(k, v); };
+  const bothChainA = w.eval("mockAns[0] = 'א'; mockSaveRun()");
+  await new Promise(r => setTimeout(r, 0));
+  const bothChainB = dmBoth.window.eval("mockAns[1] = 'ב'; mockSaveRun()");
+  await new Promise(r => setTimeout(r, 30));
+  releaseBothA();
+  await bothChainA; await bothChainB;
+  await new Promise(r => setTimeout(r, 30));
+  w.storage.set = realSetBoth;
+  let bothDisk = {};
+  try{ bothDisk = JSON.parse(store[rkeyBoth]).a; }catch(e){}
+  ok('STALE6/two-tabs-both-resumed: two real tabs, both already resumed on the same run, answering different questions concurrently — both answers survive, neither is clobbered',
+     bothDisk['0'] === 'א' && bothDisk['1'] === 'ב', JSON.stringify(bothDisk));
+  /* full reset, not just the three fields other blocks in this file reset — this test is the
+     first to leave mockRunObservedId/MOCKSEEN non-default, and a later block that sets
+     mockRunClaimed=false without its own mockRunObservedId (there are several) would otherwise
+     inherit this run's id here and wrongly treat its own fresh empty RUNKEY as "superseded" */
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+  dmBoth.window.close();
+}
+{
+  /* ID2 (ACCEPTANCE-round5.md, section A): Date.now()+Math.random() is not actually
+     collision-proof — under a frozen clock (already true here, the whole suite pins it) plus a
+     repeated RNG sequence, two "new" runs could mint the identical id. Force exactly that: pin
+     Math.random to always return the same value, accept two mockStarts back to back (the second
+     confirms the discard prompt), and require the two resulting run ids to differ anyway. */
+  const realRandom = w.Math.random;
+  w.Math.random = () => 0.123456789;
+  const realConfirm = w.confirm;
+  w.confirm = () => true;
+  /* the pinned clock still advances in real wall-clock time (by design — see clock.mjs), so
+     two mockStart() calls milliseconds apart already get different Date.now() values on their
+     own merit, without newRunId() doing anything: that would pass even against the OLD,
+     collision-prone scheme and prove nothing. Freeze Date.now itself to one literal millisecond
+     for the duration of this test, so only newRunId()'s own collision-resistance is on trial. */
+  const realNow = w.Date.now;
+  w.Date.now = () => 1700000000000;
+  w.eval("mockOn = false; mockQs = []");
+  delete store[w.eval('RUNKEY')];
+  await w.eval('mockStart()');
+  const id1 = w.eval('mockRunId');
+  await w.eval('mockStart()');   /* liveRun is true (mockOn already true) -> discard prompt -> confirmed above */
+  const id2 = w.eval('mockRunId');
+  w.confirm = realConfirm;
+  w.Math.random = realRandom;
+  w.Date.now = realNow;
+  ok('ID2: two runs started back to back under a frozen clock and a repeated RNG sequence still get different ids',
+     !!id1 && !!id2 && id1 !== id2, 'id1=' + id1 + ' id2=' + id2);
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
 }
 
 {
@@ -3589,8 +3846,10 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
         matched mockSaveRun's intact copy instead. Confirmed MISSED under MUTANT_ONLY before
         this fix. `code` has block comments stripped (see top of file), so the anchor is the
         structural "try{ const raw = (await window.storage.get(RUNKEY))" that immediately
-        follows this specific occurrence, not the comment text. */
-     /mockRunChain = mockRunChain\.then\(async\(\)=>\{\s*\n\s*try\{\s*\n\s*const raw = \(await window\.storage\.get\(RUNKEY\)\)\.value;[\s\S]*?if\(!cur \|\| cur\.id !== finishingId\) return;\s*\n\s*await window\.storage\.set\(RUNKEY, ''\);[\s\S]*?\}\)\.catch\(\(\)=>\{\}\);\s*\n\s*await mockRunChain;\s*\n\s*\}\s*\n\s*paintLastMock\(\);/.test(code));
+        follows this specific occurrence, not the comment text. The check-then-clear itself is
+        further wrapped in withLock('geri-mockrun', ...) (ChatGPT audit of #456/#457 against
+        ACCEPTANCE-round5.md, STALE5) — accounted for in the anchor below. */
+     /mockRunChain = mockRunChain\.then\(async\(\)=>\{\s*\n\s*await withLock\('geri-mockrun', async\(\)=>\{\s*\n\s*try\{\s*\n\s*const raw = \(await window\.storage\.get\(RUNKEY\)\)\.value;[\s\S]*?if\(!cur \|\| cur\.id !== finishingId\) return;\s*\n\s*await window\.storage\.set\(RUNKEY, ''\);[\s\S]*?\}\)\.catch\(\(\)=>\{\}\);\s*\n\s*await mockRunChain;\s*\n\s*\}\s*\n\s*paintLastMock\(\);/.test(code));
 }
 {
   /* Codex review of #456: mockFinish awaits pqSave/saveML/the MKKEY write before this clear —
@@ -3679,7 +3938,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
      must win on a cold load; the saved tab is the fallback only when there is no hash. */
   const tabStore = {'geri:tab': 'drill'};
   const dm = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/#falls',
-    beforeParse(w2){ pinClock(w2); wireErrs(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
       w2.storage = { get: async k => { if(!(k in tabStore)) throw new Error('missing'); return {key:k, value:tabStore[k]}; },
         set: async (k, v) => { tabStore[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm.window.document.getElementById('falls'); t++) await new Promise(r => setTimeout(r, 50));
@@ -3696,7 +3955,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
      not have simply disabled tab restoration. */
   const tabStore2 = {'geri:tab': 'drill'};
   const dm2 = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2); wireErrs(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
       w2.storage = { get: async k => { if(!(k in tabStore2)) throw new Error('missing'); return {key:k, value:tabStore2[k]}; },
         set: async (k, v) => { tabStore2[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm2.window.document.getElementById('drill'); t++) await new Promise(r => setTimeout(r, 50));

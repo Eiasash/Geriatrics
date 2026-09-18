@@ -11130,6 +11130,18 @@ function mergePQ(stored, seen, mine){
    and write it back over anything added since — invisible in the suite, where the stub
    resolves in the same tick, and entirely possible on a phone where a real write takes
    a macrotask and taps land in between. */
+/* Cross-tab mutual exclusion for a read-merge-write critical section. mergeSave's own
+   "re-check storage right before writing" (below) narrows the gap between reading and writing
+   but cannot close it — another tab's confirmed write can still land in the moment between that
+   re-check and this tab's own window.storage.set actually landing, and get silently overwritten
+   (ChatGPT audit of #456 against ACCEPTANCE-round5.md: XANN, and the STALE3/STALE4 mock-run
+   equivalent). navigator.locks (Web Locks API) gives real mutual exclusion across tabs/windows
+   of the same origin, keyed by name; where it is unavailable, fall back to running the callback
+   directly — the same, narrower protection this file already had. */
+function withLock(name, fn){
+  if(typeof navigator !== 'undefined' && navigator.locks && navigator.locks.request) return navigator.locks.request(name, fn);
+  return fn();
+}
 function mergeSave(key, getMine, mergeFn, apply){
   if(restoring) return saveChain;   /* see flushPending */
   /* ChatGPT third-model audit round 4 review (Codex, on #456): the caller's own promise from
@@ -11141,7 +11153,7 @@ function mergeSave(key, getMine, mergeFn, apply){
      by a live edit that moved on) is settled, independent of what else is queued on
      saveChain around it. */
   let resolveResult; const resultP = new Promise(res => { resolveResult = res; });
-  saveChain = saveChain.then(async()=>{
+  saveChain = saveChain.then(()=> withLock('geri-save-' + key, async()=>{
     /* ChatGPT third-model audit round 4 review (Codex, on #456): getMine() returns the LIVE
        object (HL/SN/pqDone) — comparing it against itself further down (`nowMine !== mine`)
        is comparing an object to itself when the real edit paths in this file mutate that
@@ -11206,7 +11218,7 @@ function mergeSave(key, getMine, mergeFn, apply){
        persists the edit that moved on) settles too. */
     if(movedOn) mergeSave(key, getMine, mergeFn, apply).then(resolveResult);
     else resolveResult(landed);
-  }).catch(()=>resolveResult(false));
+  })).catch(()=>resolveResult(false));
   return resultP;
 }
 /* repaint now, or as soon as the reader has finished selecting */
@@ -13587,6 +13599,33 @@ let mockRunId = '', mockRunSeq = 0, mockRunChain = Promise.resolve(), mockRunCla
    so a second tab racing past the same discard prompt at nearly the same moment cannot also
    silently claim RUNKEY (Codex review of #456) */
 let mockRunObservedId = '';
+/* last-synced full checkpoint record for THIS run, mirroring HLSEEN/SNSEEN/PQSEEN. Without
+   this, mockSaveRun sent the WHOLE current mockAns/mockFlag as an unconditional overwrite —
+   two tabs both legitimately resumed on the same run, each answering different questions from
+   their own (possibly stale) local state, would have the later write blow away the earlier
+   tab's answers entirely rather than merge with them (ChatGPT audit of #456/#457 against
+   ACCEPTANCE-round5.md, STALE6 and the deeper two-tabs-both-resumed gap it names). */
+let MOCKSEEN = '{}';
+function mergeMockAnswers(diskRec, seen, mineAns, mineFlag){
+  const seenA = (seen && seen.a) || {}, seenF = (seen && seen.f) || {};
+  const outA = Object.assign({}, diskRec && diskRec.a || {});
+  const outF = Object.assign({}, diskRec && diskRec.f || {});
+  for(const k in mineAns){ if(!(k in seenA) || mineAns[k] !== seenA[k]) outA[k] = mineAns[k]; }
+  for(const k in mineFlag){ if(!(k in seenF) || mineFlag[k] !== seenF[k]) outF[k] = mineFlag[k]; }
+  return {a: outA, f: outF};
+}
+/* Date.now()+Math.random() is not actually collision-proof: under a frozen clock (a phone
+   asleep, or two tabs opened in the same test tick) plus a repeated RNG sequence, two "new"
+   runs can mint the identical id (ChatGPT audit of #456/#457 against ACCEPTANCE-round5.md,
+   ID2) — the run-identity mechanism this whole file relies on to tell two runs apart is only
+   as sound as this id actually being unique. crypto.randomUUID() is a real UUIDv4 (122 random
+   bits), not derivable from timing or a predictable RNG state; fall back to the old scheme only
+   where it is unavailable (very old browsers with no navigator.storage-quality persistence
+   anyway). */
+function newRunId(){
+  if(typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  return Date.now() + '-' + Math.random().toString(36).slice(2);
+}
 /* the home tile starts a 50-question mock on the same clock the mock runs (exam pace,
    mockPerQ minutes a question); it said "35 min", the daily goal, while the clock read 100:00 */
 function paintMockTile(){
@@ -13648,9 +13687,8 @@ function mockSaveRun(){
      checkpoint would then find a mismatched id on disk and wrongly stand down (Codex review
      of #456). */
   const forId = mockRunId;
-  const blob = JSON.stringify({
-    q: mockQs.map(p=>p.y + '#' + p.n), a: mockAns, f: mockFlag, i: mockI,
-    e: mockEnds, t: mockPerQ, id: forId, rev: seq });
+  const qList = mockQs.map(p=>p.y + '#' + p.n);
+  const mineAns = Object.assign({}, mockAns), mineFlag = Object.assign({}, mockFlag), mineI = mockI;
   /* each answer used to fire an unawaited, unserialized window.storage.set — nothing stopped
      two of those in-flight writes from resolving out of order, so a later, more-complete
      answer set could land on disk before an earlier, smaller one, which then overwrote it.
@@ -13667,17 +13705,41 @@ function mockSaveRun(){
        (mockFinish's own clear, elsewhere, or nothing ever written) normalises to '' — distinct
        from "we haven't looked yet" only in that '' never equals a real id, so it always reads
        as lost/unclaimed ownership rather than silently retrying the write on a JSON.parse
-       failure the way an empty-string RUNKEY used to (Codex review of #456). */
-    let curId = '';
-    try{ const raw = (await window.storage.get(RUNKEY)).value; if(raw){ const cur = JSON.parse(raw); curId = (cur && cur.id) || ''; } }catch(e){}
-    const expected = mockRunClaimed ? mockRunId : mockRunObservedId;
-    if(curId !== expected){ if(mockOn) mockRunSuperseded(); return; }
-    try{
-      await window.storage.set(RUNKEY, blob);
-      const back = await window.storage.get(RUNKEY);
-      if(back && back.value === blob){ if(forId === mockRunId) mockRunClaimed = true; }
-      else notSaved();
-    }catch(e){ notSaved(); }
+       failure the way an empty-string RUNKEY used to (Codex review of #456).
+       Wrapped in withLock: the check-then-write here is the same TOCTOU shape as mergeSave's
+       (ChatGPT audit of #456 against ACCEPTANCE-round5.md, STALE3/STALE4) — another tab's
+       write can land between this check and this tab's own set() actually reaching storage,
+       and get silently overwritten, unless the whole check-then-write is mutually exclusive
+       across tabs. */
+    await withLock('geri-mockrun', async()=>{
+      let curId = '', cur = null, rawVal = '';
+      try{ rawVal = (await window.storage.get(RUNKEY)).value; if(rawVal){ cur = JSON.parse(rawVal); curId = (cur && cur.id) || ''; } }catch(e){}
+      const expected = mockRunClaimed ? mockRunId : mockRunObservedId;
+      if(curId !== expected){ if(mockOn) mockRunSuperseded(); return; }
+      /* merge THIS write's own changed answers/flags onto whatever is on disk right now
+         (freshly read inside the same lock hold as the write below), rather than overwriting
+         the whole record with this tab's local snapshot — two tabs both resumed on the same
+         run, each answering different questions from their own local state, must not have the
+         later write erase the earlier tab's answers entirely (STALE6). `i` never regresses:
+         take whichever tab got further. */
+      /* MOCKSEEN is only a valid merge baseline for the run it was captured for — a test (or a
+         real path) that sets mockAns/mockRunId directly, skipping mockStart/Resume's own reset,
+         must not have a DIFFERENT run's stale MOCKSEEN silently suppress this write's answers
+         (an answer that happens to already equal an old, unrelated run's "seen" value for the
+         same key would otherwise look unchanged and get dropped from the merge entirely). */
+      let seen = {}; try{ const s = JSON.parse(MOCKSEEN); if(s && s.id === forId) seen = s; }catch(e){}
+      const mergedAF = mergeMockAnswers(cur, seen, mineAns, mineFlag);
+      const mergedI = Math.max(mineI, (cur && cur.i) || 0);
+      const blob = JSON.stringify({
+        q: qList, a: mergedAF.a, f: mergedAF.f, i: mergedI,
+        e: mockEnds, t: mockPerQ, id: forId, rev: seq });
+      try{
+        await window.storage.set(RUNKEY, blob);
+        const back = await window.storage.get(RUNKEY);
+        if(back && back.value === blob){ if(forId === mockRunId){ mockRunClaimed = true; MOCKSEEN = blob; } }
+        else notSaved();
+      }catch(e){ notSaved(); }
+    });
   }).catch(()=>{});
   return mockRunChain;
 }
@@ -13767,8 +13829,9 @@ async function mockStart(){
   if(!mockQs.length) return;
   mockAns = {}; mockFlag = {}; mockI = 0; mockOn = true;
   mockEnds = mockPerQ ? Date.now() + mockN * mockPerQ * 60000 : 0;
-  mockRunId = Date.now() + '-' + Math.random().toString(36).slice(2); mockRunSeq = 0; mockRunClaimed = false;
+  mockRunId = newRunId(); mockRunSeq = 0; mockRunClaimed = false;
   mockRunObservedId = (stored && stored.id) || '';
+  MOCKSEEN = '{}';   /* a brand-new run has no prior checkpoint to merge against */
   document.getElementById('mockCard').hidden = false;
   document.getElementById('mockReport').hidden = true;
   document.getElementById('pqCard').hidden = true;
@@ -13879,15 +13942,19 @@ async function mockFinish(auto){
          unconditionally would erase THAT run instead of the one this call actually finished.
          Only clear if RUNKEY still names the run this call started with (Codex review of
          #456); an empty/missing/differently-owned record means somebody else has already
-         moved it on, and this call has nothing left to clean up. */
-      try{
-        const raw = (await window.storage.get(RUNKEY)).value;
-        const cur = raw ? JSON.parse(raw) : null;
-        if(!cur || cur.id !== finishingId) return;
-        await window.storage.set(RUNKEY, '');
-        const back = await window.storage.get(RUNKEY);
-        if(!(back && back.value === '')) notSaved();
-      }catch(e){ notSaved(); }
+         moved it on, and this call has nothing left to clean up.
+         Wrapped in withLock, same reason as mockSaveRun above: the check-then-clear here has
+         the same TOCTOU shape a held write can slip through (STALE5's cross-tab equivalent). */
+      await withLock('geri-mockrun', async()=>{
+        try{
+          const raw = (await window.storage.get(RUNKEY)).value;
+          const cur = raw ? JSON.parse(raw) : null;
+          if(!cur || cur.id !== finishingId) return;
+          await window.storage.set(RUNKEY, '');
+          const back = await window.storage.get(RUNKEY);
+          if(!(back && back.value === '')) notSaved();
+        }catch(e){ notSaved(); }
+      });
     }).catch(()=>{});
     await mockRunChain;
   }
@@ -14000,8 +14067,12 @@ document.addEventListener('keydown', e=>{
     /* this run already owns RUNKEY under its own id (we just read it back) — inherit that
        id/sequence rather than minting a new one, so this tab's next checkpoint write is
        recognised as belonging to the run already on disk, not rejected as a stale writer */
-    mockRunId = fresh.id || (Date.now() + '-' + Math.random().toString(36).slice(2));
+    mockRunId = fresh.id || newRunId();
     mockRunSeq = fresh.rev || 0; mockRunClaimed = true; mockRunObservedId = mockRunId;
+    /* baseline for the merge in mockSaveRun: what we just resumed FROM, so our next checkpoint
+       only asserts what changed here since this exact read, not our whole local answer set as
+       an unconditional overwrite of whatever another tab may have added since */
+    MOCKSEEN = JSON.stringify({id: mockRunId, a: mockAns, f: mockFlag});
     document.getElementById('mockCard').hidden = false;
     document.getElementById('mockReport').hidden = true;
     document.getElementById('pqCard').hidden = true;

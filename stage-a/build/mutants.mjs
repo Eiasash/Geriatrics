@@ -1196,9 +1196,9 @@ const M = [
    `    let fresh = v;`,
    'not the boot-time snapshot'],
   ['mockSaveRun stops rejecting a stale writer, so a checkpoint for a run another tab has already superseded overwrites that tab’s record instead of standing down (ChatGPT third-model audit round 4, data-loss cluster item 3)',
-   `    const expected = mockRunClaimed ? mockRunId : mockRunObservedId;
-    if(curId !== expected){ if(mockOn) mockRunSuperseded(); return; }`,
-   `    const expected = mockRunClaimed ? mockRunId : mockRunObservedId;`,
+   `      const expected = mockRunClaimed ? mockRunId : mockRunObservedId;
+      if(curId !== expected){ if(mockOn) mockRunSuperseded(); return; }`,
+   `      const expected = mockRunClaimed ? mockRunId : mockRunObservedId;`,
    'superseded by another tab'],
   /* "mockSaveRun stops serializing its checkpoint writes through mockRunChain" (de-chaining
      it to Promise.resolve().then(...) instead) is retired: with the per-write ownership
@@ -1224,9 +1224,9 @@ const M = [
    `    const mine = getMine();`,
    'mutating HL.falls in place'],
   ['mockFinish stops checking run ownership before clearing RUNKEY, so a brand-new run started (and checkpointed) while this finish was still awaiting its own writes gets its record erased instead of the run this call actually finished (Codex review of #456)',
-   `        if(!cur || cur.id !== finishingId) return;
-        await window.storage.set(RUNKEY, '');`,
-   `        await window.storage.set(RUNKEY, '');`,
+   `          if(!cur || cur.id !== finishingId) return;
+          await window.storage.set(RUNKEY, '');`,
+   `          await window.storage.set(RUNKEY, '');`,
    'does not clear a different run'],
   ['refreshBody stops advancing PQSEEN when it reloads past-paper progress, so every entry the refresh introduces looks like a local addition forever and the next save reasserts it over whatever another tab wrote afterward (Codex review of #456)',
    `      let seen = {}; try{ seen = JSON.parse(PQSEEN); }catch(e){}
@@ -1247,6 +1247,30 @@ const M = [
    `Medication Prescribing and De-Prescribing <button type="button" class="chgo" data-sec="pharm"`,
    `Medication Prescribing and De-Prescribing <button type="button" class="chgo" data-sec="beers"`,
    'routes to pharm, not the guideline-only beers section'],
+  ['withLock stops actually taking a cross-tab lock and always runs its callback directly, so another tab\'s write landing in the gap between a re-check and the actual set() is silently overwritten instead of queued behind it (ChatGPT audit of #456/#457/#458 against ACCEPTANCE-round5.md, XANN, STALE3/STALE4)',
+   `function withLock(name, fn){
+  if(typeof navigator !== 'undefined' && navigator.locks && navigator.locks.request) return navigator.locks.request(name, fn);
+  return fn();
+}`,
+   `function withLock(name, fn){
+  return fn();
+}`,
+   'two genuinely concurrent tabs saving different sections'],
+  ['mockSaveRun stops merging its own changed answers/flags onto whatever is on disk, and goes back to sending its whole local snapshot as an unconditional overwrite, so a second tab\'s answers to different questions on the same run are erased instead of merged (ChatGPT audit against ACCEPTANCE-round5.md, STALE6)',
+   `      const mergedAF = mergeMockAnswers(cur, seen, mineAns, mineFlag);
+      const mergedI = Math.max(mineI, (cur && cur.i) || 0);`,
+   `      const mergedAF = {a: mineAns, f: mineFlag};
+      const mergedI = mineI;`,
+   'two-tabs-both-resumed'],
+  ['newRunId stops trying crypto.randomUUID and goes straight back to Date.now()+Math.random(), which is not collision-proof under a frozen clock and a repeated RNG sequence (ChatGPT audit against ACCEPTANCE-round5.md, ID2)',
+   `function newRunId(){
+  if(typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  return Date.now() + '-' + Math.random().toString(36).slice(2);
+}`,
+   `function newRunId(){
+  return Date.now() + '-' + Math.random().toString(36).slice(2);
+}`,
+   'still get different ids'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
