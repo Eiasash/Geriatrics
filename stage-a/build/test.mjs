@@ -428,7 +428,7 @@ for(let k=0;k<25;k++){
   const pick = k % 4 === 0 ? cur.a[0] : 'א';
   d.querySelector('#mockOpts .pqo[data-l="'+pick+'"]').click();
 }
-w.eval('mockFinish(true)');
+await w.eval('mockFinish(true)');
 await new Promise(r=>setTimeout(r,120));
 ok('mock report appears', !d.getElementById('mockReport').hidden);
 ok('mock report scores out of the right total', (()=>{
@@ -477,24 +477,27 @@ ok('last-mock line present', !!d.getElementById('mockLast'));
 w.eval('mockUnseen=1; mockN=10; mockPerQ=0;');
 d.getElementById('mockGo').click();
 await new Promise(r=>setTimeout(r,150));
-ok('unseen-only draw avoids answered questions', (()=>{
-  /* the old form had an escape hatch — "or the draw was 10 long", which it always is —
-     so it passed even when the filter was removed entirely */
-  const seeded = w.eval(`(()=>{
+{
+  /* mockStart is async (it re-reads RUNKEY before deciding whether to warn — see the
+     "starting a mock" tests below), so it must be awaited before mockQs reflects the draw */
+  const seeded = await w.eval(`(async()=>{
     const pool = PQ.filter(x=>!x.im);
     pool.slice(0, 40).forEach(x=>{ pqDone[pqKey(x)] = 1; });   /* mark 40 as answered */
-    mockN = 10; mockUnseen = 1; mockStart();
+    mockN = 10; mockUnseen = 1; await mockStart();
     const bad = mockQs.filter(p=>pqDone[pqKey(p)] !== undefined).length;
     return {drawn: mockQs.length, answeredInDraw: bad};
   })()`);
-  return seeded.drawn > 0 && seeded.answeredInDraw === 0;
-})(), JSON.stringify(w.eval("mockQs.length")));
+  /* the old form had an escape hatch — "or the draw was 10 long", which it always is —
+     so it passed even when the filter was removed entirely */
+  ok('unseen-only draw avoids answered questions',
+     seeded.drawn > 0 && seeded.answeredInDraw === 0, JSON.stringify(seeded));
+}
 ok('an in-progress mock is saved', 'geri:mockrun' in store && /"q":\[/.test(store['geri:mockrun']));
 d.querySelector('#mockOpts .pqo[data-l="\u05d0"]').click();
 await new Promise(r=>setTimeout(r,60));
 ok('answers are saved as you go', /"a":\{/.test(store['geri:mockrun']) &&
    Object.keys(JSON.parse(store['geri:mockrun']).a).length > 0);
-w.eval('mockFinish(true)');
+await w.eval('mockFinish(true)');
 await new Promise(r=>setTimeout(r,120));
 ok('finishing clears the saved run', store['geri:mockrun'] === '');
 ok('last result recorded', 'geri:mock' in store && /right/.test(store['geri:mock']), store['geri:mock']);
@@ -1024,7 +1027,7 @@ ok('the pre-restore snapshot is awaited, so it cannot read keys the restore is m
    /await bkSnapshot\('replaced'\);/.test(code));
 ok('the mock result is written before the line that reads it back repaints',
    /async function mockFinish\(auto\)\{/.test(code) &&
-   /try\{ await window\.storage\.set\(MKKEY, JSON\.stringify\(/.test(code));
+   /await window\.storage\.set\(MKKEY, blob\);/.test(code));
 ok('both restore paths go through it', (code.match(/await bkApply\(o, safe/g)||[]).length === 2);
 ok('the highlight walk skips by tag and caches the verdict per element', /const HLSKIP = \{SCRIPT:1, STYLE:1, TEXTAREA:1\}/.test(code) && /memo\.set\(el, false\); return false;/.test(code));
 ok('the section is walked once per highlight, not twice', /hlWrap\(sec, pick\.at, pick\.at \+ pick\.len, h, nodes\)/.test(code));
@@ -1641,14 +1644,14 @@ ok('the timer\u2019s height is watched, not just its attributes',
 {
   ok('a finished paper writes its own log, not the reader\u2019s',
      /mlog\[today\(\)\] = Math\.round\(right \/ rows\.length \* 50\);/.test(code) &&
-     /saveML\(\); paintQ\(\);/.test(code) &&
+     /mlSaved = await saveML\(\); paintQ\(\);/.test(code) &&
      !/qlog\[today\(\)\] = Math\.round\(right/.test(code));
   ok('the only thing that writes qlog is the reader typing a score',
      (code.match(/qlog\[today\(\)\]\s*=/g) || []).length === 1 &&
      /qlog\[today\(\)\]=v; el\.value=''; saveQ\(\);/.test(code));
   ok('the mock log has its own key, loaded on boot and re-read on refresh, and is backed up',
      /const MQKEY = 'geri:mocklog';/.test(code) &&
-     (code.match(/window\.storage\.get\(MQKEY\)/g) || []).length === 2 &&
+     (code.match(/window\.storage\.get\(MQKEY\)/g) || []).length === 3 &&
      /'geri:qlog','geri:mocklog'/.test(code));
 
   /* the reconciliation is run, not re-implemented: dayScore is the real function */
@@ -1831,6 +1834,88 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   ok('and behaviourally: a highlight added between queueing and resolving survives',
      ids.join(',') === 'a,b', JSON.stringify(ids) + ' stored=' + (store[w.eval('HLKEY')] || '(nothing)'));
 }
+{
+  /* ChatGPT third-model audit round 4: the previous guard's race window closes before the
+     queued task even starts (HL is reassigned before mergeSave's `mine = getMine()` line
+     ever runs, so `mine` already includes both entries). The real, reported window is
+     later: an edit made AFTER `mine` is captured but BEFORE this save's write resolves —
+     "type FIRST, hold its save, type SECOND, release" — which apply() used to clobber by
+     overwriting the live object with a merged snapshot built from `mine` alone. */
+  delete store[w.eval('HLKEY')];
+  w.eval("HL = {falls:[{id:'first', sec:'falls', t:'fear of falling', i:0, n:'', c:'2026-09-14'}]}; HLSEEN = '{}'");
+  const realSet = w.storage.set;
+  let release; const held = new Promise(r => { release = r; });
+  w.storage.set = async (k, v) => { if(k === w.eval('HLKEY')) await held; return realSet(k, v); };
+  const chain = w.eval("hlSave()");                 /* queued: the write for "first" is held */
+  await new Promise(r => setTimeout(r, 0));          /* let mergeSave's task start and capture `mine` = first-only */
+  w.eval("HL = {falls:[{id:'first', sec:'falls', t:'fear of falling', i:0, n:'', c:'2026-09-14'}," +
+    "{id:'second', sec:'falls', t:'orthostatic hypotension', i:1, n:'', c:'2026-09-14'}]}");   /* "type SECOND" while the save is still in flight */
+  release();
+  await chain;
+  /* the second edit lands on disk via a follow-up save the fix itself queues (mergeSave
+     re-invokes itself when it notices the live value moved on) — that follow-up is a
+     separate promise from the one `chain` above pointed to, so wait for whatever
+     saveChain currently is too */
+  await w.eval('saveChain');
+  w.storage.set = realSet;
+  const liveIds = w.eval("(HL.falls||[]).map(x=>x.id).sort()").join(',');
+  let diskIds = [];
+  try{ diskIds = (JSON.parse(store[w.eval('HLKEY')]).falls || []).map(x=>x.id).sort(); }catch(e){}
+  ok('a highlight added while an earlier save is still writing survives in both memory and on disk',
+     liveIds === 'first,second' && diskIds.join(',') === 'first,second',
+     'live=' + liveIds + ' disk=' + diskIds.join(','));
+}
+{
+  /* ChatGPT third-model audit round 4, data-loss cluster item 2: "two tabs" — a confirmed,
+     read-back save in tab A silently replaced by tab B merging from an older read. Simulated
+     here as this tab reading `stored` once (getting the pre-tabB value), then another tab's
+     write landing in the shared store, then this tab's own re-check before writing. */
+  const base = {id:'base', sec:'falls', t:'a fixed baseline', i:0, n:'', c:'2026-09-14'};
+  const seedBlob = JSON.stringify({falls:[base]});
+  store[w.eval('HLKEY')] = seedBlob;
+  w.eval("HL = {falls:[" + JSON.stringify(base) + ", {id:'tabA', sec:'falls', t:'added here', i:1, n:'', c:'2026-09-14'}]}; " +
+    "HLSEEN = " + JSON.stringify(seedBlob));
+  const realGet = w.storage.get;
+  let hlGets = 0;
+  w.storage.get = async k => {
+    if(k !== w.eval('HLKEY')) return realGet(k);
+    hlGets++;
+    const r = await realGet(k);       /* capture the pre-tabB-write value first */
+    /* the very first read is this tab's own `stored` snapshot; simulate another tab's
+       confirmed write landing in the shared store right after it, before this tab writes */
+    if(hlGets === 1) store[k] = JSON.stringify({falls:[base, {id:'tabB', sec:'falls', t:'from another tab', i:1, n:'', c:'2026-09-14'}]});
+    return r;
+  };
+  await w.eval('hlSave()');
+  w.storage.get = realGet;
+  let diskIds = [];
+  try{ diskIds = (JSON.parse(store[w.eval('HLKEY')]).falls || []).map(x => x.id).sort(); }catch(e){}
+  ok('a highlight confirmed by another tab while this tab’s own save is mid-flight is not silently discarded',
+     diskIds.join(',') === 'base,tabA,tabB', 'disk=' + diskIds.join(','));
+}
+{
+  /* ChatGPT third-model audit round 4, data-loss cluster item 7: pqSave used to overwrite
+     the whole geri:pq blob with whatever THIS tab's pqDone held, so two tabs answering
+     different practice questions kept only whichever tab's fire-and-forget write landed
+     last — the other tab's answers vanished with no warning. Routed through mergeSave
+     (mergePQ) the same way highlights/notes already are. */
+  const pkey = w.eval('PKEY');
+  store[pkey] = JSON.stringify({'2024-05#1': 1});
+  w.eval("pqDone = {'2024-05#1': 1}; PQSEEN = " + JSON.stringify(store[pkey]));
+  w.eval("pqDone['2024-05#2'] = 0");             /* answered here */
+  /* the other tab answered a third question and its write already landed on disk */
+  store[pkey] = JSON.stringify({'2024-05#1': 1, '2024-05#3': 1});
+  await w.eval('pqSave()');
+  let diskPq = {}, livePq = {};
+  try{ diskPq = JSON.parse(store[pkey]); }catch(e){}
+  try{ livePq = w.eval('pqDone'); }catch(e){}
+  const wantKeys = '2024-05#1,2024-05#2,2024-05#3';
+  ok('past-paper progress answered in another tab is not overwritten by this tab’s own save',
+     Object.keys(diskPq).sort().join(',') === wantKeys && diskPq['2024-05#3'] === 1 && diskPq['2024-05#2'] === 0,
+     JSON.stringify(diskPq));
+  ok('...and the merged result is reflected back into the live pqDone, not just on disk',
+     Object.keys(livePq).sort().join(',') === wantKeys, JSON.stringify(livePq));
+}
 ok('the synchronous teardown write stands down when the host supplies its own storage',
    /if\(!storageIsLocal\) return false;/.test(code) && /let storageIsLocal = false;/.test(code) &&
    /storageIsLocal = false;\s*\/\* the memory fallback/.test(html));
@@ -1903,6 +1988,23 @@ ok('the synchronous teardown write stands down when the host supplies its own st
     const toast = [...d.body.children].find(e=>/Storage is full/.test(e.textContent));
     return !!toast && [...d.body.children].length > before;
   })());
+
+  // 3b. saveML (the mock's own day-log write) cannot be saved: say so, and report failure
+  /* ChatGPT third-model audit round 4, data-loss cluster item 4: saveML() used to swallow a
+     refused write with a bare try/catch and no signal to its caller or the reader — the
+     mock's day-log entry could vanish with the screen still showing it as done. */
+  reset(1, ['geri:mocklog']);
+  /* clear any toast left by the manual notSaved() call in case 3 above, and its debounce
+     timer, so this check can only be satisfied by saveML's own failure triggering a new one */
+  [...d.body.children].filter(e=>/Storage is full/.test(e.textContent)).forEach(e=>e.remove());
+  w.eval('notSavedAt = 0');
+  w.eval("mlog = {}; mlog[today()] = 42");
+  const mlOk = await w.eval('saveML()');
+  failFrom = -1;
+  ok('quota: a refused mock-log save tells the reader, the same way a refused highlight does',
+     mlOk === false && alerts.length === 0 &&
+     [...d.body.children].some(e=>/Storage is full/.test(e.textContent)),
+     'mlOk=' + mlOk);
 
   // 4. the synchronous teardown write, with localStorage itself refusing
   reset(-1);
@@ -2156,14 +2258,14 @@ ok('after Got it / Missed it the next card is brought into view if it opened abo
   w.confirm = m => { confirms.push(String(m)); return false; };
   const fake = d.createElement('button'); fake.id = 'mockResume'; d.body.appendChild(fake);
   w.eval('mockOn = false; mockQs = []');
-  w.eval('mockStart()');
+  await w.eval('mockStart()');
   ok('starting a mock asks before discarding one left part-way',
      confirms.some(c => /unfinished mock/.test(c)) && w.eval('mockOn') === false && w.eval('mockQs.length') === 0, confirms.join(' | '));
   fake.remove(); w.confirm = realConfirm;
 }
 {
   w.confirm = () => true;
-  w.eval('mockN = 50; mockStart()');
+  w.eval('mockOn = false'); await w.eval('mockN = 50; mockStart()');
   const n = w.eval('mockQs.length');
   /* five answered wrong and at least two left blank, all on one chapter, so the tally shows
      whether blanks were counted against it */
@@ -2332,7 +2434,7 @@ ok('each mock question is kept in view after an answer or next/back', /cardIntoV
 ok('the mock header (question n of N, time left) sticks under the nav', /#mockCard \.pqhead\{ position:sticky; top:var\(--navh, 135px\)/.test(code));
 {
   w.confirm = () => true;
-  w.eval('mockN = 50; mockStart()');
+  w.eval('mockOn = false'); await w.eval('mockN = 50; mockStart()');
   w.eval("(()=>{ const q = mockQs[0]; mockAns[0] = 'אבגד'.split('').find(x => q.a.indexOf(x) < 0) || 'ה'; })()");
   await w.eval('mockFinish()'); await new Promise(r => setTimeout(r, 50));
   d.getElementById('mockReview').click();
@@ -2386,7 +2488,7 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
   const confirms = [], realConfirm = w.confirm;
   w.confirm = m => { confirms.push(String(m)); return false; };
   w.eval("mockOn = true; mockQs = [{marker:1}]");
-  w.eval('mockStart()');
+  await w.eval('mockStart()');
   ok('starting a mock while one is running asks first, and a refusal keeps the running paper',
      confirms.some(c => /unfinished mock/.test(c)) && w.eval('mockQs.length === 1 && mockQs[0].marker === 1'), confirms.join(' | '));
   w.eval('mockOn = false; mockQs = []; clearInterval(mockTick)'); w.confirm = realConfirm;
@@ -2967,8 +3069,8 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
   const practiceKey = w.eval('pqKey(pqPool[pqIdx % pqPool.length])');
   w.eval('delete pqDone[' + JSON.stringify(practiceKey) + ']');
   const idxBefore = w.eval('pqIdx');
-  if(w.eval('mockOn')){ w.eval('mockFinish(true)'); await new Promise(r => setTimeout(r, 80)); }
-  w.eval('mockN = 5; mockPerQ = 0; mockStart();');
+  if(w.eval('mockOn')){ await w.eval('mockFinish(true)'); await new Promise(r => setTimeout(r, 80)); }
+  await w.eval('mockN = 5; mockPerQ = 0; mockStart();');
   await new Promise(r => setTimeout(r, 80));
   d.dispatchEvent(new w.KeyboardEvent('keydown', {key: '1'}));
   d.dispatchEvent(new w.KeyboardEvent('keydown', {key: 'n'}));
@@ -2977,7 +3079,7 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
      w.eval('pqDone[' + JSON.stringify(practiceKey) + ']') === undefined,
      'pqIdx=' + w.eval('pqIdx') + ' pqShown=' + w.eval('pqShown') +
      ' pqDone=' + w.eval('pqDone[' + JSON.stringify(practiceKey) + ']'));
-  w.eval('mockFinish(true)');
+  await w.eval('mockFinish(true)');
   await new Promise(r => setTimeout(r, 80));
 }
 {
@@ -3219,6 +3321,141 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   ok('a restored in-progress mock (geri:mockrun round-tripped through a backup) offers to resume it on the next load, with the right answered count',
      !!resumeBtn && /1 of 3 answered/.test(resumeBtn.textContent), resumeBtn && resumeBtn.textContent);
   dm.window.close();
+}
+
+{
+  /* ChatGPT third-model audit round 4, data-loss cluster item 3: the Resume click handler
+     used to resume from `v`, a JS closure captured once at page load. If the record in
+     storage moved on since — a checkpoint from this same run landing after boot but before
+     the click, which a slow page load or a reader who leaves the tab open for a while makes
+     entirely realistic — clicking Resume rolled the run BACKWARD to that boot-time snapshot,
+     discarding whatever was answered since. Resume now re-reads RUNKEY fresh at click time. */
+  /* real past-paper keys — a made-up id would fail the "questions this version no longer
+     has" check inside the resume handler and never reach the code under test */
+  const qs = w.eval("PQ.slice(0,3).map(p=>p.y+'#'+p.n)");
+  const staleVal = JSON.stringify({q: qs, a: {[qs[0]]: 'א'}, f: {}, i: 1, t: 0, e: 0, id: 'run-1', rev: 1});
+  const rstore2 = {'geri:mockrun': staleVal};
+  const dm2 = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2);
+      w2.storage = { get: async k => { if(!(k in rstore2)) throw new Error('missing'); return {key:k, value:rstore2[k]}; },
+        set: async (k, v) => { rstore2[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dm2.window.document.getElementById('mockLast'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 200));
+  const d4 = dm2.window.document;
+  /* a newer checkpoint for the SAME run landed after boot (this run's own #2 answered),
+     before the reader gets around to clicking Resume */
+  rstore2['geri:mockrun'] = JSON.stringify({q: qs, a: {[qs[0]]: 'א', [qs[1]]: 'ב'}, f: {}, i: 2, t: 0, e: 0, id: 'run-1', rev: 2});
+  d4.getElementById('mockResume').click();
+  await new Promise(r => setTimeout(r, 80));
+  const gotAns = dm2.window.eval('mockAns');
+  ok('resuming reads the run fresh at click time, not the boot-time snapshot, so a checkpoint made in between is not rolled back',
+     Object.keys(gotAns).sort().join(',') === [qs[0], qs[1]].sort().join(','), JSON.stringify(gotAns));
+  dm2.window.close();
+}
+
+{
+  /* ChatGPT third-model audit round 4, data-loss cluster item 3: "reject stale writers" —
+     once mockRunId/mockRunClaimed say this tab's checkpoint has landed under its own id, a
+     DIFFERENT id showing up in storage means some other run has taken RUNKEY over (started
+     fresh here, or resumed/started in another tab). A checkpoint for the old run must not
+     stomp on it, and this tab's own mock should stop rather than keep silently failing to
+     save every answer from here on. */
+  const qs2 = w.eval("PQ.slice(0,2).map(p=>p.y+'#'+p.n)");
+  const rkey = w.eval('RUNKEY');
+  const othersBlob = JSON.stringify({q: qs2, a: {}, f: {}, i: 0, e: 0, t: 0, id: 'other-tab-run', rev: 1});
+  store[rkey] = othersBlob;
+  const realAlert = w.alert; const alerts2 = [];
+  w.alert = m => alerts2.push(String(m));
+  w.eval(`mockOn = true; mockQs = ${JSON.stringify(qs2)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockAns = {}; mockI = 0; mockRunId = 'mine'; mockRunSeq = 5; mockRunClaimed = true;`);
+  await w.eval('mockSaveRun()');
+  w.alert = realAlert;
+  ok('a checkpoint for a run superseded by another tab does not overwrite that tab’s record',
+     store[rkey] === othersBlob, store[rkey]);
+  ok('...and this tab is told its copy stopped saving, rather than silently failing on every future answer',
+     alerts2.some(a => /started again in another tab/.test(a)) && w.eval('mockOn') === false,
+     alerts2.join(' | '));
+  w.eval("mockOn = false; mockQs = []; mockAns = {}");
+}
+
+{
+  /* ChatGPT third-model audit round 4, data-loss cluster item 3: mockSaveRun used to fire an
+     unawaited, unserialized window.storage.set per answer — nothing stopped an earlier
+     answer's in-flight write from resolving AFTER a later one and overwriting it, dropping
+     disk back to a smaller answered count. Delay only the FIRST write here (the second gets
+     none) — under the old fire-and-forget code the second, fast write would land first and
+     then get overwritten when the slow first write finally resolved; the fix serializes
+     through mockRunChain, so the first write's entire round trip must finish before the
+     second's write even starts, regardless of which one storage would have been faster to
+     resolve. */
+  const qs3 = w.eval("PQ.slice(0,2).map(p=>p.y+'#'+p.n)");
+  const rkey2 = w.eval('RUNKEY');
+  delete store[rkey2];
+  const realSet2 = w.storage.set;
+  let setCount = 0, releaseFirst;
+  const heldFirst = new Promise(r => { releaseFirst = r; });
+  w.storage.set = async (k, v) => { if(k === rkey2 && ++setCount === 1) await heldFirst; return realSet2(k, v); };
+  w.eval(`mockOn = true; mockQs = ${JSON.stringify(qs3)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockAns = {}; mockI = 0; mockRunId = 'order-test'; mockRunSeq = 0; mockRunClaimed = false;`);
+  w.eval(`mockAns[0] = 'א'`);
+  const p1 = w.eval('mockSaveRun()');                 /* first write: held */
+  await new Promise(r => setTimeout(r, 0));             /* let it start and reach the hold */
+  w.eval(`mockAns[1] = 'ב'`);
+  const p2 = w.eval('mockSaveRun()');                 /* second write: queued behind the first, no delay */
+  releaseFirst();
+  await p1; await p2;
+  const landed = JSON.parse(store[rkey2] || '{}');
+  ok('an earlier answer’s slow write cannot land after, and overwrite, a later answer’s write',
+     Object.keys(landed.a || {}).sort().join(',') === '0,1', JSON.stringify(landed.a));
+  w.storage.set = realSet2;
+  w.eval("mockOn = false; mockQs = []; mockAns = {}");
+}
+
+{
+  /* ChatGPT third-model audit round 4, data-loss cluster item 6: a per-answer checkpoint
+     write queued just before mockFinish() (still in flight, e.g. the reader's last click
+     landing right as time ran out) used to race mockFinish's own, separately-fired RUNKEY
+     clear — the checkpoint could land AFTER the clear and resurrect the just-finished run's
+     data forever, since nothing clears it again. The actual ordering guarantee is exactly
+     the same "queued behind whatever mockRunChain already holds" mechanism the two mockSaveRun
+     tests above already prove behaviorally (mockRunChain only ever runs one task at a time,
+     in the order each was queued) — reconstructing that same race a third time here, now
+     spanning mockFinish's own multi-step async body, is timing-fragile without a hook into
+     exactly when mockFinish reaches this step. Pinned structurally instead: the clear MUST be
+     queued on mockRunChain and awaited, not fired on its own. */
+  ok('mockFinish clears RUNKEY through mockRunChain — the same queue a pending checkpoint write sits on — instead of racing it with a separate write',
+     /mockRunChain = mockRunChain\.then\(async\(\)=>\{\s*\n\s*try\{\s*\n\s*await window\.storage\.set\(RUNKEY, ''\);/.test(code) &&
+     /\}\)\.catch\(\(\)=>\{\}\);\s*\n\s*await mockRunChain;\s*\n\s*\}\s*\n\s*paintLastMock\(\);/.test(code));
+}
+
+{
+  /* ChatGPT third-model audit round 4, data-loss cluster item 5: bkGather already awaited
+     saveChain (highlights/notes/past-paper progress) but not mockRunChain — a checkpoint
+     write for the CURRENT mock still in flight when the reader taps "download a backup"
+     mid-paper could be skipped, so the exported file held an older answer count than the
+     screen. Same shape as the "held write" tests above, exercised through the real download
+     path this time. */
+  const qs5 = w.eval("PQ.slice(0,1).map(p=>p.y+'#'+p.n)");
+  const rkey4 = w.eval('RUNKEY');
+  delete store[rkey4];
+  const realSet4 = w.storage.set;
+  let releaseBk;
+  const heldBk = new Promise(r => { releaseBk = r; });
+  let bkWriteSeen = false;
+  w.storage.set = async (k, v) => { if(k === rkey4 && !bkWriteSeen){ bkWriteSeen = true; await heldBk; } return realSet4(k, v); };
+  w.eval(`mockOn = true; mockQs = ${JSON.stringify(qs5)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockAns = {0:'א'}; mockI = 0; mockRunId = 'bk-order-test'; mockRunSeq = 0; mockRunClaimed = false;`);
+  const pendingBk = w.eval('mockSaveRun()');    /* the mid-mock checkpoint: held */
+  await new Promise(r => setTimeout(r, 0));
+  const gatherP = w.eval('bkGather()');          /* must wait for the checkpoint above, not race it */
+  releaseBk();
+  const [, gathered] = await Promise.all([pendingBk, gatherP]);
+  w.storage.set = realSet4;
+  let gotAns = {};
+  try{ gotAns = JSON.parse(gathered[rkey4]).a; }catch(e){}
+  ok('a backup gathered while the current mock’s checkpoint write is still in flight waits for it, not a stale read',
+     JSON.stringify(gotAns) === '{"0":"א"}', JSON.stringify(gathered[rkey4]));
+  w.eval("mockOn = false; mockQs = []; mockAns = {}");
 }
 
 {
