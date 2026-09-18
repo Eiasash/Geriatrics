@@ -1243,6 +1243,10 @@ const M = [
   secChapters('');`,
    `  secChapters('');`,
    'agrees on a string and a number form'],
+  ['chapter 22\'s chapter-index row goes back to the wrong section (data-sec="beers" instead of "pharm"), so once sectionForChapter\'s numeric lookup works it routes straight to the guideline-only Beers section instead of chapter 22\'s real home (Codex review of #457)',
+   `Medication Prescribing and De-Prescribing <button type="button" class="chgo" data-sec="pharm"`,
+   `Medication Prescribing and De-Prescribing <button type="button" class="chgo" data-sec="beers"`,
+   'routes to pharm, not the guideline-only beers section'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the

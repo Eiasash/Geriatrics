@@ -174,14 +174,22 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
      status !== 0 && reachedDone && mentionsFalls, 'status=' + status + ' reachedDone=' + reachedDone + ' mentionsFalls=' + mentionsFalls);
 }
 {
+  /* Codex review of #457: the naive count matched the helper's OWN declaration line
+     ("function wireErrs(w2){" contains the substring "wireErrs(w2)"), inflating every real
+     count by one — so the ">= 9" floor still passed after removing a real call site from any
+     secondary window other than the one #falls behaviorally exercises. Exclude the declaration
+     line explicitly, and compare against the actual number of `new JSDOM(` constructions
+     (the real, unambiguous count of windows that need wiring) rather than a hardcoded floor. */
   const src = fs.readFileSync('test.mjs', 'utf8');
   const helperIdx = src.indexOf('function wireErrs(w2){');
   ok('the wireErrs helper is defined in test.mjs', helperIdx >= 0);
-  const callSites = (src.match(/wireErrs\(w[23]?\)/g) || []).length;
-  /* the primary window's call (wireErrs(w)) plus every secondary JSDOM construction's
-     (wireErrs(w2)/wireErrs(w3)) — this file has 8 secondary windows as of this writing */
+  const declLine = src.slice(0, src.indexOf('\n', helperIdx));
+  const bodySrc = src.replace(declLine, '');
+  const callSites = (bodySrc.match(/wireErrs\(w[23]?\)/g) || []).length;
+  const domConstructions = (src.match(/new JSDOM\(/g) || []).length;
   ok('wireErrs is called from every window construction in test.mjs, not just the primary one',
-     callSites >= 9, callSites + ' call sites');
+     domConstructions >= 2 && callSites === domConstructions,
+     callSites + ' call sites vs ' + domConstructions + ' new JSDOM(...) constructions');
 }
 
 console.log('\n' + FAILS + ' failing harness self-test(s)');

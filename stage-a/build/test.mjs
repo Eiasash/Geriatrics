@@ -574,8 +574,10 @@ ok('table captions do not simply repeat the heading above',
      object (as byCh in mockFinish, or the equivalent in pqStats) always hands back STRINGS,
      so sectionForChapter('63') fell through to CHFALLBACK, which maps only one primary
      chapter per section rather than the real per-chapter mapping — sectionForChapter(63) is
-     'bpsd', sectionForChapter('63') used to be ''; sectionForChapter(22) is 'beers',
-     sectionForChapter('22') used to be 'pharm'. Two spot values are a proxy, not the
+     'bpsd', sectionForChapter('63') used to be ''; sectionForChapter(22) is 'pharm',
+     sectionForChapter('22') used to be 'pharm' too (CHFALLBACK's primary-chapter guess
+     happened to agree here, which is what let a real markup bug hide behind this fix: see
+     the ch22/'pharm' test below). Two spot values are a proxy, not the
      behaviour the fix promises: loop every chapter the app actually maps and require the
      string and number forms to agree for every one of them. */
   const r = w.eval(`(()=>{
@@ -593,6 +595,19 @@ ok('table captions do not simply repeat the heading above',
      r.length === 0, r.slice(0, 5).join(', '));
   ok('sectionForChapter coerces at its own boundary',
      /function sectionForChapter\(n\)\{[\s\S]{0,40}n = Number\(n\);\s*\n\s*if\(!Number\.isInteger\(n\) \|\| n <= 0\) return '';/.test(code));
+}
+
+{
+  /* Codex review of #457: making sectionForChapter's SECCH lookup actually work (the coercion
+     fix directly above) exposed a real, separate bug it had been silently masking — chapter
+     22's row in the chapter-index table itself carried the wrong data-sec ("beers" instead
+     of "pharm"), so once the numeric lookup started succeeding it routed straight to the
+     Beers-criteria section instead of chapter 22's real home. CHREF.pharm ([22,'Medication
+     Prescribing and De-Prescribing',301]) and the table row's own title/page (p301) agree —
+     'beers' is a guideline-only section (see DOCREF.beers) with no Hazzard chapter of its
+     own. Fixed the markup, not the lookup: pin the correct destination directly. */
+  ok('chapter 22 (Medication Prescribing and De-Prescribing) routes to pharm, not the guideline-only beers section',
+     w.eval('sectionForChapter(22)') === 'pharm', w.eval('sectionForChapter(22)'));
 }
 
 {
@@ -3478,7 +3493,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   const staleValExp = JSON.stringify({q: qsExp, a: {}, f: {}, i: 0, t: 5, e: expiredE, id: 'run-exp', rev: 1});
   const rstore3 = {'geri:mockrun': staleValExp};
   const dm3 = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
-    beforeParse(w2){ pinClock(w2);
+    beforeParse(w2){ pinClock(w2); wireErrs(w2);
       w2.storage = { get: async k => { if(!(k in rstore3)) throw new Error('missing'); return {key:k, value:rstore3[k]}; },
         set: async (k, v) => { rstore3[k] = v; return {key:k, value:v}; } }; } });
   for(let t = 0; t < 100 && !dm3.window.document.getElementById('mockResume'); t++) await new Promise(r => setTimeout(r, 50));
