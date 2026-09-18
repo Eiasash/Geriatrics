@@ -1285,9 +1285,24 @@ const M = [
    `      const mergedAF = mergeMockAnswers(cur, seen, mineAns, mineFlag);`,
    'does not inherit that run’s answers or flags'],
   ['the checkpoint cursor goes back to being a high-water mark, so walking back through the paper keeps writing the furthest question reached and the next resume opens past where the reader actually was (Codex review of #459)',
-   `      const mergedI = mineI;`,
+   /* re-anchored where the #462 capture-time ordering rewrote this line; same property, same
+      needle, and the high-water mark still overrides whatever the ordering rule decided */
+   `      const mergedI = keepMineI ? mineI : cur.i;`,
    `      const mergedI = Math.max(mineI, (cur && cur.i) || 0);`,
    'moves the saved cursor back too'],
+
+  /* ---- Codex review of #462, posted four minutes before that PR auto-merged and therefore
+     against code already on main. Both reproduce; both red tests are in test.mjs. ---- */
+  ['mockSaveRun goes back to reading every id-less record as "not this run", so a migration\'s first write asserts this tab\'s boot-time snapshot over a legacy record a still-open pre-ID tab updated in the meantime, and everything that tab added is silently erased (Codex review of #462, P1)',
+   `      const sameList = !!(cur && Array.isArray(cur.q) && cur.q.length === qList.length &&
+                          cur.q.every((k, n) => k === qList[n]));
+      const sameRun = !!(cur && (cur.id ? cur.id === forId : sameList));`,
+   `      const sameRun = !!(cur && cur.id === forId);`,
+   'old tab updated mid-migration'],
+  ['the saved cursor goes back to raw last-commit-wins, so a checkpoint captured at an earlier question but queued behind its own tab\'s in-flight write lands after a later one from another tab and rewinds the reader\'s place (Codex review of #462, P2)',
+   `      const keepMineI = mineIAt >= curIAt;`,
+   `      const keepMineI = true;`,
+   'reaches the lock late'],
 
   /* ---- red tests for the weak-check rewrites (ChatGPT audit of the SUITE, not the app: ~234
      of 618 checks were weaker than their labels). Each mutation below breaks the behaviour the

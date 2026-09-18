@@ -3920,6 +3920,52 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   dmLeg.window.close();
 }
 {
+  /* Codex review of #462 (P1): an id-less record on disk is one of two different things — the
+     legacy checkpoint THIS run resumed from, or a run being discarded and replaced. #459's fix
+     collapsed both into "not mine", so a migration's first write asserted this tab's whole
+     boot-time snapshot over whatever was actually on disk. A pre-ID tab still open on the same
+     legacy run writes into exactly that window — between this tab's Resume read and its first
+     checkpoint — and everything it added is erased. The lock cannot help: that older build
+     does not take one.
+     Drive the real Resume button, then write the old tab's update straight into storage (a
+     whole-record overwrite with no id, which is all that build knew how to do), then answer
+     here, which is what fires the first checkpoint.
+     The window is narrow and exact — Resume paints immediately, and painting checkpoints — so
+     it is opened off the READ rather than off a sleep: the old tab's overwrite is applied the
+     moment the Resume handler's own read of the record returns, which is precisely "after this
+     tab read it, before its first write re-reads it inside the lock". */
+  const qsMig = w.eval("PQ.slice(0,4).map(p=>p.y+'#'+p.n)");
+  const migStore = {'geri:mockrun': JSON.stringify({q: qsMig, a: {0:'א'}, f: {}, i: 1, e: 0, t: 0})};
+  const dmMig = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in migStore)) throw new Error('missing'); return {key:k, value:migStore[k]}; },
+        set: async (k, v) => { migStore[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dmMig.window.document.getElementById('mockResume'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 100));
+  const migAlerts = []; dmMig.window.alert = m => migAlerts.push(String(m));
+  let migArmed = false, migOldTabWrote = false;
+  const realGetMig = dmMig.window.storage.get;
+  dmMig.window.storage.get = async k => {
+    const r = await realGetMig(k);
+    if(k === 'geri:mockrun' && migArmed && !migOldTabWrote){
+      migOldTabWrote = true;
+      migStore[k] = JSON.stringify({q: qsMig, a: {0:'א', 2:'ג'}, f: {}, i: 2, e: 0, t: 0});
+    }
+    return r;
+  };
+  migArmed = true;
+  dmMig.window.document.getElementById('mockResume').click();
+  await new Promise(r => setTimeout(r, 120));
+  await dmMig.window.eval("mockAns[1] = 'ב'; mockSaveRun()");
+  await new Promise(r => setTimeout(r, 60));
+  let migDisk = {};
+  try{ migDisk = JSON.parse(migStore['geri:mockrun']); }catch(e){}
+  ok('a legacy record the old tab updated mid-migration is merged, not overwritten with this tab’s boot-time snapshot',
+     !!migDisk.id && migDisk.a && migDisk.a['0'] === 'א' && migDisk.a['1'] === 'ב' && migDisk.a['2'] === 'ג',
+     JSON.stringify(migDisk.a) + ' id=' + migDisk.id + ' alerts=' + migAlerts.join(' | '));
+  dmMig.window.close();
+}
+{
   /* Codex review of #459: when the reader confirms replacing an unfinished mock, mockStart
      leaves mockRunObservedId pointing at the OLD record so the first checkpoint may take the key
      over — but that record was then passed into mergeMockAnswers, copying the discarded run's
@@ -3968,6 +4014,61 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   ok('walking back through the paper moves the saved cursor back too, instead of pinning it at the furthest question reached',
      atFive === 5 && afterBack === 3, 'first=' + atFive + ' after two backs=' + afterBack);
   w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+}
+{
+  /* Codex review of #462 (P2): with the high-water mark gone, the cursor became last-COMMIT-wins
+     — and a commit can carry an older reading than one already on disk. A checkpoint captures
+     mockI synchronously when it is called, but reaches the shared lock only when its own tab's
+     chain frees, so one taken at question 3 while that tab's previous write was still in flight
+     lands AFTER another tab's later checkpoint at question 5, and rewinds the saved place two
+     moves. The next resume opens where the reader was before, not where they are.
+     The interleaving is built out of the queue structure, not out of sleeps: B's first write
+     holds the lock; B's second write is captured but stuck behind B's own chain, so it has not
+     joined the lock queue yet; A joins it; only then is B's first write released. Ordering is
+     therefore guaranteed by the queues, not by timing luck.
+     mockI is moved directly here rather than through #mockPrev on purpose — the real control
+     repaints, painting checkpoints, and each such save supersedes the one before it by seq, so
+     the real control cannot produce a captured-but-not-yet-queued write at all. The semantic
+     that backward navigation is honoured is what the block above tests, through #mockPrev. */
+  const rkeyOrd = w.eval('RUNKEY');
+  const qsOrd = w.eval("PQ.slice(0,8).map(p=>p.y+'#'+p.n)");
+  store[rkeyOrd] = JSON.stringify({q: qsOrd, a: {}, f: {}, i: 0, e: 0, t: 0, id: 'order-run', rev: 1});
+  const seedOrd = `mockQs = ${JSON.stringify(qsOrd)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 0;
+    mockRunId = 'order-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'order-run';
+    MOCKSEEN = JSON.stringify({id: 'order-run', a: {}, f: {}});`;
+  w.eval(seedOrd);
+  const dmOrd = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in store)) throw new Error('missing'); return {key:k, value:store[k]}; },
+        set: async (k, v) => { store[k] = v; return {key:k, value:v}; } }; } });
+  /* wait for the papers bank, not just for the script: PQ is parsed on a deferred boot pass, and
+     seeding mockQs before it lands leaves a list of undefined entries */
+  for(let t = 0; t < 200 && !dmOrd.window.eval('typeof PQ !== "undefined" && PQ.length > 0'); t++) await new Promise(r => setTimeout(r, 50));
+  /* two tabs of one origin share a clock; two pinClock instances do not, because each offsets
+     from its own construction moment and these are minutes apart. Put the second window on the
+     first one's clock, or a capture-time comparison between them measures the harness. */
+  dmOrd.window.eval('__stageaClock.set(' + w.eval('Date.now()') + ')');
+  dmOrd.window.eval(seedOrd);
+
+  const realSetOrd = dmOrd.window.storage.set;
+  let releaseOrdB; const heldOrdB = new Promise(r => { releaseOrdB = r; });
+  dmOrd.window.storage.set = async (k, v) => { if(k === rkeyOrd) await heldOrdB; return realSetOrd(k, v); };
+  dmOrd.window.eval('mockI = 1; mockSaveRun()');                     /* B1 takes the lock and blocks in its write */
+  await new Promise(r => setTimeout(r, 30));
+  const ordChainB = dmOrd.window.eval('mockI = 3; mockSaveRun()');   /* B2 captured at 3, stuck behind B1's chain */
+  await new Promise(r => setTimeout(r, 30));
+  const ordChainA = w.eval('mockI = 5; mockSaveRun()');              /* A captured later, joins the lock queue now */
+  await new Promise(r => setTimeout(r, 30));
+  releaseOrdB();
+  await ordChainA; await ordChainB;
+  await new Promise(r => setTimeout(r, 60));
+  dmOrd.window.storage.set = realSetOrd;
+  const ordDisk = JSON.parse(store[rkeyOrd] || '{}');
+  ok('a checkpoint that reaches the lock late does not rewind the saved place to where its own tab was two moves ago',
+     ordDisk.i === 5, 'i=' + ordDisk.i + ' (A was at 5, B captured 3 first and committed last)');
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+  dmOrd.window.close();
 }
 {
   /* ID2 (ACCEPTANCE-round5.md, section A): Date.now()+Math.random() is not actually
