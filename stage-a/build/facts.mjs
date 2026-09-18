@@ -1,4 +1,5 @@
 import { JSDOM } from 'jsdom'; import fs from 'fs';
+import { logRun } from './ledger.mjs';
 const html=fs.readFileSync(process.argv[2]||'geriatrics-stage-a.html','utf8');
 const F=JSON.parse(fs.readFileSync('facts.json','utf8')).facts;
 const d=new JSDOM(html).window.document;
@@ -10,4 +11,6 @@ for(const f of F){
   if(!ok){bad++; console.log('MISSING  #'+f.sec+'  «'+f.text+'»  ('+f.src+')');}
 }
 console.log(`facts: ${F.length-bad} present, ${bad} missing`);
+logRun('facts.mjs', { file: process.argv[2] || 'geriatrics-stage-a.html', facts: F.length,
+  missing: bad, verdict: bad ? 'fail' : 'pass', completed: true, engine: 'jsdom' });
 process.exit(bad?1:0);

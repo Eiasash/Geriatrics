@@ -2,6 +2,7 @@ import { JSDOM } from 'jsdom';
 import fs from 'fs';
 import vm from 'vm';
 import { PIN, pinClock } from './clock.mjs';
+import { logRun } from './ledger.mjs';
 
 /* a rejection nobody handled used to end the process silently mid-suite: every check after it
    simply never ran, which the mutation runner then read as MISSED. Count it as a FAIL and
@@ -77,7 +78,11 @@ await new Promise(r => setTimeout(r, 400));
 /* counts failures so the process exit code carries them. Before this, a FAIL line still
    exited 0, and CI only went red on a failing check because mutants.mjs re-ran the suite */
 let FAILS = 0;
-const ok = (label, cond, extra='') => { if(!cond) FAILS++;
+/* how many checks actually ran, and how long. "0 failures" out of 12 checks and out of 640 are
+   not the same verdict, and the ledger cannot tell them apart from the failure count alone. */
+let CHECKS = 0;
+const T_START = Date.now();
+const ok = (label, cond, extra='') => { CHECKS++; if(!cond) FAILS++;
   console.log((cond?'PASS  ':'FAIL  ') + label + (extra?'  — '+extra:'')); };
 
 /* parses the number a piece of prose OPENS with — digit or spelled-out word — so a
@@ -4337,4 +4342,12 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
 }
 
 console.log("DONE");
+/* The ledger line is written AFTER "DONE" and reads the same two values the exit code is
+   computed from, so a run that died early cannot leave a "passed" line behind: no DONE, no
+   line. `completed` is recorded explicitly rather than inferred, because "0 failures" and
+   "0 failures out of a run that finished" are different claims and only the second is a
+   verdict. */
+logRun('test.mjs', { file: process.argv[2] || 'geriatrics-stage-a.html', checks: CHECKS, failures: FAILS,
+  verdict: (FAILS || process.exitCode) ? 'fail' : 'pass', completed: true,
+  engine: 'jsdom', date_pin: PIN, ms: Date.now() - T_START });
 process.exit(FAILS || process.exitCode ? 1 : 0);

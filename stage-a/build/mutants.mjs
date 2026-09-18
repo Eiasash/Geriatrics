@@ -13,6 +13,13 @@
 import fs from 'fs';
 import { execFileSync } from 'child_process';
 import { classifyMutant, baselineOk } from './mutants-classify.mjs';
+import { logRun } from './ledger.mjs';
+
+/* The child runs are runs of a DELIBERATELY BROKEN file. Their verdicts say nothing about the
+   tree, so they must never reach the ledger: one mutation set would otherwise write ~270 'fail'
+   lines about an index.html that does not exist. STAGEA_LEDGER is stripped from every child. */
+const CHILD_ENV = Object.assign({}, process.env);
+delete CHILD_ENV.STAGEA_LEDGER;
 
 const SRC = process.argv.slice(2).find(a => !a.startsWith('--')) || '../index.html';
 /* --static: only check that every mutation still has exactly one target. Seconds instead of
@@ -1420,12 +1427,14 @@ if(STATIC){
     if(!hay.includes(needle)){ bad++; console.log('NEEDLE ' + name + '  — no ' + (runner === 'audit' ? 'audit.mjs gate' : 'guard') + ' label contains "' + needle + '"'); }
   }
   console.log(M.length + ' mutations, ' + bad + ' stale, ambiguous or unmatched');
+  logRun('mutants.mjs --static', { file: SRC, mutations: M.length, unmatched: bad,
+    verdict: bad ? 'fail' : 'pass', completed: true });
   process.exit(bad ? 1 : 0);
 }
 /* Baseline first: a mutation "caught" by a suite that was already red proves nothing. */
 {
   let out = '', status = 0;
-  try{ out = execFileSync('node', ['test.mjs', SRC], {encoding:'utf8'}); status = 0; }
+  try{ out = execFileSync('node', ['test.mjs', SRC], {encoding:'utf8', env: CHILD_ENV}); status = 0; }
   catch(e){ out = (e.stdout || '') + (e.stderr || ''); status = e.status == null ? 1 : e.status; }
   const base = baselineOk(out, status);
   if(!base.ok){
@@ -1433,6 +1442,10 @@ if(STATIC){
     if(status !== 0) console.log('   exit status ' + status + (base.fails.length ? '' : ' (no FAIL line printed — see test.mjs’s own exit code)'));
     base.fails.forEach(f => console.log('   ' + f));
     if(!base.hasDone) console.log('   the run never reached DONE');
+    /* recorded as 'incomplete', never 'fail': a red baseline means no mutation was judged at
+       all, which is a different thing from mutations having escaped. */
+    logRun('mutants.mjs', { file: SRC, verdict: 'incomplete', completed: false,
+      reason: 'baseline not green', shard: SHARD || null });
     process.exit(1);
   }
   console.log('baseline green: ' + out.split('\n').filter(l => l.startsWith('PASS')).length + ' checks\n');
@@ -1450,7 +1463,7 @@ const { execFile } = await import('child_process');
 const os = await import('os');
 const WORKERS = Math.max(1, Math.min(M_RUN.length, +(process.env.MUTANT_WORKERS || os.cpus().length)));
 const runSuite = file => new Promise(res => execFile('node', ['test.mjs', file],
-  {encoding:'utf8', maxBuffer: 64 * 1024 * 1024}, (err, stdout, stderr) => res((stdout || '') + (stderr || ''))));
+  {encoding:'utf8', maxBuffer: 64 * 1024 * 1024, env: CHILD_ENV}, (err, stdout, stderr) => res((stdout || '') + (stderr || ''))));
 /* audit.mjs is a guard file too, and its gates exist to catch defects in index.html — exactly
    what a mutation is. But it reports differently from test.mjs: no PASS lines, no DONE line, one
    "FAIL: label, label" summary and a non-zero exit. classifyMutant() requires an exact DONE line,
@@ -1459,7 +1472,7 @@ const runSuite = file => new Promise(res => execFile('node', ['test.mjs', file],
    mutated file judged by audit.mjs instead. Its exit status is what says whether the gate fired,
    so unlike runSuite this keeps it. */
 const runAudit = file => new Promise(res => execFile('node', ['audit.mjs', file],
-  {encoding:'utf8', maxBuffer: 64 * 1024 * 1024}, (err, stdout, stderr) =>
+  {encoding:'utf8', maxBuffer: 64 * 1024 * 1024, env: CHILD_ENV}, (err, stdout, stderr) =>
     res({ out: (stdout || '') + (stderr || ''), status: err ? (err.code == null ? 1 : err.code) : 0 })));
 function classifyAudit(name, needle, r){
   /* the empty-PQ preflight exits 1 before any gate runs; that is a broken fixture, not a verdict */
@@ -1501,4 +1514,12 @@ for(const r of results){ console.log(r); if(!r.startsWith('CAUGHT')) bad++; }
 if(SHARD) console.log('\n(MUTANT_SHARD ' + SHARD + ': ' + M_RUN.length + ' of ' + M_SEL.length + ' mutations in this shard)');
 if(ONLY.length) console.log('\n(MUTANT_ONLY filter: ' + M_RUN.length + ' of ' + M_FULL.length + ' mutations ran locally; CI runs the full set)');
 console.log('\n' + (M_RUN.length - bad) + ' of ' + M_RUN.length + ' mutations caught (' + WORKERS + ' workers, ' + Math.round((Date.now()-t0)/1000) + ' s)');
+/* `not_caught` counts every non-CAUGHT line — MISSED, INCOMPLETE and any other class alike.
+   It is not a MISSED count, and the ledger must not imply it is: an INCOMPLETE is an
+   uninterpretable verdict, not an escaped mutation, and collapsing the two is the reading
+   this field exists to prevent. The lines themselves are kept so the split is recoverable. */
+logRun('mutants.mjs', { file: SRC, mutations: M_RUN.length, not_caught: bad,
+  not_caught_lines: results.filter(r => r && !r.startsWith('CAUGHT')),
+  verdict: bad ? 'fail' : 'pass', completed: true, shard: SHARD || null,
+  ms: Date.now() - t0 });
 process.exit(bad ? 1 : 0);
