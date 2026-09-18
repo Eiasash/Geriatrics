@@ -13479,6 +13479,14 @@ function srcLabel(src){
   return t.length > 44 ? t.slice(0,44) + '\u2026' : t;
 }
 function sectionForChapter(n){
+  /* ChatGPT third-model audit round 5: SECCH holds chapter numbers, and Array#indexOf is
+     strict — a caller that hands this a string (Object.keys() of a tally object always does)
+     never matches, and falls through to CHFALLBACK, which maps only one primary chapter per
+     section (CHREF[sec][0]) rather than the real per-chapter mapping. Coerce at this
+     function's own boundary so every caller gets the real mapping, not just the ones that
+     remembered to convert first. */
+  n = Number(n);
+  if(!Number.isInteger(n) || n <= 0) return '';
   secChapters('');                       /* force SECCH to build */
   for(const sec in SECCH){ if(SECCH[sec].indexOf(n) >= 0) return sec; }
   return CHFALLBACK[n] || '';
@@ -13746,7 +13754,10 @@ async function mockFinish(auto){
       ).join('') + '</tbody></table></div>' +
     (weak.length ? '<p class="note">Two or more answered wrong in one chapter: ' +
       weak.map(c=>{
-        const sec = sectionForChapter(c);
+        /* c comes from Object.keys(byCh) — always a string; sectionForChapter now coerces at
+           its own boundary too, but keep this explicit to match the sibling call site at
+           pqStuck (ChatGPT third-model audit round 5) */
+        const sec = sectionForChapter(Number(c));
         const txt = 'ch ' + c + ' (' + (byCh[c][1]-byCh[c][0]) + ' wrong of ' + byCh[c][1] + ' answered)';
         return sec
           ? '<button type="button" class="lnk weakgo" data-sec="' + sec + '">' + txt + '</button>'
