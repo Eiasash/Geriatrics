@@ -1257,10 +1257,11 @@ const M = [
 }`,
    'two genuinely concurrent tabs saving different sections'],
   ['mockSaveRun stops merging its own changed answers/flags onto whatever is on disk, and goes back to sending its whole local snapshot as an unconditional overwrite, so a second tab\'s answers to different questions on the same run are erased instead of merged (ChatGPT audit against ACCEPTANCE-round5.md, STALE6)',
-   `      const mergedAF = mergeMockAnswers(cur, seen, mineAns, mineFlag);
-      const mergedI = Math.max(mineI, (cur && cur.i) || 0);`,
-   `      const mergedAF = {a: mineAns, f: mineFlag};
-      const mergedI = mineI;`,
+   /* re-anchored after the Codex-review-of-#459 fixes rewrote these two lines (ownership-scoped
+      merge, and a cursor that is no longer a high-water mark). Same property guarded, same
+      needle — only the text it attaches to moved. */
+   `      const mergedAF = mergeMockAnswers(sameRun ? cur : null, seen, mineAns, mineFlag);`,
+   `      const mergedAF = {a: mineAns, f: mineFlag};`,
    'two-tabs-both-resumed'],
   ['newRunId stops trying crypto.randomUUID and goes straight back to Date.now()+Math.random(), which is not collision-proof under a frozen clock and a repeated RNG sequence (ChatGPT audit against ACCEPTANCE-round5.md, ID2)',
    `function newRunId(){
@@ -1275,6 +1276,18 @@ const M = [
    `  if(!mlSaved || !mkSaved || !pqSaved) notSaved();`,
    `  if(!mlSaved || !mkSaved) notSaved();`,
    'does not clear RUNKEY when the practice-result'],
+  ['the mock Resume handler goes back to claiming an id-less legacy checkpoint under a freshly minted id, so the first checkpoint reads curId "" against that id and closes the resumed mock as superseded (Codex review of #459)',
+   `    mockRunClaimed = !!fresh.id; mockRunObservedId = fresh.id || '';`,
+   `    mockRunClaimed = true; mockRunObservedId = mockRunId;`,
+   'resumes and migrates instead of being declared superseded'],
+  ['mockSaveRun goes back to merging against whatever record is on disk regardless of whose run it is, so a new mock started over a discarded one inherits that run\'s index-keyed answers onto a different question list (Codex review of #459)',
+   `      const mergedAF = mergeMockAnswers(sameRun ? cur : null, seen, mineAns, mineFlag);`,
+   `      const mergedAF = mergeMockAnswers(cur, seen, mineAns, mineFlag);`,
+   'does not inherit that run’s answers or flags'],
+  ['the checkpoint cursor goes back to being a high-water mark, so walking back through the paper keeps writing the furthest question reached and the next resume opens past where the reader actually was (Codex review of #459)',
+   `      const mergedI = mineI;`,
+   `      const mergedI = Math.max(mineI, (cur && cur.i) || 0);`,
+   'moves the saved cursor back too'],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
