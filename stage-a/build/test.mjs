@@ -4210,6 +4210,32 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
 }
 {
+  /* Codex review of #464 (P2): after this tab adopts another tab's cursor, the adopted value goes
+     into MOCKSEEN while local mockI stays where it was. On the next checkpoint nothing has moved
+     anywhere — cur.i === seenI and this tab did not navigate — and the old branch returned the
+     stale LOCAL cursor, writing it back over the one just adopted. Neither side moving must leave
+     the record alone. Driven through #mockFlag, a save that is not a navigation. */
+  const rkeyAd = w.eval('RUNKEY');
+  const qsAd = w.eval("PQ.slice(0,9).map(p=>p.y+'#'+p.n)");
+  w.eval(`mockQs = ${JSON.stringify(qsAd)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 1;
+    mockRunId = 'adopt-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'adopt-run';
+    MOCKSEEN = JSON.stringify({id: 'adopt-run', a: {}, f: {}, i: 1});`);
+  /* the other tab moved to 6; this one has not navigated at all */
+  store[rkeyAd] = w.eval(`JSON.stringify({q: ${JSON.stringify(qsAd)}, fp: mockPaperFp(mockQs), a: {}, f: {},
+    i: 6, iAt: Date.now() - 500, e: 0, t: 0, id: 'adopt-run', rev: 1})`);
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 40));
+  const adAdopted = JSON.parse(store[rkeyAd] || '{}').i;
+  d.getElementById('mockFlag').click();          /* a save, not a navigation */
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 40));
+  const adAfter = JSON.parse(store[rkeyAd] || '{}').i;
+  ok('a cursor adopted from another tab is not rewound by this tab\u2019s next non-navigating save',
+     adAdopted === 6 && adAfter === 6, 'adopted ' + adAdopted + ', after a flag-only save ' + adAfter);
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockFlag = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+}
+{
   /* Codex review of #464 (P2): the cursor's timestamp was taken when the checkpoint ran, not when
      the reader moved. Every save refreshed it, so a flag toggle or a re-answer at the same
      question handed this tab the freshest stamp with no navigation at all — and laterWins() then

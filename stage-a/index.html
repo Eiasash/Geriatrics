@@ -13708,7 +13708,13 @@ function mergeMockCursor(seenI, mineI, mineIAt, mineMoved, cur, now){
      whether THIS side moved is tracked, because an endpoint cannot see a reader who navigated
      away and came back */
   const curMoved = cur.i !== seenI;
-  if(curMoved && !mineMoved) return theirs;
+  /* A tab writes its own cursor only when it actually moved. `!curMoved` used to fall through to
+     `mine` whether or not this tab had moved, which rewound the saved place one checkpoint after
+     adopting another tab's: the adopted cursor goes into MOCKSEEN while local mockI stays where
+     it was, so the next flag-only save saw cur.i === seenI, nothing moved anywhere, and wrote the
+     stale local value back over it (Codex review of #464). Neither side moving means there is
+     nothing to decide — leave the record's cursor alone. */
+  if(!mineMoved) return theirs;
   if(!curMoved) return mine;
   return laterWins();
 }

@@ -1345,7 +1345,9 @@ const M = [
    `  const mineIAt = Date.now(), mineMoved = mockICursorMoved;`,
    'does not refresh the cursor timestamp'],
   ['the cursor merge stops being three-way and falls back to comparing captures, so a legacy record — which carries no timestamp at all — loses the reading its own tab actually moved to, in the very write that rescues its answers (Codex review of #464, P2)',
-   `  if(curMoved && !mineMoved) return theirs;`,
+   /* re-anchored: the "neither side moved" fix collapsed this branch to `if(!mineMoved)`, which
+      covers the same case — this tab did not move, so the record's cursor stands. */
+   `  if(!mineMoved) return theirs;`,
    `  if(false) return theirs;`,
    'cursor the legacy tab moved to'],
   ['a pre-ID tab overwriting this tab\'s freshly claimed record is read as another tab taking the run over again, so the modern tab stands down, the stale id-less record is left on disk, and the reader is told their answers are safe in a run that does not exist (Codex review of #464, P1)',
