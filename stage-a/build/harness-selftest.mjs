@@ -18,6 +18,7 @@
 */
 import { execFileSync } from 'child_process';
 import fs from 'fs';
+import path from 'path';
 import { classifyMutant, baselineOk, guardRecords, resolveNeedle } from './mutants-classify.mjs';
 
 let FAILS = 0;
@@ -253,6 +254,62 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
      resolveNeedle(['text size applies', 'text size applies before the first paint'], 'text size applies').how === 'exact');
   ok('resolveNeedle refuses when two labels contain the needle and neither is exact',
      resolveNeedle(['a text size row', 'another text size row'], 'text size').ok === false);
+}
+
+/* ---- (5) allocate-guard-ids.mjs: retirement is real, and an id is never handed back out ----
+
+   Runs the actual allocator (not a re-implementation of its logic) against a throwaway copy
+   of test.mjs in os.tmpdir(), because the property under test — a freed id staying freed
+   across a retire-then-allocate cycle — only means something if it survives the real
+   insert/retire code path, not a mock of it. */
+{
+  const os = await import('os');
+  const scratchDir = fs.mkdtempSync(path.join(os.tmpdir(), 'guard-id-selftest-'));
+  const scratchFile = path.join(scratchDir, 'test.mjs');
+  const scratchRegistry = path.join(scratchDir, 'guard-ids.json');
+  const run = (...args) => execFileSync('node', ['allocate-guard-ids.mjs', ...args], { encoding: 'utf8' });
+  try{
+    fs.copyFileSync('test.mjs', scratchFile);
+    const common = ['--file', scratchFile, '--registry', scratchRegistry];
+
+    run('--write', ...common);
+    const before = JSON.parse(fs.readFileSync(scratchRegistry, 'utf8'));
+    ok('a fresh allocation pass gives every ok() call an id and starts the counter at 1',
+       Object.keys(before.guards).length >= 600 && before.guards.g0001, 'guards: ' + Object.keys(before.guards).length);
+
+    run(...common);
+    const unchanged = JSON.parse(fs.readFileSync(scratchRegistry, 'utf8'));
+    ok('re-running with no source changes allocates nothing and retires nothing',
+       unchanged.next === before.next && Object.keys(unchanged.retired).length === 0);
+
+    /* delete the ok() call that owns g0002 ('week section exists') and re-run */
+    const src = fs.readFileSync(scratchFile, 'utf8');
+    const line = "ok('week section exists', !!d.getElementById('week'), '', {id:'g0002'});\n";
+    if(src.includes(line)){
+      fs.writeFileSync(scratchFile, src.replace(line, ''), 'utf8');
+      run('--write', ...common);
+      const afterRetire = JSON.parse(fs.readFileSync(scratchRegistry, 'utf8'));
+      ok('deleting a call retires its id, with the label frozen, rather than deleting the record',
+         !afterRetire.guards.g0002 && afterRetire.retired.g0002 && afterRetire.retired.g0002.label.includes('week section exists'));
+
+      /* now add a brand-new check and confirm the retired slot is never reissued */
+      const src2 = fs.readFileSync(scratchFile, 'utf8');
+      const doneLine = 'console.log("DONE");';
+      fs.writeFileSync(scratchFile, src2.replace(doneLine,
+        "ok('scratch: a brand-new check added after a retirement', true);\n" + doneLine), 'utf8');
+      run('--write', ...common);
+      const afterNew = JSON.parse(fs.readFileSync(scratchRegistry, 'utf8'));
+      const newId = afterNew.next - 1;
+      ok('a new check after a retirement gets the next never-used id, not the one just freed',
+         !afterNew.guards.g0002 && afterNew.retired.g0002.status === 'retired' &&
+         afterNew.guards['g' + String(newId).padStart(4, '0')]);
+    } else {
+      ok('the retirement fixture line still exists in test.mjs (update this test if it moved)', false,
+         'expected line not found — allocate-guard-ids.mjs itself is unverified by this run');
+    }
+  } finally {
+    fs.rmSync(scratchDir, { recursive: true, force: true });
+  }
 }
 
 console.log('\n' + FAILS + ' failing harness self-test(s)');
