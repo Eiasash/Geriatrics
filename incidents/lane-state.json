@@ -1,0 +1,50 @@
+{
+  "probed_at": "2026-09-19T15:15:00Z",
+  "probe": "incidents/README.md documents the snippet. It reads each lane's OWN transcript and reports who holds the last turn. last_speaker is derived, not asserted; the *_at times are recorded when a send is verified delivered.",
+  "lanes": {
+    "chat": {
+      "what": "claude.ai project chat - the partner, always first",
+      "last_speaker": "me",
+      "my_last_message_at": "2026-09-19T15:08:00Z",
+      "their_last_message_at": "2026-09-19T14:05:00Z",
+      "my_last_message_chars": 4674,
+      "note": "INC-011 proposal delivered; composing a reply. A reply in flight still counts as my turn held."
+    },
+    "cloud": {
+      "what": "Claude Code cloud - the builder",
+      "last_speaker": "me",
+      "my_last_message_at": "2026-09-19T14:50:00Z",
+      "their_last_message_at": "2026-09-19T14:40:00Z",
+      "my_last_message_chars": 3800,
+      "note": "work order: audit/browser migration + classifyMutant production-path guard"
+    },
+    "chatgpt": {
+      "what": "GPT-6 Astra - outside oracle",
+      "last_speaker": "me",
+      "my_last_message_at": "2026-09-19T15:02:00Z",
+      "their_last_message_at": "2026-09-19T13:30:00Z",
+      "my_last_message_chars": 4388,
+      "note": "round 9 sent, generating"
+    },
+    "codex": {
+      "what": "Codex CLI - outside oracle with a shell",
+      "last_speaker": "me",
+      "my_last_message_at": "2026-09-19T15:05:00Z",
+      "their_last_message_at": "2026-09-19T00:16:00Z",
+      "my_last_message_chars": 4100,
+      "note": "round 2 running; jsdom installed at the worktree root, removing its NOT-RUN blocker. Its round-1 findings went unanswered for ~15h - that gap is INC-011."
+    }
+  },
+  "reports_to_eias": [
+    {
+      "what": "96be605 - two findings from the repaired classifier",
+      "origin_lane": "cloud",
+      "at": "2026-09-19T14:55:00Z"
+    },
+    {
+      "what": "INC-011 logged and proposal put to the partner",
+      "origin_lane": "chat",
+      "at": "2026-09-19T15:12:00Z"
+    }
+  ]
+}
