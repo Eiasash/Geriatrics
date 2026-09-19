@@ -22,12 +22,14 @@ To change the checklist, edit this file only. Agree the change with the SZMC ger
 
 This is the order to run. The sections below are grouped by topic, not by sequence, so each step names the one that details it — §2 and §3 in particular are run in the order here, not the order they appear.
 
+**`incidents/gate.mjs` outranks every step below.** Before any step that reports completion or dispatches to another lane, route it through `incidents/gated-dispatch.cmd` — it refuses to run while a lane's latest item has no decision entry. This is P0 from `incidents/PROTOCOL.md` (the chat lane's post is read and answered before anything else, no exceptions) made structural for the one path the gate actually covers; P0 itself still governs everywhere the gate doesn't reach.
+
 1. **Agree the scope** (§0). Content, sections, schedule, verification rules or project instructions → the project chat concurs first. Pure UI or CI mechanics Eias already asked for → go, but still report.
 2. **Build it** (§1). One bounded task: fix, guard, red test, mutation entry. Nothing speculative.
 3. **CC's own gate** (§1). Suite at three pinned dates, audit/facts/sweep/dashtest, `mutants --static`, the touched mutations under `MUTANT_ONLY`, `harness-selftest`.
 4. **Open the PR** (§1). Arm auto-merge, unless it touches persistence or clinical content — those wait for an outside lane.
 5. **Cheap review, automatically** (§3). Codex reviews on open at no cost. Read it.
-6. **Paid review, deliberately** (§3). `agy`/Gemini on the diff unless the change is trivial, which rule 1 defines the same way: **trivial means it cannot affect the product or the workflow.** A code comment or a typo in prose is trivial. A change to THIS file is not — it alters routing and merge behaviour, which is why the doctrine PR that introduced this rule got a full review and needed one. A deep ChatGPT or Antigravity pass when the cheap lanes disagree, or when a whole subsystem needs auditing rather than a diff.
+6. **Paid review, deliberately** (§3). ChatGPT is the standing non-Claude oracle — Gemini/`agy` was dropped from the automatic loop at Eias's instruction, see "Lane changes" — on the diff unless the change is trivial, which rule 1 defines the same way: **trivial means it cannot affect the product or the workflow.** A code comment or a typo in prose is trivial. A change to THIS file is not — it alters routing and merge behaviour, which is why the doctrine PR that introduced this rule got a full review and needed one. An Antigravity session when the cheap lanes disagree, or when a whole subsystem needs auditing rather than a diff.
 7. **Verify it yourself** (§2). Playwright against the PR head: real behaviour, not proxies.
 8. **Verify every finding in source, then route** (§3). Mechanical, on a PR still open → back onto that PR. Mechanical, after merge → a new PR. Content or scope → the project chat.
 9. **If step 8 pushed to the PR, go back to step 3.** The head has changed, so the local gate, the `agy` review and the Playwright pass all ran against code that is no longer there, and Codex only reviews automatically when a PR OPENS — `@codex review` has to be asked for by hand on every later push. Merging here would land a persistence fix that no lane examined, which is the race the hold exists to prevent.
@@ -94,8 +96,8 @@ Five outside lanes, plus Claude Code itself — the two Codex modes count separa
 
 ### The seven rules
 
-1. **Cheap first.** Codex on GitHub costs nothing and fires by itself, so it runs on every PR without deciding anything. `agy` costs about a minute, so it runs on every PR **except a trivial one — meaning one that cannot affect the product or the workflow**: a code comment, a typo in prose. A change to this file is not trivial by that test, and neither is anything under `stage-a/`. A deep ChatGPT audit or an Antigravity session is the expensive instrument: spend it on a subsystem, a disagreement, or a suspicion — never as a reflex. Step 6 of the pipeline states the same eligibility; if these two ever disagree, this one is wrong, because the pipeline is what someone actually follows.
-2. **Convergence is the confidence signal.** Two lanes reaching the same finding independently is the strongest evidence available here — stronger than any single lane's stated confidence. When two name the same line, treat it as real and go straight to verifying it.
+1. **Cheap first.** Codex on GitHub costs nothing and fires by itself, so it runs on every PR without deciding anything. ChatGPT is the standing non-Claude oracle — Gemini/`agy` was dropped from the automatic loop at Eias's instruction, see "Lane changes" — so it runs on every PR **except a trivial one — meaning one that cannot affect the product or the workflow**: a code comment, a typo in prose. A change to this file is not trivial by that test, and neither is anything under `stage-a/`. An Antigravity session is the expensive instrument beyond that: spend it on a subsystem, a disagreement, or a suspicion — never as a reflex. Step 6 of the pipeline states the same eligibility; if these two ever disagree, this one is wrong, because the pipeline is what someone actually follows.
+2. **Convergence is the confidence signal, only across distinct engines.** Two lanes reaching the same finding independently is the strongest evidence available here — stronger than any single lane's stated confidence — but only when they run on different engines; Codex on GitHub and Codex CLI share a model family and do not corroborate each other (R10: same-family agreement is correlated, not corroborating). When two DISTINCT-ENGINE lanes name the same line, treat it as real and go straight to verifying it.
 3. **Divergence is where to spend attention.** One lane flags what another called clean: that gap is the finding. Do not average the lanes and do not let a majority vote settle it — go and look.
 4. **Execution beats inference.** A lane that ran the code outranks a lane that read it. A runtime claim from a non-executing lane (`agy`, ChatGPT on a pasted diff) is a hypothesis to test, never a finding to route.
 5. **Bound the output at Max.** A lane at its maximum reasoning setting, uncapped, returns a wall of prose in which the real findings are indistinguishable from the padding. Always cap the shape: severity, exact snippet, why, repro for any runtime claim; top N; a word limit; and an explicit "say clean per area" so silence is never ambiguous.
@@ -106,7 +108,7 @@ Five outside lanes, plus Claude Code itself — the two Codex modes count separa
 Gemini web and the old Gemini CLI both fail when driven by Claude. Use `agy` on Eias's PC through Desktop Commander (PowerShell). It is signed in with his Google AI Ultra account.
 
 1. **Build the diff and prompt file** in `C:\Users\eiasa\agy-reviews`:
-   - `git diff <base> <head> -- stage-a > prNNN.diff`
+   - `git diff <base> <head> -- stage-a .claude/skills/stage-a-supervised-change > prNNN.diff` — this doctrine file is itself non-trivial by rule 1's own test, so a change to it must be in the reviewed diff, not just to `stage-a/`.
    - Write `prNNN-prompt.txt` as UTF-8 without BOM, using `[IO.File]::WriteAllText` (never a heredoc).
    - Contents: the reviewer rules, then `DIFF:`, then the diff. Rules: do not use any tools; review only the pasted diff; no patches; no rewording clinical text; sideways tables are by design; `calc(Npx*var(--fs,1))` font sizes; check correctness, accessibility, blind guards, and whether each mutation turns its guard red; severity + exact snippet + why + repro for runtime claims; say clean per area; top 5; under 400 words.
 2. **Run it with the prompt piped on stdin.** Do NOT pass it as an argument: PowerShell splits it, and `--print` swallows the next flag.
@@ -119,10 +121,7 @@ Gemini web and the old Gemini CLI both fail when driven by Claude. Use `agy` on 
    - "no output produced", a permission denial, an error, a refusal, an empty file, or a generic greeting → it did not review. Fix the invocation and re-run; never treat it as "clean".
    - Headless mode auto-denies tools. Keep it that way; never use `--dangerously-skip-permissions`.
 4. **Verify every finding** against the source, using Playwright for runtime claims. Known pattern: static findings are usually right, runtime claims about half wrong, example data sometimes invented, "clean" calls reliable.
-5. **Route findings:**
-   - Mechanical verified defects → CC as a new PR.
-   - Anything touching content or scope → the project chat first.
-   - Tell Eias and the chat what was adopted or rejected, one line each with the reason.
+5. **Route findings:** see "### Routing a verified finding" below — never a bare "→ CC as a new PR" for a mechanical defect on a PR that is still open; a new PR branched off `main` cannot contain a fix for code that hasn't merged yet.
 6. **If `agy` stops working:**
    - Auth expired → open it interactively in a visible window for Eias to sign in again.
    - Unavailable → fall back to Eias pasting the prompt into his own Gemini and screenshotting the answer.
