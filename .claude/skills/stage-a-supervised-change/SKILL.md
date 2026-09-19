@@ -137,6 +137,15 @@ deletes one rule while another still enforces it, certifies nothing.
 **Reds can be uninterpretable, and that is a reportable state.** A verdict you cannot explain is
 reported as uninterpretable. Never resolve it by re-running: repetition is not validation.
 
+**RESTORED — this was deleted in `1949b61` and its absence was caught by the chat lane, not by me.
+Required for merge:** `validate`, `js-integrity`, `scan`, `claude-review`. **`guards` and `mutants`
+are NOT required** — a mutation regression, or a review posted while auto-merge is counting down,
+lands anyway. Read the shard results before treating a merge as clean. This is the single most
+load-bearing fact in this file and the easiest to lose: every guard, every mutation, every
+certification argument in this document sits behind checks that **do not gate the merge**. All that
+work raises what you KNOW, not what the repository ENFORCES. Deleting this sentence makes the rest
+of the file read as stronger than it is, which is exactly why it must not go missing again.
+
 **"No verdict" is not "passed".** Path filtering can skip the stage-a workflow entirely, so a green
 checks list on main can mean the guard suite never ran. Check which workflow actually produced the
 last verdict on the branch you are about to trust.
