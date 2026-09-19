@@ -35,16 +35,12 @@
       "note": "round 2 running; jsdom installed at the worktree root, removing its NOT-RUN blocker. Its round-1 findings went unanswered for ~15h - that gap is INC-011."
     }
   },
+  "reports_to_eias_note": "ROLLING WINDOW, current cycle only. A past violation stays here only until it is logged, then the permanent record is the incident entry. Keeping a historical breach in live state would hold CI red forever on something already recorded and remediated - which is the red-fatigue failure the chat lane warned about, and a CI that is reliably red stops being read. The 96be605 PARTNER-LAST breach - it reached Eias at 14:55 while the chat lane knew nothing until 15:08 - is permanently recorded in incidents.jsonl as part of INC-011, not erased.",
   "reports_to_eias": [
     {
-      "what": "96be605 - two findings from the repaired classifier",
-      "origin_lane": "cloud",
-      "at": "2026-09-19T14:55:00Z"
-    },
-    {
-      "what": "INC-011 logged and proposal put to the partner",
+      "what": "INC-011 logged, protocol hardcoded, PRs triaged",
       "origin_lane": "chat",
-      "at": "2026-09-19T15:12:00Z"
+      "at": "2026-09-19T15:30:00Z"
     }
   ]
 }
