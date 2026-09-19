@@ -245,18 +245,29 @@ export function classifyById(name, target, out, baselinePasses, exitStatus) {
      substring-matching path this fix exists to remove) — zero guard records at all in a run
      that was supposed to certify by id is refused, not silently downgraded to text matching */
   if (!rec.guards.length) return 'UNCERTIFIABLE ' + name + '  — this run emitted no guard records at all; nothing to certify against';
-  const matches = rec.guards.filter(g => g.id === target.id);
-  /* the target id shared by records whose labels disagree WITHIN THIS RUN — a duplicate/
-     retired-id-reuse defect surfacing at classification time instead of at allocation time.
-     Different from the baseline-side check in resolveTargetId: that one catches it in the
-     baseline; this one catches it if a mutation itself somehow produces the collision. */
-  const distinctLabels = new Set(matches.map(g => g.label));
-  if (distinctLabels.size > 1) return 'UNCERTIFIABLE ' + name + '  — id "' + target.id +
-    '" is carried by records with different labels in this run: ' + [...distinctLabels].slice(0, 3).map(l => '"' + l + '"').join(', ');
+  /* Found live, chasing a real MISSED after this fix shipped: a call site inside a loop (the
+     search-highlighting guard, one id, fired once per search term with the term baked into the
+     label) legitimately produces several records sharing one id with DIFFERENT labels in a
+     single run. Refusing on "id shared by disagreeing labels" alone — the first cut of this
+     check — made that guard UNCERTIFIABLE every time, a false refusal on a guard that was
+     working correctly. The real target of a "shared-id different-case" collision is narrower:
+     records that agree on BOTH id and the resolved label but disagree on what happened —
+     genuine self-contradiction, not "this call site also fired for a different search term".
+     Matching on the id+label PAIR (not id alone) is what the baseline resolution already
+     promised: target.label is the exact string resolveTargetId resolved this id to, and a
+     sibling record under the same id with a different label was never a candidate witness for
+     THIS target to begin with — it is simply a different firing of the same loop, irrelevant
+     noise, not evidence of anything. */
+  const matches = rec.guards.filter(g => g.id === target.id && g.label === target.label);
+  const distinctVerdicts = new Set(matches.map(g => g.verdict));
+  if (matches.length > 1 && distinctVerdicts.size > 1) return 'UNCERTIFIABLE ' + name + '  — id "' + target.id +
+    '" with label "' + target.label + '" disagrees with itself in this run (' +
+    [...distinctVerdicts].join(' and ') + ') — genuinely self-contradictory, not a verdict either way';
   /* THE FIX, this is the line that matters: absence is its own outcome, not "passed" and not
      "some other guard failed instead". MISSED still means exactly what it always meant — the
      intended check ran and did not detect the defect. Nothing here was detected because
-     nothing here ran. */
+     nothing here ran — including the case where this id fired for OTHER loop iterations but
+     never for the one this target actually names. */
   if (!matches.length) return 'UNCERTIFIABLE ' + name + '  — no record with id "' + target.id + '" ("' +
     target.label + '") appears in this run; the guard the mutation exists to exercise never ran — not that it passed, and not that some other guard caught it instead';
   const failed = matches.filter(g => g.verdict === 'fail');

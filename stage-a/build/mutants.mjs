@@ -1047,7 +1047,7 @@ const M = [
   ['a live selection no longer freezes the header’s auto-hide',
    "if(typeof hdrSetFrozen === 'function') hdrSetFrozen(up);",
    '',
-   'a live selection freezes the header’s auto-hide', undefined, {id:'m0192'}],
+   'clearing the selection un-freezes the header’s auto-hide', undefined, {id:'m0192'}],
 
   ['the docked highlight bar stops re-anchoring to the top when the header is hidden',
    'body.hdr-hidden #hlBar{ top:env(safe-area-inset-top) !important; }',

@@ -450,10 +450,34 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
   ok('VARIANT — malformed record beside a valid target failure: one unparseable record anywhere in the stream refuses the whole run, even though the target itself looks fine',
      malformedVerdict.startsWith('UNCERTIFIABLE'), malformedVerdict);
 
-  const sharedIdMutant = bodyN([G('g0001', 'target', 'fail'), G('g0001', 'target RENAMED', 'pass')]);
-  const sharedIdVerdict = classifyById('m', target, sharedIdMutant, baselinePasses, 1);
-  ok('VARIANT — shared-id different-case: two records sharing the target id but disagreeing on label within one run refuses, rather than picking one',
-     sharedIdVerdict.startsWith('UNCERTIFIABLE'), sharedIdVerdict);
+  /* VARIANT — shared-id different-case, corrected shape. The first draft of this check refused
+     on ANY id shared by disagreeing labels within a run — which turned out to be exactly the
+     shape of a legitimate loop-driven guard (search highlighting fires the same id once per
+     search term, with the term baked into the label) and produced a false UNCERTIFIABLE on a
+     guard that was working correctly (found live, on this PR, chasing a real MISSED after this
+     fix shipped). The genuine collision this must still refuse is narrower: the SAME id AND the
+     SAME resolved label disagreeing with itself — not two different labels sharing an id, which
+     is just two different loop iterations and not a collision at all. */
+  const trueSelfContradiction = bodyN([G('g0001', 'target', 'fail'), G('g0001', 'target', 'pass')]);
+  const contradictionVerdict = classifyById('m', target, trueSelfContradiction, baselinePasses, 1);
+  ok('VARIANT — shared-id different-case (corrected): the SAME id+label pair disagreeing with itself within one run refuses, rather than picking one',
+     contradictionVerdict.startsWith('UNCERTIFIABLE'), contradictionVerdict);
+
+  /* the loop-guard regression this correction exists for: one id, several records with
+     DIFFERENT labels in the same run (different search terms) — not a collision, and the
+     target's own specific label must still be classified correctly (CAUGHT here) rather than
+     refused just because a sibling loop iteration used the same id */
+  const loopGuardMutant = bodyN([G('g0001', 'target', 'fail'), G('g0001', 'target: a different loop iteration', 'pass')]);
+  const loopGuardVerdict = classifyById('m', target, loopGuardMutant, baselinePasses, 1);
+  ok('REGRESSION GUARD — a loop-driven guard (one id, several differently-labelled records in one run) is classified on its OWN label, not refused for a sibling iteration sharing the id',
+     loopGuardVerdict === 'CAUGHT m', loopGuardVerdict);
+
+  /* and the mirror: the target's OWN label never fired at all, even though the id fired for
+     OTHER loop iterations — this is absence for THIS target, same as if the id never appeared */
+  const loopGuardAbsentMutant = bodyN([G('g0001', 'target: a different loop iteration', 'pass')]);
+  const loopGuardAbsentVerdict = classifyById('m', target, loopGuardAbsentMutant, baselinePasses, 1);
+  ok('REGRESSION GUARD — a loop-driven guard whose id fired for OTHER iterations but never for this target’s own label is UNCERTIFIABLE (absence), not credited via a sibling',
+     loopGuardAbsentVerdict.startsWith('UNCERTIFIABLE'), loopGuardAbsentVerdict);
 
   /* Also refuse at the BASELINE side of the same defect: two records sharing one label but
      carrying different ids — resolveTargetId must not silently pick one. */
