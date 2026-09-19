@@ -35,6 +35,18 @@
       "note": "round 2 running; jsdom installed at the worktree root, removing its NOT-RUN blocker. Its round-1 findings went unanswered for ~15h - that gap is INC-011."
     }
   },
+  "dispatch_log": [
+    { "lane": "chat", "at": "2026-09-19T15:08:00Z", "what": "INC-011 proposal" },
+    { "lane": "cloud", "at": "2026-09-19T14:50:00Z", "what": "work order: audit/browser migration" },
+    { "lane": "chatgpt", "at": "2026-09-19T15:02:00Z", "what": "round 9" },
+    { "lane": "codex", "at": "2026-09-19T15:05:00Z", "what": "round 2" }
+  ],
+  "decision_log": [
+    { "lane": "chatgpt", "in_reply_to": "r8-findings", "status": "adopted", "what": "red test + positive control adopted verbatim; shared-id variant narrowed to id+label pair" },
+    { "lane": "codex", "in_reply_to": "r1-findings", "status": "adopted", "what": "P1 confirmed and fixed; allocator + ledger-pin findings in the work order; thrown-predicate refinement adopted over my stronger claim" },
+    { "lane": "cloud", "in_reply_to": "96be605", "status": "adopted", "what": "both findings accepted; id+label narrowing is a correction to my work order, not its implementation" },
+    { "lane": "chat", "in_reply_to": "inc011-verdict", "status": "adopted", "what": "ship labelled GUARD; build point 4 — the rendered view gated by the open-loop computation" }
+  ],
   "reports_to_eias_note": "ROLLING WINDOW, current cycle only. A past violation stays here only until it is logged, then the permanent record is the incident entry. Keeping a historical breach in live state would hold CI red forever on something already recorded and remediated - which is the red-fatigue failure the chat lane warned about, and a CI that is reliably red stops being read. The 96be605 PARTNER-LAST breach - it reached Eias at 14:55 while the chat lane knew nothing until 15:08 - is permanently recorded in incidents.jsonl as part of INC-011, not erased.",
   "reports_to_eias": [
     {
