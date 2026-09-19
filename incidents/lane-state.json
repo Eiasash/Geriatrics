@@ -5,11 +5,11 @@
     "chat": {
       "what": "claude.ai project chat - the partner, always first",
       "last_speaker": "me",
-      "my_last_message_at": "2026-09-19T15:30:00Z",
-      "their_last_message_at": "2026-09-19T15:26:00Z",
+      "my_last_message_at": "2026-09-19T15:40:00Z",
+      "their_last_message_at": "2026-09-19T16:06:00Z",
       "my_last_message_chars": 4674,
-      "note": "reset-before-each-case flagged and implemented; C2/C1 controls reported; they confirmed received and are waiting on the reviewer packet.",
-      "their_last_item_id": "c2-confirmed-received"
+      "note": "proposed persisting the fetched text at fetch time; adopted, built, red-tested.",
+      "their_last_item_id": "persist-capture-proposal"
     },
     "cloud": {
       "what": "Claude Code cloud - the builder",
@@ -154,6 +154,89 @@
       "status": "adopted",
       "at": "2026-09-19T15:36:00Z",
       "what": "RE-RECORDED with a real timestamp, same reason and same caveat as the cloud entry above."
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "direct-fetch-proposal",
+      "status": "adopted",
+      "at": "2026-09-19T15:56:00Z",
+      "what": "their narrow fix adopted and built: decision entries for a fetchable lane must carry direct-fetch source evidence. Red-tested in 5 cases including a positive control, and each blocking case verified to block for the reason its label states. Their scoping accepted too - this closes the INC-012 channel only, not the general relayed-content problem.",
+      "source": {
+        "via": "direct-fetch",
+        "extractor": "strip-thinking-preamble@v1",
+        "chars": 2740,
+        "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61",
+        "fetched_at": "2026-09-19T15:58:00Z",
+        "reads": [
+          {
+            "chars": 2740,
+            "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61"
+          },
+          {
+            "chars": 2740,
+            "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61"
+          }
+        ],
+        "reads_note": "two independent reads 1.2s apart, agreed exactly. SELF-REPORTED: the gate checks the record is internally consistent, not that the reads happened."
+      },
+      "source_superseded": {
+        "reason": "digest was computed over the rendered DOM node including the app thinking-header preamble, whose repeat count is not stable. The same unchanged message measured 2900 chars then 2794. The gate accepted it because it only checked that a digest existed.",
+        "was": {
+          "via": "direct-fetch",
+          "chars": 2900,
+          "digest": "sha256:1d13237a8cb64eeefff0450027347771"
+        }
+      }
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "digest-mismatch-check",
+      "status": "adopted",
+      "at": "2026-09-19T16:02:00Z",
+      "what": "their mismatch was a real defect, not a serialization gap. Digest was non-deterministic (2900 vs 2794 on the same unchanged message) because it hashed UI chrome. Extractor made explicit, two agreeing reads now required, and the record that the old rule ACCEPTED is red-tested to be rejected by the new one.",
+      "source": {
+        "via": "direct-fetch",
+        "extractor": "strip-thinking-preamble@v1",
+        "chars": 2740,
+        "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61",
+        "fetched_at": "2026-09-19T15:58:00Z",
+        "reads": [
+          {
+            "chars": 2740,
+            "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61"
+          },
+          {
+            "chars": 2740,
+            "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61"
+          }
+        ]
+      }
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "persist-capture-proposal",
+      "status": "adopted",
+      "at": "2026-09-19T16:12:00Z",
+      "what": "adopted their diagnosis over my own fix. The substrate was wrong, not the extractor: a windowed DOM render cannot back a durable digest. Fetched text is now persisted at fetch time and the gate RECOMPUTES the digest from the file - the first check here that verifies rather than inspects. Their framing kept: ONE finding about the foundation, not two of increasing severity.",
+      "source": {
+        "via": "direct-fetch",
+        "extractor": "strip-thinking-preamble@v1",
+        "chars": 2187,
+        "digest": "sha256:09465c198df765a5fc836b6b26d218bc97bd54ac2778b135efedd7276b1a5bc2",
+        "capture": "incidents/captures/chat-2026-09-19T160601Z.txt",
+        "fetched_at": "2026-09-19T16:06:01Z",
+        "reads": [
+          {
+            "chars": 2187,
+            "digest": "sha256:09465c198df765a5fc836b6b26d218bc97bd54ac2778b135efedd7276b1a5bc2"
+          },
+          {
+            "chars": 2187,
+            "digest": "sha256:09465c198df765a5fc836b6b26d218bc97bd54ac2778b135efedd7276b1a5bc2"
+          }
+        ],
+        "transfer_note": "page could not POST to 127.0.0.1 (CSP) and clipboard write hung, so the text was moved in four chunks and the reassembled file was verified against the page-computed digest: exact match at 2187 chars. The transfer is proven lossless rather than assumed."
+      }
     }
   ],
   "reports_to_eias_note": "ROLLING WINDOW, current cycle only. A past violation stays here only until it is logged, then the permanent record is the incident entry. Keeping a historical breach in live state would hold CI red forever on something already recorded and remediated - which is the red-fatigue failure the chat lane warned about, and a CI that is reliably red stops being read. The 96be605 PARTNER-LAST breach - it reached Eias at 14:55 while the chat lane knew nothing until 15:08 - is permanently recorded in incidents.jsonl as part of INC-011, not erased.",
@@ -163,5 +246,9 @@
       "origin_lane": "chat",
       "at": "2026-09-19T15:30:00Z"
     }
-  ]
+  ],
+  "direct_fetch_lanes": [
+    "chat"
+  ],
+  "direct_fetch_note": "Lanes whose transcript can be fetched directly. A decision entry for one of these may not rest on a relay or a paraphrase: it must carry source {via:\"direct-fetch\", chars, digest, fetched_at} produced by reading that lane's own page. Added after INC-012. It closes that specific channel and nothing wider: a verbal report, a screenshot, or any source that cannot be fetched is outside it, and a digest proves a record was produced, not that it came from that page."
 }
