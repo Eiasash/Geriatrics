@@ -1591,15 +1591,35 @@ const runAudit = file => new Promise(res => execFile('node', ['audit.mjs', file]
 const runBrowser = file => new Promise(res => execFile('node', ['browser-check.mjs', file],
   {encoding:'utf8', maxBuffer: 64 * 1024 * 1024, timeout: 60000, env: CHILD_ENV}, (err, stdout, stderr) =>
     res({ out: (stdout || '') + (stderr || ''), status: err ? (err.code == null ? 1 : err.code) : 0 })));
-function classifyAudit(name, needle, r){
-  /* the empty-PQ preflight exits 1 before any gate runs; that is a broken fixture, not a verdict */
+/* TASK 1 of the review-lane ruling that produced the P1 fix elsewhere in this file: audit.mjs
+   and browser-check.mjs report one aggregate "FAIL: label1, label2" summary line, with no
+   per-check id and no ##GUARD-style structured record — a fundamentally different shape from
+   test.mjs's machine-readable stream. The old classifyAudit read that line with
+   `failLine.includes(needle)`, which is exactly the substring-matching defect classifyById
+   was built to close for the default runner: it can credit a DIFFERENT gate whose label
+   happens to contain the needle, or MISS a gate whose label does not literally embed it.
+
+   Migrating these two runners to structured, id-tagged records — a new allocator convention
+   for check()'s three-argument, non-assertion call shape, mirroring what allocate-guard-ids.mjs
+   already does for test.mjs's ok() — is a differently-shaped job that has not been done. Chosen
+   instead, per direction: mark every audit/browser mutation entry UNCERTIFIABLE BY
+   CONSTRUCTION. This is honest, and strictly better than a guessed verdict, because it says
+   "this cannot be certified" instead of quietly being wrong. A narrower, bounded substring
+   match was explicitly ruled out — bounding it is what cc79e75 already tried, for the default
+   runner, and it was still a substring match.
+
+   The subprocess still runs and its raw output is still returned in the mutation's own message,
+   so a human reading CI logs has the same evidence as before; only the CAUGHT/MISSED guess is
+   gone. The one branch kept is INCOMPLETE for the empty-PQ preflight case — that is a captured
+   exit-status/preflight fact, not a substring match, and remains a fine thing to say plainly. */
+function classifyAudit(name, needle, r, runner){
   if(/^FATAL/m.test(r.out)) return 'INCOMPLETE  ' + name + '  — audit.mjs stopped at its own preflight before reaching any gate; not a verdict';
-  if(r.status === 0) return 'MISSED  ' + name;
   const failLine = r.out.split('\n').find(l => l.startsWith('FAIL:')) || '';
-  /* a non-zero exit alone is not enough: the mutation has to trip THIS gate, not some unrelated
-     one it happened to break on the way past */
-  if(!failLine.includes(needle)) return 'MISSED  ' + name + '  — audit.mjs failed, but on "' + failLine.trim() + '", not the gate this mutation targets';
-  return 'CAUGHT  ' + name;
+  return 'UNCERTIFIABLE ' + name + '  — the \'' + runner + '\' runner reports one aggregate FAIL line with ' +
+    'no per-check id, so matching its needle ("' + needle + '") to the specific gate it targets is the same ' +
+    'substring-matching defect classifyById exists to close for every other runner; not migrated to structured ' +
+    'records yet (see the comment above). Raw evidence, not a verdict: exit ' + r.status +
+    (failLine ? ', ' + failLine.trim() : ', no FAIL line') + '.';
 }
 const results = new Array(M_RUN.length);
 let next = 0;
@@ -1616,13 +1636,13 @@ async function worker(){
     if(runner === 'audit'){
       const r = await runAudit(tmp);
       try{ fs.unlinkSync(tmp); }catch(e){}
-      results[i] = classifyAudit(name, needle, r);
+      results[i] = classifyAudit(name, needle, r, runner);
       continue;
     }
     if(runner === 'browser'){
       const r = await runBrowser(tmp);
       try{ fs.unlinkSync(tmp); }catch(e){}
-      results[i] = classifyAudit(name, needle, r);
+      results[i] = classifyAudit(name, needle, r, runner);
       continue;
     }
     const { out, status } = await runSuite(tmp);
