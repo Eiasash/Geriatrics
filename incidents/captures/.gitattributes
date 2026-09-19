@@ -1,0 +1,8 @@
+# Captures are evidence: their bytes are what a digest is recomputed over. Git's CRLF
+# conversion on checkout would change those bytes on another machine and the gate would
+# report a digest mismatch on a capture nobody touched. Pinned to LF.
+#
+# The gate also normalises CRLF before hashing, so this is belt and braces - deliberately,
+# because the two failures look identical from the outside (a mismatch) and only one of
+# them means what the message says.
+*.txt -text eol=lf
