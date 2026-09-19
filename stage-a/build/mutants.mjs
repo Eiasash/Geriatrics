@@ -80,7 +80,10 @@ const M = [
   ['abbreviation in the pop-out stops closing the dialog',
    "const inModal = a.closest('#tblModal');",
    "const inModal = false;",
-   'finds its footnote and closes'],
+   /* re-pointed: #463 split this check in two, and this mutation breaks the STRUCTURAL half —
+      the line it removes is one of the three that guard matches for. The behavioural half has
+      its own entry further down, mutating only the close. */
+   'abbreviation handler still falls back'],
 
   ['all-wrong small samples hidden again',
    "const weakEnough = t => (t.n >= 4 && (t.n - t.w) / t.n < 0.65) || (t.n >= 2 && t.w === t.n);",
@@ -95,7 +98,10 @@ const M = [
   ['pre-paint script accepts any text size',
    "if(['s','m','l','xl'].indexOf(v.fs) >= 0) document.body.classList.add('fs-' + v.fs);",
    "if(v.fs) document.body.classList.add('fs-' + v.fs);",
-   'only accepts a size it knows'],
+   /* re-pointed for the same reason: removing the whitelist array breaks the structural guard
+      too, and #463 relabelled it. The behavioural half is the `|| v.fs` entry further down,
+      which leaves the array intact so only the driven check can see it. */
+   'pre-paint whitelist is in the source'],
 
   ['mock draws answered questions as unseen',
    "const fresh = pool.filter(p=>pqDone[pqKey(p)] === undefined);",
@@ -1196,9 +1202,14 @@ const M = [
    `    let fresh = v;`,
    'not the boot-time snapshot'],
   ['mockSaveRun stops rejecting a stale writer, so a checkpoint for a run another tab has already superseded overwrites that tab’s record instead of standing down (ChatGPT third-model audit round 4, data-loss cluster item 3)',
-   `      const expected = mockRunClaimed ? mockRunId : mockRunObservedId;
-      if(curId !== expected){ if(mockOn) mockRunSuperseded(); return; }`,
-   `      const expected = mockRunClaimed ? mockRunId : mockRunObservedId;`,
+   /* re-anchored where #464's legacy reclaim turned this one-liner into a block. Same
+      property, same needle: a writer whose run another tab has taken over must not write.
+      Dropping only the alert and keeping the `return` is a DIFFERENT property — it was tried
+      here first and came back MISSED, because the check that catches it is the sibling one
+      about telling the reader, whose label does not carry this needle. The stand-down itself
+      has to go for this mutation to mean what its name says. */
+   `        if(!legacyReclaim){ if(mockOn) mockRunSuperseded(); return; }`,
+   ``,
    'superseded by another tab'],
   /* "mockSaveRun stops serializing its checkpoint writes through mockRunChain" (de-chaining
      it to Promise.resolve().then(...) instead) is retired: with the per-write ownership
@@ -1260,7 +1271,7 @@ const M = [
    /* re-anchored after the Codex-review-of-#459 fixes rewrote these two lines (ownership-scoped
       merge, and a cursor that is no longer a high-water mark). Same property guarded, same
       needle — only the text it attaches to moved. */
-   `      const mergedAF = mergeMockAnswers(sameRun ? cur : null, seen, mineAns, mineFlag);`,
+   `      const mergedAF = mergeMockAnswers(sameRun ? cur : null, legacyReclaim ? {} : seen, mineAns, mineFlag);`,
    `      const mergedAF = {a: mineAns, f: mineFlag};`,
    'two-tabs-both-resumed'],
   ['newRunId stops trying crypto.randomUUID and goes straight back to Date.now()+Math.random(), which is not collision-proof under a frozen clock and a repeated RNG sequence (ChatGPT audit against ACCEPTANCE-round5.md, ID2)',
@@ -1281,13 +1292,68 @@ const M = [
    `    mockRunClaimed = true; mockRunObservedId = mockRunId;`,
    'resumes and migrates instead of being declared superseded'],
   ['mockSaveRun goes back to merging against whatever record is on disk regardless of whose run it is, so a new mock started over a discarded one inherits that run\'s index-keyed answers onto a different question list (Codex review of #459)',
-   `      const mergedAF = mergeMockAnswers(sameRun ? cur : null, seen, mineAns, mineFlag);`,
-   `      const mergedAF = mergeMockAnswers(cur, seen, mineAns, mineFlag);`,
+   `      const mergedAF = mergeMockAnswers(sameRun ? cur : null, legacyReclaim ? {} : seen, mineAns, mineFlag);`,
+   `      const mergedAF = mergeMockAnswers(cur, legacyReclaim ? {} : seen, mineAns, mineFlag);`,
    'does not inherit that run’s answers or flags'],
   ['the checkpoint cursor goes back to being a high-water mark, so walking back through the paper keeps writing the furthest question reached and the next resume opens past where the reader actually was (Codex review of #459)',
-   `      const mergedI = mineI;`,
-   `      const mergedI = Math.max(mineI, (cur && cur.i) || 0);`,
+   /* re-anchored twice now, as #462 then #464 moved this decision — into mergeMockCursor's
+      "only this tab moved" branch. Same property, same needle: a reader walking backward must
+      take the saved cursor with them, and the high-water mark still overrides the merge. */
+   `  if(!curMoved) return mine;`,
+   `  if(!curMoved) return {i: Math.max(mineI, cur.i), iAt: mineIAt};`,
    'moves the saved cursor back too'],
+
+  /* ---- Codex review of #462, posted four minutes before that PR auto-merged and therefore
+     against code already on main. Both reproduce; both red tests are in test.mjs. ---- */
+  ['mockSaveRun goes back to reading every id-less record as "not this run", so a migration\'s first write asserts this tab\'s boot-time snapshot over a legacy record a still-open pre-ID tab updated in the meantime, and everything that tab added is silently erased (Codex review of #462, P1)',
+   /* re-anchored after #464 moved sameList above the ownership check and added the content
+      fingerprint; same property, same needle */
+   `      const sameRun = !!(cur && (cur.id ? cur.id === forId : sameList));`,
+   `      const sameRun = !!(cur && cur.id === forId);`,
+   'old tab updated mid-migration'],
+  ['the saved cursor goes back to raw last-commit-wins, so a checkpoint captured at an earlier question but queued behind its own tab\'s in-flight write lands after a later one from another tab and rewinds the reader\'s place (Codex review of #462, P2)',
+   /* re-anchored onto mergeMockCursor's tie-break, which is where #464 moved this decision.
+      Same property: the later capture must win a genuine two-tab race. */
+   `    return cur.iAt > mineIAt ? theirs : mine;`,
+   `    return mine;`,
+   'reaches the lock late'],
+
+  /* ---- Codex review of #464: four findings on the PR that fixed the previous two, two of them
+     P1. All four reproduce, and one was derived from the fixture of the test added in that PR.
+     Each red test is in test.mjs. ---- */
+  ['mockPaperFp stops covering the option text and the key, so its fingerprint is just the question slots again and an edited paper is indistinguishable from the one the answers were given against (Codex review of #464, P1)',
+   `    const s = p.y + '#' + p.n + '\u0001' + (p.q || '') + '\u0001' + (p.o || []).join('\u0002') + '\u0001' + (p.a || '');`,
+   `    const s = p.y + '#' + p.n;`,
+   'fingerprint changes when the options are reordered'],
+  ['mockPaperFp stops covering the question stem, so a deployment that rewords what a question ASKS \u2014 leaving y#n, the options and the key untouched \u2014 is invisible to the content check and old answers are restored against it (Codex review of #464, P1)',
+   `p.y + '#' + p.n + '\u0001' + (p.q || '') + '\u0001'`,
+   `p.y + '#' + p.n + '\u0001'`,
+   'when only the stem is reworded'],
+  ['the cursor merge stops rejecting a stamp from the future, so a record written while that device\'s clock ran ahead beats every later capture and the saved place stays frozen until wall time catches up (Codex review of #464, P2)',
+   /* re-anchored: the first fix bounded this with a five-minute window, which also discarded any
+      genuine interleaving longer than five minutes. A duration cannot tell a slow tab from a
+      wrong clock; a stamp later than the moment we are reading it can only be a wrong clock. */
+   `    if(cur.iAt > now) return mine;`,
+   `    if(false) return mine;`,
+   'freeze the saved place'],
+  ['setMockI stops recording that the reader moved, so movement is inferred from endpoints again and a reader who navigated away and came back reads as having stayed put, losing their place to another tab\'s older reading (Codex review of #464, P2)',
+   `function setMockI(n){ if(n !== mockI){ mockI = n; mockICursorMoved = true; mockIAtMoved = Date.now(); } }`,
+   `function setMockI(n){ mockI = n; mockIAtMoved = Date.now(); }`,
+   'navigated away and back still counts as having moved'],
+  ['the cursor timestamp goes back to being taken at save time rather than at the move, so a flag toggle or a re-answer at the same question hands this tab the freshest stamp with no navigation at all and beats another tab\'s genuinely later move (Codex review of #464, P2)',
+   `  const mineIAt = mockIAtMoved, mineMoved = mockICursorMoved;`,
+   `  const mineIAt = Date.now(), mineMoved = mockICursorMoved;`,
+   'does not refresh the cursor timestamp'],
+  ['the cursor merge stops being three-way and falls back to comparing captures, so a legacy record — which carries no timestamp at all — loses the reading its own tab actually moved to, in the very write that rescues its answers (Codex review of #464, P2)',
+   /* re-anchored: the "neither side moved" fix collapsed this branch to `if(!mineMoved)`, which
+      covers the same case — this tab did not move, so the record's cursor stands. */
+   `  if(!mineMoved) return theirs;`,
+   `  if(false) return theirs;`,
+   'cursor the legacy tab moved to'],
+  ['a pre-ID tab overwriting this tab\'s freshly claimed record is read as another tab taking the run over again, so the modern tab stands down, the stale id-less record is left on disk, and the reader is told their answers are safe in a run that does not exist (Codex review of #464, P1)',
+   `        legacyReclaim = mockRunMigrated && mockRunWrote && !curId && sameList && sameContent && continues;`,
+   `        legacyReclaim = false;`,
+   'reclaimed, not read as another tab'],
 
   /* ---- red tests for the weak-check rewrites (ChatGPT audit of the SUITE, not the app: ~234
      of 618 checks were weaker than their labels). Each mutation below breaks the behaviour the
@@ -1332,6 +1398,33 @@ const M = [
    `      if(inModal){`,
    `      if(false){`,
    'pop-out closes the dialog'],
+
+  /* ---- Codex round 3 on #464, plus the two policy calls Eias made on it ---- */
+  ['Resume stops noticing that the saved paper has been edited since these answers were given, so the score is presented with no caveat and the reader is told a percentage that may be wrong in either direction (Codex review of #464, P1 — ACCEPTANCE-round5.md ID4)',
+   `    mockPaperChanged = !!fresh.chg ||
+      (typeof fresh.fp === 'string' && fresh.fp !== mockPaperFp(mockQs));`,
+   `    mockPaperChanged = false;`,
+   'fingerprint does not match the paper this build serves'],
+  ['the changed-paper flag stops being written onto the record, so it survives in memory only and a reload presents the same score with no caveat at all (Eias\'s call on Codex #464: keep the answers and warn)',
+   `        q: qList, fp: qFp, chg: (mockPaperChanged || !!(sameRun && cur && cur.chg)) ? 1 : 0,`,
+   `        q: qList, fp: qFp, chg: 0,`,
+   'carries the flag, so a reload still knows'],
+  ['the fingerprint goes back to gating the MERGE rather than the warning, which is the shape that made this worse: Resume has already loaded the old answers, so refusing to merge writes every one of them back under the current fingerprint, certifying exactly what could not be certified (Codex review of #464, P1)',
+   `      const sameRun = !!(cur && (cur.id ? cur.id === forId : sameList));`,
+   `      const sameRun = !!(cur && sameContent && (cur.id ? cur.id === forId : sameList));`,
+   'edited paper are kept, not silently re-certified'],
+  ['the reclaim stops requiring the id-less record to be a continuation of what this tab last wrote, so a backup the reader restored mid-run is absorbed and partly undone as if the pre-ID tab had written it (Eias\'s call on Codex #464: reclaim a continuation only)',
+   `            continues = Object.keys(lastA).every(k => !(k in cur.a) || cur.a[k] === lastA[k]);`,
+   `            continues = true;`,
+   'NOT a continuation is left alone'],
+  ['the reclaim goes back to treating a merely-behind legacy snapshot as foreign, so the ordinary clobber \u2014 where the old tab simply never saw this tab\'s newest answer \u2014 is classified as a restore and stood down on (Codex review of #464, P1)',
+   `            continues = Object.keys(lastA).every(k => !(k in cur.a) || cur.a[k] === lastA[k]);`,
+   `            continues = Object.keys(lastA).every(k => cur.a[k] === lastA[k]);`,
+   'merely behind is still reclaimed'],
+  ['the reclaim keeps the seen-baseline, so an answer this tab wrote that the pre-ID tab\'s snapshot never carried looks unchanged-since-seen, is left out of the merge, and is lost by the very write that rescues the legacy tab\'s answers (Codex review of #464, P1)',
+   `legacyReclaim ? {} : seen, mineAns, mineFlag);\n      /* the cursor`,
+   `seen, mineAns, mineFlag);\n      /* the cursor`,
+   'merely behind is still reclaimed'],
 
   /* ---- audit.mjs's own gates (runner 'audit'): each break below is one a reviewer verified
      the OLD gate waved through. They are the red tests for those gates as much as they are
@@ -1410,11 +1503,27 @@ if(STATIC){
   /* the suite writes non-ASCII in guard labels as \uXXXX escapes, so decode before comparing
      or every needle holding a real curly apostrophe reports a false miss */
   const decode = s => s.replace(/\\u([0-9a-fA-F]{4})/g, (m, h) => String.fromCharCode(parseInt(h, 16)));
-  const suite = decode(fs.readFileSync('test.mjs', 'utf8'));
+  /* Search the LABELS, not the file. This used to grep the whole of test.mjs, which meant any
+     mention of the old wording anywhere kept a dead needle looking alive — and the most likely
+     place for such a mention is the comment a rewrite leaves behind explaining what the check
+     used to promise. That is exactly what happened in #463: two guards were relabelled, their
+     mutations kept the old needles, --static stayed green because the new comments quoted the
+     old labels verbatim, and both mutations went MISSED in CI on a merged commit. Same class as
+     this suite's own `code`-not-`html` rule, one level up.
+     Comments are stripped first, then the first argument of every ok()/check() call is collected;
+     every label in both files is a plain string literal, so that is the whole haystack. */
+  const labelsOf = (src, fn) => {
+    const noComments = decode(src)
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .split('\n').map(l => l.replace(/(^|[^:'"\\])\/\/.*$/, '$1')).join('\n');
+    const re = new RegExp('\\b' + fn + "\\(\\s*(['\"])((?:\\\\.|(?!\\1).)*)\\1", 'g');
+    return [...noComments.matchAll(re)].map(m => m[2]).join('\n');
+  };
+  const suite = labelsOf(fs.readFileSync('test.mjs', 'utf8'), 'ok');
   /* a mutation whose runner is 'audit' is caught by a gate label in audit.mjs, not by a guard
      label in test.mjs — look its needle up in the file that actually has to catch it, or every
      such entry reports a false NEEDLE against a suite that was never going to contain it */
-  const auditSrc = decode(fs.readFileSync('audit.mjs', 'utf8'));
+  const auditSrc = labelsOf(fs.readFileSync('audit.mjs', 'utf8'), 'check');
   for(const [name, , , needle, runner] of M){
     const hay = runner === 'audit' ? auditSrc : suite;
     if(!hay.includes(needle)){ bad++; console.log('NEEDLE ' + name + '  — no ' + (runner === 'audit' ? 'audit.mjs gate' : 'guard') + ' label contains "' + needle + '"'); }
