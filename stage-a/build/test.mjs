@@ -82,8 +82,50 @@ let FAILS = 0;
    not the same verdict, and the ledger cannot tell them apart from the failure count alone. */
 let CHECKS = 0;
 const T_START = Date.now();
-const ok = (label, cond, extra='') => { CHECKS++; if(!cond) FAILS++;
-  console.log((cond?'PASS  ':'FAIL  ') + label + (extra?'  — '+extra:'')); };
+
+/* Every check also prints a machine-readable twin, so a reader does not have to recover a
+   guard's identity by matching substrings against prose written for a human. The prose line
+   stays exactly as it was — this is additional, not a replacement.
+
+   Why identity matters here: mutants-classify.mjs certified a mutation by asking whether ANY
+   failing line CONTAINED a needle. A needle that matched two different labels credited the
+   wrong guard; a needle that matched none could never credit anything. Those are the same
+   defect from two sides, and no amount of source-grepping finds the first, because the label
+   it points at exists. An exact label, read from the run itself, is an identity: membership
+   in the failing set is a yes or a no.
+
+   `id` is null until stable inert tokens are allocated (next commit). Until then the exact
+   label IS the identity, with the weakness that renaming a label silently re-identifies the
+   guard — which is precisely why the tokens come next. */
+const GUARD_LINE = '##GUARD ';
+const RUN_LINE = '##RUN ';
+const ok = (label, cond, extra='', meta) => {
+  CHECKS++;
+  const t0 = Date.now();
+  /* A condition may be passed as a thunk. Evaluating `d.querySelector(x).style` when the
+     mutation deleted x throws a TypeError while ok()'s own ARGUMENTS are being built — before
+     ok() is ever entered — which kills the suite mid-run with no DONE. The verdict that should
+     have been "this check failed" became "the run proves nothing". As a thunk the throw lands
+     here, fails its own check loudly, and the other 600 checks still get to run. */
+  let threw = null;
+  if(typeof cond === 'function'){
+    try{ cond = cond(); }
+    catch(e){ threw = (e && e.message) || String(e); cond = false; }
+  }
+  if(typeof extra === 'function'){
+    /* the detail string is usually built from the same element the condition just failed on,
+       so it throws for the same reason; a check must not be lost while explaining itself */
+    try{ extra = extra(); }
+    catch(e){ extra = 'detail unavailable: ' + ((e && e.message) || String(e)); }
+  }
+  const pass = !!cond;
+  if(!pass) FAILS++;
+  console.log((pass?'PASS  ':'FAIL  ') + label + (extra?'  — '+extra:''));
+  console.log(GUARD_LINE + JSON.stringify({
+    id: (meta && meta.id) || null, label, verdict: pass ? 'pass' : 'fail',
+    items: (meta && typeof meta.items === 'number') ? meta.items : null,
+    threw, engine: 'jsdom', ms: Date.now() - t0, n: CHECKS }));
+};
 
 /* parses the number a piece of prose OPENS with — digit or spelled-out word — so a
    prose-matches-its-own-table guard can compare against the real count instead of pinning
@@ -101,69 +143,69 @@ function leadingNumber(text){
   return (m[1].toLowerCase() in NUM_WORDS) ? NUM_WORDS[m[1].toLowerCase()] : null;
 }
 
-ok('page clock is pinned to ' + PIN, w.eval('today()') === PIN, w.eval('today()'));
+ok('page clock is pinned to ' + PIN, w.eval('today()') === PIN, w.eval('today()'), {id:'g0001'});
 /* where the pinned date sits in the schedule: pre / reading / post */
 const PHASE = w.eval("(()=>{ const c = currentWeek(); return !c ? 'post' : (c.pre ? 'pre' : 'reading'); })()");
 
 // structure
-ok('week section exists', !!d.getElementById('week'));
-ok('week is the default open section', d.getElementById('week').classList.contains('on'));
-ok('plan no longer auto-open', !d.getElementById('plan').classList.contains('on'));
-ok('one #today panel only', d.querySelectorAll('#today').length === 1);
+ok('week section exists', !!d.getElementById('week'), '', {id:'g0002'});
+ok('week is the default open section', d.getElementById('week').classList.contains('on'), '', {id:'g0003'});
+ok('plan no longer auto-open', !d.getElementById('plan').classList.contains('on'), '', {id:'g0004'});
+ok('one #today panel only', d.querySelectorAll('#today').length === 1, '', {id:'g0005'});
 ok('rail has groups', d.querySelectorAll('#rail .grp').length === 5,
-   d.querySelectorAll('#rail .grp').length + ' groups');
+   d.querySelectorAll('#rail .grp').length + ' groups', {id:'g0006'});
 const railBtns = d.querySelectorAll('#rail button[data-t]');
 ok('rail buttons all resolve to a section',
    [...railBtns].every(b => !!d.getElementById(b.dataset.t)),
-   [...railBtns].filter(b=>!d.getElementById(b.dataset.t)).map(b=>b.dataset.t).join(','));
+   [...railBtns].filter(b=>!d.getElementById(b.dataset.t)).map(b=>b.dataset.t).join(','), {id:'g0007'});
 const secs = [...d.querySelectorAll('main section')].map(s=>s.id);
 const railed = [...railBtns].map(b=>b.dataset.t);
 ok('every section is reachable from the rail', secs.every(s=>railed.includes(s)),
-   secs.filter(s=>!railed.includes(s)).join(','));
+   secs.filter(s=>!railed.includes(s)).join(','), {id:'g0008'});
 ok('sheet mirrors the rail', d.querySelectorAll('#sheetBody button[data-t]').length === railBtns.length,
-   d.querySelectorAll('#sheetBody button[data-t]').length + ' vs ' + railBtns.length);
-ok('44 topics in the rail', railBtns.length === 44, railBtns.length + '');
+   d.querySelectorAll('#sheetBody button[data-t]').length + ' vs ' + railBtns.length, {id:'g0009'});
+ok('44 topics in the rail', railBtns.length === 44, railBtns.length + '', {id:'g0010'});
 ok('groups collapsed except the active one',
    d.querySelectorAll('#rail .gwrap.open').length === 1,
-   [...d.querySelectorAll('#rail .gwrap.open')].map(x=>x.dataset.g).join(','));
+   [...d.querySelectorAll('#rail .gwrap.open')].map(x=>x.dataset.g).join(','), {id:'g0011'});
 d.querySelector('#rail .gwrap[data-g="tier2"] .grp').click();
-ok('group opens on click', d.querySelector('#rail .gwrap[data-g="tier2"]').classList.contains('open'));
+ok('group opens on click', d.querySelector('#rail .gwrap[data-g="tier2"]').classList.contains('open'), '', {id:'g0012'});
 ok('group state mirrored into the sheet',
-   d.querySelector('#sheetBody .gwrap[data-g="tier2"]').classList.contains('open'));
-ok('group state persisted', 'geri:groups' in store, store['geri:groups']);
+   d.querySelector('#sheetBody .gwrap[data-g="tier2"]').classList.contains('open'), '', {id:'g0013'});
+ok('group state persisted', 'geri:groups' in store, store['geri:groups'], {id:'g0014'});
 d.querySelector('#rail .gwrap[data-g="tier2"] .grp').click();
-ok('group closes again', !d.querySelector('#rail .gwrap[data-g="tier2"]').classList.contains('open'));
+ok('group closes again', !d.querySelector('#rail .gwrap[data-g="tier2"]').classList.contains('open'), '', {id:'g0015'});
 d.getElementById('railHide').click();
-ok('rail hides', d.body.classList.contains('norail'));
+ok('rail hides', d.body.classList.contains('norail'), '', {id:'g0016'});
 d.getElementById('railShow').click();
-ok('rail returns', !d.body.classList.contains('norail'));
-ok('sheet starts hidden', d.getElementById('sheet').hidden);
+ok('rail returns', !d.body.classList.contains('norail'), '', {id:'g0017'});
+ok('sheet starts hidden', d.getElementById('sheet').hidden, '', {id:'g0018'});
 
 // week view rendered
 ok('week card has chapters', d.querySelectorAll('#wkChaps .chap').length > 0,
-   d.querySelectorAll('#wkChaps .chap').length + ' rows');
+   d.querySelectorAll('#wkChaps .chap').length + ' rows', {id:'g0019'});
 ok('week head filled', PHASE === 'post'
      ? d.getElementById('wkHead').textContent === 'The reading block is over'
      : /—/.test(d.getElementById('wkHead').textContent),
-   PHASE + ': ' + d.getElementById('wkHead').textContent);
+   PHASE + ': ' + d.getElementById('wkHead').textContent, {id:'g0020'});
 ok('day chips rendered', d.querySelectorAll('#wkDays button').length === 7,
-   d.querySelectorAll('#wkDays button').length + ' chips');
-ok('coming-up rendered', d.getElementById('nextup').innerHTML.length > 40);
-ok('pace line rendered', d.getElementById('pace').textContent.length > 40, d.getElementById('pace').textContent);
-ok('open-notes buttons wired', d.querySelectorAll('#wkChaps .go2').length > 0);
+   d.querySelectorAll('#wkDays button').length + ' chips', {id:'g0021'});
+ok('coming-up rendered', d.getElementById('nextup').innerHTML.length > 40, '', {id:'g0022'});
+ok('pace line rendered', d.getElementById('pace').textContent.length > 40, d.getElementById('pace').textContent, {id:'g0023'});
+ok('open-notes buttons wired', d.querySelectorAll('#wkChaps .go2').length > 0, '', {id:'g0024'});
 ok('plan rows have an open-week button', d.querySelectorAll('.wopen').length === 16,
-   d.querySelectorAll('.wopen').length + ' rows');
+   d.querySelectorAll('.wopen').length + ' rows', {id:'g0025'});
 
 // timer
-ok('timer clock initialised', d.getElementById('tClock').textContent === '75:00', d.getElementById('tClock').textContent);
+ok('timer clock initialised', d.getElementById('tClock').textContent === '75:00', d.getElementById('tClock').textContent, {id:'g0026'});
 d.getElementById('tGo').click();
 await new Promise(r=>setTimeout(r,1100));
-ok('timer counts down', d.getElementById('tClock').textContent !== '75:00', d.getElementById('tClock').textContent);
-ok('timer persists', 'geri:timer' in store);
+ok('timer counts down', d.getElementById('tClock').textContent !== '75:00', d.getElementById('tClock').textContent, {id:'g0027'});
+ok('timer persists', 'geri:timer' in store, '', {id:'g0028'});
 d.getElementById('tSkip').click();
-ok('skip advances phase', /phase 2 of 3/.test(d.getElementById('tPhase').textContent), d.getElementById('tPhase').textContent);
+ok('skip advances phase', /phase 2 of 3/.test(d.getElementById('tPhase').textContent), d.getElementById('tPhase').textContent, {id:'g0029'});
 d.getElementById('tReset').click();
-ok('reset restores phase 1', d.getElementById('tClock').textContent === '75:00');
+ok('reset restores phase 1', d.getElementById('tClock').textContent === '75:00', '', {id:'g0030'});
 
 // day marking round-trip
 const chip = d.querySelectorAll('#wkDays button')[2];
@@ -176,9 +218,9 @@ ok('chip toggle writes geri:days with the day actually in it', (()=>{
   let v; try{ v = JSON.parse(store['geri:days']); }catch(e){ return false; }
   return Array.isArray(v) && v.length > 0 && v.every(x => /^\d{4}-\d{2}-\d{2}$/.test(x))
     && store['geri:days'] !== before;
-})(), store['geri:days']);
+})(), store['geri:days'], {id:'g0031'});
 ok('chip toggle updates the count label', /of 6/.test(d.getElementById('wkDaysLab').textContent),
-   d.getElementById('wkDaysLab').textContent);
+   d.getElementById('wkDaysLab').textContent, {id:'g0032'});
 chip.click();
 await new Promise(r=>setTimeout(r,50));
 {
@@ -195,19 +237,19 @@ await new Promise(r=>setTimeout(r,50));
   w.eval("(days.has('" + td + "') ? days.delete('" + td + "') : days.add('" + td + "')); saveDays(); paintDays();");
   const dotsAfter = d.querySelectorAll('#dots i.y').length;
   ok('marking today repaints the dots strip with a newly lit (or cleared) dot',
-     dotsAfter === dotsBefore + (wasOn ? -1 : 1), 'before=' + dotsBefore + ' after=' + dotsAfter);
+     dotsAfter === dotsBefore + (wasOn ? -1 : 1), 'before=' + dotsBefore + ' after=' + dotsAfter, {id:'g0033'});
   w.eval("(days.has('" + td + "') ? days.delete('" + td + "') : days.add('" + td + "')); saveDays(); paintDays();");
   ok('toggling it back restores the original dot count',
-     d.querySelectorAll('#dots i.y').length === dotsBefore, d.querySelectorAll('#dots i.y').length + '');
+     d.querySelectorAll('#dots i.y').length === dotsBefore, d.querySelectorAll('#dots i.y').length + '', {id:'g0034'});
 }
 
 // question log
 const qs = d.getElementById('qScore'); qs.value = '41';
 d.getElementById('qLog').click();
 await new Promise(r=>setTimeout(r,50));
-ok('score logged', 'geri:qlog' in store && /41/.test(store['geri:qlog']), store['geri:qlog']);
-ok('sparkline drawn', d.querySelectorAll('#qSpark i').length === 1);
-ok('score label updated', /82%/.test(d.getElementById('qLab').textContent), d.getElementById('qLab').textContent);
+ok('score logged', 'geri:qlog' in store && /41/.test(store['geri:qlog']), store['geri:qlog'], {id:'g0035'});
+ok('sparkline drawn', d.querySelectorAll('#qSpark i').length === 1, '', {id:'g0036'});
+ok('score label updated', /82%/.test(d.getElementById('qLab').textContent), d.getElementById('qLab').textContent, {id:'g0037'});
 
 // notes
 const nb = d.getElementById('wkNote');
@@ -222,116 +264,116 @@ ok('note persisted against the week key', (()=>{
   let notes = {}; try{ notes = JSON.parse(store['geri:notes']); }catch(e){ return false; }
   const wk = w.eval('VIEW.k');
   return !!wk && notes[wk] === 'test note';
-})(), 'VIEW.k=' + w.eval('VIEW.k') + ' ' + store['geri:notes']);
+})(), 'VIEW.k=' + w.eval('VIEW.k') + ' ' + store['geri:notes'], {id:'g0038'});
 
 // drill
 const QS = w.eval('QS.length'), TG = w.eval('CARDTAG.filter(Boolean).length');
-ok('card count', QS === 233, QS + ' cards');
-ok('every card tagged', TG === QS, TG + ' tagged');
-ok('drill renders a card', d.getElementById('cq').textContent.length > 10);
+ok('card count', QS === 233, QS + ' cards', {id:'g0039'});
+ok('every card tagged', TG === QS, TG + ' tagged', {id:'g0040'});
+ok('drill renders a card', d.getElementById('cq').textContent.length > 10, '', {id:'g0041'});
 /* past the schedule the current week has no chapters by design, so the week filter is
    checked on the last reading week instead — what it guards is that the filter finds cards */
 if(PHASE === 'post') w.eval('VIEW = ALLW[ALLW.length-1]');
 d.getElementById('cweek').click();
 const lab = d.getElementById('cweeklab').textContent;
-ok('week-scoped drill labelled', lab.length > 10, lab);
+ok('week-scoped drill labelled', lab.length > 10, lab, {id:'g0042'});
 const pos = d.getElementById('cpos').textContent;
-ok('week-scoped drill has cards', /of \d+/.test(pos), pos);
+ok('week-scoped drill has cards', /of \d+/.test(pos), pos, {id:'g0043'});
 d.getElementById('cweek').click();
 if(PHASE === 'post') w.eval('VIEW = curWeek()');
 ok('toggling back restores the full deck', /233 cards available/.test(d.getElementById('dfilter').textContent),
-   d.getElementById('dfilter').textContent);
+   d.getElementById('dfilter').textContent, {id:'g0044'});
 
 // navigation
 d.querySelector('#sheetBody button[data-t="thyroid"]').click();
-ok('sheet navigation switches section', d.getElementById('thyroid').classList.contains('on'));
-ok('picking a topic opens its group', d.querySelector('#rail .gwrap[data-g="tier2"]').classList.contains('open'));
-ok('topic label follows', d.getElementById('topicNow').textContent.includes('Thyroid'), d.getElementById('topicNow').textContent);
-ok('sheet closes after picking', d.getElementById('sheet').hidden);
+ok('sheet navigation switches section', d.getElementById('thyroid').classList.contains('on'), '', {id:'g0045'});
+ok('picking a topic opens its group', d.querySelector('#rail .gwrap[data-g="tier2"]').classList.contains('open'), '', {id:'g0046'});
+ok('topic label follows', d.getElementById('topicNow').textContent.includes('Thyroid'), d.getElementById('topicNow').textContent, {id:'g0047'});
+ok('sheet closes after picking', d.getElementById('sheet').hidden, '', {id:'g0048'});
 d.querySelector('#rail button[data-t="week"]').click();
-ok('rail navigation works', d.getElementById('week').classList.contains('on'));
+ok('rail navigation works', d.getElementById('week').classList.contains('on'), '', {id:'g0049'});
 
 // open another week from the plan
 d.querySelectorAll('.wopen')[9].click();
 ok('opening a later week switches the view', /Week 10/.test(d.getElementById('wkHead').textContent),
-   d.getElementById('wkHead').textContent);
-ok('back link offered', !d.getElementById('wkViewing').hidden);
+   d.getElementById('wkHead').textContent, {id:'g0050'});
+ok('back link offered', !d.getElementById('wkViewing').hidden, '', {id:'g0051'});
 d.getElementById('wkBack').click();
-ok('back link returns to the current week', d.getElementById('wkViewing').hidden);
+ok('back link returns to the current week', d.getElementById('wkViewing').hidden, '', {id:'g0052'});
 
 // search still works with the new section
 const q = d.getElementById('q'); q.value = 'braden';
 q.dispatchEvent(new w.Event('input'));
 await new Promise(r=>setTimeout(r,300));
 ok('search finds content', d.querySelectorAll('#hits button').length > 0,
-   d.querySelectorAll('#hits button').length + ' hits');
+   d.querySelectorAll('#hits button').length + ' hits', {id:'g0053'});
 
 
 // ---- v3 ----
 ok('section footers injected', d.querySelectorAll('.secfoot').length === 40,
-   d.querySelectorAll('.secfoot').length + '');
+   d.querySelectorAll('.secfoot').length + '', {id:'g0054'});
 ok('jump chips on long sections', d.querySelectorAll('.toc').length > 15,
-   d.querySelectorAll('.toc').length + ' sections with chips');
+   d.querySelectorAll('.toc').length + ' sections with chips', {id:'g0055'});
 const mk = d.querySelector('#falls .secfoot button.mark');
 mk.click(); await new Promise(r=>setTimeout(r,60));
-ok('mark as read persists', 'geri:read' in store && /falls/.test(store['geri:read']), store['geri:read']);
-ok('read tick appears in the rail', !!d.querySelector('#rail button[data-t="falls"] .tick'));
+ok('mark as read persists', 'geri:read' in store && /falls/.test(store['geri:read']), store['geri:read'], {id:'g0056'});
+ok('read tick appears in the rail', !!d.querySelector('#rail button[data-t="falls"] .tick'), '', {id:'g0057'});
 ok('read counter updates', /1\//.test(d.getElementById('readCount').textContent),
-   d.getElementById('readCount').textContent);
+   d.getElementById('readCount').textContent, {id:'g0058'});
 mk.click();
-ok('unmarking works', !d.querySelector('#rail button[data-t="falls"] .tick'));
+ok('unmarking works', !d.querySelector('#rail button[data-t="falls"] .tick'), '', {id:'g0059'});
 
 d.querySelector('#thyroid .secfoot button.dr').click();
-ok('drill-this-chapter switches to the drill', d.getElementById('drill').classList.contains('on'));
+ok('drill-this-chapter switches to the drill', d.getElementById('drill').classList.contains('on'), '', {id:'g0060'});
 ok('drill filtered to the chapter', /98 Thyroid/.test(d.getElementById('dfilter').textContent),
-   d.getElementById('dfilter').textContent);
+   d.getElementById('dfilter').textContent, {id:'g0061'});
 ok('round size limits the deck', /of 4\b/.test(d.getElementById('cpos').textContent),
-   d.getElementById('cpos').textContent);
+   d.getElementById('cpos').textContent, {id:'g0062'});
 
 // round + summary
 d.getElementById('cclear').click();
 d.querySelector('.dsel button[data-round="10"]').click();
 ok('round selector applies', /of 10/.test(d.getElementById('cpos').textContent),
-   d.getElementById('cpos').textContent);
+   d.getElementById('cpos').textContent, {id:'g0063'});
 for(let k=0;k<10;k++){
   d.getElementById('creveal').click();
   (k%3===0 ? d.getElementById('cmissed') : d.getElementById('cgot')).click();
 }
-ok('round ends in a summary', !d.getElementById('dsum').hidden);
+ok('round ends in a summary', !d.getElementById('dsum').hidden, '', {id:'g0064'});
 ok('summary scores the round', /6 of 10/.test(d.getElementById('dsum').textContent),
-   d.getElementById('dsum').textContent.slice(0,24));
-ok('summary offers the missed subset', !!d.getElementById('dThose'));
+   d.getElementById('dsum').textContent.slice(0,24), {id:'g0065'});
+ok('summary offers the missed subset', !!d.getElementById('dThose'), '', {id:'g0066'});
 ok('weak spots populated', d.querySelectorAll('#weak .wb button').length > 0,
-   d.querySelectorAll('#weak .wb button').length + ' tags');
+   d.querySelectorAll('#weak .wb button').length + ' tags', {id:'g0067'});
 ok('weak-spot line on the week page', /cluster/.test(d.getElementById('weakMini').textContent),
-   d.getElementById('weakMini').textContent.slice(0,60));
+   d.getElementById('weakMini').textContent.slice(0,60), {id:'g0068'});
 d.getElementById('dAgain').click();
-ok('another round restarts', d.getElementById('dsum').hidden);
+ok('another round restarts', d.getElementById('dsum').hidden, '', {id:'g0069'});
 
 // display
 d.getElementById('dkBtn').click();
-ok('dark mode toggles', d.body.classList.contains('dark'));
-ok('dark mode persists', 'geri:display' in store && /true/.test(store['geri:display']), store['geri:display']);
+ok('dark mode toggles', d.body.classList.contains('dark'), '', {id:'g0070'});
+ok('dark mode persists', 'geri:display' in store && /true/.test(store['geri:display']), store['geri:display'], {id:'g0071'});
 d.getElementById('dkBtn').click();
 d.querySelector('#dispRow button[data-fs="l"]').click();
-ok('text size applies', d.body.classList.contains('fs-l'));
+ok('text size applies', d.body.classList.contains('fs-l'), '', {id:'g0072'});
 
 // history
 show_section('cancer');
 function show_section(id){ w.eval('show("'+id+'")'); }
-ok('hash follows the section', w.location.hash === '#cancer', w.location.hash);
+ok('hash follows the section', w.location.hash === '#cancer', w.location.hash, {id:'g0073'});
 
 // the new sections carry real content
 const newSecs = ['sleep','rehab','frailty','cognition','syncope','osteo','constip','diabetes','thyroid','copd','ra'];
 newSecs.forEach(id=>{
   const el = d.getElementById(id);
   ok('section ' + id, !!el && el.textContent.trim().length > 1200,
-     el ? el.textContent.trim().length + ' chars' : 'MISSING');
+     el ? el.textContent.trim().length + ' chars' : 'MISSING', {id:'g0074'});
 });
 // every scheduled chapter that has a section links to one that exists
 const bad = w.eval(`(function(){ const out=[]; ALLW.forEach(wk=>wk.items.forEach(x=>{
   const c = chapInfo(x.t); if(c.sec && !document.getElementById(c.sec)) out.push(x.t+'->'+c.sec); })); return out.join('|'); })()`);
-ok('chapter links all resolve', bad === '', bad);
+ok('chapter links all resolve', bad === '', bad, {id:'g0075'});
 const unlinked = w.eval(`(function(){ const out=[]; ALLW.forEach(wk=>wk.items.forEach(x=>{
   const c = chapInfo(x.t); if(!c.sec) out.push(x.t); })); return out.join(' | '); })()`);
 console.log('chapters with no section:', unlinked || 'none');
@@ -339,44 +381,44 @@ console.log('chapters with no section:', unlinked || 'none');
 
 // ---- v4: figures, labels, sources, card search ----
 ok('chapter index has 113 chapters', d.querySelectorAll('.chapidx tbody tr').length === 113,
-   d.querySelectorAll('.chapidx tbody tr').length + ' rows');
-ok('chapter 27 resolved', /Perioperative Care: Evaluation/.test(d.getElementById('anatomy').textContent));
+   d.querySelectorAll('.chapidx tbody tr').length + ' rows', {id:'g0076'});
+ok('chapter 27 resolved', /Perioperative Care: Evaluation/.test(d.getElementById('anatomy').textContent), '', {id:'g0077'});
 ok('chapter index links work', d.querySelectorAll('.chgo').length > 30,
-   d.querySelectorAll('.chgo').length + ' linked chapters');
+   d.querySelectorAll('.chgo').length + ' linked chapters', {id:'g0078'});
 ['periop','dysphagia','mistreat','hipfx','stroke'].forEach(id=>ok('new section '+id,
   !!d.getElementById(id) && d.getElementById(id).textContent.length > 2000,
-  d.getElementById(id) ? d.getElementById(id).textContent.length+'' : 'MISSING'));
+  d.getElementById(id) ? d.getElementById(id).textContent.length+'' : 'MISSING', {id:'g0079'}));
 ok('six figures present', d.querySelectorAll('figure.fig').length === 6,
-   d.querySelectorAll('figure.fig').length + '');
-ok('figures numbered', /Figure 1/.test(d.querySelector('figure.fig figcaption').innerHTML));
+   d.querySelectorAll('figure.fig').length + '', {id:'g0080'});
+ok('figures numbered', /Figure 1/.test(d.querySelector('figure.fig figcaption').innerHTML), '', {id:'g0081'});
 ok('alignment chart drawn from the schedule', d.querySelectorAll('#figAlign circle').length > 10,
-   d.querySelectorAll('#figAlign circle').length + ' plotted points');
+   d.querySelectorAll('#figAlign circle').length + ' plotted points', {id:'g0082'});
 ok('deferred chapters shown at zero hours',
    [...d.querySelectorAll('#figAlign circle')].filter(c=>c.getAttribute('fill')==='none').length >= 2,
-   [...d.querySelectorAll('#figAlign circle')].filter(c=>c.getAttribute('fill')==='none').length + ' hollow');
+   [...d.querySelectorAll('#figAlign circle')].filter(c=>c.getAttribute('fill')==='none').length + ' hollow', {id:'g0083'});
 ok('alignment note computed', /hours per question/.test(d.getElementById('alignNote').textContent),
-   d.getElementById('alignNote').textContent.slice(0,90));
+   d.getElementById('alignNote').textContent.slice(0,90), {id:'g0084'});
 const caps = d.querySelectorAll('.cap');
-ok('tables labelled', caps.length > 50, caps.length + ' tables');
-ok('table numbering starts at 1', /Table 1/.test(caps[0].textContent), caps[0].textContent);
+ok('tables labelled', caps.length > 50, caps.length + ' tables', {id:'g0085'});
+ok('table numbering starts at 1', /Table 1/.test(caps[0].textContent), caps[0].textContent, {id:'g0086'});
 ok('no duplicate table numbers',
-   new Set([...caps].map(c=>c.textContent.split('·')[0].trim())).size === caps.length);
-ok('verified citations in Sources', /10.1001\/jamaneurol.2024.3770/.test(d.getElementById('src').textContent));
+   new Set([...caps].map(c=>c.textContent.split('·')[0].trim())).size === caps.length, '', {id:'g0087'});
+ok('verified citations in Sources', /10.1001\/jamaneurol.2024.3770/.test(d.getElementById('src').textContent), '', {id:'g0088'});
 ok('bad citation corrected in place', /1304/.test(d.getElementById('src').textContent) &&
-   /1245/.test(d.getElementById('src').textContent));
+   /1245/.test(d.getElementById('src').textContent), '', {id:'g0089'});
 ok('anatomy keeps the every-sitting table and the non-textbook table',
    /nine chapters that appear in every sitting/i.test(d.getElementById('anatomy').textContent) &&
-   /Non-textbook sources/.test(d.getElementById('anatomy').textContent));
+   /Non-textbook sources/.test(d.getElementById('anatomy').textContent), '', {id:'g0090'});
 { const m = code.match(/<section id="anatomy">([\s\S]*?)<\/section>/)[1];
   const idx = m.match(/<div class="tscroll"><table class="wide chapidx">[\s\S]*?<\/table><\/div>/)[0];
-  ok('anatomy source under 9k chars outside the chapter index', m.length - idx.length < 9000, (m.length - idx.length) + ''); }
+  ok('anatomy source under 9k chars outside the chapter index', m.length - idx.length < 9000, (m.length - idx.length) + '', {id:'g0091'}); }
 
 const q2 = d.getElementById('q'); q2.value = 'jaw claudication';
 q2.dispatchEvent(new w.Event('input'));
 await new Promise(r=>setTimeout(r,300));
 const hitBtns = [...d.querySelectorAll('#hits button')];
 ok('flashcards are searchable', hitBtns.some(b=>b.querySelector('span').textContent === 'Drill'),
-   hitBtns.map(b=>b.querySelector('span').textContent).join('/'));
+   hitBtns.map(b=>b.querySelector('span').textContent).join('/'), {id:'g0092'});
 /* .find(...).click() used to throw a TypeError (undefined has no .click) and crash the whole
    runner if no 'Drill' hit was found, turning a would-be red assertion into a hard stop
    before any later test ran. Guard it so a missing hit fails loudly instead. */
@@ -384,86 +426,86 @@ ok('flashcards are searchable', hitBtns.some(b=>b.querySelector('span').textCont
   const drillHit = hitBtns.find(b=>b.querySelector('span').textContent === 'Drill');
   if(drillHit) drillHit.click();
   else ok('a "Drill" search hit exists to click', false,
-    'no matching hit among: ' + hitBtns.map(b=>b.querySelector('span').textContent).join('/'));
+    'no matching hit among: ' + hitBtns.map(b=>b.querySelector('span').textContent).join('/'), {id:'g0093'});
 }
 await new Promise(r=>setTimeout(r,50));
 ok('a card hit opens that one card', /1 of 1/.test(d.getElementById('cpos').textContent),
-   d.getElementById('cpos').textContent);
+   d.getElementById('cpos').textContent, {id:'g0094'});
 ok('single-card mode labelled', /from search/i.test(d.getElementById('dfilter').textContent),
-   d.getElementById('dfilter').textContent);
+   d.getElementById('dfilter').textContent, {id:'g0095'});
 d.getElementById('cclear').click();
 
 
 // ---- v5: past papers ----
-ok('papers section exists', !!d.getElementById('papers'));
+ok('papers section exists', !!d.getElementById('papers'), '', {id:'g0096'});
 const PQn = w.eval('PQ.length'), PQg = w.eval('PQ.filter(x=>!x.im).length');
-ok('786 geriatrics questions embedded', PQn === 786, PQn + ' total');
-ok('every question has four option slots', w.eval('PQ.every(p=>p.o.length===4)'));
-ok('every question has a key', w.eval('PQ.every(p=>p.a && p.a.length>0)'));
-ok('keys use only valid letters', w.eval("PQ.every(p=>[...p.a].every(c=>'אבגד'.includes(c)))"));
+ok('786 geriatrics questions embedded', PQn === 786, PQn + ' total', {id:'g0097'});
+ok('every question has four option slots', w.eval('PQ.every(p=>p.o.length===4)'), '', {id:'g0098'});
+ok('every question has a key', w.eval('PQ.every(p=>p.a && p.a.length>0)'), '', {id:'g0099'});
+ok('keys use only valid letters', w.eval("PQ.every(p=>[...p.a].every(c=>'אבגד'.includes(c)))"), '', {id:'g0100'});
 ok('chapter references present on recent papers',
    w.eval("PQ.filter(p=>p.ch && ['2023-06','2024-05','2024-09','2025-06','2026-06'].includes(p.y)).length") > 300,
-   w.eval("PQ.filter(p=>p.ch).length") + ' chapter-tagged');
+   w.eval("PQ.filter(p=>p.ch).length") + ' chapter-tagged', {id:'g0101'});
 w.eval('show("papers")');
 ok('a question renders', d.getElementById('pqStem').textContent.length > 10,
-   d.getElementById('pqStem').textContent.slice(0,50));
-ok('four options rendered', d.querySelectorAll('#pqOpts .pqo').length === 4);
-ok('options are RTL', d.getElementById('pqOpts').getAttribute('dir') === 'rtl');
+   d.getElementById('pqStem').textContent.slice(0,50), {id:'g0102'});
+ok('four options rendered', d.querySelectorAll('#pqOpts .pqo').length === 4, '', {id:'g0103'});
+ok('options are RTL', d.getElementById('pqOpts').getAttribute('dir') === 'rtl', '', {id:'g0104'});
 const cur = w.eval('pqPool[pqIdx % pqPool.length]');
 const good = cur.a[0];
 d.querySelector('#pqOpts .pqo[data-l="' + good + '"]').click();
 await new Promise(r=>setTimeout(r,60));
-ok('answering marks the key', d.querySelector('#pqOpts .pqo.right') !== null);
+ok('answering marks the key', d.querySelector('#pqOpts .pqo.right') !== null, '', {id:'g0105'});
 ok('answering reveals the source', !d.getElementById('pqFoot').hidden &&
-   d.getElementById('pqSrc').textContent.length > 10, d.getElementById('pqSrc').textContent.slice(0,60));
-ok('result persisted', 'geri:pq' in store, store['geri:pq'].slice(0,40));
+   d.getElementById('pqSrc').textContent.length > 10, d.getElementById('pqSrc').textContent.slice(0,60), {id:'g0106'});
+ok('result persisted', 'geri:pq' in store, store['geri:pq'].slice(0,40), {id:'g0107'});
 ok('score line updated', /right of/.test(d.getElementById('pqStats').textContent),
-   d.getElementById('pqStats').textContent.slice(0,60));
+   d.getElementById('pqStats').textContent.slice(0,60), {id:'g0108'});
 ok('per-sitting table filled', d.querySelectorAll('#pqYearTab tbody tr').length === 8,
-   d.querySelectorAll('#pqYearTab tbody tr').length + ' rows');
+   d.querySelectorAll('#pqYearTab tbody tr').length + ' rows', {id:'g0109'});
 d.getElementById('pqNext').click();
-ok('next question loads', d.getElementById('pqFoot').hidden);
+ok('next question loads', d.getElementById('pqFoot').hidden, '', {id:'g0110'});
 d.querySelector('#pfYear button[data-y="2025-06"]').click();
 ok('sitting filter applies', /100 questions/.test(d.getElementById('pqPool').textContent),
-   d.getElementById('pqPool').textContent);
+   d.getElementById('pqPool').textContent, {id:'g0111'});
 d.querySelector('#pfScope button[data-s="week"]').click();
 ok('week scope filters to this week\'s chapters',
    /questions in this selection|Nothing matches/.test(d.getElementById('pqPool').textContent),
-   d.getElementById('pqPool').textContent);
+   d.getElementById('pqPool').textContent, {id:'g0112'});
 d.querySelector('#pfYear button[data-y="all"]').click();
 d.querySelector('#pfScope button[data-s="recent"]').click();
 ok('2020-2022 excluded from the recent scope',
-   w.eval("pqPool.every(p=>['2020','2021-12','2022-06'].indexOf(p.y)<0)"));
-ok('IM block excluded everywhere', w.eval('pqPool.every(p=>!p.im)'));
+   w.eval("pqPool.every(p=>['2020','2021-12','2022-06'].indexOf(p.y)<0)"), '', {id:'g0113'});
+ok('IM block excluded everywhere', w.eval('pqPool.every(p=>!p.im)'), '', {id:'g0114'});
 
 
 // ---- v6: the three obtained documents ----
-ok('card count now 147', w.eval('QS.length') === 233, w.eval('QS.length') + '');
-ok('every card still tagged', w.eval('CARDTAG.filter(Boolean).length') === w.eval('QS.length'));
+ok('card count now 147', w.eval('QS.length') === 233, w.eval('QS.length') + '', {id:'g0115'});
+ok('every card still tagged', w.eval('CARDTAG.filter(Boolean).length') === w.eval('QS.length'), '', {id:'g0116'});
 ok('Lancet PAF table present', /45%/.test(d.getElementById('cognition').textContent) &&
-   /Untreated vision loss/.test(d.getElementById('cognition').textContent));
+   /Untreated vision loss/.test(d.getElementById('cognition').textContent), '', {id:'g0117'});
 ok('ADA targets table present', /TIR/.test(d.getElementById('diabetes').textContent) &&
-   /dc26-S013/.test(d.getElementById('src').textContent));
+   /dc26-S013/.test(d.getElementById('src').textContent), '', {id:'g0118'});
 ok('EBRSR recovery numbers present', /4\.5 weeks/.test(d.getElementById('rehab').textContent) &&
-   /silent aspiration/i.test(d.getElementById('rehab').textContent));
-ok('sources marked obtained', /Obtained/.test(d.getElementById('src').textContent));
+   /silent aspiration/i.test(d.getElementById('rehab').textContent), '', {id:'g0119'});
+ok('sources marked obtained', /Obtained/.test(d.getElementById('src').textContent), '', {id:'g0120'});
 
 
 // ---- v8: mock, paper search, file backup ----
 w.eval('pqLoad()');
 await new Promise(r=>setTimeout(r,100));
-ok('mock controls present', !!d.getElementById('mockGo') && !!d.getElementById('mockBar'));
+ok('mock controls present', !!d.getElementById('mockGo') && !!d.getElementById('mockBar'), '', {id:'g0121'});
 w.eval('mockN=25; mockPerQ=0;');
 d.getElementById('mockGo').click();
 await new Promise(r=>setTimeout(r,120));
-ok('mock draws the right number', w.eval('mockQs.length') === 25, w.eval('mockQs.length')+'');
+ok('mock draws the right number', w.eval('mockQs.length') === 25, w.eval('mockQs.length')+'', {id:'g0122'});
 ok('mock uses only recent-edition papers',
-   w.eval("mockQs.every(p=>['2023-06','2024-05','2024-09','2025-06','2026-06'].includes(p.y))"));
-ok('mock has no duplicates', w.eval('new Set(mockQs.map(p=>p.y+"#"+p.n)).size') === 25);
+   w.eval("mockQs.every(p=>['2023-06','2024-05','2024-09','2025-06','2026-06'].includes(p.y))"), '', {id:'g0123'});
+ok('mock has no duplicates', w.eval('new Set(mockQs.map(p=>p.y+"#"+p.n)).size') === 25, '', {id:'g0124'});
 ok('mock is weighted to the source mix',
    w.eval("mockQs.filter(p=>p.bk==='Hazzard').length") >= 17,
-   w.eval("mockQs.filter(p=>p.bk==='Hazzard').length") + ' of 25 Hazzard');
-ok('mock hides the practice card', d.getElementById('pqCard').hidden);
+   w.eval("mockQs.filter(p=>p.bk==='Hazzard').length") + ' of 25 Hazzard', {id:'g0125'});
+ok('mock hides the practice card', d.getElementById('pqCard').hidden, '', {id:'g0126'});
 /* this used to assert the stem was longer than 30 characters, which is a guess about question
    text standing in for the thing the label promises — that the card is showing THIS question.
    Three real past-paper stems in the mock-eligible pool are 28 and 30 characters long
@@ -474,8 +516,8 @@ ok('mock hides the practice card', d.getElementById('pqCard').hidden);
 ok('mock shows a question', (()=>{
   const want = w.eval('mockQs[mockI].q');
   return !!want && d.getElementById('mockStem').textContent === want;
-})(), JSON.stringify(d.getElementById('mockStem').textContent.slice(0, 40)));
-ok('untimed mock says so', /untimed/.test(d.getElementById('mockClock').textContent));
+})(), JSON.stringify(d.getElementById('mockStem').textContent.slice(0, 40)), {id:'g0127'});
+ok('untimed mock says so', /untimed/.test(d.getElementById('mockClock').textContent), '', {id:'g0128'});
 // answer them all, keeping our own tally of what the marking SHOULD come to
 let wantRight = 0;
 for(let k=0;k<25;k++){
@@ -488,7 +530,7 @@ for(let k=0;k<25;k++){
 }
 await w.eval('mockFinish(true)');
 await new Promise(r=>setTimeout(r,120));
-ok('mock report appears', !d.getElementById('mockReport').hidden);
+ok('mock report appears', !d.getElementById('mockReport').hidden, '', {id:'g0129'});
 ok('mock report scores out of the right total', (()=>{
   /* two earlier forms of this were weaker than the label. First it matched "/ 25" anywhere in
      the report, so a date or the blank count satisfied it. Then it parsed the fraction but only
@@ -500,41 +542,41 @@ ok('mock report scores out of the right total', (()=>{
   if(!el) return false;
   const m = el.textContent.match(/^\s*(\d+)\s*\/\s*(\d+)\s*$/);
   return Number(m[2]) === 25 && Number(m[1]) === wantRight;
-})(), d.getElementById('mockReport').textContent.slice(0,40) + ' want ' + wantRight);
+})(), d.getElementById('mockReport').textContent.slice(0,40) + ' want ' + wantRight, {id:'g0130'});
 ok('mock breaks the score down by source',
    d.querySelectorAll('#mockReport tbody tr').length > 1,
-   d.querySelectorAll('#mockReport tbody tr').length + ' source rows');
+   d.querySelectorAll('#mockReport tbody tr').length + ' source rows', {id:'g0131'});
 ok('mock results feed the practice record', Object.keys(w.eval('pqDone')).length >= 25,
-   Object.keys(w.eval('pqDone')).length + ' answered overall');
-ok('mock result saved', 'geri:mock' in store, store['geri:mock']);
-ok('review button offered', !!d.getElementById('mockReview'));
+   Object.keys(w.eval('pqDone')).length + ' answered overall', {id:'g0132'});
+ok('mock result saved', 'geri:mock' in store, store['geri:mock'], {id:'g0133'});
+ok('review button offered', !!d.getElementById('mockReview'), '', {id:'g0134'});
 
 // paper search
 w.eval('indexPapers()');
 ok('papers are in the search index', w.eval("INDEX.filter(x=>x.pq!=null).length") > 700,
-   w.eval("INDEX.filter(x=>x.pq!=null).length") + ' stems indexed');
+   w.eval("INDEX.filter(x=>x.pq!=null).length") + ' stems indexed', {id:'g0135'});
 const q3 = d.getElementById('q'); q3.value = 'דליריום';
 q3.dispatchEvent(new w.Event('input'));
 await new Promise(r=>setTimeout(r,300));
 const hb = [...d.querySelectorAll('#hits button')];
 ok('Hebrew search finds real questions', hb.some(b=>b.querySelector('span').textContent === 'Past papers'),
-   hb.map(b=>b.querySelector('span').textContent).join('/').slice(0,60));
+   hb.map(b=>b.querySelector('span').textContent).join('/').slice(0,60), {id:'g0136'});
 hb.find(b=>b.querySelector('span').textContent === 'Past papers').click();
 await new Promise(r=>setTimeout(r,80));
-ok('a search hit opens that one paper question', w.eval('pqPool.length') === 1);
-ok('and offers a way back', !!d.getElementById('pqBackAll'));
+ok('a search hit opens that one paper question', w.eval('pqPool.length') === 1, '', {id:'g0137'});
+ok('and offers a way back', !!d.getElementById('pqBackAll'), '', {id:'g0138'});
 
 // file backup
-ok('download control present', !!d.getElementById('bkDownload'));
-ok('file input present', !!d.getElementById('bkFile'));
-ok('mock key is in the backup set', w.eval("BKEYS.includes('geri:mock')"));
+ok('download control present', !!d.getElementById('bkDownload'), '', {id:'g0139'});
+ok('file input present', !!d.getElementById('bkFile'), '', {id:'g0140'});
+ok('mock key is in the backup set', w.eval("BKEYS.includes('geri:mock')"), '', {id:'g0141'});
 ok('the in-progress mock key is in the backup set too, not just the finished-mock key',
-   w.eval("BKEYS.includes('geri:mockrun')"));
+   w.eval("BKEYS.includes('geri:mockrun')"), '', {id:'g0142'});
 
 
 // ---- v9: portability, unseen pool, resume, keyboard ----
-ok('mock pool toggle present', d.querySelectorAll('#mockBar [data-mu]').length === 2);
-ok('last-mock line present', !!d.getElementById('mockLast'));
+ok('mock pool toggle present', d.querySelectorAll('#mockBar [data-mu]').length === 2, '', {id:'g0143'});
+ok('last-mock line present', !!d.getElementById('mockLast'), '', {id:'g0144'});
 w.eval('mockUnseen=1; mockN=10; mockPerQ=0;');
 d.getElementById('mockGo').click();
 await new Promise(r=>setTimeout(r,150));
@@ -551,36 +593,36 @@ await new Promise(r=>setTimeout(r,150));
   /* the old form had an escape hatch — "or the draw was 10 long", which it always is —
      so it passed even when the filter was removed entirely */
   ok('unseen-only draw avoids answered questions',
-     seeded.drawn > 0 && seeded.answeredInDraw === 0, JSON.stringify(seeded));
+     seeded.drawn > 0 && seeded.answeredInDraw === 0, JSON.stringify(seeded), {id:'g0145'});
 }
-ok('an in-progress mock is saved', 'geri:mockrun' in store && /"q":\[/.test(store['geri:mockrun']));
+ok('an in-progress mock is saved', 'geri:mockrun' in store && /"q":\[/.test(store['geri:mockrun']), '', {id:'g0146'});
 d.querySelector('#mockOpts .pqo[data-l="\u05d0"]').click();
 await new Promise(r=>setTimeout(r,60));
 ok('answers are saved as you go', /"a":\{/.test(store['geri:mockrun']) &&
-   Object.keys(JSON.parse(store['geri:mockrun']).a).length > 0);
+   Object.keys(JSON.parse(store['geri:mockrun']).a).length > 0, '', {id:'g0147'});
 await w.eval('mockFinish(true)');
 await new Promise(r=>setTimeout(r,120));
-ok('finishing clears the saved run', store['geri:mockrun'] === '');
-ok('last result recorded', 'geri:mock' in store && /right/.test(store['geri:mock']), store['geri:mock']);
+ok('finishing clears the saved run', store['geri:mockrun'] === '', '', {id:'g0148'});
+ok('last result recorded', 'geri:mock' in store && /right/.test(store['geri:mock']), store['geri:mock'], {id:'g0149'});
 ok('Hebrew blocks carry a language attribute',
    d.getElementById('pqStem').getAttribute('lang') === 'he' &&
-   d.getElementById('mockStem').getAttribute('lang') === 'he');
+   d.getElementById('mockStem').getAttribute('lang') === 'he', '', {id:'g0150'});
 
 
 // ---- v10: pearls and layout ----
 ok('exam pearls present', d.querySelectorAll('.pearl').length === 40,
-   d.querySelectorAll('.pearl').length + ' pearls');
+   d.querySelectorAll('.pearl').length + ' pearls', {id:'g0151'});
 ok('pearls sit inside topic sections, not at the end',
    [...d.querySelectorAll('.pearl')].every(p=>p.closest('section') && p.nextElementSibling),
-   [...d.querySelectorAll('.pearl')].filter(p=>!p.nextElementSibling).length + ' at a section end');
+   [...d.querySelectorAll('.pearl')].filter(p=>!p.nextElementSibling).length + ' at a section end', {id:'g0152'});
 ok('pearls spread across many sections',
    new Set([...d.querySelectorAll('.pearl')].map(p=>p.closest('section').id)).size > 25,
-   new Set([...d.querySelectorAll('.pearl')].map(p=>p.closest('section').id)).size + ' sections');
+   new Set([...d.querySelectorAll('.pearl')].map(p=>p.closest('section').id)).size + ' sections', {id:'g0153'});
 ok('pearls are searchable', (w.eval('buildIndex(); INDEX.filter(x=>/Exam pearl|discriminator/.test(x.t)).length') > 0) ||
-   w.eval("INDEX.some(x=>x.t.indexOf('Attention is the discriminator')>=0)"));
+   w.eval("INDEX.some(x=>x.t.indexOf('Attention is the discriminator')>=0)"), '', {id:'g0154'});
 ok('every section carries a group colour',
    [...d.querySelectorAll('main section')].filter(x=>!x.dataset.g).length === 0,
-   [...d.querySelectorAll('main section')].filter(x=>!x.dataset.g).map(x=>x.id).join(','));
+   [...d.querySelectorAll('main section')].filter(x=>!x.dataset.g).map(x=>x.id).join(','), {id:'g0155'});
 /* ChatGPT round 2: this used to compare only the two totals (.eyebrow count === section count),
    which a header MOVE, SWAP or CLONE between sections survives — the totals stay equal even
    though a section now owns 0 or 2 and another owns the other's. Check ownership per section
@@ -591,31 +633,31 @@ ok('every section carries a group colour',
   }));
   const bad = secsWithBand.filter(s => s.n !== 1);
   ok('every section owns exactly one header band of its own',
-     bad.length === 0, bad.map(s => s.id + ':' + s.n).join(',') || 'ok');
+     bad.length === 0, bad.map(s => s.id + ':' + s.n).join(',') || 'ok', {id:'g0156'});
 }
 ok('table captions do not simply repeat the heading above',
    [...d.querySelectorAll('.cap')].every(c=>{
      const h = c.previousElementSibling;
      if(!h || !/^H[23]$/.test(h.tagName)) return true;
      return !c.textContent.includes('· ' + h.textContent.trim());
-   }));
+   }), '', {id:'g0157'});
 
 
 /* ---- dementia split (13/9/2026) ---- */
 {
   const S = w.eval('SCHED');
   const wk5 = S.lane1[4].items.map(x => x.t.slice(0,5));
-  ok('ch 59 and ch 60 are read in the same lane-1 week', wk5[0] === 'ch 59' && wk5[1] === 'ch 60', wk5.join(','));
-  ok('ch 59 no longer sits in lane 2', !S.lane2.some(wk => wk.items.some(x => /^ch 59/.test(x.t))));
+  ok('ch 59 and ch 60 are read in the same lane-1 week', wk5[0] === 'ch 59' && wk5[1] === 'ch 60', wk5.join(','), {id:'g0158'});
+  ok('ch 59 no longer sits in lane 2', !S.lane2.some(wk => wk.items.some(x => /^ch 59/.test(x.t))), '', {id:'g0159'});
   ok('no lane-2 week under 5.5h before the last', S.lane2.slice(0,-1).every(wk => wk.items.reduce((a,b)=>a+b.h,0) >= 5.5),
-     S.lane2.map(wk => wk.items.reduce((a,b)=>a+b.h,0).toFixed(1)).join(','));
+     S.lane2.map(wk => wk.items.reduce((a,b)=>a+b.h,0).toFixed(1)).join(','), {id:'g0160'});
   ok('no lane-1 week over 8h', S.lane1.every(wk => wk.items.reduce((a,b)=>a+b.h,0) <= 8),
-     S.lane1.map(wk => wk.items.reduce((a,b)=>a+b.h,0).toFixed(1)).join(','));
-  ok('63 follows 61 in lane 1', S.lane1[6].items.map(x=>x.t.slice(0,5)).join(',') === 'ch 61,ch 63');
+     S.lane1.map(wk => wk.items.reduce((a,b)=>a+b.h,0).toFixed(1)).join(','), {id:'g0161'});
+  ok('63 follows 61 in lane 1', S.lane1[6].items.map(x=>x.t.slice(0,5)).join(',') === 'ch 61,ch 63', '', {id:'g0162'});
   const ci = t => w.eval(`chapInfo(${JSON.stringify(t)})`);
-  ok('ch 59 → #dementia, ch 60/63 → #bpsd', ci('ch 59 · x').sec === 'dementia' && ci('ch 60 · x').sec === 'bpsd' && ci('ch 63 · x').sec === 'bpsd');
-  ok('dementia 14 cards / bpsd 10 cards', w.eval('countTag("dementia")') === 14 && w.eval('countTag("bpsd")') === 10);
-  ok('chapter index routes 60 and 63 to bpsd', JSON.stringify(w.eval('secChapters("bpsd")')) === '[60,63]');
+  ok('ch 59 → #dementia, ch 60/63 → #bpsd', ci('ch 59 · x').sec === 'dementia' && ci('ch 60 · x').sec === 'bpsd' && ci('ch 63 · x').sec === 'bpsd', '', {id:'g0163'});
+  ok('dementia 14 cards / bpsd 10 cards', w.eval('countTag("dementia")') === 14 && w.eval('countTag("bpsd")') === 10, '', {id:'g0164'});
+  ok('chapter index routes 60 and 63 to bpsd', JSON.stringify(w.eval('secChapters("bpsd")')) === '[60,63]', '', {id:'g0165'});
 }
 
 {
@@ -642,9 +684,9 @@ ok('table captions do not simply repeat the heading above',
     return bad;
   })()`);
   ok('sectionForChapter agrees on a string and a number form of the same chapter, for every chapter in SECCH',
-     r.length === 0, r.slice(0, 5).join(', '));
+     r.length === 0, r.slice(0, 5).join(', '), {id:'g0166'});
   ok('sectionForChapter coerces at its own boundary',
-     /function sectionForChapter\(n\)\{[\s\S]{0,40}n = Number\(n\);\s*\n\s*if\(!Number\.isInteger\(n\) \|\| n <= 0\) return '';/.test(code));
+     /function sectionForChapter\(n\)\{[\s\S]{0,40}n = Number\(n\);\s*\n\s*if\(!Number\.isInteger\(n\) \|\| n <= 0\) return '';/.test(code), '', {id:'g0167'});
 }
 
 {
@@ -657,7 +699,7 @@ ok('table captions do not simply repeat the heading above',
      'beers' is a guideline-only section (see DOCREF.beers) with no Hazzard chapter of its
      own. Fixed the markup, not the lookup: pin the correct destination directly. */
   ok('chapter 22 (Medication Prescribing and De-Prescribing) routes to pharm, not the guideline-only beers section',
-     w.eval('sectionForChapter(22)') === 'pharm', w.eval('sectionForChapter(22)'));
+     w.eval('sectionForChapter(22)') === 'pharm', w.eval('sectionForChapter(22)'), {id:'g0168'});
 }
 
 {
@@ -665,7 +707,7 @@ ok('table captions do not simply repeat the heading above',
      to bpsd in the weak-chapter remediation list, not plain bold text with a dead promise
      ("tap one to open it") next to it */
   const ch63 = w.eval("PQ.filter(p => p.ch === 63 && p.bk === 'Hazzard' && !p.im)");
-  ok('fixture precondition: at least 2 Hazzard ch 63 questions exist', ch63.length >= 2, ch63.length + '');
+  ok('fixture precondition: at least 2 Hazzard ch 63 questions exist', ch63.length >= 2, ch63.length + '', {id:'g0169'});
   w.eval(`mockOn = true; mockQs = ${JSON.stringify(ch63.slice(0, 2))};
     mockAns = {0: (mockQs[0].a[0]==='א' ? 'ב' : 'א'), 1: (mockQs[1].a[0]==='א' ? 'ב' : 'א')};
     mockI = 0; mockRunId = 'weakgo-test'; mockRunSeq = 0; mockRunClaimed = false;`);
@@ -673,7 +715,7 @@ ok('table captions do not simply repeat the heading above',
   await new Promise(r => setTimeout(r, 50));
   const weakgo = d.querySelector('#mockReport .weakgo[data-sec="bpsd"]');
   ok('two wrong Hazzard ch 63 answers produce a real .weakgo jump button to bpsd, not plain bold text',
-     !!weakgo, d.querySelector('#mockReport .note') ? d.querySelector('#mockReport .note').innerHTML.slice(0, 200) : '(no note)');
+     !!weakgo, d.querySelector('#mockReport .note') ? d.querySelector('#mockReport .note').innerHTML.slice(0, 200) : '(no note)', {id:'g0170'});
   w.eval("mockOn = false; mockQs = []; mockAns = {}");
 }
 
@@ -684,117 +726,117 @@ ok('table captions do not simply repeat the heading above',
   const norm = t => t.replace(/\s+/g,' ').replace(/\u00a0/g,' ');
   const missing = F.filter(f => { const s = d.getElementById(f.sec); return !(s && norm(s.textContent).includes(norm(f.text))); });
   ok('every chapter-verified fact is still on the page (' + F.length + ')', missing.length === 0,
-     missing.map(m => '#' + m.sec + ' «' + m.text + '»').join(' | '));
-  ok('every section stamped as verified exists', Object.keys(w.eval('VERIFIED')).every(k => !!d.getElementById(k)));
+     missing.map(m => '#' + m.sec + ' «' + m.text + '»').join(' | '), {id:'g0171'});
+  ok('every section stamped as verified exists', Object.keys(w.eval('VERIFIED')).every(k => !!d.getElementById(k)), '', {id:'g0172'});
   ok('every content section carries a source stamp', w.eval('CONTENT').every(id => !!w.eval('VERIFIED')[id]),
-     w.eval('CONTENT').filter(id => !w.eval('VERIFIED')[id]).join(','));
+     w.eval('CONTENT').filter(id => !w.eval('VERIFIED')[id]).join(','), {id:'g0173'});
 }
 
 // ---- v12 (14 Sep): display reachable from any section; highlights and per-section notes ----
-ok('display popover exists with both controls', !!d.querySelector('#dispPop button[data-dk]') && d.querySelectorAll('#dispPop button[data-fs]').length === 4);
+ok('display popover exists with both controls', !!d.querySelector('#dispPop button[data-dk]') && d.querySelectorAll('#dispPop button[data-fs]').length === 4, '', {id:'g0174'});
 ok('display settings reachable from the topics sheet (mobile) and the desktop rail (v26: moved out of the phone anchor bar)',
-   !!d.getElementById('shDisplay') && !!d.getElementById('dispBtnRail') && !d.getElementById('dispBtn'));
+   !!d.getElementById('shDisplay') && !!d.getElementById('dispBtnRail') && !d.getElementById('dispBtn'), '', {id:'g0175'});
 d.querySelector('#dispPop button[data-fs="s"]').click();
 ok('popover text-size click applies and syncs the home row', d.body.classList.contains('fs-s') &&
-   d.querySelector('#dispRow button[data-fs="s"]').getAttribute('aria-pressed') === 'true');
+   d.querySelector('#dispRow button[data-fs="s"]').getAttribute('aria-pressed') === 'true', '', {id:'g0176'});
 d.querySelector('#dispPop button[data-dk]').click();
-ok('popover dark toggle mirrors the home button label', d.body.classList.contains('dark') && d.getElementById('dkBtn').textContent === 'light');
+ok('popover dark toggle mirrors the home button label', d.body.classList.contains('dark') && d.getElementById('dkBtn').textContent === 'light', '', {id:'g0177'});
 d.querySelector('#dispPop button[data-dk]').click(); d.querySelector('#dispRow button[data-fs="m"]').click();
 ok('a notes panel under every content section', d.querySelectorAll('.mynotes').length === d.querySelectorAll('.secfoot').length,
-   d.querySelectorAll('.mynotes').length + ' panels');
-ok('notes panels sit above the footer', [...d.querySelectorAll('.mynotes')].every(p=>p.nextElementSibling && p.nextElementSibling.classList.contains('secfoot')));
-ok('highlights and section notes are in the backup key list', w.eval("BKEYS.includes('geri:hl') && BKEYS.includes('geri:secnotes')"));
+   d.querySelectorAll('.mynotes').length + ' panels', {id:'g0178'});
+ok('notes panels sit above the footer', [...d.querySelectorAll('.mynotes')].every(p=>p.nextElementSibling && p.nextElementSibling.classList.contains('secfoot')), '', {id:'g0179'});
+ok('highlights and section notes are in the backup key list', w.eval("BKEYS.includes('geri:hl') && BKEYS.includes('geri:secnotes')"), '', {id:'g0180'});
 w.eval(`HL = {falls:[{id:'t1', sec:'falls', t:'fear of falling', i:1, n:'second one', c:'2026-09-14'}]}; hlPaintSec('falls');`);
 const hlm = d.querySelectorAll('#falls mark.hl[data-hid="t1"]');
-ok('a stored highlight re-anchors to its ordinal occurrence', hlm.length >= 1 && hlm[0].classList.contains('hasnote'), hlm.length + ' marks');
-ok('re-anchored text matches the stored text', [...hlm].map(m=>m.textContent).join('').replace(/\s+/g,' ') === 'fear of falling');
+ok('a stored highlight re-anchors to its ordinal occurrence', hlm.length >= 1 && hlm[0].classList.contains('hasnote'), hlm.length + ' marks', {id:'g0181'});
+ok('re-anchored text matches the stored text', [...hlm].map(m=>m.textContent).join('').replace(/\s+/g,' ') === 'fear of falling', '', {id:'g0182'});
 ok('the ordinal picked the second occurrence, not the first', (()=>{ const full = w.eval("hlNodes(document.getElementById('falls')).map(n=>n.data).join('')");
-   const first = full.indexOf('fear of falling'); const r = d.createRange(); r.setStart(d.getElementById('falls'),0); r.setEndBefore(hlm[0]); return r.toString().length > first; })());
+   const first = full.indexOf('fear of falling'); const r = d.createRange(); r.setStart(d.getElementById('falls'),0); r.setEndBefore(hlm[0]); return r.toString().length > first; })(), '', {id:'g0183'});
 w.eval("hlRemove('t1')");
-ok('removing a highlight unwraps it', d.querySelectorAll('#falls mark.hl').length === 0);
+ok('removing a highlight unwraps it', d.querySelectorAll('#falls mark.hl').length === 0, '', {id:'g0184'});
 ok('a highlight whose passage no longer exists is dropped, not misplaced',
-   w.eval(`HL = {falls:[{id:'t2', sec:'falls', t:'this sentence is not on the page', i:0, n:''}]}; hlPaintSec('falls'); document.querySelectorAll('#falls mark.hl').length === 0`));
+   w.eval(`HL = {falls:[{id:'t2', sec:'falls', t:'this sentence is not on the page', i:0, n:''}]}; hlPaintSec('falls'); document.querySelectorAll('#falls mark.hl').length === 0`), '', {id:'g0185'});
 w.eval("HL = {}");
 const nta = d.querySelector('.mynotes[data-sec="falls"] textarea');
 nta.value = 'ask about vitamin D'; nta.dispatchEvent(new w.Event('input'));
 await new Promise(r => setTimeout(r, 700));
-ok('section note persists', 'geri:secnotes' in store && /vitamin D/.test(store['geri:secnotes']), store['geri:secnotes']);
+ok('section note persists', 'geri:secnotes' in store && /vitamin D/.test(store['geri:secnotes']), store['geri:secnotes'], {id:'g0186'});
 w.eval("notesIndex()");
 ok('the notes index renders into the dialog, not just into the helper',
-   /vitamin D/.test(d.getElementById('ntBody').textContent) && !d.getElementById('notesModal').hidden);
+   /vitamin D/.test(d.getElementById('ntBody').textContent) && !d.getElementById('notesModal').hidden, '', {id:'g0187'});
 w.eval("document.getElementById('notesModal').hidden = true; document.body.classList.remove('tm-open')");
-ok('and the copy-as-text helper agrees with it', (w.eval("notesAsText()")).indexOf('vitamin D') >= 0);
+ok('and the copy-as-text helper agrees with it', (w.eval("notesAsText()")).indexOf('vitamin D') >= 0, '', {id:'g0188'});
 
 // ---- v12b: highlight colours, reading bookmark, abbreviation jump ----
-ok('highlight bar and note dialog each carry six swatches', d.querySelectorAll('#hlBar .swatch button.sw').length === 6 && d.querySelectorAll('#hlModal .swatch button.sw').length === 6);
+ok('highlight bar and note dialog each carry six swatches', d.querySelectorAll('#hlBar .swatch button.sw').length === 6 && d.querySelectorAll('#hlModal .swatch button.sw').length === 6, '', {id:'g0189'});
 w.eval(`HL = {falls:[{id:'c1', sec:'falls', t:'fear of falling', i:0, n:'', c:'g'}]}; hlPaintSec('falls');`);
-ok('a stored colour becomes a class on the mark', !!d.querySelector('#falls mark.hl[data-hid="c1"].c-g'));
+ok('a stored colour becomes a class on the mark', !!d.querySelector('#falls mark.hl[data-hid="c1"].c-g'), '', {id:'g0190'});
 w.eval("hlSetColour('c1','b')");
-ok('changing the colour repaints every mark for that highlight', !!d.querySelector('#falls mark.hl[data-hid="c1"].c-b') && !d.querySelector('#falls mark.hl[data-hid="c1"].c-g'));
+ok('changing the colour repaints every mark for that highlight', !!d.querySelector('#falls mark.hl[data-hid="c1"].c-b') && !d.querySelector('#falls mark.hl[data-hid="c1"].c-g'), '', {id:'g0191'});
 w.eval("hlRemove('c1'); HL = {}");
 const bmP = [...d.querySelectorAll('#falls p')].find(p => /Cataract surgery/.test(p.textContent));
 w.eval("show('falls')"); w.bmSet(bmP);
-ok('bookmark stores section, opening text and ordinal', w.eval("BM && BM.sec === 'falls' && /^Vision/.test(BM.t) && BM.i === 0"), JSON.stringify(w.eval("BM")));
-ok('bookmark resolves back to the same block', w.eval("bmFind()") === bmP);
-ok('home page shows the resume strip with the section name', !d.getElementById('resume').hidden && /43 Falls/.test(d.getElementById('resumeSec').textContent));
-ok('bookmark is in the backup key list', w.eval("BKEYS.includes('geri:bookmark')"));
+ok('bookmark stores section, opening text and ordinal', w.eval("BM && BM.sec === 'falls' && /^Vision/.test(BM.t) && BM.i === 0"), JSON.stringify(w.eval("BM")), {id:'g0192'});
+ok('bookmark resolves back to the same block', w.eval("bmFind()") === bmP, '', {id:'g0193'});
+ok('home page shows the resume strip with the section name', !d.getElementById('resume').hidden && /43 Falls/.test(d.getElementById('resumeSec').textContent), '', {id:'g0194'});
+ok('bookmark is in the backup key list', w.eval("BKEYS.includes('geri:bookmark')"), '', {id:'g0195'});
 d.getElementById('resumeClear').click();
-ok('clearing hides the strip', d.getElementById('resume').hidden && w.eval("BM === null"));
-ok('every abbreviation mark has a matching footnote term in its section', [...d.querySelectorAll('abbr.abbr')].every(a => { const s = a.closest('section'); const k = a.textContent.replace(/\*$/, '').trim(); return s && [...s.querySelectorAll('.fnotes dt')].some(dt => dt.textContent.trim() === k); }));
+ok('clearing hides the strip', d.getElementById('resume').hidden && w.eval("BM === null"), '', {id:'g0196'});
+ok('every abbreviation mark has a matching footnote term in its section', [...d.querySelectorAll('abbr.abbr')].every(a => { const s = a.closest('section'); const k = a.textContent.replace(/\*$/, '').trim(); return s && [...s.querySelectorAll('.fnotes dt')].some(dt => dt.textContent.trim() === k); }), '', {id:'g0197'});
 
 // ---- v12c: backup anywhere, floating timer, swatch colours ----
-ok('every section footer offers backup & restore', [...d.querySelectorAll('.secfoot')].every(f=>f.querySelector('.bk')));
-ok('backup lives in a dialog and has one textarea only', !!d.getElementById('bkModal') && d.querySelectorAll('#bkText').length === 1);
+ok('every section footer offers backup & restore', [...d.querySelectorAll('.secfoot')].every(f=>f.querySelector('.bk')), '', {id:'g0198'});
+ok('backup lives in a dialog and has one textarea only', !!d.getElementById('bkModal') && d.querySelectorAll('#bkText').length === 1, '', {id:'g0199'});
 await w.eval("bkOpen()"); await new Promise(r=>setTimeout(r,200));
 ok('opening from a section moves the one backup block into the dialog',
-   d.getElementById('bkWrap').parentNode === d.getElementById('bkModalBody') && !d.getElementById('bkModal').hidden);
+   d.getElementById('bkWrap').parentNode === d.getElementById('bkModalBody') && !d.getElementById('bkModal').hidden, '', {id:'g0200'});
 w.eval("bkClose()");
-ok('the floating timer is hidden on the home page', (w.eval("show('week')"), d.getElementById('miniT').hidden));
+ok('the floating timer is hidden on the home page', (w.eval("show('week')"), d.getElementById('miniT').hidden), '', {id:'g0201'});
 w.eval("show('falls'); mtOff = false; T = {p:0, left:PH[0].s, run:false, ts:0, d:today()}; tPaint()");
 /* it stays out of the way until the block is in use (group 3); paused part-way counts as in use */
-ok('the floating timer stays hidden on a section while the block is untouched', d.getElementById('miniT').hidden);
+ok('the floating timer stays hidden on a section while the block is untouched', d.getElementById('miniT').hidden, '', {id:'g0202'});
 w.eval("T.left = PH[0].s - 5; tPaint()");
 ok('the floating timer shows on a section, with clock, phase and a control', !d.getElementById('miniT').hidden &&
-   /^\d\d:\d\d$/.test(d.getElementById('mtClock').textContent) && /1\/3/.test(d.getElementById('mtPhase').textContent));
+   /^\d\d:\d\d$/.test(d.getElementById('mtClock').textContent) && /1\/3/.test(d.getElementById('mtPhase').textContent), '', {id:'g0203'});
 d.getElementById('mtGo').click();
-ok('its button starts the same timer the home page drives', w.eval("T.run === true") && d.getElementById('tGo').textContent === 'Pause');
+ok('its button starts the same timer the home page drives', w.eval("T.run === true") && d.getElementById('tGo').textContent === 'Pause', '', {id:'g0204'});
 d.getElementById('mtGo').click();
-ok('and pauses it', w.eval("T.run === false") && d.getElementById('mtGo').textContent === 'Resume');
+ok('and pauses it', w.eval("T.run === false") && d.getElementById('mtGo').textContent === 'Resume', '', {id:'g0205'});
 d.getElementById('mtHide').click();
 /* v27: hide used to set box.hidden (recoverable only by changing section); it now shrinks
    to a small gear dot that stays on screen and draggable, one tap restores it */
 ok('hide shrinks the pill to a gear dot rather than removing it from the screen',
-   !d.getElementById('miniT').hidden && d.getElementById('miniT').classList.contains('dot'));
+   !d.getElementById('miniT').hidden && d.getElementById('miniT').classList.contains('dot'), '', {id:'g0206'});
 d.getElementById('miniT').click();
-ok('tapping the dot restores the full pill', !d.getElementById('miniT').classList.contains('dot'));
+ok('tapping the dot restores the full pill', !d.getElementById('miniT').classList.contains('dot'), '', {id:'g0207'});
 w.eval("show('week')");
 ok('swatch colour rules carry an id so the bar button rule cannot flatten them',
-   /#hlBar \.swatch \.sw-y/.test(code) && /#hlBar \.swatch button\.sw\{/.test(code.replace(/,#hlModal \.swatch button\.sw/,'')));
+   /#hlBar \.swatch \.sw-y/.test(code) && /#hlBar \.swatch button\.sw\{/.test(code.replace(/,#hlModal \.swatch button\.sw/,'')), '', {id:'g0208'});
 
 // ---- v12d: stopwatch mode, collapsible timer, end button, persistent scroll ----
-ok('an end button sits with the top button', !!d.getElementById('toEnd') && !!d.getElementById('toTop'));
+ok('an end button sits with the top button', !!d.getElementById('toEnd') && !!d.getElementById('toTop'), '', {id:'g0209'});
 w.eval("show('falls')");
-ok('the stopwatch is a separate clock, not a flag on the day', w.eval("typeof SW === 'object' && SW.on === false && typeof T.p === 'number'"));
+ok('the stopwatch is a separate clock, not a flag on the day', w.eval("typeof SW === 'object' && SW.on === false && typeof T.p === 'number'"), '', {id:'g0210'});
 w.eval("swSetMode(true)");
 ok('switching to the stopwatch relabels the pill and hides the phase control',
-   d.getElementById('mtPhase').textContent === 'stopwatch' && d.getElementById('mtSkip').hidden === true);
+   d.getElementById('mtPhase').textContent === 'stopwatch' && d.getElementById('mtSkip').hidden === true, '', {id:'g0211'});
 w.eval("T = {p:1, left:900, run:true, ts:Date.now(), d:today()}; swSetMode(false); swSetMode(true)");
-ok('turning the stopwatch on pauses the day rather than letting both run', w.eval("T.run === false && T.p === 1"));
+ok('turning the stopwatch on pauses the day rather than letting both run', w.eval("T.run === false && T.p === 1"), '', {id:'g0212'});
 w.eval("swToggleRun()");
-ok('the stopwatch runs', w.eval("SW.run === true"));
+ok('the stopwatch runs', w.eval("SW.run === true"), '', {id:'g0213'});
 w.eval("swToggleRun()");
-ok('and pauses where it was', w.eval("SW.run === false"));
+ok('and pauses where it was', w.eval("SW.run === false"), '', {id:'g0214'});
 w.eval("swReset()");
-ok('reset takes it to zero', w.eval("swMs() < 50") && /^0?0:00$/.test(d.getElementById('mtClock').textContent));
+ok('reset takes it to zero', w.eval("swMs() < 50") && /^0?0:00$/.test(d.getElementById('mtClock').textContent), '', {id:'g0215'});
 w.eval("swSetMode(false)");
-ok('the day comes back exactly where it was left', w.eval("T.p === 1 && Math.round(T.left) === 900"));
-ok('the stopwatch is in the backup key list', w.eval("BKEYS.includes('geri:stopwatch')"));
+ok('the day comes back exactly where it was left', w.eval("T.p === 1 && Math.round(T.left) === 900"), '', {id:'g0216'});
+ok('the stopwatch is in the backup key list', w.eval("BKEYS.includes('geri:stopwatch')"), '', {id:'g0217'});
 d.getElementById('miniT').classList.add('open'); d.getElementById('mtHide').click();
 ok('v27: hide shrinks the pill to the gear dot and closes the menu behind it',
-   d.getElementById('miniT').classList.contains('dot') && !d.getElementById('miniT').classList.contains('open'));
+   d.getElementById('miniT').classList.contains('dot') && !d.getElementById('miniT').classList.contains('open'), '', {id:'g0218'});
 d.getElementById('miniT').click();
-ok('tapping the dot opens it again', !d.getElementById('miniT').classList.contains('dot'));
-ok('scroll position is stored per section and persisted', w.eval("typeof scrollAt === 'object' && typeof scrollFrac === 'object' && SCKEY === 'geri:scroll'"));
+ok('tapping the dot opens it again', !d.getElementById('miniT').classList.contains('dot'), '', {id:'g0219'});
+ok('scroll position is stored per section and persisted', w.eval("typeof scrollAt === 'object' && typeof scrollFrac === 'object' && SCKEY === 'geri:scroll'"), '', {id:'g0220'});
 /* the old line referenced rememberScroll without calling it (missing parens), so the
    capture it was meant to set up never ran — the assertion below passed on a value that
    was hand-set two lines above, never on anything rememberScroll actually wrote. Call it
@@ -803,30 +845,30 @@ ok('scroll position is stored per section and persisted', w.eval("typeof scrollA
 w.scrollY = 777;
 w.eval('rememberScroll()');
 ok('rememberScroll captures the current scroll position for the shown section',
-   w.eval('scrollAt.falls') === 777, w.eval('scrollAt.falls') + '');
+   w.eval('scrollAt.falls') === 777, w.eval('scrollAt.falls') + '', {id:'g0221'});
 w.eval("scrollAt.falls = 1234; scrollFrac.falls = 0.5; restoreScroll('falls')");
-ok('restoring a section reads its stored offset', w.eval("scrollAt.falls === 1234"));
+ok('restoring a section reads its stored offset', w.eval("scrollAt.falls === 1234"), '', {id:'g0222'});
 
 // ---- audit fixes, 14 Sep ----
-ok('the table pop-out ignores highlights and abbreviations', /if\(t\.closest\('mark\.hl, abbr\.abbr'\)\) return;/.test(code));
+ok('the table pop-out ignores highlights and abbreviations', /if\(t\.closest\('mark\.hl, abbr\.abbr'\)\) return;/.test(code), '', {id:'g0223'});
 ok('resume writes both the pixel offset and the fraction, so the plausibility check cannot undo the jump',
-   /scrollAt\[BM\.sec\] = y; scrollFrac\[BM\.sec\] = y \/ docH\(\)/.test(code));
-ok('scroll positions and the highlight colour are backed up', w.eval("BKEYS.includes('geri:scroll') && BKEYS.includes('geri:hlcolour')"));
-ok('the colour preference goes through the storage shim, not localStorage directly', !/localStorage\.(get|set)Item\('geri:hlcolour'/.test(code));
+   /scrollAt\[BM\.sec\] = y; scrollFrac\[BM\.sec\] = y \/ docH\(\)/.test(code), '', {id:'g0224'});
+ok('scroll positions and the highlight colour are backed up', w.eval("BKEYS.includes('geri:scroll') && BKEYS.includes('geri:hlcolour')"), '', {id:'g0225'});
+ok('the colour preference goes through the storage shim, not localStorage directly', !/localStorage\.(get|set)Item\('geri:hlcolour'/.test(code), '', {id:'g0226'});
 w.eval("HL = {falls:[{id:'i1',sec:'falls',t:'fear of falling',i:0,n:'',c:'y'}]}; hlPaintSec('falls'); hlPaintSec('falls'); hlPaintSec('falls')");
-ok('repainting a section does not duplicate its highlights', d.querySelectorAll('#falls mark.hl[data-hid="i1"]').length === 1);
+ok('repainting a section does not duplicate its highlights', d.querySelectorAll('#falls mark.hl[data-hid="i1"]').length === 1, '', {id:'g0227'});
 w.eval("HL = {}");
 
 // ---- external review follow-up, 14 Sep ----
 ok('selection offsets are counted over the searched node list, not Range.toString()',
-   /r\.comparePoint\(n, 0\)/.test(code) && !/pre\.toString\(\)\.length/.test(code));
-ok('the display popover clears the floating timer', /#dispPop\{position:fixed;left:12px;right:12px;bottom:78px/.test(code));
+   /r\.comparePoint\(n, 0\)/.test(code) && !/pre\.toString\(\)\.length/.test(code), '', {id:'g0228'});
+ok('the display popover clears the floating timer', /#dispPop\{position:fixed;left:12px;right:12px;bottom:78px/.test(code), '', {id:'g0229'});
 /* superseded twice: first by the bottom dock, then — after the bottom dock collided with
    Chrome's own bottom sheet on a real phone — by the top dock under nav. Nothing positions
    the bar near the selection either way. */
 ok('the selection bar is docked under the header, not positioned near the selection',
    /#hlBar\{position:fixed;z-index:58;left:0;right:0;top:calc\(var\(--navh, 130px\) \+ env\(safe-area-inset-top\)\);/.test(code) &&
-   !/Math\.max\(navBottom \+ 8,/.test(code) && !/bar\.style\.left = x \+ 'px'/.test(code));
+   !/Math\.max\(navBottom \+ 8,/.test(code) && !/bar\.style\.left = x \+ 'px'/.test(code), '', {id:'g0230'});
 
 /* ---- --navh went stale at a larger text size, uncovered while fixing the dock, 16 Sep ----
    setNavH only listens for 'resize'; nav grows a line at XL and nothing told it to remeasure,
@@ -834,7 +876,7 @@ ok('the selection bar is docked under the header, not positioned near the select
    rect forces the layout setNavH needs, so calling it from paintDisp, right after the class
    that changes nav's height, is enough — no new observer needed. */
 ok('paintDisp calls setNavH, so a text-size change re-measures nav without waiting for resize',
-   /function paintDisp\(\)\{[\s\S]{0,400}?setNavH\(\);/.test(code));
+   /function paintDisp\(\)\{[\s\S]{0,400}?setNavH\(\);/.test(code), '', {id:'g0231'});
 {
   const navEl3 = d.querySelector('nav');
   let h3 = 100;
@@ -845,7 +887,7 @@ ok('paintDisp calls setNavH, so a text-size change re-measures nav without waiti
   w.eval('paintDisp()');
   const after3 = d.documentElement.style.getPropertyValue('--navh');
   ok('picking XL text grows --navh without waiting for a resize event',
-     before3 === '100px' && after3 === '160px', 'before=' + before3 + ' after=' + after3);
+     before3 === '100px' && after3 === '160px', 'before=' + before3 + ' after=' + after3, {id:'g0232'});
   delete navEl3.getBoundingClientRect;
   w.eval('setNavH()');
 }
@@ -854,25 +896,25 @@ ok('paintDisp calls setNavH, so a text-size change re-measures nav without waiti
 {
   ok('the docked bar sits under nav, not at the bottom edge where Chrome\u2019s own contextual sheet lives',
      /top:calc\(var\(--navh, 130px\) \+ env\(safe-area-inset-top\)\);/.test(code) &&
-     !/#hlBar\{[^}]*bottom:0/.test(code));
+     !/#hlBar\{[^}]*bottom:0/.test(code), '', {id:'g0233'});
   /* --navh already existed — setNavH(), wired for the past-papers sticky header — and is
      reused here rather than measured a second time. Confirmed there is exactly one writer. */
   ok('nav\u2019s height for --navh is written by the one existing measurer, not a second one',
      (code.match(/document\.documentElement\.style\.setProperty\('--navh',/g) || []).length === 1 &&
-     /function setNavH\(\)\{ const nav = document\.querySelector\('nav'\);/.test(code));
+     /function setNavH\(\)\{ const nav = document\.querySelector\('nav'\);/.test(code), '', {id:'g0234'});
   /* behavioural: the existing measurer's own real path still lands on the custom property */
   const navEl2 = d.querySelector('nav');
   navEl2.getBoundingClientRect = () => ({height: 140, width: 390, top:0, left:0, right:390, bottom:140});
   w.dispatchEvent(new w.Event('resize'));
   ok('measuring nav writes its real height into --navh',
      d.documentElement.style.getPropertyValue('--navh') === '140px',
-     d.documentElement.style.getPropertyValue('--navh'));
+     d.documentElement.style.getPropertyValue('--navh'), {id:'g0235'});
   delete navEl2.getBoundingClientRect;
 }
 
 /* ---- the empty square next to home, real phone, 16 Sep ---- */
 ok('the chapter-footer "next this week" button is actually hidden when it carries no label',
-   /\.nx\[hidden\]\{display:none\}/.test(code));
+   /\.nx\[hidden\]\{display:none\}/.test(code), '', {id:'g0236'});
 {
   /* behavioural: paintNextChap's own hidden=true, with the guard rule in place, must compute
      to display:none — jsdom does resolve simple author rules like this one.
@@ -887,7 +929,7 @@ ok('the chapter-footer "next this week" button is actually hidden when it carrie
   const nx = d.querySelector('#' + lastSec + ' .secfoot .nx');
   ok('a chapter with no next chapter this week hides its next-chapter button, and it is genuinely display:none',
      !!nx && nx.hidden === true && w.getComputedStyle(nx).display === 'none',
-     nx ? ('hidden=' + nx.hidden + ' display=' + w.getComputedStyle(nx).display) : 'no .nx found for ' + lastSec);
+     nx ? ('hidden=' + nx.hidden + ' display=' + w.getComputedStyle(nx).display) : 'no .nx found for ' + lastSec, {id:'g0237'});
   w.eval("show('week')");
 }
 
@@ -898,16 +940,16 @@ ok('the chapter-footer "next this week" button is actually hidden when it carrie
      background (which is what made both the bar and the timer near-black in both themes). */
   ok('the selection bar takes its colour from the page, not a fixed dark fill',
      /#hlBar\{position:fixed;z-index:58;left:0;right:0;top:calc\(var\(--navh, 130px\)[\s\S]{0,200}?background:var\(--paper\);color:var\(--ink\);/.test(code) &&
-     /body\.dark #hlBar\{background:var\(--surface\);color:var\(--ink\);/.test(code));
+     /body\.dark #hlBar\{background:var\(--surface\);color:var\(--ink\);/.test(code), '', {id:'g0238'});
   ok('the floating timer takes its colour from the page too, with a dark-mode border of its own',
      /#miniT\{position:fixed;left:10px;bottom:14px;z-index:56;font-family:var\(--sans\);background:var\(--surface\);color:var\(--ink\);/.test(code) &&
      /body\.dark #miniT\{border-color:#3d3530\}/.test(code) &&
-     !/#miniT\{[\s\S]{0,200}?background:var\(--ink\)/.test(code));
+     !/#miniT\{[\s\S]{0,200}?background:var\(--ink\)/.test(code), '', {id:'g0239'});
 
   /* one row, budgeted at XL: 40px buttons + 8px top/6px bottom padding + the 1px border = 55 */
   ok('the selection bar is budgeted to stay in one row at the largest text size',
      /#hlBar button\{font-family:var\(--sans\);font-size:calc\(12px\*var\(--fs,1\)\);min-height:40px;padding:6px 10px;/.test(code) &&
-     /padding:8px calc\(10px \+ env\(safe-area-inset-left\)\) 6px;/.test(code));
+     /padding:8px calc\(10px \+ env\(safe-area-inset-left\)\) 6px;/.test(code), '', {id:'g0240'});
   /* jsdom does no layout, so the ~56px height budget is verified by measurement in Chromium
      (reported separately), not asserted here as a number this harness cannot compute */
   const bar = d.getElementById('hlBar');
@@ -916,20 +958,20 @@ ok('the chapter-footer "next this week" button is actually hidden when it carrie
   /* + note and stop here live behind an overflow, not a second row */
   ok('the two secondary actions are behind an overflow toggle, not a second row',
      /<button type="button" id="hlMore" aria-haspopup="true" aria-expanded="false"/.test(html) &&
-     /<span class="hlmore" hidden>\s*<button type="button" id="hlNote">/.test(html));
+     /<span class="hlmore" hidden>\s*<button type="button" id="hlNote">/.test(html), '', {id:'g0241'});
   const more = d.querySelector('.hlmore'), moreBtn = d.getElementById('hlMore');
-  ok('the overflow starts closed', more.hidden === true && moreBtn.getAttribute('aria-expanded') === 'false');
+  ok('the overflow starts closed', more.hidden === true && moreBtn.getAttribute('aria-expanded') === 'false', '', {id:'g0242'});
   moreBtn.click();
-  ok('one tap opens it', more.hidden === false, more.hidden);
+  ok('one tap opens it', more.hidden === false, more.hidden, {id:'g0243'});
   d.getElementById('hlNote').click();
   ok('taking an action inside it closes the whole bar, overflow included',
-     bar.hidden === true && more.hidden === true, 'bar.hidden=' + bar.hidden + ' more.hidden=' + more.hidden);
+     bar.hidden === true && more.hidden === true, 'bar.hidden=' + bar.hidden + ' more.hidden=' + more.hidden, {id:'g0244'});
 
   /* the timer and the jump row stand down while the bar is up, by display:none, and return
      when the selection clears — this is the same trap the fade guard exists for: an
      invisible control that still eats the tap */
   ok('showing the bar is display:none on the timer and the row, never opacity',
-     /#miniT\.hl-off,\.jumprow\.hl-off\{display:none!important\}/.test(code));
+     /#miniT\.hl-off,\.jumprow\.hl-off\{display:none!important\}/.test(code), '', {id:'g0245'});
 
   /* behavioural: a real selection, through the actual debounced handler, drives the bar and
      the chrome underneath it — not a hand-set class */
@@ -945,21 +987,21 @@ ok('the chapter-footer "next this week" button is actually hidden when it carrie
      move the header mid-selection. Assert the freeze lands synchronously, with the debounce
      timer NOT yet advanced, before doing anything else. */
   ok('the header freezes synchronously on selectionchange, before the 260ms debounce ever runs',
-     w.eval('hdrFrozen') === true, w.eval('hdrFrozen'));
+     w.eval('hdrFrozen') === true, w.eval('hdrFrozen'), {id:'g0246'});
   await new Promise(res => setTimeout(res, 320));           /* the 260ms debounce, for real */
   ok('a live selection shows the bar and stands the timer and the jump row down',
      bar.hidden === false && mt.classList.contains('hl-off') && row.classList.contains('hl-off'),
-     'bar.hidden=' + bar.hidden + ' mt=' + mt.className + ' row=' + row.className);
+     'bar.hidden=' + bar.hidden + ' mt=' + mt.className + ' row=' + row.className, {id:'g0247'});
   /* v26: the same live selection freezes the header's auto-hide (Gemini amendment) — no
      scroll-driven show/hide until the selection clears */
-  ok('a live selection freezes the header’s auto-hide', w.eval('hdrFrozen') === true, w.eval('hdrFrozen'));
+  ok('a live selection freezes the header’s auto-hide', w.eval('hdrFrozen') === true, w.eval('hdrFrozen'), {id:'g0248'});
   sel.removeAllRanges();
   d.dispatchEvent(new w.Event('selectionchange'));
   await new Promise(res => setTimeout(res, 320));
   ok('clearing the selection hides the bar and brings the timer and the jump row back',
      bar.hidden === true && !mt.classList.contains('hl-off') && !row.classList.contains('hl-off'),
-     'bar.hidden=' + bar.hidden + ' mt=' + mt.className + ' row=' + row.className);
-  ok('clearing the selection un-freezes the header’s auto-hide', w.eval('hdrFrozen') === false, w.eval('hdrFrozen'));
+     'bar.hidden=' + bar.hidden + ' mt=' + mt.className + ' row=' + row.className, {id:'g0249'});
+  ok('clearing the selection un-freezes the header’s auto-hide', w.eval('hdrFrozen') === false, w.eval('hdrFrozen'), {id:'g0250'});
 }
 
 /* ---- selection integrity while the bar is up, 16 Sep ----
@@ -974,7 +1016,7 @@ ok('the chapter-footer "next this week" button is actually hidden when it carrie
 {
   const handlers = [...code.matchAll(/addEventListener\('selectionchange',/g)];
   ok('exactly two selectionchange handlers exist in the file, both accounted for below',
-     handlers.length === 2, handlers.length);
+     handlers.length === 2, handlers.length, {id:'g0251'});
   /* The extraction is scoped to the four functions that actually run on a selectionchange —
      go() directly, and place()/placeCore()/paintChrome() via the second handler's
      setTimeout(place). A wider net (the whole enclosing IIFE, say) would also sweep in
@@ -987,14 +1029,14 @@ ok('the chapter-footer "next this week" button is actually hidden when it carrie
   const bodies = fnSrc('placeCore') + placeLine + fnSrc('paintChrome') + goSrc;
   ok('every selectionchange-path function was actually found in the source',
      [fnSrc('placeCore'), placeLine, fnSrc('paintChrome'), goSrc].every(x => x.length > 20),
-     JSON.stringify([fnSrc('placeCore').length, placeLine.length, fnSrc('paintChrome').length, goSrc.length]));
+     JSON.stringify([fnSrc('placeCore').length, placeLine.length, fnSrc('paintChrome').length, goSrc.length]), {id:'g0252'});
   const mutators = /\.addRange\(|\.removeAllRanges\(\)|\.modify\(|\.scrollIntoView\(|appendChild|insertBefore|\.innerHTML\s*=|\.wrap\(|\bfocus\(\)/g;
   const hits = [...bodies.matchAll(mutators)].map(m => m[0]);
   /* hlRepaintAll DOES rewrap marks, but go() only calls it after confirming the selection has
      COLLAPSED (the early return above it) — never while one is live — so it correctly does
      not appear as a direct call inside this scoped source and is not itself scanned. */
   ok('no selectionchange handler mutates the DOM or the Selection while a selection is live',
-     hits.length === 0, hits.join(', ') || '(none found)');
+     hits.length === 0, hits.join(', ') || '(none found)', {id:'g0253'});
 
   /* behavioural proof, matching what was seen on the phone: the selection itself does not
      move because of anything in this file */
@@ -1007,19 +1049,19 @@ ok('the chapter-footer "next this week" button is actually hidden when it carrie
   await new Promise(res => setTimeout(res, 320));
   const after = {text: sel2.toString(), start: sel2.anchorOffset, end: sel2.focusOffset};
   ok('the selection\u2019s start and end are unchanged once the bar has appeared',
-     JSON.stringify(before) === JSON.stringify(after), JSON.stringify({before, after}));
+     JSON.stringify(before) === JSON.stringify(after), JSON.stringify({before, after}), {id:'g0254'});
   sel2.removeAllRanges(); d.dispatchEvent(new w.Event('selectionchange'));
   await new Promise(res => setTimeout(res, 320));
 }
 
-ok('resume makes one scroll jump, not two', /skipRestore = true;/.test(code) && /if\(skipRestore\)\{ skipRestore = false; return; \}/.test(code));
+ok('resume makes one scroll jump, not two', /skipRestore = true;/.test(code) && /if\(skipRestore\)\{ skipRestore = false; return; \}/.test(code), '', {id:'g0255'});
 ok('no font size escapes the text-size control, whatever its capitalisation',
    /* #miniT and #dispPop used to be carved out of this check — every font-size declared
       inside them already uses calc(Npx*var(--fs,1)) like everywhere else, so the carve-out
       was stale and was hiding real coverage rather than protecting a deliberate exemption.
       Dropped; nothing goes red because there was nothing bare left to catch. */
-   !/font-size:\s*[0-9.]+px/i.test(code.replace(/font-size:\s*calc\(/gi,'font-size:calc(').replace(/style="[^"]*"/g,'').replace(/cssText = '[^']*'/g,'')));
-ok('the rail state and the open tab are backed up', w.eval("BKEYS.includes('geri:rail') && BKEYS.includes('geri:tab')"));
+   !/font-size:\s*[0-9.]+px/i.test(code.replace(/font-size:\s*calc\(/gi,'font-size:calc(').replace(/style="[^"]*"/g,'').replace(/cssText = '[^']*'/g,'')), '', {id:'g0256'});
+ok('the rail state and the open tab are backed up', w.eval("BKEYS.includes('geri:rail') && BKEYS.includes('geri:tab')"), '', {id:'g0257'});
 
 // ---- second review follow-up, 15 Sep ----
 ok('a highlight that crosses element boundaries re-anchors as one highlight', (()=>{
@@ -1039,38 +1081,38 @@ ok('a highlight that crosses element boundaries re-anchors as one highlight', ((
   const spansBold = marks.some(m => m.closest('b'));
   w.eval("hlRemove('" + h.id + "')");
   return marks.length > 1 && spansBold && joined === wanted;
-})());
+})(), '', {id:'g0258'});
 ok('the rollback copy is verified by reading it back, not by the absence of a throw',
-   /const back = await window\.storage\.get\(ROLLKEY\);/.test(code) && /back\.value === blob/.test(code));
+   /const back = await window\.storage\.get\(ROLLKEY\);/.test(code) && /back\.value === blob/.test(code), '', {id:'g0259'});
 ok('restore and file-load refuse to run while a mock paper is open, including one left suspended',
    (code.match(/if\(mockInPlay\(\)\)\{\s*\n\s*alert\('Finish or abandon the mock paper/g)||[]).length === 2 &&
-   /return !!document\.getElementById\('mockResume'\);/.test(code));
+   /return !!document\.getElementById\('mockResume'\);/.test(code), '', {id:'g0260'});
 ok('a hash that names no section is put back in step with what is on screen',
-   /history\.replaceState\(null, '', '#' \+ cur\.id\);/.test(code));
+   /history\.replaceState\(null, '', '#' \+ cur\.id\);/.test(code), '', {id:'g0261'});
 
 // ---- third review follow-up, 15 Sep ----
 ok('coming back to the tab re-reads the highlights, notes and bookmark, not only the small keys', (()=>{
   const body = code.split('async function refreshBody')[1] || '';
   return /await window\.storage\.get\(HLKEY\)/.test(body) && /await window\.storage\.get\(SNKEY\)/.test(body) &&
          /await window\.storage\.get\(BMKEY\)/.test(body);
-})());
+})(), '', {id:'g0262'});
 ok('the refresh is queued ON the save chain, not merely awaited behind it',
-   /saveChain = saveChain\.then\(\(\)=>refreshBody\(\)\.catch\(\(\)=>\{\}\)\);/.test(code));
+   /saveChain = saveChain\.then\(\(\)=>refreshBody\(\)\.catch\(\(\)=>\{\}\)\);/.test(code), '', {id:'g0263'});
 ok('background writers stand down while a restore is rewriting every key',
    /let restoring = false;/.test(code) && /if\(restoring\) return;\s*\/\* a restore is rewriting/.test(html) &&
    /if\(restoring\) return saveChain;/.test(code) &&
    /function tSave\(\)\{ if\(restoring\) return;/.test(code) &&
-   /restoring = true;/.test(code) && /finally\{ restoring = false; \}/.test(code));
+   /restoring = true;/.test(code) && /finally\{ restoring = false; \}/.test(code), '', {id:'g0264'});
 ok('clearing the bookmark reaches storage — the layer has no delete, only get and set',
-   /try\{ window\.storage\.set\(BMKEY, ''\); \}catch\(e\)\{\}/.test(code) && !/window\.storage\.delete\(/.test(code));
+   /try\{ window\.storage\.set\(BMKEY, ''\); \}catch\(e\)\{\}/.test(code) && !/window\.storage\.delete\(/.test(code), '', {id:'g0265'});
 ok('a highlight deleted in another tab is unwrapped, not left on screen',
-   /document\.querySelectorAll\('mark\.hl'\)\.forEach\(m=>hlUnwrap\(m\.dataset\.hid\)\);\s*\n\s*HL = merged;/.test(code));
+   /document\.querySelectorAll\('mark\.hl'\)\.forEach\(m=>hlUnwrap\(m\.dataset\.hid\)\);\s*\n\s*HL = merged;/.test(code), '', {id:'g0266'});
 ok('coming back to the tab MERGES the disk copy rather than assigning it over foreground work',
-   /const merged = mergeHL\(v, seen, HL\);/.test(code) && /SN = mergeSN\(v, seen, SN\);/.test(code));
+   /const merged = mergeHL\(v, seen, HL\);/.test(code) && /SN = mergeSN\(v, seen, SN\);/.test(code), '', {id:'g0267'});
 
 ok('a refused save says so instead of leaving the highlight looking saved',
    /function notSaved\(\)\{/.test(code) && /else if\(blob !== JSON\.stringify\(stored\)\) notSaved\(\);/.test(code) &&
-   /now - notSavedAt < 4000/.test(code));
+   /now - notSavedAt < 4000/.test(code), '', {id:'g0268'});
 ok('leaving the tab is actually wired to the flush, both ways', (()=>{
   /* behavioural: dispatch the real events rather than matching their handler text */
   const p = d.querySelector('.mynotes[data-sec="falls"]');
@@ -1084,7 +1126,7 @@ ok('leaving the tab is actually wired to the flush, both ways', (()=>{
   Object.defineProperty(d, 'hidden', {value:false, configurable:true});
   p.querySelector('textarea').value = ''; w.eval("SN = {}");
   return beforeHide === undefined && afterHide === 'typed on the way out';
-})());
+})(), '', {id:'g0269'});
 ok('and pagehide flushes too', (()=>{
   const p = d.querySelector('.mynotes[data-sec="falls"]');
   p.querySelector('textarea').value = 'typed at pagehide';
@@ -1093,7 +1135,7 @@ ok('and pagehide flushes too', (()=>{
   const got = w.eval("SN.falls");
   p.querySelector('textarea').value = ''; w.eval("SN = {}");
   return got === 'typed at pagehide';
-})());
+})(), '', {id:'g0270'});
 /* reset SEEN as well as SN: the merge keeps the stored copy when this tab has not
    changed anything since it last looked */
 delete store['geri:secnotes']; w.localStorage.removeItem('geri:secnotes');
@@ -1102,16 +1144,16 @@ await new Promise(r=>setTimeout(r,250));
 ok('and the flush actually writes it', (()=>{
   const a = store['geri:secnotes'] || '', b = w.localStorage.getItem('geri:secnotes') || '';
   return /typed but not yet saved/.test(a) || /typed but not yet saved/.test(b);
-})(), (store['geri:secnotes'] || '') + ' | ' + (w.localStorage.getItem('geri:secnotes') || ''));
+})(), (store['geri:secnotes'] || '') + ' | ' + (w.localStorage.getItem('geri:secnotes') || ''), {id:'g0271'});
 w.eval("SN = {}; snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the floating timer stands down while a mock paper is running',
-   (w.eval("mockOn = true; show('falls'); mtOff = false; tPaint(); const h = document.getElementById('miniT').hidden; mockOn = false; tPaint(); h")) === true);
+   (w.eval("mockOn = true; show('falls'); mtOff = false; tPaint(); const h = document.getElementById('miniT').hidden; mockOn = false; tPaint(); h")) === true, '', {id:'g0272'});
 ok('dark mode and text size are applied before the first paint, not after the async read',
-   /localStorage\.getItem\('geri:display'\)/.test(code.split('<body>')[1].slice(0, 900)));
+   /localStorage\.getItem\('geri:display'\)/.test(code.split('<body>')[1].slice(0, 900)), '', {id:'g0273'});
 
 // ---- fourth review follow-up, 15 Sep ----
 ok('highlights record the text on each side, not only the ordinal',
-   /b: full\.slice\(Math\.max\(0, start - HLCTX\), start\)/.test(code) && /a: full\.slice\(start \+ t\.length/.test(code));
+   /b: full\.slice\(Math\.max\(0, start - HLCTX\), start\)/.test(code) && /a: full\.slice\(start \+ t\.length/.test(code), '', {id:'g0274'});
 ok('a highlight whose ordinal has gone stale re-anchors by its neighbours', (()=>{
   const sec = d.getElementById('falls');
   const nodes = w.hlNodes(sec), full = nodes.map(n=>n.data).join('');
@@ -1128,7 +1170,7 @@ ok('a highlight whose ordinal has gone stale re-anchors by its neighbours', (()=
   const landed = para.slice(Math.max(0, para.indexOf(m.textContent)-24), para.indexOf(m.textContent));
   w.eval("hlUnwrap('ctx1'); HL = {}");
   return landed.replace(/\s+/g,' ').trim() === h.b.replace(/\s+/g,' ').trim();
-})());
+})(), '', {id:'g0275'});
 ok('rather than moving a highlight onto text the reader never marked, it is dropped', (()=>{
   const h = {id:'ctx2', sec:'falls', t:'exercise', i:3, b:'zzz nothing like this zzz', a:'nor this', n:'', c:'y'};
   w.eval("HL = {falls:[]}");
@@ -1136,23 +1178,23 @@ ok('rather than moving a highlight onto text the reader never marked, it is drop
   const m = d.querySelector('mark.hl[data-hid="ctx2"]');
   w.eval("HL = {}");
   return okk === false && !m;
-})());
+})(), '', {id:'g0276'});
 ok('restore is all-or-nothing: a refused write rolls back instead of reloading into a mixture',
    /async function bkApply\(o, haveUndo, undoing\)/.test(code) && /const back = await window\.storage\.get\(k\); ok = back && back\.value === val;/.test(code) &&
-   /const want = \(j in v\) \? v\[j\] : '';/.test(code));
+   /const want = \(j in v\) \? v\[j\] : '';/.test(code), '', {id:'g0277'});
 ok('the rollback covers every key it ATTEMPTED, not only the ones that verified',
    /touched\.push\(k\);\s*\n\s*try\{ await window\.storage\.set\(k, val\);/.test(code) &&
-   /for\(const j of touched\)\{/.test(code) && !/for\(const j of done\)\{/.test(code));
+   /for\(const j of touched\)\{/.test(code) && !/for\(const j of done\)\{/.test(code), '', {id:'g0278'});
 ok('the pre-restore snapshot is awaited, so it cannot read keys the restore is mid-way through writing',
-   /await bkSnapshot\('replaced'\);/.test(code));
+   /await bkSnapshot\('replaced'\);/.test(code), '', {id:'g0279'});
 ok('the mock result is written before the line that reads it back repaints',
    /async function mockFinish\(auto\)\{/.test(code) &&
-   /await window\.storage\.set\(MKKEY, blob\);/.test(code));
-ok('both restore paths go through it', (code.match(/await bkApply\(o, safe/g)||[]).length === 2);
-ok('the highlight walk skips by tag and caches the verdict per element', /const HLSKIP = \{SCRIPT:1, STYLE:1, TEXTAREA:1\}/.test(code) && /memo\.set\(el, false\); return false;/.test(code));
-ok('the section is walked once per highlight, not twice', /hlWrap\(sec, pick\.at, pick\.at \+ pick\.len, h, nodes\)/.test(code));
+   /await window\.storage\.set\(MKKEY, blob\);/.test(code), '', {id:'g0280'});
+ok('both restore paths go through it', (code.match(/await bkApply\(o, safe/g)||[]).length === 2, '', {id:'g0281'});
+ok('the highlight walk skips by tag and caches the verdict per element', /const HLSKIP = \{SCRIPT:1, STYLE:1, TEXTAREA:1\}/.test(code) && /memo\.set\(el, false\); return false;/.test(code), '', {id:'g0282'});
+ok('the section is walked once per highlight, not twice', /hlWrap\(sec, pick\.at, pick\.at \+ pick\.len, h, nodes\)/.test(code), '', {id:'g0283'});
 ok('the service worker also registers when the URL names index.html',
-   /\/\\\/stage-a\\\/\(index\\\.html\)\?\$\|\\\/stage-a\$\//.test(code));
+   /\/\\\/stage-a\\\/\(index\\\.html\)\?\$\|\\\/stage-a\$\//.test(code), '', {id:'g0284'});
 
 // ---- fifth review follow-up, 15 Sep ----
 ok('a whole-paragraph or whole-cell selection is anchored, not silently lost', (()=>{
@@ -1168,7 +1210,7 @@ ok('a whole-paragraph or whole-cell selection is anchored, not silently lost', (
   if(h) w.eval("hlRemove('" + h.id + "')");
   w.eval("HL = {}");
   return !!h && n > 0;
-})());
+})(), '', {id:'g0285'});
 ok('neighbour matching survives whitespace the author added', (()=>{
   /* the failing direction is whitespace added to the PAGE, not to the stored context:
      the candidate window then holds fewer letters than the stored neighbour and a
@@ -1194,18 +1236,18 @@ ok('neighbour matching survives whitespace the author added', (()=>{
   touched.forEach(([n, d0]) => { n.data = d0; });
   w.eval("HL = {}");
   return okk && /effect of $/.test(before);
-})());
+})(), '', {id:'g0286'});
 ok('a tie between two equally-scoring occurrences drops the highlight rather than guessing',
-   /if\(best\.s >= 2 && \(!runner \|\| runner\.s < best\.s\)\) pick = best\.x;/.test(code));
+   /if\(best\.s >= 2 && \(!runner \|\| runner\.s < best\.s\)\) pick = best\.x;/.test(code), '', {id:'g0287'});
 ok('context is compared over a widened, normalised window on both sides',
-   /const WIDE = HLCTX \* 2;/.test(code) && /gotB\.endsWith\(tailB\)/.test(code) && /gotA === headA/.test(code));
+   /const WIDE = HLCTX \* 2;/.test(code) && /gotB\.endsWith\(tailB\)/.test(code) && /gotA === headA/.test(code), '', {id:'g0288'});
 ok('opening a section repaints its highlights after the abbreviation pass has rewritten the text',
-   /annotateSection\(id\);[\s\S]{0,300}?hlPaintSec\(id\);[\s\S]{0,120}?_show\.apply/.test(code));
+   /annotateSection\(id\);[\s\S]{0,300}?hlPaintSec\(id\);[\s\S]{0,120}?_show\.apply/.test(code), '', {id:'g0289'});
 ok('rollback empties a key the user did not have before the restore',
-   /const want = \(j in v\) \? v\[j\] : '';/.test(code));
+   /const want = \(j in v\) \? v\[j\] : '';/.test(code), '', {id:'g0290'});
 ok('and the rollback verifies its own writes rather than promising a restoration it did not make',
    /if\(back && back\.value === want\) rolled\+\+; else failed\.push\(j\);/.test(code) &&
-   /Do not trust what is on screen until you have/.test(code));
+   /Do not trust what is on screen until you have/.test(code), '', {id:'g0291'});
 
 ok('a selection starting mid-text-node is anchored at the right character', (()=>{
   const sec = d.getElementById('falls');
@@ -1225,7 +1267,7 @@ ok('a selection starting mid-text-node is anchored at the right character', (()=
   if(m){ let q = 0; for(const n of w.hlNodes(sec)){ if(m.contains(n)){ landedAt = q; break; } q += n.data.length; } }
   if(h) w.eval("hlUnwrap('" + h.id + "')"); w.eval("HL = {}");
   return !!h && h.i === 3 && landedAt === target;
-})());
+})(), '', {id:'g0292'});
 
 // ---- sixth review follow-up, 15 Sep ----
 ok('navigating while a note is still in its debounce banks it first', (()=>{
@@ -1236,10 +1278,10 @@ ok('navigating while a note is still in its debounce banks it first', (()=>{
   w.eval("show('falls')");                      /* repaint inside the debounce window */
   const kept = ta.value === 'half typed note' && w.eval("SN.falls") === 'half typed note';
   return kept;
-})());
+})(), '', {id:'g0293'});
 w.eval("SN = {}; snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the flush is wired into show, not only into teardown',
-   /if\(typeof flushPending === 'function'\) flushPending\(\);[\s\S]{0,120}?annotateSection\(id\)/.test(code));
+   /if\(typeof flushPending === 'function'\) flushPending\(\);[\s\S]{0,120}?annotateSection\(id\)/.test(code), '', {id:'g0294'});
 /* this block used to end in `return true`, so the check could not fail and only its sibling
    below carried any weight. The label promises the teardown writes NOTHING, which is a stronger
    and separately observable property than "the other tab's note survived" — count the writes to
@@ -1259,26 +1301,26 @@ await w.eval('saveChain');
 await new Promise(r=>setTimeout(r,60));
 w.storage.set = realSetTd;
 ok('a tab whose notes box matches its own stale memory writes nothing on teardown',
-   teardownWrites === 0, teardownWrites + ' write(s) to geri:secnotes');
+   teardownWrites === 0, teardownWrites + ' write(s) to geri:secnotes', {id:'g0295'});
 await new Promise(r=>setTimeout(r,60));
 ok('and the newer note is still there afterwards',
-   JSON.parse(store['geri:secnotes']).falls === 'NEWER from the other tab', store['geri:secnotes']);
+   JSON.parse(store['geri:secnotes']).falls === 'NEWER from the other tab', store['geri:secnotes'], {id:'g0296'});
 w.eval("SN = {}; SNSEEN = '{}'"); d.querySelectorAll('.mynotes textarea').forEach(t=>t.value = '');
 d.querySelector('.mynotes[data-sec="falls"] textarea').value = 'typed here just now';
 w.eval("flushPending()");
 await new Promise(r=>setTimeout(r,60));
 ok('but a tab that genuinely typed something still writes it',
-   JSON.parse(store['geri:secnotes'] || '{}').falls === 'typed here just now', store['geri:secnotes']);
+   JSON.parse(store['geri:secnotes'] || '{}').falls === 'typed here just now', store['geri:secnotes'], {id:'g0297'});
 w.eval("SN = {}"); w.eval("SNSEEN = " + JSON.stringify(store['geri:secnotes'] || '{}'));
 d.querySelector('.mynotes[data-sec="falls"] textarea').value = '';
 w.eval("snSave()"); await new Promise(r=>setTimeout(r,60));
 ok('the scroll position is written directly on teardown, not left behind a timer',
-   /if\(blob !== scLastBlob\)\{\s*\n\s*clearTimeout\(scSaveTmr\); scSaveTmr = null;\s*\n\s*scLastBlob = blob;\s*\n\s*put\(SCKEY, blob\);/.test(code));
+   /if\(blob !== scLastBlob\)\{\s*\n\s*clearTimeout\(scSaveTmr\); scSaveTmr = null;\s*\n\s*scLastBlob = blob;\s*\n\s*put\(SCKEY, blob\);/.test(code), '', {id:'g0298'});
 ok('a teardown flush writes synchronously, because the OS can halt the thread before a promise resolves',
    /function writeNow\(key, value\)\{/.test(code) && /localStorage\.setItem\(key, value\)/.test(code) &&
    /const put = urgent \?/.test(code) &&
    /addEventListener\('pagehide', \(\)=>flushPending\(true\)\)/.test(code) &&
-   /if\(document\.hidden\)\{ flushPending\(true\); return; \}/.test(code));
+   /if\(document\.hidden\)\{ flushPending\(true\); return; \}/.test(code), '', {id:'g0299'});
 ok('but a navigation that moved nothing writes nothing', (()=>{
   w.eval("scrollAt.falls = 1234; scrollFrac.falls = 0.5; scLastBlob = ''");
   w.eval("flushPending()");
@@ -1287,9 +1329,9 @@ ok('but a navigation that moved nothing writes nothing', (()=>{
   w.eval("flushPending()");                 /* nothing changed since */
   const second = store['geri:scroll'];
   return !!first && second === undefined;
-})());
+})(), '', {id:'g0300'});
 ok('the pre-paint whitelist is in the source',
-   /\['s','m','l','xl'\]\.indexOf\(v\.fs\) >= 0/.test(code));
+   /\['s','m','l','xl'\]\.indexOf\(v\.fs\) >= 0/.test(code), '', {id:'g0301'});
 /* ...and this drives it. The structural guard above was the ONLY check on this behaviour, under
    a label promising the script "only accepts a size it knows" — delete the whitelist and every
    other check in the file still passed. The pre-paint script is a synchronous IIFE in <body>
@@ -1313,16 +1355,16 @@ ok('the pre-paint whitelist is in the source',
   const known = await prePaint('{"fs":"xl"}');
   /* a size from a build that is not this one — the shape a stale phone actually presents */
   const unknown = await prePaint('{"fs":"xxl"}');
-  ok('the pre-paint script applies a size it knows', known.split(/\s+/).includes('fs-xl'), known || '(no classes)');
-  ok('and refuses one it does not', !unknown.split(/\s+/).some(c=>c.startsWith('fs-')), unknown || '(no classes)');
+  ok('the pre-paint script applies a size it knows', known.split(/\s+/).includes('fs-xl'), known || '(no classes)', {id:'g0302'});
+  ok('and refuses one it does not', !unknown.split(/\s+/).some(c=>c.startsWith('fs-')), unknown || '(no classes)', {id:'g0303'});
 }
 
 // ---- seventh review follow-up, 15 Sep: saves are merges, not writes ----
 ok('highlights and notes are saved through a three-way merge, not a blind write',
    /function mergeHL\(stored, seen, mine\)/.test(code) && /function mergeSN\(stored, seen, mine\)/.test(code) &&
-   !/function hlSave\(\)\{ try\{ window\.storage\.set\(HLKEY/.test(code));
+   !/function hlSave\(\)\{ try\{ window\.storage\.set\(HLKEY/.test(code), '', {id:'g0304'});
 ok('every read of the stored copy updates what this tab has SEEN',
-   (code.match(/HLSEEN = JSON\.stringify/g)||[]).length >= 2 && (code.match(/SNSEEN = JSON\.stringify/g)||[]).length >= 2);
+   (code.match(/HLSEEN = JSON\.stringify/g)||[]).length >= 2 && (code.match(/SNSEEN = JSON\.stringify/g)||[]).length >= 2, '', {id:'g0305'});
 ok('merging keeps the other tab\u2019s addition and this tab\u2019s addition', (()=>{
   const stored = {falls:[{id:'a', t:'from the other tab'}]};
   const seen   = {};
@@ -1330,43 +1372,43 @@ ok('merging keeps the other tab\u2019s addition and this tab\u2019s addition', (
   const out = w.mergeHL(stored, seen, mine);
   const ids = (out.falls||[]).map(h=>h.id).sort().join(',');
   return ids === 'a,b';
-})());
+})(), '', {id:'g0306'});
 ok('merging respects a deletion made here rather than resurrecting it', (()=>{
   const stored = {falls:[{id:'a'}, {id:'b'}]};
   const seen   = {falls:[{id:'a'}, {id:'b'}]};   /* we had both */
   const mine   = {falls:[{id:'a'}]};             /* and deleted b */
   const out = w.mergeHL(stored, seen, mine);
   return (out.falls||[]).length === 1 && out.falls[0].id === 'a';
-})());
+})(), '', {id:'g0307'});
 ok('merging keeps this tab\u2019s edit to a highlight it shares with the other tab', (()=>{
   const stored = {falls:[{id:'a', n:''}]};
   const seen   = {falls:[{id:'a', n:''}]};
   const mine   = {falls:[{id:'a', n:'my remark'}]};
   return w.mergeHL(stored, seen, mine).falls[0].n === 'my remark';
-})());
+})(), '', {id:'g0308'});
 ok('section notes merge per section: untouched here means the other tab\u2019s copy wins', (()=>{
   const stored = {falls:'newer from the other tab', sleep:'mine'};
   const seen   = {falls:'older', sleep:'mine'};
   const mine   = {falls:'older', sleep:'mine, edited here'};
   const out = w.mergeSN(stored, seen, mine);
   return out.falls === 'newer from the other tab' && out.sleep === 'mine, edited here';
-})());
-ok('saves are serialised so two in the same tick cannot interleave', /saveChain = saveChain\.then\(\(\)=> withLock\('geri-save-' \+ key, async\(\)=>\{/.test(code));
+})(), '', {id:'g0309'});
+ok('saves are serialised so two in the same tick cannot interleave', /saveChain = saveChain\.then\(\(\)=> withLock\('geri-save-' \+ key, async\(\)=>\{/.test(code), '', {id:'g0310'});
 
 // ---- merge audit, 15 Sep: the merge must never turn a failure into a deletion ----
 ok('SEEN only advances on a write that was read back', /if\(landed\) seenSet\(key, blob\);/.test(code) &&
-   /const back = await window\.storage\.get\(key\);\s*\n\s*landed = !!\(back && back\.value === blob\);/.test(code));
+   /const back = await window\.storage\.get\(key\);\s*\n\s*landed = !!\(back && back\.value === blob\);/.test(code), '', {id:'g0311'});
 /* storage must already hold SOMETHING, or the merge short-circuits to "no stored copy"
    and the deletion path this guard is about is never reached */
 store['geri:hl'] = JSON.stringify({sleep:[{id:'other', sec:'sleep', t:'hypnotic', i:0, n:'', c:'y'}]});
 w.eval("HL = {falls:[{id:'f1', sec:'falls', t:'fear of falling', i:0, n:'', c:'y'}]}; HLSEEN = JSON.stringify({sleep:[{id:'other', sec:'sleep', t:'hypnotic', i:0, n:'', c:'y'}]})");
 w.eval("window.__realset = window.storage.set; window.storage.set = async()=>undefined");
 await w.eval("hlSave()"); await new Promise(r=>setTimeout(r,60));
-ok('a refused save leaves SEEN where it was', !/f1/.test(w.eval("HLSEEN")), w.eval("HLSEEN"));
+ok('a refused save leaves SEEN where it was', !/f1/.test(w.eval("HLSEEN")), w.eval("HLSEEN"), {id:'g0312'});
 w.eval("window.storage.set = window.__realset");
 await w.eval("hlSave()"); await new Promise(r=>setTimeout(r,60));
 ok('and the next save still carries the highlight, instead of reading it as a deletion',
-   ((JSON.parse(store['geri:hl'] || '{}').falls) || []).length === 1, store['geri:hl']);
+   ((JSON.parse(store['geri:hl'] || '{}').falls) || []).length === 1, store['geri:hl'], {id:'g0313'});
 w.eval("HL = {}; HLSEEN = '{}'"); delete store['geri:hl'];
 ok('a highlight both tabs hold is taken from storage unless this tab changed it', (()=>{
   const stored = {falls:[{id:'X', n:'note from the other tab'}]};
@@ -1374,38 +1416,38 @@ ok('a highlight both tabs hold is taken from storage unless this tab changed it'
   const mine   = {falls:[{id:'X', n:''}, {id:'Y'}]};
   const out = w.mergeHL(stored, seen, mine);
   return out.falls.find(h=>h.id === 'X').n === 'note from the other tab' && !!out.falls.find(h=>h.id === 'Y');
-})());
+})(), '', {id:'g0314'});
 ok('but an edit made here still wins', (()=>{
   const stored = {falls:[{id:'X', n:''}]}, seen = {falls:[{id:'X', n:''}]}, mine = {falls:[{id:'X', n:'mine'}]};
   return w.mergeHL(stored, seen, mine).falls[0].n === 'mine';
-})());
+})(), '', {id:'g0315'});
 ok('the initial read folds the stored copy in rather than assigning over what is already there',
    /HL = Object\.keys\(HL\)\.length \? mergeHL\(stored, \{\}, HL\) : stored;/.test(code) &&
-   /SN = Object\.keys\(SN\)\.length \? mergeSN\(stored, \{\}, SN\) : stored;/.test(code));
+   /SN = Object\.keys\(SN\)\.length \? mergeSN\(stored, \{\}, SN\) : stored;/.test(code), '', {id:'g0316'});
 ok('a merge repaint waits for a live selection to end before unwrapping its text nodes',
    /function hlRepaintWhenIdle\(merged\)\{/.test(code) &&
    /if\(sel && sel\.rangeCount && !sel\.isCollapsed\)\{/.test(code) &&
-   /document\.addEventListener\('selectionchange', go\);/.test(code));
+   /document\.addEventListener\('selectionchange', go\);/.test(code), '', {id:'g0317'});
 ok('and coming back to the tab uses the same hold, not a bare repaint',
    /hlRepaintWhenIdle\(merged\);/.test(code) &&
    (code.match(/hlRepaintWhenIdle\(merged\);/g)||[]).length === 2 &&
-   !/const merged = mergeHL\(v, seen, HL\);\s*\n\s*document\.querySelectorAll\('mark\.hl'\)/.test(code));
+   !/const merged = mergeHL\(v, seen, HL\);\s*\n\s*document\.querySelectorAll\('mark\.hl'\)/.test(code), '', {id:'g0318'});
 ok('a backup waits for queued saves, so it cannot be written without a highlight just made',
-   /async function bkGather\(\)\{[\s\S]{0,200}?try\{ await saveChain; \}catch\(e\)\{\}/.test(code));
+   /async function bkGather\(\)\{[\s\S]{0,200}?try\{ await saveChain; \}catch\(e\)\{\}/.test(code), '', {id:'g0319'});
 
 // ---- workflow pass, 15 Sep ----
 ok('a missed question offers a jump to the chapter it came from',
-   /class="chgo pqgo" data-sec="/.test(code) && /jump\.addEventListener\('click', \(\)=>\{ show\(jump\.dataset\.sec\)/.test(code));
+   /class="chgo pqgo" data-sec="/.test(code) && /jump\.addEventListener\('click', \(\)=>\{ show\(jump\.dataset\.sec\)/.test(code), '', {id:'g0320'});
 ok('the read-but-not-retained list is keyed by number, not by the string Object.keys gives',
-   /const sec = sectionForChapter\(Number\(c\)\);/.test(code) && /x\.sec \+ '">' \+ x\.label/.test(code));
+   /const sec = sectionForChapter\(Number\(c\)\);/.test(code) && /x\.sec \+ '">' \+ x\.label/.test(code), '', {id:'g0321'});
 ok('it only counts sections actually marked read, with enough questions behind them',
    /const weakEnough = t => \(t\.n >= 4 && \(t\.n - t\.w\) \/ t\.n < 0\.65\) \|\| \(t\.n >= 2 && t\.w === t\.n\);/.test(code) &&
    /return sec && readSet\.has\(sec\) && weakEnough\(by\[c\]\);/.test(code) &&
-   /filter\(k=>readSet\.has\(byS\[k\]\.sec\) && weakEnough\(byS\[k\]\)\)/.test(code));
+   /filter\(k=>readSet\.has\(byS\[k\]\.sec\) && weakEnough\(byS\[k\]\)\)/.test(code), '', {id:'g0322'});
 ok('every one wrong flags even a small sample, which four-answered alone would hide',
-   /\|\| \(t\.n >= 2 && t\.w === t\.n\)/.test(code));
+   /\|\| \(t\.n >= 2 && t\.w === t\.n\)/.test(code), '', {id:'g0323'});
 ok('named papers are counted one paper at a time, not lumped into a single source bucket',
-   /const key = \(lab\.length >= 6 && /.test(code) && /function srcLabel\(src\)/.test(code));
+   /const key = \(lab\.length >= 6 && /.test(code) && /function srcLabel\(src\)/.test(code), '', {id:'g0324'});
 ok('and it reaches the third of the bank that carries no chapter number \u2014 law, papers, Beers', (()=>{
   /* behavioural: answer a law question, which carries no chapter, and require the jump */
   const q = w.eval("JSON.stringify(PQ.find(x=>x.bk==='Law/MoH' && !x.ch))");
@@ -1413,13 +1455,13 @@ ok('and it reaches the third of the bank that carries no chapter number \u2014 l
   w.eval("(()=>{const q=PQ.find(x=>x.bk==='Law/MoH' && !x.ch); pqPool=[q]; pqIdx=0; pqShown=false; pqRender(); pqShown=false; pqAnswer(q.a[0]);})()");
   const btn = d.querySelector('#pqSrc .pqgo');
   return !!btn && btn.dataset.sec === 'ethics';
-})());
+})(), '', {id:'g0325'});
 ok('the jump button and the metric read the same source map, so they cannot drift apart',
    /: \(PQSEC\[p\.bk\] \|\| ''\);/.test(code) &&
-   (code.match(/'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'/g)||[]).length === 1);
+   (code.match(/'Law\/MoH':'ethics', 'Article':'src', 'Beers':'beers'/g)||[]).length === 1, '', {id:'g0326'});
 ok('a table may split across printed pages, with its rows kept whole and its header repeated',
    /table\{page-break-inside:auto\}/.test(code) && /tr,td,th\{page-break-inside:avoid\}/.test(code) &&
-   /thead\{display:table-header-group\}/.test(code));
+   /thead\{display:table-header-group\}/.test(code), '', {id:'g0327'});
 /* ---- the place follows progress, 16 Sep ----
    Marking a chapter read, or finishing its drill, used to leave the bookmark pointing at the
    old spot inside the chapter just finished. It now moves to the top of the next unread week
@@ -1432,15 +1474,15 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   const wk = w.eval("weekChapters().map(x=>x.sec)");
   const bm = () => w.eval("BM ? BM.sec : null");
   ok('the week used for these checks has enough chapters to move between',
-     realWC === true && wk.length === 3, JSON.stringify(wk));
+     realWC === true && wk.length === 3, JSON.stringify(wk), {id:'g0328'});
   w.eval("readSet = new Set(); BM = null;");
   w.eval(`toggleRead('${wk[0]}')`);
   const afterFirst = bm();
   ok('marking a chapter read moves the place to the next unread chapter this week',
-     afterFirst === wk[1], 'read ' + wk[0] + ' -> ' + afterFirst + ' (wanted ' + wk[1] + ')');
+     afterFirst === wk[1], 'read ' + wk[0] + ' -> ' + afterFirst + ' (wanted ' + wk[1] + ')', {id:'g0329'});
   /* un-marking must not drag it back into the chapter just re-opened */
   w.eval(`toggleRead('${wk[0]}')`);
-  ok('un-marking a chapter leaves the place where it moved to', bm() === wk[1], String(bm()));
+  ok('un-marking a chapter leaves the place where it moved to', bm() === wk[1], String(bm()), {id:'g0330'});
   /* a place set by hand wins, until the next completion.
      This used to assign BM itself and then assert bm() returned what it had just assigned — no
      app operation ran in between, so it could only fail if reading back a value you just wrote
@@ -1455,16 +1497,16 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
     return BM ? BM.sec + '|' + (BM.t || '').slice(0, 24) : 'no BM';
   })()`);
   ok('a place marked by hand through bmSet is kept, with the text the app read off that block',
-     handPlaced.split('|')[0] === wk[0] && (handPlaced.split('|')[1] || '').length > 0, handPlaced);
+     handPlaced.split('|')[0] === wk[0] && (handPlaced.split('|')[1] || '').length > 0, handPlaced, {id:'g0331'});
   w.eval(`readSet = new Set(); toggleRead('${wk[0]}')`);
-  ok('and the next completion moves it on again', bm() === wk[1], String(bm()));
+  ok('and the next completion moves it on again', bm() === wk[1], String(bm()), {id:'g0332'});
   /* finishing a chapter's own cards counts the same as marking it read */
   w.eval("readSet = new Set(); BM = null;");
   ok('finishing a chapter\u2019s drill moves the place on too',
-     /if\(filter\.mode === 'tag' && SECFORTAG\[filter\.tag\] && typeof bmAdvance === 'function'\) bmAdvance\(\);/.test(code));
+     /if\(filter\.mode === 'tag' && SECFORTAG\[filter\.tag\] && typeof bmAdvance === 'function'\) bmAdvance\(\);/.test(code), '', {id:'g0333'});
   w.eval(`readSet = new Set(${JSON.stringify(wk)});`);
   w.eval("bmAdvance()");
-  ok('with the week finished the place clears, so resume goes home', bm() === null, String(bm()));
+  ok('with the week finished the place clears, so resume goes home', bm() === null, String(bm()), {id:'g0334'});
   w.eval("readSet = new Set(); BM = null;");
   w.eval("weekChapters = window._realWeekChapters;");
   w.eval("paintRead();");
@@ -1480,9 +1522,9 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   go.click();
   const ranAfterOne = w.eval('T.run');
   ok('one tap on the compact bar starts or resumes the day, with no menu in the way',
-     ranAfterOne === true && !box.classList.contains('open'), 'run=' + ranAfterOne + ' ' + cls());
+     ranAfterOne === true && !box.classList.contains('open'), 'run=' + ranAfterOne + ' ' + cls(), {id:'g0335'});
   go.click();
-  ok('and one tap pauses it again', w.eval('T.run') === false, 'run=' + w.eval('T.run'));
+  ok('and one tap pauses it again', w.eval('T.run') === false, 'run=' + w.eval('T.run'), {id:'g0336'});
   /* The menu must never be what a pause has to go through. Checked in stopwatch mode on
      purpose: in day mode the button forwards to the home-page Go, whose synthetic click has a
      target outside the timer, so the outside-tap handler closes the menu too and would mask
@@ -1491,33 +1533,33 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   box.classList.remove('dot'); box.classList.add('open');
   go.click();
   ok('pausing from an open menu closes the menu rather than leaving it up',
-     !box.classList.contains('open'), cls());
+     !box.classList.contains('open'), cls(), {id:'g0337'});
   w.eval("swSetMode(false); SW = {on:false, run:false, ms:0, ts:0};");
   /* v27: the pill is the single control, so the clock now does the same thing mtGo does \u2014
      no separate collapse gesture to confuse it with any more */
   box.classList.remove('open','dot');
   w.eval("T = {p:0, left:PH[0].s - 5, run:false, ts:0, d:today()}; tPaint()");
   d.getElementById('mtClock').click();
-  ok('one tap on the clock pauses/resumes the day, the same as the button', w.eval('T.run') === true, cls());
+  ok('one tap on the clock pauses/resumes the day, the same as the button', w.eval('T.run') === true, cls(), {id:'g0338'});
   d.getElementById('mtClock').click();
-  ok('a second tap pauses it again', w.eval('T.run') === false, cls());
+  ok('a second tap pauses it again', w.eval('T.run') === false, cls(), {id:'g0339'});
   /* hide shrinks the pill to a gear dot; a tap on the dot restores it */
   box.classList.remove('dot');
   d.getElementById('mtHide').focus();   /* simulate reaching Hide by keyboard, then activating it */
   d.getElementById('mtHide').click();
   ok('the hide button in the menu shrinks the pill to the dot, and closes the menu behind it',
-     box.classList.contains('dot') && !box.classList.contains('open'), cls());
+     box.classList.contains('dot') && !box.classList.contains('open'), cls(), {id:'g0340'});
   ok('activating Hide by keyboard moves focus to the restore dot, so it doesn’t strand focus on the now-hidden mtHide and skip the pill entirely on the next Tab',
-     d.activeElement === d.getElementById('mtMore'), 'activeElement=' + (d.activeElement && d.activeElement.id));
+     d.activeElement === d.getElementById('mtMore'), 'activeElement=' + (d.activeElement && d.activeElement.id), {id:'g0341'});
   ok('once dotted, mtMore’s accessible name says it restores the timer, not "Settings and more" with a popup it no longer opens',
      d.getElementById('mtMore').getAttribute('aria-label') === 'Restore timer' &&
      d.getElementById('mtMore').getAttribute('aria-haspopup') === 'false',
-     'label=' + d.getElementById('mtMore').getAttribute('aria-label') + ' haspopup=' + d.getElementById('mtMore').getAttribute('aria-haspopup'));
+     'label=' + d.getElementById('mtMore').getAttribute('aria-label') + ' haspopup=' + d.getElementById('mtMore').getAttribute('aria-haspopup'), {id:'g0342'});
   box.click();
-  ok('tapping the dot restores the pill', !box.classList.contains('dot'), cls());
+  ok('tapping the dot restores the pill', !box.classList.contains('dot'), cls(), {id:'g0343'});
   ok('restoring the pill puts mtMore’s accessible name back to "Settings and more" with its popup restored',
      d.getElementById('mtMore').getAttribute('aria-label') === 'Settings and more' &&
-     d.getElementById('mtMore').getAttribute('aria-haspopup') === 'true');
+     d.getElementById('mtMore').getAttribute('aria-haspopup') === 'true', '', {id:'g0344'});
   /* every action in the menu closes it behind itself */
   box.classList.add('open'); d.getElementById('mtMode').click();
   const modeClosed = !box.classList.contains('open');
@@ -1525,11 +1567,11 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   box.classList.add('open'); d.getElementById('mtSkip').click();
   const skipClosed = !box.classList.contains('open');
   ok('an action taken in the menu closes it', modeClosed && skipClosed,
-     'mode=' + modeClosed + ' skip=' + skipClosed);
+     'mode=' + modeClosed + ' skip=' + skipClosed, {id:'g0345'});
   /* and tapping the page closes it */
   box.classList.add('open');
   d.body.dispatchEvent(new w.MouseEvent('click', {bubbles:true}));
-  ok('tapping outside the menu closes it', !box.classList.contains('open'), cls());
+  ok('tapping outside the menu closes it', !box.classList.contains('open'), cls(), {id:'g0346'});
   box.classList.remove('open','dot');
 
   /* ---- v27: the pill as the single control ---- */
@@ -1540,24 +1582,24 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
   d.getElementById('mtMore').click();  /* back open, through the real handler this time */
   ok('the jump row stands down while the pill’s own menu is open, and returns once it closes',
      jumpRow.classList.contains('hl-off'),
-     'open=' + box.classList.contains('open') + ' jumpRow=' + jumpRow.className);
+     'open=' + box.classList.contains('open') + ' jumpRow=' + jumpRow.className, {id:'g0347'});
   d.getElementById('mtMore').click();
-  ok('closing the pill’s menu brings the jump row back', !jumpRow.classList.contains('hl-off'));
+  ok('closing the pill’s menu brings the jump row back', !jumpRow.classList.contains('hl-off'), '', {id:'g0348'});
   ok('the reordered menu leads with text size, theme, and mark my place, with the rarer actions behind a muted "More"',
      !!d.getElementById('mtSize') && !!d.getElementById('mtTheme') && !!d.getElementById('mtMark') &&
      !!d.getElementById('mtMoreToggle') && d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtSkip')) &&
      d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtReset')) &&
      d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtMode')) &&
      d.getElementById('mtMoreToggle').parentElement.querySelector('.moresub').contains(d.getElementById('mtHide')) &&
-     !d.getElementById('mtShut'));
+     !d.getElementById('mtShut'), '', {id:'g0349'});
   {
     const moreSub = box.querySelector('.moresub');
     ok('the muted "More" toggle reveals next phase / reset the day / plain stopwatch / hide, and starts closed',
-       moreSub.hidden === true);
+       moreSub.hidden === true, '', {id:'g0350'});
     d.getElementById('mtMoreToggle').click();
-    ok('tapping it opens the sub-list', moreSub.hidden === false);
+    ok('tapping it opens the sub-list', moreSub.hidden === false, '', {id:'g0351'});
     d.getElementById('mtMoreToggle').click();
-    ok('tapping it again closes it', moreSub.hidden === true);
+    ok('tapping it again closes it', moreSub.hidden === true, '', {id:'g0352'});
     /* reopen it, then close the whole menu through an ordinary action rather than the
        outside-tap handler — the nested list must not still be expanded next time the
        menu opens fresh */
@@ -1565,17 +1607,17 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
     d.getElementById('mtMark').click();
     ok('an action that closes the pill’s menu also collapses the nested More list behind it, not only the outside-tap handler',
        moreSub.hidden === true && d.getElementById('mtMoreToggle').getAttribute('aria-expanded') === 'false',
-       'hidden=' + moreSub.hidden + ' expanded=' + d.getElementById('mtMoreToggle').getAttribute('aria-expanded'));
+       'hidden=' + moreSub.hidden + ' expanded=' + d.getElementById('mtMoreToggle').getAttribute('aria-expanded'), {id:'g0353'});
   }
   ok('theme in the pill’s menu toggles dark mode the same way the display popover does',
-     /document\.getElementById\('mtTheme'\)\.addEventListener\('click', \(\)=>\{ disp\.dark = !disp\.dark; paintDisp\(\); setMenuOpen\(false\); \}\);/.test(code));
+     /document\.getElementById\('mtTheme'\)\.addEventListener\('click', \(\)=>\{ disp\.dark = !disp\.dark; paintDisp\(\); setMenuOpen\(false\); \}\);/.test(code), '', {id:'g0354'});
   ok('mark my place in the pill’s menu sets the bookmark the same way the topics-sheet row does',
-     /document\.getElementById\('mtMark'\)\.addEventListener\('click', \(\)=>\{ setTimeout\(\(\)=>bmSet\(null\), 0\); setMenuOpen\(false\); \}\);/.test(code));
+     /document\.getElementById\('mtMark'\)\.addEventListener\('click', \(\)=>\{ setTimeout\(\(\)=>bmSet\(null\), 0\); setMenuOpen\(false\); \}\);/.test(code), '', {id:'g0355'});
   ok('text size in the pill’s menu joins the shared display-popover wiring, and closes the pill’s own menu behind it',
      /\['shDisplay','dispBtnRail','mtSize'\]\.forEach/.test(code) &&
-     /document\.getElementById\('mtSize'\)\.addEventListener\('click', \(\)=>setMenuOpen\(false\)\);/.test(code));
+     /document\.getElementById\('mtSize'\)\.addEventListener\('click', \(\)=>setMenuOpen\(false\)\);/.test(code), '', {id:'g0356'});
   ok('the pill’s menu button carries a settings glyph alongside the overflow dots, so the gear reads even when the menu is closed',
-     d.getElementById('mtMore').textContent.includes('⚙'));
+     d.getElementById('mtMore').textContent.includes('⚙'), '', {id:'g0357'});
   {
     /* opening the menu grows the box upward from its fixed bottom anchor. A pill dragged to the
        top edge (bottom pinned near vh-h-EDGE) can then have its open, taller self pushed off
@@ -1591,36 +1633,36 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
     box.style.left = '24px'; box.style.bottom = '696px';   /* pinned at the very top edge (768-48-24) */
     d.getElementById('mtMore').click();                     /* open */
     ok('opening the menu re-clamps a top-pinned pill so its taller, open self stays inside the top edge inset',
-       box.style.bottom === '524px', 'bottom=' + box.style.bottom);   /* 768-220-24 */
+       box.style.bottom === '524px', 'bottom=' + box.style.bottom, {id:'g0358'});   /* 768-220-24 */
     d.getElementById('mtMore').click();                     /* close */
     ok('closing the menu restores the exact pre-open position, not the open-state clamp',
-       box.style.bottom === '696px', 'bottom=' + box.style.bottom);
+       box.style.bottom === '696px', 'bottom=' + box.style.bottom, {id:'g0359'});
     delete box.offsetHeight; delete box.offsetWidth;
     box.style.left = leftBefore; box.style.bottom = bottomBefore;
   }
   ok('the drag threshold is a real long-press (300ms), not an instant drag on touchdown',
-     /pressTimer = setTimeout\(\(\)=>\{\s*\n\s*armed = true; dragging = true; box\.classList\.add\('dragging'\);\s*\n\s*if\(navigator\.vibrate\) navigator\.vibrate\(12\);\s*\n\s*\}, 300\);/.test(code));
+     /pressTimer = setTimeout\(\(\)=>\{\s*\n\s*armed = true; dragging = true; box\.classList\.add\('dragging'\);\s*\n\s*if\(navigator\.vibrate\) navigator\.vibrate\(12\);\s*\n\s*\}, 300\);/.test(code), '', {id:'g0360'});
   ok('the dragged pill snaps 24px (plus the safe-area inset) off the nearest edge, not flush — a flush dock sits inside Android’s own back-gesture strip',
      /const EDGE = 24;/.test(code) && /safeInset\('left'\)/.test(code) && /safeInset\('right'\)/.test(code) &&
-     /safeInset\('top'\)/.test(code) && /safeInset\('bottom'\)/.test(code));
+     /safeInset\('top'\)/.test(code) && /safeInset\('bottom'\)/.test(code), '', {id:'g0361'});
   ok('the safe-area inset is measured off a resolved padding on a real probe element, not round-tripped through a custom property (which some browsers hand back as the literal unresolved "env(...)" string — parseFloat of that is always NaN, reading as 0 everywhere)',
      /padding-left:env\(safe-area-inset-left,0px\)/.test(code) &&
-     /getComputedStyle\(safeProbe\)\.getPropertyValue\('padding-' \+ side\)/.test(code));
+     /getComputedStyle\(safeProbe\)\.getPropertyValue\('padding-' \+ side\)/.test(code), '', {id:'g0362'});
   ok('the dragged position persists to geri:timerpos and is read back on load',
      /window\.storage\.set\('geri:timerpos', JSON\.stringify\(pos\)\);/.test(code) &&
-     /window\.storage\.get\('geri:timerpos'\); const stored = JSON\.parse\(r\.value\);/.test(code));
+     /window\.storage\.get\('geri:timerpos'\); const stored = JSON\.parse\(r\.value\);/.test(code), '', {id:'g0363'});
   ok('a long-press that never moves is swallowed as a hold, not forwarded to the pause/resume tap',
-     /if\(armed \|\| \(Date\.now\(\) - dragEndedAt < 400\)\)\{ armed = false; e\.stopImmediatePropagation\(\); \}/.test(code));
+     /if\(armed \|\| \(Date\.now\(\) - dragEndedAt < 400\)\)\{ armed = false; e\.stopImmediatePropagation\(\); \}/.test(code), '', {id:'g0364'});
   ok('armed is cleared synchronously in endDrag, not only by a post-drag click — Android doesn’t reliably fire one, which used to leave armed true forever and swallow the next unrelated genuine tap',
-     /armed = false;\s*\n\s*dragEndedAt = Date\.now\(\);\s*\n\s*teardown\(\);/.test(code));
+     /armed = false;\s*\n\s*dragEndedAt = Date\.now\(\);\s*\n\s*teardown\(\);/.test(code), '', {id:'g0365'});
   ok('pointercancel tears the drag down — clears the press timer, drops dragging, and removes the document-level listeners — so a later unrelated touch cannot inherit an armed drag',
      /function onPointerCancel\(e\)\{\s*\n\s*if\(e\.pointerId !== activePointerId\) return;\s*\n\s*armed = false; teardown\(\);\s*\n\s*\}/.test(code) &&
      /document\.addEventListener\('pointercancel', onPointerCancel\);/.test(code) &&
-     /document\.removeEventListener\('pointercancel', onPointerCancel\);/.test(code));
+     /document\.removeEventListener\('pointercancel', onPointerCancel\);/.test(code), '', {id:'g0366'});
   ok('the pill is clamped to the edge inset on load even with no stored position, not only after the first drag',
-     /applyPos\(clampPos\(\.\.\.Object\.values\(CSS_DEFAULT_POS\)\)\);/.test(code));
+     /applyPos\(clampPos\(\.\.\.Object\.values\(CSS_DEFAULT_POS\)\)\);/.test(code), '', {id:'g0367'});
   ok('a fresh desktop pill keeps its CSS right-side default instead of being dragged to the mobile left/bottom fallback',
-     /!\(window\.matchMedia && window\.matchMedia\('\(min-width:901px\)'\)\.matches\)/.test(code));
+     /!\(window\.matchMedia && window\.matchMedia\('\(min-width:901px\)'\)\.matches\)/.test(code), '', {id:'g0368'});
   /* the init IIFE runs at page load while #miniT is still display:none (hidden until the
      reading block shows it), so clamping from a live getBoundingClientRect() reads a
      zero-size rect — its "bottom" computes as the full viewport height, which clampPos then
@@ -1630,13 +1672,13 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
      not on getBoundingClientRect(), which stays all-zero here regardless of the fix. */
   ok('with no stored position, the pill lands near the bottom-left edge inset, not pinned to the top from a zero-size hidden rect',
      box.style.bottom === '24px' && box.style.left === '24px',
-     'left=' + box.style.left + ' bottom=' + box.style.bottom);
+     'left=' + box.style.left + ' bottom=' + box.style.bottom, {id:'g0369'});
   ok('Start/Resume is the same surface/ink-border outline as the rest of the pill, not a solid near-black slab (light mode’s --ink is dark, unlike dark mode’s)',
-     /#miniT button\.pri\{background:var\(--surface\);color:var\(--ink\);border-color:var\(--ink\);font-weight:600\}/.test(code));
+     /#miniT button\.pri\{background:var\(--surface\);color:var\(--ink\);border-color:var\(--ink\);font-weight:600\}/.test(code), '', {id:'g0370'});
   ok('the shrunk gear dot can still be long-pressed and dragged, even though it is entirely covered by the mtMore button',
-     /if\(e\.target\.closest\('button'\) && !box\.classList\.contains\('dot'\)\) return;/.test(code));
+     /if\(e\.target\.closest\('button'\) && !box\.classList\.contains\('dot'\)\) return;/.test(code), '', {id:'g0371'});
   ok('the gear dot is 44px, not 40 — mtMore keeps its app-wide 44px min-size regardless, so a smaller dot just clips that hit area down via overflow:hidden',
-     /#miniT\.dot\{ padding:0; border-radius:50%; width:44px; height:44px; min-width:44px; overflow:hidden;/.test(code));
+     /#miniT\.dot\{ padding:0; border-radius:50%; width:44px; height:44px; min-width:44px; overflow:hidden;/.test(code), '', {id:'g0372'});
   {
     /* a second finger touching down anywhere on the page while the first is dragging must not
        affect the gesture at all: its pointerdown is ignored (a gesture is already active), and
@@ -1662,7 +1704,7 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
        armedByFirstFinger === true && leftUnchangedByForeignMove === true &&
        stillDraggingAfterOtherFingerUp === true && box.classList.contains('dragging') === false,
        'armed=' + armedByFirstFinger + ' unmovedByForeignMove=' + leftUnchangedByForeignMove +
-       ' afterOtherFingerUp=' + stillDraggingAfterOtherFingerUp + ' afterOwnUp=' + box.classList.contains('dragging'));
+       ' afterOtherFingerUp=' + stillDraggingAfterOtherFingerUp + ' afterOwnUp=' + box.classList.contains('dragging'), {id:'g0373'});
   }
 
   {
@@ -1683,7 +1725,7 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
     await new Promise(r=>setTimeout(r,450));
     clockEl.dispatchEvent(new w.MouseEvent('click', {bubbles:true}));
     ok('a much-later genuine tap is not swallowed by a stale armed flag from an earlier real drag that never got a post-drag click',
-       w.eval('T.run') === true, 'run=' + w.eval('T.run'));
+       w.eval('T.run') === true, 'run=' + w.eval('T.run'), {id:'g0374'});
     /* the reverse case: a click landing quickly after a real drag ends (the common desktop/
        most-Android case) must still be swallowed, so releasing the drag over the clock doesn't
        also toggle the timer */
@@ -1698,7 +1740,7 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
     const runBeforeQuickClick = w.eval('T.run');
     clockEl.dispatchEvent(new w.MouseEvent('click', {bubbles:true}));   /* fired right away */
     ok('a click landing right after a real drag ends is still swallowed, so releasing over the clock doesn’t also toggle the timer',
-       w.eval('T.run') === runBeforeQuickClick, 'before=' + runBeforeQuickClick + ' after=' + w.eval('T.run'));
+       w.eval('T.run') === runBeforeQuickClick, 'before=' + runBeforeQuickClick + ' after=' + w.eval('T.run'), {id:'g0375'});
   }
 
   /* runtime reproduction of the long-press-toggles-the-timer bug: pointerdown on the clock,
@@ -1717,7 +1759,7 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
     const ck = new w.MouseEvent('click', {bubbles:true});
     clockEl.dispatchEvent(ck);
     ok('a 600ms hold on the clock with no movement never toggles the timer',
-       w.eval('T.run') === false, 'run=' + w.eval('T.run'));
+       w.eval('T.run') === false, 'run=' + w.eval('T.run'), {id:'g0376'});
     box.classList.remove('dragging');
   }
 
@@ -1741,16 +1783,16 @@ ok('a table may split across printed pages, with its rows kept whole and its hea
      right > -1 && wrong > -1 &&
      /body\.dark \.pqo\.right \{\s*background: #1b2a25 !important;\s*border-color: var\(--start\) !important;/.test(code) &&
      /body\.dark \.pqo\.wrong \{\s*background: #2b1d20 !important;\s*border-color: var\(--stop\) !important;/.test(code),
-     'right@' + right + ' wrong@' + wrong);
+     'right@' + right + ' wrong@' + wrong, {id:'g0377'});
   /* same specificity would make source order decide, so pin that too */
   ok('and those rules sit after the plain-option rule they have to beat',
-     plain > -1 && right > plain && wrong > plain, 'plain@' + plain + ' right@' + right);
+     plain > -1 && right > plain && wrong > plain, 'plain@' + plain + ' right@' + right, {id:'g0378'});
 }
 
 /* ---- the timer can change height without any attribute changing, 16 Sep ---- */
 ok('the timer\u2019s height is watched, not just its attributes',
    /if\(miniT && typeof ResizeObserver === 'function'\) new ResizeObserver\(measureTimer\)\.observe\(miniT\);/.test(code) &&
-   /new MutationObserver\(measureTimer\)\.observe\(miniT, \{attributes:true/.test(code));
+   /new MutationObserver\(measureTimer\)\.observe\(miniT, \{attributes:true/.test(code), '', {id:'g0379'});
 {
   /* the mode line flips between "plain stopwatch" and "back to the 75/35/10 day" and the clock
      text changes; neither touches an attribute, so without this the box can grow a line and
@@ -1776,7 +1818,7 @@ ok('the timer\u2019s height is watched, not just its attributes',
   const after = d.documentElement.style.getPropertyValue('--minih');
   ok('a height change with no attribute change still updates --minih, via the MutationObserver fallback (the ResizeObserver path itself cannot be exercised in jsdom)',
      before === '56px' && stale === '56px' && after === '88px',
-     'before=' + before + ' on-resize=' + stale + ' after=' + after);
+     'before=' + before + ' on-resize=' + stale + ' after=' + after, {id:'g0380'});
   delete mt.getBoundingClientRect; delete mt.getClientRects;
   mt.hidden = true; w.eval("show('week')");
 }
@@ -1789,7 +1831,7 @@ ok('the timer\u2019s height is watched, not just its attributes',
   ok('coming back to the tab re-reads the timer and the stopwatch, not just the rest',
      /window\.storage\.get\(TKEY\)/.test(body) && /window\.storage\.get\(SWKEY\)/.test(body) &&
      /v\.d === today\(\)/.test(body) && /tPaint\(\);/.test(body),
-     'refreshBody ' + body.length + ' chars, TKEY=' + /window\.storage\.get\(TKEY\)/.test(body));
+     'refreshBody ' + body.length + ' chars, TKEY=' + /window\.storage\.get\(TKEY\)/.test(body), {id:'g0381'});
 }
 {
   /* behaviourally: another tab advances the timer, this one refreshes and must show theirs */
@@ -1798,12 +1840,12 @@ ok('the timer\u2019s height is watched, not just its attributes',
   await w.eval('refreshBody()');
   ok('a timer another tab moved on is picked up, not overwritten',
      w.eval('T.p') === 2 && Math.round(w.eval('T.left')) === 123 && w.eval('SW.ms') === 4567,
-     'T.p=' + w.eval('T.p') + ' left=' + w.eval('T.left') + ' SW.ms=' + w.eval('SW.ms'));
+     'T.p=' + w.eval('T.p') + ' left=' + w.eval('T.left') + ' SW.ms=' + w.eval('SW.ms'), {id:'g0382'});
   /* yesterday's timer must not come back — the loader's own rule */
   store['geri:timer'] = JSON.stringify({p:1, left:999, run:false, ts:0, d:'1999-01-01'});
   await w.eval('refreshBody()');
   ok('but a timer from another day is left where it is',
-     Math.round(w.eval('T.left')) === 123, 'left=' + w.eval('T.left'));
+     Math.round(w.eval('T.left')) === 123, 'left=' + w.eval('T.left'), {id:'g0383'});
   w.eval("SW = {on:false, run:false, ms:0, ts:0}; swSetMode(false)");
 }
 {
@@ -1819,7 +1861,7 @@ ok('the timer\u2019s height is watched, not just its attributes',
   await w.eval('refreshBody()');
   const pqSeenAfterRefresh = w.eval('PQSEEN');
   ok('refreshBody advances PQSEEN to the value it just read, not leaving it at boot-time ‘{}’',
-     pqSeenAfterRefresh === JSON.stringify({'2020#1': 1}), pqSeenAfterRefresh);
+     pqSeenAfterRefresh === JSON.stringify({'2020#1': 1}), pqSeenAfterRefresh, {id:'g0384'});
   /* now the other tab answers a second question and commits it; this tab, unaware, answers a
      THIRD — the refreshed snapshot from above must not be treated as new-here and reasserted
      over the other tab's answer */
@@ -1829,7 +1871,7 @@ ok('the timer\u2019s height is watched, not just its attributes',
   let pqAfter = {};
   try{ pqAfter = JSON.parse(store[pkeyRB]); }catch(e){}
   ok('...so a save made after the refresh composes with another tab’s answer instead of overwriting it',
-     Object.keys(pqAfter).sort().join(',') === '2020#1,2020#2,2020#3', JSON.stringify(pqAfter));
+     Object.keys(pqAfter).sort().join(',') === '2020#1,2020#2,2020#3', JSON.stringify(pqAfter), {id:'g0385'});
 }
 
 /* ---- the mock keeps its own day log, 16 Sep ----
@@ -1840,14 +1882,14 @@ ok('the timer\u2019s height is watched, not just its attributes',
   ok('a finished paper writes its own log, not the reader\u2019s',
      /mlog\[today\(\)\] = Math\.round\(right \/ rows\.length \* 50\);/.test(code) &&
      /mlSaved = await saveML\(\); paintQ\(\);/.test(code) &&
-     !/qlog\[today\(\)\] = Math\.round\(right/.test(code));
+     !/qlog\[today\(\)\] = Math\.round\(right/.test(code), '', {id:'g0386'});
   ok('the only thing that writes qlog is the reader typing a score',
      (code.match(/qlog\[today\(\)\]\s*=/g) || []).length === 1 &&
-     /qlog\[today\(\)\]=v; el\.value=''; saveQ\(\);/.test(code));
+     /qlog\[today\(\)\]=v; el\.value=''; saveQ\(\);/.test(code), '', {id:'g0387'});
   ok('the mock log has its own key, loaded on boot and re-read on refresh, and is backed up',
      /const MQKEY = 'geri:mocklog';/.test(code) &&
      (code.match(/window\.storage\.get\(MQKEY\)/g) || []).length === 3 &&
-     /'geri:qlog','geri:mocklog'/.test(code));
+     /'geri:qlog','geri:mocklog'/.test(code), '', {id:'g0388'});
 
   /* the reconciliation is run, not re-implemented: dayScore is the real function */
   const day = (a, b) => w.eval(`(()=>{ const qa = qlog, ma = mlog;
@@ -1857,10 +1899,10 @@ ok('the timer\u2019s height is watched, not just its attributes',
     if(${b === null ? 'false' : 'true'}) mlog['d'] = ${b === null ? 0 : b};
     const out = dayScore('d'); qlog = qa; mlog = ma; return out; })()`);
   ok('a day with both scores plots the lower of them', day(44, 30) === 30 && day(30, 44) === 30,
-     day(44, 30) + ' / ' + day(30, 44));
+     day(44, 30) + ' / ' + day(30, 44), {id:'g0389'});
   ok('a day with only one score plots that one', day(37, null) === 37 && day(null, 41) === 41,
-     day(37, null) + ' / ' + day(null, 41));
-  ok('a day with neither has no score', day(null, null) === null, String(day(null, null)));
+     day(37, null) + ' / ' + day(null, 41), {id:'g0390'});
+  ok('a day with neither has no score', day(null, null) === null, String(day(null, null)), {id:'g0391'});
 
   /* both numbers on screen, each part dropped when it is absent */
   const lab = (a, b) => w.eval(`(()=>{ const qa = qlog, ma = mlog, t = today();
@@ -1871,18 +1913,18 @@ ok('the timer\u2019s height is watched, not just its attributes',
     qlog = qa; mlog = ma; paintQ(); return out; })()`);
   const both = lab(44, 30);
   ok('both scores are shown when the day has both',
-     /you: <b>44\/50<\/b>/.test(both) && /mock: <b>30\/50<\/b>/.test(both), both.slice(-90));
+     /you: <b>44\/50<\/b>/.test(both) && /mock: <b>30\/50<\/b>/.test(both), both.slice(-90), {id:'g0392'});
   const onlyMine = lab(44, null), onlyMock = lab(null, 30);
   ok('only the part that exists is shown',
      /you: <b>44/.test(onlyMine) && !/mock:/.test(onlyMine) &&
      /mock: <b>30/.test(onlyMock) && !/you:/.test(onlyMock),
-     onlyMine.slice(-60) + '  ||  ' + onlyMock.slice(-60));
+     onlyMine.slice(-60) + '  ||  ' + onlyMock.slice(-60), {id:'g0393'});
 }
 
 ok('the abbreviation handler still falls back to the section on screen and drops the way back',
    /const inModal = a\.closest\('#tblModal'\);/.test(code) &&
    /const sec = a\.closest\('main section'\) \|\| document\.querySelector\('main section\.on'\);/.test(code) &&
-   /back = inModal \? null : a;/.test(code));
+   /back = inModal \? null : a;/.test(code), '', {id:'g0394'});
 {
   /* the guard above is three regexes on the source, under a label that used to promise
      behaviour — a tap inside the pop-out finds its footnote and closes the dialog first. Nothing
@@ -1913,7 +1955,7 @@ ok('the abbreviation handler still falls back to the section on screen and drops
   const flashed = !!dt && dt.classList.contains('bm-flash');
   ok('an abbreviation tapped inside the table pop-out closes the dialog and lands on its own footnote',
      !!key && opened && !!clone && closed && flashed,
-     'key=' + (key || 'none') + ' opened=' + opened + ' clone=' + !!clone + ' closed=' + closed + ' flashed=' + flashed);
+     'key=' + (key || 'none') + ' opened=' + opened + ' clone=' + !!clone + ' closed=' + closed + ' flashed=' + flashed, {id:'g0395'});
   delete w.Element.prototype.scrollIntoView;
   if(!d.getElementById('tblModal').hidden) d.getElementById('tmClose').click();
   w.eval("show('" + wasOn + "')");
@@ -1923,31 +1965,31 @@ ok('the abbreviation handler still falls back to the section on screen and drops
 ok('a page number stuck on a reference does not split one source into two',
    (()=>{ const a = w.srcLabel('Stroke Rehabilitation Clinical Handbook עמוד17');
           const b = w.srcLabel('Stroke Rehabilitation Clinical Handbook עמוד12');
-          return a === b && a === 'Stroke Rehabilitation Clinical Handbook'; })());
-ok('nor does a trailing full stop', w.srcLabel('חוק החולה הנוטה למות.') === w.srcLabel('חוק החולה הנוטה למות'));
-ok('but two different sources stay apart', w.srcLabel('Advanced Dementia') !== w.srcLabel('Management of Acute Hip Fracture'));
+          return a === b && a === 'Stroke Rehabilitation Clinical Handbook'; })(), '', {id:'g0396'});
+ok('nor does a trailing full stop', w.srcLabel('חוק החולה הנוטה למות.') === w.srcLabel('חוק החולה הנוטה למות'), '', {id:'g0397'});
+ok('but two different sources stay apart', w.srcLabel('Advanced Dementia') !== w.srcLabel('Management of Acute Hip Fracture'), '', {id:'g0398'});
 ok('past the last scheduled week the block gets its own week, not week 16 again', (()=>{
   const last = w.eval("ALLW[ALLW.length-1]");
   const got = w.eval("(()=>{const r=currentWeek; window.currentWeek=()=>null; const a=curWeek(); window.currentWeek=r; return a;})()");
   return got && got.post === true && got.k !== last.k && !!got.a && !!got.b;
-})());
+})(), '', {id:'g0399'});
 ok('and the same calendar week keeps the same key, so its note is stable', (()=>{
   const two = w.eval("(()=>{const r=currentWeek; window.currentWeek=()=>null; const a=curWeek(), b=curWeek(); window.currentWeek=r; return a===b;})()");
   return two === true;
-})());
+})(), '', {id:'g0400'});
 
 ok('a highlight sitting on an abbreviation opens its note, not the footnote',
-   /if\(a && !e\.target\.closest\('mark\.hl'\)\)\{/.test(code));
+   /if\(a && !e\.target\.closest\('mark\.hl'\)\)\{/.test(code), '', {id:'g0401'});
 ok('but a bare abbreviation still jumps to its footnote', (()=>{
   const a = d.querySelector('#falls abbr.abbr');
   if(!a) return false;
   const key = a.textContent.replace(/\*$/, '').trim();
   const dt = [...d.querySelector('#falls').querySelectorAll('.fnotes dt')].find(x=>x.textContent.trim() === key);
   return !!dt;                       /* the pairing the handler depends on still holds */
-})());
+})(), '', {id:'g0402'});
 ok('drilling the week falls back to missed cards when the week has no chapters of its own',
    /const hasChapters = VIEW && VIEW\.items && VIEW\.items\.length;/.test(code) &&
-   /\{mode:'missed', tag:null, label:'Missed cards only'\}/.test(code));
+   /\{mode:'missed', tag:null, label:'Missed cards only'\}/.test(code), '', {id:'g0403'});
 ok('and still filters to the week when there are chapters', (()=>{
   /* a week that has chapters on every date, not whatever week the run date lands in */
   w.eval("VIEW = ALLW[0]");
@@ -1955,7 +1997,7 @@ ok('and still filters to the week when there are chapters', (()=>{
   const m = w.eval("filter.mode");
   w.eval("VIEW = curWeek()");
   return m === 'week';
-})());
+})(), '', {id:'g0404'});
 ok('the consolidation week survives the week card, the chips and the tag lookup', (()=>{
   const r = w.eval(`(()=>{const real=currentWeek; window.currentWeek=()=>null; const V=curWeek();
     const save=VIEW; VIEW=V; let out={};
@@ -1965,11 +2007,11 @@ ok('the consolidation week survives the week card, the chips and the tag lookup'
     try{ paintChips(); out.chips=1; }catch(e){ out.chips=0; }
     VIEW=save; window.currentWeek=real; return out;})()`);
   return r.render === 1 && r.tags === 0 && r.dates === 7 && r.chips === 1;
-})());
+})(), '', {id:'g0405'});
 
 ok('the past-paper week filter does not empty the pool when the week has no chapters',
    /if\(chs\.size\) p = p\.filter\(x=>x\.ch && x\.bk===.Hazzard. && chs\.has\(x\.ch\)/.test(code) &&
-   /\(\(VIEW && VIEW\.items\) \|\| \[\]\)\.forEach/.test(code));
+   /\(\(VIEW && VIEW\.items\) \|\| \[\]\)\.forEach/.test(code), '', {id:'g0406'});
 ok('every flashcard carries a tag and no tag points past the end of the deck', (()=>{
   /* CARDTAG maps cards by hard-coded index, so inserting a card anywhere but the end
      silently shifts every tag below it. Nothing in the file says so; this check is the
@@ -1979,14 +2021,14 @@ ok('every flashcard carries a tag and no tag points past the end of the deck', (
   for(let i = 0; i < n; i++) if(!tags[i]) untagged++;
   for(const k in tags) if(+k >= n) past++;
   return untagged === 0 && past === 0;
-})(), w.eval("QS.length") + ' cards');
+})(), w.eval("QS.length") + ' cards', {id:'g0407'});
 
 ok('a restore clears the keys the backup does not carry, instead of leaving newer work behind',
-   /const keys = BKEYS\.slice\(\);/.test(code) && /const val = \(k in o\) \? o\[k\] : '';/.test(code));
+   /const keys = BKEYS\.slice\(\);/.test(code) && /const val = \(k in o\) \? o\[k\] : '';/.test(code), '', {id:'g0408'});
 /* the undo now goes through bkApply, so it clears the same keys and verifies the same way */
-ok('the undo does the same', /if\(!await bkApply\(v, false, true\)\) return;/.test(code));
+ok('the undo does the same', /if\(!await bkApply\(v, false, true\)\) return;/.test(code), '', {id:'g0409'});
 ok('and the scope confirm is awaited \u2014 an unawaited async guard is always truthy and never fires',
-   (code.match(/if\(!await bkConfirmScope\(o\)\) return;/g)||[]).length === 2);
+   (code.match(/if\(!await bkConfirmScope\(o\)\) return;/g)||[]).length === 2, '', {id:'g0410'});
 
 // ---- suite audit, 15 Sep: behaviour where there was only a string ----
 ok('the undo actually puts the old values back, not just the right-looking code', (()=>{
@@ -2000,7 +2042,7 @@ ok('the undo actually puts the old values back, not just the right-looking code'
   for(const k of w.eval("JSON.stringify(BKEYS)") ? JSON.parse(w.eval("JSON.stringify(BKEYS)")) : [])
     store[k] = (k in v) ? v[k] : '';
   return store['geri:days'] === '["BEFORE"]' && store['geri:qlog'] === '';
-})());
+})(), '', {id:'g0411'});
 {
   /* r.setStart(a.firstChild, a.firstChild.data.length - 20) used to throw IndexSizeError and
      crash the whole runner whenever the FIRST paragraph's leading text node was shorter than
@@ -2032,7 +2074,7 @@ ok('the undo actually puts the old values back, not just the right-looking code'
     }
   }catch(e){ err = e; result = false; }
   ok('a highlight spanning a block boundary is anchored as one highlight', result,
-     err ? 'threw: ' + (err && err.message || err) : '');
+     err ? 'threw: ' + (err && err.message || err) : '', {id:'g0412'});
 }
 ok('a highlight the other tab deleted is not resurrected by this tab saving a new one', (()=>{
   /* the inverse of the deletion case already covered: the deletion happened THERE */
@@ -2042,11 +2084,11 @@ ok('a highlight the other tab deleted is not resurrected by this tab saving a ne
   const out = w.mergeHL(stored, seen, mine);
   const ids = (out.falls || []).map(x => x.id).sort().join(',');
   return ids === 'keep,new';
-})());
+})(), '', {id:'g0413'});
 
 ok('a save queued before a merge reassigns HL reads the live object, not the one it was queued with',
    /function mergeSave\(key, getMine, mergeFn, apply\)\{/.test(code) && /const mine = JSON\.parse\(JSON\.stringify\(getMine\(\)\)\);/.test(code) &&
-   /mergeSave\(HLKEY, \(\)=>HL, mergeHL/.test(code) && /mergeSave\(SNKEY, \(\)=>SN, mergeSN/.test(code));
+   /mergeSave\(HLKEY, \(\)=>HL, mergeHL/.test(code) && /mergeSave\(SNKEY, \(\)=>SN, mergeSN/.test(code), '', {id:'g0414'});
 /* This used to assert only that hlSave() returned a thenable, which is true of the broken
    version too — it proved nothing about the merge it is named for. Await the chain and read
    what actually landed in storage. */
@@ -2063,7 +2105,7 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   let ids = [];
   try{ ids = (JSON.parse(store[w.eval('HLKEY')]).falls || []).map(x => x.id).sort(); }catch(e){}
   ok('and behaviourally: a highlight added between queueing and resolving survives',
-     ids.join(',') === 'a,b', JSON.stringify(ids) + ' stored=' + (store[w.eval('HLKEY')] || '(nothing)'));
+     ids.join(',') === 'a,b', JSON.stringify(ids) + ' stored=' + (store[w.eval('HLKEY')] || '(nothing)'), {id:'g0415'});
 }
 {
   /* ChatGPT third-model audit round 4: the previous guard's race window closes before the
@@ -2094,7 +2136,7 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   try{ diskIds = (JSON.parse(store[w.eval('HLKEY')]).falls || []).map(x=>x.id).sort(); }catch(e){}
   ok('a highlight added while an earlier save is still writing survives in both memory and on disk',
      liveIds === 'first,second' && diskIds.join(',') === 'first,second',
-     'live=' + liveIds + ' disk=' + diskIds.join(','));
+     'live=' + liveIds + ' disk=' + diskIds.join(','), {id:'g0416'});
 }
 {
   /* Codex review of #456 (independently re-confirmed by a blind Codex CLI read of main
@@ -2133,7 +2175,7 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   }catch(e){}
   ok('a highlight added by mutating HL.falls in place (the real edit path, not a reassignment) while an earlier save is still writing survives in both memory and on disk, against pre-existing stored data',
      liveIds2 === 'firstip,secondip' && diskIds2.join(',') === 'firstip,secondip' && diskDelirium.join(',') === 'preexisting',
-     'live=' + liveIds2 + ' disk falls=' + diskIds2.join(',') + ' disk delirium=' + diskDelirium.join(','));
+     'live=' + liveIds2 + ' disk falls=' + diskIds2.join(',') + ' disk delirium=' + diskDelirium.join(','), {id:'g0417'});
 }
 {
   /* ANN1 (ACCEPTANCE-round5.md, section E): text replacement while saving, driven through the
@@ -2159,7 +2201,7 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   try{ ann1Disk = JSON.parse(store[w.eval('SNKEY')]).falls; }catch(e){}
   ok('ANN1: typing SECOND while FIRST is still saving (through the real debounced textarea, not a direct eval) ends up live, in the textarea, and on disk — not the stale FIRST snapshot',
      ann1ta.value === 'SECOND' && w.eval("SN.falls") === 'SECOND' && ann1Disk === 'SECOND',
-     'textarea=' + ann1ta.value + ' live=' + w.eval('SN.falls') + ' disk=' + ann1Disk);
+     'textarea=' + ann1ta.value + ' live=' + w.eval('SN.falls') + ' disk=' + ann1Disk, {id:'g0418'});
 }
 {
   /* ChatGPT third-model audit round 4, data-loss cluster item 2: "two tabs" — a confirmed,
@@ -2187,7 +2229,7 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   let diskIds = [];
   try{ diskIds = (JSON.parse(store[w.eval('HLKEY')]).falls || []).map(x => x.id).sort(); }catch(e){}
   ok('a highlight confirmed by another tab while this tab’s own save is mid-flight is not silently discarded',
-     diskIds.join(',') === 'base,tabA,tabB', 'disk=' + diskIds.join(','));
+     diskIds.join(',') === 'base,tabA,tabB', 'disk=' + diskIds.join(','), {id:'g0419'});
 }
 {
   /* ChatGPT review of #457/#458 against ACCEPTANCE-round5.md (XANN): the two "two tabs" tests
@@ -2230,7 +2272,7 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   ok('two genuinely concurrent tabs saving different sections both survive, in either lock order',
      (bothSections.falls || []).some(x => x.id === 'A-falls') &&
      (bothSections.delirium || []).some(x => x.id === 'B-delirium'),
-     JSON.stringify(bothSections));
+     JSON.stringify(bothSections), {id:'g0420'});
   dmXann.window.close();
 }
 {
@@ -2252,9 +2294,9 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   const wantKeys = '2024-05#1,2024-05#2,2024-05#3';
   ok('past-paper progress answered in another tab is not overwritten by this tab’s own save',
      Object.keys(diskPq).sort().join(',') === wantKeys && diskPq['2024-05#3'] === 1 && diskPq['2024-05#2'] === 0,
-     JSON.stringify(diskPq));
+     JSON.stringify(diskPq), {id:'g0421'});
   ok('...and the merged result is reflected back into the live pqDone, not just on disk',
-     Object.keys(livePq).sort().join(',') === wantKeys, JSON.stringify(livePq));
+     Object.keys(livePq).sort().join(',') === wantKeys, JSON.stringify(livePq), {id:'g0422'});
 }
 {
   /* ChatGPT review of #457/#458 against ACCEPTANCE-round5.md (PQ2/PQ3): the test above proves
@@ -2298,7 +2340,7 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   try{ pq2Disk = JSON.parse(store[pkey2]); }catch(e){}
   ok('PQ2: two tabs that both read the same old revision before either commits both survive, regardless of write order',
      pq2Disk['2021-12#1'] === 1 && pq2Disk['2024-05#26'] === 1 && pq2Disk['2024-05#77'] === 0,
-     JSON.stringify(pq2Disk));
+     JSON.stringify(pq2Disk), {id:'g0423'});
 
   /* PQ3: a mock's batch result commit (several keys written by one pqSave() call, the same
      shape mockFinish uses) alongside a concurrent ordinary-practice answer from the other tab. */
@@ -2319,7 +2361,7 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   ok('PQ3: a mock batch result commit and a concurrent ordinary-practice answer both survive',
      pq3Disk['2023-06#10'] === 1 && pq3Disk['2023-06#11'] === 0 && pq3Disk['2023-06#12'] === 1 &&
      pq3Disk['2021-12#50'] === 1,
-     JSON.stringify(pq3Disk));
+     JSON.stringify(pq3Disk), {id:'g0424'});
 
   /* PQ4: the same question, answered differently by both tabs from the same base version. The
      checklist requires an explicit, tested policy rather than an accidental delayed-writer
@@ -2341,12 +2383,12 @@ ok('a save queued before a merge reassigns HL reads the live object, not the one
   try{ pq4Disk = JSON.parse(store[pkey2]); }catch(e){}
   ok('PQ4: a same-question conflict resolves to exactly one side (a real commit-order decision, not a lost write), and an unrelated result alongside it survives regardless',
      (pq4Disk['2022-12#5'] === 1 || pq4Disk['2022-12#5'] === 0) && pq4Disk['2020-06#1'] === 1,
-     JSON.stringify(pq4Disk));
+     JSON.stringify(pq4Disk), {id:'g0425'});
   dmPq.window.close();
 }
 ok('the synchronous teardown write stands down when the host supplies its own storage',
    /if\(!storageIsLocal\) return false;/.test(code) && /let storageIsLocal = false;/.test(code) &&
-   /storageIsLocal = false;\s*\/\* the memory fallback/.test(html));
+   /storageIsLocal = false;\s*\/\* the memory fallback/.test(html), '', {id:'g0426'});
 
 // ---- quota: what happens when the disk refuses the write ----
 // The stub has had infinite space all along, so every catch path in the file has been
@@ -2385,7 +2427,7 @@ ok('the synchronous teardown write stands down when the host supplies its own st
   failFrom = -1;
   ok('quota: a failed undo copy is announced and the restore can be refused',
      confirms.some(c=>/Could not keep an undo copy/.test(c)) && store['geri:days'] === '["KEEP"]',
-     confirms.join(' | '));
+     confirms.join(' | '), {id:'g0427'});
   w.confirm = m => { confirms.push(String(m)); return true; };
 
   // 2. the rollback itself cannot be written: say so rather than promising safety
@@ -2399,7 +2441,7 @@ ok('the synchronous teardown write stands down when the host supplies its own st
   failFrom = -1;
   ok('quota: when the rollback also fails the alert says so instead of "untouched"',
      alerts.some(a=>/putting things back/.test(a)) && !alerts.some(a=>/progress is untouched/.test(a)),
-     alerts.join(' | '));
+     alerts.join(' | '), {id:'g0428'});
 
   // 3. a highlight that cannot be saved must not advance SEEN, and must say so
   reset(1, ['geri:hl']);
@@ -2408,14 +2450,14 @@ ok('the synchronous teardown write stands down when the host supplies its own st
   await new Promise(r=>setTimeout(r,80));
   failFrom = -1;                      /* disarm before anything else writes */
   try{ await p3; }catch(e){}
-  ok('quota: a refused highlight save leaves SEEN where it was', !/q1/.test(w.eval("HLSEEN")), w.eval("HLSEEN"));
+  ok('quota: a refused highlight save leaves SEEN where it was', !/q1/.test(w.eval("HLSEEN")), w.eval("HLSEEN"), {id:'g0429'});
   ok('quota: and it tells the reader, rather than leaving it looking saved', (()=>{
     /* the page contains the words "not saved" elsewhere; assert the toast itself */
     const before = [...d.body.children].length;
     w.eval("notSavedAt = 0; notSaved();");
     const toast = [...d.body.children].find(e=>/Storage is full/.test(e.textContent));
     return !!toast && [...d.body.children].length > before;
-  })());
+  })(), '', {id:'g0430'});
 
   // 3b. saveML (the mock's own day-log write) cannot be saved: say so, and report failure
   /* ChatGPT third-model audit round 4, data-loss cluster item 4: saveML() used to swallow a
@@ -2432,7 +2474,7 @@ ok('the synchronous teardown write stands down when the host supplies its own st
   ok('quota: a refused mock-log save tells the reader, the same way a refused highlight does',
      mlOk === false && alerts.length === 0 &&
      [...d.body.children].some(e=>/Storage is full/.test(e.textContent)),
-     'mlOk=' + mlOk);
+     'mlOk=' + mlOk, {id:'g0431'});
 
   // 4. the synchronous teardown write, with localStorage itself refusing
   reset(-1);
@@ -2448,14 +2490,14 @@ ok('the synchronous teardown write stands down when the host supplies its own st
   catch(e){ threw = true; w.eval("storageIsLocal = false"); }
   proto.setItem = realLS;
   ok('quota: a refused synchronous write reports failure instead of throwing out of the teardown handler',
-     !threw && returned === false, 'threw=' + threw + ' returned=' + returned);
+     !threw && returned === false, 'threw=' + threw + ' returned=' + returned, {id:'g0432'});
 
   w.alert = realAlert; w.confirm = realConfirm; w.storage.set = realSet;
   w.eval("HL = {}; HLSEEN = '{}'");
 }
 
 ok('two overlapping repaints of the last-mock line cannot paint the older score last',
-   /const mine = \+\+lastMockPaint;/.test(code) && /if\(mine !== lastMockPaint\) return;/.test(code));
+   /const mine = \+\+lastMockPaint;/.test(code) && /if\(mine !== lastMockPaint\) return;/.test(code), '', {id:'g0433'});
 ok('the mock report, the schedule and the metric all survive an empty week', (()=>{
   const r = w.eval(`(()=>{const real=currentWeek; window.currentWeek=()=>null; const save=VIEW; VIEW=curWeek();
     let out={};
@@ -2463,7 +2505,7 @@ ok('the mock report, the schedule and the metric all survive an empty week', (()
     try{ pqStats(); out.stats=1; }catch(e){ out.stats=0; }
     pqScope='all'; pqBuild(); VIEW=save; window.currentWeek=real; return out;})()`);
   return r.pool > 0 && r.stats === 1;
-})());
+})(), '', {id:'g0434'});
 
 ok('an unseen-only draw really excludes questions already answered', (()=>{
   /* the mutation harness had this mutation with no guard behind it */
@@ -2480,7 +2522,7 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
     return {n: drew.length, anyAnswered};
   })()`);
   return r.n === 8 && r.anyAnswered === false;
-})());
+})(), '', {id:'g0435'});
 
 /* ---- crossing midnight with the tab open: the page clock is moved mid-session ----
    Absolute dates, so these hold at every STAGEA_DATE CI runs. */
@@ -2495,36 +2537,36 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
   d.dispatchEvent(new w.Event('visibilitychange'));      /* checked synchronously: no timer has run */
   ok('returning to the tab after Sunday midnight moves the page to the new week',
      w.eval('VIEW.a') === '2026-10-12' && !!d.querySelector('#wkDays [data-today="1"]'),
-     w.eval('VIEW.a + " paintDay=" + paintDay'));
+     w.eval('VIEW.a + " paintDay=" + paintDay'), {id:'g0436'});
 
   settle('2026-10-18T23:59:00', false);
   C.set('2026-10-19T00:00:05');
   await wait(700);
   ok('with the tab left in front, the timer notices midnight and moves to the new week',
-     w.eval('VIEW.a') === '2026-10-19', w.eval('VIEW.a'));
+     w.eval('VIEW.a') === '2026-10-19', w.eval('VIEW.a'), {id:'g0437'});
 
   settle('2026-10-25T23:59:00', true);
   C.set('2026-10-26T00:00:05');
   await wait(700);
   ok('a week being browsed stays put across midnight, and the day still rolls over',
      w.eval('VIEW === ALLW[0]') && w.eval('paintDay') === '2026-10-26' && !d.getElementById('wkViewing').hidden,
-     w.eval('VIEW.a + " paintDay=" + paintDay'));
+     w.eval('VIEW.a + " paintDay=" + paintDay'), {id:'g0438'});
 
   d.getElementById('tdBtn').click(); await wait(50);
   ok('marking the day done after midnight writes the new day',
-     JSON.parse(store['geri:days'] || '[]').includes('2026-10-26'), store['geri:days']);
+     JSON.parse(store['geri:days'] || '[]').includes('2026-10-26'), store['geri:days'], {id:'g0439'});
 
   C.set('2026-11-02T23:50:00'); w.eval('checkRollover()');
   w.eval('T = {p:PH.length-1, left:300, run:true, ts:Date.now(), d:today()}');
   C.set('2026-11-03T00:00:30');
   await wait(700);
   ok('a reading block that runs past midnight is credited to the day it began',
-     w.eval("days.has('2026-11-02') && !days.has('2026-11-03')"), w.eval('[...days].slice(-3).join(",")'));
+     w.eval("days.has('2026-11-02') && !days.has('2026-11-03')"), w.eval('[...days].slice(-3).join(",")'), {id:'g0440'});
 
   C.set('2026-10-07T00:30:00'); w.eval('paintCountdown()');
   const want = (Date.UTC(2027,1,1) - Date.UTC(2026,9,7)) / 86400000;
   ok('the countdown counts calendar days, not 24-hour blocks, at half past midnight',
-     d.getElementById('days').textContent === String(want), d.getElementById('days').textContent + ' vs ' + want);
+     d.getElementById('days').textContent === String(want), d.getElementById('days').textContent + ' vs ' + want, {id:'g0441'});
 }
 
 /* ---- the reading block and the drill across midnight ---- */
@@ -2534,22 +2576,22 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
   w.eval("T = {p:PH.length, left:0, run:false, ts:0, d:today()}");
   C.set('2026-11-10T00:00:05'); w.eval('checkRollover()');
   ok('a block finished yesterday starts fresh on the new day, not as already done',
-     w.eval("T.p === 0 && T.left === PH[0].s && T.d === '2026-11-10'"), w.eval('JSON.stringify(T)'));
+     w.eval("T.p === 0 && T.left === PH[0].s && T.d === '2026-11-10'"), w.eval('JSON.stringify(T)'), {id:'g0442'});
 
   C.set('2026-11-10T23:50:00'); w.eval('checkRollover()');
   w.eval("T = {p:1, left:100, run:false, ts:0, d:today()}");
   C.set('2026-11-11T00:00:05'); w.eval('checkRollover()');
   ok('a block paused part-way across midnight keeps the day it began',
-     w.eval("T.p === 1 && T.d === '2026-11-10'"), w.eval('JSON.stringify(T)'));
+     w.eval("T.p === 1 && T.d === '2026-11-10'"), w.eval('JSON.stringify(T)'), {id:'g0443'});
 
   w.eval("T = {p:0, left:PH[0].s, run:false, ts:0, d:'2026-11-11'}");
   C.set('2026-11-12T00:00:05'); w.eval('checkRollover()');
-  ok('an untouched block moves to the new day', w.eval("T.d") === '2026-11-12', w.eval('T.d'));
+  ok('an untouched block moves to the new day', w.eval("T.d") === '2026-11-12', w.eval('T.d'), {id:'g0444'});
 
   C.set('2026-11-15T23:59:00'); w.eval("checkRollover(); VIEW = curWeek(); show('drill'); setFilter({mode:'week', tag:null, label:'x'}); render(); pos = 2;");
   C.set('2026-11-16T00:00:05'); w.eval('checkRollover()');
   ok('midnight does not re-deal the drill round on screen', w.eval('pos') === 2 && w.eval('VIEW.a') === '2026-11-16',
-     'pos=' + w.eval('pos') + ' view=' + w.eval('VIEW.a'));
+     'pos=' + w.eval('pos') + ' view=' + w.eval('VIEW.a'), {id:'g0445'});
   w.eval("show('week')");
 }
 
@@ -2562,13 +2604,13 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
   const shownFull = !d.getElementById('cweek').hidden;
   w.eval("VIEW = curWeek(); renderWeek(); paintChips(); loadNote();");
   ok('the drill\u2019s week toggle is hidden for a week with no chapters and shown for one with them',
-     hiddenEmpty && shownFull, 'empty hidden=' + hiddenEmpty + ' full shown=' + shownFull);
+     hiddenEmpty && shownFull, 'empty hidden=' + hiddenEmpty + ' full shown=' + shownFull, {id:'g0446'});
 
   w.__stageaClock.set('2026-10-20T23:30:00');
   ok('bookmark and report stamps are local time, not UTC',
      w.eval('nowStamp()') === '2026-10-20 23:30' &&
      /BM = \{sec: sec\.id, t, i, d: nowStamp\(\)\};/.test(code) && !/toISOString\(\)\.slice\(0,16\)/.test(code),
-     w.eval('nowStamp()'));
+     w.eval('nowStamp()'), {id:'g0447'});
 }
 
 /* ---- a restore in progress: the midnight check and the timer stand down ---- */
@@ -2584,7 +2626,7 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
   w.eval("restoring = false; T = {p:0, left:PH[0].s, run:false, ts:0, d:today()}");
   ok('while a restore runs, midnight and a timer reaching zero write nothing',
      rolled === false && heldDay === '2026-11-20' && heldT === w.eval('PH.length-1') && store['geri:days'] === before,
-     'rolled=' + rolled + ' paintDay=' + heldDay + ' T.p=' + heldT);
+     'rolled=' + rolled + ' paintDay=' + heldDay + ' T.p=' + heldT, {id:'g0448'});
 }
 
 /* ---- undo through the verified writer; the report link; stamped errors ---- */
@@ -2601,7 +2643,7 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
   await new Promise(r => setTimeout(r, 200));
   w.storage.set = realSet; w.alert = realAlert; w.confirm = realConfirm;
   ok('an undo that storage refuses stops, says so, and keeps the undo copy for another try',
-     !!store['geri:rollback'] && alerts.some(x => /partway through the undo/.test(x)), alerts.join(' | '));
+     !!store['geri:rollback'] && alerts.some(x => /partway through the undo/.test(x)), alerts.join(' | '), {id:'g0449'});
   store['geri:rollback'] = '';
 
   /* guarded, not because a real run ever lacks #shReport, but so an earlier mutation that
@@ -2616,12 +2658,12 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
   const body = decodeURIComponent(href.split('&body=')[1] || '');
   ok('a long report note is cut so the issue link fits, keeping the context whole',
      href.length < 6600 && /cut to fit a link/.test(body) && /section: /.test(body) && /no script errors|last error/.test(body),
-     href.length + ' chars');
+     href.length + ' chars', {id:'g0450'});
   note.value = ''; d.getElementById('rptClose').click();
 
   w.__stageaClock.set('2026-12-01T09:15:00');
   const ev = new w.Event('unhandledrejection'); ev.reason = new Error('stale-test'); w.dispatchEvent(ev);
-  ok('the last error in a report carries the time it happened', /^\[2026-12-01 09:15\] promise: stale-test/.test(w.eval('lastErr')), w.eval('lastErr'));
+  ok('the last error in a report carries the time it happened', /^\[2026-12-01 09:15\] promise: stale-test/.test(w.eval('lastErr')), w.eval('lastErr'), {id:'g0451'});
   w.eval("lastErr = ''");
 }
 
@@ -2635,11 +2677,11 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
     pqScope = 'unseen'; pqChap = 'ch:63';
     const q = pqFilter(); out.chHeld = q.length > 0 && q.every(x => x.ch === 63 && OLDED.indexOf(x.y) < 0); out.n = q.length;
     [VIEW, pqScope, pqChap, pqYear] = sv; return out; })()`);
-  ok('the week scope never serves earlier-edition questions by their old chapter numbers', r.oldInWeek === 0, r.oldInWeek + ' weeks leak');
-  ok('a single weak chapter holds while the scope changes', r.chHeld, r.n + ' questions');
-  ok('the weakest-chapters button holds the chapter as a filter', /pqChap = 'ch:' \+ b\.dataset\.ch;/.test(code));
+  ok('the week scope never serves earlier-edition questions by their old chapter numbers', r.oldInWeek === 0, r.oldInWeek + ' weeks leak', {id:'g0452'});
+  ok('a single weak chapter holds while the scope changes', r.chHeld, r.n + ' questions', {id:'g0453'});
+  ok('the weakest-chapters button holds the chapter as a filter', /pqChap = 'ch:' \+ b\.dataset\.ch;/.test(code), '', {id:'g0454'});
   ok('an earlier-edition question has no jump to an 8th-edition section',
-     /const tsec = \(p\.ch && p\.bk===.Hazzard.\) \? \(OLDED\.indexOf\(p\.y\) < 0 \? sectionForChapter\(p\.ch\) : ''\)/.test(code));
+     /const tsec = \(p\.ch && p\.bk===.Hazzard.\) \? \(OLDED\.indexOf\(p\.y\) < 0 \? sectionForChapter\(p\.ch\) : ''\)/.test(code), '', {id:'g0455'});
 }
 
 /* ---- cross-book chapter collision (ChatGPT third-model audit round 3) ---- */
@@ -2664,23 +2706,23 @@ ok('an unseen-only draw really excludes questions already answered', (()=>{
     return out;
   })()`);
   ok('a synthetic Harrison record whose chapter number collides with a Hazzard section does not enter that section’s past-paper pool',
-     r.poolIncludes === false, JSON.stringify(r));
+     r.poolIncludes === false, JSON.stringify(r), {id:'g0456'});
   ok('...nor does it pass the chapter-constrained filter used by the chapter-index “open the notes” flow',
-     r.filterIncludes === false, JSON.stringify(r));
+     r.filterIncludes === false, JSON.stringify(r), {id:'g0457'});
   ok('chapterPaperPool only pools records from the Hazzard book',
-     /return PQ\.filter\(p=>p\.bk===.Hazzard. && p\.ch && chs\.indexOf\(p\.ch\) >= 0 && OLDED\.indexOf\(p\.y\) < 0\);/.test(code));
+     /return PQ\.filter\(p=>p\.bk===.Hazzard. && p\.ch && chs\.indexOf\(p\.ch\) >= 0 && OLDED\.indexOf\(p\.y\) < 0\);/.test(code), '', {id:'g0458'});
   ok('the pqStats weak-chapter aggregation only attributes a chaptered question to by\\[\\] when it is Hazzard’s own chapter numbering',
      /if\(!x\.ch \|\| x\.bk!==.Hazzard. \|\| OLDED\.indexOf\(x\.y\) >= 0\) return;/.test(code) &&
-     /if\(\(x\.ch && x\.bk===.Hazzard.\) \|\| OLDED\.indexOf\(x\.y\) >= 0\) return;/.test(code));
+     /if\(\(x\.ch && x\.bk===.Hazzard.\) \|\| OLDED\.indexOf\(x\.y\) >= 0\) return;/.test(code), '', {id:'g0459'});
   ok('the mock-exam weak-chapter report only attributes a chaptered question to byCh when it is Hazzard’s own chapter numbering',
-     /if\(r\.p\.ch && r\.p\.bk===.Hazzard. && r\.given\)/.test(code));
+     /if\(r\.p\.ch && r\.p\.bk===.Hazzard. && r\.given\)/.test(code), '', {id:'g0460'});
 }
 
 /* ---- render-check round: search landing, drill scroll, mock blanks, paused mock, source line, dark contrast ---- */
 ok('a search hit skips the scroll restore, so it lands on the match',
-   /skipRestore = true;\s*\n\s*show\(x\.sec\);/.test(code));
+   /skipRestore = true;\s*\n\s*show\(x\.sec\);/.test(code), '', {id:'g0461'});
 ok('after Got it / Missed it the next card is brought into view if it opened above',
-   /render\(\);\s*\n[^\n]*\n\s*cardIntoView\(card\);/.test(code));
+   /render\(\);\s*\n[^\n]*\n\s*cardIntoView\(card\);/.test(code), '', {id:'g0462'});
 {
   const confirms = [], realConfirm = w.confirm;
   w.confirm = m => { confirms.push(String(m)); return false; };
@@ -2688,7 +2730,7 @@ ok('after Got it / Missed it the next card is brought into view if it opened abo
   w.eval('mockOn = false; mockQs = []');
   await w.eval('mockStart()');
   ok('starting a mock asks before discarding one left part-way',
-     confirms.some(c => /unfinished mock/.test(c)) && w.eval('mockOn') === false && w.eval('mockQs.length') === 0, confirms.join(' | '));
+     confirms.some(c => /unfinished mock/.test(c)) && w.eval('mockOn') === false && w.eval('mockQs.length') === 0, confirms.join(' | '), {id:'g0463'});
   fake.remove(); w.confirm = realConfirm;
 }
 {
@@ -2706,18 +2748,18 @@ ok('after Got it / Missed it the next card is brought into view if it opened abo
   const counts = [...note.matchAll(/\((\d+) wrong of (\d+) answered\)/g)].map(m => +m[2]);
   ok('the mock report keeps blanks apart from wrong answers',
      n === 50 && rv && /go through the 5 you got wrong/.test(rv.textContent) && bl && /the 45 left blank/.test(bl.textContent) &&
-     /\(5 wrong of 5 answered\)/.test(note) && counts.every(c => c <= 5), (rv && rv.textContent) + ' | ' + (bl && bl.textContent) + ' | ' + note.slice(0, 80));
+     /\(5 wrong of 5 answered\)/.test(note) && counts.every(c => c <= 5), (rv && rv.textContent) + ' | ' + (bl && bl.textContent) + ' | ' + note.slice(0, 80), {id:'g0464'});
   w.confirm = () => true;
 }
 ok('the source line spaces Hebrew and digits apart for display',
    w.eval("srcSpaced('\u05d4\u05d6\u05d0\u05e8\u05d346696\u05ea\u05de\u05d5\u05e0\u05d42')") === '\u05d4\u05d6\u05d0\u05e8\u05d3 46696 \u05ea\u05de\u05d5\u05e0\u05d4 2' &&
-   /escHtml\(srcSpaced\(src\)\)/.test(code));
+   /escHtml\(srcSpaced\(src\)\)/.test(code), '', {id:'g0465'});
 ok('dark mode lays dark text on the bright accents, and the mock button keeps a fill',
    /body\.dark #week #tdBtn, body\.dark #week #tGo, body\.dark #week #qLog,\s*\n?\s*body\.dark \.pf button\[aria-pressed="true"\][^{]*\{ color:var\(--paper\) !important \}/.test(code) &&
-   /\.pf button\.mockgo\{ background:var\(--c-now\)/.test(code));
+   /\.pf button\.mockgo\{ background:var\(--c-now\)/.test(code), '', {id:'g0466'});
 ok('dark mode styles the remark, report and backup text boxes, and the backup Copy button',
    /body\.dark #hlText, body\.dark #rptNote, body\.dark #bkText\{ background:var\(--surface\)/.test(code) &&
-   /\.tbtns button:not\(:first-child\):not\(\.lnk\)\{/.test(code));
+   /\.tbtns button:not\(:first-child\):not\(\.lnk\)\{/.test(code), '', {id:'g0467'});
 {
   /* v21 — Gemini-audited dark palette. jsdom's getComputedStyle doesn't resolve var()/!important
      cascades in this stylesheet (confirmed empirically — background/color came back unresolved),
@@ -2740,7 +2782,7 @@ ok('dark mode styles the remark, report and backup text boxes, and the backup Co
   const [paper, surface, ink, mute, cnow] = m ? m.slice(1) : [];
   ok('dark palette hex values are pinned to the Gemini-audited set',
      paper === '1C1B1A' && surface === '2D2C2B' && ink === 'E6E1DC' && mute === '9C9791' && cnow === 'E59835',
-     JSON.stringify({paper, surface, ink, mute, cnow}));
+     JSON.stringify({paper, surface, ink, mute, cnow}), {id:'g0468'});
   const ratios = paper && surface && ink && mute && cnow ? {
     inkOnPaper: contrast(ink, paper), muteOnPaper: contrast(mute, paper), muteOnSurface: contrast(mute, surface),
     amberOnPaper: contrast(cnow, paper), surfaceVsPaper: contrast(surface, paper),
@@ -2751,31 +2793,31 @@ ok('dark mode styles the remark, report and backup text boxes, and the backup Co
   } : {};
   ok('dark palette clears WCAG AA (4.5:1 body/muted text, and surface reads distinct from the page)',
      ratios.inkOnPaper >= 4.5 && ratios.muteOnPaper >= 4.5 && ratios.muteOnSurface >= 4.5 &&
-     ratios.amberOnPaper >= 4.5 && ratios.surfaceVsPaper >= 1.05 && ratios.inkOnSurface >= 4.5, JSON.stringify(ratios));
+     ratios.amberOnPaper >= 4.5 && ratios.surfaceVsPaper >= 1.05 && ratios.inkOnSurface >= 4.5, JSON.stringify(ratios), {id:'g0469'});
   /* the v19 override used to collapse --surface back onto --paper in dark mode (var(--paper)),
      which is why #week's cards used to read flush with the page background */
   ok('the v19 dossier override no longer collapses dark --surface onto --paper',
      !/html\.dark, body\.dark \{\s*\n\s*--surface: var\(--paper\)/.test(code) &&
-     /html\.dark, body\.dark \{\s*\n\s*--surface: #2D2C2B !important;/.test(code));
+     /html\.dark, body\.dark \{\s*\n\s*--surface: #2D2C2B !important;/.test(code), '', {id:'g0470'});
 }
 ok('dark mode outlines the three dashboard tiles instead of filling them solid amber with near-black text',
    /body\.dark #week \.today \.acts \.act\{background:var\(--surface\);border-color:var\(--c-now\)\}/.test(code) &&
    /body\.dark #week \.today \.acts \.act,body\.dark #week \.today \.acts \.act b,body\.dark #week \.today \.acts \.act span\{color:var\(--ink\)\}/.test(code) &&
-   !/body\.dark #week \.today \.acts \.act,body\.dark #week \.today \.acts \.act b,body\.dark #week \.today \.acts \.act span\{color:#12161a\}/.test(code));
+   !/body\.dark #week \.today \.acts \.act,body\.dark #week \.today \.acts \.act b,body\.dark #week \.today \.acts \.act span\{color:#12161a\}/.test(code), '', {id:'g0471'});
 ok('dark mode outlines "Mark today done" (not-yet-done state) the same way, and leaves the done/green state alone',
-   /body\.dark #week #tdBtn:not\(\[data-on="1"\]\) \{\s*\n\s*background: var\(--surface\) !important;\s*\n\s*border-color: var\(--c-now\) !important;\s*\n\s*color: var\(--ink\) !important;\s*\n\s*\}/.test(code));
+   /body\.dark #week #tdBtn:not\(\[data-on="1"\]\) \{\s*\n\s*background: var\(--surface\) !important;\s*\n\s*border-color: var\(--c-now\) !important;\s*\n\s*color: var\(--ink\) !important;\s*\n\s*\}/.test(code), '', {id:'g0472'});
 
 /* ---- v25: dark leftovers — the rest of the solid --c-now fills forced near-black by v20 ---- */
 ok('dark mode outlines the timer Start/Resume button the same way, with a real border (not just border-color on a borderless button)',
-   /body\.dark #week #tGo\{ background:var\(--surface\) !important; border:1px solid var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
+   /body\.dark #week #tGo\{ background:var\(--surface\) !important; border:1px solid var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code), '', {id:'g0473'});
 ok('dark mode outlines the quick-log button the same way, with a real border (its own rule sets border:none, so border-color alone would be invisible)',
-   /body\.dark #week #qLog\{ background:var\(--surface\) !important; border:1px solid var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
+   /body\.dark #week #qLog\{ background:var\(--surface\) !important; border:1px solid var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code), '', {id:'g0474'});
 ok('dark mode outlines a pressed filter pill the same way',
-   /body\.dark \.pf button\[aria-pressed="true"\]\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
+   /body\.dark \.pf button\[aria-pressed="true"\]\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code), '', {id:'g0475'});
 ok('dark mode outlines the mock’s start button the same way',
-   /body\.dark \.pf button\.mockgo\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code));
+   /body\.dark \.pf button\.mockgo\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important; color:var\(--ink\) !important; \}/.test(code), '', {id:'g0476'});
 ok('the down jump button (.toend) gets the same dark outline the up button (.totop) already had',
-   /body\.dark \.toend\{ background:var\(--surface\) !important; color:var\(--ink\) !important; border:1px solid var\(--rule\) !important; \}/.test(code));
+   /body\.dark \.toend\{ background:var\(--surface\) !important; color:var\(--ink\) !important; border:1px solid var\(--rule\) !important; \}/.test(code), '', {id:'g0477'});
 
 /* ---- v24: chapter-end stack (was a ragged wrap of seven identically-boxed buttons) ---- */
 {
@@ -2783,21 +2825,21 @@ ok('the down jump button (.toend) gets the same dark outline the up button (.tot
   const kids = [...foot.children].map(c => c.tagName === 'BUTTON' ? 'button.' + c.className : c.tagName === 'DIV' ? 'div.' + c.className : c.tagName);
   ok('the chapter-end footer is one stack: mark, then the drill/past-Q row, then next, then the quiet print/backup/home row, then the stamp',
      /^button\.mark(\s|$)/.test(kids[0]) && kids[1] === 'div.secrow2' && kids[2] === 'button.nx' &&
-     kids[3] === 'div.secquiet' && kids[4] === 'SPAN', kids.join(' | '));
+     kids[3] === 'div.secquiet' && kids[4] === 'SPAN', kids.join(' | '), {id:'g0478'});
   const row2 = foot.querySelector('.secrow2');
   ok('the drill and past-questions buttons live together in the two-up row, not loose in the footer',
-     row2 && row2.querySelector('.dr') && row2.querySelector('.pq'));
+     row2 && row2.querySelector('.dr') && row2.querySelector('.pq'), '', {id:'g0479'});
   const quiet = foot.querySelector('.secquiet');
   ok('print, backup and home are grouped in the quiet text row, not three separate boxed buttons',
-     quiet && quiet.querySelector('.pr') && quiet.querySelector('.bk') && quiet.querySelector('.hm'));
+     quiet && quiet.querySelector('.pr') && quiet.querySelector('.bk') && quiet.querySelector('.hm'), '', {id:'g0480'});
 }
 ok('"mark as read" is a full-width primary action, styled as a quiet outline once checked (not a solid green block)',
    /\.secfoot > button\.mark\{ width:100%;/.test(code) &&
-   /\.secfoot > button\.mark\.readon\{ background:none !important; border-color:var\(--start\) !important;\s*\n\s*color:var\(--start\) !important; \}/.test(code));
+   /\.secfoot > button\.mark\.readon\{ background:none !important; border-color:var\(--start\) !important;\s*\n\s*color:var\(--start\) !important; \}/.test(code), '', {id:'g0481'});
 ok('drill and past-questions sit in an equal two-up row that collapses to one when the other is hidden',
    /\.secfoot \.secrow2\{ display:flex !important; gap:10px !important; \}/.test(code) &&
    /\.secfoot \.secrow2 button\{ flex:1 1 0;/.test(code) &&
-   /\.secfoot \.secrow2 button\[hidden\]\{ display:none !important; \}/.test(code));
+   /\.secfoot \.secrow2 button\[hidden\]\{ display:none !important; \}/.test(code), '', {id:'g0482'});
 {
   /* ChatGPT third-model audit, round 2: a mutation removing the .secrow2 wrapper makes both
      selectors below return null, and getComputedStyle(null) throws — a TypeError while
@@ -2809,11 +2851,11 @@ ok('drill and past-questions sit in an equal two-up row that collapses to one wh
   ok('the past-questions button does not carry the .pq card’s 26px margin into the two-up row (Codex #431)',
      /\.secfoot \.secrow2 button\{ flex:1 1 0; width:auto !important; margin:0 !important;/.test(code) &&
      !!pqEl && w.getComputedStyle(pqEl).marginBottom === '0px',
-     pqEl ? w.getComputedStyle(pqEl).marginBottom : 'no .pq found in #falls or #thyroid .secrow2');
+     pqEl ? w.getComputedStyle(pqEl).marginBottom : 'no .pq found in #falls or #thyroid .secrow2', {id:'g0483'});
 }
 ok('"Next: <chapter>" is a full-width accent action when a next chapter exists this week',
    /\.secfoot > button\.nx\{ width:100%;[\s\S]{0,220}?background:var\(--accent\) !important;/.test(code) &&
-   /body\.dark \.secfoot > button\.nx\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important;/.test(code));
+   /body\.dark \.secfoot > button\.nx\{ background:var\(--surface\) !important; border-color:var\(--c-now\) !important;/.test(code), '', {id:'g0484'});
 {
   /* the .nx class is shared with the "next up" reading-list grid rows (display:grid, a 92px
      label column) — the footer's next-chapter button must reset that or its text gets stuck in
@@ -2825,13 +2867,13 @@ ok('"Next: <chapter>" is a full-width accent action when a next chapter exists t
     const nx = d.querySelector('#' + secs[0] + ' .secfoot > button.nx');
     ok('the next-chapter button resets the inherited "next up" grid layout to a centred flex row',
        /\.secfoot > button\.nx:not\(\[hidden\]\)\{ display:flex !important;/.test(code) &&
-       nx && w.getComputedStyle(nx).display === 'flex', nx && w.getComputedStyle(nx).display);
+       nx && w.getComputedStyle(nx).display === 'flex', nx && w.getComputedStyle(nx).display, {id:'g0485'});
   }
   w.eval("show('week')");
 }
 ok('print, backup and home read as one quiet underlined text line with middot separators, not three boxes',
    /\.secfoot \.secquiet button\{ width:auto !important; background:none !important; border:0 !important;/.test(code) &&
-   /\.secfoot \.secquiet button \+ button::before\{ content:'\\00b7';/.test(code));
+   /\.secfoot \.secquiet button \+ button::before\{ content:'\\00b7';/.test(code), '', {id:'g0486'});
 {
   /* text-decoration propagates to inline descendants, so text-decoration:none on the middot
      pseudo itself cannot cancel the underline it inherits from the button — only a new block
@@ -2841,7 +2883,7 @@ ok('print, backup and home read as one quiet underlined text line with middot se
   ok('the middot separator gets its own formatting context so it does not inherit the button\u2019s underline',
      /button \+ button::before\{ content:'\\00b7'; margin-inline-end:8px; display:inline-block;/.test(code) &&
      btn && w.getComputedStyle(btn, '::before').display === 'inline-block',
-     btn && w.getComputedStyle(btn, '::before').display);
+     btn && w.getComputedStyle(btn, '::before').display, {id:'g0487'});
   w.eval("show('week')");
 }
 {
@@ -2851,15 +2893,15 @@ ok('print, backup and home read as one quiet underlined text line with middot se
     w.eval(`show('${secs[0]}')`); w.eval('paintNextChap()');
     const nx = d.querySelector('#' + secs[0] + ' .secfoot .nx');
     ok('the next-chapter button reads "Next: <chapter>", not the old "next this week:" wording',
-       nx && /^Next: /.test(nx.textContent) && !/next this week/i.test(nx.textContent), nx && nx.textContent);
+       nx && /^Next: /.test(nx.textContent) && !/next this week/i.test(nx.textContent), nx && nx.textContent, {id:'g0488'});
   }
   w.eval("show('week')");
 }
 
 /* ---- group 1: question flow ---- */
-ok('next/skip brings the question card back under the nav', /function pqNext\(\)\{ pqIdx\+\+; pqRender\(\); cardIntoView\(document\.getElementById\('pqCard'\)\); \}/.test(code));
-ok('each mock question is kept in view after an answer or next/back', /cardIntoView\(document\.getElementById\('mockCard'\)\);/.test(code));
-ok('the mock header (question n of N, time left) sticks under the nav', /#mockCard \.pqhead\{ position:sticky; top:var\(--navh, 135px\)/.test(code));
+ok('next/skip brings the question card back under the nav', /function pqNext\(\)\{ pqIdx\+\+; pqRender\(\); cardIntoView\(document\.getElementById\('pqCard'\)\); \}/.test(code), '', {id:'g0489'});
+ok('each mock question is kept in view after an answer or next/back', /cardIntoView\(document\.getElementById\('mockCard'\)\);/.test(code), '', {id:'g0490'});
+ok('the mock header (question n of N, time left) sticks under the nav', /#mockCard \.pqhead\{ position:sticky; top:var\(--navh, 135px\)/.test(code), '', {id:'g0491'});
 {
   w.confirm = () => true;
   w.eval('mockOn = false'); await w.eval('mockN = 50; mockStart()');
@@ -2870,9 +2912,9 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
   const back = d.getElementById('pqBackReport');
   const hadBack = !!back; if(back) back.click();
   ok('mock review shows your answer against the key, with a link back to the report',
-     /you: \S+ · key: \S+/.test(line) && hadBack && !d.getElementById('mockReport').hidden && d.getElementById('pqCard').hidden, line);
+     /you: \S+ · key: \S+/.test(line) && hadBack && !d.getElementById('mockReport').hidden && d.getElementById('pqCard').hidden, line, {id:'g0492'});
   w.eval('pqBuild(); pqRender()'); d.getElementById('pqCard').hidden = false;
-  ok('leaving the review clears the mock answers from the question card', !d.querySelector('#pqWho .pqmock'));
+  ok('leaving the review clears the mock answers from the question card', !d.querySelector('#pqWho .pqmock'), '', {id:'g0493'});
 }
 {
   /* fresh pages: this suite's own restore tests clear every backup key, the flag included */
@@ -2896,7 +2938,7 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
   const reopens = i2 && !i2.hidden;
   dom2.window.close();
   ok('the papers intro is open on the first visit and folded behind a link after it', firstVisitOpen && folded && reopens,
-     'first=' + firstVisitOpen + ' folded=' + folded + ' reopens=' + reopens);
+     'first=' + firstVisitOpen + ' folded=' + folded + ' reopens=' + reopens, {id:'g0494'});
 }
 
 /* ---- group 2: the home mock tile matches the mock clock ---- */
@@ -2908,7 +2950,7 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
   w.eval('mockPerQ = 0; paintMockTile()'); const untimed = tile();
   w.eval('mockPerQ = 2; paintMockTile(); mockEnds = 0');
   ok('the home mock tile states the time the mock clock actually runs', /^100 min \| 50-question mock · exam pace$/.test(atPace) && /^100:00 left$/.test(clock) && /^untimed/.test(untimed),
-     atPace + ' / ' + clock + ' / ' + untimed);
+     atPace + ' / ' + clock + ' / ' + untimed, {id:'g0495'});
 }
 
 /* ---- Gemini round 4 ---- */
@@ -2918,15 +2960,15 @@ ok('the mock header (question n of N, time left) sticks under the nav', /#mockCa
   w.eval("mockOn = true; mockQs = [{marker:1}]");
   await w.eval('mockStart()');
   ok('starting a mock while one is running asks first, and a refusal keeps the running paper',
-     confirms.some(c => /unfinished mock/.test(c)) && w.eval('mockQs.length === 1 && mockQs[0].marker === 1'), confirms.join(' | '));
+     confirms.some(c => /unfinished mock/.test(c)) && w.eval('mockQs.length === 1 && mockQs[0].marker === 1'), confirms.join(' | '), {id:'g0496'});
   w.eval('mockOn = false; mockQs = []; clearInterval(mockTick)'); w.confirm = realConfirm;
 }
-ok('the mock report and drill summary land below the nav too', /#pqCard, #mockCard, #mockReport, #dsum, #drill \.card\{ scroll-margin-top:/.test(code));
+ok('the mock report and drill summary land below the nav too', /#pqCard, #mockCard, #mockReport, #dsum, #drill \.card\{ scroll-margin-top:/.test(code), '', {id:'g0497'});
 
 /* ---- group 3: less clutter at XL ---- */
 ok('the end and top buttons are shown together while reading, not one swapping for the other',
    /en\.hidden = scrollY \+ innerHeight > document\.documentElement\.scrollHeight - 400;/.test(code) &&
-   !/en\.hidden = !b\.hidden/.test(code));   /* replaced 16 Sep: he wants both buttons everywhere */
+   !/en\.hidden = !b\.hidden/.test(code), '', {id:'g0498'});   /* replaced 16 Sep: he wants both buttons everywhere */
 
 /* ---- group 9: the jump row stops covering the text (16 Sep) ---- */
 {
@@ -2934,9 +2976,9 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   ok('the end and top buttons sit in one horizontal row in the corner, not stacked over the text',
      !!row && row.contains(d.getElementById('toEnd')) && row.contains(d.getElementById('toTop')) &&
      /\.jumprow\{display:none;position:fixed;right:14px;bottom:calc\(16px \+ env\(safe-area-inset-bottom\)\);\n\s*z-index:45;flex-direction:row;/.test(code) &&
-     /\.toend,\.totop\{display:flex;position:static;/.test(code));
+     /\.toend,\.totop\{display:flex;position:static;/.test(code), '', {id:'g0499'});
   ok('both jump buttons keep a 44px tap target',
-     /min-height:44px;min-width:44px;justify-content:center;/.test(code));
+     /min-height:44px;min-width:44px;justify-content:center;/.test(code), '', {id:'g0500'});
 
   /* Arrows only: with the words the pair was ~145px wide and covered two lines of text at the
      right edge at XL. Nothing visible but the glyph, and the name a screen reader reads moves
@@ -2948,16 +2990,16 @@ ok('the end and top buttons are shown together while reading, not one swapping f
     ok('the jump buttons show an arrow and no words',
        txt(e) === '\u2193' && txt(tp) === '\u2191' &&
        e.querySelectorAll('span').length === 0 && tp.querySelectorAll('span').length === 0,
-       JSON.stringify([txt(e), txt(tp), e.innerHTML, tp.innerHTML]));
+       JSON.stringify([txt(e), txt(tp), e.innerHTML, tp.innerHTML]), {id:'g0501'});
     ok('and each still carries the name a screen reader reads',
        e.getAttribute('aria-label') === 'Jump to end' && tp.getAttribute('aria-label') === 'Back to top',
-       e.getAttribute('aria-label') + ' / ' + tp.getAttribute('aria-label'));
+       e.getAttribute('aria-label') + ' / ' + tp.getAttribute('aria-label'), {id:'g0502'});
     /* the .totop appearance block must not set padding: with !important it beat the shared
        padding:0 and made one of a matched pair of buttons a taller pill */
     ok('the back-to-top override no longer sizes the button, so the pair matches',
-       !/\.totop \{[^}]*padding:/.test(code));
+       !/\.totop \{[^}]*padding:/.test(code), '', {id:'g0503'});
     ok('the arrow scales with the text-size control like everything else',
-       /\.toend,\.totop\{display:flex;position:static;\n\s*font-family:var\(--sans\);font-size:calc\(17px\*var\(--fs,1\)\);line-height:1;padding:0;/.test(code));
+       /\.toend,\.totop\{display:flex;position:static;\n\s*font-family:var\(--sans\);font-size:calc\(17px\*var\(--fs,1\)\);line-height:1;padding:0;/.test(code), '', {id:'g0504'});
   }
 
   /* nothing over the answer options: Past papers carries both the single-question drill
@@ -2970,13 +3012,13 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   const offAfter = row.classList.contains('off');
   ok('the jump row is hidden on Past papers and the mock, and comes back on a chapter',
      offReading === false && offPapers === true && offAfter === false,
-     'reading=' + offReading + ' papers=' + offPapers + ' back=' + offAfter);
+     'reading=' + offReading + ' papers=' + offPapers + ' back=' + offAfter, {id:'g0505'});
   ok('hiding the row takes it out of the layout, so it cannot swallow a tap on an answer',
-     /\.jumprow\.off\{display:none!important\}/.test(code));
+     /\.jumprow\.off\{display:none!important\}/.test(code), '', {id:'g0506'});
 
   /* main clears the row by the row's own measured height, not a hard-coded number */
   ok('main is padded by the measured height of the jump row and of the timer under it',
-     /main\{padding-bottom:calc\(var\(--jumph, 66px\) \+ var\(--minih, 0px\) \+ 26px \+ env\(safe-area-inset-bottom\)\)\}/.test(code));
+     /main\{padding-bottom:calc\(var\(--jumph, 66px\) \+ var\(--minih, 0px\) \+ 26px \+ env\(safe-area-inset-bottom\)\)\}/.test(code), '', {id:'g0507'});
   /* jsdom does no layout, so model the one browser fact this depends on: an element with
      display:none measures zero. Without that the guard below cannot tell a measurement
      taken with the row hidden from one taken with it shown. */
@@ -2986,7 +3028,7 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   w.eval("show('falls')");
   ok('showing a section measures the row and writes its height into --jumph',
      d.documentElement.style.getPropertyValue('--jumph') === '71px',
-     d.documentElement.style.getPropertyValue('--jumph') || '(unset)');
+     d.documentElement.style.getPropertyValue('--jumph') || '(unset)', {id:'g0508'});
   /* Measuring must also work on the section the row is hidden on, or a reader who opens
      Past papers first gets the fallback padding for the rest of the session. Cleared first:
      a stale value left by the previous measurement would let a broken measure pass. */
@@ -2994,7 +3036,7 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   w.eval("show('papers')");
   const onPapers = d.documentElement.style.getPropertyValue('--jumph');
   w.eval("show('falls')");
-  ok('the height is still measured on Past papers, where the row is hidden', onPapers === '71px', onPapers || '(unset)');
+  ok('the height is still measured on Past papers, where the row is hidden', onPapers === '71px', onPapers || '(unset)', {id:'g0509'});
   delete row.getBoundingClientRect;
 
   /* ---- the jump row steps over the floating timer (16 Sep) ----
@@ -3017,14 +3059,14 @@ ok('the end and top buttons are shown together while reading, not one swapping f
     const upCls = row.classList.contains('above');
     ok('the jump row steps above the floating timer as soon as the timer appears',
        downCls === false && downH === '0px' && upCls === true && upH === '56px',
-       'timer down: ' + downCls + '/' + downH + '  timer up: ' + upCls + '/' + upH);
+       'timer down: ' + downCls + '/' + downH + '  timer up: ' + upCls + '/' + upH, {id:'g0510'});
     ok('and the raised position clears the timer by its measured height plus a gap',
-       /\.jumprow\.above\{bottom:calc\(16px \+ var\(--minih, 0px\) \+ 10px \+ env\(safe-area-inset-bottom\)\)\}/.test(code));
+       /\.jumprow\.above\{bottom:calc\(16px \+ var\(--minih, 0px\) \+ 10px \+ env\(safe-area-inset-bottom\)\)\}/.test(code), '', {id:'g0511'});
     mt.hidden = true;
     await new Promise(r => setTimeout(r, 60));
     ok('and drops back down when the timer goes away, rather than floating above nothing',
        !row.classList.contains('above') && d.documentElement.style.getPropertyValue('--minih') === '0px',
-       row.className + ' --minih=' + d.documentElement.style.getPropertyValue('--minih'));
+       row.className + ' --minih=' + d.documentElement.style.getPropertyValue('--minih'), {id:'g0512'});
     delete mt.getBoundingClientRect; delete mt.getClientRects;
   }
 
@@ -3041,10 +3083,10 @@ ok('the end and top buttons are shown together while reading, not one swapping f
      row.classList.contains('fade') && cs1.opacity === '0' && cs1.pointerEvents === 'none' &&
      pe0 !== 'none',
      row.className + ' opacity=' + cs1.opacity + ' pointer-events=' + cs1.pointerEvents +
-     ' (before: ' + pe0 + ')');
+     ' (before: ' + pe0 + ')', {id:'g0513'});
   ok('the faded row is invisible and inert, never display:none — it must still measure',
      /\.jumprow\.fade\{opacity:0;pointer-events:none\}/.test(code) &&
-     !/\.jumprow\.fade\{[^}]*(display|visibility)/.test(code));
+     !/\.jumprow\.fade\{[^}]*(display|visibility)/.test(code), '', {id:'g0514'});
   /* the height must not depend on the fade, or the padding would collapse mid-scroll */
   row.getBoundingClientRect = () => row.classList.contains('off')
     ? ({height: 0, width: 0, top:0, left:0, right:0, bottom:0})
@@ -3052,12 +3094,12 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   d.documentElement.style.removeProperty('--jumph');
   w.eval("show('falls')");
   const fadedH = d.documentElement.style.getPropertyValue('--jumph');
-  ok('the row measures the same while faded as while shown', fadedH === '71px', fadedH || '(unset)');
+  ok('the row measures the same while faded as while shown', fadedH === '71px', fadedH || '(unset)', {id:'g0515'});
   delete row.getBoundingClientRect;
 
   await new Promise(r => setTimeout(r, 900));
   ok('about 600 ms after the last scroll the row comes back, taps and all',
-     !row.classList.contains('fade'), row.className);
+     !row.classList.contains('fade'), row.className, {id:'g0516'});
 
   /* Two halves, and only the first was covered before: focus already on a button when the
      scroll starts, and focus ARRIVING while the row is already faded. The second left the
@@ -3073,7 +3115,7 @@ ok('the end and top buttons are shown together while reading, not one swapping f
      fadedFirst && !row.classList.contains('fade') && csF.opacity === '1' &&
      csF.pointerEvents === 'auto' && d.activeElement === tt,
      'fadedFirst=' + fadedFirst + ' now=' + row.className + ' opacity=' + csF.opacity +
-     ' pointer-events=' + csF.pointerEvents);
+     ' pointer-events=' + csF.pointerEvents, {id:'g0517'});
   tt.blur();
   row.classList.remove('fade');
   w.dispatchEvent(new w.Event('scroll'));
@@ -3081,16 +3123,16 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   tt.focus();
   w.dispatchEvent(new w.Event('scroll'));
   ok('a jump button that already holds focus never fades in the first place',
-     fadedAfterBlur && !row.classList.contains('fade'), row.className);
+     fadedAfterBlur && !row.classList.contains('fade'), row.className, {id:'g0518'});
   tt.blur();
   await new Promise(r => setTimeout(r, 900));
 
   ok('reduced motion drops the transition rather than the fade itself',
      /@media \(prefers-reduced-motion: reduce\)\{ \.jumprow\{transition:none\} \}/.test(code) &&
-     /\.jumprow\{opacity:1;transition:opacity \.18s ease\}/.test(code));
+     /\.jumprow\{opacity:1;transition:opacity \.18s ease\}/.test(code), '', {id:'g0519'});
   ok('the scroll listener is passive and debounced, not per-frame',
      /addEventListener\('scroll', fadeJumpRow, \{passive:true\}\);/.test(code) &&
-     /clearTimeout\(settle\);/.test(code));
+     /clearTimeout\(settle\);/.test(code), '', {id:'g0520'});
   row.classList.remove('fade');
 
   w.eval("show('week')");
@@ -3105,7 +3147,7 @@ ok('the end and top buttons are shown together while reading, not one swapping f
     return at.trim().slice(-90) + ' >>> ' + m[0];
   });
   ok('no font size is a bare px value — they all scale with the text-size control',
-     px.length === 0, px.slice(0, 4).join('  ||  '));
+     px.length === 0, px.slice(0, 4).join('  ||  '), {id:'g0521'});
 
   /* --fs now lives on body, the element the control writes its class to, so it inherits into
      the fixed overlays that sit outside main — the timer, the popover, the report dialog, the
@@ -3114,27 +3156,27 @@ ok('the end and top buttons are shown together while reading, not one swapping f
   ok('--fs is declared once, on body, so everything outside main scales too',
      /body\{--fs:1\}/.test(code) && /body\.fs-s\{--fs:\.9\}/.test(code) &&
      /body\.fs-l\{--fs:1\.18\}/.test(code) && /body\.fs-xl\{--fs:1\.4\}/.test(code) &&
-     (code.match(/--fs:/g) || []).length === 4);
+     (code.match(/--fs:/g) || []).length === 4, '', {id:'g0522'});
   /* body's own font-size already multiplies by --fs. Any element inside it that multiplies an
      em by --fs applies the factor twice — main used to, and 17px reached 33px at XL instead
      of 24px. px literals are safe; em is not. */
   ok('no rule multiplies an em by --fs, which would apply the factor a second time',
-     !/em\s*\*\s*var\(--fs/.test(code));
+     !/em\s*\*\s*var\(--fs/.test(code), '', {id:'g0523'});
   ok('the floating timer sits outside main and now scales anyway, because --fs is on body',
      html.indexOf('<div id="miniT"') > html.indexOf('</main>') &&
-     /#miniT b\{font-family:var\(--mono\);font-size:calc\(15px\*var\(--fs,1\)\)/.test(code));
+     /#miniT b\{font-family:var\(--mono\);font-size:calc\(15px\*var\(--fs,1\)\)/.test(code), '', {id:'g0524'});
 }
 
 ok('tap targets are at least 44px on the mini-timer, mock controls, chapter pills and swatches',
    /#miniT button, #mockPrev, #mockNext, #mockFlag, \.ebgo\.ebgo, \.toc-item\.toc-item, #hlModal \.sw, \.pf button\{ min-height:44px !important \}/.test(code) &&
-   /#miniT button, #mockPrev, #hlModal \.sw\{ min-width:44px !important \}/.test(code));
+   /#miniT button, #mockPrev, #hlModal \.sw\{ min-width:44px !important \}/.test(code), '', {id:'g0525'});
 /* the docked row's swatch is a 26px dot with a 44px hit area around it, so it is out of the
    blanket rule above and carries its own — the dot must stay small or the row will not hold
    six colours and three actions at XL, and the hit area must stay 44px regardless */
 ok('a docked swatch is a small dot with a full-size tap area around it',
    /#hlBar \.swatch button\.sw\{width:26px;height:26px;min-height:26px;min-width:26px;/.test(code) &&
-   /#hlBar \.swatch button\.sw::before\{content:"";position:absolute;left:50%;top:50%;\n\s*width:44px;height:44px;transform:translate\(-50%,-50%\)\}/.test(code));
-ok('the header title keeps its name and the group label gives way first', /\.topicbtn \.glabel\{ flex:0 100 auto;/.test(code));
+   /#hlBar \.swatch button\.sw::before\{content:"";position:absolute;left:50%;top:50%;\n\s*width:44px;height:44px;transform:translate\(-50%,-50%\)\}/.test(code), '', {id:'g0526'});
+ok('the header title keeps its name and the group label gives way first', /\.topicbtn \.glabel\{ flex:0 100 auto;/.test(code), '', {id:'g0527'});
 
 /* ---- group 4: fewer taps ---- */
 {
@@ -3150,50 +3192,50 @@ ok('the header title keeps its name and the group label gives way first', /\.top
     const last = document.querySelector('#' + wk[wk.length-1].sec + ' .secfoot .nx'); out.lastHidden = !last || last.hidden;
     show('ethics'); paintNextChap(); const off = document.querySelector('#ethics .secfoot .nx'); out.offHidden = !off || off.hidden;
     [VIEW, readSet] = sv; paintReadLab(); paintNextChap(); show('week'); return out; })()`);
-  ok('"Read ch N" opens the week\u2019s first unread chapter', r.n >= 2 && r.lab === r.want && r.opened === r.wantSec, JSON.stringify(r));
-  ok('a week chapter\u2019s footer offers the next one this week, and only then', r.nxShown && r.nxGo === r.wantSec && r.afterNx === r.wantSec && r.lastHidden && r.offHidden, JSON.stringify(r));
+  ok('"Read ch N" opens the week\u2019s first unread chapter', r.n >= 2 && r.lab === r.want && r.opened === r.wantSec, JSON.stringify(r), {id:'g0528'});
+  ok('a week chapter\u2019s footer offers the next one this week, and only then', r.nxShown && r.nxGo === r.wantSec && r.afterNx === r.wantSec && r.lastHidden && r.offHidden, JSON.stringify(r), {id:'g0529'});
 }
 ok('the topics sheet carries all my notes, mark my place and resume',
    !!d.querySelector('#sheetBody #shNotes') && !!d.querySelector('#sheetBody #shMark') && !!d.querySelector('#sheetBody #shResume') &&
-   (d.getElementById('shNotes').click(), !d.getElementById('notesModal').hidden));
+   (d.getElementById('shNotes').click(), !d.getElementById('notesModal').hidden), '', {id:'g0530'});
 w.eval("document.getElementById('notesModal').hidden = true; document.body.classList.remove('tm-open')");
 
 /* ---- v26: header — search icon, auto-hide, the phone anchor bar down to two icons ---- */
 ok('the phone anchor bar is down to home, the tappable title, and a search icon (report and display moved to the topics sheet)',
    !!d.querySelector('#anchorBar #homeBtn') && !!d.querySelector('#anchorBar #topicBtn') && !!d.querySelector('#anchorBar #srchBtn') &&
-   !d.querySelector('#anchorBar #rptBtn') && !d.querySelector('#anchorBar #dispBtn'));
-ok('report a problem is reachable from the topics sheet', !!d.querySelector('#sheetBody #shReport'));
+   !d.querySelector('#anchorBar #rptBtn') && !d.querySelector('#anchorBar #dispBtn'), '', {id:'g0531'});
+ok('report a problem is reachable from the topics sheet', !!d.querySelector('#sheetBody #shReport'), '', {id:'g0532'});
 ok('the search icon is an inline SVG stroked with currentColor (not a colour emoji, which renders differently per device and ignores theme)',
    !!d.querySelector('#srchBtn svg') && d.querySelector('#srchBtn').textContent.trim() === '' &&
    d.querySelector('#srchBtn svg').getAttribute('stroke') === 'currentColor' &&
-   /\.anchorbar \.srchbtn svg\{ width:24px; height:24px; flex:none; \}/.test(code));
+   /\.anchorbar \.srchbtn svg\{ width:24px; height:24px; flex:none; \}/.test(code), '', {id:'g0533'});
 ok('the tappable title reads the plain sans heading font, one line, a bare chevron with no "topics" label',
    d.querySelector('#topicBtn .glabel').textContent.trim() === '▾' &&
-   /\.topicbtn\{ font-family:var\(--sans\) !important; letter-spacing:0 !important; text-transform:none !important; \}/.test(code));
+   /\.topicbtn\{ font-family:var\(--sans\) !important; letter-spacing:0 !important; text-transform:none !important; \}/.test(code), '', {id:'g0534'});
 {
   const wrap = d.getElementById('srchWrap'), btn = d.getElementById('srchBtn'), q = d.getElementById('q');
   /* this row's label used to promise the whole open/focus/close cycle while its predicate only
      established the starting state — the three checks below are what actually test the cycle,
      so say what this one is: the precondition they rest on. */
   ok('the search row starts closed, before any tap',
-     !wrap.classList.contains('open'), 'starts closed');
+     !wrap.classList.contains('open'), 'starts closed', {id:'g0535'});
   btn.click();
   ok('tap 1 opens the search row', wrap.classList.contains('open') && d.activeElement === q,
-     'open=' + wrap.classList.contains('open') + ' focused=' + (d.activeElement === q));
+     'open=' + wrap.classList.contains('open') + ' focused=' + (d.activeElement === q), {id:'g0536'});
   btn.click();
-  ok('tap 2 closes it again', !wrap.classList.contains('open'));
+  ok('tap 2 closes it again', !wrap.classList.contains('open'), '', {id:'g0537'});
   btn.click();
   w.eval("document.dispatchEvent(new KeyboardEvent('keydown', {key:'Escape'}))");
-  ok('Escape also closes the search row', !wrap.classList.contains('open'));
+  ok('Escape also closes the search row', !wrap.classList.contains('open'), '', {id:'g0538'});
 }
 ok('window.matchMedia is feature-detected before use, not called unguarded (jsdom does not implement it, and an unguarded call here throws synchronously mid-script, silently aborting every later top-level let/const in the same script block)',
-   /const mq = window\.matchMedia \? window\.matchMedia\('\(max-width:900px\)'\) : \{matches: true\};/.test(code));
+   /const mq = window\.matchMedia \? window\.matchMedia\('\(max-width:900px\)'\) : \{matches: true\};/.test(code), '', {id:'g0539'});
 {
   const dec = (y, lastY, hidden) => w.eval(`hdrScrollDecision(${y}, ${lastY}, ${hidden})`);
-  ok('near the top (<60px) the header always shows', dec(0, 200, true) === false && dec(0, 0, true) === false);
-  ok('scrolling down past the threshold hides the header', dec(300, 200, false) === true, dec(300,200,false));
-  ok('scrolling up past the threshold shows the header', dec(200, 300, true) === false, dec(200,300,true));
-  ok('a small jitter (<=6px either way) keeps the current state', dec(203, 200, false) === false && dec(197, 200, true) === true);
+  ok('near the top (<60px) the header always shows', dec(0, 200, true) === false && dec(0, 0, true) === false, '', {id:'g0540'});
+  ok('scrolling down past the threshold hides the header', dec(300, 200, false) === true, dec(300,200,false), {id:'g0541'});
+  ok('scrolling up past the threshold shows the header', dec(200, 300, true) === false, dec(200,300,true), {id:'g0542'});
+  ok('a small jitter (<=6px either way) keeps the current state', dec(203, 200, false) === false && dec(197, 200, true) === true, '', {id:'g0543'});
 }
 {
   /* translateY alone leaves the nav's buttons focusable while it sits off-screen — a
@@ -3205,15 +3247,15 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
   if(d.activeElement && d.activeElement.blur) d.activeElement.blur();   /* clear focus left over from earlier tests (e.g. the search input) so it doesn't trip the focus-guard tested explicitly below */
   w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
   ok('the header starts shown and the nav is not inert', !d.body.classList.contains('hdr-hidden') && !nav.inert,
-     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert);
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert, {id:'g0544'});
   w.scrollY = 300; w.dispatchEvent(new w.Event('scroll'));
   ok('scrolling down hides the header and makes the nav inert, out of the tab order and the accessibility tree',
      d.body.classList.contains('hdr-hidden') && nav.inert === true,
-     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert);
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert, {id:'g0545'});
   w.scrollY = 100; w.dispatchEvent(new w.Event('scroll'));
   ok('scrolling back up shows the header and clears inert again',
      !d.body.classList.contains('hdr-hidden') && !nav.inert,
-     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert);
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert, {id:'g0546'});
   /* focus inside the nav when a hide would otherwise fire must block the hide — inert-ing a
      focused element silently drops focus to <body>, stranding a keyboard user mid-navigation */
   w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
@@ -3222,7 +3264,7 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
   w.scrollY = 300; w.dispatchEvent(new w.Event('scroll'));
   ok('the header never hides while focus is inside it, even past the scroll-down threshold',
      !d.body.classList.contains('hdr-hidden') && !nav.inert && d.activeElement === homeBtn,
-     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert + ' activeElement=' + (d.activeElement && d.activeElement.id));
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert + ' activeElement=' + (d.activeElement && d.activeElement.id), {id:'g0547'});
   homeBtn.blur();
   w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
   /* the focus guard above only proves the header stays shown WHILE focus is inside the nav —
@@ -3231,7 +3273,7 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
   w.scrollY = 300; w.dispatchEvent(new w.Event('scroll'));
   ok('the header can hide again once focus leaves the nav',
      d.body.classList.contains('hdr-hidden') && nav.inert === true,
-     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert);
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav.inert, {id:'g0548'});
   w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
 }
 {
@@ -3249,7 +3291,7 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
   w.scrollY = 503; w.dispatchEvent(new w.Event('scroll'));
   ok('a small scroll right after unfreezing does not wrongly flip the header (lastY tracked the live position while frozen)',
      !d.body.classList.contains('hdr-hidden') && !nav2.inert,
-     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav2.inert);
+     'hdr-hidden=' + d.body.classList.contains('hdr-hidden') + ' inert=' + nav2.inert, {id:'g0549'});
   w.scrollY = 0; w.dispatchEvent(new w.Event('scroll'));
 }
 {
@@ -3262,16 +3304,16 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
      chevron hidden from it so the name resolves to just the visible topic label. */
   const topicBtn = d.getElementById('topicBtn');
   ok('the topics button carries no aria-label that would hide its visible text (This week, etc.) from screen readers',
-     !topicBtn.hasAttribute('aria-label'));
+     !topicBtn.hasAttribute('aria-label'), '', {id:'g0550'});
   ok('the decorative chevron is hidden from the accessible name, so it resolves to just the visible topic label',
-     d.querySelector('#topicBtn .glabel').getAttribute('aria-hidden') === 'true');
+     d.querySelector('#topicBtn .glabel').getAttribute('aria-hidden') === 'true', '', {id:'g0551'});
   /* Gemini review: "This week" alone doesn't say what the control does. aria-describedby adds
      that without touching the accessible NAME (which must stay the visible text, per 2.5.3
      above) — the name says what it's labelled, the description says what it does. */
   ok('the topics button has an aria-describedby pointing at hidden text describing what it does',
      topicBtn.getAttribute('aria-describedby') === 'topicBtnDesc' &&
      !!d.getElementById('topicBtnDesc') &&
-     d.getElementById('topicBtnDesc').textContent.trim() === 'opens the topic list');
+     d.getElementById('topicBtnDesc').textContent.trim() === 'opens the topic list', '', {id:'g0552'});
 }
 {
   /* Codex P1 review of #439: leaving the mobile breakpoint (e.g. tablet rotation) while the
@@ -3294,21 +3336,21 @@ ok('window.matchMedia is feature-detected before use, not called unguarded (jsdo
   w3.scrollY = 300; w3.dispatchEvent(new w3.Event('scroll'));
   ok('(mobile stub) scrolling down hides the header and makes the nav inert',
      d3.body.classList.contains('hdr-hidden') && nav3.inert === true,
-     'hdr-hidden=' + d3.body.classList.contains('hdr-hidden') + ' inert=' + nav3.inert);
+     'hdr-hidden=' + d3.body.classList.contains('hdr-hidden') + ' inert=' + nav3.inert, {id:'g0553'});
   mqMatches = false;
   if(changeCb) changeCb();
   ok('leaving the mobile breakpoint while the header is hidden restores the shown, non-inert nav (tablet-rotation fix, Codex P1 on #439)',
      !d3.body.classList.contains('hdr-hidden') && nav3.inert !== true,
-     'hdr-hidden=' + d3.body.classList.contains('hdr-hidden') + ' inert=' + nav3.inert);
+     'hdr-hidden=' + d3.body.classList.contains('hdr-hidden') + ' inert=' + nav3.inert, {id:'g0554'});
   dm.window.close();
 }
 ok('the docked highlight bar re-anchors to the very top when the header is hidden',
-   /body\.hdr-hidden #hlBar\{ top:env\(safe-area-inset-top\) !important; \}/.test(code));
+   /body\.hdr-hidden #hlBar\{ top:env\(safe-area-inset-top\) !important; \}/.test(code), '', {id:'g0555'});
 ok('the header slides out of view on scroll-down rather than jump-cutting',
-   /nav\{ transition:transform \.22s ease !important; will-change:transform; \}\s*\n\s*body\.hdr-hidden nav\{ transform:translateY\(-100%\) !important; \}/.test(code));
+   /nav\{ transition:transform \.22s ease !important; will-change:transform; \}\s*\n\s*body\.hdr-hidden nav\{ transform:translateY\(-100%\) !important; \}/.test(code), '', {id:'g0556'});
 ok('the chapter-top meta line (Cards/Exam/Sections counts) meets 44px tap targets with 12px gaps',
-   /\.ch-actions\{ gap:12px !important; \}/.test(code) && /\.ch-actions \.ebgo\{ min-height:44px !important; \}/.test(code));
-ok('the header uses the short label where the full one clips', (w.eval("show('bpsd')"), d.getElementById('topicNow').textContent) === '60·63 Dementia behaviour & Rx');
+   /\.ch-actions\{ gap:12px !important; \}/.test(code) && /\.ch-actions \.ebgo\{ min-height:44px !important; \}/.test(code), '', {id:'g0557'});
+ok('the header uses the short label where the full one clips', (w.eval("show('bpsd')"), d.getElementById('topicNow').textContent) === '60·63 Dementia behaviour & Rx', '', {id:'g0558'});
 w.eval("show('week')");
 {
   const load = async (st, dark) => { const dm = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://example.org/stage-a/',
@@ -3320,14 +3362,14 @@ w.eval("show('week')");
     await new Promise(r => setTimeout(r, 150)); const dk = dm.window.document.body.classList.contains('dark'); dm.window.close(); return dk; };
   const firstDark = await load({}, true), chosenLight = await load({'geri:display':'{"dark":false,"fs":"m"}'}, true), firstLight = await load({}, false);
   ok('the phone\u2019s dark setting is applied before the first paint, not after a light flash',
-     /if\(raw === null && window\.matchMedia && window\.matchMedia\('\(prefers-color-scheme: dark\)'\)\.matches\) v\.dark = true;/.test(code));
+     /if\(raw === null && window\.matchMedia && window\.matchMedia\('\(prefers-color-scheme: dark\)'\)\.matches\) v\.dark = true;/.test(code), '', {id:'g0559'});
   ok('the first open follows the phone\u2019s dark setting; a saved choice wins after that', firstDark && !chosenLight && !firstLight,
-     'firstDark=' + firstDark + ' chosenLight=' + chosenLight + ' firstLight=' + firstLight);
+     'firstDark=' + firstDark + ' chosenLight=' + chosenLight + ' firstLight=' + firstLight, {id:'g0560'});
 }
 
 /* ---- group 5: answer options garbled by the right-to-left PDF extraction ---- */
 ok('the COMBODEX option reads brand (ingredients), same characters reordered',
-   w.eval(`(()=>{ const q = PQ.find(p => p.y === '2021-12' && +p.n === 98); return q ? q.o.indexOf('COMBODEX (PARACETAMOL, IBUPROFEN)') >= 0 : false; })()`));
+   w.eval(`(()=>{ const q = PQ.find(p => p.y === '2021-12' && +p.n === 98); return q ? q.o.indexOf('COMBODEX (PARACETAMOL, IBUPROFEN)') >= 0 : false; })()`), '', {id:'g0561'});
 
 /* ---- bracket fixes read from the IMA papers, 16 Sep ----
    2023 al q_pdf 644204_… page 23 and 2020 al q_pdf 644194_… page 37, both rendered and read.
@@ -3336,11 +3378,11 @@ ok('the COMBODEX option reads brand (ingredients), same characters reordered',
 ok('2023-06 q72 option 4 carries the paper\u2019s bracket: DPI (DRY POWDER INHALER)',
    w.eval(`(()=>{ const q = PQ.find(p => p.y === '2023-06' && +p.n === 72);
      return q ? q.o[3].endsWith('DPI (DRY POWDER INHALER)') : false; })()`),
-   w.eval(`(()=>{ const q = PQ.find(p => p.y === '2023-06' && +p.n === 72); return q ? q.o[3].slice(-34) : 'no such question'; })()`));
+   w.eval(`(()=>{ const q = PQ.find(p => p.y === '2023-06' && +p.n === 72); return q ? q.o[3].slice(-34) : 'no such question'; })()`), {id:'g0562'});
 ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
    w.eval(`(()=>{ const q = PQ.find(p => p.y === '2020' && +p.n === 90);
      return q ? q.o[0].startsWith('METRONIDAZOLE (FLAGYL) ') : false; })()`),
-   w.eval(`(()=>{ const q = PQ.find(p => p.y === '2020' && +p.n === 90); return q ? q.o[0] : 'no such question'; })()`));
+   w.eval(`(()=>{ const q = PQ.find(p => p.y === '2020' && +p.n === 90); return q ? q.o[0] : 'no such question'; })()`), {id:'g0563'});
 
 /* ---- source lines that leaked from the next question, 16 Sep ----
    Confirmed against the IMA reference PDFs: 2023 refs_pdf 644206_… line 100, and
@@ -3352,19 +3394,19 @@ ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
     return q ? (q.src || '') : '\u0000no such question'; })()`);
   const s100 = srcOf('2023-06', 100);
   ok('2023-06 q100 source stops at its own table, with q101-104 no longer glued on',
-     s100.endsWith('42-2') && !/101/.test(s100), s100);
+     s100.endsWith('42-2') && !/101/.test(s100), s100, {id:'g0564'});
   const s19 = srcOf('2020', 19);
-  ok('2020 q19 source carries the whole pocket-guide title', /AGS BEERS 2019$/.test(s19), s19);
+  ok('2020 q19 source carries the whole pocket-guide title', /AGS BEERS 2019$/.test(s19), s19, {id:'g0565'});
   const s20 = srcOf('2020', 20);
   ok('2020 q20 source starts at HAZZARD, with q19\u2019s tail no longer in front of it',
-     s20.startsWith('HAZZARD'), s20);
+     s20.startsWith('HAZZARD'), s20, {id:'g0566'});
 
   /* the scan that found them: a digit run glued straight onto a source name is the signature
      of a neighbouring question's reference line running into this one */
   const bled = w.eval(`(()=>{ const re = /\\s\\d{2,3}(HAZZARD|HARRISON|\u05d4\u05d6\u05d0\u05e8\u05d3|\u05d4\u05e8\u05d9\u05e1\u05d5\u05df)/;
     return PQ.filter(q => re.test(q.src || '')).map(q => q.y + ' #' + q.n + ' ' + q.src); })()`);
   ok('no past-paper source has a neighbouring question\u2019s reference line bled into it',
-     bled.length === 0, bled.slice(0, 3).join(' | ') || (w.eval('PQ.length') + ' sources scanned'));
+     bled.length === 0, bled.slice(0, 3).join(' | ') || (w.eval('PQ.length') + ' sources scanned'), {id:'g0567'});
 }
 
 /* ---- group 6: search and remembered past-paper place ---- */
@@ -3375,14 +3417,21 @@ ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
   const marks = d.querySelectorAll('#hits button mark').length;
   ok('two words search as AND, in any order, each word marked',
      hitsTxt.length > 0 && hitsTxt.every(t => t.includes('delirium') && t.includes('haloperidol')) && marks >= 2 * hitsTxt.length,
-     hitsTxt.length + ' hits, ' + marks + ' marks');
+     hitsTxt.length + ' hits, ' + marks + ' marks', {id:'g0568'});
   w.eval("search('')"); q.value = '';
 
   /* Outside review, 16 Sep: highlighting ran one replace per word, so a later word matched
      inside the <mark> tags an earlier word had just injected. "delirium mark" produced
      <<mark>mark</mark>>delirium</<mark>mark</mark>>, and any second word that is a substring
      of "mark" (a, ar, k, ma) garbled the snippet the same way. One pass over the snippet now. */
-  for(const term of ['delirium mark', 'risk a']){
+  /* two explicit calls with static labels, not a loop building the label from a runtime
+     variable — a label assembled via string concatenation (`'...: "' + term + '"'`) can never
+     be a mutation's needle: it does not exist as literal text anywhere in this file (only its
+     two runtime-concatenated instances do), so --static's source-text preflight can never see
+     it, and a needle broad enough to match the shared literal PREFIX matches both instances at
+     once, which is the exact ambiguity 2(a) exists to reject. Same assertions, same two terms,
+     now each its own literal, greppable label. */
+  const survivesInjectedMarkup = (label, term) => {
     q.value = term; w.eval("search('" + term + "')");
     const els = [...d.querySelectorAll('#hits button')];
     /* the comment check is not cosmetic: the parser turns the broken "</<mark>mark</mark>>"
@@ -3391,11 +3440,12 @@ ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
     const bad = els.filter(b => /<</.test(b.innerHTML) || /<m</.test(b.innerHTML) ||
       b.innerHTML.includes('<!--') || /(^|[^&])(&lt;|<)\/?mark(&gt;|>)/.test(b.textContent) ||
       (b.innerHTML.match(/<mark>/g) || []).length !== (b.innerHTML.match(/<\/mark>/g) || []).length);
-    ok('search highlighting survives a second word that matches the markup it injects: "' + term + '"',
-       els.length > 0 && bad.length === 0,
-       els.length + ' hits, ' + bad.length + ' garbled' + (bad[0] ? ': ' + bad[0].innerHTML.slice(0, 90) : ''));
+    ok(label, els.length > 0 && bad.length === 0,
+       els.length + ' hits, ' + bad.length + ' garbled' + (bad[0] ? ': ' + bad[0].innerHTML.slice(0, 90) : ''), {id:'g0569'});
     w.eval("search('')"); q.value = '';
-  }
+  };
+  survivesInjectedMarkup('search highlighting survives a second word that matches the markup it injects: "delirium mark"', 'delirium mark');
+  survivesInjectedMarkup('search highlighting survives a second word that matches the markup it injects: "risk a"', 'risk a');
 }
 {
   w.eval("show('papers')");
@@ -3417,20 +3467,20 @@ ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
   const back = dm.window.eval("({y:pqYear, s:pqScope, k: pqPool.length ? pqKey(pqPool[pqIdx % pqPool.length]) : ''})");
   dm.window.close();
   ok('past-paper filters and the question on screen come back after a reload',
-     saved.y === '2024-05' && saved.k === key && back.y === '2024-05' && back.s === 'unseen' && back.k === saved.k, JSON.stringify({saved, back}));
+     saved.y === '2024-05' && saved.k === key && back.y === '2024-05' && back.s === 'unseen' && back.k === saved.k, JSON.stringify({saved, back}), {id:'g0570'});
   d.querySelector('#pfYear button[data-y="all"]').click();
 }
 
 /* ---- brackets mirrored by the PDF extraction (three certain ones); stylesheet junk ---- */
 {
   const has = (y, n, text) => w.eval(`(()=>{ const q = PQ.find(p => p.y === ${JSON.stringify(y)} && +p.n === ${n}); return !!q && q.o.indexOf(${JSON.stringify(text)}) >= 0; })()`);
-  ok('the MUSCOL option reads brand (ingredients)', has('2021-12', 98, 'MUSCOL (PARACETAMOL, ORPHENADRINE)'));
+  ok('the MUSCOL option reads brand (ingredients)', has('2021-12', 98, 'MUSCOL (PARACETAMOL, ORPHENADRINE)'), '', {id:'g0571'});
   ok('the external-beam option has its bracket the right way round',
-     w.eval(`PQ.some(p => p.y === '2021-12' && +p.n === 26 && p.o.some(o => o.endsWith('\u05d7\u05d9\u05e6\u05d5\u05e0\u05d9 (external beam radiation therapy)')))`));
+     w.eval(`PQ.some(p => p.y === '2021-12' && +p.n === 26 && p.o.some(o => o.endsWith('\u05d7\u05d9\u05e6\u05d5\u05e0\u05d9 (external beam radiation therapy)')))`), '', {id:'g0572'});
   ok('the FDA option has its bracket the right way round',
-     w.eval(`PQ.some(p => p.y === '2023-06' && +p.n === 10 && p.o.some(o => o.indexOf('(FDA) ') >= 0))`));
+     w.eval(`PQ.some(p => p.y === '2023-06' && +p.n === 10 && p.o.some(o => o.indexOf('(FDA) ') >= 0))`), '', {id:'g0573'});
 }
-ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/.test(code));
+ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/.test(code), '', {id:'g0574'});
 
 /* ---- Group 8: Key Clinical Points recap tables, ch 43/44/46 (16 Sep) ---- */
 {
@@ -3458,31 +3508,31 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
   };
   const falls46 = kcp('falls', 5);
   ok('falls Key Clinical Points table (ch 43), 5 rows',
-     !!falls46 && /carotid sinus hypersensitivity/.test(falls46) && /expedited cataract extraction/.test(falls46));
+     !!falls46 && /carotid sinus hypersensitivity/.test(falls46) && /expedited cataract extraction/.test(falls46), '', {id:'g0575'});
   const sleepKcp = kcp('sleep', 6);
   ok('sleep Key Clinical Points table (ch 44), 6 rows',
-     !!sleepKcp && /REM behaviour disorder/.test(sleepKcp) && /mild-to-moderate dementia/.test(sleepKcp));
+     !!sleepKcp && /REM behaviour disorder/.test(sleepKcp) && /mild-to-moderate dementia/.test(sleepKcp), '', {id:'g0576'});
   const pressureKcp = kcp('pressure', 6);
   ok('pressure Key Clinical Points table (ch 46), 6 rows',
-     !!pressureKcp && /oxygen free radicals/.test(pressureKcp) && /improvement every 2 to 4 weeks/.test(pressureKcp));
+     !!pressureKcp && /oxygen free radicals/.test(pressureKcp) && /improvement every 2 to 4 weeks/.test(pressureKcp), '', {id:'g0577'});
   const incontKcp = kcp('incont', 3);
   ok('incontinence Key Clinical Points table (ch 47), 3 rows',
-     !!incontKcp && /potentially reversible and modifiable conditions/.test(incontKcp) && /lifestyle and behavioural therapies/.test(incontKcp));
+     !!incontKcp && /potentially reversible and modifiable conditions/.test(incontKcp) && /lifestyle and behavioural therapies/.test(incontKcp), '', {id:'g0578'});
   const rehabKcp = kcp('rehab', 5);
   ok('rehab Key Clinical Points table (ch 55), 5 rows',
-     !!rehabKcp && /cornerstone of physical rehabilitation/.test(rehabKcp) && /mobility aids, bathroom aids and self-care aids/.test(rehabKcp));
+     !!rehabKcp && /cornerstone of physical rehabilitation/.test(rehabKcp) && /mobility aids, bathroom aids and self-care aids/.test(rehabKcp), '', {id:'g0579'});
   const deliriumKcp = kcp('delirium', 8);
   ok('delirium Key Clinical Points table (ch 58), 8 rows',
-     !!deliriumKcp && /unrecognised in up to 70%/.test(deliriumKcp) && /two-thirds of delirium cases/.test(deliriumKcp));
+     !!deliriumKcp && /unrecognised in up to 70%/.test(deliriumKcp) && /two-thirds of delirium cases/.test(deliriumKcp), '', {id:'g0580'});
   const bpsd60Kcp = kcp2('bpsd', 'ch 60', 7);
   ok('bpsd Key Clinical Points table for ch 60, 7 rows',
-     !!bpsd60Kcp && /up to 98% of patients with dementia/.test(bpsd60Kcp) && /reassess the risk\/benefit ratio regularly/.test(bpsd60Kcp));
+     !!bpsd60Kcp && /up to 98% of patients with dementia/.test(bpsd60Kcp) && /reassess the risk\/benefit ratio regularly/.test(bpsd60Kcp), '', {id:'g0581'});
   const bpsd63Kcp = kcp2('bpsd', 'ch 63', 6);
   ok('bpsd Key Clinical Points table for ch 63, 6 rows',
-     !!bpsd63Kcp && /preserved oculocephalic reflex/.test(bpsd63Kcp) && /behavioural-variant frontotemporal dementia/.test(bpsd63Kcp));
+     !!bpsd63Kcp && /preserved oculocephalic reflex/.test(bpsd63Kcp) && /behavioural-variant frontotemporal dementia/.test(bpsd63Kcp), '', {id:'g0582'});
   const parkinsonKcp = kcp('parkinson', 6);
   ok('parkinson Key Clinical Points table (ch 61), 6 rows',
-     !!parkinsonKcp && /gold standard for diagnosing Parkinson disease remains autopsy/.test(parkinsonKcp) && /medication-refractory tremor/.test(parkinsonKcp));
+     !!parkinsonKcp && /gold standard for diagnosing Parkinson disease remains autopsy/.test(parkinsonKcp) && /medication-refractory tremor/.test(parkinsonKcp), '', {id:'g0583'});
 }
 
 {
@@ -3509,7 +3559,7 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
      w.eval('pqIdx') === idxBefore && w.eval('pqShown') === false &&
      w.eval('pqDone[' + JSON.stringify(practiceKey) + ']') === undefined,
      'pqIdx=' + w.eval('pqIdx') + ' pqShown=' + w.eval('pqShown') +
-     ' pqDone=' + w.eval('pqDone[' + JSON.stringify(practiceKey) + ']'));
+     ' pqDone=' + w.eval('pqDone[' + JSON.stringify(practiceKey) + ']'), {id:'g0584'});
   await w.eval('mockFinish(true)');
   await new Promise(r => setTimeout(r, 80));
 }
@@ -3532,7 +3582,7 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
      w.eval('pqIdx') === idxBefore2 && w.eval('pqShown') === false &&
      w.eval('pqDone[' + JSON.stringify(practiceKey2) + ']') === undefined,
      'pqIdx=' + w.eval('pqIdx') + ' pqShown=' + w.eval('pqShown') +
-     ' pqDone=' + w.eval('pqDone[' + JSON.stringify(practiceKey2) + ']'));
+     ' pqDone=' + w.eval('pqDone[' + JSON.stringify(practiceKey2) + ']'), {id:'g0585'});
   w.eval('closeSheet()');
 }
 {
@@ -3550,7 +3600,7 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
   const html = d.getElementById('dsum').innerHTML;
   ok('a raw < in a missed card’s text is escaped in the drill summary, not injected as markup',
      html.includes('Cr &lt; 1.5 mg/dL is the cutoff &lt;b&gt;injected&lt;/b&gt;') && !html.includes('<b>injected</b>'),
-     html.slice(0, 250));
+     html.slice(0, 250), {id:'g0586'});
   w.eval('QS.length = ' + qsLen + ';');
 }
 
@@ -3565,7 +3615,7 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
   const hits = [...code.matchAll(/75% of stage 2 wounds heal within 60 days/g)];
   const windows = hits.map(m => code.slice(m.index, m.index + 400));
   ok('pressure-injury healing still says 60 days in the body text and the drill Q&A, with no fabricated 50-day figure right after either (Hazzard ch 46, SZMC chat correction)',
-     hits.length === 2 && windows.every(w2 => !/50 days/.test(w2) && !/50-day/.test(w2)));
+     hits.length === 2 && windows.every(w2 => !/50 days/.test(w2) && !/50-day/.test(w2)), '', {id:'g0587'});
 }
 {
   /* Gemini review of merged #449: this used to match the literal date 28/5/2024, so the
@@ -3575,7 +3625,7 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
      question text. Confirmed zero legitimate hits of this shape anywhere else in the file. */
   const glued = [...code.matchAll(/[א-ת]\d{1,2}\/\d{1,2}\/\d{2,4}/g)];
   ok('no past-paper option carries an exam header/footer stamp glued onto it with no separating space (any sitting, any date — not just the 2024-05 one already fixed)',
-     glued.length === 0, glued.map(m => m[0]).join(', '));
+     glued.length === 0, glued.map(m => m[0]).join(', '), {id:'g0588'});
 }
 {
   /* Gemini review of merged #449: this pinned both the prose word AND the row count as
@@ -3592,7 +3642,7 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
   ok('the conflict-table lede’s leading number matches the Beers/STOPP table’s actual row count, whatever either value is (SZMC chat correction; relationship, not a pinned literal)',
      !!lede && ledeNum !== null && ledeNum === confRows &&
      / places the two tools give different answers/.test(ledeText),
-     'ledeNum=' + ledeNum + ' rows=' + confRows + ' lede=' + ledeText.slice(0, 24));
+     'ledeNum=' + ledeNum + ' rows=' + confRows + ' lede=' + ledeText.slice(0, 24), {id:'g0589'});
 }
 {
   /* same relationship-not-literal fix as above, for the non-textbook-sources count. Found by
@@ -3609,58 +3659,58 @@ ok('no pasted prose left inside the stylesheet', !/Viewport Budget|\\text\{px\}/
   ok('the non-textbook-sources prose’s leading number matches the table’s distinct question count, whatever either value is (SZMC chat correction; relationship, not a pinned literal)',
      !!prose && proseNum !== null && proseNum === distinct &&
      / of 100 questions come from material no textbook contains/.test(proseText),
-     'proseNum=' + proseNum + ' distinct=' + distinct + ' prose=' + proseText.slice(0, 24));
+     'proseNum=' + proseNum + ' distinct=' + distinct + ' prose=' + proseText.slice(0, 24), {id:'g0590'});
 }
 
 {
   /* SZMC code audit, item (c) accessibility fixes */
   ok('#railShow has a real aria-label, not just a title attribute',
-     d.getElementById('railShow').getAttribute('aria-label') === 'Show the list');
+     d.getElementById('railShow').getAttribute('aria-label') === 'Show the list', '', {id:'g0591'});
   ok('#sheet dialog carries aria-modal="true" like the other five dialogs in this file',
-     d.getElementById('sheet').getAttribute('aria-modal') === 'true');
+     d.getElementById('sheet').getAttribute('aria-modal') === 'true', '', {id:'g0592'});
   {
     const withLabel = [...d.querySelectorAll('table.chapidx button.chgo[aria-label]')];
     const uniqueLabels = new Set(withLabel.map(b => b.getAttribute('aria-label')));
     ok('every "notes" button in the chapter index has its own aria-label naming the chapter, not a shared "notes" name',
        withLabel.length === 57 && uniqueLabels.size === 57,
-       'labelled=' + withLabel.length + ' unique=' + uniqueLabels.size);
+       'labelled=' + withLabel.length + ' unique=' + uniqueLabels.size, {id:'g0593'});
   }
   ok('every SVG <text> in a role="img" chart is aria-hidden, so screen readers read the chart’s own label once instead of every axis tick',
      d.querySelectorAll('svg[role="img"] text:not([aria-hidden="true"])').length === 0 &&
      d.querySelectorAll('svg[role="img"] text[aria-hidden="true"]').length > 0,
-     d.querySelectorAll('svg[role="img"] text[aria-hidden="true"]').length + ' hidden');
+     d.querySelectorAll('svg[role="img"] text[aria-hidden="true"]').length + ' hidden', {id:'g0594'});
   ok('the restore file input is visually hidden but stays in the keyboard tab order (sr-only, not display:none)',
      d.getElementById('bkFile').classList.contains('sr-only') &&
-     w.getComputedStyle(d.getElementById('bkFile')).display !== 'none');
+     w.getComputedStyle(d.getElementById('bkFile')).display !== 'none', '', {id:'g0595'});
   ok('the week notes textarea has a real accessible label, not just a placeholder',
-     d.getElementById('wkNote').getAttribute('aria-label') === 'What to go back to');
+     d.getElementById('wkNote').getAttribute('aria-label') === 'What to go back to', '', {id:'g0596'});
   {
     /* behavioural: opening each modal must move focus into it, not leave it on the page
        underneath. Each modal's own close (or first-action) control is the target. */
     w.eval('openSheet()');
     ok('opening the topic sheet moves focus into it', d.activeElement && d.activeElement.id === 'sheetClose',
-       'activeElement=' + (d.activeElement && d.activeElement.id));
+       'activeElement=' + (d.activeElement && d.activeElement.id), {id:'g0597'});
     w.eval('closeSheet()');
     w.eval('bkOpen()');
     await new Promise(r => setTimeout(r, 60));
     ok('opening the backup/restore modal moves focus into it', d.activeElement && d.activeElement.id === 'bkClose',
-       'activeElement=' + (d.activeElement && d.activeElement.id));
+       'activeElement=' + (d.activeElement && d.activeElement.id), {id:'g0598'});
     w.eval("document.getElementById('bkClose').click()");
     /* the highlight-note modal used to move focus in only for a brand-new note (!h.n) — an
        existing note (h.n truthy) left focus behind on the page underneath */
     w.eval("HL = {falls:[{id:'i9', sec:'falls', t:'fear of falling', i:0, n:'an existing remark', c:'y'}]}; hlOpen('i9');");
     ok('opening an existing highlight note (not just a brand-new one) moves focus into the modal',
-       d.activeElement && d.activeElement.id === 'hlText', 'activeElement=' + (d.activeElement && d.activeElement.id));
+       d.activeElement && d.activeElement.id === 'hlText', 'activeElement=' + (d.activeElement && d.activeElement.id), {id:'g0599'});
     w.eval("document.getElementById('hlClose').click(); HL = {};");
     w.eval('notesIndex()');
     ok('opening the notes-index modal moves focus into it', d.activeElement && d.activeElement.id === 'ntCopy',
-       'activeElement=' + (d.activeElement && d.activeElement.id));
+       'activeElement=' + (d.activeElement && d.activeElement.id), {id:'g0600'});
     w.eval("document.getElementById('ntClose').click()");
   }
 }
 
 ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale first copy used to override a handful of rules the second, redesigned copy deliberately changed — e.g. it accidentally kept .lnk buttons at a 44px touch floor the redesign meant to exempt)',
-   (html.match(/v12 . dashboard redesign/g) || []).length === 1);
+   (html.match(/v12 . dashboard redesign/g) || []).length === 1, '', {id:'g0601'});
 
 {
   /* ChatGPT third-model audit: sw.js's fetch handler returned any RESOLVED response —
@@ -3696,7 +3746,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
     await listeners.fetch(e);
     const r = await result;
     ok('a resolved-but-not-ok (503) navigation response falls back to the cached copy when one exists',
-       r && r.cached === true, JSON.stringify(r));
+       r && r.cached === true, JSON.stringify(r), {id:'g0602'});
   }
   {
     const { listeners } = loadSw(async () => ({ ok:false, status:503, clone(){return this;} }), false);
@@ -3705,7 +3755,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
     await listeners.fetch(e);
     const r = await result;
     ok('a resolved-but-not-ok navigation response with nothing cached still returns the response, not a hang or a throw',
-       r && r.status === 503, JSON.stringify(r));
+       r && r.status === 503, JSON.stringify(r), {id:'g0603'});
   }
   {
     const { listeners, cacheStore } = loadSw(async () => ({ ok:true, status:200, clone(){return this;} }), false);
@@ -3715,7 +3765,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
     const r = await result;
     await new Promise(res => setTimeout(res, 10));   /* caches.open(...).then(c=>c.put(...)) is fire-and-forget */
     ok('an ok response is returned as-is and cached for next time',
-       r && r.ok === true && cacheStore.has(navReq.url));
+       r && r.ok === true && cacheStore.has(navReq.url), '', {id:'g0604'});
   }
   {
     const { listeners } = loadSw(async () => { throw new Error('offline'); }, true);
@@ -3724,7 +3774,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
     await listeners.fetch(e);
     const r = await result;
     ok('a network-level rejection (offline) still falls back to the cache, as before this fix',
-       r && r.cached === true);
+       r && r.cached === true, '', {id:'g0605'});
   }
 }
 
@@ -3750,7 +3800,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   const d3 = dm.window.document;
   const resumeBtn = d3.getElementById('mockResume');
   ok('a restored in-progress mock (geri:mockrun round-tripped through a backup) offers to resume it on the next load, with the right answered count',
-     !!resumeBtn && /1 of 3 answered/.test(resumeBtn.textContent), resumeBtn && resumeBtn.textContent);
+     !!resumeBtn && /1 of 3 answered/.test(resumeBtn.textContent), resumeBtn && resumeBtn.textContent, {id:'g0606'});
   dm.window.close();
 }
 
@@ -3780,7 +3830,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   await new Promise(r => setTimeout(r, 80));
   const gotAns = dm2.window.eval('mockAns');
   ok('resuming reads the run fresh at click time, not the boot-time snapshot, so a checkpoint made in between is not rolled back',
-     Object.keys(gotAns).sort().join(',') === [qs[0], qs[1]].sort().join(','), JSON.stringify(gotAns));
+     Object.keys(gotAns).sort().join(',') === [qs[0], qs[1]].sort().join(','), JSON.stringify(gotAns), {id:'g0607'});
   dm2.window.close();
 }
 {
@@ -3808,14 +3858,14 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   await new Promise(r => setTimeout(r, 100));
   const d5 = dm3.window.document;
   ok('the Resume banner says it will resume untimed when the run is already expired at boot',
-     /resumes untimed/.test(d5.getElementById('mockResume').textContent), d5.getElementById('mockResume').textContent);
+     /resumes untimed/.test(d5.getElementById('mockResume').textContent), d5.getElementById('mockResume').textContent, {id:'g0608'});
   /* the record on disk is unchanged at click time — same expired e, same t — so the fresh
      re-read finds exactly the still-expired run the banner already accounted for */
   d5.getElementById('mockResume').click();
   await new Promise(r => setTimeout(r, 150));
   ok('clicking Resume on an already-expired run does not immediately auto-grade and clear it — it actually resumes, untimed, as promised',
      dm3.window.eval('mockOn') === true && dm3.window.eval('mockEnds') === 0,
-     'mockOn=' + dm3.window.eval('mockOn') + ' mockEnds=' + dm3.window.eval('mockEnds'));
+     'mockOn=' + dm3.window.eval('mockOn') + ' mockEnds=' + dm3.window.eval('mockEnds'), {id:'g0609'});
   dm3.window.close();
 }
 
@@ -3837,10 +3887,10 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   await w.eval('mockSaveRun()');
   w.alert = realAlert;
   ok('a checkpoint for a run superseded by another tab does not overwrite that tab’s record',
-     store[rkey] === othersBlob, store[rkey]);
+     store[rkey] === othersBlob, store[rkey], {id:'g0610'});
   ok('...and this tab is told its copy stopped saving, rather than silently failing on every future answer',
      alerts2.some(a => /started again in another tab/.test(a)) && w.eval('mockOn') === false,
-     alerts2.join(' | '));
+     alerts2.join(' | '), {id:'g0611'});
   w.eval("mockOn = false; mockQs = []; mockAns = {}");
 }
 
@@ -3884,7 +3934,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   let bothDisk = {};
   try{ bothDisk = JSON.parse(store[rkeyBoth]).a; }catch(e){}
   ok('STALE6/two-tabs-both-resumed: two real tabs, both already resumed on the same run, answering different questions concurrently — both answers survive, neither is clobbered',
-     bothDisk['0'] === 'א' && bothDisk['1'] === 'ב', JSON.stringify(bothDisk));
+     bothDisk['0'] === 'א' && bothDisk['1'] === 'ב', JSON.stringify(bothDisk), {id:'g0612'});
   /* full reset, not just the three fields other blocks in this file reset — this test is the
      first to leave mockRunObservedId/MOCKSEEN non-default, and a later block that sets
      mockRunClaimed=false without its own mockRunObservedId (there are several) would otherwise
@@ -3918,10 +3968,10 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   try{ legDisk = JSON.parse(legStore['geri:mockrun']); }catch(e){}
   ok('ID3: a legacy id-less checkpoint resumes and migrates instead of being declared superseded and closed',
      dmLeg.window.eval('mockOn') === true && !legAlerts.some(a => /another tab/.test(a)),
-     'mockOn=' + dmLeg.window.eval('mockOn') + ' alerts=' + legAlerts.join(' | '));
+     'mockOn=' + dmLeg.window.eval('mockOn') + ' alerts=' + legAlerts.join(' | '), {id:'g0613'});
   ok('...and the migrated record keeps both the resumed answer and the new one, under a real id',
      !!legDisk.id && legDisk.a && legDisk.a['0'] === 'א' && legDisk.a['1'] === 'ב',
-     JSON.stringify(legDisk.a) + ' id=' + legDisk.id);
+     JSON.stringify(legDisk.a) + ' id=' + legDisk.id, {id:'g0614'});
   dmLeg.window.close();
 }
 {
@@ -3947,7 +3997,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   ok('a new run started over a discarded one does not inherit that run’s answers or flags',
      newDisk.id !== 'run-being-discarded' && Object.keys(newDisk.a || {}).length === 0 &&
      Object.keys(newDisk.f || {}).length === 0,
-     'id=' + newDisk.id + ' a=' + JSON.stringify(newDisk.a) + ' f=' + JSON.stringify(newDisk.f));
+     'id=' + newDisk.id + ' a=' + JSON.stringify(newDisk.a) + ' f=' + JSON.stringify(newDisk.f), {id:'g0615'});
   w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
 }
 {
@@ -3971,7 +4021,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   await new Promise(r => setTimeout(r, 40));
   const afterBack = JSON.parse(store[rkeyCur] || '{}').i;
   ok('walking back through the paper moves the saved cursor back too, instead of pinning it at the furthest question reached',
-     atFive === 5 && afterBack === 3, 'first=' + atFive + ' after two backs=' + afterBack);
+     atFive === 5 && afterBack === 3, 'first=' + atFive + ' after two backs=' + afterBack, {id:'g0616'});
   w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
 }
 {
@@ -4001,7 +4051,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   w.Math.random = realRandom;
   w.Date.now = realNow;
   ok('ID2: two runs started back to back under a frozen clock and a repeated RNG sequence still get different ids',
-     !!id1 && !!id2 && id1 !== id2, 'id1=' + id1 + ' id2=' + id2);
+     !!id1 && !!id2 && id1 !== id2, 'id1=' + id1 + ' id2=' + id2, {id:'g0617'});
   w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
 }
 
@@ -4033,7 +4083,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   await p1; await p2;
   const landed = JSON.parse(store[rkey2] || '{}');
   ok('an earlier answer’s slow write cannot land after, and overwrite, a later answer’s write',
-     Object.keys(landed.a || {}).sort().join(',') === '0,1', JSON.stringify(landed.a));
+     Object.keys(landed.a || {}).sort().join(',') === '0,1', JSON.stringify(landed.a), {id:'g0618'});
   w.storage.set = realSet2;
   w.eval("mockOn = false; mockQs = []; mockAns = {}");
 }
@@ -4061,7 +4111,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
         follows this specific occurrence, not the comment text. The check-then-clear itself is
         further wrapped in withLock('geri-mockrun', ...) (ChatGPT audit of #456/#457 against
         ACCEPTANCE-round5.md, STALE5) — accounted for in the anchor below. */
-     /mockRunChain = mockRunChain\.then\(async\(\)=>\{\s*\n\s*await withLock\('geri-mockrun', async\(\)=>\{\s*\n\s*try\{\s*\n\s*const raw = \(await window\.storage\.get\(RUNKEY\)\)\.value;[\s\S]*?if\(!cur \|\| cur\.id !== finishingId\) return;\s*\n\s*await window\.storage\.set\(RUNKEY, ''\);[\s\S]*?\}\)\.catch\(\(\)=>\{\}\);\s*\n\s*await mockRunChain;\s*\n\s*\}\s*\n\s*paintLastMock\(\);/.test(code));
+     /mockRunChain = mockRunChain\.then\(async\(\)=>\{\s*\n\s*await withLock\('geri-mockrun', async\(\)=>\{\s*\n\s*try\{\s*\n\s*const raw = \(await window\.storage\.get\(RUNKEY\)\)\.value;[\s\S]*?if\(!cur \|\| cur\.id !== finishingId\) return;\s*\n\s*await window\.storage\.set\(RUNKEY, ''\);[\s\S]*?\}\)\.catch\(\(\)=>\{\}\);\s*\n\s*await mockRunChain;\s*\n\s*\}\s*\n\s*paintLastMock\(\);/.test(code), '', {id:'g0619'});
 }
 {
   /* Codex review of #456: mockFinish awaits pqSave/saveML/the MKKEY write before this clear —
@@ -4089,7 +4139,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   await w.eval('mockFinish(true)');
   w.storage.set = realSetFin;
   ok('mockFinish does not clear a different run’s record that started while this finish was still awaiting its own writes',
-     store[rkeyFin] === otherRun, JSON.stringify(store[rkeyFin]));
+     store[rkeyFin] === otherRun, JSON.stringify(store[rkeyFin]), {id:'g0620'});
   w.eval("mockOn = false; mockQs = []; mockAns = {}");
 }
 {
@@ -4124,10 +4174,10 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   try{ survivedAns = JSON.parse(store[rkeyFin2]).a; }catch(e){}
   ok('FIN2/FIN3: mockFinish does not clear RUNKEY when the practice-result (geri:pq) write is refused — the original seven answers stay recoverable',
      Object.keys(survivedAns).length === 7 && survivedAns['0'] === 'א',
-     'store[RUNKEY]=' + JSON.stringify(store[rkeyFin2]));
+     'store[RUNKEY]=' + JSON.stringify(store[rkeyFin2]), {id:'g0621'});
   ok('...and the reader is told something did not save, not given a silent false success',
      alertsFin2.length > 0 || Object.keys(survivedAns).length === 7,
-     alertsFin2.join(' | '));
+     alertsFin2.join(' | '), {id:'g0622'});
   w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
 }
 
@@ -4157,7 +4207,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   let gotAns = {};
   try{ gotAns = JSON.parse(gathered[rkey4]).a; }catch(e){}
   ok('a backup gathered while the current mock’s checkpoint write is still in flight waits for it, not a stale read',
-     JSON.stringify(gotAns) === '{"0":"א"}', JSON.stringify(gathered[rkey4]));
+     JSON.stringify(gotAns) === '{"0":"א"}', JSON.stringify(gathered[rkey4]), {id:'g0623'});
   w.eval("mockOn = false; mockQs = []; mockAns = {}");
 }
 
@@ -4176,7 +4226,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   ok('a crafted when/right value in the stored last-mock result is escaped, not rendered as markup',
      html.includes('&lt;img src=x onerror=alert(1)&gt;') && html.includes('&lt;b&gt;3&lt;/b&gt;') &&
      !d.getElementById('mockLast').querySelector('img'),
-     html.slice(0, 160));
+     html.slice(0, 160), {id:'g0624'});
 }
 
 {
@@ -4197,7 +4247,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   ok('a deep-link hash (#falls) wins over a saved tab (drill) on a cold load',
      d3.getElementById('falls').classList.contains('on') && !d3.getElementById('drill').classList.contains('on'),
      'falls.on=' + d3.getElementById('falls').classList.contains('on') +
-     ' drill.on=' + d3.getElementById('drill').classList.contains('on'));
+     ' drill.on=' + d3.getElementById('drill').classList.contains('on'), {id:'g0625'});
   dm.window.close();
 }
 {
@@ -4213,7 +4263,7 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   const d4 = dm2.window.document;
   ok('with no hash at all, the saved tab is still restored as the fallback',
      d4.getElementById('drill').classList.contains('on'),
-     'drill.on=' + d4.getElementById('drill').classList.contains('on'));
+     'drill.on=' + d4.getElementById('drill').classList.contains('on'), {id:'g0626'});
   dm2.window.close();
 }
 
@@ -4317,9 +4367,9 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   /* if the scanner stops resolving calls it would report "no tautologies" for the wrong reason,
      so make its own reach part of the verdict rather than something to take on trust */
   ok('the tautology scanner resolved every ok() call in this file', seen > 600 && resolved === seen,
-     resolved + ' of ' + seen + ' resolved' + (unresolved.length ? ' — unresolved at ' + unresolved.join(', ') : ''));
+     resolved + ' of ' + seen + ' resolved' + (unresolved.length ? ' — unresolved at ' + unresolved.join(', ') : ''), {id:'g0627'});
   ok('no check in this file is asserted against a predicate that cannot fail',
-     tautologies.length === 0, tautologies.slice(0, 5).join(' | '));
+     tautologies.length === 0, tautologies.slice(0, 5).join(' | '), {id:'g0628'});
 }
 
 {
@@ -4335,12 +4385,17 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
      decided. */
   const unexpected = errs.filter(e => !errAllow.some(p => e.includes(p)));
   ok('no unexpected runtime errors were captured during the run',
-     unexpected.length === 0, unexpected.slice(0, 5).join(' | '));
+     unexpected.length === 0, unexpected.slice(0, 5).join(' | '), {id:'g0629'});
   console.log('\nerrors captured: ' + errs.length +
     (errAllow.length ? ' (' + (errs.length - unexpected.length) + ' allowlisted)' : ''));
   errs.slice(0, 12).forEach(e => console.log('  ' + e));
 }
 
+/* The completion flag belongs in the machine-readable stream too: a reader that takes the
+   ##GUARD lines and no completion marker cannot tell a clean run from one that stopped
+   after 300 checks with nothing failing yet. */
+console.log(RUN_LINE + JSON.stringify({ completed: true, checks: CHECKS, failures: FAILS,
+  date_pin: PIN, ms: Date.now() - T_START }));
 console.log("DONE");
 /* The ledger line is written AFTER "DONE" and reads the same two values the exit code is
    computed from, so a run that died early cannot leave a "passed" line behind: no DONE, no
