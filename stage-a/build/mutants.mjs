@@ -12,8 +12,15 @@
 */
 import fs from 'fs';
 import { execFileSync } from 'child_process';
-import { classifyMutant, baselineOk, guardRecords, resolveNeedle, resolveTargetId, classifyById } from './mutants-classify.mjs';
+import { baselineOk, guardRecords, resolveNeedle, resolveTargetId, classifyById } from './mutants-classify.mjs';
 import { logRun } from './ledger.mjs';
+/* classifyMutant (label-keyed) is deliberately NOT imported here — mutants.mjs importing it
+   was itself part of the exposure production-path-guard.mjs now checks for: an unused import
+   sitting right there is one accidental line away from becoming a call. It is still imported
+   directly from mutants-classify.mjs by harness-selftest.mjs, which is where its own coverage
+   and the one-time old-path-red comparison live. */
+import { assertNoProductionClassifyMutant, assertMutantsFileIsClean } from './production-path-guard.mjs';
+import { blankLiterals } from './blank-literals.mjs';
 
 /* The child runs are runs of a DELIBERATELY BROKEN file. Their verdicts say nothing about the
    tree, so they must never reach the ledger: one mutation set would otherwise write ~270 'fail'
@@ -30,6 +37,21 @@ const STATIC = process.argv.includes('--static');
    answers the question --static cannot: does each needle name exactly ONE guard. */
 const NEEDLES_ONLY = process.argv.includes('--needles');
 const src = fs.readFileSync(SRC, 'utf8');
+/* mutants.mjs's OWN source — read once, same way src (index.html) is. Only the 'selfsrc'
+   runner (below, alongside 'audit'/'browser') mutates this text instead of src: it is how
+   the production-path-guard.mjs check on this very file gets a mutation-tested red/green
+   proof of its own, the same standard every other guard in this project is held to. */
+const mutantsSrc = fs.readFileSync(process.argv[1], 'utf8');
+/* A 'selfsrc' mutation's own M-array entry necessarily quotes a byte-identical copy of its
+   `from` text (that quoted copy IS the mutation's specification) — so a plain
+   `mutantsSrc.split(from)` count is always at least 2: the real call site, plus the entry's
+   own literal. blankLiterals turns every comment and every string/template-literal BODY into
+   spaces without changing length or position, so the M array's quoted copy (inside a
+   template literal) disappears from this view while the real, live code occurrence — never
+   itself inside a string or comment — survives untouched. Used for both the uniqueness check
+   and to locate exactly where to patch, below; never used in place of mutantsSrc for the
+   actual replacement, since blanked text is not valid JS. */
+const mutantsSrcBlanked = blankLiterals(mutantsSrc);
 
 const M = [
   ['teardown write goes back through the async layer',
@@ -1402,6 +1424,23 @@ const M = [
    `an option did not extract cleanly`,
    `an option did not parse`,
    'the in-app blank-option disclosure still exists', 'audit', {id:'m0261'}],
+
+  /* ---- runner 'selfsrc': this mutation targets mutants.mjs's OWN source, not index.html —
+     it exists to give production-path-guard.mjs's assertion a mutation-tested red/green proof
+     of its own, per the review-lane ruling: "give it a mutation entry too, or the guard is
+     itself uncertified." The worker below does not spawn a subprocess for this runner; it
+     patches mutantsSrc in memory and calls the guard function directly on both the real and
+     the mutated text — there is exactly one predicate being checked (does classifyMutant get
+     called in production), not many guards to disambiguate, so id-keying does not apply here
+     the way it does for test.mjs mutations; a direct before/after comparison is the whole
+     mechanism. Note on the from/to text below: a self-referential mutation mutating
+     mutants.mjs necessarily quotes a byte-identical copy of its own `from` right here in this
+     array entry — mutantsSrcBlanked (see its own comment, above the M array) is what keeps
+     that quoted copy from counting as a second, ambiguous hit. ---- */
+  ['the worker’s production dispatch calls classifyMutant (label-keyed) instead of classifyById (id-keyed) — exactly the regression the P1 fix closed, reintroduced silently',
+   'results[i] = classifyById(name, TARGETS.get(i), out, BASELINE_PASSES, status);',
+   'results[i] = classifyMutant(name, needle, out, BASELINE_PASSES, status);',
+   'assertNoProductionClassifyMutant', 'selfsrc', {id:'m0262'}],
 ];
 
 /* MUTANT_ONLY=<comma-separated name substrings> restricts the full (non --static) run to the
@@ -1435,8 +1474,12 @@ if(!STATIC && ONLY.length){
 
 if(STATIC){
   let bad = 0;
-  for(const [name, from] of M){
-    const n = src.split(from).length - 1;
+  for(const [name, from, , , runner] of M){
+    /* 'selfsrc' mutates mutants.mjs's own text, not index.html — check uniqueness against the
+       right haystack (blanked, so the mutation entry's own quoted copy of `from` doesn't
+       count as a second hit — see the mutantsSrcBlanked comment above) or a perfectly fine,
+       unique call site reports as AMBIG against its own specification. */
+    const n = (runner === 'selfsrc' ? mutantsSrcBlanked : src).split(from).length - 1;
     if(n !== 1){ bad++; console.log((n ? 'AMBIG  ' : 'STALE  ') + name); }
   }
   /* A needle that matches no guard label can never be reported as CAUGHT, so the mutation is
@@ -1452,15 +1495,25 @@ if(STATIC){
      such entry reports a false NEEDLE against a suite that was never going to contain it. Same
      reasoning for 'browser': its needle lives in browser-check.mjs's own gate labels, not in
      either of the other two files — real-browser checks (real CSS transitions, real computed
-     font sizes at a real viewport) that jsdom cannot evaluate at all, so they run separately. */
+     font sizes at a real viewport) that jsdom cannot evaluate at all, so they run separately.
+     'selfsrc' is the mutants.mjs self-check: its needle lives in production-path-guard.mjs,
+     the file that actually implements the assertion this mutation exists to exercise. */
   const auditSrc = decode(fs.readFileSync('audit.mjs', 'utf8'));
   const browserSrc = decode(fs.readFileSync('browser-check.mjs', 'utf8'));
-  const HAY = { audit: { src: auditSrc, file: 'audit.mjs' }, browser: { src: browserSrc, file: 'browser-check.mjs' } };
+  const guardSrc = decode(fs.readFileSync('production-path-guard.mjs', 'utf8'));
+  const HAY = { audit: { src: auditSrc, file: 'audit.mjs' }, browser: { src: browserSrc, file: 'browser-check.mjs' },
+    selfsrc: { src: guardSrc, file: 'production-path-guard.mjs' } };
   for(const [name, , , needle, runner] of M){
     const h = HAY[runner];
     const hay = h ? h.src : suite;
     if(!hay.includes(needle)){ bad++; console.log('NEEDLE ' + name + '  — no ' + (h ? h.file + ' gate' : 'guard') + ' label contains "' + needle + '"'); }
   }
+  /* The actual, continuously-enforced half of TASK 2: every CI push runs `mutants.mjs
+     --static`, so this is where "no production path calls classifyMutant" is really checked —
+     the 'selfsrc' mutation entry above proves this assertion CAN catch the regression; this is
+     what catches it on the real file, every time. */
+  const clean = assertMutantsFileIsClean();
+  if(!clean.ok){ bad++; console.log('CLASSIFY-GUARD  mutants.mjs calls classifyMutant (label-keyed) outside a comment — ' + clean.reason); }
   console.log(M.length + ' mutations, ' + bad + ' stale, ambiguous or unmatched');
   logRun('mutants.mjs --static', { file: SRC, mutations: M.length, unmatched: bad,
     verdict: bad ? 'fail' : 'pass', completed: true });
@@ -1521,7 +1574,7 @@ const TARGETS = new Map();
     const unresolvable = [];
     for(let i = 0; i < M_RUN.length; i++){
       const [name, , , needle, runner] = M_RUN[i];
-      if(runner === 'audit' || runner === 'browser') continue;
+      if(runner === 'audit' || runner === 'browser' || runner === 'selfsrc') continue;
       const target = resolveTargetId(out, needle);
       TARGETS.set(i, target);
       if(!target.ok) unresolvable.push({ name, needle, target });
@@ -1626,6 +1679,26 @@ let next = 0;
 async function worker(){
   while(next < M_RUN.length){
     const i = next++; const [name, from, to, needle, runner] = M_RUN[i];
+    if(runner === 'selfsrc'){
+      /* no subprocess, no temp file: the predicate under test is a pure text scan over
+         mutants.mjs's own source, so patching it in memory and calling the guard function
+         directly is both correct and instant. See the M array entry's own comment for why
+         id-keying does not apply to this one-predicate self-check, and the mutantsSrcBlanked
+         comment above for why the hit-count and patch location come from the BLANKED text —
+         plain mutantsSrc.split(from) would count the mutation entry's own quoted copy of
+         `from` as a second occurrence and always report AMBIG. */
+      const hits = mutantsSrcBlanked.split(from).length - 1;
+      if(hits === 0){ results[i] = 'STALE  ' + name + '  — the code it mutates has moved; update this mutation'; continue; }
+      if(hits > 1){ results[i] = 'AMBIG  ' + name + '  — target appears ' + hits + ' times; make it unique'; continue; }
+      const idx = mutantsSrcBlanked.indexOf(from);
+      const mutated = mutantsSrc.slice(0, idx) + to + mutantsSrc.slice(idx + from.length);
+      const base = assertNoProductionClassifyMutant(mutantsSrc);
+      const mut = assertNoProductionClassifyMutant(mutated);
+      results[i] = !base.ok ? 'INCOMPLETE  ' + name + '  — the real mutants.mjs already fails this guard before any mutation is applied; not a verdict about the mutation'
+        : !mut.ok ? 'CAUGHT  ' + name
+        : 'MISSED  ' + name + '  — the guard did not notice this mutation';
+      continue;
+    }
     const hits = src.split(from).length - 1;
     if(hits === 0){ results[i] = 'STALE  ' + name + '  — the code it mutates has moved; update this mutation'; continue; }
     /* replace() takes the first occurrence only: with two, the mutation may land on dead

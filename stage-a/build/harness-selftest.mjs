@@ -20,6 +20,7 @@ import { execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { classifyMutant, baselineOk, guardRecords, resolveNeedle, failLabels, resolveTargetId, classifyById } from './mutants-classify.mjs';
+import { assertNoProductionClassifyMutant, assertMutantsFileIsClean } from './production-path-guard.mjs';
 
 let FAILS = 0;
 const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
@@ -631,6 +632,41 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
     fs.rmSync(branchADir, { recursive: true, force: true });
     fs.rmSync(branchBDir, { recursive: true, force: true });
   }
+}
+
+/* ---- (6) production-path-guard.mjs: closes the risk that classifyMutant (label-keyed)
+   silently becomes a production path again in mutants.mjs — TASK 2 of the review-lane ruling
+   that also produced the id-keyed P1 fix above. Canned-string red/green pair first (pure,
+   deterministic, independent of what mutants.mjs currently says), then a live check against
+   the REAL mutants.mjs on disk — which is the thing that actually matters, since the
+   continuously-enforced half of this guard is wired into mutants.mjs's own --static block,
+   not into this file. ---- */
+{
+  const productionCall = 'function worker(){\n  results[i] = classifyMutant(name, needle, out, BASELINE_PASSES, status);\n}';
+  const red = assertNoProductionClassifyMutant(productionCall);
+  ok('RED — a real call to classifyMutant( outside any comment or string is reported, not silently accepted',
+     red.ok === false && red.hits.length === 1, JSON.stringify(red));
+
+  const commentMention = 'function worker(){\n  /* classifyMutant() requires an exact DONE line, so an audit run through it fails */\n  results[i] = classifyById(name, TARGETS.get(i), out, BASELINE_PASSES, status);\n}';
+  const greenComment = assertNoProductionClassifyMutant(commentMention);
+  ok('GREEN — the exact wording already live in mutants.mjs today (a comment that spells classifyMutant() with its own parens) does not trip the guard',
+     greenComment.ok === true, JSON.stringify(greenComment));
+
+  const stringMention = 'function worker(){\n  const note = "call classifyMutant(a, b) if you ever need the old path";\n  results[i] = classifyById(name, TARGETS.get(i), out, BASELINE_PASSES, status);\n}';
+  const greenString = assertNoProductionClassifyMutant(stringMention);
+  ok('GREEN — a string literal mentioning classifyMutant( does not trip the guard either (never itself a call site)',
+     greenString.ok === true, JSON.stringify(greenString));
+
+  const importLine = "import { classifyMutant, classifyById } from './mutants-classify.mjs';\nresults[i] = classifyById(name, TARGETS.get(i), out, BASELINE_PASSES, status);";
+  const greenImport = assertNoProductionClassifyMutant(importLine);
+  ok('GREEN — importing the identifier without calling it (no open-paren immediately after) does not trip the guard',
+     greenImport.ok === true, JSON.stringify(greenImport));
+
+  /* the live check: enforces this against the file that actually matters, right now, in this
+     PR's own state — not just against canned fixtures above */
+  const real = assertMutantsFileIsClean();
+  ok('the real mutants.mjs currently calls classifyMutant nowhere outside a comment or string (production dispatch is id-keyed only)',
+     real.ok === true, JSON.stringify(real));
 }
 
 console.log('\n' + FAILS + ' failing harness self-test(s)');

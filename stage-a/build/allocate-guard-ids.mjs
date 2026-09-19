@@ -19,6 +19,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { blankLiterals } from './blank-literals.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const argVal = flag => { const i = process.argv.indexOf(flag); return i >= 0 ? process.argv[i + 1] : null; };
@@ -26,55 +27,10 @@ const FILE = argVal('--file') || path.join(HERE, 'test.mjs');
 const REGISTRY = argVal('--registry') || path.join(HERE, 'guard-ids.json');
 const WRITE = process.argv.includes('--write');
 
-/* the EXACT tokenizer from test.mjs's own tautology scanner (line ~4278), copied byte for
-   byte rather than reconstructed from memory — a from-memory rewrite of this dropped the
-   the two comment-stripping branches on the first attempt and silently mis-blanked over
-   half the file's
-   ok() calls into invisibility. Never hand-retype this; if test.mjs's copy changes,
-   re-extract it here the same way, and the call-count sanity check below is what catches
-   drift if that step is skipped. */
-function blankLiterals(src){
-  const out = src.split('');
-  const blank = (a, b) => { for(let i = a; i < b && i < out.length; i++) if(out[i] !== '\n') out[i] = ' '; };
-  const KW = /(?:^|[^\w$])(?:return|typeof|case|in|of|new|delete|void|do|else|yield|await)$/;
-  let i = 0;
-  while(i < src.length){
-    const c = src[i], c2 = src[i + 1];
-    if(c === '/' && c2 === '/'){ let j = src.indexOf('\n', i); if(j < 0) j = src.length; blank(i, j); i = j; continue; }
-    if(c === '/' && c2 === '*'){ let j = src.indexOf('*/', i + 2); j = j < 0 ? src.length : j + 2; blank(i, j); i = j; continue; }
-    if(c === "'" || c === '"'){
-      let j = i + 1; while(j < src.length && src[j] !== c){ if(src[j] === '\\') j++; j++; }
-      blank(i, j + 1); i = j + 1; continue;
-    }
-    if(c === '`'){
-      let j = i + 1, depth = 0;
-      while(j < src.length){
-        if(src[j] === '\\'){ j += 2; continue; }
-        if(src[j] === '$' && src[j + 1] === '{'){ depth++; j += 2; continue; }
-        if(depth > 0 && src[j] === '}'){ depth--; j++; continue; }
-        if(depth === 0 && src[j] === '`') break;
-        j++;
-      }
-      blank(i, j + 1); i = j + 1; continue;
-    }
-    if(c === '/'){
-      const before = out.slice(Math.max(0, i - 16), i).join('').replace(/\s+$/, '');
-      if(before === '' || /[(,=:[!&|?{};+\-*%~^]$/.test(before) || KW.test(before)){
-        let j = i + 1, inClass = false;
-        while(j < src.length && src[j] !== '\n'){
-          if(src[j] === '\\'){ j += 2; continue; }
-          if(src[j] === '[') inClass = true;
-          else if(src[j] === ']') inClass = false;
-          else if(src[j] === '/' && !inClass) break;
-          j++;
-        }
-        blank(i, j + 1); i = j + 1; continue;
-      }
-    }
-    i++;
-  }
-  return out.join('');
-}
+/* the tokenizer itself now lives in blank-literals.mjs — see that file's own header for the
+   provenance note. Re-exported here so anything that previously imported blankLiterals from
+   this module keeps working. */
+export { blankLiterals };
 
 function findCalls(src){
   const bl = blankLiterals(src);

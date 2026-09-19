@@ -1,5 +1,5 @@
 {
-  "next": 262,
+  "next": 263,
   "mutants": {
     "m0001": {
       "name": "teardown write goes back through the async layer",
@@ -1304,6 +1304,11 @@
     "m0261": {
       "name": "the in-app \"an option did not extract cleanly\" disclosure is removed, while audit.mjs keeps printing a flagged-option count under a label promising the reader was told",
       "runner": "audit",
+      "status": "active"
+    },
+    "m0262": {
+      "name": "the worker’s production dispatch calls classifyMutant (label-keyed) instead of classifyById (id-keyed) — exactly the regression the P1 fix closed, reintroduced silently",
+      "runner": "selfsrc",
       "status": "active"
     }
   },
