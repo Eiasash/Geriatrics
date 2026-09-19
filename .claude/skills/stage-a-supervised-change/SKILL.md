@@ -22,7 +22,7 @@ To change the checklist, edit this file only. Agree the change with the SZMC ger
 
 This is the order to run. The sections below are grouped by topic, not by sequence, so each step names the one that details it — §2 and §3 in particular are run in the order here, not the order they appear.
 
-**`incidents/gate.mjs` outranks every step below.** Before any step that reports completion or dispatches to another lane, route it through `incidents/gated-dispatch.cmd` — it refuses to run while a lane's latest item has no decision entry. This is P0 from `incidents/PROTOCOL.md` (the chat lane's post is read and answered before anything else, no exceptions) made structural for the one path the gate actually covers; P0 itself still governs everywhere the gate doesn't reach.
+**`incidents/gate.mjs` outranks every step below.** Before any step that reports completion or dispatches to another lane, route it through `incidents/gated-dispatch.cmd` — it refuses to run while a lane's latest item has no decision entry. This is P0 from `incidents/PROTOCOL.md` (the chat lane's post is read and answered before anything else, no exceptions) made structural for the one path the gate actually covers; P0 itself still governs everywhere the gate doesn't reach. As on `main` it enforces decision-entry recency only; source-verification and capture rules land with #471.
 
 1. **Agree the scope** (§0). Content, sections, schedule, verification rules or project instructions → the project chat concurs first. Pure UI or CI mechanics Eias already asked for → go, but still report.
 2. **Build it** (§1). One bounded task: fix, guard, red test, mutation entry. Nothing speculative.
