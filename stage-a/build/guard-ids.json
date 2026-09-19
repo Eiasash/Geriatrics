@@ -1,5 +1,5 @@
 {
-  "next": 630,
+  "next": 648,
   "guards": {
     "g0001": {
       "label": "'page clock is pinned to ' + PIN",
@@ -2842,7 +2842,7 @@
       "status": "active"
     },
     "g0569": {
-      "label": "'search highlighting survives a second word that matches the markup it injects: \"' + term + '\"'",
+      "label": "label",
       "file": "test.mjs",
       "status": "active"
     },
@@ -3143,6 +3143,96 @@
     },
     "g0629": {
       "label": "'no unexpected runtime errors were captured during the run'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0630": {
+      "label": "'a legacy record the old tab updated mid-migration is merged, not overwritten with this tab’s boot-time snapshot'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0631": {
+      "label": "'...and so does the cursor the legacy tab moved to, which the answer merge alone left behind'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0632": {
+      "label": "'a pre-ID tab overwriting this tab’s claim is reclaimed, not read as another tab taking the run over'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0633": {
+      "label": "'...and the reclaimed record carries this run’s id again, with both tabs’ answers'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0634": {
+      "label": "'a legacy snapshot that is merely behind is still reclaimed, and this tab\\u2019s own answer survives it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0635": {
+      "label": "'an id-less record that is NOT a continuation is left alone, not absorbed as if it were the old tab'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0636": {
+      "label": "'a checkpoint that reaches the lock late does not rewind the saved place to where its own tab was two moves ago'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0637": {
+      "label": "'a cursor timestamped in the future does not freeze the saved place until wall time catches up'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0638": {
+      "label": "'a cursor adopted from another tab is not rewound by this tab\\u2019s next non-navigating save'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0639": {
+      "label": "'a checkpoint that does not move the reader does not refresh the cursor timestamp'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0640": {
+      "label": "'a reader who navigated away and back still counts as having moved, and keeps their place'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0641": {
+      "label": "'the paper fingerprint changes when the options are reordered, with the same y#n keys throughout'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0642": {
+      "label": "'...and when only the stem is reworded, with the options and the key untouched'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0643": {
+      "label": "'answers given against an edited paper are kept, not silently re-certified under the new fingerprint'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0644": {
+      "label": "'...and the record carries the flag, so a reload still knows the score needs a caveat'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0645": {
+      "label": "'resuming a record whose stored fingerprint does not match the paper this build serves flags the run'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0646": {
+      "label": "'...and the flag is on the record the very first checkpoint writes, not only in memory'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0647": {
+      "label": "'a run whose paper changed says so in the report, above the score'",
       "file": "test.mjs",
       "status": "active"
     }

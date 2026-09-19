@@ -1,0 +1,41 @@
+{
+  "note": "What may be reported to Eias as complete. status.mjs renders this; it is not narrated. An item whose fed_by lane is unanswered has NO code path to a completion line.",
+  "items": [
+    {
+      "what": "#469 id-keyed certification — the absent-guard false-CAUGHT is closed",
+      "fed_by": ["cloud", "chatgpt", "codex"],
+      "done": false,
+      "blocker": "classifyAudit at mutants.mjs:1594 still substring-matches, live at 1619/1625. The ratified gate: done = red test passes AND no substring path remains anywhere."
+    },
+    {
+      "what": "Incident ledger — charter, seeded entries, validator that fails the build",
+      "fed_by": ["chat"],
+      "done": true,
+      "evidence": "PR #470. check.mjs red-tested 3 ways incl. a positive control that caught the validator failing a valid file (UTF-8 BOM)."
+    },
+    {
+      "what": "Open-loop guard for INC-011",
+      "fed_by": ["chat"],
+      "done": true,
+      "evidence": "lane-loops.mjs, red-tested 5 ways: live violation 1, healthy 0, lane spoke last 1, lane absent 1, unreadable transcript 1. Labelled GUARD, not structural — chat lane concurred it is correctly self-assessed."
+    },
+    {
+      "what": "Coordination protocol hardcoded and gated in CI",
+      "fed_by": ["chat"],
+      "done": true,
+      "evidence": "incidents/PROTOCOL.md P1-P10 + .github/workflows/incidents-ci.yml. Open loops fail the job; a redtest job with a positive control asserts the checks still bite."
+    },
+    {
+      "what": "Premature-completion made unreachable rather than merely loud",
+      "fed_by": ["chat"],
+      "done": true,
+      "evidence": "status.mjs — the report is rendered from lane state, and there is no branch that prints a completion while a feeding loop is open. Chat lane's point 4, ratified: 'sequencing isn't a rule you apply, it's a property of how the view is built.'"
+    },
+    {
+      "what": "#464 Codex findings on merged #462",
+      "fed_by": ["codex"],
+      "done": true,
+      "evidence": "merged 2026-09-19T14:57Z, all checks green"
+    }
+  ]
+}

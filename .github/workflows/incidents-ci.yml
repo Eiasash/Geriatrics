@@ -1,0 +1,90 @@
+name: incidents
+
+# Enforces incidents/PROTOCOL.md. It runs on every push and PR touching incidents/, and on a
+# schedule so an open loop becomes visible even when nobody pushes. A check that only runs when
+# someone remembers to run it is a convention wearing a workflow's clothes.
+
+on:
+  push:
+    paths: ['incidents/**', '.github/workflows/incidents-ci.yml']
+  pull_request:
+    paths: ['incidents/**', '.github/workflows/incidents-ci.yml']
+  schedule:
+    - cron: '17 */4 * * *'
+  workflow_dispatch:
+
+jobs:
+  ledger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      # The ledger may legitimately be RED: the recurrence rule fires when a class recurs while
+      # its earlier preventions were convention/none. That is the ledger reporting a true state,
+      # so it is surfaced loudly but does not fail the job on its own.
+      - name: incident ledger consistency
+        id: ledger
+        continue-on-error: true
+        run: node incidents/check.mjs
+
+      - name: ledger verdict
+        run: |
+          if [ "${{ steps.ledger.outcome }}" = "failure" ]; then
+            echo "::warning::Incident ledger is RED — a class recurred while prevented only by convention/none. Read incidents/check.mjs output above."
+          fi
+
+      # This one DOES fail the job. An unanswered lane is not a matter of opinion.
+      - name: open-loop check (PROTOCOL P1/P2)
+        run: node incidents/lane-loops.mjs
+
+  redtest:
+    # A guard nobody has seen fail is not a guard. These assert the checks above still bite.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      - name: red test — a lane that spoke last must FAIL
+        run: |
+          node -e "
+            const fs=require('fs');
+            const s=JSON.parse(fs.readFileSync('incidents/lane-state.json','utf8'));
+            s.lanes.codex.last_speaker='them';
+            s.reports_to_eias.forEach(r=>r.at='2099-01-01T00:00:00Z');
+            fs.writeFileSync('/tmp/open.json',JSON.stringify(s));
+          "
+          if node incidents/lane-loops.mjs /tmp/open.json; then
+            echo "::error::RED TEST FAILED — an open loop did not fail the check. The guard is blind."
+            exit 1
+          fi
+          echo "open loop correctly failed"
+
+      - name: red test — an absent lane must FAIL
+        run: |
+          node -e "
+            const fs=require('fs');
+            const s=JSON.parse(fs.readFileSync('incidents/lane-state.json','utf8'));
+            delete s.lanes.codex;
+            s.reports_to_eias.forEach(r=>r.at='2099-01-01T00:00:00Z');
+            fs.writeFileSync('/tmp/missing.json',JSON.stringify(s));
+          "
+          if node incidents/lane-loops.mjs /tmp/missing.json; then
+            echo "::error::RED TEST FAILED — a lane missing from the data passed. Silence is not health."
+            exit 1
+          fi
+          echo "absent lane correctly failed"
+
+      - name: POSITIVE CONTROL — a healthy state must PASS
+        run: |
+          node -e "
+            const fs=require('fs');
+            const s=JSON.parse(fs.readFileSync('incidents/lane-state.json','utf8'));
+            Object.values(s.lanes).forEach(l=>l.last_speaker='me');
+            s.reports_to_eias.forEach(r=>r.at='2099-01-01T00:00:00Z');
+            fs.writeFileSync('/tmp/ok.json',JSON.stringify(s));
+          "
+          node incidents/lane-loops.mjs /tmp/ok.json
+          echo "healthy state correctly passed — the check is not always-failing"

@@ -1,0 +1,167 @@
+{
+  "probed_at": "2026-09-19T15:32:00Z",
+  "probe": "incidents/README.md documents the snippet. It reads each lane's OWN transcript and reports who holds the last turn. last_speaker is derived, not asserted; the *_at times are recorded when a send is verified delivered.",
+  "lanes": {
+    "chat": {
+      "what": "claude.ai project chat - the partner, always first",
+      "last_speaker": "me",
+      "my_last_message_at": "2026-09-19T15:30:00Z",
+      "their_last_message_at": "2026-09-19T15:26:00Z",
+      "my_last_message_chars": 4674,
+      "note": "reset-before-each-case flagged and implemented; C2/C1 controls reported; they confirmed received and are waiting on the reviewer packet.",
+      "their_last_item_id": "c2-confirmed-received"
+    },
+    "cloud": {
+      "what": "Claude Code cloud - the builder",
+      "last_speaker": "me",
+      "my_last_message_at": "2026-09-19T14:50:00Z",
+      "their_last_message_at": "2026-09-19T14:40:00Z",
+      "my_last_message_chars": 3800,
+      "note": "work order: audit/browser migration + classifyMutant production-path guard"
+    },
+    "chatgpt": {
+      "what": "GPT-6 Astra - outside oracle",
+      "last_speaker": "me",
+      "my_last_message_at": "2026-09-19T15:36:00Z",
+      "their_last_message_at": "2026-09-19T15:28:00Z",
+      "my_last_message_chars": 4388,
+      "note": "reviewer packet delivered, then an addendum answering the two open findings I had dispatched past. Round 9 classifier work still running.",
+      "their_last_item_id": "r9-classifier-questions"
+    },
+    "codex": {
+      "what": "Codex CLI - outside oracle with a shell",
+      "last_speaker": "me",
+      "my_last_message_at": "2026-09-19T15:05:00Z",
+      "their_last_message_at": "2026-09-19T00:16:00Z",
+      "my_last_message_chars": 4100,
+      "note": "round 2 running; jsdom installed at the worktree root, removing its NOT-RUN blocker. Its round-1 findings went unanswered for ~15h - that gap is INC-011."
+    }
+  },
+  "dispatch_log": [
+    {
+      "lane": "chat",
+      "at": "2026-09-19T15:08:00Z",
+      "what": "INC-011 proposal"
+    },
+    {
+      "lane": "cloud",
+      "at": "2026-09-19T14:50:00Z",
+      "what": "work order: audit/browser migration"
+    },
+    {
+      "lane": "chatgpt",
+      "at": "2026-09-19T15:02:00Z",
+      "what": "round 9"
+    },
+    {
+      "lane": "codex",
+      "at": "2026-09-19T15:05:00Z",
+      "what": "round 2"
+    },
+    {
+      "lane": "chat",
+      "at": "2026-09-19T15:30:00Z",
+      "what": "C2/C1 contamination control results + P0 correction pushed"
+    },
+    {
+      "lane": "chatgpt",
+      "at": "2026-09-19T15:32:00Z",
+      "what": "reviewer packet: dispatch gate, 7 cases, known hole"
+    },
+    {
+      "lane": "chatgpt",
+      "at": "2026-09-19T15:36:00Z",
+      "what": "addendum: answered r9 open findings that the packet had dispatched past"
+    }
+  ],
+  "decision_log": [
+    {
+      "lane": "chatgpt",
+      "in_reply_to": "r8-findings",
+      "status": "adopted",
+      "what": "red test + positive control adopted verbatim; shared-id variant narrowed to id+label pair"
+    },
+    {
+      "lane": "codex",
+      "in_reply_to": "r1-findings",
+      "status": "adopted",
+      "what": "P1 confirmed and fixed; allocator + ledger-pin findings in the work order; thrown-predicate refinement adopted over my stronger claim"
+    },
+    {
+      "lane": "cloud",
+      "in_reply_to": "96be605",
+      "status": "adopted",
+      "what": "both findings accepted; id+label narrowing is a correction to my work order, not its implementation"
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "inc011-verdict",
+      "status": "adopted",
+      "what": "ship labelled GUARD; build point 4 — the rendered view gated by the open-loop computation"
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "reset-before-each-case",
+      "status": "adopted",
+      "at": "2026-09-19T15:20:00Z",
+      "what": "invocation evidence must be reset per case, not merely checked for presence; implemented in both harnesses and red-tested by C1/C2"
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "read-c2-first",
+      "status": "adopted",
+      "at": "2026-09-19T15:24:00Z",
+      "what": "contamination-possible half carries the weight; reported C2 before C1 regardless of run order"
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "inc011-recurred-during-its-own-fix",
+      "status": "adopted",
+      "at": "2026-09-19T15:24:00Z",
+      "what": "their framing used verbatim in PROTOCOL.md and the ledger, unsoftened"
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "c2-confirmed-received",
+      "status": "rejected",
+      "at": "2026-09-19T15:30:00Z",
+      "what": "declined their offer to formally ratify C2 — a second Claude agreeing is correlated evidence and would defeat the charter STRUCTURAL carve-out"
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "item-delimitation-question",
+      "status": "adopted",
+      "at": "2026-09-19T15:32:00Z",
+      "what": "their formulation (who draws the boundary of an item; eliminate or relocate the ambiguity) sent to the oracle as the question, in their words"
+    },
+    {
+      "lane": "chatgpt",
+      "in_reply_to": "r9-classifier-questions",
+      "status": "adopted",
+      "at": "2026-09-19T15:36:00Z",
+      "what": "both open findings adopted as real: (a) same (id,label) pair observing different state across executions is the id-vs-label bug one level down - a key unique in form but not across time; (b) verdict tests exercising the legacy classifier while classifyAudit is the production path is a blind guard by construction. Asked for the observed divergence before changing anything rather than narrowing on a guess."
+    },
+    {
+      "lane": "cloud",
+      "in_reply_to": "96be605",
+      "status": "adopted",
+      "at": "2026-09-19T15:36:00Z",
+      "what": "RE-RECORDED with a real timestamp. The original entry predates timestamped decisions and the gate correctly refused to evaluate it - CANNOT EVALUATE is not PASS. The decision itself is unchanged; only the recording is new, and the timestamp is the re-recording time, not a reconstruction of when it was taken."
+    },
+    {
+      "lane": "codex",
+      "in_reply_to": "r1-findings",
+      "status": "adopted",
+      "at": "2026-09-19T15:36:00Z",
+      "what": "RE-RECORDED with a real timestamp, same reason and same caveat as the cloud entry above."
+    }
+  ],
+  "reports_to_eias_note": "ROLLING WINDOW, current cycle only. A past violation stays here only until it is logged, then the permanent record is the incident entry. Keeping a historical breach in live state would hold CI red forever on something already recorded and remediated - which is the red-fatigue failure the chat lane warned about, and a CI that is reliably red stops being read. The 96be605 PARTNER-LAST breach - it reached Eias at 14:55 while the chat lane knew nothing until 15:08 - is permanently recorded in incidents.jsonl as part of INC-011, not erased.",
+  "reports_to_eias": [
+    {
+      "what": "INC-011 logged, protocol hardcoded, PRs triaged",
+      "origin_lane": "chat",
+      "at": "2026-09-19T15:30:00Z"
+    }
+  ]
+}
