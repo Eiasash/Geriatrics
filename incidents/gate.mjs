@@ -26,6 +26,7 @@
    attempt a real dispatch, confirm it stops; then restore and confirm a fresh read lets it through. */
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 
 const here = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
 const stateFile = process.env.LANE_STATE || path.join(here, 'lane-state.json');
@@ -122,6 +123,42 @@ for (const [lane, l] of Object.entries(state.lanes || {})) {
       blocking.push({ lane, why: 'the recorded reads DISAGREE with each other or with the headline digest — the digest is not stable, so it identifies nothing' });
       continue;
     }
+    /* PERSISTED CAPTURE (the foundation fix). Everything above measures a windowed DOM render.
+       Measured directly: a lane message was gone from the page 2 minutes 8 seconds after it was
+       hashed. So a digest over it is unverifiable FOREVER after that - not merely unreliable. An
+       honest, perfectly stable digest over a vanished object sits in the same position as a
+       fabricated one, because nobody can recompute either.
+
+       This is ONE finding about the foundation, not two findings of increasing severity: the
+       non-persistence is what made the stability question undecidable, rather than a worse version
+       of it. Scraping a transient render was the wrong substrate, and measuring it more carefully
+       was the same mistake twice - the shape of the substring certifier and its bounded-substring
+       "fix" that was still a substring match.
+
+       So the fetched text is persisted at fetch time and the gate RECOMPUTES the digest from that
+       file. This is the first check here that verifies rather than inspects: a wrong digest cannot
+       be written past it, because the file is the authority and it is in the repo.
+
+       CEILING, unchanged by this: it does not close the fabrication path. A capture I invent and a
+       capture I fetched are indistinguishable to the gate. It closes only the proven gap - that the
+       evidence became unrecoverable in principle. */
+    if (!src.capture) {
+      blocking.push({ lane, why: 'source record has no persisted capture. The lane transcript is windowed (a message was gone 2m08s after hashing), so a digest with no durable object is unverifiable forever.' });
+      continue;
+    }
+    let capText;
+    try { capText = fs.readFileSync(path.join(here, '..', src.capture), 'utf8').replace(/^﻿/, '').replace(/\r\n/g, '\n').trim(); }
+    catch (e) { blocking.push({ lane, why: 'capture file ' + src.capture + ' cannot be read: ' + e.message + ' — CANNOT EVALUATE' }); continue; }
+    const recomputed = 'sha256:' + crypto.createHash('sha256').update(capText, 'utf8').digest('hex');
+    if (!recomputed.startsWith(src.digest.replace(/\.\.\.$/, ''))) {
+      blocking.push({ lane, why: 'RECOMPUTED digest of the capture does not match the recorded digest.\n      recorded:   ' + src.digest + '\n      recomputed: ' + recomputed });
+      continue;
+    }
+    if (capText.length !== src.chars) {
+      blocking.push({ lane, why: 'capture is ' + capText.length + ' chars, record says ' + src.chars + ' — the capture and the record describe different text' });
+      continue;
+    }
+
     const fetchedAt = src.fetched_at ? Date.parse(src.fetched_at) : null;
     if (fetchedAt === null) {
       blocking.push({ lane, why: 'source record has no fetched_at — cannot tell whether the fetch predates their message' });

@@ -6,10 +6,10 @@
       "what": "claude.ai project chat - the partner, always first",
       "last_speaker": "me",
       "my_last_message_at": "2026-09-19T15:40:00Z",
-      "their_last_message_at": "2026-09-19T15:57:00Z",
+      "their_last_message_at": "2026-09-19T16:06:00Z",
       "my_last_message_chars": 4674,
-      "note": "they attempted to verify my digest and could not reproduce it; checking rather than accepting their charitable explanation found the digest was non-deterministic.",
-      "their_last_item_id": "digest-mismatch-check"
+      "note": "proposed persisting the fetched text at fetch time; adopted, built, red-tested.",
+      "their_last_item_id": "persist-capture-proposal"
     },
     "cloud": {
       "what": "Claude Code cloud - the builder",
@@ -210,6 +210,32 @@
             "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61"
           }
         ]
+      }
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "persist-capture-proposal",
+      "status": "adopted",
+      "at": "2026-09-19T16:12:00Z",
+      "what": "adopted their diagnosis over my own fix. The substrate was wrong, not the extractor: a windowed DOM render cannot back a durable digest. Fetched text is now persisted at fetch time and the gate RECOMPUTES the digest from the file - the first check here that verifies rather than inspects. Their framing kept: ONE finding about the foundation, not two of increasing severity.",
+      "source": {
+        "via": "direct-fetch",
+        "extractor": "strip-thinking-preamble@v1",
+        "chars": 2187,
+        "digest": "sha256:09465c198df765a5fc836b6b26d218bc97bd54ac2778b135efedd7276b1a5bc2",
+        "capture": "incidents/captures/chat-2026-09-19T160601Z.txt",
+        "fetched_at": "2026-09-19T16:06:01Z",
+        "reads": [
+          {
+            "chars": 2187,
+            "digest": "sha256:09465c198df765a5fc836b6b26d218bc97bd54ac2778b135efedd7276b1a5bc2"
+          },
+          {
+            "chars": 2187,
+            "digest": "sha256:09465c198df765a5fc836b6b26d218bc97bd54ac2778b135efedd7276b1a5bc2"
+          }
+        ],
+        "transfer_note": "page could not POST to 127.0.0.1 (CSP) and clipboard write hung, so the text was moved in four chunks and the reassembled file was verified against the page-computed digest: exact match at 2187 chars. The transfer is proven lossless rather than assumed."
       }
     }
   ],
