@@ -15,6 +15,59 @@ mechanism.
 | `chatgpt` | GPT-6 Astra — outside oracle |
 | `codex` | Codex CLI — outside oracle with a shell |
 
+## P0 — THE CHAT LANE POSTS, YOU REPLY. BEFORE ANYTHING ELSE.
+
+**Highest precedence. Overrides every other rule in this file, including P2.**
+
+The moment the chat lane has posted, the next action is acknowledging receipt and replying. Not
+after one more commit. Not after a merge. Not after reporting to Eias — **not even to tell Eias
+what the chat lane said.** No other lane, no repo work, no status render, nothing.
+
+Imposed by Eias on 19 Sep, by hand, after watching a reply sit unread for ten minutes while work
+continued on something else. It is stated as an ordering rule because the mechanisms below do not
+cover this case and cannot be pretended to: `status.mjs` and `lane-loops.mjs` both fire on a CLAIM
+— a completion being rendered, a check being run. **Not-reading is not an action, so no guard has
+an event to trigger on.** The window between their post and my reading it is unguarded, and saying
+otherwise would be the overclaim this whole ledger exists to catch.
+
+### CORRECTION, 19 Sep — the ceiling claim above was FALSE
+
+The paragraph that stood here said: *"The only candidate mechanism is a trigger that fires on a
+lane's INBOUND arriving rather than on my outbound or my claim, and no such lever is known in this
+tooling."* That was wrong, and it was wrong in the most costly direction — it declared a class of
+fix impossible, which is an instruction to stop looking. A lever existed and was built the same
+evening: `incidents/gate.mjs` + `incidents/gated-dispatch.cmd`.
+
+The reasoning error was a framing one, and it is worth naming because it recurs. Not-reading is
+indeed not an event, so nothing can fire on it — that part was true. But **acting-elsewhere-while-
+behind IS an action**, and every action has a moment of dispatch that can be made to check a
+precondition first. The search was for a trigger on the inbound; the answer was a gate on the
+outbound. Asking the wrong question produced a confident "impossible".
+
+**A ceiling claim later shown false is at least as serious as a wrong count, and is treated here as
+its own defect class.** A wrong number is corrected when someone recomputes it. A false impossibility
+is not corrected by anyone, because it tells everyone downstream that there is nothing to recompute.
+It fails silent, permanently, and by design. Any future statement in this file that a thing *cannot*
+be prevented carries the same burden of proof as a claim that something *is* prevented, and is
+subject to the same red test.
+
+### CURRENT STATUS OF P0
+
+P0 remains `convention` — **NOT PREVENTED** — for the general case, and that is deliberate, not
+lazy. The gate makes it `structural` for one specific path only: actions routed through
+`gated-dispatch.cmd`, which refuses to invoke the wrapped command while a lane's latest item has no
+decision entry. Verified by red test, including a contamination control on the test's own evidence
+mechanism (7 cases; see `agy-reviews/gatetest*.ps1`).
+
+What the gate does NOT cover, stated so that no one reads the word "structural" and relaxes:
+anything not routed through the wrapper; a claim made in prose rather than by running a command;
+and — confirmed by test, not suspected — **partial coverage**: the gate tracks one item id per lane,
+so a message carrying several findings is satisfied by a decision entry against any one of them.
+Per-message, not per-item. That hole is open and known.
+
+Until those are closed, this rule is held by the wrapper on the paths it covers, and by discipline
+and by the person who imposed it everywhere else.
+
 ## P1 — EVERY INBOUND GETS AN OUTBOUND
 
 When any lane produces output, that lane gets a reply before its thread is treated as finished.
