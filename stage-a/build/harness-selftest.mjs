@@ -93,6 +93,24 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
      status !== 0 && reachedDone && mentionsLate, 'status=' + status + ' reachedDone=' + reachedDone + ' mentionsLate=' + mentionsLate);
 }
 
+/* LEGACY PATH ONLY, sections (2)–(4) below. Every classifyMutant(...) call between here and
+   (4b) exercises classifyMutant — the label-keyed classifier, kept only for its own coverage
+   and the one-time old-path-red comparison the P1 fix's red test needed (see (4b), and the
+   production-path-guard.mjs check in (6) that mutants.mjs's real dispatch never calls it).
+   These assertions prove classifyMutant's OWN logic behaves as documented. They prove NOTHING
+   about classifyById, the function mutants.mjs's worker actually calls in production — not
+   even for scenarios where the two functions look like they should agree, because the
+   CAUGHT/MISSED determination itself (id+label-scoped matching against guard records) is
+   different code in each, sharing only the completion/exit-status tail in finishVerdict.
+
+   Found live: ChatGPT broke classifyById's own id-scoped filter (mutants-classify.mjs, the
+   `matches.filter(g => g.verdict === 'fail')` line — widened in the experiment to filter the
+   whole run's records instead of just the target's own) and every assertion in this block
+   still passed, because none of them call classifyById. The one scenario that exposed it —
+   a target that genuinely PASSES while an unrelated neighbour FAILS in the same run — is
+   still tested here at "a guard that PASSED is not credited..." against classifyMutant only;
+   the production-routed version of that same scenario is in (4b), added alongside this
+   banner rather than as a 45th assertion bolted onto this legacy block. */
 /* ---- (2) a child that dies before DONE must never be CAUGHT, matching FAIL or not ---- */
 {
   const cannedDiesAfterMatch = 'PASS  x\nFAIL  needle-match here\n';   // no DONE — died mid-run
@@ -434,6 +452,19 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
   const controlVerdict = classifyById('m', target, mutantCaught, baselinePasses, 1);
   ok('POSITIVE CONTROL: the intended guard genuinely failing is still CAUGHT — this is not an always-abstaining classifier',
      controlVerdict === 'CAUGHT m', controlVerdict);
+
+  /* RUNTIME GUARD, production path — the mirror of the positive control above, and of "a guard
+     that PASSED is not credited because some other guard failed in the same run" earlier in
+     this file (LEGACY PATH ONLY banner, section (2)) — routed through classifyById instead of
+     classifyMutant. The target's OWN record genuinely passes; an unrelated neighbour's record
+     fails in the same run. This must stay MISSED. It is the exact scenario whose classifyMutant
+     coverage gave false confidence: breaking classifyById's own id+label-scoped `matches.filter`
+     (mutants-classify.mjs, widening it to the whole run's records) leaves every assertion above
+     this line green, because none of them call classifyById — this is the one that goes red. */
+  const passingTargetMutant = bodyN(['FAIL  target neighbour', G('g0001', 'target', 'pass'), G('g0002', 'target neighbour', 'fail'), G('g0003', 'filler', 'pass')]);
+  const passingVerdict = classifyById('m', target, passingTargetMutant, baselinePasses, 1);
+  ok('RUNTIME GUARD (production path) — a target that genuinely PASSES is not credited CAUGHT via an unrelated neighbour that fails in the same run',
+     passingVerdict === 'MISSED m', passingVerdict);
 
   /* Four variants that must each REFUSE certification outright. */
   const nullIdBaseline = bodyN([G(null, 'target', 'pass'), G('g0002', 'filler', 'pass')], '##RUN ' + JSON.stringify({ completed: true, failures: 0 }));
