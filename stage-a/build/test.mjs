@@ -3920,6 +3920,166 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   dmLeg.window.close();
 }
 {
+  /* Codex review of #462 (P1): an id-less record on disk is one of two different things — the
+     legacy checkpoint THIS run resumed from, or a run being discarded and replaced. #459's fix
+     collapsed both into "not mine", so a migration's first write asserted this tab's whole
+     boot-time snapshot over whatever was actually on disk. A pre-ID tab still open on the same
+     legacy run writes into exactly that window — between this tab's Resume read and its first
+     checkpoint — and everything it added is erased. The lock cannot help: that older build
+     does not take one.
+     Drive the real Resume button, then write the old tab's update straight into storage (a
+     whole-record overwrite with no id, which is all that build knew how to do), then answer
+     here, which is what fires the first checkpoint.
+     The window is narrow and exact — Resume paints immediately, and painting checkpoints — so
+     it is opened off the READ rather than off a sleep: the old tab's overwrite is applied the
+     moment the Resume handler's own read of the record returns, which is precisely "after this
+     tab read it, before its first write re-reads it inside the lock". */
+  const qsMig = w.eval("PQ.slice(0,4).map(p=>p.y+'#'+p.n)");
+  const migStore = {'geri:mockrun': JSON.stringify({q: qsMig, a: {0:'א'}, f: {}, i: 1, e: 0, t: 0})};
+  const dmMig = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in migStore)) throw new Error('missing'); return {key:k, value:migStore[k]}; },
+        set: async (k, v) => { migStore[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dmMig.window.document.getElementById('mockResume'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 100));
+  const migAlerts = []; dmMig.window.alert = m => migAlerts.push(String(m));
+  let migArmed = false, migOldTabWrote = false;
+  const realGetMig = dmMig.window.storage.get;
+  dmMig.window.storage.get = async k => {
+    const r = await realGetMig(k);
+    if(k === 'geri:mockrun' && migArmed && !migOldTabWrote){
+      migOldTabWrote = true;
+      migStore[k] = JSON.stringify({q: qsMig, a: {0:'א', 2:'ג'}, f: {}, i: 2, e: 0, t: 0});
+    }
+    return r;
+  };
+  migArmed = true;
+  dmMig.window.document.getElementById('mockResume').click();
+  await new Promise(r => setTimeout(r, 120));
+  /* the migration write is the Resume paint's own checkpoint, which has already happened by
+     here — snapshot it before this tab does anything else, because that write is what the two
+     findings below are about */
+  let migFirst = {};
+  try{ migFirst = JSON.parse(migStore['geri:mockrun']); }catch(e){}
+  await dmMig.window.eval("mockAns[1] = 'ב'; mockSaveRun()");
+  await new Promise(r => setTimeout(r, 60));
+  let migDisk = {};
+  try{ migDisk = JSON.parse(migStore['geri:mockrun']); }catch(e){}
+  ok('a legacy record the old tab updated mid-migration is merged, not overwritten with this tab’s boot-time snapshot',
+     !!migDisk.id && migDisk.a && migDisk.a['0'] === 'א' && migDisk.a['1'] === 'ב' && migDisk.a['2'] === 'ג',
+     JSON.stringify(migDisk.a) + ' id=' + migDisk.id + ' alerts=' + migAlerts.join(' | '));
+  /* Codex review of #464 (P2): the answers were merged but the cursor was not. A legacy record
+     carries no iAt, so the capture-time comparison forced this tab's boot-time reading to win,
+     and the position the other tab had actually moved to was erased by the very write that
+     rescued its answers. Codex read this off the fixture above: legacy moved to i:2 after Resume
+     had read i:1, and this tab has not moved since, so the migration write must carry 2.
+     Asserted on the MIGRATION write, not on the state at the end of the block — after this tab
+     answers and checkpoints again the two readers are simply at different questions, and the
+     last checkpoint winning is the intended contested-cursor behaviour. */
+  ok('...and so does the cursor the legacy tab moved to, which the answer merge alone left behind',
+     migFirst.i === 2, 'migration write i=' + migFirst.i + ' (legacy moved to 2, this tab resumed at 1 and stayed)');
+  dmMig.window.close();
+}
+{
+  /* Codex review of #464 (P1): the pre-ID tab checkpoints AFTER this tab has migrated and
+     claimed the record. Its build writes the whole record with no id, so the ownership check
+     sees '' against our uuid and calls mockRunSuperseded — which stops this tab, leaves the
+     stale legacy record on disk, and tells the reader "your answers are safe in that other run".
+     There is no other run: a modern tab would have written an id. That alert was a lie and the
+     answers were genuinely lost. It should reclaim instead.
+     Same window machinery as the migration test above, but the old tab writes one step later —
+     after the Resume paint has already checkpointed. */
+  const qsRc = w.eval("PQ.slice(0,4).map(p=>p.y+'#'+p.n)");
+  const rcStore = {'geri:mockrun': JSON.stringify({q: qsRc, a: {0:'א'}, f: {}, i: 1, e: 0, t: 0})};
+  const dmRc = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in rcStore)) throw new Error('missing'); return {key:k, value:rcStore[k]}; },
+        set: async (k, v) => { rcStore[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dmRc.window.document.getElementById('mockResume'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 100));
+  const rcAlerts = []; dmRc.window.alert = m => rcAlerts.push(String(m));
+  dmRc.window.document.getElementById('mockResume').click();
+  await new Promise(r => setTimeout(r, 150));
+  const rcClaimed = JSON.parse(rcStore['geri:mockrun'] || '{}');
+  /* now the pre-ID tab checkpoints over the claim: whole record, no id, no lock */
+  rcStore['geri:mockrun'] = JSON.stringify({q: qsRc, a: {0:'א', 3:'ד'}, f: {}, i: 3, e: 0, t: 0});
+  await dmRc.window.eval("mockAns[1] = 'ב'; mockSaveRun()");
+  await new Promise(r => setTimeout(r, 80));
+  let rcDisk = {};
+  try{ rcDisk = JSON.parse(rcStore['geri:mockrun']); }catch(e){}
+  ok('a pre-ID tab overwriting this tab’s claim is reclaimed, not read as another tab taking the run over',
+     !!rcClaimed.id && dmRc.window.eval('mockOn') === true && !rcAlerts.some(a => /another tab/.test(a)),
+     'claimed=' + !!rcClaimed.id + ' mockOn=' + dmRc.window.eval('mockOn') + ' alerts=' + rcAlerts.join(' | '));
+  ok('...and the reclaimed record carries this run’s id again, with both tabs’ answers',
+     rcDisk.id === rcClaimed.id && rcDisk.a && rcDisk.a['0'] === 'א' && rcDisk.a['1'] === 'ב' && rcDisk.a['3'] === 'ד',
+     JSON.stringify(rcDisk.a) + ' id=' + (rcDisk.id === rcClaimed.id ? 'reclaimed' : rcDisk.id));
+  dmRc.window.close();
+}
+{
+  /* Codex review of #464 (P1): the pre-ID tab's snapshot is written from what IT last read, so an
+     answer this tab wrote after that is simply not in it. The reclaim merged from that truncated
+     record, and the missing answer still equalled the seen-baseline, so the merge left it out —
+     the modern tab's own answer dropped by the very write that rescues the legacy tab's.
+     Codex's fixture exactly: claim, save question 1, legacy overwrite carrying 0 and 3 but not 1,
+     then answer 2. All four must survive. */
+  const qsPk = w.eval("PQ.slice(0,5).map(p=>p.y+'#'+p.n)");
+  const pkStore = {'geri:mockrun': JSON.stringify({q: qsPk, a: {0:'\u05d0'}, f: {}, i: 0, e: 0, t: 0})};
+  const dmPk = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in pkStore)) throw new Error('missing'); return {key:k, value:pkStore[k]}; },
+        set: async (k, v) => { pkStore[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dmPk.window.document.getElementById('mockResume'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 100));
+  dmPk.window.alert = () => {};
+  dmPk.window.document.getElementById('mockResume').click();
+  await new Promise(r => setTimeout(r, 150));
+  await dmPk.window.eval("mockAns[1] = '\u05d1'; mockSaveRun()");   /* the modern tab's own answer */
+  await new Promise(r => setTimeout(r, 60));
+  /* the pre-ID tab writes from what it last read: it never saw question 1 */
+  pkStore['geri:mockrun'] = JSON.stringify({q: qsPk, a: {0:'\u05d0', 3:'\u05d3'}, f: {}, i: 3, e: 0, t: 0});
+  await dmPk.window.eval("mockAns[2] = '\u05d2'; mockSaveRun()");
+  await new Promise(r => setTimeout(r, 80));
+  let pkDisk = {};
+  try{ pkDisk = JSON.parse(pkStore['geri:mockrun']); }catch(e){}
+  ok('a legacy snapshot that is merely behind is still reclaimed, and this tab\u2019s own answer survives it',
+     !!pkDisk.id && pkDisk.a && pkDisk.a['0'] === '\u05d0' && pkDisk.a['1'] === '\u05d1' &&
+     pkDisk.a['2'] === '\u05d2' && pkDisk.a['3'] === '\u05d3',
+     JSON.stringify(pkDisk.a) + ' (1 is the one the legacy snapshot never carried)');
+  dmPk.window.close();
+}
+{
+  /* Eias's call on Codex's fourth #464 finding: an id-less record for this paper is not proof the
+     pre-ID tab wrote it. A reader restoring a backup mid-run produces one too, and reclaiming
+     that silently undoes part of a deliberate restore. What tells them apart is shape — the old
+     tab is CONTINUING, so everything this tab last wrote is still in its record; a restore is a
+     different snapshot and will generally have dropped something. Same setup as the reclaim test
+     above, except the replacement drops an answer this tab had already written, which no
+     continuation of this run can do. It must stand down, and the alert is now true. */
+  const qsNc = w.eval("PQ.slice(0,4).map(p=>p.y+'#'+p.n)");
+  const ncStore = {'geri:mockrun': JSON.stringify({q: qsNc, a: {0:'\u05d0'}, f: {}, i: 1, e: 0, t: 0})};
+  const dmNc = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in ncStore)) throw new Error('missing'); return {key:k, value:ncStore[k]}; },
+        set: async (k, v) => { ncStore[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dmNc.window.document.getElementById('mockResume'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 100));
+  const ncAlerts = []; dmNc.window.alert = m => ncAlerts.push(String(m));
+  dmNc.window.document.getElementById('mockResume').click();
+  await new Promise(r => setTimeout(r, 150));
+  /* a restored backup: same paper, no id, but it does not carry what this tab already wrote */
+  /* a genuinely foreign snapshot: it CONTRADICTS what this tab wrote (question 0 is \u05d1 here,
+     \u05d0 in our last checkpoint). Merely lacking one of our answers would not qualify — the
+     pre-ID tab cannot know about an answer written after its own last read. */
+  ncStore['geri:mockrun'] = JSON.stringify({q: qsNc, a: {0:'\u05d1', 3:'\u05d3'}, f: {}, i: 3, e: 0, t: 0});
+  const ncRestored = ncStore['geri:mockrun'];
+  await dmNc.window.eval("mockAns[1] = '\u05d1'; mockSaveRun()");
+  await new Promise(r => setTimeout(r, 80));
+  ok('an id-less record that is NOT a continuation is left alone, not absorbed as if it were the old tab',
+     ncStore['geri:mockrun'] === ncRestored && dmNc.window.eval('mockOn') === false,
+     'restore intact=' + (ncStore['geri:mockrun'] === ncRestored) + ' mockOn=' + dmNc.window.eval('mockOn'));
+  dmNc.window.close();
+}
+{
   /* Codex review of #459: when the reader confirms replacing an unfinished mock, mockStart
      leaves mockRunObservedId pointing at the OLD record so the first checkpoint may take the key
      over — but that record was then passed into mergeMockAnswers, copying the discarded run's
@@ -3968,6 +4128,253 @@ ok('the "v12 — dashboard redesign" CSS block is not duplicated (the stale firs
   ok('walking back through the paper moves the saved cursor back too, instead of pinning it at the furthest question reached',
      atFive === 5 && afterBack === 3, 'first=' + atFive + ' after two backs=' + afterBack);
   w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+}
+{
+  /* Codex review of #462 (P2): with the high-water mark gone, the cursor became last-COMMIT-wins
+     — and a commit can carry an older reading than one already on disk. A checkpoint captures
+     mockI synchronously when it is called, but reaches the shared lock only when its own tab's
+     chain frees, so one taken at question 3 while that tab's previous write was still in flight
+     lands AFTER another tab's later checkpoint at question 5, and rewinds the saved place two
+     moves. The next resume opens where the reader was before, not where they are.
+     The interleaving is built out of the queue structure, not out of sleeps: B's first write
+     holds the lock; B's second write is captured but stuck behind B's own chain, so it has not
+     joined the lock queue yet; A joins it; only then is B's first write released. Ordering is
+     therefore guaranteed by the queues, not by timing luck.
+     mockI is moved directly here rather than through #mockPrev on purpose — the real control
+     repaints, painting checkpoints, and each such save supersedes the one before it by seq, so
+     the real control cannot produce a captured-but-not-yet-queued write at all. The semantic
+     that backward navigation is honoured is what the block above tests, through #mockPrev. */
+  const rkeyOrd = w.eval('RUNKEY');
+  const qsOrd = w.eval("PQ.slice(0,8).map(p=>p.y+'#'+p.n)");
+  store[rkeyOrd] = JSON.stringify({q: qsOrd, a: {}, f: {}, i: 0, e: 0, t: 0, id: 'order-run', rev: 1});
+  const seedOrd = `mockQs = ${JSON.stringify(qsOrd)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 0;
+    mockRunId = 'order-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'order-run';
+    MOCKSEEN = JSON.stringify({id: 'order-run', a: {}, f: {}});`;
+  w.eval(seedOrd);
+  const dmOrd = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in store)) throw new Error('missing'); return {key:k, value:store[k]}; },
+        set: async (k, v) => { store[k] = v; return {key:k, value:v}; } }; } });
+  /* wait for the papers bank, not just for the script: PQ is parsed on a deferred boot pass, and
+     seeding mockQs before it lands leaves a list of undefined entries */
+  for(let t = 0; t < 200 && !dmOrd.window.eval('typeof PQ !== "undefined" && PQ.length > 0'); t++) await new Promise(r => setTimeout(r, 50));
+  /* two tabs of one origin share a clock; two pinClock instances do not, because each offsets
+     from its own construction moment and these are minutes apart. Put the second window on the
+     first one's clock, or a capture-time comparison between them measures the harness. */
+  dmOrd.window.eval('__stageaClock.set(' + w.eval('Date.now()') + ')');
+  dmOrd.window.eval(seedOrd);
+
+  const realSetOrd = dmOrd.window.storage.set;
+  let releaseOrdB; const heldOrdB = new Promise(r => { releaseOrdB = r; });
+  dmOrd.window.storage.set = async (k, v) => { if(k === rkeyOrd) await heldOrdB; return realSetOrd(k, v); };
+  dmOrd.window.eval('setMockI(1); mockSaveRun()');                   /* B1 takes the lock and blocks in its write */
+  await new Promise(r => setTimeout(r, 30));
+  const ordChainB = dmOrd.window.eval('setMockI(3); mockSaveRun()'); /* B2 captured at 3, stuck behind B1's chain */
+  await new Promise(r => setTimeout(r, 30));
+  const ordChainA = w.eval('setMockI(5); mockSaveRun()');            /* A captured later, joins the lock queue now */
+  await new Promise(r => setTimeout(r, 30));
+  releaseOrdB();
+  await ordChainA; await ordChainB;
+  await new Promise(r => setTimeout(r, 60));
+  dmOrd.window.storage.set = realSetOrd;
+  const ordDisk = JSON.parse(store[rkeyOrd] || '{}');
+  ok('a checkpoint that reaches the lock late does not rewind the saved place to where its own tab was two moves ago',
+     ordDisk.i === 5, 'i=' + ordDisk.i + ' (A was at 5, B captured 3 first and committed last)');
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+  dmOrd.window.close();
+}
+{
+  /* Codex review of #464 (P2): ordering the cursor by a wall clock alone. If the device clock
+     was ahead when a checkpoint was written and is then corrected — an NTP sync, a manual
+     change, a phone waking — every later capture is a SMALLER number than the one on disk, so
+     the saved cursor cannot move until wall time catches up. Not a lost update: a stuck one.
+     Put a record on disk whose iAt is an hour in the future, move this tab's reader, and require
+     the reader's real position to win anyway. */
+  const rkeySk = w.eval('RUNKEY');
+  const qsSk = w.eval("PQ.slice(0,12).map(p=>p.y+'#'+p.n)");
+  w.eval(`mockQs = ${JSON.stringify(qsSk)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 0;
+    mockRunId = 'skew-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'skew-run';
+    MOCKSEEN = JSON.stringify({id: 'skew-run', a: {}, f: {}, i: 0});
+    setMockI(3);`);   /* the app's own cursor mover, which every control calls — a bare
+                         mockI = 3 would leave the reader looking moved but not marked as
+                         having moved, which is the distinction this merge now turns on */
+  store[rkeySk] = w.eval(`JSON.stringify({q: ${JSON.stringify(qsSk)}, fp: mockPaperFp(mockQs), a: {}, f: {},
+    i: 9, iAt: Date.now() + 3600000, e: 0, t: 0, id: 'skew-run', rev: 1})`);
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 40));
+  const skDisk = JSON.parse(store[rkeySk] || '{}');
+  ok('a cursor timestamped in the future does not freeze the saved place until wall time catches up',
+     skDisk.i === 3, 'i=' + skDisk.i + ' (reader is at 3; disk claimed 9, stamped an hour ahead)');
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+}
+{
+  /* Codex review of #464 (P2): after this tab adopts another tab's cursor, the adopted value goes
+     into MOCKSEEN while local mockI stays where it was. On the next checkpoint nothing has moved
+     anywhere — cur.i === seenI and this tab did not navigate — and the old branch returned the
+     stale LOCAL cursor, writing it back over the one just adopted. Neither side moving must leave
+     the record alone. Driven through #mockFlag, a save that is not a navigation. */
+  const rkeyAd = w.eval('RUNKEY');
+  const qsAd = w.eval("PQ.slice(0,9).map(p=>p.y+'#'+p.n)");
+  w.eval(`mockQs = ${JSON.stringify(qsAd)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 1;
+    mockRunId = 'adopt-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'adopt-run';
+    MOCKSEEN = JSON.stringify({id: 'adopt-run', a: {}, f: {}, i: 1});`);
+  /* the other tab moved to 6; this one has not navigated at all */
+  store[rkeyAd] = w.eval(`JSON.stringify({q: ${JSON.stringify(qsAd)}, fp: mockPaperFp(mockQs), a: {}, f: {},
+    i: 6, iAt: Date.now() - 500, e: 0, t: 0, id: 'adopt-run', rev: 1})`);
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 40));
+  const adAdopted = JSON.parse(store[rkeyAd] || '{}').i;
+  d.getElementById('mockFlag').click();          /* a save, not a navigation */
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 40));
+  const adAfter = JSON.parse(store[rkeyAd] || '{}').i;
+  ok('a cursor adopted from another tab is not rewound by this tab\u2019s next non-navigating save',
+     adAdopted === 6 && adAfter === 6, 'adopted ' + adAdopted + ', after a flag-only save ' + adAfter);
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockFlag = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+}
+{
+  /* Codex review of #464 (P2): the cursor's timestamp was taken when the checkpoint ran, not when
+     the reader moved. Every save refreshed it, so a flag toggle or a re-answer at the same
+     question handed this tab the freshest stamp with no navigation at all — and laterWins() then
+     beat another tab whose reader had genuinely moved more recently. The stamp belongs to the
+     move. Driven through the real controls: setMockI for the move, #mockFlag for the non-move. */
+  const rkeyTs = w.eval('RUNKEY');
+  const qsTs = w.eval("PQ.slice(0,6).map(p=>p.y+'#'+p.n)");
+  delete store[rkeyTs];
+  w.eval(`mockQs = ${JSON.stringify(qsTs)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 0;
+    mockRunId = 'stamp-run'; mockRunSeq = 1; mockRunClaimed = false; mockRunObservedId = '';
+    MOCKSEEN = JSON.stringify({id: 'stamp-run', a: {}, f: {}, i: 0});
+    setMockI(2); mockPaint();`);
+  const tsAtMove = w.eval('mockIAtMoved');
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 30));
+  const tsFirst = JSON.parse(store[rkeyTs] || '{}').iAt;
+  await new Promise(r => setTimeout(r, 25));        /* real time passes with no navigation */
+  d.getElementById('mockFlag').click();             /* a save that changes a flag, not the place */
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 30));
+  const tsAfter = JSON.parse(store[rkeyTs] || '{}').iAt;
+  ok('a checkpoint that does not move the reader does not refresh the cursor timestamp',
+     tsFirst === tsAtMove && tsAfter === tsAtMove,
+     'moved at ' + tsAtMove + ', first write ' + tsFirst + ', after a flag-only save ' + tsAfter);
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockFlag = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+}
+{
+  /* Codex review of #464 (P2): whether THIS tab moved was inferred by comparing endpoints,
+     mineI !== seenI. That cannot see a reader who navigated away and came back before the
+     checkpoint reached the lock: the endpoints match, it reads as "did not move", and the other
+     tab's older reading is kept even though this tab made the most recent interaction. The
+     rapid repaints in between supersede each other by seq, so no intermediate write records it
+     either. Movement is now tracked rather than inferred.
+     Driven through setMockI, which is what every cursor control in the file calls. */
+  const rkeyBk = w.eval('RUNKEY');
+  const qsBk = w.eval("PQ.slice(0,10).map(p=>p.y+'#'+p.n)");
+  w.eval(`mockQs = ${JSON.stringify(qsBk)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 0;
+    mockRunId = 'back-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'back-run';
+    MOCKSEEN = JSON.stringify({id: 'back-run', a: {}, f: {}, i: 0});
+    setMockI(2); setMockI(0);`);   /* away and back: same endpoint, latest interaction */
+  store[rkeyBk] = w.eval(`JSON.stringify({q: ${JSON.stringify(qsBk)}, fp: mockPaperFp(mockQs), a: {}, f: {},
+    i: 7, iAt: Date.now() - 1000, e: 0, t: 0, id: 'back-run', rev: 1})`);
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 40));
+  const bkDisk = JSON.parse(store[rkeyBk] || '{}');
+  ok('a reader who navigated away and back still counts as having moved, and keeps their place',
+     bkDisk.i === 0, 'i=' + bkDisk.i + ' (reader went 0 to 2 and back to 0; the other tab saved 7)');
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'");
+}
+{
+  /* Codex review of #464 (P1): "2020#1" names a question SLOT, not its content. A deployment can
+     reword an option, reorder the options or correct the key without touching y or n — and then
+     an answer of Bet restored from before that edit is graded against a different option. The
+     list comparison reported sameList and merged those answers in; the Resume handler's own
+     length check cannot see it either, because the length did not change (ACCEPTANCE-round5.md
+     ID4). The record now carries a fingerprint of the option text and the key.
+     The wrong fingerprint here is computed by the app itself, over this same paper with its
+     options reordered — the actual shape of the deployment change, not a made-up string. */
+  const rkeyFp = w.eval('RUNKEY');
+  const qsFp = w.eval("PQ.slice(0,5).map(p=>p.y+'#'+p.n)");
+  w.eval(`mockQs = ${JSON.stringify(qsFp)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {}; mockFlag = {}; mockI = 0;
+    mockRunId = 'fp-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'fp-run';
+    MOCKSEEN = JSON.stringify({id: 'fp-run', a: {}, f: {}, i: 0});`);
+  /* Codex review of #464 (P1): a deployment can reword the STEM while leaving y#n, the options
+     and the key untouched — the question now asks something else, and an answer restored from
+     before means something else. The first fingerprint hashed the options and the key and not
+     the stem, so it could not see that at all. */
+  const fpStem = w.eval("mockPaperFp(mockQs.map((p,n)=>n===0?Object.assign({}, p, {q: p.q + ' (reworded)'}):p))");
+  const fpNow = w.eval('mockPaperFp(mockQs)');
+  const fpEdited = w.eval('mockPaperFp(mockQs.map(p=>Object.assign({}, p, {o: (p.o||[]).slice().reverse()})))');
+  ok('the paper fingerprint changes when the options are reordered, with the same y#n keys throughout',
+     !!fpNow && !!fpEdited && fpNow !== fpEdited, fpNow + ' vs ' + fpEdited);
+  ok('...and when only the stem is reworded, with the options and the key untouched',
+     !!fpStem && fpStem !== fpNow, fpNow + ' vs ' + fpStem);
+  store[rkeyFp] = JSON.stringify({q: qsFp, fp: fpEdited, a: {2: 'ג'}, f: {}, i: 2, iAt: 1, e: 0, t: 0,
+    id: 'fp-run', rev: 1});
+  w.eval("mockAns[0] = 'א'; mockPaperChanged = true;");
+  await w.eval('mockSaveRun()');
+  await new Promise(r => setTimeout(r, 40));
+  const fpDisk = JSON.parse(store[rkeyFp] || '{}');
+  /* Eias's call, against the first shape of this fix: KEEP the answers and warn, rather than
+     refuse to merge them. Refusing looked safer and was worse — Resume has already copied the
+     old answers into mockAns, so a refusal made mergeMockAnswers treat each of them as a local
+     edit and write it straight back under the CURRENT fingerprint, certifying exactly what could
+     not be certified (Codex review of #464). Merging them and flagging the run says the same
+     thing honestly. */
+  ok('answers given against an edited paper are kept, not silently re-certified under the new fingerprint',
+     fpDisk.a && fpDisk.a['0'] === 'א' && fpDisk.a['2'] === 'ג' && fpDisk.fp === fpNow,
+     JSON.stringify(fpDisk.a) + ' fp=' + (fpDisk.fp === fpNow ? 'current' : fpDisk.fp));
+  ok('...and the record carries the flag, so a reload still knows the score needs a caveat',
+     fpDisk.chg === 1, 'chg=' + fpDisk.chg);
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'; mockPaperChanged = false;");
+}
+{
+  /* Nothing drove the Resume-side detection itself — the report test below sets the flag by hand,
+     so reverting the fingerprint comparison at Resume changed no check. Drive the real Resume
+     button against a record whose stored fingerprint does not match the paper this build serves.
+     A previous MISSED in CI is what surfaced the gap. */
+  const qsRs = w.eval("PQ.slice(0,4).map(p=>p.y+'#'+p.n)");
+  const rsStore = {'geri:mockrun': JSON.stringify({q: qsRs, fp: 'not-this-paper', a: {0: '\u05d0'}, f: {},
+    i: 0, e: 0, t: 0, id: 'resume-fp-run', rev: 1})};
+  const dmRs = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://example.org/stage-a/',
+    beforeParse(w2){ pinClock(w2); wireErrs(w2); wireLocks(w2);
+      w2.storage = { get: async k => { if(!(k in rsStore)) throw new Error('missing'); return {key:k, value:rsStore[k]}; },
+        set: async (k, v) => { rsStore[k] = v; return {key:k, value:v}; } }; } });
+  for(let t = 0; t < 100 && !dmRs.window.document.getElementById('mockResume'); t++) await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 100));
+  dmRs.window.alert = () => {};
+  dmRs.window.document.getElementById('mockResume').click();
+  await new Promise(r => setTimeout(r, 150));
+  ok('resuming a record whose stored fingerprint does not match the paper this build serves flags the run',
+     dmRs.window.eval('mockPaperChanged') === true, 'mockPaperChanged=' + dmRs.window.eval('mockPaperChanged'));
+  let rsDisk = {};
+  try{ rsDisk = JSON.parse(rsStore['geri:mockrun']); }catch(e){}
+  ok('...and the flag is on the record the very first checkpoint writes, not only in memory',
+     rsDisk.chg === 1, 'chg=' + rsDisk.chg);
+  dmRs.window.close();
+}
+{
+  /* the flag has to reach the reader, and before the number rather than under it: "warn before
+     grading" is the whole point of keeping the answers. */
+  const qsWarn = w.eval("PQ.filter(x=>!x.im).slice(0,3).map(p=>p.y+'#'+p.n)");
+  w.eval(`mockQs = ${JSON.stringify(qsWarn)}.map(k => { const [y,n] = k.split('#'); return PQ.find(p => p.y===y && p.n===+n); });
+    mockOn = true; mockAns = {0:'א'}; mockFlag = {}; mockI = 0;
+    mockRunId = 'warn-run'; mockRunSeq = 1; mockRunClaimed = true; mockRunObservedId = 'warn-run';
+    MOCKSEEN = '{}'; mockPaperChanged = true;`);
+  await w.eval('mockFinish(true)');
+  await new Promise(r => setTimeout(r, 120));
+  const warnEl = d.getElementById('mockStaleNote');
+  const bigEl = d.querySelector('#mockReport .big');
+  ok('a run whose paper changed says so in the report, above the score',
+     !!warnEl && /earlier version of this paper/.test(warnEl.textContent) &&
+     !!bigEl && (warnEl.compareDocumentPosition(bigEl) & 4) !== 0,
+     warnEl ? warnEl.textContent.slice(0, 60) : 'no note');
+  w.eval("mockOn = false; mockQs = []; mockAns = {}; mockRunId = ''; mockRunObservedId = ''; mockRunClaimed = false; MOCKSEEN = '{}'; mockPaperChanged = false;");
+  d.getElementById('mockReport').hidden = true;
 }
 {
   /* ID2 (ACCEPTANCE-round5.md, section A): Date.now()+Math.random() is not actually
