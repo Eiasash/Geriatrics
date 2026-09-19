@@ -3424,7 +3424,14 @@ ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
      inside the <mark> tags an earlier word had just injected. "delirium mark" produced
      <<mark>mark</mark>>delirium</<mark>mark</mark>>, and any second word that is a substring
      of "mark" (a, ar, k, ma) garbled the snippet the same way. One pass over the snippet now. */
-  for(const term of ['delirium mark', 'risk a']){
+  /* two explicit calls with static labels, not a loop building the label from a runtime
+     variable — a label assembled via string concatenation (`'...: "' + term + '"'`) can never
+     be a mutation's needle: it does not exist as literal text anywhere in this file (only its
+     two runtime-concatenated instances do), so --static's source-text preflight can never see
+     it, and a needle broad enough to match the shared literal PREFIX matches both instances at
+     once, which is the exact ambiguity 2(a) exists to reject. Same assertions, same two terms,
+     now each its own literal, greppable label. */
+  const survivesInjectedMarkup = (label, term) => {
     q.value = term; w.eval("search('" + term + "')");
     const els = [...d.querySelectorAll('#hits button')];
     /* the comment check is not cosmetic: the parser turns the broken "</<mark>mark</mark>>"
@@ -3433,11 +3440,12 @@ ok('2020 q90 option 1 carries the paper\u2019s bracket: METRONIDAZOLE (FLAGYL)',
     const bad = els.filter(b => /<</.test(b.innerHTML) || /<m</.test(b.innerHTML) ||
       b.innerHTML.includes('<!--') || /(^|[^&])(&lt;|<)\/?mark(&gt;|>)/.test(b.textContent) ||
       (b.innerHTML.match(/<mark>/g) || []).length !== (b.innerHTML.match(/<\/mark>/g) || []).length);
-    ok('search highlighting survives a second word that matches the markup it injects: "' + term + '"',
-       els.length > 0 && bad.length === 0,
+    ok(label, els.length > 0 && bad.length === 0,
        els.length + ' hits, ' + bad.length + ' garbled' + (bad[0] ? ': ' + bad[0].innerHTML.slice(0, 90) : ''), {id:'g0569'});
     w.eval("search('')"); q.value = '';
-  }
+  };
+  survivesInjectedMarkup('search highlighting survives a second word that matches the markup it injects: "delirium mark"', 'delirium mark');
+  survivesInjectedMarkup('search highlighting survives a second word that matches the markup it injects: "risk a"', 'risk a');
 }
 {
   w.eval("show('papers')");

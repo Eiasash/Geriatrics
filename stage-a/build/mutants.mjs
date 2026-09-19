@@ -12,7 +12,7 @@
 */
 import fs from 'fs';
 import { execFileSync } from 'child_process';
-import { classifyMutant, baselineOk, guardRecords, resolveNeedle } from './mutants-classify.mjs';
+import { classifyMutant, baselineOk, guardRecords, resolveNeedle, resolveTargetId, classifyById } from './mutants-classify.mjs';
 import { logRun } from './ledger.mjs';
 
 /* The child runs are runs of a DELIBERATELY BROKEN file. Their verdicts say nothing about the
@@ -55,7 +55,7 @@ const M = [
   ['SEEN advances on a write that never landed',
    "      landed = !!(back && back.value === blob);",
    "      landed = true;",
-   'SEEN where it was', undefined, {id:'m0005'}],
+   'a refused save leaves SEEN where it was', undefined, {id:'m0005'}],
 
   ['rollback claims a restoration it did not make',
    "          if(back && back.value === want) rolled++; else failed.push(j);",
@@ -91,7 +91,7 @@ const M = [
   ['abbreviation in the pop-out stops closing the dialog',
    "const inModal = a.closest('#tblModal');",
    "const inModal = false;",
-   'finds its footnote and closes', undefined, {id:'m0012'}],
+   'an abbreviation tapped inside the table pop-out closes the dialog and lands on its own footnote', undefined, {id:'m0012'}],
 
   ['all-wrong small samples hidden again',
    "const weakEnough = t => (t.n >= 4 && (t.n - t.w) / t.n < 0.65) || (t.n >= 2 && t.w === t.n);",
@@ -106,7 +106,7 @@ const M = [
   ['pre-paint script accepts any text size',
    "if(['s','m','l','xl'].indexOf(v.fs) >= 0) document.body.classList.add('fs-' + v.fs);",
    "if(v.fs) document.body.classList.add('fs-' + v.fs);",
-   'only accepts a size it knows', undefined, {id:'m0015'}],
+   'and refuses one it does not', undefined, {id:'m0015'}],
 
   ['mock draws answered questions as unseen',
    "const fresh = pool.filter(p=>pqDone[pqKey(p)] === undefined);",
@@ -378,7 +378,7 @@ const M = [
   ["the pre-paint script paints light first and snaps to dark",
    "    if(raw === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) v.dark = true;",
    "",
-   "before the first paint", undefined, {id:'m0068'}],
+   "the phone’s dark setting is applied before the first paint, not after a light flash", undefined, {id:'m0068'}],
   /* --- group 5: extraction-garbled options, 16/09 --- */
   ["the COMBODEX option is garbled again",
    "\"COMBODEX (PARACETAMOL, IBUPROFEN)\"",
@@ -479,7 +479,7 @@ const M = [
   ['the jump buttons lose their 44px tap target',
    "    min-height:44px;min-width:44px;justify-content:center;\n",
    "",
-   '44px tap target', undefined, {id:'m0088'}],
+   'both jump buttons keep a 44px tap target', undefined, {id:'m0088'}],
 
   ['the jump row stays up on Past papers and the mock, over the answer options',
    "    if(row) row.classList.toggle('off', !!sec && sec.id === 'papers');",
@@ -685,7 +685,7 @@ const M = [
   ['text size in the pill\u2019s menu no longer closes the menu behind it',
    "  document.getElementById('mtSize').addEventListener('click', ()=>setMenuOpen(false));",
    "",
-   'text size', undefined, {id:'m0124'}],
+   'text size in the pill’s menu joins the shared display-popover wiring, and closes the pill’s own menu behind it', undefined, {id:'m0124'}],
 
   ['theme in the pill\u2019s menu stops toggling dark mode',
    "  document.getElementById('mtTheme').addEventListener('click', ()=>{ disp.dark = !disp.dark; paintDisp(); setMenuOpen(false); });",
@@ -932,7 +932,7 @@ const M = [
   ['search highlighting goes back to one replace per word, marking its own markup',
    "    if(words.length) snip = snip.replace(\n      new RegExp(words.map(w=>esc(escHtml(w))).sort((a,b)=>b.length-a.length).join('|'), 'gi'),\n      m=>`<mark>${m}</mark>`);",
    "    for(const w of words) snip = snip.replace(new RegExp(esc(escHtml(w)), 'gi'), m=>`<mark>${m}</mark>`);",
-   'survives a second word that matches the markup it injects', undefined, {id:'m0170'}],
+   'search highlighting survives a second word that matches the markup it injects: "delirium mark"', undefined, {id:'m0170'}],
 
   /* --- v21 dark palette, 16 Sep --- */
   ['dark accent reverts to the too-bright pre-audit amber',
@@ -1026,7 +1026,7 @@ const M = [
   ['the quick-log button’s dark outline goes back to border-color-only, invisible against its own border:none rule',
    'body.dark #week #qLog{ background:var(--surface) !important; border:1px solid var(--c-now) !important; color:var(--ink) !important; }',
    'body.dark #week #qLog{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }',
-   'with a real border', undefined, {id:'m0188'}],
+   'dark mode outlines the quick-log button the same way, with a real border (its own rule sets border:none, so border-color alone would be invisible)', undefined, {id:'m0188'}],
 
   ['a pressed filter pill reverts to a solid amber fill with near-black text in dark mode',
    'body.dark .pf button[aria-pressed="true"]{ background:var(--surface) !important; border-color:var(--c-now) !important; color:var(--ink) !important; }',
@@ -1047,7 +1047,7 @@ const M = [
   ['a live selection no longer freezes the header’s auto-hide',
    "if(typeof hdrSetFrozen === 'function') hdrSetFrozen(up);",
    '',
-   'freezes the header’s auto-hide', undefined, {id:'m0192'}],
+   'a live selection freezes the header’s auto-hide', undefined, {id:'m0192'}],
 
   ['the docked highlight bar stops re-anchoring to the top when the header is hidden',
    'body.hdr-hidden #hlBar{ top:env(safe-area-inset-top) !important; }',
@@ -1115,7 +1115,7 @@ const M = [
   ['a mock running underneath the practice keydown listener also answers/advances the background practice question, polluting pqDone (Gemini site-wide audit)',
    "  if(mockOn) return;\n  /* the topic sheet",
    "  /* the topic sheet",
-   'does not also answer or advance the background practice question', undefined, {id:'m0206'}],
+   'while a mock is running, pressing 1-4/n does not also answer or advance the background practice question', undefined, {id:'m0206'}],
   ['the drill summary injects a missed card’s text into innerHTML unescaped, so a raw < in the text starts an unintended tag (Gemini site-wide audit)',
    "rMissed.map(i=>'<li>'+escHtml(QS[i][0])+'</li>')",
    "rMissed.map(i=>'<li>'+QS[i][0]+'</li>')",
@@ -1151,7 +1151,7 @@ const M = [
   ['opening the topic sheet no longer moves focus into it, stranding a keyboard user on the page underneath (SZMC code audit)',
    `function openSheet(){ SHEET.hidden=false; document.body.style.overflow='hidden'; document.getElementById('sheetClose').focus(); }`,
    `function openSheet(){ SHEET.hidden=false; document.body.style.overflow='hidden'; }`,
-   'moves focus into it', undefined, {id:'m0215'}],
+   'opening the topic sheet moves focus into it', undefined, {id:'m0215'}],
   ['opening the backup/restore modal no longer moves focus into it (SZMC code audit)',
    "  document.getElementById('bkClose').focus();\n  await bkFill();",
    '  await bkFill();',
@@ -1206,12 +1206,12 @@ const M = [
    `      movedOn = JSON.stringify(nowMine) !== JSON.stringify(mine);
       apply(movedOn ? mergeFn(merged, mine, nowMine) : merged);`,
    `      apply(merged);`,
-   'survives in both memory and on disk', undefined, {id:'m0228'}],
+   'a highlight added while an earlier save is still writing survives in both memory and on disk', undefined, {id:'m0228'}],
   ['mergeSave stops queueing a follow-up save when the live value moved on mid-write, so that edit reaches memory but is never actually persisted to disk (ChatGPT third-model audit round 4, data-loss cluster item 1)',
    `    if(movedOn) mergeSave(key, getMine, mergeFn, apply).then(resolveResult);
     else resolveResult(landed);`,
    `    resolveResult(landed);`,
-   'survives in both memory and on disk', undefined, {id:'m0229'}],
+   'a highlight added by mutating HL.falls in place (the real edit path, not a reassignment) while an earlier save is still writing survives in both memory and on disk, against pre-existing stored data', undefined, {id:'m0229'}],
   ['mergeSave stops re-checking storage right before it writes, so another tab’s confirmed write landing between our read and our write is silently overwritten (ChatGPT third-model audit round 4, data-loss cluster item 2, "two tabs")',
    `    try{
       const r2 = await window.storage.get(key);
@@ -1470,6 +1470,9 @@ if(STATIC){
    here, outside the block below, because the worker loop that classifies each mutation needs
    it too — assigned once, read many times, never recomputed per mutation. */
 let BASELINE_PASSES = 0;
+/* the id each non-audit/browser mutation resolves to, ONCE, against the baseline — read by
+   the worker below, never recomputed per mutant run (see the P1 fix comment inside the block) */
+const TARGETS = new Map();
 {
   let out = '', status = 0;
   try{ out = execFileSync('node', ['test.mjs', SRC], {encoding:'utf8', env: CHILD_ENV}); status = 0; }
@@ -1503,20 +1506,31 @@ let BASELINE_PASSES = 0;
      names none or names several is reported as what it is — a mutation that can produce no
      verdict — rather than being quietly counted as a pass or a miss for 259 runs.
 
-     test.mjs-run mutations only: the audit runner prints no guard records. */
-  const baseLabels = guardRecords(out).guards.map(g => g.label);
-  if(baseLabels.length){
+     test.mjs-run mutations only: the audit runner prints no guard records.
+
+     Review-lane P1 fix: this used to resolve each needle against the baseline ONLY to decide
+     whether the preflight passes, then throw the resolved identity away — the worker re-resolved
+     from scratch against each MUTANT run's own labels, which is exactly the bug (a mutation that
+     makes its own intended guard vanish entirely can resolve UNIQUELY against the survivors,
+     and gets credited CAUGHT via a guard that never had anything to do with it). resolveTargetId
+     is called ONCE here, per mutation, against this green baseline, and its result — the
+     resolved guard's stable ALLOCATED ID, not its label — is what TARGETS below carries into
+     the worker. classifyById never re-resolves against the mutant run; it only asks whether a
+     record bearing that exact id exists there, and what it says. */
+  if(guardRecords(out).guards.length){
     const unresolvable = [];
-    for(const [name, , , needle, runner] of M_RUN){
+    for(let i = 0; i < M_RUN.length; i++){
+      const [name, , , needle, runner] = M_RUN[i];
       if(runner === 'audit' || runner === 'browser') continue;
-      const r = resolveNeedle(baseLabels, needle);
-      if(!r.ok) unresolvable.push({ name, needle, r });
+      const target = resolveTargetId(out, needle);
+      TARGETS.set(i, target);
+      if(!target.ok) unresolvable.push({ name, needle, target });
     }
     if(unresolvable.length){
-      console.log('NEEDLES THAT NAME NO SINGLE GUARD — these mutations can produce no verdict:');
+      console.log('NEEDLES THAT NAME NO SINGLE, PROPERLY-IDENTIFIED GUARD — these mutations can produce no verdict:');
       for(const u of unresolvable){
-        console.log('  ' + u.r.reason + '  — needle "' + u.needle + '"');
-        u.r.matches.slice(0, 3).forEach(m => console.log('      also: "' + m + '"'));
+        console.log('  ' + u.target.reason + '  — needle "' + u.needle + '"');
+        (u.target.matches || []).slice(0, 3).forEach(m => console.log('      also: "' + m + '"'));
         console.log('      on: ' + u.name.slice(0, 110));
       }
       console.log('\n' + unresolvable.length + ' of ' + M_RUN.length + ' mutations cannot be certified. Nothing below would mean anything.');
@@ -1524,9 +1538,8 @@ let BASELINE_PASSES = 0;
         reason: 'unresolvable needles', unresolvable: unresolvable.length, shard: SHARD || null });
       process.exit(1);
     }
-    const viaSubstring = M_RUN.filter(([, , , needle, runner]) =>
-      runner !== 'audit' && runner !== 'browser' && resolveNeedle(baseLabels, needle).how === 'unique substring').length;
-    console.log('every needle names exactly one guard (' + M_RUN.length + ' checked, ' +
+    const viaSubstring = [...TARGETS.values()].filter(t => t.ok && t.how === 'unique substring').length;
+    console.log('every needle names exactly one properly-identified guard (' + TARGETS.size + ' checked, ' +
       viaSubstring + ' by unique substring rather than by the full label)\n');
     if(NEEDLES_ONLY){
       logRun('mutants.mjs --needles', { file: SRC, mutations: M_RUN.length,
@@ -1614,7 +1627,10 @@ async function worker(){
     }
     const { out, status } = await runSuite(tmp);
     try{ fs.unlinkSync(tmp); }catch(e){}
-    results[i] = classifyMutant(name, needle, out, BASELINE_PASSES, status);
+    /* id-keyed, not label-keyed — see the P1 fix comment above the preflight block. TARGETS
+       was resolved once against the baseline; classifyMutant (label-keyed, still exported and
+       still covered by its own harness-selftest.mjs suite) is no longer the production path. */
+    results[i] = classifyById(name, TARGETS.get(i), out, BASELINE_PASSES, status);
   }
 }
 const t0 = Date.now();

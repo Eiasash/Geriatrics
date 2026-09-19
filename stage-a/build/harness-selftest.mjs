@@ -19,7 +19,7 @@
 import { execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { classifyMutant, baselineOk, guardRecords, resolveNeedle, failLabels } from './mutants-classify.mjs';
+import { classifyMutant, baselineOk, guardRecords, resolveNeedle, failLabels, resolveTargetId, classifyById } from './mutants-classify.mjs';
 
 let FAILS = 0;
 const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
@@ -387,6 +387,82 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
   }
 }
 
+/* ---- (4b) id-keyed certification — the review-lane P1 fix ----
+
+   classifyMutant (above) resolves the needle against the MUTANT run's own labels, every time —
+   never against the baseline. A needle genuinely ambiguous at baseline (two labels contain it)
+   resolves UNIQUELY against a mutant run in which the mutation makes the intended guard vanish
+   entirely: removing the witness removes the ambiguity that would otherwise refuse the verdict,
+   and classifyMutant reports CAUGHT, citing the wrong guard. Reproduced here exactly as the
+   review specified — adopted verbatim, not paraphrased — and confirmed red against the OLD
+   (label-keyed) path before any fix code existed, per "a red test you never saw go red is not
+   a red test". */
+{
+  const G = (id, label, verdict, threw) => '##GUARD ' + JSON.stringify({ id, label, verdict, threw: threw || null });
+  const bodyN = (lines, run) => lines.join('\n') + '\n' + (run || '##RUN ' + JSON.stringify({ completed: true, failures: 1 })) + '\nDONE\n' + Array(60).fill('PASS x').join('\n');
+
+  const baseline = bodyN([G('g0001', 'target', 'pass'), G('g0002', 'target neighbour', 'pass'), G('g0003', 'filler', 'pass')],
+    '##RUN ' + JSON.stringify({ completed: true, failures: 0 }));
+  const baselinePasses = 3;
+  /* the mutant: g0001 ("target") is OMITTED ENTIRELY — the guard the mutation exists to
+     exercise never fired at all — while g0002 ("target neighbour") fails for a reason that has
+     nothing to do with this mutation, and g0003 still passes */
+  const mutantAbsent = bodyN(['FAIL  target neighbour', G('g0002', 'target neighbour', 'fail'), G('g0003', 'filler', 'pass')]);
+
+  /* THE RED TEST, confirmed red against the OLD path first. classifyMutant re-resolves
+     "target" against the MUTANT's own labels, where it now names exactly one guard —
+     "target neighbour" — because the guard it was meant to name is silently absent. */
+  const oldVerdict = classifyMutant('m', 'target', mutantAbsent, baselinePasses, 1);
+  ok('CONFIRMED RED, old label-keyed path: an absent intended guard is falsely CAUGHT via an unrelated neighbour that happens to fail',
+     oldVerdict.startsWith('CAUGHT'), oldVerdict);
+
+  /* THE FIX: resolve once, against the baseline, and carry the id — not the label — into the
+     mutant-run classification. */
+  const target = resolveTargetId(baseline, 'target');
+  ok('resolveTargetId resolves the ambiguous-by-label needle to exactly one id against the baseline (exact match beats substring)',
+     target.ok === true && target.id === 'g0001' && target.label === 'target', JSON.stringify(target));
+
+  const newVerdict = classifyById('m', target, mutantAbsent, baselinePasses, 1);
+  ok('THE FIX: the same absent-guard case is UNCERTIFIABLE under id-keyed classification, not CAUGHT via the neighbour',
+     newVerdict.startsWith('UNCERTIFIABLE'), newVerdict);
+
+  /* POSITIVE CONTROL — without this, an always-abstaining classifier (UNCERTIFIABLE no matter
+     what) would pass the test above for the wrong reason. A classifier that certifies nothing
+     is exactly as blind as one that certifies everything; only this tells them apart. */
+  const mutantCaught = bodyN(['FAIL  target', G('g0001', 'target', 'fail'), G('g0002', 'target neighbour', 'pass'), G('g0003', 'filler', 'pass')]);
+  const controlVerdict = classifyById('m', target, mutantCaught, baselinePasses, 1);
+  ok('POSITIVE CONTROL: the intended guard genuinely failing is still CAUGHT — this is not an always-abstaining classifier',
+     controlVerdict === 'CAUGHT m', controlVerdict);
+
+  /* Four variants that must each REFUSE certification outright. */
+  const nullIdBaseline = bodyN([G(null, 'target', 'pass'), G('g0002', 'filler', 'pass')], '##RUN ' + JSON.stringify({ completed: true, failures: 0 }));
+  const nullIdTarget = resolveTargetId(nullIdBaseline, 'target');
+  ok('VARIANT — null target id: a guard resolved at baseline but never allocated an id refuses, rather than falling back to its label',
+     nullIdTarget.ok === false, JSON.stringify(nullIdTarget));
+
+  const zeroRecordsMutant = ['FAIL  target', '##RUN ' + JSON.stringify({ completed: true, failures: 1 }), 'DONE', ...Array(60).fill('PASS x')].join('\n');
+  const zeroVerdict = classifyById('m', target, zeroRecordsMutant, baselinePasses, 1);
+  ok('VARIANT — zero structured records: a mutant run with no ##GUARD lines at all refuses (no synthetic substring fallback)',
+     zeroVerdict.startsWith('UNCERTIFIABLE'), zeroVerdict);
+
+  const malformedMutant = bodyN(['##GUARD {not json', G('g0001', 'target', 'fail')]);
+  const malformedVerdict = classifyById('m', target, malformedMutant, baselinePasses, 1);
+  ok('VARIANT — malformed record beside a valid target failure: one unparseable record anywhere in the stream refuses the whole run, even though the target itself looks fine',
+     malformedVerdict.startsWith('UNCERTIFIABLE'), malformedVerdict);
+
+  const sharedIdMutant = bodyN([G('g0001', 'target', 'fail'), G('g0001', 'target RENAMED', 'pass')]);
+  const sharedIdVerdict = classifyById('m', target, sharedIdMutant, baselinePasses, 1);
+  ok('VARIANT — shared-id different-case: two records sharing the target id but disagreeing on label within one run refuses, rather than picking one',
+     sharedIdVerdict.startsWith('UNCERTIFIABLE'), sharedIdVerdict);
+
+  /* Also refuse at the BASELINE side of the same defect: two records sharing one label but
+     carrying different ids — resolveTargetId must not silently pick one. */
+  const dupIdBaseline = bodyN([G('g0001', 'target', 'pass'), G('g0002', 'target', 'pass')], '##RUN ' + JSON.stringify({ completed: true, failures: 0 }));
+  const dupIdTarget = resolveTargetId(dupIdBaseline, 'target');
+  ok('VARIANT — the same label carried by two different ids in the baseline refuses at resolution time',
+     dupIdTarget.ok === false, JSON.stringify(dupIdTarget));
+}
+
 /* ---- (5) allocate-guard-ids.mjs: retirement is real, and an id is never handed back out ----
 
    Runs the actual allocator (not a re-implementation of its logic) against a throwaway copy
@@ -440,6 +516,96 @@ const ok = (label, cond, extra = '') => { if (!cond) FAILS++;
     }
   } finally {
     fs.rmSync(scratchDir, { recursive: true, force: true });
+  }
+}
+
+/* ---- (5b) allocate-guard-ids.mjs: two independent allocations against a shared base collide,
+   and the allocator must refuse rather than accept — review-lane items 5 and 6 ----
+
+   The four existing allocator assertions above are all SEQUENTIAL, SINGLE-STREAM: one scratch
+   copy, one registry, one allocation at a time. None of them proves two independent allocations
+   CANNOT collide — they prove ids get assigned, never that assignment is safe under the shape
+   that actually broke it: two branches, each starting from the same registry.next, each picking
+   the same never-before-used id for a DIFFERENT new check, then merged. That is exactly how
+   g0630 collided. Built here as two real scratch copies from one shared base, allocated
+   independently, then merged the way a git merge would — two call sites in one file, each
+   already carrying the literal token {id:'g0630'}. */
+{
+  const os = await import('os');
+  const baseDir = fs.mkdtempSync(path.join(os.tmpdir(), 'guard-id-merge-base-'));
+  const branchADir = fs.mkdtempSync(path.join(os.tmpdir(), 'guard-id-merge-a-'));
+  const branchBDir = fs.mkdtempSync(path.join(os.tmpdir(), 'guard-id-merge-b-'));
+  const run = (...args) => execFileSync('node', ['allocate-guard-ids.mjs', ...args], { encoding: 'utf8' });
+  try{
+    const baseFile = path.join(baseDir, 'test.mjs');
+    const baseRegistry = path.join(baseDir, 'guard-ids.json');
+    fs.copyFileSync('test.mjs', baseFile);
+    run('--write', '--file', baseFile, '--registry', baseRegistry);
+    const baseReg = JSON.parse(fs.readFileSync(baseRegistry, 'utf8'));
+    const nextId = 'g' + String(baseReg.next).padStart(4, '0');
+    const doneLine = 'console.log("DONE");';
+    const baseSrc = fs.readFileSync(baseFile, 'utf8');
+
+    /* branch A: one new check, allocated from the shared base registry */
+    const fileA = path.join(branchADir, 'test.mjs');
+    const registryA = path.join(branchADir, 'guard-ids.json');
+    fs.writeFileSync(fileA, baseSrc.replace(doneLine, "ok('scratch: branch A adds this check', true);\n" + doneLine), 'utf8');
+    fs.copyFileSync(baseRegistry, registryA);
+    run('--write', '--file', fileA, '--registry', registryA);
+    const regA = JSON.parse(fs.readFileSync(registryA, 'utf8'));
+    ok('branch A allocates the shared next id for its own new check',
+       regA.guards[nextId] && regA.guards[nextId].label.includes('branch A'), JSON.stringify(regA.guards[nextId]));
+
+    /* branch B: a DIFFERENT new check, allocated independently from the SAME shared base
+       registry — neither branch has seen the other's allocation */
+    const fileB = path.join(branchBDir, 'test.mjs');
+    const registryB = path.join(branchBDir, 'guard-ids.json');
+    fs.writeFileSync(fileB, baseSrc.replace(doneLine, "ok('scratch: branch B adds a different check', true);\n" + doneLine), 'utf8');
+    fs.copyFileSync(baseRegistry, registryB);
+    run('--write', '--file', fileB, '--registry', registryB);
+    const regB = JSON.parse(fs.readFileSync(registryB, 'utf8'));
+    ok('branch B independently allocates the SAME shared next id for its own, different new check — the collision',
+       regB.guards[nextId] && regB.guards[nextId].label.includes('branch B'), JSON.stringify(regB.guards[nextId]));
+
+    /* the merge: both new ok() calls, each already carrying the literal {id:'g0630'}-shaped
+       token, land in one file — exactly what a real git merge of both branches produces */
+    const mergedSrc = fs.readFileSync(fileA, 'utf8').replace(doneLine,
+      "ok('scratch: branch B adds a different check', true, '', {id:'" + nextId + "'});\n" + doneLine);
+    const mergedFile = path.join(baseDir, 'test-merged.mjs');
+    fs.writeFileSync(mergedFile, mergedSrc, 'utf8');
+
+    let threw = null;
+    try{ run('--file', mergedFile, '--registry', baseRegistry); }
+    catch(e){ threw = (e.stderr || '') + (e.stdout || '') + (e.message || ''); }
+    ok('THE MERGE-COLLISION FIX: the allocator refuses (throws) rather than silently accepting two call sites that share one id',
+       threw != null && /DUPLICATE IDS/.test(threw), threw ? threw.slice(0, 200) : '(did not throw)');
+
+    /* and the sibling case item 5 also names: a hand-edited or badly-merged file that reuses
+       an id the registry already knows as retired must refuse too */
+    const retiredScratchDir = fs.mkdtempSync(path.join(os.tmpdir(), 'guard-id-retired-reuse-'));
+    try{
+      const rFile = path.join(retiredScratchDir, 'test.mjs');
+      const rRegistry = path.join(retiredScratchDir, 'guard-ids.json');
+      fs.copyFileSync(baseFile, rFile);
+      /* a synthetic id well outside the real 629, so this exercises ONLY the retired-reuse
+         path — reusing a real active id (e.g. g0001) would trip the duplicate-id check first,
+         since that id is still claimed by its own real call site in the base file */
+      const retiredReg = { ...baseReg, retired: { ...baseReg.retired, g9001: { label: 'anything', file: 'test.mjs', status: 'retired', retired_reason: 'test fixture', retired_at: new Date().toISOString() } } };
+      fs.writeFileSync(rRegistry, JSON.stringify(retiredReg, null, 2), 'utf8');
+      const rSrc = fs.readFileSync(rFile, 'utf8');
+      fs.writeFileSync(rFile, rSrc.replace(doneLine, "ok('scratch: reuses a retired id', true, '', {id:'g9001'});\n" + doneLine), 'utf8');
+      let threwRetired = null;
+      try{ run('--file', rFile, '--registry', rRegistry); }
+      catch(e){ threwRetired = (e.stderr || '') + (e.stdout || '') + (e.message || ''); }
+      ok('VARIANT — retired id reused: the allocator refuses a hand-edited or badly-merged reuse of an id the registry already retired',
+         threwRetired != null && /RETIRED ID REUSED/.test(threwRetired), threwRetired ? threwRetired.slice(0, 200) : '(did not throw)');
+    } finally {
+      fs.rmSync(retiredScratchDir, { recursive: true, force: true });
+    }
+  } finally {
+    fs.rmSync(baseDir, { recursive: true, force: true });
+    fs.rmSync(branchADir, { recursive: true, force: true });
+    fs.rmSync(branchBDir, { recursive: true, force: true });
   }
 }
 

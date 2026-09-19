@@ -78,6 +78,43 @@ export function resolveNeedle(labels, needle) {
    checks broke parsing, whatever the suite's current size. */
 const BROKE_FRACTION = 0.1;
 
+/* Shared tail: everything after "do we have a caught/not-caught verdict candidate" is common
+   to the label-keyed path (classifyMutant, below — kept for its own extensive coverage and as
+   the one-time "does the red test actually go red on the old path" check the review-lane ruling
+   asked for) and the id-keyed path (classifyById, further below — the actual production path
+   after this fix). Extracting it once means a change to DONE/INCONSISTENT/BROKE/WEAK-WITNESS
+   semantics can't drift between the two by accident. */
+function finishVerdict(name, caught, weakWitness, how, lines, passes, brokeThreshold, rec, baselinePasses, exitStatus) {
+  /* exact line match, not startsWith: test.mjs only ever prints a bare "DONE" line, so this
+     was already safe in practice, but startsWith('DONE') would also credit a line like
+     "DONE_WITH_ERRORS" or any other line that happens to begin with the same four letters
+     (ChatGPT third-model audit round 4, paired with the same weakness below in baselineOk) */
+  const done = lines.some(l => l === 'DONE');
+  if (!done) return 'INCOMPLETE ' + name + '  — the suite stopped after ' + passes + ' checks without reaching DONE; not a verdict';
+  /* The DONE line proves the child reached its own last line of code, not that its exit code
+     agrees with what it just printed. test.mjs's own contract is `process.exit(FAILS ||
+     process.exitCode ? 1 : 0)` — FAILS is what the ##RUN record's `failures` field carries,
+     but `process.exitCode` can be set by a path FAILS never sees (the unhandledRejection
+     handler sets it directly, without touching FAILS, specifically so a late rejection after
+     every check has already passed still fails the run). A run that prints a clean ##RUN
+     record and then exits 1 anyway is exactly that case — contaminated in a way `caught`/
+     `done` alone cannot see. Checked only when a real exit status was actually captured: the
+     mutation subprocess wrapper on this path used to discard it entirely (fixed alongside this
+     check, not before it — a status nobody captured cannot be cross-checked against anything). */
+  if (rec.run && typeof exitStatus === 'number') {
+    const expectStatus = rec.run.failures > 0 ? 1 : 0;
+    if (exitStatus !== expectStatus) return 'INCONSISTENT ' + name + '  — ##RUN reports ' +
+      rec.run.failures + ' failure(s) (expected exit ' + expectStatus + ') but the process exited ' +
+      exitStatus + '; something failed after the last check that FAILS never counted. Not a verdict.';
+  }
+  /* the file stopped parsing, so everything failed. That is not the guard biting. */
+  if (caught && passes < brokeThreshold) return 'BROKE  ' + name + '  — mutation broke the parse (' +
+    passes + ' passed, below ' + brokeThreshold + (typeof baselinePasses === 'number' ? ' = 10% of the ' + baselinePasses + '-check baseline' : ', the no-baseline fallback floor') + '); it proves nothing';
+  if (weakWitness) return 'WEAK-WITNESS ' + name + '  — ' + weakWitness + '. Not CAUGHT.';
+  if (caught) return 'CAUGHT ' + name + (how === 'identity' ? '' : '  [' + how + ']');
+  return 'MISSED ' + name + (how === 'identity' ? '' : '  [' + how + ']');
+}
+
 export function classifyMutant(name, needle, out, baselinePasses, exitStatus) {
   const lines = out.split('\n');
   const passes = lines.filter(l => l.startsWith('PASS')).length;
@@ -144,34 +181,91 @@ export function classifyMutant(name, needle, out, baselinePasses, exitStatus) {
     caught = failLabels(lines).some(label => label.includes(needle));
     how = 'SUBSTRING FALLBACK — the run emitted no guard records, so this is not an identity';
   }
-  /* exact line match, not startsWith: test.mjs only ever prints a bare "DONE" line, so this
-     was already safe in practice, but startsWith('DONE') would also credit a line like
-     "DONE_WITH_ERRORS" or any other line that happens to begin with the same four letters
-     (ChatGPT third-model audit round 4, paired with the same weakness below in baselineOk) */
-  const done = lines.some(l => l === 'DONE');
-  if (!done) return 'INCOMPLETE ' + name + '  — the suite stopped after ' + passes + ' checks without reaching DONE; not a verdict';
-  /* The DONE line proves the child reached its own last line of code, not that its exit code
-     agrees with what it just printed. test.mjs's own contract is `process.exit(FAILS ||
-     process.exitCode ? 1 : 0)` — FAILS is what the ##RUN record's `failures` field carries,
-     but `process.exitCode` can be set by a path FAILS never sees (the unhandledRejection
-     handler sets it directly, without touching FAILS, specifically so a late rejection after
-     every check has already passed still fails the run). A run that prints a clean ##RUN
-     record and then exits 1 anyway is exactly that case — contaminated in a way `caught`/
-     `done` alone cannot see. Checked only when a real exit status was actually captured: the
-     mutation subprocess wrapper on this path used to discard it entirely (fixed alongside this
-     check, not before it — a status nobody captured cannot be cross-checked against anything). */
-  if (rec.run && typeof exitStatus === 'number') {
-    const expectStatus = rec.run.failures > 0 ? 1 : 0;
-    if (exitStatus !== expectStatus) return 'INCONSISTENT ' + name + '  — ##RUN reports ' +
-      rec.run.failures + ' failure(s) (expected exit ' + expectStatus + ') but the process exited ' +
-      exitStatus + '; something failed after the last check that FAILS never counted. Not a verdict.';
-  }
-  /* the file stopped parsing, so everything failed. That is not the guard biting. */
-  if (caught && passes < brokeThreshold) return 'BROKE  ' + name + '  — mutation broke the parse (' +
-    passes + ' passed, below ' + brokeThreshold + (typeof baselinePasses === 'number' ? ' = 10% of the ' + baselinePasses + '-check baseline' : ', the no-baseline fallback floor') + '); it proves nothing';
-  if (weakWitness) return 'WEAK-WITNESS ' + name + '  — ' + weakWitness + '. Not CAUGHT.';
-  if (caught) return 'CAUGHT ' + name + (how === 'identity' ? '' : '  [' + how + ']');
-  return 'MISSED ' + name + (how === 'identity' ? '' : '  [' + how + ']');
+  return finishVerdict(name, caught, weakWitness, how, lines, passes, brokeThreshold, rec, baselinePasses, exitStatus);
+}
+
+/* ---- id-keyed certification (review-lane P1 fix) ----
+
+   The defect classifyMutant (above) still carries, even after 2(a)/2(b)/2(c)/WEAK-WITNESS:
+   resolveNeedle is called AGAIN, from scratch, against the MUTANT run's own labels — never
+   against the baseline. A needle that is genuinely ambiguous at baseline (two labels contain
+   it) can resolve UNIQUELY against a mutant run in which the mutation exists to make ONE of
+   those two guards disappear entirely — and the certifier reports CAUGHT, citing the guard
+   that never had anything to do with the mutation, because removing the intended witness
+   REMOVED THE AMBIGUITY that would otherwise have refused the verdict. Confirmed by
+   reproduction (harness-selftest.mjs): baseline g0001 "target"/g0002 "target neighbour" both
+   PASS (needle "target" is ambiguous here); mutant omits g0001 entirely, g0002 FAILS for an
+   unrelated reason; classifyMutant returns CAUGHT via g0002. The needle was never wrong; the
+   MOMENT of resolution was.
+
+   The fix: resolve ONCE, against the baseline ONLY (resolveTargetId), and carry the resolved
+   guard's stable ALLOCATED ID — not its label, which a rename can still silently reassign —
+   into the mutant-run classification (classifyById). Absence of that id in the mutant run's
+   own records is then visible as exactly what it is: no witness ran, not "the witness passed"
+   and not "some other guard, coincidentally, failed". */
+
+/* Resolve a needle to exactly one guard's stable id, against the BASELINE only. Everything
+   downstream (classifyById) trusts this id and never re-derives it from a label. */
+export function resolveTargetId(baselineOut, needle) {
+  const rec = guardRecords(baselineOut);
+  if (rec.bad.length) return { ok: false, reason: 'the baseline emitted ' + rec.bad.length + ' malformed guard record(s); a needle cannot be trusted against a baseline that cannot be parsed' };
+  if (!rec.guards.length) return { ok: false, reason: 'the baseline emitted no guard records at all' };
+  const r = resolveNeedle(rec.guards.map(g => g.label), needle);
+  if (!r.ok) return { ok: false, reason: r.reason, matches: r.matches };
+  const matching = rec.guards.filter(g => g.label === r.label);
+  /* the SAME exact label carried by records with different ids inside one baseline run is a
+     duplicate/retired-id-reuse defect in the allocator or a hand-edit, not something a needle
+     resolution can paper over — refuse rather than pick one arbitrarily */
+  const distinctIds = new Set(matching.map(g => g.id));
+  if (distinctIds.size > 1) return { ok: false, reason: 'the label "' + r.label + '" is carried by records with different ids in the baseline: ' + [...distinctIds].join(', ') };
+  const id = matching[0].id;
+  /* an ok() call with no {id:...} meta yet (never run through allocate-guard-ids.mjs, or the
+     literal token was stripped) has nothing stable to carry — falling back to its label would
+     just re-import the exact fragility this function exists to remove */
+  if (id == null) return { ok: false, reason: 'the resolved guard "' + r.label + '" has no allocated id (meta.id is null) — nothing stable to carry into the mutant run', label: r.label };
+  return { ok: true, id, label: r.label, how: r.how };
+}
+
+export function classifyById(name, target, out, baselinePasses, exitStatus) {
+  if (!target.ok) return 'UNCERTIFIABLE ' + name + '  — the needle could not be resolved against the baseline: ' +
+    target.reason + (target.matches && target.matches.length ? '; matches: ' + target.matches.slice(0, 3).map(m => '"' + m + '"').join(', ') : '') +
+    '. No verdict either way.';
+  const lines = out.split('\n');
+  const passes = lines.filter(l => l.startsWith('PASS')).length;
+  const brokeThreshold = (typeof baselinePasses === 'number' && baselinePasses > 0)
+    ? Math.max(1, Math.round(baselinePasses * BROKE_FRACTION))
+    : 50;
+  const rec = guardRecords(out);
+  /* Validate the WHOLE stream before awarding any verdict — a malformed record elsewhere in
+     the run means the run's own reporting is not trustworthy, even if the target's own record
+     happens to look fine. A run this broken is not a witness for anything it printed. */
+  if (rec.bad.length) return 'UNCERTIFIABLE ' + name + '  — this run emitted ' + rec.bad.length +
+    ' malformed guard record(s); nothing it reports can be trusted, including a record that happens to name "' + target.id + '"';
+  /* no synthetic substring fallback here (that was the old SUBSTRING FALLBACK path, itself a
+     substring-matching path this fix exists to remove) — zero guard records at all in a run
+     that was supposed to certify by id is refused, not silently downgraded to text matching */
+  if (!rec.guards.length) return 'UNCERTIFIABLE ' + name + '  — this run emitted no guard records at all; nothing to certify against';
+  const matches = rec.guards.filter(g => g.id === target.id);
+  /* the target id shared by records whose labels disagree WITHIN THIS RUN — a duplicate/
+     retired-id-reuse defect surfacing at classification time instead of at allocation time.
+     Different from the baseline-side check in resolveTargetId: that one catches it in the
+     baseline; this one catches it if a mutation itself somehow produces the collision. */
+  const distinctLabels = new Set(matches.map(g => g.label));
+  if (distinctLabels.size > 1) return 'UNCERTIFIABLE ' + name + '  — id "' + target.id +
+    '" is carried by records with different labels in this run: ' + [...distinctLabels].slice(0, 3).map(l => '"' + l + '"').join(', ');
+  /* THE FIX, this is the line that matters: absence is its own outcome, not "passed" and not
+     "some other guard failed instead". MISSED still means exactly what it always meant — the
+     intended check ran and did not detect the defect. Nothing here was detected because
+     nothing here ran. */
+  if (!matches.length) return 'UNCERTIFIABLE ' + name + '  — no record with id "' + target.id + '" ("' +
+    target.label + '") appears in this run; the guard the mutation exists to exercise never ran — not that it passed, and not that some other guard caught it instead';
+  const failed = matches.filter(g => g.verdict === 'fail');
+  const caught = failed.length > 0;
+  const weakWitness = caught && failed.every(g => g.threw != null) ?
+    'every failing record for "' + target.label + '" threw (' +
+      failed.map(g => '"' + g.threw + '"').slice(0, 2).join('; ') + ') rather than evaluating the ' +
+      'labelled behaviour; a crashed selector is not a witness for what the label claims' : null;
+  return finishVerdict(name, caught, weakWitness, 'identity', lines, passes, brokeThreshold, rec, baselinePasses, exitStatus);
 }
 
 /* ChatGPT third-model audit: the baseline check read only stdout/stderr text (FAIL lines,

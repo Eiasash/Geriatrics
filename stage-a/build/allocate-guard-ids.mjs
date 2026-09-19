@@ -125,6 +125,40 @@ const parsed = calls.map(c => {
 let registry = { next: 1, guards: {}, retired: {} };
 if(fs.existsSync(REGISTRY)) registry = JSON.parse(fs.readFileSync(REGISTRY, 'utf8'));
 
+/* Review-lane item 5: reject a duplicate or retired token instead of silently accepting it.
+   Every entry in `parsed` is a DISTINCT source position (findCalls finds one per literal
+   `ok(` occurrence) — there is no legitimate reason two different call sites carry the exact
+   same {id:'...'} token. The shape that produces this: two independent allocation runs, each
+   starting from the same registry.next, each picking the same never-before-used id for a
+   DIFFERENT new check, then merged together (this is exactly how g0630 collided). The old
+   code below used to just do `registry.guards[existingId] = {...}` per call site in source
+   order, so the second site silently overwrote the first's registry entry — both kept their
+   token in the FILE, but the registry (and every id-keyed lookup, including classifyById's)
+   ended up trusting only whichever one the loop happened to visit last. */
+{
+  const byId = new Map();
+  for(const p of parsed){
+    if(!p.existingId) continue;
+    if(!byId.has(p.existingId)) byId.set(p.existingId, []);
+    byId.get(p.existingId).push(p);
+  }
+  const duplicates = [...byId.entries()].filter(([, sites]) => sites.length > 1);
+  if(duplicates.length){
+    console.log('DUPLICATE IDS — the same id is embedded at more than one ok() call site:');
+    for(const [id, sites] of duplicates) console.log('  ' + id + ': ' +
+      sites.map(s => 'line ' + s.line + ' ("' + s.label.slice(0, 60) + '")').join('  |  '));
+    throw new Error(duplicates.length + ' id(s) claimed by more than one call site — refusing to touch the file. ' +
+      'Give every call but one a fresh id (delete its {id:...} and re-run with --write), or fix whichever site ' +
+      'copy-pasted an id it should not have.');
+  }
+  const retiredReuse = parsed.filter(p => p.existingId && registry.retired[p.existingId]);
+  if(retiredReuse.length){
+    console.log('RETIRED ID REUSED — these ids were already retired and must never be reissued:');
+    for(const p of retiredReuse) console.log('  ' + p.existingId + ' at line ' + p.line + ' ("' + p.label.slice(0, 60) + '")');
+    throw new Error(retiredReuse.length + ' retired id(s) reused — refusing to touch the file. Delete the stale {id:...} token so a fresh one can be allocated.');
+  }
+}
+
 /* retire first: any id the registry knows as active but that no longer appears in the file
    at all. History is frozen — we keep its last-known label and the retirement reason, never
    delete the record, never hand the id back out. */
