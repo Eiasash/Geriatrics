@@ -1,4 +1,5 @@
 import { JSDOM } from 'jsdom'; import { pinClock } from './clock.mjs'; import fs from 'fs';
+import { logRun } from './ledger.mjs';
 const html=fs.readFileSync(process.argv[2]||'geriatrics-stage-a.html','utf8'); const errs=[];
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,beforeParse(w){pinClock(w);const m={};w.storage={get:async k=>{if(!(k in m))throw new Error('x');return{key:k,value:m[k]}},set:async(k,v)=>{m[k]=v;return{key:k,value:v}}};w.requestIdleCallback=f=>setTimeout(f,0);w.addEventListener('error',e=>errs.push(e.message));w.console.error=(...a)=>errs.push('console.error '+a.join(' '));}});
 await new Promise(r=>setTimeout(r,1500)); const w=dom.window,d=w.document;
@@ -43,5 +44,8 @@ check('details on home', wkSummaries.join(' | '), wkSummaries.length>0);
 
 console.log('errors', errs.length, errs[0]||'');
 if(errs.length) fail.push('runtime errors');
+logRun('dashtest.mjs', { file: process.argv[2] || 'geriatrics-stage-a.html',
+  failures: fail.length, failed: fail, runtime_errors: errs.length,
+  verdict: fail.length ? 'fail' : 'pass', completed: true, engine: 'jsdom' });
 if(fail.length){ console.log('FAIL:', fail.join(', ')); process.exit(1); }
 process.exit(0);

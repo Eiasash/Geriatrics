@@ -1,4 +1,5 @@
 import { JSDOM } from 'jsdom'; import { pinClock } from './clock.mjs'; import fs from 'fs';
+import { logRun } from './ledger.mjs';
 const html=fs.readFileSync(process.argv[2]||'geriatrics-stage-a.html','utf8'); const errs=[];
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,beforeParse(w){pinClock(w);
   const m={}; w.storage={get:async k=>{if(!(k in m))throw new Error('missing');return{key:k,value:m[k]}},set:async(k,v)=>{m[k]=v;return{key:k,value:v}}};
@@ -23,4 +24,7 @@ console.log('sections',ids.length,'chgo clicks',clicks,'dup-abbr sections',dupAb
    duplicated abbreviation footnote passed with exit 0 as long as no runtime error fired. Both
    are real defects (a dead-sec button silently does nothing on click; a dup abbr means two
    footnotes fight for one asterisk), so fail on them the same as a runtime error. */
+logRun('sweep.mjs', { file: process.argv[2] || 'geriatrics-stage-a.html', sections: ids.length,
+  chgo_clicks: clicks, dup_abbr_sections: dupAbbr, dead_data_sec: dead, runtime_errors: errs.length,
+  verdict: (errs.length || dupAbbr || dead) ? 'fail' : 'pass', completed: true, engine: 'jsdom' });
 process.exit((errs.length || dupAbbr || dead) ? 1 : 0);
