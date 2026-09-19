@@ -92,6 +92,36 @@ for (const [lane, l] of Object.entries(state.lanes || {})) {
       blocking.push({ lane, why: 'source record is incomplete (needs chars and digest read off the lane page) — CANNOT EVALUATE, and unknown is not pass' });
       continue;
     }
+
+    /* DIGEST STABILITY (found in the first live use of the rule above, and it had already passed).
+       The first digest recorded under this rule was computed over the rendered DOM node, which
+       carries the app's thinking-header preamble. That preamble's repeat count is not stable, so the
+       same unchanged message hashed to two different values minutes apart (2900 then 2794 chars).
+       A digest that moves on unchanged content identifies nothing: it cannot detect a substitution
+       and cannot be reproduced. The rule accepted it because it only checked that a digest EXISTED -
+       a proxy standing in for the property, inside the mechanism built to stop exactly that.
+
+       So the record must now name the extractor that produced the digest, and carry at least two
+       INDEPENDENT reads that agreed. Disagreement between reads is a blocking condition, not a note.
+
+       WHAT THIS CANNOT DO, stated so the label is not read as more than it is: the gate cannot
+       verify the reads actually happened. It checks that the record claims two and that the claimed
+       values are self-consistent. The reads remain SELF-REPORTED. This is a consistency check on the
+       record, not proof of the reading - and calling it hardened would be the same overclaim again. */
+    if (!src.extractor) {
+      blocking.push({ lane, why: 'source record names no extractor — a digest over raw rendered text includes UI chrome and is not stable. CANNOT EVALUATE.' });
+      continue;
+    }
+    const reads = Array.isArray(src.reads) ? src.reads : [];
+    if (reads.length < 2) {
+      blocking.push({ lane, why: 'source record carries ' + reads.length + ' read(s); at least 2 independent reads must be recorded and agree (digest stability)' });
+      continue;
+    }
+    const disagree = reads.some(r => r.chars !== src.chars || r.digest !== src.digest);
+    if (disagree) {
+      blocking.push({ lane, why: 'the recorded reads DISAGREE with each other or with the headline digest — the digest is not stable, so it identifies nothing' });
+      continue;
+    }
     const fetchedAt = src.fetched_at ? Date.parse(src.fetched_at) : null;
     if (fetchedAt === null) {
       blocking.push({ lane, why: 'source record has no fetched_at — cannot tell whether the fetch predates their message' });

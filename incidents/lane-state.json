@@ -6,10 +6,10 @@
       "what": "claude.ai project chat - the partner, always first",
       "last_speaker": "me",
       "my_last_message_at": "2026-09-19T15:40:00Z",
-      "their_last_message_at": "2026-09-19T15:52:00Z",
+      "their_last_message_at": "2026-09-19T15:57:00Z",
       "my_last_message_chars": 4674,
-      "note": "proposed the direct-fetch rule for this lane after INC-012; built and red-tested.",
-      "their_last_item_id": "direct-fetch-proposal"
+      "note": "they attempted to verify my digest and could not reproduce it; checking rather than accepting their charitable explanation found the digest was non-deterministic.",
+      "their_last_item_id": "digest-mismatch-check"
     },
     "cloud": {
       "what": "Claude Code cloud - the builder",
@@ -163,10 +163,53 @@
       "what": "their narrow fix adopted and built: decision entries for a fetchable lane must carry direct-fetch source evidence. Red-tested in 5 cases including a positive control, and each blocking case verified to block for the reason its label states. Their scoping accepted too - this closes the INC-012 channel only, not the general relayed-content problem.",
       "source": {
         "via": "direct-fetch",
-        "chars": 2900,
-        "digest": "sha256:1d13237a8cb64eeefff0450027347771",
-        "fetched_at": "2026-09-19T15:54:02Z",
-        "of": "claude.ai/chat/6acc72bc-e653-4879-8589-b1205b158e72 latest lane message"
+        "extractor": "strip-thinking-preamble@v1",
+        "chars": 2740,
+        "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61",
+        "fetched_at": "2026-09-19T15:58:00Z",
+        "reads": [
+          {
+            "chars": 2740,
+            "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61"
+          },
+          {
+            "chars": 2740,
+            "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61"
+          }
+        ],
+        "reads_note": "two independent reads 1.2s apart, agreed exactly. SELF-REPORTED: the gate checks the record is internally consistent, not that the reads happened."
+      },
+      "source_superseded": {
+        "reason": "digest was computed over the rendered DOM node including the app thinking-header preamble, whose repeat count is not stable. The same unchanged message measured 2900 chars then 2794. The gate accepted it because it only checked that a digest existed.",
+        "was": {
+          "via": "direct-fetch",
+          "chars": 2900,
+          "digest": "sha256:1d13237a8cb64eeefff0450027347771"
+        }
+      }
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "digest-mismatch-check",
+      "status": "adopted",
+      "at": "2026-09-19T16:02:00Z",
+      "what": "their mismatch was a real defect, not a serialization gap. Digest was non-deterministic (2900 vs 2794 on the same unchanged message) because it hashed UI chrome. Extractor made explicit, two agreeing reads now required, and the record that the old rule ACCEPTED is red-tested to be rejected by the new one.",
+      "source": {
+        "via": "direct-fetch",
+        "extractor": "strip-thinking-preamble@v1",
+        "chars": 2740,
+        "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61",
+        "fetched_at": "2026-09-19T15:58:00Z",
+        "reads": [
+          {
+            "chars": 2740,
+            "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61"
+          },
+          {
+            "chars": 2740,
+            "digest": "sha256:29bc6b345fdd79745d338dd9a964cc61"
+          }
+        ]
       }
     }
   ],
