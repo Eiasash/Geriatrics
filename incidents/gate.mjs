@@ -69,8 +69,20 @@ for (const [lane, l] of Object.entries(state.lanes || {})) {
      the character count and a digest of the fetched text.
 
      WHAT THIS CLOSES: the INC-012 path, where text presented as the lane's arrived through another
-     channel and a decision entry was written against it without ever opening the lane. Producing a
-     digest requires having the page text, so a relayed paraphrase cannot satisfy it by construction.
+     channel and a decision entry was written against it without ever opening the lane.
+
+     CORRECTION, from the non-Claude oracle, and it was right. This comment used to end with:
+     "Producing a digest requires having the page text, so a relayed paraphrase cannot satisfy it
+     BY CONSTRUCTION." That sentence was FALSE and it was the strongest claim in the file.
+
+     The check below verifies the STRING src.via, not the acquisition channel. It rejects a record
+     that is HONEST about being a relay. It does not detect relayed content: a paraphrase recorded
+     as via:"direct-fetch", with a digest computed over that paraphrase, passes every check here.
+     The oracle demonstrated it with a fixture of locally invented text that never touched a page.
+
+     So the "relay blocked" test proves rejection of the relay TAG, not detection of relayed
+     content, and the ceiling disclaimer below - which was honest - did not cover this, because the
+     disclaimer conceded the digest's provenance while this sentence claimed the channel's.
 
      WHAT IT DOES NOT CLOSE, stated so the label is not read as more than it is: it does not prove
      the digest came from that page. A digest can be computed over any text. It raises the cost of
