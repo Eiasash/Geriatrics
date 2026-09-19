@@ -57,8 +57,49 @@ for (const [lane, l] of Object.entries(state.lanes || {})) {
     blocking.push({ lane, why: 'decision entry ' + (entry.in_reply_to || '?') + ' carries no timestamp — CANNOT EVALUATE, and unknown is not pass' });
     continue;
   }
-  if (readAt < theirs)
+  if (readAt < theirs) {
     blocking.push({ lane, why: 'they posted at ' + l.their_last_message_at + '; the newest decision entry is ' + entry.at + ', which is older. You are behind.' });
+    continue;
+  }
+
+  /* DIRECT-FETCH REQUIREMENT (INC-012). Lanes listed in direct_fetch_lanes have a transcript that
+     can be fetched directly, so a decision about one of their items may not rest on a paraphrase or
+     a relay of it. The entry must carry source evidence produced BY reading that lane's own page:
+     the character count and a digest of the fetched text.
+
+     WHAT THIS CLOSES: the INC-012 path, where text presented as the lane's arrived through another
+     channel and a decision entry was written against it without ever opening the lane. Producing a
+     digest requires having the page text, so a relayed paraphrase cannot satisfy it by construction.
+
+     WHAT IT DOES NOT CLOSE, stated so the label is not read as more than it is: it does not prove
+     the digest came from that page. A digest can be computed over any text. It raises the cost of
+     the failure from "accept a paraphrase" to "fabricate a source record", which is a different and
+     more deliberate act - it does not make it impossible. And it applies ONLY to lanes with a
+     fetchable transcript; a verbal report, a screenshot, or anything without a direct source is
+     outside it entirely, which is most of the general problem. */
+  const fetchLanes = state.direct_fetch_lanes || [];
+  if (fetchLanes.includes(lane)) {
+    const src = entry.source;
+    if (!src) {
+      blocking.push({ lane, why: 'decision entry ' + (entry.in_reply_to || '?') + ' carries no source record. This lane requires a DIRECT FETCH of its own page — a relay or paraphrase does not count (INC-012).' });
+      continue;
+    }
+    if (src.via !== 'direct-fetch') {
+      blocking.push({ lane, why: 'source.via is "' + src.via + '", not "direct-fetch". Relayed content cannot back a decision entry for this lane (INC-012).' });
+      continue;
+    }
+    if (!Number.isInteger(src.chars) || src.chars <= 0 || !src.digest) {
+      blocking.push({ lane, why: 'source record is incomplete (needs chars and digest read off the lane page) — CANNOT EVALUATE, and unknown is not pass' });
+      continue;
+    }
+    const fetchedAt = src.fetched_at ? Date.parse(src.fetched_at) : null;
+    if (fetchedAt === null) {
+      blocking.push({ lane, why: 'source record has no fetched_at — cannot tell whether the fetch predates their message' });
+      continue;
+    }
+    if (fetchedAt < theirs)
+      blocking.push({ lane, why: 'the source was fetched at ' + src.fetched_at + ', BEFORE they posted at ' + l.their_last_message_at + '. The decision rests on a stale fetch.' });
+  }
 }
 
 if (!blocking.length) {

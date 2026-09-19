@@ -5,11 +5,11 @@
     "chat": {
       "what": "claude.ai project chat - the partner, always first",
       "last_speaker": "me",
-      "my_last_message_at": "2026-09-19T15:30:00Z",
-      "their_last_message_at": "2026-09-19T15:26:00Z",
+      "my_last_message_at": "2026-09-19T15:40:00Z",
+      "their_last_message_at": "2026-09-19T15:52:00Z",
       "my_last_message_chars": 4674,
-      "note": "reset-before-each-case flagged and implemented; C2/C1 controls reported; they confirmed received and are waiting on the reviewer packet.",
-      "their_last_item_id": "c2-confirmed-received"
+      "note": "proposed the direct-fetch rule for this lane after INC-012; built and red-tested.",
+      "their_last_item_id": "direct-fetch-proposal"
     },
     "cloud": {
       "what": "Claude Code cloud - the builder",
@@ -154,6 +154,20 @@
       "status": "adopted",
       "at": "2026-09-19T15:36:00Z",
       "what": "RE-RECORDED with a real timestamp, same reason and same caveat as the cloud entry above."
+    },
+    {
+      "lane": "chat",
+      "in_reply_to": "direct-fetch-proposal",
+      "status": "adopted",
+      "at": "2026-09-19T15:56:00Z",
+      "what": "their narrow fix adopted and built: decision entries for a fetchable lane must carry direct-fetch source evidence. Red-tested in 5 cases including a positive control, and each blocking case verified to block for the reason its label states. Their scoping accepted too - this closes the INC-012 channel only, not the general relayed-content problem.",
+      "source": {
+        "via": "direct-fetch",
+        "chars": 2900,
+        "digest": "sha256:1d13237a8cb64eeefff0450027347771",
+        "fetched_at": "2026-09-19T15:54:02Z",
+        "of": "claude.ai/chat/6acc72bc-e653-4879-8589-b1205b158e72 latest lane message"
+      }
     }
   ],
   "reports_to_eias_note": "ROLLING WINDOW, current cycle only. A past violation stays here only until it is logged, then the permanent record is the incident entry. Keeping a historical breach in live state would hold CI red forever on something already recorded and remediated - which is the red-fatigue failure the chat lane warned about, and a CI that is reliably red stops being read. The 96be605 PARTNER-LAST breach - it reached Eias at 14:55 while the chat lane knew nothing until 15:08 - is permanently recorded in incidents.jsonl as part of INC-011, not erased.",
@@ -163,5 +177,9 @@
       "origin_lane": "chat",
       "at": "2026-09-19T15:30:00Z"
     }
-  ]
+  ],
+  "direct_fetch_lanes": [
+    "chat"
+  ],
+  "direct_fetch_note": "Lanes whose transcript can be fetched directly. A decision entry for one of these may not rest on a relay or a paraphrase: it must carry source {via:\"direct-fetch\", chars, digest, fetched_at} produced by reading that lane's own page. Added after INC-012. It closes that specific channel and nothing wider: a verbal report, a screenshot, or any source that cannot be fetched is outside it, and a digest proves a record was produced, not that it came from that page."
 }
