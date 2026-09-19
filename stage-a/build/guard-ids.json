@@ -1,0 +1,3241 @@
+{
+  "next": 648,
+  "guards": {
+    "g0001": {
+      "label": "'page clock is pinned to ' + PIN",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0002": {
+      "label": "'week section exists'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0003": {
+      "label": "'week is the default open section'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0004": {
+      "label": "'plan no longer auto-open'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0005": {
+      "label": "'one #today panel only'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0006": {
+      "label": "'rail has groups'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0007": {
+      "label": "'rail buttons all resolve to a section'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0008": {
+      "label": "'every section is reachable from the rail'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0009": {
+      "label": "'sheet mirrors the rail'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0010": {
+      "label": "'44 topics in the rail'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0011": {
+      "label": "'groups collapsed except the active one'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0012": {
+      "label": "'group opens on click'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0013": {
+      "label": "'group state mirrored into the sheet'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0014": {
+      "label": "'group state persisted'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0015": {
+      "label": "'group closes again'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0016": {
+      "label": "'rail hides'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0017": {
+      "label": "'rail returns'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0018": {
+      "label": "'sheet starts hidden'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0019": {
+      "label": "'week card has chapters'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0020": {
+      "label": "'week head filled'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0021": {
+      "label": "'day chips rendered'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0022": {
+      "label": "'coming-up rendered'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0023": {
+      "label": "'pace line rendered'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0024": {
+      "label": "'open-notes buttons wired'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0025": {
+      "label": "'plan rows have an open-week button'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0026": {
+      "label": "'timer clock initialised'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0027": {
+      "label": "'timer counts down'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0028": {
+      "label": "'timer persists'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0029": {
+      "label": "'skip advances phase'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0030": {
+      "label": "'reset restores phase 1'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0031": {
+      "label": "'chip toggle writes geri:days with the day actually in it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0032": {
+      "label": "'chip toggle updates the count label'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0033": {
+      "label": "'marking today repaints the dots strip with a newly lit (or cleared) dot'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0034": {
+      "label": "'toggling it back restores the original dot count'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0035": {
+      "label": "'score logged'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0036": {
+      "label": "'sparkline drawn'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0037": {
+      "label": "'score label updated'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0038": {
+      "label": "'note persisted against the week key'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0039": {
+      "label": "'card count'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0040": {
+      "label": "'every card tagged'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0041": {
+      "label": "'drill renders a card'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0042": {
+      "label": "'week-scoped drill labelled'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0043": {
+      "label": "'week-scoped drill has cards'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0044": {
+      "label": "'toggling back restores the full deck'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0045": {
+      "label": "'sheet navigation switches section'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0046": {
+      "label": "'picking a topic opens its group'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0047": {
+      "label": "'topic label follows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0048": {
+      "label": "'sheet closes after picking'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0049": {
+      "label": "'rail navigation works'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0050": {
+      "label": "'opening a later week switches the view'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0051": {
+      "label": "'back link offered'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0052": {
+      "label": "'back link returns to the current week'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0053": {
+      "label": "'search finds content'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0054": {
+      "label": "'section footers injected'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0055": {
+      "label": "'jump chips on long sections'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0056": {
+      "label": "'mark as read persists'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0057": {
+      "label": "'read tick appears in the rail'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0058": {
+      "label": "'read counter updates'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0059": {
+      "label": "'unmarking works'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0060": {
+      "label": "'drill-this-chapter switches to the drill'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0061": {
+      "label": "'drill filtered to the chapter'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0062": {
+      "label": "'round size limits the deck'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0063": {
+      "label": "'round selector applies'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0064": {
+      "label": "'round ends in a summary'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0065": {
+      "label": "'summary scores the round'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0066": {
+      "label": "'summary offers the missed subset'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0067": {
+      "label": "'weak spots populated'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0068": {
+      "label": "'weak-spot line on the week page'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0069": {
+      "label": "'another round restarts'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0070": {
+      "label": "'dark mode toggles'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0071": {
+      "label": "'dark mode persists'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0072": {
+      "label": "'text size applies'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0073": {
+      "label": "'hash follows the section'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0074": {
+      "label": "'section ' + id",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0075": {
+      "label": "'chapter links all resolve'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0076": {
+      "label": "'chapter index has 113 chapters'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0077": {
+      "label": "'chapter 27 resolved'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0078": {
+      "label": "'chapter index links work'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0079": {
+      "label": "'new section '+id",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0080": {
+      "label": "'six figures present'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0081": {
+      "label": "'figures numbered'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0082": {
+      "label": "'alignment chart drawn from the schedule'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0083": {
+      "label": "'deferred chapters shown at zero hours'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0084": {
+      "label": "'alignment note computed'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0085": {
+      "label": "'tables labelled'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0086": {
+      "label": "'table numbering starts at 1'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0087": {
+      "label": "'no duplicate table numbers'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0088": {
+      "label": "'verified citations in Sources'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0089": {
+      "label": "'bad citation corrected in place'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0090": {
+      "label": "'anatomy keeps the every-sitting table and the non-textbook table'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0091": {
+      "label": "'anatomy source under 9k chars outside the chapter index'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0092": {
+      "label": "'flashcards are searchable'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0093": {
+      "label": "'a \"Drill\" search hit exists to click'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0094": {
+      "label": "'a card hit opens that one card'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0095": {
+      "label": "'single-card mode labelled'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0096": {
+      "label": "'papers section exists'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0097": {
+      "label": "'786 geriatrics questions embedded'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0098": {
+      "label": "'every question has four option slots'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0099": {
+      "label": "'every question has a key'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0100": {
+      "label": "'keys use only valid letters'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0101": {
+      "label": "'chapter references present on recent papers'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0102": {
+      "label": "'a question renders'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0103": {
+      "label": "'four options rendered'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0104": {
+      "label": "'options are RTL'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0105": {
+      "label": "'answering marks the key'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0106": {
+      "label": "'answering reveals the source'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0107": {
+      "label": "'result persisted'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0108": {
+      "label": "'score line updated'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0109": {
+      "label": "'per-sitting table filled'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0110": {
+      "label": "'next question loads'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0111": {
+      "label": "'sitting filter applies'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0112": {
+      "label": "'week scope filters to this week\\'s chapters'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0113": {
+      "label": "'2020-2022 excluded from the recent scope'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0114": {
+      "label": "'IM block excluded everywhere'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0115": {
+      "label": "'card count now 147'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0116": {
+      "label": "'every card still tagged'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0117": {
+      "label": "'Lancet PAF table present'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0118": {
+      "label": "'ADA targets table present'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0119": {
+      "label": "'EBRSR recovery numbers present'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0120": {
+      "label": "'sources marked obtained'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0121": {
+      "label": "'mock controls present'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0122": {
+      "label": "'mock draws the right number'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0123": {
+      "label": "'mock uses only recent-edition papers'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0124": {
+      "label": "'mock has no duplicates'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0125": {
+      "label": "'mock is weighted to the source mix'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0126": {
+      "label": "'mock hides the practice card'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0127": {
+      "label": "'mock shows a question'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0128": {
+      "label": "'untimed mock says so'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0129": {
+      "label": "'mock report appears'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0130": {
+      "label": "'mock report scores out of the right total'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0131": {
+      "label": "'mock breaks the score down by source'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0132": {
+      "label": "'mock results feed the practice record'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0133": {
+      "label": "'mock result saved'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0134": {
+      "label": "'review button offered'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0135": {
+      "label": "'papers are in the search index'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0136": {
+      "label": "'Hebrew search finds real questions'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0137": {
+      "label": "'a search hit opens that one paper question'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0138": {
+      "label": "'and offers a way back'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0139": {
+      "label": "'download control present'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0140": {
+      "label": "'file input present'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0141": {
+      "label": "'mock key is in the backup set'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0142": {
+      "label": "'the in-progress mock key is in the backup set too, not just the finished-mock key'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0143": {
+      "label": "'mock pool toggle present'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0144": {
+      "label": "'last-mock line present'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0145": {
+      "label": "'unseen-only draw avoids answered questions'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0146": {
+      "label": "'an in-progress mock is saved'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0147": {
+      "label": "'answers are saved as you go'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0148": {
+      "label": "'finishing clears the saved run'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0149": {
+      "label": "'last result recorded'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0150": {
+      "label": "'Hebrew blocks carry a language attribute'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0151": {
+      "label": "'exam pearls present'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0152": {
+      "label": "'pearls sit inside topic sections, not at the end'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0153": {
+      "label": "'pearls spread across many sections'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0154": {
+      "label": "'pearls are searchable'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0155": {
+      "label": "'every section carries a group colour'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0156": {
+      "label": "'every section owns exactly one header band of its own'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0157": {
+      "label": "'table captions do not simply repeat the heading above'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0158": {
+      "label": "'ch 59 and ch 60 are read in the same lane-1 week'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0159": {
+      "label": "'ch 59 no longer sits in lane 2'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0160": {
+      "label": "'no lane-2 week under 5.5h before the last'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0161": {
+      "label": "'no lane-1 week over 8h'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0162": {
+      "label": "'63 follows 61 in lane 1'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0163": {
+      "label": "'ch 59 → #dementia, ch 60/63 → #bpsd'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0164": {
+      "label": "'dementia 14 cards / bpsd 10 cards'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0165": {
+      "label": "'chapter index routes 60 and 63 to bpsd'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0166": {
+      "label": "'sectionForChapter agrees on a string and a number form of the same chapter, for every chapter in SECCH'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0167": {
+      "label": "'sectionForChapter coerces at its own boundary'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0168": {
+      "label": "'chapter 22 (Medication Prescribing and De-Prescribing) routes to pharm, not the guideline-only beers section'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0169": {
+      "label": "'fixture precondition: at least 2 Hazzard ch 63 questions exist'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0170": {
+      "label": "'two wrong Hazzard ch 63 answers produce a real .weakgo jump button to bpsd, not plain bold text'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0171": {
+      "label": "'every chapter-verified fact is still on the page (' + F.length + ')'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0172": {
+      "label": "'every section stamped as verified exists'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0173": {
+      "label": "'every content section carries a source stamp'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0174": {
+      "label": "'display popover exists with both controls'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0175": {
+      "label": "'display settings reachable from the topics sheet (mobile) and the desktop rail (v26: moved out of the phone anchor bar)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0176": {
+      "label": "'popover text-size click applies and syncs the home row'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0177": {
+      "label": "'popover dark toggle mirrors the home button label'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0178": {
+      "label": "'a notes panel under every content section'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0179": {
+      "label": "'notes panels sit above the footer'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0180": {
+      "label": "'highlights and section notes are in the backup key list'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0181": {
+      "label": "'a stored highlight re-anchors to its ordinal occurrence'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0182": {
+      "label": "'re-anchored text matches the stored text'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0183": {
+      "label": "'the ordinal picked the second occurrence, not the first'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0184": {
+      "label": "'removing a highlight unwraps it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0185": {
+      "label": "'a highlight whose passage no longer exists is dropped, not misplaced'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0186": {
+      "label": "'section note persists'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0187": {
+      "label": "'the notes index renders into the dialog, not just into the helper'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0188": {
+      "label": "'and the copy-as-text helper agrees with it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0189": {
+      "label": "'highlight bar and note dialog each carry six swatches'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0190": {
+      "label": "'a stored colour becomes a class on the mark'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0191": {
+      "label": "'changing the colour repaints every mark for that highlight'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0192": {
+      "label": "'bookmark stores section, opening text and ordinal'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0193": {
+      "label": "'bookmark resolves back to the same block'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0194": {
+      "label": "'home page shows the resume strip with the section name'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0195": {
+      "label": "'bookmark is in the backup key list'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0196": {
+      "label": "'clearing hides the strip'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0197": {
+      "label": "'every abbreviation mark has a matching footnote term in its section'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0198": {
+      "label": "'every section footer offers backup & restore'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0199": {
+      "label": "'backup lives in a dialog and has one textarea only'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0200": {
+      "label": "'opening from a section moves the one backup block into the dialog'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0201": {
+      "label": "'the floating timer is hidden on the home page'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0202": {
+      "label": "'the floating timer stays hidden on a section while the block is untouched'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0203": {
+      "label": "'the floating timer shows on a section, with clock, phase and a control'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0204": {
+      "label": "'its button starts the same timer the home page drives'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0205": {
+      "label": "'and pauses it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0206": {
+      "label": "'hide shrinks the pill to a gear dot rather than removing it from the screen'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0207": {
+      "label": "'tapping the dot restores the full pill'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0208": {
+      "label": "'swatch colour rules carry an id so the bar button rule cannot flatten them'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0209": {
+      "label": "'an end button sits with the top button'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0210": {
+      "label": "'the stopwatch is a separate clock, not a flag on the day'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0211": {
+      "label": "'switching to the stopwatch relabels the pill and hides the phase control'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0212": {
+      "label": "'turning the stopwatch on pauses the day rather than letting both run'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0213": {
+      "label": "'the stopwatch runs'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0214": {
+      "label": "'and pauses where it was'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0215": {
+      "label": "'reset takes it to zero'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0216": {
+      "label": "'the day comes back exactly where it was left'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0217": {
+      "label": "'the stopwatch is in the backup key list'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0218": {
+      "label": "'v27: hide shrinks the pill to the gear dot and closes the menu behind it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0219": {
+      "label": "'tapping the dot opens it again'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0220": {
+      "label": "'scroll position is stored per section and persisted'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0221": {
+      "label": "'rememberScroll captures the current scroll position for the shown section'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0222": {
+      "label": "'restoring a section reads its stored offset'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0223": {
+      "label": "'the table pop-out ignores highlights and abbreviations'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0224": {
+      "label": "'resume writes both the pixel offset and the fraction, so the plausibility check cannot undo the jump'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0225": {
+      "label": "'scroll positions and the highlight colour are backed up'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0226": {
+      "label": "'the colour preference goes through the storage shim, not localStorage directly'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0227": {
+      "label": "'repainting a section does not duplicate its highlights'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0228": {
+      "label": "'selection offsets are counted over the searched node list, not Range.toString()'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0229": {
+      "label": "'the display popover clears the floating timer'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0230": {
+      "label": "'the selection bar is docked under the header, not positioned near the selection'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0231": {
+      "label": "'paintDisp calls setNavH, so a text-size change re-measures nav without waiting for resize'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0232": {
+      "label": "'picking XL text grows --navh without waiting for a resize event'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0233": {
+      "label": "'the docked bar sits under nav, not at the bottom edge where Chrome\\u2019s own contextual sheet lives'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0234": {
+      "label": "'nav\\u2019s height for --navh is written by the one existing measurer, not a second one'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0235": {
+      "label": "'measuring nav writes its real height into --navh'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0236": {
+      "label": "'the chapter-footer \"next this week\" button is actually hidden when it carries no label'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0237": {
+      "label": "'a chapter with no next chapter this week hides its next-chapter button, and it is genuinely display:none'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0238": {
+      "label": "'the selection bar takes its colour from the page, not a fixed dark fill'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0239": {
+      "label": "'the floating timer takes its colour from the page too, with a dark-mode border of its own'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0240": {
+      "label": "'the selection bar is budgeted to stay in one row at the largest text size'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0241": {
+      "label": "'the two secondary actions are behind an overflow toggle, not a second row'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0242": {
+      "label": "'the overflow starts closed'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0243": {
+      "label": "'one tap opens it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0244": {
+      "label": "'taking an action inside it closes the whole bar, overflow included'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0245": {
+      "label": "'showing the bar is display:none on the timer and the row, never opacity'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0246": {
+      "label": "'the header freezes synchronously on selectionchange, before the 260ms debounce ever runs'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0247": {
+      "label": "'a live selection shows the bar and stands the timer and the jump row down'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0248": {
+      "label": "'a live selection freezes the header’s auto-hide'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0249": {
+      "label": "'clearing the selection hides the bar and brings the timer and the jump row back'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0250": {
+      "label": "'clearing the selection un-freezes the header’s auto-hide'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0251": {
+      "label": "'exactly two selectionchange handlers exist in the file, both accounted for below'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0252": {
+      "label": "'every selectionchange-path function was actually found in the source'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0253": {
+      "label": "'no selectionchange handler mutates the DOM or the Selection while a selection is live'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0254": {
+      "label": "'the selection\\u2019s start and end are unchanged once the bar has appeared'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0255": {
+      "label": "'resume makes one scroll jump, not two'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0256": {
+      "label": "'no font size escapes the text-size control, whatever its capitalisation'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0257": {
+      "label": "'the rail state and the open tab are backed up'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0258": {
+      "label": "'a highlight that crosses element boundaries re-anchors as one highlight'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0259": {
+      "label": "'the rollback copy is verified by reading it back, not by the absence of a throw'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0260": {
+      "label": "'restore and file-load refuse to run while a mock paper is open, including one left suspended'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0261": {
+      "label": "'a hash that names no section is put back in step with what is on screen'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0262": {
+      "label": "'coming back to the tab re-reads the highlights, notes and bookmark, not only the small keys'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0263": {
+      "label": "'the refresh is queued ON the save chain, not merely awaited behind it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0264": {
+      "label": "'background writers stand down while a restore is rewriting every key'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0265": {
+      "label": "'clearing the bookmark reaches storage — the layer has no delete, only get and set'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0266": {
+      "label": "'a highlight deleted in another tab is unwrapped, not left on screen'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0267": {
+      "label": "'coming back to the tab MERGES the disk copy rather than assigning it over foreground work'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0268": {
+      "label": "'a refused save says so instead of leaving the highlight looking saved'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0269": {
+      "label": "'leaving the tab is actually wired to the flush, both ways'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0270": {
+      "label": "'and pagehide flushes too'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0271": {
+      "label": "'and the flush actually writes it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0272": {
+      "label": "'the floating timer stands down while a mock paper is running'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0273": {
+      "label": "'dark mode and text size are applied before the first paint, not after the async read'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0274": {
+      "label": "'highlights record the text on each side, not only the ordinal'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0275": {
+      "label": "'a highlight whose ordinal has gone stale re-anchors by its neighbours'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0276": {
+      "label": "'rather than moving a highlight onto text the reader never marked, it is dropped'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0277": {
+      "label": "'restore is all-or-nothing: a refused write rolls back instead of reloading into a mixture'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0278": {
+      "label": "'the rollback covers every key it ATTEMPTED, not only the ones that verified'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0279": {
+      "label": "'the pre-restore snapshot is awaited, so it cannot read keys the restore is mid-way through writing'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0280": {
+      "label": "'the mock result is written before the line that reads it back repaints'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0281": {
+      "label": "'both restore paths go through it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0282": {
+      "label": "'the highlight walk skips by tag and caches the verdict per element'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0283": {
+      "label": "'the section is walked once per highlight, not twice'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0284": {
+      "label": "'the service worker also registers when the URL names index.html'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0285": {
+      "label": "'a whole-paragraph or whole-cell selection is anchored, not silently lost'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0286": {
+      "label": "'neighbour matching survives whitespace the author added'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0287": {
+      "label": "'a tie between two equally-scoring occurrences drops the highlight rather than guessing'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0288": {
+      "label": "'context is compared over a widened, normalised window on both sides'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0289": {
+      "label": "'opening a section repaints its highlights after the abbreviation pass has rewritten the text'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0290": {
+      "label": "'rollback empties a key the user did not have before the restore'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0291": {
+      "label": "'and the rollback verifies its own writes rather than promising a restoration it did not make'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0292": {
+      "label": "'a selection starting mid-text-node is anchored at the right character'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0293": {
+      "label": "'navigating while a note is still in its debounce banks it first'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0294": {
+      "label": "'the flush is wired into show, not only into teardown'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0295": {
+      "label": "'a tab whose notes box matches its own stale memory writes nothing on teardown'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0296": {
+      "label": "'and the newer note is still there afterwards'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0297": {
+      "label": "'but a tab that genuinely typed something still writes it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0298": {
+      "label": "'the scroll position is written directly on teardown, not left behind a timer'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0299": {
+      "label": "'a teardown flush writes synchronously, because the OS can halt the thread before a promise resolves'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0300": {
+      "label": "'but a navigation that moved nothing writes nothing'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0301": {
+      "label": "'the pre-paint whitelist is in the source'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0302": {
+      "label": "'the pre-paint script applies a size it knows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0303": {
+      "label": "'and refuses one it does not'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0304": {
+      "label": "'highlights and notes are saved through a three-way merge, not a blind write'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0305": {
+      "label": "'every read of the stored copy updates what this tab has SEEN'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0306": {
+      "label": "'merging keeps the other tab\\u2019s addition and this tab\\u2019s addition'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0307": {
+      "label": "'merging respects a deletion made here rather than resurrecting it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0308": {
+      "label": "'merging keeps this tab\\u2019s edit to a highlight it shares with the other tab'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0309": {
+      "label": "'section notes merge per section: untouched here means the other tab\\u2019s copy wins'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0310": {
+      "label": "'saves are serialised so two in the same tick cannot interleave'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0311": {
+      "label": "'SEEN only advances on a write that was read back'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0312": {
+      "label": "'a refused save leaves SEEN where it was'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0313": {
+      "label": "'and the next save still carries the highlight, instead of reading it as a deletion'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0314": {
+      "label": "'a highlight both tabs hold is taken from storage unless this tab changed it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0315": {
+      "label": "'but an edit made here still wins'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0316": {
+      "label": "'the initial read folds the stored copy in rather than assigning over what is already there'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0317": {
+      "label": "'a merge repaint waits for a live selection to end before unwrapping its text nodes'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0318": {
+      "label": "'and coming back to the tab uses the same hold, not a bare repaint'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0319": {
+      "label": "'a backup waits for queued saves, so it cannot be written without a highlight just made'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0320": {
+      "label": "'a missed question offers a jump to the chapter it came from'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0321": {
+      "label": "'the read-but-not-retained list is keyed by number, not by the string Object.keys gives'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0322": {
+      "label": "'it only counts sections actually marked read, with enough questions behind them'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0323": {
+      "label": "'every one wrong flags even a small sample, which four-answered alone would hide'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0324": {
+      "label": "'named papers are counted one paper at a time, not lumped into a single source bucket'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0325": {
+      "label": "'and it reaches the third of the bank that carries no chapter number \\u2014 law, papers, Beers'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0326": {
+      "label": "'the jump button and the metric read the same source map, so they cannot drift apart'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0327": {
+      "label": "'a table may split across printed pages, with its rows kept whole and its header repeated'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0328": {
+      "label": "'the week used for these checks has enough chapters to move between'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0329": {
+      "label": "'marking a chapter read moves the place to the next unread chapter this week'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0330": {
+      "label": "'un-marking a chapter leaves the place where it moved to'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0331": {
+      "label": "'a place marked by hand through bmSet is kept, with the text the app read off that block'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0332": {
+      "label": "'and the next completion moves it on again'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0333": {
+      "label": "'finishing a chapter\\u2019s drill moves the place on too'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0334": {
+      "label": "'with the week finished the place clears, so resume goes home'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0335": {
+      "label": "'one tap on the compact bar starts or resumes the day, with no menu in the way'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0336": {
+      "label": "'and one tap pauses it again'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0337": {
+      "label": "'pausing from an open menu closes the menu rather than leaving it up'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0338": {
+      "label": "'one tap on the clock pauses/resumes the day, the same as the button'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0339": {
+      "label": "'a second tap pauses it again'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0340": {
+      "label": "'the hide button in the menu shrinks the pill to the dot, and closes the menu behind it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0341": {
+      "label": "'activating Hide by keyboard moves focus to the restore dot, so it doesn’t strand focus on the now-hidden mtHide and skip the pill entirely on the next Tab'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0342": {
+      "label": "'once dotted, mtMore’s accessible name says it restores the timer, not \"Settings and more\" with a popup it no longer opens'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0343": {
+      "label": "'tapping the dot restores the pill'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0344": {
+      "label": "'restoring the pill puts mtMore’s accessible name back to \"Settings and more\" with its popup restored'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0345": {
+      "label": "'an action taken in the menu closes it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0346": {
+      "label": "'tapping outside the menu closes it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0347": {
+      "label": "'the jump row stands down while the pill’s own menu is open, and returns once it closes'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0348": {
+      "label": "'closing the pill’s menu brings the jump row back'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0349": {
+      "label": "'the reordered menu leads with text size, theme, and mark my place, with the rarer actions behind a muted \"More\"'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0350": {
+      "label": "'the muted \"More\" toggle reveals next phase / reset the day / plain stopwatch / hide, and starts closed'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0351": {
+      "label": "'tapping it opens the sub-list'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0352": {
+      "label": "'tapping it again closes it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0353": {
+      "label": "'an action that closes the pill’s menu also collapses the nested More list behind it, not only the outside-tap handler'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0354": {
+      "label": "'theme in the pill’s menu toggles dark mode the same way the display popover does'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0355": {
+      "label": "'mark my place in the pill’s menu sets the bookmark the same way the topics-sheet row does'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0356": {
+      "label": "'text size in the pill’s menu joins the shared display-popover wiring, and closes the pill’s own menu behind it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0357": {
+      "label": "'the pill’s menu button carries a settings glyph alongside the overflow dots, so the gear reads even when the menu is closed'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0358": {
+      "label": "'opening the menu re-clamps a top-pinned pill so its taller, open self stays inside the top edge inset'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0359": {
+      "label": "'closing the menu restores the exact pre-open position, not the open-state clamp'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0360": {
+      "label": "'the drag threshold is a real long-press (300ms), not an instant drag on touchdown'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0361": {
+      "label": "'the dragged pill snaps 24px (plus the safe-area inset) off the nearest edge, not flush — a flush dock sits inside Android’s own back-gesture strip'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0362": {
+      "label": "'the safe-area inset is measured off a resolved padding on a real probe element, not round-tripped through a custom property (which some browsers hand back as the literal unresolved \"env(...)\" string — parseFloat of that is always NaN, reading as 0 everywhere)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0363": {
+      "label": "'the dragged position persists to geri:timerpos and is read back on load'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0364": {
+      "label": "'a long-press that never moves is swallowed as a hold, not forwarded to the pause/resume tap'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0365": {
+      "label": "'armed is cleared synchronously in endDrag, not only by a post-drag click — Android doesn’t reliably fire one, which used to leave armed true forever and swallow the next unrelated genuine tap'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0366": {
+      "label": "'pointercancel tears the drag down — clears the press timer, drops dragging, and removes the document-level listeners — so a later unrelated touch cannot inherit an armed drag'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0367": {
+      "label": "'the pill is clamped to the edge inset on load even with no stored position, not only after the first drag'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0368": {
+      "label": "'a fresh desktop pill keeps its CSS right-side default instead of being dragged to the mobile left/bottom fallback'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0369": {
+      "label": "'with no stored position, the pill lands near the bottom-left edge inset, not pinned to the top from a zero-size hidden rect'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0370": {
+      "label": "'Start/Resume is the same surface/ink-border outline as the rest of the pill, not a solid near-black slab (light mode’s --ink is dark, unlike dark mode’s)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0371": {
+      "label": "'the shrunk gear dot can still be long-pressed and dragged, even though it is entirely covered by the mtMore button'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0372": {
+      "label": "'the gear dot is 44px, not 40 — mtMore keeps its app-wide 44px min-size regardless, so a smaller dot just clips that hit area down via overflow:hidden'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0373": {
+      "label": "'a second finger cannot hijack an in-progress drag — its pointermove cannot teleport the pill, and its pointerup cannot end the first finger’s drag early'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0374": {
+      "label": "'a much-later genuine tap is not swallowed by a stale armed flag from an earlier real drag that never got a post-drag click'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0375": {
+      "label": "'a click landing right after a real drag ends is still swallowed, so releasing over the clock doesn’t also toggle the timer'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0376": {
+      "label": "'a 600ms hold on the clock with no movement never toggles the timer'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0377": {
+      "label": "'dark mode gives an answered option its own background and border, not the plain one'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0378": {
+      "label": "'and those rules sit after the plain-option rule they have to beat'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0379": {
+      "label": "'the timer\\u2019s height is watched, not just its attributes'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0380": {
+      "label": "'a height change with no attribute change still updates --minih, via the MutationObserver fallback (the ResizeObserver path itself cannot be exercised in jsdom)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0381": {
+      "label": "'coming back to the tab re-reads the timer and the stopwatch, not just the rest'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0382": {
+      "label": "'a timer another tab moved on is picked up, not overwritten'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0383": {
+      "label": "'but a timer from another day is left where it is'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0384": {
+      "label": "'refreshBody advances PQSEEN to the value it just read, not leaving it at boot-time ‘{}’'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0385": {
+      "label": "'...so a save made after the refresh composes with another tab’s answer instead of overwriting it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0386": {
+      "label": "'a finished paper writes its own log, not the reader\\u2019s'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0387": {
+      "label": "'the only thing that writes qlog is the reader typing a score'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0388": {
+      "label": "'the mock log has its own key, loaded on boot and re-read on refresh, and is backed up'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0389": {
+      "label": "'a day with both scores plots the lower of them'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0390": {
+      "label": "'a day with only one score plots that one'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0391": {
+      "label": "'a day with neither has no score'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0392": {
+      "label": "'both scores are shown when the day has both'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0393": {
+      "label": "'only the part that exists is shown'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0394": {
+      "label": "'the abbreviation handler still falls back to the section on screen and drops the way back'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0395": {
+      "label": "'an abbreviation tapped inside the table pop-out closes the dialog and lands on its own footnote'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0396": {
+      "label": "'a page number stuck on a reference does not split one source into two'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0397": {
+      "label": "'nor does a trailing full stop'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0398": {
+      "label": "'but two different sources stay apart'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0399": {
+      "label": "'past the last scheduled week the block gets its own week, not week 16 again'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0400": {
+      "label": "'and the same calendar week keeps the same key, so its note is stable'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0401": {
+      "label": "'a highlight sitting on an abbreviation opens its note, not the footnote'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0402": {
+      "label": "'but a bare abbreviation still jumps to its footnote'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0403": {
+      "label": "'drilling the week falls back to missed cards when the week has no chapters of its own'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0404": {
+      "label": "'and still filters to the week when there are chapters'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0405": {
+      "label": "'the consolidation week survives the week card, the chips and the tag lookup'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0406": {
+      "label": "'the past-paper week filter does not empty the pool when the week has no chapters'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0407": {
+      "label": "'every flashcard carries a tag and no tag points past the end of the deck'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0408": {
+      "label": "'a restore clears the keys the backup does not carry, instead of leaving newer work behind'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0409": {
+      "label": "'the undo does the same'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0410": {
+      "label": "'and the scope confirm is awaited \\u2014 an unawaited async guard is always truthy and never fires'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0411": {
+      "label": "'the undo actually puts the old values back, not just the right-looking code'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0412": {
+      "label": "'a highlight spanning a block boundary is anchored as one highlight'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0413": {
+      "label": "'a highlight the other tab deleted is not resurrected by this tab saving a new one'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0414": {
+      "label": "'a save queued before a merge reassigns HL reads the live object, not the one it was queued with'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0415": {
+      "label": "'and behaviourally: a highlight added between queueing and resolving survives'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0416": {
+      "label": "'a highlight added while an earlier save is still writing survives in both memory and on disk'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0417": {
+      "label": "'a highlight added by mutating HL.falls in place (the real edit path, not a reassignment) while an earlier save is still writing survives in both memory and on disk, against pre-existing stored data'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0418": {
+      "label": "'ANN1: typing SECOND while FIRST is still saving (through the real debounced textarea, not a direct eval) ends up live, in the textarea, and on disk — not the stale FIRST snapshot'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0419": {
+      "label": "'a highlight confirmed by another tab while this tab’s own save is mid-flight is not silently discarded'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0420": {
+      "label": "'two genuinely concurrent tabs saving different sections both survive, in either lock order'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0421": {
+      "label": "'past-paper progress answered in another tab is not overwritten by this tab’s own save'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0422": {
+      "label": "'...and the merged result is reflected back into the live pqDone, not just on disk'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0423": {
+      "label": "'PQ2: two tabs that both read the same old revision before either commits both survive, regardless of write order'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0424": {
+      "label": "'PQ3: a mock batch result commit and a concurrent ordinary-practice answer both survive'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0425": {
+      "label": "'PQ4: a same-question conflict resolves to exactly one side (a real commit-order decision, not a lost write), and an unrelated result alongside it survives regardless'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0426": {
+      "label": "'the synchronous teardown write stands down when the host supplies its own storage'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0427": {
+      "label": "'quota: a failed undo copy is announced and the restore can be refused'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0428": {
+      "label": "'quota: when the rollback also fails the alert says so instead of \"untouched\"'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0429": {
+      "label": "'quota: a refused highlight save leaves SEEN where it was'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0430": {
+      "label": "'quota: and it tells the reader, rather than leaving it looking saved'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0431": {
+      "label": "'quota: a refused mock-log save tells the reader, the same way a refused highlight does'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0432": {
+      "label": "'quota: a refused synchronous write reports failure instead of throwing out of the teardown handler'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0433": {
+      "label": "'two overlapping repaints of the last-mock line cannot paint the older score last'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0434": {
+      "label": "'the mock report, the schedule and the metric all survive an empty week'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0435": {
+      "label": "'an unseen-only draw really excludes questions already answered'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0436": {
+      "label": "'returning to the tab after Sunday midnight moves the page to the new week'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0437": {
+      "label": "'with the tab left in front, the timer notices midnight and moves to the new week'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0438": {
+      "label": "'a week being browsed stays put across midnight, and the day still rolls over'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0439": {
+      "label": "'marking the day done after midnight writes the new day'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0440": {
+      "label": "'a reading block that runs past midnight is credited to the day it began'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0441": {
+      "label": "'the countdown counts calendar days, not 24-hour blocks, at half past midnight'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0442": {
+      "label": "'a block finished yesterday starts fresh on the new day, not as already done'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0443": {
+      "label": "'a block paused part-way across midnight keeps the day it began'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0444": {
+      "label": "'an untouched block moves to the new day'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0445": {
+      "label": "'midnight does not re-deal the drill round on screen'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0446": {
+      "label": "'the drill\\u2019s week toggle is hidden for a week with no chapters and shown for one with them'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0447": {
+      "label": "'bookmark and report stamps are local time, not UTC'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0448": {
+      "label": "'while a restore runs, midnight and a timer reaching zero write nothing'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0449": {
+      "label": "'an undo that storage refuses stops, says so, and keeps the undo copy for another try'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0450": {
+      "label": "'a long report note is cut so the issue link fits, keeping the context whole'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0451": {
+      "label": "'the last error in a report carries the time it happened'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0452": {
+      "label": "'the week scope never serves earlier-edition questions by their old chapter numbers'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0453": {
+      "label": "'a single weak chapter holds while the scope changes'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0454": {
+      "label": "'the weakest-chapters button holds the chapter as a filter'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0455": {
+      "label": "'an earlier-edition question has no jump to an 8th-edition section'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0456": {
+      "label": "'a synthetic Harrison record whose chapter number collides with a Hazzard section does not enter that section’s past-paper pool'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0457": {
+      "label": "'...nor does it pass the chapter-constrained filter used by the chapter-index “open the notes” flow'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0458": {
+      "label": "'chapterPaperPool only pools records from the Hazzard book'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0459": {
+      "label": "'the pqStats weak-chapter aggregation only attributes a chaptered question to by\\\\[\\\\] when it is Hazzard’s own chapter numbering'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0460": {
+      "label": "'the mock-exam weak-chapter report only attributes a chaptered question to byCh when it is Hazzard’s own chapter numbering'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0461": {
+      "label": "'a search hit skips the scroll restore, so it lands on the match'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0462": {
+      "label": "'after Got it / Missed it the next card is brought into view if it opened above'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0463": {
+      "label": "'starting a mock asks before discarding one left part-way'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0464": {
+      "label": "'the mock report keeps blanks apart from wrong answers'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0465": {
+      "label": "'the source line spaces Hebrew and digits apart for display'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0466": {
+      "label": "'dark mode lays dark text on the bright accents, and the mock button keeps a fill'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0467": {
+      "label": "'dark mode styles the remark, report and backup text boxes, and the backup Copy button'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0468": {
+      "label": "'dark palette hex values are pinned to the Gemini-audited set'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0469": {
+      "label": "'dark palette clears WCAG AA (4.5:1 body/muted text, and surface reads distinct from the page)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0470": {
+      "label": "'the v19 dossier override no longer collapses dark --surface onto --paper'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0471": {
+      "label": "'dark mode outlines the three dashboard tiles instead of filling them solid amber with near-black text'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0472": {
+      "label": "'dark mode outlines \"Mark today done\" (not-yet-done state) the same way, and leaves the done/green state alone'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0473": {
+      "label": "'dark mode outlines the timer Start/Resume button the same way, with a real border (not just border-color on a borderless button)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0474": {
+      "label": "'dark mode outlines the quick-log button the same way, with a real border (its own rule sets border:none, so border-color alone would be invisible)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0475": {
+      "label": "'dark mode outlines a pressed filter pill the same way'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0476": {
+      "label": "'dark mode outlines the mock’s start button the same way'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0477": {
+      "label": "'the down jump button (.toend) gets the same dark outline the up button (.totop) already had'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0478": {
+      "label": "'the chapter-end footer is one stack: mark, then the drill/past-Q row, then next, then the quiet print/backup/home row, then the stamp'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0479": {
+      "label": "'the drill and past-questions buttons live together in the two-up row, not loose in the footer'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0480": {
+      "label": "'print, backup and home are grouped in the quiet text row, not three separate boxed buttons'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0481": {
+      "label": "'\"mark as read\" is a full-width primary action, styled as a quiet outline once checked (not a solid green block)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0482": {
+      "label": "'drill and past-questions sit in an equal two-up row that collapses to one when the other is hidden'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0483": {
+      "label": "'the past-questions button does not carry the .pq card’s 26px margin into the two-up row (Codex #431)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0484": {
+      "label": "'\"Next: <chapter>\" is a full-width accent action when a next chapter exists this week'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0485": {
+      "label": "'the next-chapter button resets the inherited \"next up\" grid layout to a centred flex row'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0486": {
+      "label": "'print, backup and home read as one quiet underlined text line with middot separators, not three boxes'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0487": {
+      "label": "'the middot separator gets its own formatting context so it does not inherit the button\\u2019s underline'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0488": {
+      "label": "'the next-chapter button reads \"Next: <chapter>\", not the old \"next this week:\" wording'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0489": {
+      "label": "'next/skip brings the question card back under the nav'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0490": {
+      "label": "'each mock question is kept in view after an answer or next/back'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0491": {
+      "label": "'the mock header (question n of N, time left) sticks under the nav'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0492": {
+      "label": "'mock review shows your answer against the key, with a link back to the report'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0493": {
+      "label": "'leaving the review clears the mock answers from the question card'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0494": {
+      "label": "'the papers intro is open on the first visit and folded behind a link after it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0495": {
+      "label": "'the home mock tile states the time the mock clock actually runs'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0496": {
+      "label": "'starting a mock while one is running asks first, and a refusal keeps the running paper'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0497": {
+      "label": "'the mock report and drill summary land below the nav too'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0498": {
+      "label": "'the end and top buttons are shown together while reading, not one swapping for the other'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0499": {
+      "label": "'the end and top buttons sit in one horizontal row in the corner, not stacked over the text'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0500": {
+      "label": "'both jump buttons keep a 44px tap target'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0501": {
+      "label": "'the jump buttons show an arrow and no words'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0502": {
+      "label": "'and each still carries the name a screen reader reads'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0503": {
+      "label": "'the back-to-top override no longer sizes the button, so the pair matches'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0504": {
+      "label": "'the arrow scales with the text-size control like everything else'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0505": {
+      "label": "'the jump row is hidden on Past papers and the mock, and comes back on a chapter'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0506": {
+      "label": "'hiding the row takes it out of the layout, so it cannot swallow a tap on an answer'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0507": {
+      "label": "'main is padded by the measured height of the jump row and of the timer under it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0508": {
+      "label": "'showing a section measures the row and writes its height into --jumph'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0509": {
+      "label": "'the height is still measured on Past papers, where the row is hidden'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0510": {
+      "label": "'the jump row steps above the floating timer as soon as the timer appears'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0511": {
+      "label": "'and the raised position clears the timer by its measured height plus a gap'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0512": {
+      "label": "'and drops back down when the timer goes away, rather than floating above nothing'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0513": {
+      "label": "'scrolling fades the jump row out and stops it taking taps'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0514": {
+      "label": "'the faded row is invisible and inert, never display:none — it must still measure'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0515": {
+      "label": "'the row measures the same while faded as while shown'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0516": {
+      "label": "'about 600 ms after the last scroll the row comes back, taps and all'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0517": {
+      "label": "'focus arriving on a faded jump button brings it straight back, without waiting for the timer'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0518": {
+      "label": "'a jump button that already holds focus never fades in the first place'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0519": {
+      "label": "'reduced motion drops the transition rather than the fade itself'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0520": {
+      "label": "'the scroll listener is passive and debounced, not per-frame'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0521": {
+      "label": "'no font size is a bare px value — they all scale with the text-size control'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0522": {
+      "label": "'--fs is declared once, on body, so everything outside main scales too'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0523": {
+      "label": "'no rule multiplies an em by --fs, which would apply the factor a second time'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0524": {
+      "label": "'the floating timer sits outside main and now scales anyway, because --fs is on body'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0525": {
+      "label": "'tap targets are at least 44px on the mini-timer, mock controls, chapter pills and swatches'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0526": {
+      "label": "'a docked swatch is a small dot with a full-size tap area around it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0527": {
+      "label": "'the header title keeps its name and the group label gives way first'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0528": {
+      "label": "'\"Read ch N\" opens the week\\u2019s first unread chapter'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0529": {
+      "label": "'a week chapter\\u2019s footer offers the next one this week, and only then'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0530": {
+      "label": "'the topics sheet carries all my notes, mark my place and resume'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0531": {
+      "label": "'the phone anchor bar is down to home, the tappable title, and a search icon (report and display moved to the topics sheet)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0532": {
+      "label": "'report a problem is reachable from the topics sheet'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0533": {
+      "label": "'the search icon is an inline SVG stroked with currentColor (not a colour emoji, which renders differently per device and ignores theme)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0534": {
+      "label": "'the tappable title reads the plain sans heading font, one line, a bare chevron with no \"topics\" label'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0535": {
+      "label": "'the search row starts closed, before any tap'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0536": {
+      "label": "'tap 1 opens the search row'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0537": {
+      "label": "'tap 2 closes it again'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0538": {
+      "label": "'Escape also closes the search row'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0539": {
+      "label": "'window.matchMedia is feature-detected before use, not called unguarded (jsdom does not implement it, and an unguarded call here throws synchronously mid-script, silently aborting every later top-level let/const in the same script block)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0540": {
+      "label": "'near the top (<60px) the header always shows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0541": {
+      "label": "'scrolling down past the threshold hides the header'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0542": {
+      "label": "'scrolling up past the threshold shows the header'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0543": {
+      "label": "'a small jitter (<=6px either way) keeps the current state'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0544": {
+      "label": "'the header starts shown and the nav is not inert'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0545": {
+      "label": "'scrolling down hides the header and makes the nav inert, out of the tab order and the accessibility tree'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0546": {
+      "label": "'scrolling back up shows the header and clears inert again'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0547": {
+      "label": "'the header never hides while focus is inside it, even past the scroll-down threshold'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0548": {
+      "label": "'the header can hide again once focus leaves the nav'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0549": {
+      "label": "'a small scroll right after unfreezing does not wrongly flip the header (lastY tracked the live position while frozen)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0550": {
+      "label": "'the topics button carries no aria-label that would hide its visible text (This week, etc.) from screen readers'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0551": {
+      "label": "'the decorative chevron is hidden from the accessible name, so it resolves to just the visible topic label'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0552": {
+      "label": "'the topics button has an aria-describedby pointing at hidden text describing what it does'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0553": {
+      "label": "'(mobile stub) scrolling down hides the header and makes the nav inert'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0554": {
+      "label": "'leaving the mobile breakpoint while the header is hidden restores the shown, non-inert nav (tablet-rotation fix, Codex P1 on #439)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0555": {
+      "label": "'the docked highlight bar re-anchors to the very top when the header is hidden'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0556": {
+      "label": "'the header slides out of view on scroll-down rather than jump-cutting'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0557": {
+      "label": "'the chapter-top meta line (Cards/Exam/Sections counts) meets 44px tap targets with 12px gaps'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0558": {
+      "label": "'the header uses the short label where the full one clips'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0559": {
+      "label": "'the phone\\u2019s dark setting is applied before the first paint, not after a light flash'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0560": {
+      "label": "'the first open follows the phone\\u2019s dark setting; a saved choice wins after that'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0561": {
+      "label": "'the COMBODEX option reads brand (ingredients), same characters reordered'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0562": {
+      "label": "'2023-06 q72 option 4 carries the paper\\u2019s bracket: DPI (DRY POWDER INHALER)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0563": {
+      "label": "'2020 q90 option 1 carries the paper\\u2019s bracket: METRONIDAZOLE (FLAGYL)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0564": {
+      "label": "'2023-06 q100 source stops at its own table, with q101-104 no longer glued on'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0565": {
+      "label": "'2020 q19 source carries the whole pocket-guide title'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0566": {
+      "label": "'2020 q20 source starts at HAZZARD, with q19\\u2019s tail no longer in front of it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0567": {
+      "label": "'no past-paper source has a neighbouring question\\u2019s reference line bled into it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0568": {
+      "label": "'two words search as AND, in any order, each word marked'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0569": {
+      "label": "label",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0570": {
+      "label": "'past-paper filters and the question on screen come back after a reload'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0571": {
+      "label": "'the MUSCOL option reads brand (ingredients)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0572": {
+      "label": "'the external-beam option has its bracket the right way round'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0573": {
+      "label": "'the FDA option has its bracket the right way round'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0574": {
+      "label": "'no pasted prose left inside the stylesheet'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0575": {
+      "label": "'falls Key Clinical Points table (ch 43), 5 rows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0576": {
+      "label": "'sleep Key Clinical Points table (ch 44), 6 rows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0577": {
+      "label": "'pressure Key Clinical Points table (ch 46), 6 rows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0578": {
+      "label": "'incontinence Key Clinical Points table (ch 47), 3 rows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0579": {
+      "label": "'rehab Key Clinical Points table (ch 55), 5 rows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0580": {
+      "label": "'delirium Key Clinical Points table (ch 58), 8 rows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0581": {
+      "label": "'bpsd Key Clinical Points table for ch 60, 7 rows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0582": {
+      "label": "'bpsd Key Clinical Points table for ch 63, 6 rows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0583": {
+      "label": "'parkinson Key Clinical Points table (ch 61), 6 rows'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0584": {
+      "label": "'while a mock is running, pressing 1-4/n does not also answer or advance the background practice question'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0585": {
+      "label": "'while the topic sheet is open over #papers, pressing 1 does not also answer or advance the background practice question'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0586": {
+      "label": "'a raw < in a missed card’s text is escaped in the drill summary, not injected as markup'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0587": {
+      "label": "'pressure-injury healing still says 60 days in the body text and the drill Q&A, with no fabricated 50-day figure right after either (Hazzard ch 46, SZMC chat correction)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0588": {
+      "label": "'no past-paper option carries an exam header/footer stamp glued onto it with no separating space (any sitting, any date — not just the 2024-05 one already fixed)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0589": {
+      "label": "'the conflict-table lede’s leading number matches the Beers/STOPP table’s actual row count, whatever either value is (SZMC chat correction; relationship, not a pinned literal)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0590": {
+      "label": "'the non-textbook-sources prose’s leading number matches the table’s distinct question count, whatever either value is (SZMC chat correction; relationship, not a pinned literal)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0591": {
+      "label": "'#railShow has a real aria-label, not just a title attribute'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0592": {
+      "label": "'#sheet dialog carries aria-modal=\"true\" like the other five dialogs in this file'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0593": {
+      "label": "'every \"notes\" button in the chapter index has its own aria-label naming the chapter, not a shared \"notes\" name'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0594": {
+      "label": "'every SVG <text> in a role=\"img\" chart is aria-hidden, so screen readers read the chart’s own label once instead of every axis tick'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0595": {
+      "label": "'the restore file input is visually hidden but stays in the keyboard tab order (sr-only, not display:none)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0596": {
+      "label": "'the week notes textarea has a real accessible label, not just a placeholder'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0597": {
+      "label": "'opening the topic sheet moves focus into it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0598": {
+      "label": "'opening the backup/restore modal moves focus into it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0599": {
+      "label": "'opening an existing highlight note (not just a brand-new one) moves focus into the modal'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0600": {
+      "label": "'opening the notes-index modal moves focus into it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0601": {
+      "label": "'the \"v12 — dashboard redesign\" CSS block is not duplicated (the stale first copy used to override a handful of rules the second, redesigned copy deliberately changed — e.g. it accidentally kept .lnk buttons at a 44px touch floor the redesign meant to exempt)'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0602": {
+      "label": "'a resolved-but-not-ok (503) navigation response falls back to the cached copy when one exists'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0603": {
+      "label": "'a resolved-but-not-ok navigation response with nothing cached still returns the response, not a hang or a throw'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0604": {
+      "label": "'an ok response is returned as-is and cached for next time'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0605": {
+      "label": "'a network-level rejection (offline) still falls back to the cache, as before this fix'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0606": {
+      "label": "'a restored in-progress mock (geri:mockrun round-tripped through a backup) offers to resume it on the next load, with the right answered count'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0607": {
+      "label": "'resuming reads the run fresh at click time, not the boot-time snapshot, so a checkpoint made in between is not rolled back'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0608": {
+      "label": "'the Resume banner says it will resume untimed when the run is already expired at boot'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0609": {
+      "label": "'clicking Resume on an already-expired run does not immediately auto-grade and clear it — it actually resumes, untimed, as promised'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0610": {
+      "label": "'a checkpoint for a run superseded by another tab does not overwrite that tab’s record'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0611": {
+      "label": "'...and this tab is told its copy stopped saving, rather than silently failing on every future answer'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0612": {
+      "label": "'STALE6/two-tabs-both-resumed: two real tabs, both already resumed on the same run, answering different questions concurrently — both answers survive, neither is clobbered'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0613": {
+      "label": "'ID3: a legacy id-less checkpoint resumes and migrates instead of being declared superseded and closed'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0614": {
+      "label": "'...and the migrated record keeps both the resumed answer and the new one, under a real id'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0615": {
+      "label": "'a new run started over a discarded one does not inherit that run’s answers or flags'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0616": {
+      "label": "'walking back through the paper moves the saved cursor back too, instead of pinning it at the furthest question reached'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0617": {
+      "label": "'ID2: two runs started back to back under a frozen clock and a repeated RNG sequence still get different ids'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0618": {
+      "label": "'an earlier answer’s slow write cannot land after, and overwrite, a later answer’s write'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0619": {
+      "label": "'mockFinish clears RUNKEY through mockRunChain — the same queue a pending checkpoint write sits on — instead of racing it with a separate write'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0620": {
+      "label": "'mockFinish does not clear a different run’s record that started while this finish was still awaiting its own writes'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0621": {
+      "label": "'FIN2/FIN3: mockFinish does not clear RUNKEY when the practice-result (geri:pq) write is refused — the original seven answers stay recoverable'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0622": {
+      "label": "'...and the reader is told something did not save, not given a silent false success'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0623": {
+      "label": "'a backup gathered while the current mock’s checkpoint write is still in flight waits for it, not a stale read'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0624": {
+      "label": "'a crafted when/right value in the stored last-mock result is escaped, not rendered as markup'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0625": {
+      "label": "'a deep-link hash (#falls) wins over a saved tab (drill) on a cold load'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0626": {
+      "label": "'with no hash at all, the saved tab is still restored as the fallback'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0627": {
+      "label": "'the tautology scanner resolved every ok() call in this file'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0628": {
+      "label": "'no check in this file is asserted against a predicate that cannot fail'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0629": {
+      "label": "'no unexpected runtime errors were captured during the run'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0630": {
+      "label": "'a legacy record the old tab updated mid-migration is merged, not overwritten with this tab’s boot-time snapshot'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0631": {
+      "label": "'...and so does the cursor the legacy tab moved to, which the answer merge alone left behind'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0632": {
+      "label": "'a pre-ID tab overwriting this tab’s claim is reclaimed, not read as another tab taking the run over'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0633": {
+      "label": "'...and the reclaimed record carries this run’s id again, with both tabs’ answers'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0634": {
+      "label": "'a legacy snapshot that is merely behind is still reclaimed, and this tab\\u2019s own answer survives it'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0635": {
+      "label": "'an id-less record that is NOT a continuation is left alone, not absorbed as if it were the old tab'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0636": {
+      "label": "'a checkpoint that reaches the lock late does not rewind the saved place to where its own tab was two moves ago'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0637": {
+      "label": "'a cursor timestamped in the future does not freeze the saved place until wall time catches up'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0638": {
+      "label": "'a cursor adopted from another tab is not rewound by this tab\\u2019s next non-navigating save'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0639": {
+      "label": "'a checkpoint that does not move the reader does not refresh the cursor timestamp'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0640": {
+      "label": "'a reader who navigated away and back still counts as having moved, and keeps their place'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0641": {
+      "label": "'the paper fingerprint changes when the options are reordered, with the same y#n keys throughout'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0642": {
+      "label": "'...and when only the stem is reworded, with the options and the key untouched'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0643": {
+      "label": "'answers given against an edited paper are kept, not silently re-certified under the new fingerprint'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0644": {
+      "label": "'...and the record carries the flag, so a reload still knows the score needs a caveat'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0645": {
+      "label": "'resuming a record whose stored fingerprint does not match the paper this build serves flags the run'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0646": {
+      "label": "'...and the flag is on the record the very first checkpoint writes, not only in memory'",
+      "file": "test.mjs",
+      "status": "active"
+    },
+    "g0647": {
+      "label": "'a run whose paper changed says so in the report, above the score'",
+      "file": "test.mjs",
+      "status": "active"
+    }
+  },
+  "retired": {}
+}

@@ -1,0 +1,1316 @@
+{
+  "next": 263,
+  "mutants": {
+    "m0001": {
+      "name": "teardown write goes back through the async layer",
+      "runner": null,
+      "status": "active"
+    },
+    "m0002": {
+      "name": "merge returns this tab and forgets the other",
+      "runner": null,
+      "status": "active"
+    },
+    "m0003": {
+      "name": "merge resurrects a deletion made here",
+      "runner": null,
+      "status": "active"
+    },
+    "m0004": {
+      "name": "merge reverts the other tab’s edit",
+      "runner": null,
+      "status": "active"
+    },
+    "m0005": {
+      "name": "SEEN advances on a write that never landed",
+      "runner": null,
+      "status": "active"
+    },
+    "m0006": {
+      "name": "rollback claims a restoration it did not make",
+      "runner": null,
+      "status": "active"
+    },
+    "m0007": {
+      "name": "selection offset counted the old way",
+      "runner": null,
+      "status": "active"
+    },
+    "m0008": {
+      "name": "neighbour window narrowed again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0009": {
+      "name": "tie between two occurrences guessed rather than dropped",
+      "runner": null,
+      "status": "active"
+    },
+    "m0010": {
+      "name": "refresh assigns over foreground work again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0011": {
+      "name": "consolidation week latches onto week 16 again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0012": {
+      "name": "abbreviation in the pop-out stops closing the dialog",
+      "runner": null,
+      "status": "active"
+    },
+    "m0013": {
+      "name": "all-wrong small samples hidden again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0014": {
+      "name": "jump loses the chapterless third of the bank",
+      "runner": null,
+      "status": "active"
+    },
+    "m0015": {
+      "name": "pre-paint script accepts any text size",
+      "runner": null,
+      "status": "active"
+    },
+    "m0016": {
+      "name": "mock draws answered questions as unseen",
+      "runner": null,
+      "status": "active"
+    },
+    "m0017": {
+      "name": "mock stops saving as it goes",
+      "runner": null,
+      "status": "active"
+    },
+    "m0018": {
+      "name": "mock loses its source weighting",
+      "runner": null,
+      "status": "active"
+    },
+    "m0019": {
+      "name": "table pop-out swallows abbreviation taps again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0020": {
+      "name": "a card tag runs past the end of the deck",
+      "runner": null,
+      "status": "active"
+    },
+    "m0021": {
+      "name": "the dashboard drill never finds the week’s chapters",
+      "runner": null,
+      "status": "active"
+    },
+    "m0022": {
+      "name": "the drill’s week filter comes up empty",
+      "runner": null,
+      "status": "active"
+    },
+    "m0023": {
+      "name": "backup misses a highlight queued on the save chain",
+      "runner": null,
+      "status": "active"
+    },
+    "m0024": {
+      "name": "clearing the bookmark goes back to .delete, which the layer does not have",
+      "runner": null,
+      "status": "active"
+    },
+    "m0025": {
+      "name": "restore leaves keys the backup does not carry",
+      "runner": null,
+      "status": "active"
+    },
+    "m0026": {
+      "name": "teardown write fires even when the host supplies storage",
+      "runner": null,
+      "status": "active"
+    },
+    "m0027": {
+      "name": "rollover asks isCur after the date has already moved",
+      "runner": null,
+      "status": "active"
+    },
+    "m0028": {
+      "name": "no date check when the tab is seen again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0029": {
+      "name": "the timer stops checking the date",
+      "runner": null,
+      "status": "active"
+    },
+    "m0030": {
+      "name": "a reading block past midnight credits the new day",
+      "runner": null,
+      "status": "active"
+    },
+    "m0031": {
+      "name": "countdown divides raw milliseconds again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0032": {
+      "name": "a block finished yesterday carries over as already done",
+      "runner": null,
+      "status": "active"
+    },
+    "m0033": {
+      "name": "a paused block moves its credit to the new day",
+      "runner": null,
+      "status": "active"
+    },
+    "m0034": {
+      "name": "midnight re-deals the drill round on screen",
+      "runner": null,
+      "status": "active"
+    },
+    "m0035": {
+      "name": "the drill’s week toggle shows in the consolidation period again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0036": {
+      "name": "the bookmark is stamped in UTC again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0037": {
+      "name": "the midnight check writes during a restore",
+      "runner": null,
+      "status": "active"
+    },
+    "m0038": {
+      "name": "the timer advances during a restore",
+      "runner": null,
+      "status": "active"
+    },
+    "m0039": {
+      "name": "undo clears its copy and reloads even when writes failed",
+      "runner": null,
+      "status": "active"
+    },
+    "m0040": {
+      "name": "the issue link carries the whole note again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0041": {
+      "name": "a stale error is reported without its time",
+      "runner": null,
+      "status": "active"
+    },
+    "m0042": {
+      "name": "the week scope matches earlier-edition chapter numbers again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0043": {
+      "name": "a single-chapter hold is not understood by the filter",
+      "runner": null,
+      "status": "active"
+    },
+    "m0044": {
+      "name": "an earlier-edition question jumps to a section by its old chapter number",
+      "runner": null,
+      "status": "active"
+    },
+    "m0045": {
+      "name": "a search hit restores the old scroll over the match",
+      "runner": null,
+      "status": "active"
+    },
+    "m0046": {
+      "name": "the next drill card opens above the view",
+      "runner": null,
+      "status": "active"
+    },
+    "m0047": {
+      "name": "a mock left part-way is discarded without asking",
+      "runner": null,
+      "status": "active"
+    },
+    "m0048": {
+      "name": "blanks count as wrong in the chapter tally",
+      "runner": null,
+      "status": "active"
+    },
+    "m0049": {
+      "name": "the source line is shown as extracted",
+      "runner": null,
+      "status": "active"
+    },
+    "m0050": {
+      "name": "white text on bright accents in dark mode",
+      "runner": null,
+      "status": "active"
+    },
+    "m0051": {
+      "name": "dark text boxes stay browser-white",
+      "runner": null,
+      "status": "active"
+    },
+    "m0052": {
+      "name": "next/skip leaves the new question above the view",
+      "runner": null,
+      "status": "active"
+    },
+    "m0053": {
+      "name": "the mock stops keeping its question in view",
+      "runner": null,
+      "status": "active"
+    },
+    "m0054": {
+      "name": "the mock header scrolls away",
+      "runner": null,
+      "status": "active"
+    },
+    "m0055": {
+      "name": "review loses your answer against the key",
+      "runner": null,
+      "status": "active"
+    },
+    "m0056": {
+      "name": "the papers intro never folds",
+      "runner": null,
+      "status": "active"
+    },
+    "m0057": {
+      "name": "the home tile goes back to the daily 35 minutes",
+      "runner": null,
+      "status": "active"
+    },
+    "m0058": {
+      "name": "a running mock is replaced without asking",
+      "runner": null,
+      "status": "active"
+    },
+    "m0059": {
+      "name": "the mock report scrolls under the nav",
+      "runner": null,
+      "status": "active"
+    },
+    "m0060": {
+      "name": "the mini-timer shows even when the block is untouched",
+      "runner": null,
+      "status": "active"
+    },
+    "m0061": {
+      "name": "tap targets back under 44px",
+      "runner": null,
+      "status": "active"
+    },
+    "m0062": {
+      "name": "the header title truncates again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0063": {
+      "name": "Read ch N opens the week's first chapter even when it is read",
+      "runner": null,
+      "status": "active"
+    },
+    "m0064": {
+      "name": "the footer never offers the next chapter",
+      "runner": null,
+      "status": "active"
+    },
+    "m0065": {
+      "name": "the topics sheet loses the notes and bookmark row",
+      "runner": null,
+      "status": "active"
+    },
+    "m0066": {
+      "name": "the header shows the full label that clips",
+      "runner": null,
+      "status": "active"
+    },
+    "m0067": {
+      "name": "first open ignores the phone's dark setting",
+      "runner": null,
+      "status": "active"
+    },
+    "m0068": {
+      "name": "the pre-paint script paints light first and snaps to dark",
+      "runner": null,
+      "status": "active"
+    },
+    "m0069": {
+      "name": "the COMBODEX option is garbled again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0070": {
+      "name": "search goes back to exact phrase only",
+      "runner": null,
+      "status": "active"
+    },
+    "m0071": {
+      "name": "past-paper place is never saved",
+      "runner": null,
+      "status": "active"
+    },
+    "m0072": {
+      "name": "the saved question is not put back on screen",
+      "runner": null,
+      "status": "active"
+    },
+    "m0073": {
+      "name": "the MUSCOL option is garbled again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0074": {
+      "name": "the external-beam bracket is mirrored again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0075": {
+      "name": "the FDA bracket is mirrored again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0076": {
+      "name": "pasted prose back in the stylesheet",
+      "runner": null,
+      "status": "active"
+    },
+    "m0077": {
+      "name": "falls Key Clinical Points table loses its last row",
+      "runner": null,
+      "status": "active"
+    },
+    "m0078": {
+      "name": "sleep Key Clinical Points table loses its last row",
+      "runner": null,
+      "status": "active"
+    },
+    "m0079": {
+      "name": "pressure Key Clinical Points table loses its last row",
+      "runner": null,
+      "status": "active"
+    },
+    "m0080": {
+      "name": "incontinence Key Clinical Points table loses its last row",
+      "runner": null,
+      "status": "active"
+    },
+    "m0081": {
+      "name": "rehab Key Clinical Points table loses its last row",
+      "runner": null,
+      "status": "active"
+    },
+    "m0082": {
+      "name": "delirium Key Clinical Points table loses its last row",
+      "runner": null,
+      "status": "active"
+    },
+    "m0083": {
+      "name": "bpsd ch 60 Key Clinical Points table loses its last row",
+      "runner": null,
+      "status": "active"
+    },
+    "m0084": {
+      "name": "bpsd ch 63 Key Clinical Points table loses its last row",
+      "runner": null,
+      "status": "active"
+    },
+    "m0085": {
+      "name": "parkinson Key Clinical Points table loses its last row",
+      "runner": null,
+      "status": "active"
+    },
+    "m0086": {
+      "name": "end and top buttons swap again instead of showing together",
+      "runner": null,
+      "status": "active"
+    },
+    "m0087": {
+      "name": "the jump row stacks again, so it covers three lines instead of one",
+      "runner": null,
+      "status": "active"
+    },
+    "m0088": {
+      "name": "the jump buttons lose their 44px tap target",
+      "runner": null,
+      "status": "active"
+    },
+    "m0089": {
+      "name": "the jump row stays up on Past papers and the mock, over the answer options",
+      "runner": null,
+      "status": "active"
+    },
+    "m0090": {
+      "name": "hiding the row only makes it invisible, so it still swallows the tap",
+      "runner": null,
+      "status": "active"
+    },
+    "m0091": {
+      "name": "main goes back to a hard-coded bottom gap that XL outgrows",
+      "runner": null,
+      "status": "active"
+    },
+    "m0092": {
+      "name": "the row is never measured, so the padding keeps its fallback",
+      "runner": null,
+      "status": "active"
+    },
+    "m0093": {
+      "name": "the row is measured while hidden, so Past papers reports zero height",
+      "runner": null,
+      "status": "active"
+    },
+    "m0094": {
+      "name": "scrolling no longer fades the row out of the way",
+      "runner": null,
+      "status": "active"
+    },
+    "m0095": {
+      "name": "the faded row is hidden by display, so it stops measuring mid-scroll",
+      "runner": null,
+      "status": "active"
+    },
+    "m0096": {
+      "name": "the faded row stays tappable, so it swallows the tap it is hiding under",
+      "runner": null,
+      "status": "active"
+    },
+    "m0097": {
+      "name": "the row never comes back after the reader stops",
+      "runner": null,
+      "status": "active"
+    },
+    "m0098": {
+      "name": "a focused jump button fades out from under the keyboard again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0099": {
+      "name": "reduced motion loses its carve-out",
+      "runner": null,
+      "status": "active"
+    },
+    "m0100": {
+      "name": "a text-size change stops re-measuring nav, going stale at XL",
+      "runner": null,
+      "status": "active"
+    },
+    "m0101": {
+      "name": "the reading text at #week collapses toward unreadable at every text-size setting, and a ratio-only check alone would call it clean",
+      "runner": "browser",
+      "status": "active"
+    },
+    "m0102": {
+      "name": "the fading jump row stops being provably dead while still visible — only a real transition can show that window exists at all",
+      "runner": "browser",
+      "status": "active"
+    },
+    "m0103": {
+      "name": "the bar goes back to the bottom edge, under Chrome’s own contextual sheet",
+      "runner": null,
+      "status": "active"
+    },
+    "m0104": {
+      "name": "a second, redundant writer of --navh creeps back in",
+      "runner": null,
+      "status": "active"
+    },
+    "m0105": {
+      "name": "the next-chapter button loses its hidden guard, and shows empty again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0106": {
+      "name": "the selection bar goes back to a black fill in light mode",
+      "runner": null,
+      "status": "active"
+    },
+    "m0107": {
+      "name": "the floating timer goes back to a black pill",
+      "runner": null,
+      "status": "active"
+    },
+    "m0108": {
+      "name": "the two secondary actions get a second row again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0109": {
+      "name": "the timer and jump row stop standing down for the selection bar",
+      "runner": null,
+      "status": "active"
+    },
+    "m0110": {
+      "name": "the overflow menu no longer closes behind an action taken inside it",
+      "runner": null,
+      "status": "active"
+    },
+    "m0111": {
+      "name": "a selectionchange handler starts mutating the selection again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0112": {
+      "name": "marking a chapter read leaves the place inside the chapter just finished",
+      "runner": null,
+      "status": "active"
+    },
+    "m0113": {
+      "name": "un-marking a chapter drags the place back into it",
+      "runner": null,
+      "status": "active"
+    },
+    "m0114": {
+      "name": "the place parks on the first chapter instead of clearing when the week is done",
+      "runner": null,
+      "status": "active"
+    },
+    "m0115": {
+      "name": "finishing a chapter’s drill no longer moves the place",
+      "runner": null,
+      "status": "active"
+    },
+    "m0116": {
+      "name": "pause has to go through the menu again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0117": {
+      "name": "a tap on the clock goes back to doing nothing, instead of pausing/resuming like the button",
+      "runner": null,
+      "status": "active"
+    },
+    "m0118": {
+      "name": "hide stops shrinking the pill to the gear dot",
+      "runner": null,
+      "status": "active"
+    },
+    "m0119": {
+      "name": "tapping the gear dot no longer restores the pill",
+      "runner": null,
+      "status": "active"
+    },
+    "m0120": {
+      "name": "switching mode leaves the menu open",
+      "runner": null,
+      "status": "active"
+    },
+    "m0121": {
+      "name": "tapping the page no longer closes the menu",
+      "runner": null,
+      "status": "active"
+    },
+    "m0122": {
+      "name": "the jump row stops standing down while the pill’s menu is open",
+      "runner": null,
+      "status": "active"
+    },
+    "m0123": {
+      "name": "the More sub-list stops toggling open",
+      "runner": null,
+      "status": "active"
+    },
+    "m0124": {
+      "name": "text size in the pill’s menu no longer closes the menu behind it",
+      "runner": null,
+      "status": "active"
+    },
+    "m0125": {
+      "name": "theme in the pill’s menu stops toggling dark mode",
+      "runner": null,
+      "status": "active"
+    },
+    "m0126": {
+      "name": "mark my place in the pill’s menu stops setting the bookmark",
+      "runner": null,
+      "status": "active"
+    },
+    "m0127": {
+      "name": "the drag threshold drops from 300ms, so a plain tap starts dragging",
+      "runner": null,
+      "status": "active"
+    },
+    "m0128": {
+      "name": "the dragged pill snaps flush to the edge instead of the 24px + safe-area inset",
+      "runner": null,
+      "status": "active"
+    },
+    "m0129": {
+      "name": "the pill’s dragged position stops being saved to geri:timerpos",
+      "runner": null,
+      "status": "active"
+    },
+    "m0130": {
+      "name": "a long-press with no movement stops being swallowed, so it falls through and pauses/resumes the timer",
+      "runner": null,
+      "status": "active"
+    },
+    "m0131": {
+      "name": "pointercancel stops tearing the drag down, so a system-cancelled press leaves the pill armed for the next touch",
+      "runner": null,
+      "status": "active"
+    },
+    "m0132": {
+      "name": "closing the pill’s menu stops collapsing the nested More list behind it",
+      "runner": null,
+      "status": "active"
+    },
+    "m0133": {
+      "name": "the gear dot loses its drag carve-out, so it can never be long-pressed once hidden down to a dot",
+      "runner": null,
+      "status": "active"
+    },
+    "m0134": {
+      "name": "a fresh, never-dragged pill goes back to clamping from a zero-size hidden rect and gets pinned to the top edge",
+      "runner": null,
+      "status": "active"
+    },
+    "m0135": {
+      "name": "Start/Resume goes back to a solid near-black --ink slab in light mode",
+      "runner": null,
+      "status": "active"
+    },
+    "m0136": {
+      "name": "the gear dot stops updating mtMore’s accessible name, so it still announces \"Settings and more\" with a popup once dotted",
+      "runner": null,
+      "status": "active"
+    },
+    "m0137": {
+      "name": "a fresh desktop pill loses its CSS right-side default and gets dragged to the mobile left/bottom fallback",
+      "runner": null,
+      "status": "active"
+    },
+    "m0138": {
+      "name": "a second finger can hijack an in-progress pill drag",
+      "runner": null,
+      "status": "active"
+    },
+    "m0139": {
+      "name": "the gear dot shrinks back to 40px, clipping mtMore’s 44px hit area down below the touch-target floor",
+      "runner": null,
+      "status": "active"
+    },
+    "m0140": {
+      "name": "opening the menu stops re-clamping a top-pinned pill, so its taller open self can be pushed off the top of the viewport",
+      "runner": null,
+      "status": "active"
+    },
+    "m0141": {
+      "name": "closing the menu stops restoring the exact pre-open position, leaving the pill wherever the open-state clamp put it",
+      "runner": null,
+      "status": "active"
+    },
+    "m0142": {
+      "name": "endDrag stops clearing armed and stamping dragEndedAt, so a real drag with no post-drag click leaves armed true forever",
+      "runner": null,
+      "status": "active"
+    },
+    "m0143": {
+      "name": "the safe-area probe goes back to reading an unresolved custom property, so the inset is always 0",
+      "runner": null,
+      "status": "active"
+    },
+    "m0144": {
+      "name": "entering dot mode stops moving focus off a hidden Hide button, stranding a keyboard user’s focus on it",
+      "runner": null,
+      "status": "active"
+    },
+    "m0145": {
+      "name": "dark mode answer feedback loses to the plain-option rule again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0146": {
+      "name": "the timer height stops being watched, so --minih goes stale on a wrap",
+      "runner": null,
+      "status": "active"
+    },
+    "m0147": {
+      "name": "the timer is not re-measured when the section changes either",
+      "runner": null,
+      "status": "active"
+    },
+    "m0148": {
+      "name": "coming back to the tab stops re-reading the timer",
+      "runner": null,
+      "status": "active"
+    },
+    "m0149": {
+      "name": "a timer from another day is restored on refresh",
+      "runner": null,
+      "status": "active"
+    },
+    "m0150": {
+      "name": "the mock writes the reader’s log again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0151": {
+      "name": "the mock log is left out of the backup",
+      "runner": null,
+      "status": "active"
+    },
+    "m0152": {
+      "name": "a day with both scores plots the higher one",
+      "runner": null,
+      "status": "active"
+    },
+    "m0153": {
+      "name": "only one of the two day scores is shown again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0154": {
+      "name": "the back-to-top override sizes the button again, breaking the matched pair",
+      "runner": null,
+      "status": "active"
+    },
+    "m0155": {
+      "name": "the jump buttons get their words back, and cover the text again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0156": {
+      "name": "an icon-only button loses the name a screen reader reads",
+      "runner": null,
+      "status": "active"
+    },
+    "m0157": {
+      "name": "the arrow stops scaling with the text-size control",
+      "runner": null,
+      "status": "active"
+    },
+    "m0158": {
+      "name": "--fs goes back to being scoped to main, leaving every overlay unscaled",
+      "runner": null,
+      "status": "active"
+    },
+    "m0159": {
+      "name": "main multiplies an em by --fs again, so the reading text scales twice",
+      "runner": null,
+      "status": "active"
+    },
+    "m0160": {
+      "name": "the jump row stops stepping over the timer and lands on it again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0161": {
+      "name": "the timer height is kept after it is hidden, so the row floats above nothing",
+      "runner": null,
+      "status": "active"
+    },
+    "m0162": {
+      "name": "main stops leaving room for the timer under the jump row",
+      "runner": null,
+      "status": "active"
+    },
+    "m0163": {
+      "name": "2023-06 q100 source picks up q101-104 again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0164": {
+      "name": "2020 q19 source loses the rest of the pocket-guide title",
+      "runner": null,
+      "status": "active"
+    },
+    "m0165": {
+      "name": "2020 q20 source takes back q19’s bled tail",
+      "runner": null,
+      "status": "active"
+    },
+    "m0166": {
+      "name": "a font size goes back to a bare px that the text-size control cannot reach",
+      "runner": null,
+      "status": "active"
+    },
+    "m0167": {
+      "name": "focus arriving on a faded row no longer brings it back",
+      "runner": null,
+      "status": "active"
+    },
+    "m0168": {
+      "name": "2023-06 q72 option 4 loses the paper’s bracket again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0169": {
+      "name": "2020 q90 option 1 loses the paper’s bracket again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0170": {
+      "name": "search highlighting goes back to one replace per word, marking its own markup",
+      "runner": null,
+      "status": "active"
+    },
+    "m0171": {
+      "name": "dark accent reverts to the too-bright pre-audit amber",
+      "runner": null,
+      "status": "active"
+    },
+    "m0172": {
+      "name": "dark body text reverts to the pre-audit cream",
+      "runner": null,
+      "status": "active"
+    },
+    "m0173": {
+      "name": "the v19 dossier override collapses dark --surface back onto --paper",
+      "runner": null,
+      "status": "active"
+    },
+    "m0174": {
+      "name": "the three dashboard tiles go back to near-black text in dark mode",
+      "runner": null,
+      "status": "active"
+    },
+    "m0175": {
+      "name": "\"Mark today done\" loses its dark-mode outline and goes back to a solid amber fill",
+      "runner": null,
+      "status": "active"
+    },
+    "m0176": {
+      "name": "the chapter footer stops wrapping drill/past-questions in the two-up row div",
+      "runner": null,
+      "status": "active"
+    },
+    "m0177": {
+      "name": "the chapter footer stops wrapping print/backup/home in the quiet-row div",
+      "runner": null,
+      "status": "active"
+    },
+    "m0178": {
+      "name": "\"mark as read\" goes back to a solid green fill once checked instead of a quiet outline",
+      "runner": null,
+      "status": "active"
+    },
+    "m0179": {
+      "name": "the drill/past-questions row loses its equal-width flex layout",
+      "runner": null,
+      "status": "active"
+    },
+    "m0180": {
+      "name": "\"Next: <chapter>\" loses its accent fill and reads as a plain box again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0181": {
+      "name": "the middot separator between print/backup/home disappears",
+      "runner": null,
+      "status": "active"
+    },
+    "m0182": {
+      "name": "the next-chapter button reverts to the old \"next this week:\" wording",
+      "runner": null,
+      "status": "active"
+    },
+    "m0183": {
+      "name": "the past-questions button carries the .pq card’s 26px bottom margin into the two-up row again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0184": {
+      "name": "the next-chapter button loses its reset of the inherited \"next up\" grid layout",
+      "runner": null,
+      "status": "active"
+    },
+    "m0185": {
+      "name": "the middot separator loses its own formatting context and inherits the button’s underline again",
+      "runner": null,
+      "status": "active"
+    },
+    "m0186": {
+      "name": "the timer Start/Resume button reverts to a solid amber fill with near-black text in dark mode",
+      "runner": null,
+      "status": "active"
+    },
+    "m0187": {
+      "name": "the quick-log button reverts to a solid amber fill with near-black text in dark mode",
+      "runner": null,
+      "status": "active"
+    },
+    "m0188": {
+      "name": "the quick-log button’s dark outline goes back to border-color-only, invisible against its own border:none rule",
+      "runner": null,
+      "status": "active"
+    },
+    "m0189": {
+      "name": "a pressed filter pill reverts to a solid amber fill with near-black text in dark mode",
+      "runner": null,
+      "status": "active"
+    },
+    "m0190": {
+      "name": "the mock’s start button reverts to a solid amber fill with near-black text in dark mode",
+      "runner": null,
+      "status": "active"
+    },
+    "m0191": {
+      "name": "the down jump button (.toend) loses its dark outline and goes back to the broken ink-fill/near-black-text state",
+      "runner": null,
+      "status": "active"
+    },
+    "m0192": {
+      "name": "a live selection no longer freezes the header’s auto-hide",
+      "runner": null,
+      "status": "active"
+    },
+    "m0193": {
+      "name": "the docked highlight bar stops re-anchoring to the top when the header is hidden",
+      "runner": null,
+      "status": "active"
+    },
+    "m0194": {
+      "name": "the header stops sliding out of view on scroll-down",
+      "runner": null,
+      "status": "active"
+    },
+    "m0195": {
+      "name": "the chapter-top meta line loses its 44px/12px-gap tap targets",
+      "runner": null,
+      "status": "active"
+    },
+    "m0196": {
+      "name": "the header auto-hide threshold drops from 60px to 0, showing the header nowhere near the top",
+      "runner": null,
+      "status": "active"
+    },
+    "m0197": {
+      "name": "the search icon SVG loses its explicit 24px sizing and falls back to the browser default",
+      "runner": null,
+      "status": "active"
+    },
+    "m0198": {
+      "name": "the tappable title goes back to the monospace technical-ledger voice",
+      "runner": null,
+      "status": "active"
+    },
+    "m0199": {
+      "name": "the header freeze moves back into the debounced timeout, arriving 260ms late (Gemini review of #433)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0200": {
+      "name": "the topics button’s aria-label comes back and hides its visible text from screen readers again (WCAG 2.5.3 label-in-name, Gemini review of #433)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0201": {
+      "name": "the header no longer makes the nav inert while hidden, so its buttons stay focusable off-screen (Gemini review of #433)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0202": {
+      "name": "the header hides even while focus sits inside it, dropping focus to <body> mid-navigation (Gemini review of #433)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0203": {
+      "name": "the nav stays inert forever when the viewport leaves the mobile breakpoint while the header is hidden, e.g. tablet rotation (Codex P1 review of #439)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0204": {
+      "name": "lastY does not track the live scroll position while frozen or off the mobile breakpoint, so the first scroll after unfreezing can wrongly flip the header (Gemini review of #439/#440)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0205": {
+      "name": "the topics button loses its aria-describedby, so a screen reader no longer hears what the control does (Gemini review of #439/#440)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0206": {
+      "name": "a mock running underneath the practice keydown listener also answers/advances the background practice question, polluting pqDone (Gemini site-wide audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0207": {
+      "name": "the drill summary injects a missed card’s text into innerHTML unescaped, so a raw < in the text starts an unintended tag (Gemini site-wide audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0208": {
+      "name": "the day dots stop repainting when a day is marked, so the last-14-days strip goes stale (Gemini site-wide audit — this guard used to assert NodeList.length >= 0, which cannot fail)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0209": {
+      "name": "rememberScroll stops capturing the live scroll position for the shown section (Gemini site-wide audit — the old test referenced rememberScroll without calling it, so this was never exercised)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0210": {
+      "name": "the fabricated \"should heal within 50 days\" clause comes back into the pressure-injury body text, contradicting the 60-day figure in the sentence right before it (SZMC chat correction, Hazzard ch 46)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0211": {
+      "name": "an exam header/footer stamp is glued back onto a past-paper option — the general shape, not just the 2024-05 date already fixed (Gemini review of merged #449)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0212": {
+      "name": "the Beers/STOPP conflict-table lede’s leading number stops matching the table’s actual row count (Gemini review of merged #449: the guard now tests the relationship, not a pinned \"Six\"/6 literal)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0213": {
+      "name": "the non-textbook-sources prose’s leading number stops matching the table’s distinct question count (Gemini review of merged #449: the guard now tests the relationship, not a pinned \"19 of 100\" literal)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0214": {
+      "name": "1-4/n keys bleed through to the background practice question while the topic sheet (or any modal) is open over #papers (SZMC code audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0215": {
+      "name": "opening the topic sheet no longer moves focus into it, stranding a keyboard user on the page underneath (SZMC code audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0216": {
+      "name": "opening the backup/restore modal no longer moves focus into it (SZMC code audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0217": {
+      "name": "editing an EXISTING highlight note no longer moves focus into the modal, only a brand-new one does (SZMC code audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0218": {
+      "name": "the chapter-index \"notes\" buttons lose their per-chapter aria-label and go back to sharing one indistinguishable name (SZMC code audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0219": {
+      "name": "SVG <text> elements inside role=\"img\" charts stop being aria-hidden, so a screen reader reads every axis tick alongside the chart’s own label (SZMC code audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0220": {
+      "name": "the \"v12 — dashboard redesign\" CSS header comment is duplicated again, the way it used to be before the stale first copy was deleted (SZMC code audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0221": {
+      "name": "geri:mockrun drops back out of BKEYS, so a backup captures a finished mock but silently drops a half-finished one (ChatGPT third-model audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0222": {
+      "name": "paintLastMock stops escaping the stored right/n/when fields, so a crafted value renders as markup instead of text (ChatGPT third-model audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0223": {
+      "name": "the saved-tab restore stops checking for a deep-link hash first, so it races the hash router again and can land a reader on the wrong tab (ChatGPT third-model audit)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0224": {
+      "name": "every content section’s header band is inserted into the first <main section> instead of its own, piling every band onto one section and leaving the rest with none (ChatGPT round-2 audit: the old total-count check could not see this — 40 bands, 40 sections, still true)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0225": {
+      "name": "chapterPaperPool stops requiring the Hazzard book, so a Harrison/Article/other record whose chapter number collides with a Hazzard chapter joins that chapter’s past-paper pool (ChatGPT third-model audit round 3, reproduces the real 2024-09 Q69 finding)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0226": {
+      "name": "the past-paper chapter-constrained filter stops requiring the Hazzard book, so a colliding non-Hazzard record passes the chapter-index \"open the notes\" flow’s filter too (ChatGPT third-model audit round 3)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0227": {
+      "name": "the pqStats weak-chapter aggregation goes back to keying by[] on any book’s chapter number, so a Harrison/Article record with a colliding chapter number is attributed to the wrong Hazzard chapter in the weak-chapters analytics (ChatGPT third-model audit round 3)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0228": {
+      "name": "mergeSave goes back to applying its stale snapshot unconditionally, so a highlight/note edit made while an earlier save is still writing gets silently overwritten in memory (ChatGPT third-model audit round 4, data-loss cluster item 1)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0229": {
+      "name": "mergeSave stops queueing a follow-up save when the live value moved on mid-write, so that edit reaches memory but is never actually persisted to disk (ChatGPT third-model audit round 4, data-loss cluster item 1)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0230": {
+      "name": "mergeSave stops re-checking storage right before it writes, so another tab’s confirmed write landing between our read and our write is silently overwritten (ChatGPT third-model audit round 4, data-loss cluster item 2, \"two tabs\")",
+      "runner": null,
+      "status": "active"
+    },
+    "m0231": {
+      "name": "pqSave goes back to a single-key full overwrite of the whole past-paper progress blob instead of merging, so two tabs answering different questions keep only whichever tab wrote last (ChatGPT third-model audit round 4, data-loss cluster item 7)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0232": {
+      "name": "the mock Resume handler stops re-reading RUNKEY at click time, so it resumes from the boot-time snapshot again and can roll a run backward (ChatGPT third-model audit round 4, data-loss cluster item 3)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0233": {
+      "name": "mockSaveRun stops rejecting a stale writer, so a checkpoint for a run another tab has already superseded overwrites that tab’s record instead of standing down (ChatGPT third-model audit round 4, data-loss cluster item 3)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0234": {
+      "name": "mockFinish stops clearing RUNKEY through mockRunChain and fires the clear on its own instead, so a checkpoint write already queued ahead of it can land after and resurrect the just-finished run (ChatGPT third-model audit round 4, data-loss cluster item 6)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0235": {
+      "name": "the mock-exam weak-chapter report goes back to keying byCh on any book’s chapter number (ChatGPT third-model audit round 3)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0236": {
+      "name": "mergeSave stops cloning its \"mine\" snapshot, so an in-place mutation of the live HL/SN object (the real edit path — hlNote’s h.n=text, hlAdd’s array push, notesPaint’s SN[id]=...) during an in-flight save is invisible to the moved-on check, comparing the live object to itself (Codex review of #456)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0237": {
+      "name": "mockFinish stops checking run ownership before clearing RUNKEY, so a brand-new run started (and checkpointed) while this finish was still awaiting its own writes gets its record erased instead of the run this call actually finished (Codex review of #456)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0238": {
+      "name": "refreshBody stops advancing PQSEEN when it reloads past-paper progress, so every entry the refresh introduces looks like a local addition forever and the next save reasserts it over whatever another tab wrote afterward (Codex review of #456)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0239": {
+      "name": "the mock Resume handler stops reapplying the expired-run normalisation to its own fresh re-read, so clicking Resume on an already-expired run immediately auto-grades and clears it instead of resuming untimed as the banner promised (Codex review of #456)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0240": {
+      "name": "sectionForChapter stops coercing its argument to a number, so a string chapter key (Object.keys() of a tally object always hands back strings) misses every real SECCH match and silently falls back to the wrong, one-chapter-per-section CHFALLBACK mapping (ChatGPT third-model audit round 5)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0241": {
+      "name": "chapter 22's chapter-index row goes back to the wrong section (data-sec=\"beers\" instead of \"pharm\"), so once sectionForChapter's numeric lookup works it routes straight to the guideline-only Beers section instead of chapter 22's real home (Codex review of #457)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0242": {
+      "name": "withLock stops actually taking a cross-tab lock and always runs its callback directly, so another tab's write landing in the gap between a re-check and the actual set() is silently overwritten instead of queued behind it (ChatGPT audit of #456/#457/#458 against ACCEPTANCE-round5.md, XANN, STALE3/STALE4)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0243": {
+      "name": "mockSaveRun stops merging its own changed answers/flags onto whatever is on disk, and goes back to sending its whole local snapshot as an unconditional overwrite, so a second tab's answers to different questions on the same run are erased instead of merged (ChatGPT audit against ACCEPTANCE-round5.md, STALE6)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0244": {
+      "name": "newRunId stops trying crypto.randomUUID and goes straight back to Date.now()+Math.random(), which is not collision-proof under a frozen clock and a repeated RNG sequence (ChatGPT audit against ACCEPTANCE-round5.md, ID2)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0245": {
+      "name": "mockFinish stops gating the RUNKEY clear on pqSave's own result, so a refused geri:pq write still gets the recoverable run cleared right alongside it (Codex CLI's independent blind re-audit of main 522d4cf against ACCEPTANCE-round5.md, FIN2/FIN3)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0246": {
+      "name": "the mock Resume handler goes back to claiming an id-less legacy checkpoint under a freshly minted id, so the first checkpoint reads curId \"\" against that id and closes the resumed mock as superseded (Codex review of #459)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0247": {
+      "name": "mockSaveRun goes back to merging against whatever record is on disk regardless of whose run it is, so a new mock started over a discarded one inherits that run's index-keyed answers onto a different question list (Codex review of #459)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0248": {
+      "name": "the checkpoint cursor goes back to being a high-water mark, so walking back through the paper keeps writing the furthest question reached and the next resume opens past where the reader actually was (Codex review of #459)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0249": {
+      "name": "flushPending goes back to writing section notes on teardown whether or not this tab changed anything, so a background tab holding a stale copy overwrites the note another tab just wrote (class 6: the check that should catch this ended in `return true`)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0250": {
+      "name": "bmSet stops recording the text of the block that was marked, so the place has nothing to re-find after the page re-renders and only the section id survives (class 4: the check hand-assigned BM and then read it back, so no app code ran between write and assert)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0251": {
+      "name": "the week-note debounce writes every note under one fixed key instead of the week being viewed, so last week's note is what loads next week and the real note is gone (class 2: the check only asked whether the text appeared somewhere in the blob)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0252": {
+      "name": "the mock report's score counts every question that was answered rather than every one answered right, so a reader who answered all 25 is told they scored 25 (class 2: the check parsed the fraction but accepted any numerator from 0 to 25)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0253": {
+      "name": "the pre-paint script applies whatever size string is in storage, whitelist or not, so a value from a build that is not this one becomes a body class that matches no rule (class 1b: a structural guard whose label promised behaviour, with nothing else in the file covering it)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0254": {
+      "name": "an abbreviation tapped inside the table pop-out no longer closes the pop-out first, so the footnote it jumps to scrolls into view behind a full-screen dialog and the reader sees nothing happen (class 1b: a structural guard whose label promised behaviour, with nothing else in the file covering it)",
+      "runner": null,
+      "status": "active"
+    },
+    "m0255": {
+      "name": "a chapter-index button points at an element that exists but is not a <main section>, which the old getElementById test waved through even though it cannot open as a chapter",
+      "runner": "audit",
+      "status": "active"
+    },
+    "m0256": {
+      "name": "a schedule item routes to an element id that exists but is not a section — same getElementById blindness as the chapter-index gate, one layer further in",
+      "runner": "audit",
+      "status": "active"
+    },
+    "m0257": {
+      "name": "a card tag is given a display name of a single space: truthy, so the old !TAGNAME[t] gate passed it while the reader saw an unlabelled tag",
+      "runner": "audit",
+      "status": "active"
+    },
+    "m0258": {
+      "name": "a card answer is ten spaces: length 10, so it cleared the old <10 test and counted as real content",
+      "runner": "audit",
+      "status": "active"
+    },
+    "m0259": {
+      "name": "a past-paper option is whitespace only: truthy, so the old some(o=>!o) gate read it as real content and never reported the empty tap target",
+      "runner": "audit",
+      "status": "active"
+    },
+    "m0260": {
+      "name": "a caption and a table that do not belong to each other, in balanced numbers — the exact shape the old count-minus-count gate could not see, since 101 tables minus 101 captions is still 0",
+      "runner": "audit",
+      "status": "active"
+    },
+    "m0261": {
+      "name": "the in-app \"an option did not extract cleanly\" disclosure is removed, while audit.mjs keeps printing a flagged-option count under a label promising the reader was told",
+      "runner": "audit",
+      "status": "active"
+    },
+    "m0262": {
+      "name": "the worker’s production dispatch calls classifyMutant (label-keyed) instead of classifyById (id-keyed) — exactly the regression the P1 fix closed, reintroduced silently",
+      "runner": "selfsrc",
+      "status": "active"
+    }
+  },
+  "retired": {}
+}

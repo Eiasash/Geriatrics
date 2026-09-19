@@ -1,4 +1,5 @@
 import { JSDOM } from 'jsdom'; import { pinClock } from './clock.mjs'; import fs from 'fs';
+import { logRun } from './ledger.mjs';
 const html=fs.readFileSync(process.argv[2]||'geriatrics-stage-a.html','utf8'); const store={}; const errs=[];
 const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,beforeParse(w){pinClock(w);
   w.storage={get:async k=>{if(!(k in store))throw 0;return{key:k,value:store[k]}},set:async(k,v)=>{store[k]=v;return{key:k,value:v}}};
@@ -102,5 +103,10 @@ check('search index entries', w.eval('INDEX.length')+'');
 check('PQ loaded', pqCount+'');
 check('runtime errors', errs.length+' '+errs.slice(0,3).join('|'), errs.length>0);
 p.forEach(([k,v])=>console.log((k+':').padEnd(38), v));
+/* written after every gate has run, so an audit that died mid-way leaves no line at all
+   rather than a line that reads as a clean pass. */
+logRun('audit.mjs', { file: process.argv[2] || 'geriatrics-stage-a.html', checks: p.length,
+  failures: fail.length, failed: fail, verdict: fail.length ? 'fail' : 'pass', completed: true,
+  engine: 'jsdom' });
 if(fail.length){ console.log('FAIL:', fail.join(', ')); process.exit(1); }
 process.exit(0);
