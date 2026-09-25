@@ -47,7 +47,7 @@ self.addEventListener('activate',e=>e.waitUntil(
   caches.keys().then(ks=>Promise.all(
     // Preserve IMG_CACHE + PDF_CACHE across version bumps (on-demand LRU caches,
     // not tied to app version — trashing them forces users to re-download books).
-    ks.filter(k=>k!==CACHE&&k!==IMG_CACHE&&k!==PDF_CACHE).map(k=>caches.delete(k))
+    ks.filter(k=>k.startsWith('shlav-')&&k!==CACHE&&k!==IMG_CACHE&&k!==PDF_CACHE).map(k=>caches.delete(k))
   ))
   .then(()=>self.clients.claim())
   // Tell live clients the SW has a newer version so they can reload if stuck
