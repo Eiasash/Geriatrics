@@ -177,6 +177,10 @@ describe("sw.js — Supabase image caching", () => {
     expect(swContent).toMatch(/caches\.open\(IMG_CACHE\)/);
   });
 
+  it("scopes activate cleanup to this app's own 'shlav-' caches (shared eiasash.github.io origin)", () => {
+    expect(swContent).toMatch(/ks\.filter\(k=>k\.startsWith\('shlav-'\)&&k!==CACHE/);
+  });
+
   it("preserves IMG_CACHE during activate cleanup", () => {
     expect(swContent).toMatch(/k!==IMG_CACHE/);
   });
