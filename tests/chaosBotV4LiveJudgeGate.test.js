@@ -55,6 +55,13 @@ describe('chaosBotV4 check-answer selector + judge-counter contract', () => {
     expect(src).toContain("type: 'ai-judge'");          // emit site (:604)
     expect(src).toContain("a.type === 'ai-judge'");      // aggregation (:1038)
   });
+
+  it('weekly-audit passes the proxy secret to the live gate (no built-in fallback since v10.64.188)', () => {
+    // Without it every judge call 401s and the gate reports a false "inert bot".
+    const wf = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'weekly-audit.yml'), 'utf8');
+    const job = wf.slice(wf.indexOf('live-judge-gate:'));
+    expect(job).toContain('TORANOT_API_SECRET: ${{ secrets.TORANOT_API_SECRET }}');
+  });
 });
 
 // --- The real guard: live judge-call count must be > 0 ---
