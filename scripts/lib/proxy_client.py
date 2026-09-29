@@ -34,7 +34,10 @@ import urllib.request
 import urllib.error
 
 PROXY_URL = "https://toranot.netlify.app/api/claude"
-PROXY_SECRET = "RETIRED_PROXY_SECRET_2026_07_19"
+# Rotated in v10.64.188; the old literal now gets a 401. Local runs set
+# TORANOT_API_SECRET; in a cloud session the environment's API credential for
+# toranot.netlify.app injects x-api-secret, so unset means send no header.
+PROXY_SECRET = os.environ.get("TORANOT_API_SECRET", "")
 ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_VERSION = "2023-06-01"
 
@@ -87,7 +90,7 @@ def call_claude(
     if direct:
         headers["x-api-key"] = api_key
         headers["anthropic-version"] = ANTHROPIC_VERSION
-    else:
+    elif PROXY_SECRET:
         headers["x-api-secret"] = PROXY_SECRET
 
     req = urllib.request.Request(

@@ -29,7 +29,11 @@
  */
 
 const PROXY_URL = 'https://toranot.netlify.app/api/claude';
-const PROXY_SECRET = 'RETIRED_PROXY_SECRET_2026_07_19';
+// The shared secret was rotated in v10.64.188; the old literal now gets a 401.
+// Read it from TORANOT_API_SECRET for local runs. In a cloud session the
+// environment's API credential for toranot.netlify.app injects x-api-secret
+// itself, so with the var unset we send no header rather than a stale one.
+const PROXY_SECRET = process.env.TORANOT_API_SECRET || '';
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
 
@@ -171,7 +175,7 @@ async function callClaude(prompt, options = {}) {
   if (direct) {
     headers['x-api-key'] = apiKey;
     headers['anthropic-version'] = ANTHROPIC_VERSION;
-  } else {
+  } else if (PROXY_SECRET) {
     headers['x-api-secret'] = PROXY_SECRET;
   }
 
