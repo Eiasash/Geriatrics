@@ -13,6 +13,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
 const ROOT = resolve(import.meta.dirname, '..');
@@ -62,7 +63,8 @@ describe('proxy-client — default proxy mode', () => {
     const [url, init] = fetchImpl.mock.calls[0];
     expect(url).toBe(PROXY_URL);
     expect(init.method).toBe('POST');
-    expect(init.headers['x-api-secret']).toBe(PROXY_SECRET);
+    if (PROXY_SECRET) expect(init.headers['x-api-secret']).toBe(PROXY_SECRET);
+    else expect(init.headers['x-api-secret']).toBeUndefined();
     expect(init.headers['x-api-key']).toBeUndefined();
     expect(init.headers['anthropic-version']).toBeUndefined();
   });
@@ -147,9 +149,8 @@ describe('proxy-client — direct fallback mode', () => {
 });
 
 describe('proxy-client — exports', () => {
-  it('exports PROXY_URL and PROXY_SECRET as fixed constants', () => {
+  it('exports PROXY_URL as a fixed constant', () => {
     expect(PROXY_URL).toBe('https://toranot.netlify.app/api/claude');
-    expect(PROXY_SECRET).toBe('RETIRED_PROXY_SECRET_2026_07_19');
   });
 
   it('exports ProxyError, callClaudeWithRetry, and _classifyError', () => {
@@ -527,5 +528,44 @@ describe('ProxyError class', () => {
     const root = new Error('root cause');
     const e = new ProxyError('wrap', { transient: true, category: 'network', cause: root });
     expect(e.cause).toBe(root);
+  });
+});
+
+// v10.64.188 rotated the shared secret; the old literal gets a 401 from the
+// proxy. The secret must come from TORANOT_API_SECRET, and with it unset the
+// header is omitted so a cloud environment credential can inject it.
+describe('proxy-client — secret comes from the environment', () => {
+  const MODULE = resolve(ROOT, 'scripts', 'lib', 'proxy-client.cjs');
+  function loadWith(secret) {
+    const prev = process.env.TORANOT_API_SECRET;
+    if (secret === undefined) delete process.env.TORANOT_API_SECRET;
+    else process.env.TORANOT_API_SECRET = secret;
+    delete require.cache[require.resolve(MODULE)];
+    try { return require(MODULE); }
+    finally {
+      if (prev === undefined) delete process.env.TORANOT_API_SECRET;
+      else process.env.TORANOT_API_SECRET = prev;
+      delete require.cache[require.resolve(MODULE)];
+    }
+  }
+
+  it('sends x-api-secret from TORANOT_API_SECRET when set', async () => {
+    const mod = loadWith('test-secret');
+    const fetchImpl = mockOk();
+    await mod.callClaude('hello', { fetchImpl });
+    expect(fetchImpl.mock.calls[0][1].headers['x-api-secret']).toBe('test-secret');
+  });
+
+  it('omits x-api-secret when TORANOT_API_SECRET is unset', async () => {
+    const mod = loadWith(undefined);
+    expect(mod.PROXY_SECRET).toBe('');
+    const fetchImpl = mockOk();
+    await mod.callClaude('hello', { fetchImpl });
+    expect(fetchImpl.mock.calls[0][1].headers).not.toHaveProperty('x-api-secret');
+  });
+
+  it('no longer hard-codes the retired secret', () => {
+    const src = readFileSync(MODULE, 'utf-8');
+    expect(src).not.toMatch(/RETIRED_PROXY_SECRET/);
   });
 });

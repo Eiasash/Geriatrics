@@ -110,9 +110,6 @@ function lookupAuditGrade(stem) {
 const DEFAULT_URL = 'https://eiasash.github.io/Geriatrics/';
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 const TORANOT_URL = 'https://toranot.netlify.app/api/claude';
-// v10.64.114: documented Toranot proxy secret for Geri — same value used by
-// scripts/generate_distractors.cjs (this is the contract, not a credential).
-const TORANOT_DEFAULT_SECRET = 'RETIRED_PROXY_SECRET_2026_07_19';
 // v10.64.131: model default branches on mode after the USE_PROXY flip.
 // Proxy accepts 'opus' alias (resolves to current opus server-side); direct mode
 // needs a canonical Anthropic model ID. CHAOS_MODEL env overrides both.
@@ -153,7 +150,9 @@ const CONFIG = {
 
 let KEY;
 if (USE_PROXY) {
-  KEY = process.env.TORANOT_API_SECRET || TORANOT_DEFAULT_SECRET;
+  // The documented default secret was rotated in v10.64.188 and now 401s.
+  // Unset = rely on the cloud environment's credential injecting x-api-secret.
+  KEY = process.env.TORANOT_API_SECRET || '';
 } else {
   KEY = process.env.CLAUDE_API_KEY;
   if (!KEY) { console.error('CHAOS_USE_DIRECT=1 but CLAUDE_API_KEY not set in environment. Either set CLAUDE_API_KEY or unset CHAOS_USE_DIRECT to use proxy mode (default).'); process.exit(2); }
@@ -195,7 +194,7 @@ async function callClaude(systemPrompt, userPrompt, { maxTokens = 400, retries =
         method: 'POST',
         headers: USE_PROXY
           ? {
-              'x-api-secret': KEY,
+              ...(KEY ? { 'x-api-secret': KEY } : {}),
               'content-type': 'application/json',
             }
           : {

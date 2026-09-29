@@ -42,9 +42,12 @@ describe('chaos-doctor-bot v4 — proxy-mode pins', () => {
     expect(SRC).toMatch(/CLAUDE_API_KEY not set/);
   });
 
-  it('proxy mode falls back to documented secret if TORANOT_API_SECRET is unset', () => {
-    expect(SRC).toMatch(/TORANOT_DEFAULT_SECRET\s*=\s*'RETIRED_PROXY_SECRET_2026_07_19'/);
-    expect(SRC).toMatch(/KEY\s*=\s*process\.env\.TORANOT_API_SECRET\s*\|\|\s*TORANOT_DEFAULT_SECRET/);
+  it('proxy mode reads TORANOT_API_SECRET and never falls back to the retired secret', () => {
+    // v10.64.188 rotated the secret; the old literal 401s. Unset = omit the
+    // header so the cloud environment credential can inject it.
+    expect(SRC).not.toMatch(/RETIRED_PROXY_SECRET/);
+    expect(SRC).toMatch(/KEY\s*=\s*process\.env\.TORANOT_API_SECRET\s*\|\|\s*''/);
+    expect(SRC).toMatch(/\.\.\.\(KEY \? \{ 'x-api-secret': KEY \} : \{\}\)/);
   });
 
   it('startup log surfaces the API mode', () => {
