@@ -245,8 +245,8 @@ jobs:
   # LOUDLY. The v4 bot finds the practice surface by live aria-labels; an a11y/i18n
   # label edit (cf. #290) can silently zero its judge calls — a class the cheap
   # structural pins in ci.yml CANNOT catch (only a live DOM run can). The bot
-  # defaults to proxy mode (TORANOT_DEFAULT_SECRET fallback), so this scheduled run
-  # needs no API key. The per-run budget is kept short (CHAOS_DURATION_MS=60000 in
+  # runs in proxy mode and authenticates with the TORANOT_API_SECRET repo secret
+  # (the built-in fallback was rotated out in v10.64.188). The per-run budget is kept short (CHAOS_DURATION_MS=60000 in
   # the test) so it finishes well within the execFileSync timeout — the earlier
   # ETIMEDOUT was a 120s-budget-vs-170s-timeout margin bug, not missing creds
   # (#397 removed the job on a wrong premise; this restores + fixes it).
@@ -264,4 +264,5 @@ jobs:
       - name: Live judge-call gate (fails loud if the bot is inert)
         env:
           CHAOS_LIVE_SMOKE: '1'
+          TORANOT_API_SECRET: ${{ secrets.TORANOT_API_SECRET }}
         run: npx vitest run tests/chaosBotV4LiveJudgeGate.test.js
