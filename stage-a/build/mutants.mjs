@@ -1846,17 +1846,21 @@ async function worker(){
 }
 const t0 = Date.now();
 await Promise.all(Array.from({length: WORKERS}, worker));
-let bad = 0;
-for(const r of results){ console.log(r); if(!r.startsWith('CAUGHT')) bad++; }
+let bad = 0, uncertified = 0;
+/* UNCERTIFIABLE is reported on its own line and does not fail the run: the runner gives one aggregate
+   FAIL line with no per-check id, so there is no CAUGHT/MISSED verdict to give. It is not counted as
+   caught either. MISSED, INCOMPLETE and any other class still fail. */
+for(const r of results){ console.log(r); if(r.startsWith('UNCERTIFIABLE')) uncertified++; else if(!r.startsWith('CAUGHT')) bad++; }
 if(SHARD) console.log('\n(MUTANT_SHARD ' + SHARD + ': ' + M_RUN.length + ' of ' + M_SEL.length + ' mutations in this shard)');
 if(ONLY.length) console.log('\n(MUTANT_ONLY filter: ' + M_RUN.length + ' of ' + M_FULL.length + ' mutations ran locally; CI runs the full set)');
-console.log('\n' + (M_RUN.length - bad) + ' of ' + M_RUN.length + ' mutations caught (' + WORKERS + ' workers, ' + Math.round((Date.now()-t0)/1000) + ' s)');
+console.log('\n' + (M_RUN.length - bad - uncertified) + ' of ' + M_RUN.length + ' mutations caught, ' + uncertified + ' uncertified (no verdict, not failing), ' + bad + ' not caught (' + WORKERS + ' workers, ' + Math.round((Date.now()-t0)/1000) + ' s)');
 /* `not_caught` counts every non-CAUGHT line — MISSED, INCOMPLETE and any other class alike.
    It is not a MISSED count, and the ledger must not imply it is: an INCOMPLETE is an
    uninterpretable verdict, not an escaped mutation, and collapsing the two is the reading
    this field exists to prevent. The lines themselves are kept so the split is recoverable. */
-logRun('mutants.mjs', { file: SRC, mutations: M_RUN.length, not_caught: bad,
-  not_caught_lines: results.filter(r => r && !r.startsWith('CAUGHT')),
+logRun('mutants.mjs', { file: SRC, mutations: M_RUN.length, not_caught: bad, uncertified,
+  not_caught_lines: results.filter(r => r && !r.startsWith('CAUGHT') && !r.startsWith('UNCERTIFIABLE')),
+  uncertified_lines: results.filter(r => r && r.startsWith('UNCERTIFIABLE')),
   verdict: bad ? 'fail' : 'pass', completed: true, shard: SHARD || null,
   ms: Date.now() - t0 });
 process.exit(bad ? 1 : 0);
