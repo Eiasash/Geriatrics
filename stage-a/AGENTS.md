@@ -116,10 +116,17 @@ The main app's CI does not scan this folder — its checkers hardcode
 `mutants --static`; `mutants` runs the full mutation set across 10 shards.
 Everything runs in `TZ=Asia/Jerusalem`.
 
-Required for merge: `validate`, `js-integrity`, `scan`, `claude-review`.
+Required for merge: `validate`, `js-integrity`, `scan` (`claude-review` was removed: the automatic review no longer runs).
 **`mutants` and `guards` are not required checks** — a mutation regression can
 merge. Read the shard results before merging rather than trusting the merge
 button.
+
+## Question-bank changes
+
+Any change to question data in `index.html` (stems, options, answer keys, references) needs green CI on the exact head
+plus a CONCUR from the SZMC Cowork lane (`cowork-szmc`) on the bus, like every other Stage A change; the coordinator
+merges, never its own build. Official items keep the official IMA answer key. A missing or merged option is restored from
+the exam PDF page itself (rendered image), never from memory or the text layer, which scrambles Hebrew.
 
 ## Gaps worth knowing
 
