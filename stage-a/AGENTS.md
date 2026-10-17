@@ -121,12 +121,12 @@ Required for merge: `validate`, `js-integrity`, `scan` (`claude-review` was remo
 merge. Read the shard results before merging rather than trusting the merge
 button.
 
-## Question-bank changes
+## Question-bank changes and merging
 
-Any change to question data in `index.html` (stems, options, answer keys, references) needs green CI on the exact head
-plus a CONCUR from the SZMC Cowork lane (`cowork-szmc`) on the bus, like every other Stage A change; the coordinator
-merges, never its own build. Official items keep the official IMA answer key. A missing or merged option is restored from
-the exam PDF page itself (rendered image), never from memory or the text layer, which scrambles Hebrew.
+There is no CONCUR step. Only an OBJECT from the SZMC Cowork lane (`cowork-szmc`) blocks a merge; the coordinator
+merges once the required checks are green on the exact head. Official items keep the official IMA answer key. A missing
+or merged option is restored from the exam PDF page itself (rendered image), never from memory or the text layer,
+which scrambles Hebrew. Only the Hazzard reader and the Stage A app are in use: no work on the big question bank.
 
 ## Gaps worth knowing
 
