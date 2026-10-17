@@ -1733,7 +1733,7 @@ const TARGETS = new Map();
    never CAUGHT either: an unfinished run proves nothing either way. */
 const { execFile } = await import('child_process');
 const os = await import('os');
-const WORKERS = Math.max(1, Math.min(M_RUN.length, +(process.env.MUTANT_WORKERS || os.cpus().length)));
+const WORKERS = Math.max(1, Math.min(M_RUN.length, +(process.env.MUTANT_WORKERS || Math.min(os.cpus().length, 4))));
 /* Exit status is captured alongside output, mirroring runAudit below — it used to be discarded
    entirely here (`res((stdout||'')+(stderr||''))`, `err` unused), which meant a child that
    printed a clean DONE and ##RUN record but then exited non-zero for a reason those never saw
