@@ -16,7 +16,7 @@ data/explanations.json.
 import json, sys, time, concurrent.futures, urllib.request, urllib.error, argparse, os, re
 
 PROXY = "https://toranot.netlify.app/api/claude"
-SECRET = "RETIRED_PROXY_SECRET_2026_07_19"
+SECRET = os.environ.get("TORANOT_API_SECRET", "")
 Q_BACKUP = "/tmp/questions.backup.json"
 E_BACKUP = "/tmp/explanations.backup2.json"
 AUDIT_PATH = ".audit_logs/reframe_decisions.json"

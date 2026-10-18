@@ -33,7 +33,7 @@ import process from 'node:process';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const TORANOT_URL = 'https://toranot.netlify.app/api/claude';
-const TORANOT_DEFAULT_SECRET = 'RETIRED_PROXY_SECRET_2026_07_19';
+const TORANOT_DEFAULT_SECRET = (process.env.TORANOT_API_SECRET ?? "");
 const KEY = process.env.TORANOT_API_SECRET || TORANOT_DEFAULT_SECRET;
 const MODEL = process.env.REGEN_MODEL || 'claude-sonnet-4-6';
 

@@ -18,7 +18,7 @@ Usage:
 import json, sys, time, concurrent.futures, urllib.request, urllib.error, argparse
 
 PROXY = "https://toranot.netlify.app/api/claude"
-SECRET = "RETIRED_PROXY_SECRET_2026_07_19"
+SECRET = os.environ.get("TORANOT_API_SECRET", "")
 QS_PATH = "data/questions.json"
 EX_PATH = "data/explanations.json"
 

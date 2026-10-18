@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 """v10.35 AI explanations — call toranot proxy 6 workers, 1 Q per call.
 
 Reads scripts/v10_35_new_questions.json. Adds 'e' (Hebrew explanation) and
@@ -13,7 +14,7 @@ import urllib.request
 import urllib.error
 
 PROXY = 'https://toranot.netlify.app/api/claude'
-SECRET = 'RETIRED_PROXY_SECRET_2026_07_19'
+SECRET = os.environ.get("TORANOT_API_SECRET", "")
 WORKERS = 6
 MAX_RETRIES = 2
 TIMEOUT = 60
