@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 """Generate board-exam-style Hebrew MCQs for low-volume topic buckets via toranot proxy.
 
 Pattern: 6 workers, 1-Q-per-call, ~3-5s each (slightly slower than triage due to
@@ -10,7 +11,7 @@ Generates ~12 per bucket → expect ~30+ accepted after strict validation.
 import json, sys, time, concurrent.futures, urllib.request, urllib.error, re, hashlib
 
 PROXY = "https://toranot.netlify.app/api/claude"
-SECRET = "RETIRED_PROXY_SECRET_2026_07_19"
+SECRET = os.environ.get("TORANOT_API_SECRET", "")
 QS_PATH = "data/questions.json"
 
 BUCKETS = {

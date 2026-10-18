@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 """
 scripts/reclassify_tis.py — assign tis[] (1-3 ranked topics) to every Q.
 
@@ -27,7 +28,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PROXY = "https://toranot.netlify.app/api/claude"
-SECRET = "RETIRED_PROXY_SECRET_2026_07_19"
+SECRET = os.environ.get("TORANOT_API_SECRET", "")
 
 # 46 IMA syllabus topics (matches data/topics.json indices, which is the
 # authoritative ordering). The HTML TOPICS array currently stops at 42 —
