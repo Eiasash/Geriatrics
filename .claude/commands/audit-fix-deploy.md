@@ -1,5 +1,5 @@
 ---
-description: Full audit → fix → test → build → deploy → verify cycle for this repo. Auto-detects repo; captain-mode with verify-first + merge carve-outs.
+description: Full audit → fix → test → build → deploy → verify cycle for this repo. Auto-detects repo; verify-first with coordinator-owned merges.
 ---
 
 Run the **audit-fix-deploy** skill end-to-end for the repo in the current working directory.
@@ -23,14 +23,15 @@ Every claim about what code/infra DOES ("covered", "inherits X", "verified", "ha
 Fix in order: RLS hole > crash/silent-failure > wrong clinical/data output > leak > cosmetic. Halt at the current phase (fix before advancing) on: RLS hole, crash, red tests, failed build, failed deploy. Never force-push over a broken deploy — rollback and investigate. Run the deploy-primitives §3 RLS sanity pass on ANY schema-adjacent change (shared Postgres across five repos); record the result line in IMPROVEMENTS.md even when clean.
 
 ## Merge authority
-Branch `claude/<slug>` → PR → CI + the repo's wired reviewer → merge → `verify-deploy`. Never push direct to main.
-- Self-merge OK only on non-audit/non-PHI after CI-green + reviewer-green.
-- STOP and HAND TO EIAS (open PR, summarize, do NOT merge): (a) audit-evidence artifacts (chaos-*, analyze_*, build_stemhash*, lib/{audit8,hashStem}*, tests/{chaosBot,*audit8}*, docs/AUDIT*/RESULT/crosswalk); (b) ward-helper CODEOWNERS paths; (c) PHI cleanup.
+Branch + PR always; never push directly to `main` or use `--no-verify`.
+- The coordinator merges once `validate`, `js-integrity`, and `scan` are green on the exact full head.
+- Claude Code does not self-merge. Only an OBJECT from the SZMC Cowork lane (`cowork-szmc`) blocks the coordinator's merge.
+- No CONCUR, signature, Eias sign-off, or review rounds are required. Existing Stage A guards and mutation shards are optional checks.
 - Don't unpark parked work or open a kickoff doc unless its documented trigger fired / required evidence exists.
-- This repo's on-main CLAUDE.md governs repo-specific carve-outs — defer to it over this file.
+- Follow the current `CLAUDE.md` and `stage-a/AGENTS.md` for repo scope and release mechanics.
 
 ## Output (terse)
-Per repo: findings table (severity | file:line | issue) → fixed + self-merged (PR# + root cause + verify-deploy witness) → BLOCKED ON EIAS (carve-out PRs, one line each) → RLS result (or n/a) → anything left parked + its trigger. End with a consolidated IMPROVEMENTS.md.
+Report findings, fixes, branch/commit or PR, required-check results, coordinator handoff status, and any verification not run. Report a live check only after the coordinator has merged and publication has been verified.
 
 ## Never
 Reinvent the pipeline/spec; paraphrase clinical skill content into code (verbatim port only); exceed maxAttempts>3 on extract/emit; auto-flip q.c / c_accept / curator overrides / distractor empty-slots; collapse multi-accept Qs; trust a search snippet over live state.

@@ -1,15 +1,18 @@
 # AGENTS.md — Shlav A Mega (Geriatrics, שלב א)
 
-Israeli geriatrics board-exam study PWA. Live: https://eiasash.github.io/Geriatrics/
-Stack: SINGLE-FILE HTML PWA, **no build** — the whole app is `shlav-a-mega.html` (~8,560 lines, vanilla JS). Data in `data/*.json`. Hebrew RTL.
+Current operating and release rules are in `CLAUDE.md`. The active app here is
+`stage-a/`; read `stage-a/AGENTS.md` for it. Only Stage A and the separate
+Hazzard reader are in use. The retained `shlav-a-mega.html` exam PWA and its
+big question bank are inactive; do not start work on them.
+The remaining legacy details below apply only to an explicitly assigned legacy change.
 
 ## Setup & commands
 ```bash
 npm ci
 npm test           # vitest only (no build step)
-npm run verify     # full pre-push gate incl. scripts/check-version-sync.py. MUST pass before any PR.
+npm run verify     # supplemental legacy checks; required CI is validate, js-integrity, scan
 ```
-To dev: just open/edit `shlav-a-mega.html`. Windows/git-bash: `encoding='utf-8'` for Python.
+For active console work use `stage-a/`. Read/write text with UTF-8.
 
 ## HARD RULES (do not violate)
 1. **Branch `codex/<slug>` → PR. NEVER push to `main`** (Pages deploys `main`).
@@ -24,7 +27,4 @@ To dev: just open/edit `shlav-a-mega.html`. Windows/git-bash: `encoding='utf-8'`
 - Views: tabs from `data/tabs.json` → `renderTabs()` (#tb) → `render()` `switch(tab){...}`. Track tab already has KPI cards + a 46-topic mastery heatmap + a year×topic weak-spots map. (A per-topic accuracy list + radar/ROI chart were deliberately removed as redundant — don't re-add.)
 
 ## Adding questions (only legit path)
-`scripts/gen_highyield.mjs` (Toranot proxy, grounded in Hazzard + guidelines, tag `AI-2026-hy`) → untracked output → `verify_questions.mjs` + blind audit → physician review before merge. NEVER copy external/paywalled questions.
-
-## Good first tasks
-Mobile-RTL UI fixes (overflow/contrast-AA/tap-targets/dark mode); add a correct/wrong/unanswered progress **donut** to the Track tab (only genuinely-missing visual; don't duplicate the heatmap). Report each change.
+`scripts/gen_highyield.mjs` (Toranot proxy, grounded in Hazzard + guidelines, tag `AI-2026-hy`) → untracked output → `verify_questions.mjs`. This legacy workflow is inactive; do not run it without a specific assignment. Merge authority remains the coordinator under `CLAUDE.md`. NEVER copy external/paywalled questions.

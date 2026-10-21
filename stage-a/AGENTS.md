@@ -56,23 +56,17 @@ zone with daylight saving, which is what CI uses.
 
 1. **Branch `claude/<slug>` → PR → CI green.** Never push to `main`; Pages
    deploys it.
-2. **Every fix gets a guard, every guard gets a red test.** Break the fix,
-   watch the new check fail, restore it. A guard you have not seen fail is not
-   a guard.
-3. **Every guard gets a `mutants.mjs` entry.** A green suite and a blind suite
-   look identical from the outside; the mutation is what tells them apart. The
-   entry's needle must appear in the FAIL line of the check that catches it.
-4. **When `facts.mjs` fails, go back to the chapter.** Never edit the fact to
+2. **When `facts.mjs` fails, go back to the chapter.** Never edit the fact to
    make it pass.
-5. **A structural guard must not promise behaviour it does not test.** Matching
+3. **A structural guard must not promise behaviour it does not test.** Matching
    the source is deliberate here and is fine — but if the label says what the
    app *does*, something in the file has to drive it. `test.mjs` fails on any
    `ok()` whose predicate cannot fail (a bare `true`, or a body whose only
    return is `return true`).
-6. **`code` has block comments stripped; `html` does not.** Anchor structural
+4. **`code` has block comments stripped; `html` does not.** Anchor structural
    guards on real code, never on comment text, or commenting a guard out leaves
    the suite green.
-7. **Persistence changes are judged against `build/ACCEPTANCE-round5.md`.**
+5. **Persistence changes are judged against `build/ACCEPTANCE-round5.md`.**
    Read it from disk at the start of the work, not from memory.
 
 ## How the harness thinks
@@ -116,14 +110,14 @@ The main app's CI does not scan this folder — its checkers hardcode
 `mutants --static`; `mutants` runs the full mutation set across 10 shards.
 Everything runs in `TZ=Asia/Jerusalem`.
 
-Required for merge: `validate`, `js-integrity`, `scan` (`claude-review` was removed: the automatic review no longer runs).
-**`mutants` and `guards` are not required checks** — a mutation regression can
-merge. Read the shard results before merging rather than trusting the merge
-button.
+Required for merge: `validate`, `js-integrity`, `scan`.
+**`mutants` and `guards` are optional, not required checks.** Keep the existing
+guards and mutation shards; adding a new guard or mutation is not mandatory.
 
 ## Question-bank changes and merging
 
-There is no CONCUR step. Only an OBJECT from the SZMC Cowork lane (`cowork-szmc`) blocks a merge; the coordinator
+Merges are trust-based (Eias, 17.10.2026): no CONCUR, signature or Eias sign-off.
+Never use `--no-verify`; no review rounds. Claude Code and Codex do not self-merge. Only an OBJECT from the SZMC Cowork lane (`cowork-szmc`) blocks a merge; the coordinator
 merges once the required checks are green on the exact head. Official items keep the official IMA answer key. A missing
 or merged option is restored from the exam PDF page itself (rendered image), never from memory or the text layer,
 which scrambles Hebrew. Only the Hazzard reader and the Stage A app are in use: no work on the big question bank.
@@ -133,5 +127,5 @@ which scrambles Hebrew. Only the Hazzard reader and the Stage A app are in use: 
 - `harness-selftest.mjs` is not wired into CI. It guards the mutation runner's
   own verdict logic and only runs when someone runs it by hand.
 - `.agents/skills/` at the repository root holds a byte-identical copy of two
-  skills that already exist in `.claude/skills/`. Nothing in the repo
-  references it.
+  skills that already exist in `.claude/skills/`. This instruction file
+  references it; it is retained. No executable or configuration references were found.

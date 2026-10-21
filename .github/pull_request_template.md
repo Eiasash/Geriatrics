@@ -12,7 +12,7 @@
 ## Testing
 - [ ] I have tested the changes locally in the browser
 - [ ] Questions/data files validated
-- [ ] I have added tests for new functionality
+- [ ] I have run the checks relevant to this change; added tests only where needed (new guards are not mandatory)
 
 ## Checklist
 - [ ] My code follows the project's style guidelines
