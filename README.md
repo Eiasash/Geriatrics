@@ -2,7 +2,12 @@
 
 *Shlav A Mega — sibling of [Internal Medicine Board Prep](https://github.com/Eiasash/InternalMedicine) and [Family Medicine Board Prep](https://github.com/Eiasash/FamilyMedicine).*
 
-**Israeli Shlav A Geriatric Medicine Board Exam Preparation Tool**
+**Active tools:** [Stage A console](https://eiasash.github.io/Geriatrics/stage-a/)
+and the separate [Hazzard reader](https://eiasash.github.io/hazzard-reader/).
+The big question-bank PWA described below is retained but no longer in use.
+See `CLAUDE.md` and `stage-a/AGENTS.md` for current development instructions.
+
+**Retained Shlav A Mega exam PWA**
 
 Standalone, offline-capable PWA with 3,326 questions (1,207 real IMA exam + 2,119 AI-generated textbook questions), study notes, clinical calculators, FSRS-4.5 spaced repetition, and AI-powered explanations — all in one HTML file.
 
@@ -85,32 +90,35 @@ scripts/                     # Utility scripts (question generation, exam parsin
 tests/                       # Vitest test suite (678 tests, 21 files)
 docs/MIGRATION.md            # Decomposition ledger and architecture notes
 skill/                       # Claude Projects skill package
-.github/workflows/           # CI: ci.yml + integrity-guard.yml (6 gates) + weekly-audit.yml + claude-code-review.yml
+.github/workflows/           # ci.yml, integrity-guard.yml, gitleaks.yml, stage-a-ci.yml
 ```
 
 ## Development
 
-```bash
-# Start dev server
-python -m http.server 3737
+Work on the active `stage-a/` console under its `AGENTS.md`. Both apps are
+static files with no production build step. Always use a branch and PR;
+never push to `main` or use `--no-verify`.
 
-# Run tests
-npm install && npm test   # 678 tests across 21 files
-
-# Syntax check before push
-node --check <(sed -n '/<script>/,/<\/script>/p' shlav-a-mega.html | sed '1d;$d')
-```
-
-No build step. Edit `shlav-a-mega.html`, push to main \u2192 GitHub Pages auto-deploys (~60s).
+Merges are trust-based (Eias, 17.10.2026), without CONCUR, signatures or Eias
+sign-off. Only an OBJECT from `cowork-szmc` blocks. The coordinator merges
+once `validate`, `js-integrity` and `scan` pass on the exact full head.
+Claude Code and Codex do not self-merge. No review rounds.
+GitHub Pages publishes the merged `main` branch from repository root `/`.
 
 ## CI Pipeline
 
-Four GitHub Actions workflows run on every push:
+The required checks are:
 
-1. **ci.yml** \u2014 Data validation, schema checks, SW version sync, innerHTML audit, vitest
-2. **integrity-guard.yml** \u2014 6 gates: JS syntax, critical function existence (37 functions), data loader integrity, function count regression (>5 removed = FAIL), truncated code patterns, SW file integrity
-3. **weekly-audit.yml** \u2014 13 weekly health checks
-4. **claude-code-review.yml** \u2014 Claude posts a PR review on every open/sync/reopen
+1. **ci.yml / validate** — JSON/schema checks, version sync, innerHTML audit,
+   image-map and HTML/brace checks, dependency installation and Vitest.
+2. **integrity-guard.yml / js-integrity** — inline/shared JavaScript syntax,
+   required functions, loader integrity, function-count comparison,
+   truncation detection, issue-queue threshold and cached-file integrity.
+3. **gitleaks.yml / scan** — working-tree secret scan using `.gitleaks.toml`.
+
+**stage-a-ci.yml** runs on console changes; its existing guards and mutation
+shards are optional checks. New guards or mutations are not mandatory.
+Read the checked-in workflows for the exact commands and trigger conditions.
 
 ## Data Sources
 

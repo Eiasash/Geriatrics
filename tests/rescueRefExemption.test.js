@@ -59,13 +59,4 @@ describe('SZMC-Rescue ref exemption is bounded', () => {
     ).toBeGreaterThan(0);
   });
 
-  it('weekly-audit.yml ref check carries the SZMC-Rescue exemption', () => {
-    const yml = readFileSync(
-      resolve(rootDir, '.github/workflows/weekly-audit.yml'),
-      'utf-8',
-    );
-    // Pin the exemption so a future edit that re-tightens the audit (and would
-    // re-break it weekly) is caught here instead of in production.
-    expect(yml).toMatch(/q\.get\('t'\)\s*!=\s*'SZMC-Rescue'/);
-  });
 });
