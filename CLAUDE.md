@@ -17,7 +17,6 @@
 - Its cache name is `stage-a-v1`; Stage A has no package/HTML/SW version trinity.
 - The retained exam PWA has a separate version trinity:
   `package.json` version, `shlav-a-mega.html` APP_VERSION, and root `sw.js` CACHE.
-- Those retained sources currently use `10.64.195` / `shlav-a-v10.64.195`.
 - `scripts/check-version-sync.py` requires HTML and SW versions to match;
   package.json must start with the HTML version (a package suffix is allowed).
 - Keep that trinity aligned if an explicitly assigned legacy release changes it.
@@ -27,14 +26,7 @@
 
 ## Branches and merging
 
-- Always use a task branch and PR; never push directly to `main`.
-- Never use `--no-verify`.
-- Merges are trust-based (Eias, 17.10.2026).
-- There is no CONCUR, signature, or Eias sign-off requirement.
-- Only an OBJECT from the SZMC Cowork lane (`cowork-szmc`) blocks a merge.
-- The coordinator merges after all three required checks are green on the
-  exact full commit head; Claude Code and Codex do not self-merge this repo.
-- No review rounds or routine bot-review requests.
+- Branching and merge authority: C:\Users\eiasa\ai-relay\cowork\CURRENT_SETUP.md, MERGES / APPROVALS.
 
 ## Checks
 
