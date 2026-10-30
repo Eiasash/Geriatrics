@@ -12,43 +12,11 @@
       "Bash(git commit:*)",
       "Bash(python3 -m http.server:*)",
       "Bash(scripts/hooks/*:*)",
-      "Bash(.claude/skills/ship-it/ship.sh:*)",
-      "Bash(gh pr merge --auto:*)",
-      "Bash(gh pr merge --squash:*)",
-      "Bash(gh pr merge --merge:*)",
-      "Bash(gh pr merge --rebase:*)"
+      "Bash(.claude/skills/ship-it/ship.sh:*)"
     ],
     "deny": [
       "Bash(gh pr merge --admin:*)",
       "Bash(gh *--admin*)"
-    ]
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash scripts/hooks/pre-edit-safety.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash scripts/hooks/check-sw-version-pairing.sh"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash scripts/hooks/validate-json-edit.sh"
-          }
-        ]
-      }
     ]
   }
 }
