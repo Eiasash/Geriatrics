@@ -11,8 +11,7 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(python3 -m http.server:*)",
-      "Bash(scripts/hooks/*:*)",
-      "Bash(.claude/skills/ship-it/ship.sh:*)"
+      "Bash(scripts/hooks/*:*)"
     ],
     "deny": [
       "Bash(gh pr merge --admin:*)",
