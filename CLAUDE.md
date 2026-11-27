@@ -26,7 +26,7 @@
 
 ## Branches and merging
 
-- Branching and merge authority: C:\Users\eiasa\ai-relay\cowork\CURRENT_SETUP.md, MERGES / APPROVALS.
+- Push the branch and open the PR through `C:\Users\eiasa\ai-relay\ext-write\Ext-Write.ps1`; the coordinator merges it (Ext-Write merge-pr) once the required checks pass. A job never merges unless its prompt says so.
 
 ## Checks
 
